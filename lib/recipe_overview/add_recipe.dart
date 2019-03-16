@@ -2,11 +2,42 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../recipe.dart';
 
 const double categories = 14;
 const double topPadding = 8;
 
-class AddRecipe extends StatelessWidget {
+class AddRecipe extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return AddRecipeState();
+  }
+}
+
+class AddRecipeState extends State<AddRecipe> {
+  static Recipe editRecipe;
+  TextEditingController nameController;
+  TextEditingController preperationTimeController;
+  TextEditingController cookingTimeController;
+  TextEditingController totalTimeController;
+  TextEditingController portionsController;
+  // TODO: implement controllers for the ingredients and steps
+  TextEditingController notesController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    nameController = new TextEditingController();
+    preperationTimeController = new TextEditingController();
+    cookingTimeController = new TextEditingController();
+    totalTimeController = new TextEditingController();
+    portionsController = new TextEditingController();
+    // TODO: implement controllers for the ingredients and steps
+    notesController = new TextEditingController();
+    editRecipe = new Recipe();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,6 +54,15 @@ class AddRecipe extends StatelessWidget {
               icon: Icon(Icons.check),
               onPressed: () {
                 // TODO: Implement save recipt functionality
+                print(editRecipe.getIngredients()[0]);
+                editRecipe.setName(nameController.text);
+                editRecipe.setPreperationTime(
+                    double.parse(preperationTimeController.text));
+                editRecipe
+                    .setCookingTime(double.parse(cookingTimeController.text));
+                editRecipe.setTotalTime(double.parse(totalTimeController.text));
+                editRecipe.setPortions(double.parse(portionsController.text));
+                editRecipe.setNotes(notesController.text);
               },
             )
           ],
@@ -34,6 +74,7 @@ class AddRecipe extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
+              controller: nameController,
               decoration: InputDecoration(
                 filled: true,
                 labelText: 'name',
@@ -49,6 +90,7 @@ class AddRecipe extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: TextField(
+                    controller: notesController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       filled: true,
@@ -63,6 +105,7 @@ class AddRecipe extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: TextField(
+                    controller: cookingTimeController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       filled: true,
@@ -78,6 +121,7 @@ class AddRecipe extends StatelessWidget {
             padding:
                 const EdgeInsets.only(left: 52, top: 12, right: 12, bottom: 12),
             child: TextField(
+              controller: totalTimeController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 helperText: 'in minutes',
@@ -91,6 +135,7 @@ class AddRecipe extends StatelessWidget {
             padding: const EdgeInsets.only(
                 left: 12, top: 12, bottom: 12, right: 200),
             child: TextField(
+              controller: portionsController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 filled: true,
@@ -100,7 +145,7 @@ class AddRecipe extends StatelessWidget {
             ),
           ),
           // ingredients heading with the textFields
-          IngredientSection(),
+          IngredientSection(editRecipe.getIngredients()),
           // category for vegetarian heading
           Padding(
             padding: const EdgeInsets.only(left: 56, top: 12),
@@ -121,6 +166,7 @@ class AddRecipe extends StatelessWidget {
             padding:
                 const EdgeInsets.only(right: 53, top: 12, left: 18, bottom: 12),
             child: TextField(
+              controller: notesController,
               decoration: InputDecoration(
                 labelText: 'notes',
                 filled: true,
@@ -165,9 +211,27 @@ class AddRecipe extends StatelessWidget {
           )
         ]));
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
+    preperationTimeController.dispose();
+    cookingTimeController.dispose();
+    totalTimeController.dispose();
+    portionsController.dispose();
+    // TODO: implement controllers for the ingredients and steps
+    notesController.dispose();
+  }
 }
 
 class IngredientSection extends StatefulWidget {
+  List<String> ingredients;
+
+  IngredientSection(List<String> ingredients) {
+    this.ingredients = ingredients;
+  }
+
   @override
   State<StatefulWidget> createState() {
     return _IngredientSectionState();
@@ -177,11 +241,13 @@ class IngredientSection extends StatefulWidget {
 class _IngredientSectionState extends State<IngredientSection> {
   int _count = 1;
 
-  // returns a list of the Rows 
+  // returns a list of the Rows
   List<Widget> getIngredientFields() {
     List<Widget> output = [];
 
     for (int i = 0; i < _count; i++) {
+      // add empty string to list of ingredients for being able to edit it later
+      widget.ingredients.add('');
       output.add(Padding(
         padding: const EdgeInsets.fromLTRB(12.0, 12.0, 8, 12),
         child: Row(
@@ -189,6 +255,9 @@ class _IngredientSectionState extends State<IngredientSection> {
             Expanded(
               flex: 9,
               child: TextField(
+                onChanged: (changed) {
+                  widget.ingredients[0] = changed;
+                },
                 decoration: InputDecoration(
                   icon: Icon(Icons.fastfood),
                   hintText: 'name',

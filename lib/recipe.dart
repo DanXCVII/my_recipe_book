@@ -9,11 +9,11 @@ class Recipe {
   double cookingTime;
   double totalTime;
   double portions;
-  List<String> ingredients;
-  Map<String, double> amount;
-  Map<String, String> unit;
+  List<String> ingredients = new List<String>();
+  Map<String, double> amount = new Map<String, double>();
+  Map<String, String> unit = new Map<String, String>();
   Vegetable vegetable;
-  List<String> steps;
+  List<String> steps = new List<String>();
   String notes;
   // TODO: add categories
 
