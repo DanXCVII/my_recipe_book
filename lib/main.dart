@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: Colors.red, // maybe brown[700]
+        primaryColor: Color(0xFF790604), // maybe brown[700]
          /* canvasColor: Color(0xFF43403D),
          textSelectionColor: Colors.white,
          backgroundColor: Color(0xFF43403D),
@@ -82,7 +82,7 @@ class MyHomePageState extends State<MyHomePage> {
   Widget getFloating(String page) {
     if (page == 'recipes') {
       return FloatingActionButton(
-          backgroundColor: Colors.red,
+          backgroundColor: Color(0xFF790604),
           child: Icon(Icons.add),
           onPressed: () {
             Navigator.pushNamed(context, 'addRecipe');

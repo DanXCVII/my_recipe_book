@@ -11,86 +11,159 @@ class AddRecipe extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.clear),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
           title: Text('add recipe'),
-        ),
-        body: ListView(
-          children: <Widget>[
-            ImageSelector(),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 52),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'name',
-                  icon: Icon(Icons.android),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 200),
-              child: TextField(
-                  decoration: InputDecoration(
-                labelText: 'preperation time',
-                icon: Icon(Icons.access_time),
-              )),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 56, right: 200),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'cooking time',
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 56, right: 200),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'total time',
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 200),
-              child: TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'portions',
-                  icon: Icon(Icons.local_dining),
-                ),
-              ),
-            ),
-            IngredientSection(),
-            SizedBox(height: 12),
-           Padding(
-             padding: const EdgeInsets.only(left: 56),
-             child: Text(
-                  'select a category:',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.grey[700]),
-                ),
-           ),
-            
-            Vegetarian(),
-            StepsSection(),
-            Padding(
-              padding: const EdgeInsets.only(
-                  right: 53, top: 12, left: 18, bottom: 12),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'notes',
-                  border: OutlineInputBorder(),
-                  icon: Icon(Icons.assignment),
-                ),
-                maxLines: 3,
-              ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.check),
+              onPressed: () {
+                // TODO: Implement save recipt functionality
+              },
             )
           ],
-        ));
+        ),
+        body: ListView(children: <Widget>[
+          // top section with the add image button
+          ImageSelector(),
+          // name textField
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: TextField(
+              decoration: InputDecoration(
+                filled: true,
+                labelText: 'name',
+                icon: Icon(Icons.android),
+              ),
+            ),
+          ),
+          // time textFields
+          Row(
+            children: <Widget>[
+              Expanded(
+                flex: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      filled: true,
+                      labelText: 'preperation time',
+                      icon: Icon(Icons.access_time),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      filled: true,
+                      labelText:
+                          'cooking time', // TODO: Maybe change name to something which isn't so much related to cooking with heat
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 52, top: 12, right: 12, bottom: 12),
+            child: TextField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                helperText: 'in minutes',
+                filled: true,
+                labelText: 'total time',
+              ),
+            ),
+          ),
+          // portions textField
+          Padding(
+            padding: const EdgeInsets.only(
+                left: 12, top: 12, bottom: 12, right: 200),
+            child: TextField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                filled: true,
+                labelText: 'portions',
+                icon: Icon(Icons.local_dining),
+              ),
+            ),
+          ),
+          // ingredients heading with the textFields
+          IngredientSection(),
+          // category for vegetarian heading
+          Padding(
+            padding: const EdgeInsets.only(left: 56, top: 12),
+            child: Text(
+              'select a category:',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.grey[700]),
+            ),
+          ),
+          // category for radio buttons for vegetarian selector
+          Vegetarian(),
+          // heading with textFields for steps section
+          StepsSection(),
+          // notes textField
+          Padding(
+            padding:
+                const EdgeInsets.only(right: 53, top: 12, left: 18, bottom: 12),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: 'notes',
+                filled: true,
+                icon: Icon(Icons.assignment),
+              ),
+              maxLines: 3,
+            ),
+          ),
+          // heading for the subcategory selector section
+          Padding(
+              padding: const EdgeInsets.only(left: 54, right: 6, top: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  // TODO: Add button to add a new category
+                  Text(
+                    'select subcategories:',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.grey[700]),
+                  ),
+                ],
+              )),
+          // category chips
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              child: Wrap(
+                spacing: 5.0,
+                runSpacing: 3.0,
+                children: <Widget>[
+                  MyFilterChip(chipName: "meat"),
+                  MyFilterChip(chipName: "salat"),
+                  MyFilterChip(chipName: "noodles"),
+                  MyFilterChip(chipName: "salat"),
+                  MyFilterChip(chipName: "breakfast"),
+                  MyFilterChip(chipName: "rice"),
+                ],
+              ),
+            ),
+          )
+        ]));
   }
 }
 
@@ -104,72 +177,56 @@ class IngredientSection extends StatefulWidget {
 class _IngredientSectionState extends State<IngredientSection> {
   int _count = 1;
 
+  // returns a list of the Rows 
   List<Widget> getIngredientFields() {
     List<Widget> output = [];
 
     for (int i = 0; i < _count; i++) {
-      output.add(Row(
-        children: <Widget>[
-          SizedBox(
-            width: 14,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 18.0),
-            child: ClipPath(
-              clipper: CustomIngredientsClipper(),
-              child: Container(
-                width: 24,
-                height: 24,
-                child: Center(
-                  child: Text(
-                    '${i + 1}',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.white),
+      output.add(Padding(
+        padding: const EdgeInsets.fromLTRB(12.0, 12.0, 8, 12),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              flex: 9,
+              child: TextField(
+                decoration: InputDecoration(
+                  icon: Icon(Icons.fastfood),
+                  hintText: 'name',
+                  filled: true,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: 'amnt',
                   ),
                 ),
-                color: Colors.redAccent,
               ),
             ),
-          ),
-          Expanded(
-            flex: 4,
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'name',
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: 'amnt',
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: TextField(
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: 'unit',
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'unit',
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 6.0),
-            child: IconButton(
+            IconButton(
               icon: Icon(Icons.clear),
               onPressed: () {},
             ),
-          ),
-        ],
+          ],
+        ),
       ));
     }
     return output;
@@ -180,19 +237,16 @@ class _IngredientSectionState extends State<IngredientSection> {
     Column _ingredients = Column(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.only(left: 56, right: 6, top: 12),
+          padding: const EdgeInsets.only(left: 54, right: 6),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'ingredients:',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.grey[700]),
-                ),
+              Text(
+                'ingredients:',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.grey[700]),
               ),
               IconButton(
                 icon: Icon(
@@ -225,6 +279,8 @@ class StepsSection extends StatefulWidget {
 class StepsSectionState extends State<StepsSection> {
   int _count = 1;
 
+  /// returns a list of Rows (inside the padding) in which
+  /// you can write your steps description.
   List<Widget> getIngredientFields() {
     List<Widget> output = [];
 
@@ -237,7 +293,7 @@ class StepsSectionState extends State<StepsSection> {
           Padding(
             padding: const EdgeInsets.only(right: 17.0),
             child: ClipPath(
-              clipper: CustomStepsClipper(),
+              clipper: CustomIngredientsClipper(),
               child: Container(
                 width: 26,
                 height: 26,
@@ -248,7 +304,7 @@ class StepsSectionState extends State<StepsSection> {
                         fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ),
-                color: Color(0xFF9C27B0),
+                color: Color(0xFF790604),
               ),
             ),
           ),
@@ -259,10 +315,10 @@ class StepsSectionState extends State<StepsSection> {
               child: TextFormField(
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  filled: true,
                   hintText: 'description',
                 ),
-                maxLines: 4,
+                maxLines: null,
               ),
             ),
           ),
@@ -279,6 +335,7 @@ class StepsSectionState extends State<StepsSection> {
     return output;
   }
 
+  // builds the steps section with it's corresponding heading
   @override
   Widget build(BuildContext context) {
     Column _ingredients = Column(
@@ -314,6 +371,7 @@ class StepsSectionState extends State<StepsSection> {
   }
 }
 
+// Widget for the radio buttons (vegetarian, vegan, etc.)
 class Vegetarian extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _VegetarianState();
@@ -347,31 +405,49 @@ class _VegetarianState extends State<Vegetarian> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Row(children: <Widget>[
-              Radio(
-                value: 0,
-                groupValue: _radioValue,
-                onChanged: _handleRadioValueChange,
-              ),
-              Text('non vegetarian', style: TextStyle(fontSize: 16),),
-            ]),
-            Row(
-              children: <Widget>[
-                Radio(
-                  value: 1,
+              Padding(
+                padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                child: Radio(
+                  value: 0,
                   groupValue: _radioValue,
                   onChanged: _handleRadioValueChange,
                 ),
-                Text('vegetarian', style: TextStyle(fontSize: 16),),
+              ),
+              Text(
+                'non vegetarian',
+                style: TextStyle(fontSize: 16),
+              ),
+            ]),
+            Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                  child: Radio(
+                    value: 1,
+                    groupValue: _radioValue,
+                    onChanged: _handleRadioValueChange,
+                  ),
+                ),
+                Text(
+                  'vegetarian',
+                  style: TextStyle(fontSize: 16),
+                ),
               ],
             ),
             Row(
               children: <Widget>[
-                Radio(
-                  value: 2,
-                  groupValue: _radioValue,
-                  onChanged: _handleRadioValueChange,
+                Padding(
+                  padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                  child: Radio(
+                    value: 2,
+                    groupValue: _radioValue,
+                    onChanged: _handleRadioValueChange,
+                  ),
                 ),
-                Text('vegan', style: TextStyle(fontSize: 16),),
+                Text(
+                  'vegan',
+                  style: TextStyle(fontSize: 16),
+                ),
               ],
             )
           ]),
@@ -379,6 +455,7 @@ class _VegetarianState extends State<Vegetarian> {
   }
 }
 
+// clips a shape with 8 edges
 class CustomIngredientsClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final Path path = Path();
@@ -397,6 +474,7 @@ class CustomIngredientsClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomIngredientsClipper oldClipper) => false;
 }
 
+// clips a diamond shape
 class CustomStepsClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final Path path = Path();
@@ -490,14 +568,52 @@ class ImageSelectorState extends State<ImageSelector> {
                 height: 110,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.lightBlue,
+                  color: Color(0xFF790604),
                 ),
               )
-            : Image.file(
-                pictureFile,
-                fit: BoxFit.cover,
-              ),
+            : ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: Container(
+                  child: Image.file(
+                    pictureFile,
+                    fit: BoxFit.cover,
+                  ),
+                  width: 110,
+                  height: 110,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                  ),
+                )),
       ),
+    );
+  }
+}
+
+// creates a filterClip with the given name
+class MyFilterChip extends StatefulWidget {
+  final String chipName;
+
+  MyFilterChip({Key key, this.chipName});
+
+  @override
+  State<StatefulWidget> createState() {
+    return MyFilterChipState();
+  }
+}
+
+class MyFilterChipState extends State<MyFilterChip> {
+  bool _isSelected = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilterChip(
+      label: Text(widget.chipName),
+      selected: _isSelected,
+      onSelected: (isSelected) {
+        setState(() {
+          _isSelected = isSelected;
+        });
+      },
     );
   }
 }
