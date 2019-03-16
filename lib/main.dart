@@ -23,8 +23,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         primaryColor: Colors.red, // maybe brown[700]
-        // canvasColor: Color(0xFF43403D),
-        /* textTheme: Theme.of(context).textTheme.apply(
+         /* canvasColor: Color(0xFF43403D),
+         textSelectionColor: Colors.white,
+         backgroundColor: Color(0xFF43403D),
+         hintColor: Colors.white,
+         textSelectionHandleColor: Colors.white, */
+         iconTheme: IconThemeData(color: Colors.grey[700]),
+         /*textTheme: Theme.of(context).textTheme.apply(
                 bodyColor: Colors.white,
                 displayColor: Colors.white,
               )*/
