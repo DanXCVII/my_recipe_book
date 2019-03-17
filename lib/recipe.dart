@@ -9,9 +9,10 @@ class Recipe {
   double cookingTime;
   double totalTime;
   double portions;
-  List<String> ingredients = new List<String>();
-  Map<String, double> amount = new Map<String, double>();
-  Map<String, String> unit = new Map<String, String>();
+  List<List<String>> ingredientsList;
+  List<String> ingredientsGlossary = new List<String>();
+  List<List<double>> amount = new List<List<double>>();
+  List<List<String>> unit = new List<List<String>>();
   Vegetable vegetable;
   List<String> steps = new List<String>();
   String notes;
@@ -61,27 +62,35 @@ class Recipe {
     return portions;
   }
 
-  void setIngredients(List<String> ingredients) {
-    this.ingredients = ingredients;
+  void setIngredientsGlossary(List<String> ingredients) {
+    this.ingredientsGlossary = ingredients;
   }
 
-  List<String> getIngredients() {
-    return ingredients;
+  List<String> getIngredientsGlossary() {
+    return ingredientsGlossary;
   }
 
-  setAmount(Map<String, double> amount) {
+  void setIngredientsList(List<List<String>> ingredientsList) {
+    this.ingredientsList =ingredientsList;
+  }
+
+  List<List<String>> getIngredientsList() {
+    return ingredientsList;
+  }
+
+  setAmount(List<List<double>> amount) {
     this.amount = amount;
   }
 
-  Map<String, double> getAmount() {
+  List<List<double>> getAmount() {
     return amount;
   }
 
-  void setUnit(Map<String, String> unit) {
+  void setUnit(List<List<String>> unit) {
     this.unit = unit;
   }
 
-  Map<String, String> getUnit() {
+  List<List<String>> getUnit() {
     return unit;
   }
 

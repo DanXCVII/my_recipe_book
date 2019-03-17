@@ -23,6 +23,7 @@ class AddRecipeState extends State<AddRecipe> {
   TextEditingController portionsController;
   // TODO: implement controllers for the ingredients and steps
   TextEditingController notesController;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -53,163 +54,207 @@ class AddRecipeState extends State<AddRecipe> {
             IconButton(
               icon: Icon(Icons.check),
               onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  // TODO: when data is not valid
+                }
                 // TODO: Implement save recipt functionality
-                print(editRecipe.getIngredients()[0]);
                 editRecipe.setName(nameController.text);
+                print(nameController.text);
+                print(preperationTimeController.text);
                 editRecipe.setPreperationTime(
                     double.parse(preperationTimeController.text));
+                print(cookingTimeController.text);
                 editRecipe
                     .setCookingTime(double.parse(cookingTimeController.text));
+                print(totalTimeController.text);
                 editRecipe.setTotalTime(double.parse(totalTimeController.text));
                 editRecipe.setPortions(double.parse(portionsController.text));
+                print(double.parse(portionsController.text));
                 editRecipe.setNotes(notesController.text);
+                print(notesController.text);
               },
             )
           ],
         ),
-        body: ListView(children: <Widget>[
-          // top section with the add image button
-          ImageSelector(),
-          // name textField
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                filled: true,
-                labelText: 'name',
-                icon: Icon(Icons.android),
+        body: Form(
+          key: _formKey,
+          child: ListView(children: <Widget>[
+            // top section with the add image button
+            ImageSelector(),
+            // name textField
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: TextFormField(
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter a name';
+                  }
+                },
+                controller: nameController,
+                decoration: InputDecoration(
+                  filled: true,
+                  labelText: 'name',
+                  icon: Icon(Icons.android),
+                ),
               ),
             ),
-          ),
-          // time textFields
-          Row(
-            children: <Widget>[
-              Expanded(
-                flex: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: TextField(
-                    controller: notesController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      filled: true,
-                      labelText: 'preperation time',
-                      icon: Icon(Icons.access_time),
+            // time textFields
+            Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (validateNumber(value) == false) {
+                          return 'no valid number';
+                        }
+                      },
+                      controller: preperationTimeController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        filled: true,
+                        labelText: 'preperation time',
+                        icon: Icon(Icons.access_time),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: TextField(
-                    controller: cookingTimeController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      filled: true,
-                      labelText:
-                          'cooking time', // TODO: Maybe change name to something which isn't so much related to cooking with heat
+                Expanded(
+                  flex: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (validateNumber(value) == false) {
+                          return 'no valid number';
+                        }
+                      },
+                      controller: cookingTimeController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        filled: true,
+                        labelText:
+                            'cooking time', // TODO: Maybe change name to something which isn't so much related to cooking with heat
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 52, top: 12, right: 12, bottom: 12),
-            child: TextField(
-              controller: totalTimeController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                helperText: 'in minutes',
-                filled: true,
-                labelText: 'total time',
-              ),
+              ],
             ),
-          ),
-          // portions textField
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 12, top: 12, bottom: 12, right: 200),
-            child: TextField(
-              controller: portionsController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                filled: true,
-                labelText: 'portions',
-                icon: Icon(Icons.local_dining),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 52, top: 12, right: 12, bottom: 12),
+              child: TextFormField(
+                validator: (value) {
+                  if (validateNumber(value) == false) {
+                    return 'no valid number';
+                  }
+                },
+                controller: totalTimeController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  helperText: 'in minutes',
+                  filled: true,
+                  labelText: 'total time',
+                ),
               ),
             ),
-          ),
-          // ingredients heading with the textFields
-          IngredientSection(editRecipe.getIngredients()),
-          // category for vegetarian heading
-          Padding(
-            padding: const EdgeInsets.only(left: 56, top: 12),
-            child: Text(
-              'select a category:',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.grey[700]),
-            ),
-          ),
-          // category for radio buttons for vegetarian selector
-          Vegetarian(),
-          // heading with textFields for steps section
-          StepsSection(),
-          // notes textField
-          Padding(
-            padding:
-                const EdgeInsets.only(right: 53, top: 12, left: 18, bottom: 12),
-            child: TextField(
-              controller: notesController,
-              decoration: InputDecoration(
-                labelText: 'notes',
-                filled: true,
-                icon: Icon(Icons.assignment),
-              ),
-              maxLines: 3,
-            ),
-          ),
-          // heading for the subcategory selector section
-          Padding(
-              padding: const EdgeInsets.only(left: 54, right: 6, top: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  // TODO: Add button to add a new category
-                  Text(
-                    'select subcategories:',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.grey[700]),
-                  ),
-                ],
-              )),
-          // category chips
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              child: Wrap(
-                spacing: 5.0,
-                runSpacing: 3.0,
-                children: <Widget>[
-                  MyFilterChip(chipName: "meat"),
-                  MyFilterChip(chipName: "salat"),
-                  MyFilterChip(chipName: "noodles"),
-                  MyFilterChip(chipName: "salat"),
-                  MyFilterChip(chipName: "breakfast"),
-                  MyFilterChip(chipName: "rice"),
-                ],
+            // portions textField
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 12, top: 12, bottom: 12, right: 200),
+              child: TextFormField(
+                validator: (value) {
+                        if(validateNumber(value) == false) {
+                          return 'no valid number';
+                        }
+                      },
+                controller: portionsController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  filled: true,
+                  labelText: 'portions',
+                  icon: Icon(Icons.local_dining),
+                ),
               ),
             ),
-          )
-        ]));
+            // ingredients heading
+
+            // ingredients text fields for a section and the corresponding ingredients
+            Ingredients(
+                editRecipe.getIngredientsGlossary(),
+                editRecipe.getIngredientsList(),
+                editRecipe.getAmount(),
+                editRecipe.getUnit()),
+            // button for adding a new ingredient section
+
+            // category for vegetarian heading
+            Padding(
+              padding: const EdgeInsets.only(left: 56, top: 12),
+              child: Text(
+                'select a category:',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.grey[700]),
+              ),
+            ),
+            // category for radio buttons for vegetarian selector
+            Vegetarian(),
+            // heading with textFields for steps section
+            StepsSection(),
+            // notes textField
+            Padding(
+              padding: const EdgeInsets.only(
+                  right: 53, top: 12, left: 18, bottom: 12),
+              child: TextField(
+                controller: notesController,
+                decoration: InputDecoration(
+                  labelText: 'notes',
+                  filled: true,
+                  icon: Icon(Icons.assignment),
+                ),
+                maxLines: 3,
+              ),
+            ),
+            // heading for the subcategory selector section
+            Padding(
+                padding: const EdgeInsets.only(left: 54, right: 6, top: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    // TODO: Add button to add a new category
+                    Text(
+                      'select subcategories:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.grey[700]),
+                    ),
+                  ],
+                )),
+            // category chips
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                child: Wrap(
+                  spacing: 5.0,
+                  runSpacing: 3.0,
+                  children: <Widget>[
+                    MyFilterChip(chipName: "meat"),
+                    MyFilterChip(chipName: "salat"),
+                    MyFilterChip(chipName: "noodles"),
+                    MyFilterChip(chipName: "salat"),
+                    MyFilterChip(chipName: "breakfast"),
+                    MyFilterChip(chipName: "rice"),
+                  ],
+                ),
+              ),
+            )
+          ]),
+        ));
   }
 
   @override
@@ -225,12 +270,102 @@ class AddRecipeState extends State<AddRecipe> {
   }
 }
 
-class IngredientSection extends StatefulWidget {
-  List<String> ingredients;
-
-  IngredientSection(List<String> ingredients) {
-    this.ingredients = ingredients;
+bool validateNumber(String text) {
+  if (text.isEmpty) {
+    return true;
   }
+  String pattern = r'^(?!0*[.,]?0+$)\d*[.,]?\d+$';
+
+  RegExp regex = new RegExp(pattern);
+  if (regex.hasMatch(text)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+class Ingredients extends StatefulWidget {
+  List<String> ingredientsGlossary;
+  List<List<String>> ingredientsList;
+  List<List<double>> amount;
+  List<List<String>> unit;
+
+  Ingredients(
+      this.ingredientsGlossary, this.ingredientsList, this.amount, this.unit);
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return IngredientsState();
+  }
+}
+
+class IngredientsState extends State<Ingredients> {
+  int _sectionAmount = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    Column sections = new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[],
+    );
+    // add the heading to the outputColumn
+    sections.children.add(Padding(
+      padding: const EdgeInsets.only(left: 52, top: 12, bottom: 12),
+      child: Text(
+        'ingredients:',
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[700]),
+      ),
+    ));
+    // add all the text fields with heading textField for every section to the output
+
+    // add all the sections to the children of the column
+    for (int i = 0; i < _sectionAmount; i++) {
+      sections.children.add(IngredientSection(
+          widget.ingredientsGlossary,
+          widget.ingredientsList,
+          widget.amount,
+          widget.unit,
+          (int id) {
+            setState(() {
+              // TODO: Callback when a section gets removed
+            });
+          },
+          // i position of the section in the column
+          i,
+          // callback for when section add is tapped
+          () {
+            setState(() {
+              _sectionAmount++;
+            });
+          },
+          i == _sectionAmount - 1 ? true : false));
+    }
+    return sections;
+  }
+}
+
+class IngredientSection extends StatefulWidget {
+  List<String> ingredientsGlossary;
+  List<List<String>> ingredientsList;
+  List<List<double>> amount;
+  List<List<String>> unit;
+
+  SectionsCountCallback callbackRemoveSection;
+  SectionAddCallback callbackAddSection;
+  int id;
+  bool lastRow;
+
+  IngredientSection(
+      this.ingredientsGlossary,
+      this.ingredientsList,
+      this.amount,
+      this.unit,
+      this.callbackRemoveSection,
+      this.id,
+      this.callbackAddSection,
+      this.lastRow);
 
   @override
   State<StatefulWidget> createState() {
@@ -244,121 +379,143 @@ class _IngredientSectionState extends State<IngredientSection> {
   // returns a list of the Rows
   List<Widget> getIngredientFields() {
     List<Widget> output = [];
-
+    output.add(Padding(
+      padding: const EdgeInsets.fromLTRB(12.0, 12, 8, 12),
+      child: Row(children: <Widget>[
+        Expanded(
+          child: TextField(
+            onChanged: (changed) {
+              widget.ingredientsGlossary[0] = changed;
+            },
+            decoration: InputDecoration(
+              icon: Icon(Icons.fastfood),
+              helperText: 'not required (e.g. ingredients of sauce)',
+              labelText: 'section name',
+              filled: true,
+            ),
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            // TODO: Callback when section gets removed
+            print(widget.id);
+            widget.callbackRemoveSection(widget.id);
+          },
+        ),
+      ]),
+    ));
     for (int i = 0; i < _count; i++) {
       // add empty string to list of ingredients for being able to edit it later
-      widget.ingredients.add('');
+      widget.ingredientsGlossary.add('');
       output.add(Padding(
         padding: const EdgeInsets.fromLTRB(12.0, 12.0, 8, 12),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              flex: 9,
-              child: TextField(
-                onChanged: (changed) {
-                  widget.ingredients[0] = changed;
-                },
-                decoration: InputDecoration(
-                  icon: Icon(Icons.fastfood),
-                  hintText: 'name',
-                  filled: true,
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 4,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 40),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                flex: 9,
                 child: TextField(
-                  keyboardType: TextInputType.number,
+                  onChanged: (changed) {
+                    widget.ingredientsGlossary[0] = changed;
+                  },
                   decoration: InputDecoration(
+                    hintText: 'name',
                     filled: true,
-                    hintText: 'amnt',
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: TextField(
-                  decoration: InputDecoration(
-                    filled: true,
-                    hintText: 'unit',
+              Expanded(
+                flex: 4,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: TextField(
+                    onChanged: (changed) {
+                      widget.amount[widget.id][i] = double.parse(changed);
+                    },
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      filled: true,
+                      hintText: 'amnt',
+                    ),
                   ),
                 ),
               ),
-            ),
-            IconButton(
-              icon: Icon(Icons.clear),
-              onPressed: () {},
-            ),
-          ],
+              Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: TextField(
+                    onChanged: (changed) {
+                      widget.unit[widget.id][i] = changed;
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      hintText: 'unit',
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: () {},
+              ),
+            ],
+          ),
         ),
       ));
     }
-    output.add(Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        OutlineButton.icon(
-            icon: Icon(Icons.add_circle),
-            label: Text("Add section"),
-            onPressed: () {
-              // TODO: Add a new section with one ingredient
-            },
-            shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(30.0))),
-        SizedBox(width: 12),
-        OutlineButton.icon(
-            icon: Icon(Icons.add_circle_outline),
-            label: Text('Add ingredient'),
-            onPressed: () {
-              // TODO: Add new ingredient to the section
-            },
-            shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(30.0))),
-      ],
-    ));
+    output.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          OutlineButton.icon(
+              icon: Icon(Icons.add_circle_outline),
+              label: Text('Add ingredient'),
+              onPressed: () {
+                // TODO: Add new ingredient to the section
+                setState(() {
+                  _count += 1;
+                });
+              },
+              shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(30.0))),
+          Padding(
+            padding: const EdgeInsets.only(left: 12.0),
+            child: widget.lastRow
+                ? OutlineButton.icon(
+                    icon: Icon(Icons.add_circle),
+                    label: Text('Add section'),
+                    onPressed: () {
+                      // TODO: Add a new section with one ingredient
+                      widget.callbackAddSection();
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(30.0),
+                    ),
+                  )
+                : SizedBox(),
+          )
+        ],
+      ),
+    );
     return output;
   }
 
   @override
   Widget build(BuildContext context) {
     Column _ingredients = Column(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 54, right: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                'ingredients:',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.grey[700]),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.add_circle,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _count += 1;
-                  });
-                },
-              )
-            ],
-          ),
-        ),
-      ],
+      children: <Widget>[],
     );
     _ingredients.children.addAll(getIngredientFields());
 
     return _ingredients;
   }
 }
+
+typedef SectionsCountCallback = void Function(int sections);
+typedef SectionAddCallback = void Function();
 
 class StepsSection extends StatefulWidget {
   @override
