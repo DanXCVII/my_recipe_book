@@ -298,6 +298,28 @@ class _IngredientSectionState extends State<IngredientSection> {
         ),
       ));
     }
+    output.add(Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        OutlineButton.icon(
+            icon: Icon(Icons.add_circle),
+            label: Text("Add section"),
+            onPressed: () {
+              // TODO: Add a new section with one ingredient
+            },
+            shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(30.0))),
+        SizedBox(width: 12),
+        OutlineButton.icon(
+            icon: Icon(Icons.add_circle_outline),
+            label: Text('Add ingredient'),
+            onPressed: () {
+              // TODO: Add new ingredient to the section
+            },
+            shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(30.0))),
+      ],
+    ));
     return output;
   }
 
@@ -401,6 +423,7 @@ class StepsSectionState extends State<StepsSection> {
         ],
       ));
     }
+
     return output;
   }
 
