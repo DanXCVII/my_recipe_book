@@ -28,6 +28,8 @@ class AddRecipeState extends State<AddRecipe> {
   List<String> ingredientsGlossary = new List<String>();
   List<List<double>> amount = new List<List<double>>();
   List<List<String>> unit = new List<List<String>>();
+  List<String> steps = new List<String>();
+  Vegetable vegetable;
 
   @override
   void initState() {
@@ -40,10 +42,12 @@ class AddRecipeState extends State<AddRecipe> {
     servingsController = new TextEditingController();
     // TODO: implement controllers for the ingredients and steps
     notesController = new TextEditingController();
-    ingredientsGlossary.add('');
     ingredientsList.add(new List<String>());
+    ingredientsList[0].add('');
     amount.add(new List<double>());
+    amount[0].add(-1);
     unit.add(new List<String>());
+    unit[0].add('');
   }
 
   @override
@@ -66,29 +70,34 @@ class AddRecipeState extends State<AddRecipe> {
                 }
                 // TODO: Implement save recipt functionality
                 Recipe newRecipe = new Recipe(
-                    name: nameController.text,
-                    preperationTime: preperationTimeController.text.isEmpty
-                        ? null
-                        : double.parse(preperationTimeController.text),
-                    cookingTime: cookingTimeController.text.isEmpty
-                        ? null
-                        : double.parse(cookingTimeController.text),
-                    totalTime: totalTimeController.text.isEmpty
-                        ? null
-                        : double.parse(totalTimeController.text),
-                    servings: servingsController.text.isEmpty
-                        ? null
-                        : double.parse(servingsController.text),
-                    notes: notesController.text,
-                    ingredientsGlossary: ingredientsGlossary,
-                    ingredientsList: ingredientsList,
-                    amount: amount,
-                    unit: unit);
+                  name: nameController.text,
+                  preperationTime: preperationTimeController.text.isEmpty
+                      ? null
+                      : double.parse(preperationTimeController.text),
+                  cookingTime: cookingTimeController.text.isEmpty
+                      ? null
+                      : double.parse(cookingTimeController.text),
+                  totalTime: totalTimeController.text.isEmpty
+                      ? null
+                      : double.parse(totalTimeController.text),
+                  servings: servingsController.text.isEmpty
+                      ? null
+                      : double.parse(servingsController.text),
+                  notes: notesController.text,
+                  ingredientsGlossary: ingredientsGlossary
+                      .where((string) => string.isNotEmpty)
+                      .toList(),
+                  ingredientsList: cleanUpListString(ingredientsList),
+                  amount: cleanUpListDouble(amount),
+                  unit: cleanUpListString(unit),
+                );
                 print(nameController.text);
                 print(preperationTimeController.text);
                 print(cookingTimeController.text);
                 print(totalTimeController.text);
                 print(notesController.text);
+
+                print(cleanUpListString(ingredientsList));
               },
             )
           ],
@@ -221,13 +230,13 @@ class AddRecipeState extends State<AddRecipe> {
               ),
             ),
             // category for radio buttons for vegetarian selector
-            Vegetarian(),
+            Vegetarian(vegetable),
             // heading with textFields for steps section
-            StepsSection(),
+            StepsSection(steps),
             // notes textField
             Padding(
               padding: const EdgeInsets.only(
-                  right: 53, top: 12, left: 18, bottom: 12),
+                  right: 12, top: 12, left: 18, bottom: 12),
               child: TextField(
                 controller: notesController,
                 decoration: InputDecoration(
@@ -286,6 +295,32 @@ class AddRecipeState extends State<AddRecipe> {
     servingsController.dispose();
     // TODO: implement controllers for the ingredients and steps
     notesController.dispose();
+  }
+
+  List<List<String>> cleanUpListString(List<List<String>> list) {
+    List<List<String>> output = new List<List<String>>();
+    list.forEach((listInList) {
+      output.add((listInList.where((element) => element.isNotEmpty)).toList());
+    });
+    for (int i = 0; i < output.length; i++) {
+      if (output[i].isEmpty) {
+        output.removeAt(i);
+      }
+    }
+    return output;
+  }
+
+  List<List<double>> cleanUpListDouble(List<List<double>> list) {
+    List<List<double>> output = new List<List<double>>();
+    list.forEach((listInList) {
+      output.add((listInList.where((element) => element != -1)).toList());
+    });
+    for (int i = 0; i < output.length; i++) {
+      if (output[i].isEmpty) {
+        output.removeAt(i);
+      }
+    }
+    return output;
   }
 }
 
@@ -369,6 +404,55 @@ class IngredientsState extends State<Ingredients> {
           },
           i == _sectionAmount - 1 ? true : false));
     }
+    sections.children.add(
+      Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            OutlineButton.icon(
+              icon: Icon(Icons.add_circle),
+              label: Text('Add section'),
+              onPressed: () {
+                // TODO: Add a new section with one ingredient
+                setState(() {
+                  // TODO: Callback when a section gets removed
+                  _sectionAmount++;
+                  widget.ingredientsGlossary.add('');
+                  widget.ingredientsList.add(new List<String>());
+                  widget.ingredientsList[_sectionAmount - 1].add('');
+                  widget.amount.add(new List<double>());
+                  widget.amount[_sectionAmount - 1].add(-1);
+                  widget.unit.add(new List<String>());
+                  widget.unit[_sectionAmount - 1].add('');
+                });
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(30.0),
+              ),
+            ),
+            _sectionAmount > 1
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: OutlineButton.icon(
+                      icon: Icon(Icons.remove_circle),
+                      label: Text('Remove section'),
+                      onPressed: () {
+                        // TODO: Add a new section with one ingredient
+                        setState(() {
+                          // TODO: Callback when a section gets removed
+                          widget.ingredientsGlossary.removeLast();
+                          if (_sectionAmount > 1) {
+                            _sectionAmount--;
+                          }
+                        });
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(30.0),
+                      ),
+                    ),
+                  )
+                : null,
+          ].where((c) => c != null).toList()),
+    );
     return sections;
   }
 }
@@ -407,7 +491,7 @@ class _IngredientSectionState extends State<IngredientSection> {
   List<Widget> getIngredientFields() {
     List<Widget> output = [];
     output.add(Padding(
-      padding: const EdgeInsets.fromLTRB(12.0, 12, 8, 12),
+      padding: const EdgeInsets.fromLTRB(12.0, 12, 12, 12),
       child: Row(
           children: <Widget>[
         Expanded(
@@ -424,21 +508,13 @@ class _IngredientSectionState extends State<IngredientSection> {
           ),
         ),
         // TODO: Only add button to last section and remove it properly?
-        widget.lastRow
-            ? IconButton(
-                icon: Icon(Icons.clear),
-                onPressed: () {
-                  // TODO: Callback when section gets removed
-                  widget.callbackRemoveSection(widget.sectionNumber);
-                },
-              )
-            : null,
       ].where((c) => c != null).toList()),
     ));
+
     for (int i = 0; i < _ingredientFieldsCount; i++) {
       // add empty string to list of ingredients for being able to edit it later
       output.add(Padding(
-        padding: const EdgeInsets.fromLTRB(12.0, 12.0, 8, 12),
+        padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12, 12),
         child: Padding(
           padding: const EdgeInsets.only(left: 40),
           child: Row(
@@ -447,7 +523,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                 flex: 9,
                 child: TextField(
                   onChanged: (changed) {
-                    widget.ingredientsGlossary[0] = changed;
+                    widget.ingredientsList[widget.sectionNumber][i] = changed;
                   },
                   decoration: InputDecoration(
                     hintText: 'name',
@@ -487,13 +563,6 @@ class _IngredientSectionState extends State<IngredientSection> {
                   ),
                 ),
               ),
-              _ingredientFieldsCount == i+1 && i != 1
-                  ? IconButton(
-                      // Only for the last ingredient and remove it properly?
-                      icon: Icon(Icons.clear),
-                      onPressed: () {},
-                    )
-                  : null
             ].where((c) => c != null).toList(),
           ),
         ),
@@ -510,31 +579,34 @@ class _IngredientSectionState extends State<IngredientSection> {
                 // TODO: Add new ingredient to the section
                 setState(() {
                   widget.ingredientsList[widget.sectionNumber].add('');
-                  widget.amount[widget.sectionNumber].add(0);
+                  widget.amount[widget.sectionNumber].add(-1);
                   widget.unit[widget.sectionNumber].add('');
                   _ingredientFieldsCount += 1;
-                  print(_ingredientFieldsCount);
                 });
               },
               shape: RoundedRectangleBorder(
                   borderRadius: new BorderRadius.circular(30.0))),
-          Padding(
-            padding: const EdgeInsets.only(left: 12.0),
-            child: widget.lastRow
-                ? OutlineButton.icon(
-                    icon: Icon(Icons.add_circle),
-                    label: Text('Add section'),
-                    onPressed: () {
-                      // TODO: Add a new section with one ingredient
-                      widget.callbackAddSection();
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(30.0),
-                    ),
-                  )
-                : SizedBox(),
-          )
-        ],
+          _ingredientFieldsCount > 1
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: OutlineButton.icon(
+                      icon: Icon(Icons.remove_circle_outline),
+                      label: Text('Remove ingredient'),
+                      onPressed: () {
+                        // TODO: Add new ingredient to the section
+                        setState(() {
+                          _ingredientFieldsCount--;
+                          widget.ingredientsList[widget.sectionNumber]
+                              .removeLast();
+                          widget.amount[widget.sectionNumber].removeLast();
+                          widget.unit[widget.sectionNumber].removeLast();
+                        });
+                      },
+                      shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0))),
+                )
+              : null,
+        ].where((c) => c != null).toList(),
       ),
     );
     return output;
@@ -555,6 +627,10 @@ typedef SectionsCountCallback = void Function(int sections);
 typedef SectionAddCallback = void Function();
 
 class StepsSection extends StatefulWidget {
+  List<String> steps;
+
+  StepsSection(this.steps);
+
   @override
   State<StatefulWidget> createState() {
     return StepsSectionState();
@@ -562,14 +638,14 @@ class StepsSection extends StatefulWidget {
 }
 
 class StepsSectionState extends State<StepsSection> {
-  int _count = 1;
+  int _stepsFieldCount = 1;
 
   /// returns a list of Rows (inside the padding) in which
   /// you can write your steps description.
   List<Widget> getIngredientFields() {
     List<Widget> output = [];
 
-    for (int i = 0; i < _count; i++) {
+    for (int i = 0; i < _stepsFieldCount; i++) {
       output.add(Row(
         children: <Widget>[
           SizedBox(
@@ -596,8 +672,11 @@ class StepsSectionState extends State<StepsSection> {
           Expanded(
             flex: 4,
             child: Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: TextFormField(
+              padding: const EdgeInsets.only(top: 8.0, right: 12),
+              child: TextField(
+                onChanged: (changed) {
+                  widget.steps[i] = changed;
+                },
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                   filled: true,
@@ -605,13 +684,6 @@ class StepsSectionState extends State<StepsSection> {
                 ),
                 maxLines: null,
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 6.0),
-            child: IconButton(
-              icon: Icon(Icons.clear),
-              onPressed: () {},
             ),
           ),
         ],
@@ -638,20 +710,49 @@ class StepsSectionState extends State<StepsSection> {
                     fontSize: 16,
                     color: Colors.grey[700]),
               ),
-              IconButton(
-                icon: Icon(Icons.add_circle),
-                onPressed: () {
-                  setState(() {
-                    _count += 1;
-                  });
-                },
-              )
             ],
           ),
         ),
       ],
     );
     _ingredients.children.addAll(getIngredientFields());
+    _ingredients.children.addAll([
+      SizedBox(height: 10),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          OutlineButton.icon(
+              icon: Icon(Icons.add_circle_outline),
+              label: Text('Add step'),
+              onPressed: () {
+                // TODO: Add new ingredient to the section
+                setState(() {
+                  widget.steps.add('');
+                  _stepsFieldCount++;
+                });
+              },
+              shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(30.0))),
+          _stepsFieldCount > 1
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: OutlineButton.icon(
+                      icon: Icon(Icons.remove_circle_outline),
+                      label: Text('Remove step'),
+                      onPressed: () {
+                        // TODO: Add new ingredient to the section
+                        setState(() {
+                          _stepsFieldCount--;
+                          widget.steps.removeLast();
+                        });
+                      },
+                      shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0))),
+                )
+              : null,
+        ].where((c) => c != null).toList(),
+      )
+    ]);
 
     return _ingredients;
   }
@@ -659,6 +760,9 @@ class StepsSectionState extends State<StepsSection> {
 
 // Widget for the radio buttons (vegetarian, vegan, etc.)
 class Vegetarian extends StatefulWidget {
+  Vegetable vegetable;
+  Vegetarian(this.vegetable);
+
   State<StatefulWidget> createState() {
     return _VegetarianState();
   }
@@ -674,10 +778,14 @@ class _VegetarianState extends State<Vegetarian> {
 
       switch (_radioValue) {
         case 0:
+          // TODO: save vegetable to editRecipe
+          widget.vegetable = Vegetable.non_vegetarian;
           break;
         case 1:
+          widget.vegetable = Vegetable.vegetarian;
           break;
         case 2:
+          widget.vegetable = Vegetable.vegan;
           break;
       }
     });
