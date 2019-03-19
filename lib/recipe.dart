@@ -8,7 +8,7 @@ class Recipe {
   double preperationTime;
   double cookingTime;
   double totalTime;
-  double portions;
+  double servings;
   List<List<String>> ingredientsList;
   List<String> ingredientsGlossary = new List<String>();
   List<List<double>> amount = new List<List<double>>();
@@ -18,9 +18,52 @@ class Recipe {
   String notes;
   // TODO: add categories
 
-  Recipe() {
-    // if no image => placeholder image
-  }
+  Recipe(
+      {this.name,
+      this.image,
+      this.preperationTime,
+      this.cookingTime,
+      this.totalTime,
+      this.servings,
+      this.ingredientsGlossary,
+      this.ingredientsList,
+      this.amount,
+      this.unit,
+      this.vegetable,
+      this.steps,
+      this.notes});
+
+  factory Recipe.fromMap(Map<String, dynamic> json) => new Recipe(
+        name: json["name"],
+        image: json["image"],
+        preperationTime: json["preperationTime"],
+        cookingTime: json["cookingTime"],
+        totalTime: json["totalTime"],
+        servings: json["servings"],
+        ingredientsGlossary: json["ingredientsGlossary"],
+        ingredientsList: json["ingredientsList"],
+        amount: json["amount"],
+        unit: json["unit"],
+        vegetable: json["vegetable"],
+        steps: json["steps"],
+        notes: json["notes"],
+      );
+
+  Map<String, dynamic> toMap() => {
+        "name": name,
+        "image": image,
+        "preperationTime": preperationTime,
+        "cookingTime": cookingTime,
+        "totalTime": totalTime,
+        "servings": servings,
+        "ingredientsGlossary": ingredientsGlossary,
+        "ingredientsList": ingredientsList,
+        "amount": amount,
+        "unit": unit,
+        "vegetable": vegetable,
+        "steps": steps,
+        "notes": notes
+      };
 
   void setName(String name) {
     this.name = name;
@@ -54,12 +97,12 @@ class Recipe {
     return totalTime;
   }
 
-  void setPortions(double portions) {
-    this.portions = portions;
+  void setServings(double servings) {
+    this.servings = servings;
   }
 
-  double getPortions() {
-    return portions;
+  double getServings() {
+    return servings;
   }
 
   void setIngredientsGlossary(List<String> ingredients) {
@@ -71,7 +114,7 @@ class Recipe {
   }
 
   void setIngredientsList(List<List<String>> ingredientsList) {
-    this.ingredientsList =ingredientsList;
+    this.ingredientsList = ingredientsList;
   }
 
   List<List<String>> getIngredientsList() {

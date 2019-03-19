@@ -7,6 +7,7 @@ import '../recipe.dart';
 const double categories = 14;
 const double topPadding = 8;
 
+// TODO ~: Put the AddRecipe Scaffold in a stateless widget
 class AddRecipe extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -15,15 +16,18 @@ class AddRecipe extends StatefulWidget {
 }
 
 class AddRecipeState extends State<AddRecipe> {
-  static Recipe editRecipe;
   TextEditingController nameController;
   TextEditingController preperationTimeController;
   TextEditingController cookingTimeController;
   TextEditingController totalTimeController;
-  TextEditingController portionsController;
+  TextEditingController servingsController;
   // TODO: implement controllers for the ingredients and steps
   TextEditingController notesController;
   final _formKey = GlobalKey<FormState>();
+  List<List<String>> ingredientsList = new List<List<String>>();
+  List<String> ingredientsGlossary = new List<String>();
+  List<List<double>> amount = new List<List<double>>();
+  List<List<String>> unit = new List<List<String>>();
 
   @override
   void initState() {
@@ -33,10 +37,13 @@ class AddRecipeState extends State<AddRecipe> {
     preperationTimeController = new TextEditingController();
     cookingTimeController = new TextEditingController();
     totalTimeController = new TextEditingController();
-    portionsController = new TextEditingController();
+    servingsController = new TextEditingController();
     // TODO: implement controllers for the ingredients and steps
     notesController = new TextEditingController();
-    editRecipe = new Recipe();
+    ingredientsGlossary.add('');
+    ingredientsList.add(new List<String>());
+    amount.add(new List<double>());
+    unit.add(new List<String>());
   }
 
   @override
@@ -58,19 +65,29 @@ class AddRecipeState extends State<AddRecipe> {
                   // TODO: when data is not valid
                 }
                 // TODO: Implement save recipt functionality
-                editRecipe.setName(nameController.text);
+                Recipe newRecipe = new Recipe(
+                    name: nameController.text,
+                    preperationTime: preperationTimeController.text.isEmpty
+                        ? null
+                        : double.parse(preperationTimeController.text),
+                    cookingTime: cookingTimeController.text.isEmpty
+                        ? null
+                        : double.parse(cookingTimeController.text),
+                    totalTime: totalTimeController.text.isEmpty
+                        ? null
+                        : double.parse(totalTimeController.text),
+                    servings: servingsController.text.isEmpty
+                        ? null
+                        : double.parse(servingsController.text),
+                    notes: notesController.text,
+                    ingredientsGlossary: ingredientsGlossary,
+                    ingredientsList: ingredientsList,
+                    amount: amount,
+                    unit: unit);
                 print(nameController.text);
                 print(preperationTimeController.text);
-                editRecipe.setPreperationTime(
-                    double.parse(preperationTimeController.text));
                 print(cookingTimeController.text);
-                editRecipe
-                    .setCookingTime(double.parse(cookingTimeController.text));
                 print(totalTimeController.text);
-                editRecipe.setTotalTime(double.parse(totalTimeController.text));
-                editRecipe.setPortions(double.parse(portionsController.text));
-                print(double.parse(portionsController.text));
-                editRecipe.setNotes(notesController.text);
                 print(notesController.text);
               },
             )
@@ -161,21 +178,21 @@ class AddRecipeState extends State<AddRecipe> {
                 ),
               ),
             ),
-            // portions textField
+            // servings textField
             Padding(
               padding: const EdgeInsets.only(
                   left: 12, top: 12, bottom: 12, right: 200),
               child: TextFormField(
                 validator: (value) {
-                        if(validateNumber(value) == false) {
-                          return 'no valid number';
-                        }
-                      },
-                controller: portionsController,
+                  if (validateNumber(value) == false) {
+                    return 'no valid number';
+                  }
+                },
+                controller: servingsController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   filled: true,
-                  labelText: 'portions',
+                  labelText: 'servings',
                   icon: Icon(Icons.local_dining),
                 ),
               ),
@@ -183,11 +200,13 @@ class AddRecipeState extends State<AddRecipe> {
             // ingredients heading
 
             // ingredients text fields for a section and the corresponding ingredients
+
             Ingredients(
-                editRecipe.getIngredientsGlossary(),
-                editRecipe.getIngredientsList(),
-                editRecipe.getAmount(),
-                editRecipe.getUnit()),
+              ingredientsGlossary,
+              ingredientsList,
+              amount,
+              unit,
+            ),
             // button for adding a new ingredient section
 
             // category for vegetarian heading
@@ -264,7 +283,7 @@ class AddRecipeState extends State<AddRecipe> {
     preperationTimeController.dispose();
     cookingTimeController.dispose();
     totalTimeController.dispose();
-    portionsController.dispose();
+    servingsController.dispose();
     // TODO: implement controllers for the ingredients and steps
     notesController.dispose();
   }
@@ -330,6 +349,10 @@ class IngredientsState extends State<Ingredients> {
           (int id) {
             setState(() {
               // TODO: Callback when a section gets removed
+              widget.ingredientsGlossary.removeLast();
+              if (_sectionAmount > 1) {
+                _sectionAmount--;
+              }
             });
           },
           // i position of the section in the column
@@ -338,6 +361,10 @@ class IngredientsState extends State<Ingredients> {
           () {
             setState(() {
               _sectionAmount++;
+              widget.ingredientsGlossary.add('');
+              widget.ingredientsList.add(new List<String>());
+              widget.amount.add(new List<double>());
+              widget.unit.add(new List<String>());
             });
           },
           i == _sectionAmount - 1 ? true : false));
@@ -354,7 +381,7 @@ class IngredientSection extends StatefulWidget {
 
   SectionsCountCallback callbackRemoveSection;
   SectionAddCallback callbackAddSection;
-  int id;
+  int sectionNumber;
   bool lastRow;
 
   IngredientSection(
@@ -363,7 +390,7 @@ class IngredientSection extends StatefulWidget {
       this.amount,
       this.unit,
       this.callbackRemoveSection,
-      this.id,
+      this.sectionNumber,
       this.callbackAddSection,
       this.lastRow);
 
@@ -374,14 +401,15 @@ class IngredientSection extends StatefulWidget {
 }
 
 class _IngredientSectionState extends State<IngredientSection> {
-  int _count = 1;
+  int _ingredientFieldsCount = 1;
 
   // returns a list of the Rows
   List<Widget> getIngredientFields() {
     List<Widget> output = [];
     output.add(Padding(
       padding: const EdgeInsets.fromLTRB(12.0, 12, 8, 12),
-      child: Row(children: <Widget>[
+      child: Row(
+          children: <Widget>[
         Expanded(
           child: TextField(
             onChanged: (changed) {
@@ -395,19 +423,20 @@ class _IngredientSectionState extends State<IngredientSection> {
             ),
           ),
         ),
-        IconButton(
-          icon: Icon(Icons.clear),
-          onPressed: () {
-            // TODO: Callback when section gets removed
-            print(widget.id);
-            widget.callbackRemoveSection(widget.id);
-          },
-        ),
-      ]),
+        // TODO: Only add button to last section and remove it properly?
+        widget.lastRow
+            ? IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: () {
+                  // TODO: Callback when section gets removed
+                  widget.callbackRemoveSection(widget.sectionNumber);
+                },
+              )
+            : null,
+      ].where((c) => c != null).toList()),
     ));
-    for (int i = 0; i < _count; i++) {
+    for (int i = 0; i < _ingredientFieldsCount; i++) {
       // add empty string to list of ingredients for being able to edit it later
-      widget.ingredientsGlossary.add('');
       output.add(Padding(
         padding: const EdgeInsets.fromLTRB(12.0, 12.0, 8, 12),
         child: Padding(
@@ -432,7 +461,8 @@ class _IngredientSectionState extends State<IngredientSection> {
                   padding: const EdgeInsets.only(left: 10),
                   child: TextField(
                     onChanged: (changed) {
-                      widget.amount[widget.id][i] = double.parse(changed);
+                      widget.amount[widget.sectionNumber][i] =
+                          double.parse(changed);
                     },
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
@@ -448,7 +478,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                   padding: const EdgeInsets.only(left: 10),
                   child: TextField(
                     onChanged: (changed) {
-                      widget.unit[widget.id][i] = changed;
+                      widget.unit[widget.sectionNumber][i] = changed;
                     },
                     decoration: InputDecoration(
                       filled: true,
@@ -457,11 +487,14 @@ class _IngredientSectionState extends State<IngredientSection> {
                   ),
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.clear),
-                onPressed: () {},
-              ),
-            ],
+              _ingredientFieldsCount == i+1 && i != 1
+                  ? IconButton(
+                      // Only for the last ingredient and remove it properly?
+                      icon: Icon(Icons.clear),
+                      onPressed: () {},
+                    )
+                  : null
+            ].where((c) => c != null).toList(),
           ),
         ),
       ));
@@ -476,7 +509,11 @@ class _IngredientSectionState extends State<IngredientSection> {
               onPressed: () {
                 // TODO: Add new ingredient to the section
                 setState(() {
-                  _count += 1;
+                  widget.ingredientsList[widget.sectionNumber].add('');
+                  widget.amount[widget.sectionNumber].add(0);
+                  widget.unit[widget.sectionNumber].add('');
+                  _ingredientFieldsCount += 1;
+                  print(_ingredientFieldsCount);
                 });
               },
               shape: RoundedRectangleBorder(
