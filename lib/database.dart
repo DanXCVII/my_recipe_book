@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+import './recipe.dart';
 
 // singleton DBProvider to ensure, that we only use one object
 class DBProvider {
@@ -23,11 +24,30 @@ class DBProvider {
     }, onCreate: (Database db, int version) async {
       await db.execute("CREATE TABLE Client ("
           "id INTEGER PRIMARY KEY,"
-          "first_name TEXT,"
-          "last_name TEXT,"
-          "blocked BIT"
+          "name TEXT,"
+          "image TEXT,"
+          "preperationTime BIT"
           ")");
     });
+  }
+
+  newClient(Recipe newRecipe) async {
+    final db = await database;
+    var res = await db.rawInsert(
+      "INSERT Into Client (id,name,this.image,
+      preperationTime,
+      cookingTime,
+      totalTime,
+      servings,
+      ingredientsGlossary,
+      ingredientsList,
+      amount,
+      unit,
+      vegetable,
+      steps,
+      notes)"
+      " VALUES (${newClient.id},${newClient.firstName})");
+    return res;
   }
 }
 

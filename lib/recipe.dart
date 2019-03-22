@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum Vegetable { non_vegetarian, vegetarian, vegan }
+enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
 
 class Recipe {
   String name;
