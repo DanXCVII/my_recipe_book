@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => MyHomePage(),
         'recipeCategoryOverview': (context) => RCategoryOverview(),
-        'addRecipe': (context) => AddRecipe(),
+        'addRecipe': (context) => AddRecipeForm(),
       },
     );
   }

@@ -13,15 +13,18 @@ Vegetable newRecipeVegetable;
 File newRecipeImage;
 
 // TODO ~: Put the AddRecipe Scaffold in a stateless widget
-class AddRecipe extends StatefulWidget {
+class AddRecipeForm extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return AddRecipeState();
+    return AddRecipeFormState();
   }
 }
 
-class AddRecipeState extends State<AddRecipe> {
+class AddRecipeFormState extends State<AddRecipeForm> {
+  final _formKey = GlobalKey<FormState>();
+
   bool saveData;
+  bool alreadySaved = false;
   String imageLocalPath = "";
   // Controllers for the fixed textFields
   TextEditingController nameController = new TextEditingController();
@@ -32,7 +35,6 @@ class AddRecipeState extends State<AddRecipe> {
   // TODO: implement controllers for the ingredients and steps
   TextEditingController notesController = new TextEditingController();
   // corresponding key
-  final _formKey = GlobalKey<FormState>();
 
   /// global lists of controllers for the dynamic amout of text fields data like ingredients
   /// and steps
@@ -50,6 +52,7 @@ class AddRecipeState extends State<AddRecipe> {
   void initState() {
     super.initState();
     saveData = false;
+    newRecipeVegetable =Vegetable.NON_VEGETARIAN;
     // initialize list of controllers for the dynamic textFields with one element
     ingredientNameController.add(new List<TextEditingController>());
     ingredientNameController[0].add(new TextEditingController());
@@ -63,7 +66,6 @@ class AddRecipeState extends State<AddRecipe> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO wrap in futureBuilder and get the id
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -78,72 +80,35 @@ class AddRecipeState extends State<AddRecipe> {
               icon: Icon(Icons.check),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
-                  // TODO: Implement save recipt functionality
-                  print("isIngredientListValid");
                   if (isIngredientListValid(ingredientNameController,
                       ingredientAmountController, ingredientUnitController)) {
                     /////////// Only do when all data is VALID! ///////////
                     setState(() {
                       saveData = true;
                     });
+                  } else {
+                    // TODO: show alert with info that ingredients list need to be filled in properly
+                    print(
+                        "show alert with info that ingredients list needs to be filled in properly");
                   }
-                  // TODO: show alert with info that ingredients list need to be filled in properly
-                  print(
-                      "show alert with info that ingredients list need to be filled in properly");
                 }
               },
             )
           ],
         ),
         body: saveData
-            ?
-
-            /// show progressindicator and saveData, when savaData is pressed
-            FutureBuilder<int>(
-                future: saveFileGetId(newRecipeImage, nameController.text),
+            ? FutureBuilder<int>(
+                future: saveRecipe(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    // Map with the lists of the ingredients with the corresponding amount and unit
-                    Map<String, List<List<dynamic>>> ingredients =
-                        getCleanIngredientData(
-                            ingredientNameController,
-                            ingredientAmountController,
-                            ingredientUnitController);
-                    Recipe newRecipe = new Recipe(
-                      id: snapshot.data,
-                      name: nameController.text,
-                      image: imageLocalPath,
-                      preperationTime: preperationTimeController.text.isEmpty
-                          ? 0
-                          : double.parse(preperationTimeController.text),
-                      cookingTime: cookingTimeController.text.isEmpty
-                          ? 0
-                          : double.parse(cookingTimeController.text),
-                      totalTime: totalTimeController.text.isEmpty
-                          ? 0
-                          : double.parse(totalTimeController.text),
-                      servings: double.parse(servingsController.text),
-                      steps: removeEmptyStrings(stepsList),
-                      notes: notesController.text,
-                      vegetable: newRecipeVegetable,
-                      ingredientsGlossary:
-                          getCleanGlossary(ingredientGlossary, ingredients),
-                      ingredientsList: ingredients["ingredients"],
-                      amount: ingredients["amount"],
-                      unit: ingredients["unit"],
-                    );
-                    DBProvider.db.newRecipe(newRecipe);
-                    print(ingredients["ingredients"]);
-                    print(newRecipeVegetable);
-                    return (Container());
+                    print('data');
+                    return Center(child: Text('Success😊'));
                   }
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                })
-            :
-            // data to show at the beginning
-            Form(
+                  print('has');
+                  return Center(child: CircularProgressIndicator());
+                },
+              )
+            : Form(
                 key: _formKey,
                 child: ListView(children: <Widget>[
                   // top section with the add image button
@@ -251,7 +216,7 @@ class AddRecipeState extends State<AddRecipe> {
                     ),
                   ),
 
-                  // ingredients section with it"s heading and text fields and buttons
+                  // ingredients section with it's heading and text fields and buttons
                   Ingredients(
                     ingredientNameController,
                     ingredientAmountController,
@@ -334,8 +299,73 @@ class AddRecipeState extends State<AddRecipe> {
     cookingTimeController.dispose();
     totalTimeController.dispose();
     servingsController.dispose();
-    // TODO: implement controllers for the ingredients and steps
     notesController.dispose();
+    ingredientNameController.forEach((list) {
+      list.forEach((controller) {
+        controller.dispose();
+      });
+    });
+    ingredientAmountController.forEach((list) {
+      list.forEach((controller) {
+        controller.dispose();
+      });
+    });
+    ingredientUnitController.forEach((list) {
+      list.forEach((controller) {
+        controller.dispose();
+      });
+    });
+    ingredientGlossary.forEach((controller) {
+      controller.dispose();
+    });
+  }
+
+  Future<int> saveRecipe() async {
+    if (alreadySaved) {
+      print('yooooooo');
+      return 1;
+    }
+
+    // get the lists for the data of the ingredients
+    Map<String, List<List<dynamic>>> ingredients = getCleanIngredientData(
+        ingredientNameController,
+        ingredientAmountController,
+        ingredientUnitController);
+
+    Recipe newRecipe = new Recipe(
+      id: await saveFileGetId(newRecipeImage, nameController.text),
+      name: nameController.text,
+      image: imageLocalPath,
+      preperationTime: preperationTimeController.text.isEmpty
+          ? 0
+          : double.parse(preperationTimeController.text),
+      cookingTime: cookingTimeController.text.isEmpty
+          ? 0
+          : double.parse(cookingTimeController.text),
+      totalTime: totalTimeController.text.isEmpty
+          ? 0
+          : double.parse(totalTimeController.text),
+      servings: double.parse(servingsController.text),
+      steps: removeEmptyStrings(stepsList),
+      notes: notesController.text,
+      vegetable: newRecipeVegetable,
+      ingredientsGlossary: getCleanGlossary(ingredientGlossary, ingredients),
+      ingredientsList: ingredients["ingredients"],
+      amount: ingredients["amount"],
+      unit: ingredients["unit"],
+    );
+    DBProvider.db.newRecipe(newRecipe);
+    print('---------------');
+    print(ingredients["ingredients"]);
+    print(newRecipeVegetable);
+    print(stepsList.length);
+    print(getCleanGlossary(ingredientGlossary, ingredients));
+    print(ingredients["ingredients"]);
+    print(ingredients["amount"]);
+    print(ingredients["unit"]);
+    print('---------------');
+
+    return 1;
   }
 
   bool isIngredientListValid(
@@ -456,8 +486,8 @@ class AddRecipeState extends State<AddRecipe> {
   }
 
   Future<int> saveFileGetId(File image, String name) async {
+    print('saveFileGetID()');
     Directory appDir = await getApplicationDocumentsDirectory();
-    var completer = new Completer<int>();
 
     String imageLocalPath = appDir.path;
     int id = await DBProvider.db.getNewIDforTable("Recipe");
@@ -466,11 +496,27 @@ class AddRecipeState extends State<AddRecipe> {
       newRecipeImage = null;
     }
 
-    completer.complete(id);
-    return completer.future;
+    return id;
   }
 }
 
+/*
+class SaveData extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return SaveDataState();
+  }
+}
+
+class SaveDataState extends State<SaveData> {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return null;
+  }
+}
+*/
 bool validateNumber(String text) {
   if (text.isEmpty) {
     return true;
@@ -1172,4 +1218,28 @@ class MyFilterChipState extends State<MyFilterChip> {
       },
     );
   }
+}
+
+class FutureB extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return FutureBState();
+  }
+}
+
+class FutureBState extends State<FutureB> {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+  }
+}
+
+Future<int> future() async {
+  var completer = new Completer<int>();
+
+  print('kek');
+  int i = 0;
+  completer.complete(i);
+  return completer.future;
 }
