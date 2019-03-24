@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
 
 class Recipe {
+  int id;
   String name;
-  Image image;
+  String image;
   double preperationTime;
   double cookingTime;
   double totalTime;
@@ -19,7 +20,8 @@ class Recipe {
   // TODO: add categories
 
   Recipe(
-      {this.name,
+      {this.id,
+      this.name,
       this.image,
       this.preperationTime,
       this.cookingTime,
@@ -34,6 +36,7 @@ class Recipe {
       this.notes});
 
   factory Recipe.fromMap(Map<String, dynamic> json) => new Recipe(
+        id: json["id"],
         name: json["name"],
         image: json["image"],
         preperationTime: json["preperationTime"],
@@ -50,6 +53,7 @@ class Recipe {
       );
 
   Map<String, dynamic> toMap() => {
+        "id": id,
         "name": name,
         "image": image,
         "preperationTime": preperationTime,

@@ -1,11 +1,16 @@
-import 'dart:io';
+import "dart:io";
+import "package:flutter/material.dart";
+import "package:image_picker/image_picker.dart";
+import "package:path_provider/path_provider.dart";
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import '../recipe.dart';
+import "../recipe.dart";
+import "../database.dart";
 
 const double categories = 14;
 const double topPadding = 8;
+Vegetable newRecipeVegetable;
+File newRecipeImage;
 
 // TODO ~: Put the AddRecipe Scaffold in a stateless widget
 class AddRecipe extends StatefulWidget {
@@ -16,6 +21,8 @@ class AddRecipe extends StatefulWidget {
 }
 
 class AddRecipeState extends State<AddRecipe> {
+  bool saveData;
+  String imageLocalPath = "";
   // Controllers for the fixed textFields
   TextEditingController nameController = new TextEditingController();
   TextEditingController preperationTimeController = new TextEditingController();
@@ -27,7 +34,7 @@ class AddRecipeState extends State<AddRecipe> {
   // corresponding key
   final _formKey = GlobalKey<FormState>();
 
-  /// global lists for the dynamic amout of text fields data like ingredients
+  /// global lists of controllers for the dynamic amout of text fields data like ingredients
   /// and steps
   List<List<TextEditingController>> ingredientNameController =
       new List<List<TextEditingController>>();
@@ -42,7 +49,8 @@ class AddRecipeState extends State<AddRecipe> {
   @override
   void initState() {
     super.initState();
-    // initialize lists with one element
+    saveData = false;
+    // initialize list of controllers for the dynamic textFields with one element
     ingredientNameController.add(new List<TextEditingController>());
     ingredientNameController[0].add(new TextEditingController());
     ingredientAmountController.add(new List<TextEditingController>());
@@ -55,6 +63,7 @@ class AddRecipeState extends State<AddRecipe> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO wrap in futureBuilder and get the id
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -63,234 +72,258 @@ class AddRecipeState extends State<AddRecipe> {
               Navigator.pop(context);
             },
           ),
-          title: Text('add recipe'),
+          title: Text("add recipe"),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.check),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   // TODO: Implement save recipt functionality
-                  print('isIngredientListValid');
-                  if (!isIngredientListValid(ingredientNameController,
+                  print("isIngredientListValid");
+                  if (isIngredientListValid(ingredientNameController,
                       ingredientAmountController, ingredientUnitController)) {
-                    // TODO: show alert with info that ingredients list need to be filled in properly
-                    print(
-                        'show alert with info that ingredients list need to be filled in properly');
-                    return;
+                    /////////// Only do when all data is VALID! ///////////
+                    setState(() {
+                      saveData = true;
+                    });
                   }
-                  // Map with the lists of the ingredients with the corresponding amount and unit
-                  Map<String, List<List<dynamic>>> ingredients =
-                      getCleanIngredientList(ingredientNameController,
-                          ingredientAmountController, ingredientUnitController);
-
-                  Recipe newRecipe = new Recipe(
-                    name: nameController.text,
-                    preperationTime: preperationTimeController.text.isEmpty
-                        ? null
-                        : double.parse(preperationTimeController.text),
-                    cookingTime: cookingTimeController.text.isEmpty
-                        ? null
-                        : double.parse(cookingTimeController.text),
-                    totalTime: totalTimeController.text.isEmpty
-                        ? null
-                        : double.parse(totalTimeController.text),
-                    servings: servingsController.text.isEmpty
-                        ? null
-                        : double.parse(servingsController.text),
-                    notes: notesController.text,
-                    vegetable: newRecipeVegetable,
-                    /*ingredientsGlossary: ingredientsGlossary
-                        .where((string) => string.isNotEmpty)
-                        .toList(), */
-                    ingredientsList: ingredients['ingredients'],
-                    amount: ingredients['amount'],
-                    unit: ingredients['unit'],
-                  );
-
-                  print(ingredients['ingredients']);
-                  print(newRecipeVegetable);
+                  // TODO: show alert with info that ingredients list need to be filled in properly
+                  print(
+                      "show alert with info that ingredients list need to be filled in properly");
                 }
               },
             )
           ],
         ),
-        body: Form(
-          key: _formKey,
-          child: ListView(children: <Widget>[
-            // top section with the add image button
-            ImageSelector(),
-            // name textField
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: TextFormField(
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Please enter a name';
+        body: saveData
+            ?
+
+            /// show progressindicator and saveData, when savaData is pressed
+            FutureBuilder<int>(
+                future: saveFileGetId(newRecipeImage, nameController.text),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    // Map with the lists of the ingredients with the corresponding amount and unit
+                    Map<String, List<List<dynamic>>> ingredients =
+                        getCleanIngredientData(
+                            ingredientNameController,
+                            ingredientAmountController,
+                            ingredientUnitController);
+                    Recipe newRecipe = new Recipe(
+                      id: snapshot.data,
+                      name: nameController.text,
+                      image: imageLocalPath,
+                      preperationTime: preperationTimeController.text.isEmpty
+                          ? 0
+                          : double.parse(preperationTimeController.text),
+                      cookingTime: cookingTimeController.text.isEmpty
+                          ? 0
+                          : double.parse(cookingTimeController.text),
+                      totalTime: totalTimeController.text.isEmpty
+                          ? 0
+                          : double.parse(totalTimeController.text),
+                      servings: double.parse(servingsController.text),
+                      steps: removeEmptyStrings(stepsList),
+                      notes: notesController.text,
+                      vegetable: newRecipeVegetable,
+                      ingredientsGlossary:
+                          getCleanGlossary(ingredientGlossary, ingredients),
+                      ingredientsList: ingredients["ingredients"],
+                      amount: ingredients["amount"],
+                      unit: ingredients["unit"],
+                    );
+                    DBProvider.db.newRecipe(newRecipe);
+                    print(ingredients["ingredients"]);
+                    print(newRecipeVegetable);
+                    return (Container());
                   }
-                },
-                controller: nameController,
-                decoration: InputDecoration(
-                  filled: true,
-                  labelText: 'name',
-                  icon: Icon(Icons.android),
-                ),
-              ),
-            ),
-            // time textFields
-            Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 5,
-                  child: Padding(
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                })
+            :
+            // data to show at the beginning
+            Form(
+                key: _formKey,
+                child: ListView(children: <Widget>[
+                  // top section with the add image button
+                  ImageSelector(),
+                  // name textField
+                  Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: TextFormField(
                       validator: (value) {
-                        if (validateNumber(value) == false) {
-                          return 'no valid number';
+                        if (value.isEmpty) {
+                          return "Please enter a name";
                         }
                       },
-                      controller: preperationTimeController,
-                      keyboardType: TextInputType.number,
+                      controller: nameController,
                       decoration: InputDecoration(
                         filled: true,
-                        labelText: 'preperation time',
-                        icon: Icon(Icons.access_time),
+                        labelText: "name",
+                        icon: Icon(Icons.android),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
+                  // time textFields
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: TextFormField(
+                            validator: (value) {
+                              if (validateNumber(value) == false) {
+                                return "no valid number";
+                              }
+                            },
+                            controller: preperationTimeController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              filled: true,
+                              labelText: "preperation time",
+                              icon: Icon(Icons.access_time),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 4,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: TextFormField(
+                            validator: (value) {
+                              if (validateNumber(value) == false) {
+                                return "no valid number";
+                              }
+                            },
+                            controller: cookingTimeController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              filled: true,
+                              labelText:
+                                  "cooking time", // TODO: Maybe change name to something which isn"t so much related to cooking with heat
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 52, top: 12, right: 12, bottom: 12),
                     child: TextFormField(
                       validator: (value) {
                         if (validateNumber(value) == false) {
-                          return 'no valid number';
+                          return "no valid number";
                         }
                       },
-                      controller: cookingTimeController,
+                      controller: totalTimeController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
+                        helperText: "in minutes",
                         filled: true,
-                        labelText:
-                            'cooking time', // TODO: Maybe change name to something which isn't so much related to cooking with heat
+                        labelText: "total time",
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 52, top: 12, right: 12, bottom: 12),
-              child: TextFormField(
-                validator: (value) {
-                  if (validateNumber(value) == false) {
-                    return 'no valid number';
-                  }
-                },
-                controller: totalTimeController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  helperText: 'in minutes',
-                  filled: true,
-                  labelText: 'total time',
-                ),
-              ),
-            ),
-            // servings textField
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 12, top: 12, bottom: 12, right: 200),
-              child: TextFormField(
-                validator: (value) {
-                  if (validateNumber(value) == false) {
-                    return 'no valid number';
-                  }
-                },
-                controller: servingsController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  filled: true,
-                  labelText: 'servings',
-                  icon: Icon(Icons.local_dining),
-                ),
-              ),
-            ),
+                  // servings textField
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 12, top: 12, bottom: 12, right: 200),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (validateNumber(value) == false) {
+                          return "no valid number";
+                        }
+                        if (value.isEmpty) {
+                          return "data required";
+                        }
+                      },
+                      controller: servingsController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        filled: true,
+                        labelText: "servings",
+                        icon: Icon(Icons.local_dining),
+                      ),
+                    ),
+                  ),
 
-            // ingredients section with it's heading and text fields and buttons
-            Ingredients(
-              ingredientNameController,
-              ingredientAmountController,
-              ingredientUnitController,
-              ingredientGlossary,
-            ),
-            // category for vegetarian heading
-            Padding(
-              padding: const EdgeInsets.only(left: 56, top: 12),
-              child: Text(
-                'select a category:',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.grey[700]),
-              ),
-            ),
-            // category for radio buttons for vegetarian selector
-            Vegetarian(),
-            // heading with textFields for steps section
-            StepsSection(stepsList),
-            // notes textField
-            Padding(
-              padding: const EdgeInsets.only(
-                  right: 12, top: 12, left: 18, bottom: 12),
-              child: TextField(
-                controller: notesController,
-                decoration: InputDecoration(
-                  labelText: 'notes',
-                  filled: true,
-                  icon: Icon(Icons.assignment),
-                ),
-                maxLines: 3,
-              ),
-            ),
-            // heading for the subcategory selector section
-            Padding(
-                padding: const EdgeInsets.only(left: 54, right: 6, top: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    // TODO: Add button to add a new category
-                    Text(
-                      'select subcategories:',
+                  // ingredients section with it"s heading and text fields and buttons
+                  Ingredients(
+                    ingredientNameController,
+                    ingredientAmountController,
+                    ingredientUnitController,
+                    ingredientGlossary,
+                  ),
+                  // category for vegetarian heading
+                  Padding(
+                    padding: const EdgeInsets.only(left: 56, top: 12),
+                    child: Text(
+                      "select a category:",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                           color: Colors.grey[700]),
                     ),
-                  ],
-                )),
-            // category chips
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                child: Wrap(
-                  spacing: 5.0,
-                  runSpacing: 3.0,
-                  children: <Widget>[
-                    MyFilterChip(chipName: "meat"),
-                    MyFilterChip(chipName: "salat"),
-                    MyFilterChip(chipName: "noodles"),
-                    MyFilterChip(chipName: "salat"),
-                    MyFilterChip(chipName: "breakfast"),
-                    MyFilterChip(chipName: "rice"),
-                  ],
-                ),
-              ),
-            )
-          ]),
-        ));
+                  ),
+                  // category for radio buttons for vegetarian selector
+                  Vegetarian(),
+                  // heading with textFields for steps section
+                  StepsSection(stepsList),
+                  // notes textField
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        right: 12, top: 12, left: 18, bottom: 12),
+                    child: TextField(
+                      controller: notesController,
+                      decoration: InputDecoration(
+                        labelText: "notes",
+                        filled: true,
+                        icon: Icon(Icons.assignment),
+                      ),
+                      maxLines: 3,
+                    ),
+                  ),
+                  // heading for the subcategory selector section
+                  Padding(
+                      padding:
+                          const EdgeInsets.only(left: 54, right: 6, top: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          // TODO: Add button to add a new category
+                          Text(
+                            "select subcategories:",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.grey[700]),
+                          ),
+                        ],
+                      )),
+                  // category chips
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      child: Wrap(
+                        spacing: 5.0,
+                        runSpacing: 3.0,
+                        children: <Widget>[
+                          MyFilterChip(chipName: "meat"),
+                          MyFilterChip(chipName: "salat"),
+                          MyFilterChip(chipName: "noodles"),
+                          MyFilterChip(chipName: "salat"),
+                          MyFilterChip(chipName: "breakfast"),
+                          MyFilterChip(chipName: "rice"),
+                        ],
+                      ),
+                    ),
+                  )
+                ]),
+              ));
   }
 
   @override
@@ -313,18 +346,45 @@ class AddRecipeState extends State<AddRecipe> {
     for (int i = 0; i < ingredients.length; i++) {
       for (int j = 0; j < ingredients[i].length; j++) {
         validator = 0;
-        if (ingredients[i][j].text == '') validator++;
-        if (amount[i][j].text == '') validator++;
-        if (unit[i][j].text == '') validator++;
+        if (ingredients[i][j].text == "") validator++;
+        if (amount[i][j].text == "") validator++;
+        if (unit[i][j].text == "") validator++;
         if (validator == 1 || validator == 2) return false;
       }
     }
     return true;
   }
 
+  List<String> removeEmptyStrings(List<TextEditingController> list) {
+    List<String> output = new List<String>();
+
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].text != "") {
+        output.add(list[i].text);
+      }
+    }
+    return output;
+  }
+
+  List<String> getCleanGlossary(List<TextEditingController> glossary,
+      Map<String, List<List<dynamic>>> cleanIngredientsData) {
+    List<String> output = new List<String>();
+    for (int i = 0; i < glossary.length; i++) {
+      output.add(glossary[i].text);
+    }
+
+    for (int i = cleanIngredientsData["ingredients"].length;
+        i < glossary.length;
+        i++) {
+      output.removeLast();
+    }
+
+    return output;
+  }
+
   /// removes all leading and trailing whitespaces and empty ingredients from the lists
   /// of ingredients and
-  Map<String, List<List<dynamic>>> getCleanIngredientList(
+  Map<String, List<List<dynamic>>> getCleanIngredientData(
       List<List<TextEditingController>> ingredients,
       List<List<TextEditingController>> amount,
       List<List<TextEditingController>> unit) {
@@ -342,7 +402,9 @@ class AddRecipeState extends State<AddRecipe> {
     for (int i = 0; i < amount.length; i++) {
       ingredientsAmount.add(new List<double>());
       for (int j = 0; j < amount[i].length; j++) {
-        ingredientsAmount[i].add(double.parse(amount[i][j].text));
+        String addValue = "-1";
+        if (amount[i][j].text != "") addValue = amount[i][j].text;
+        ingredientsAmount[i].add(double.parse(addValue));
       }
     }
 
@@ -358,37 +420,54 @@ class AddRecipeState extends State<AddRecipe> {
     /// data.
     Map<String, List<List<dynamic>>> output =
         new Map<String, List<List<dynamic>>>();
-    output.addAll({'ingredients': new List<List<String>>()});
-    output['ingredients'].addAll(ingredientsNames);
-    output.addAll({'amount': new List<List<double>>()});
-    output['amount'].addAll(ingredientsAmount);
-    output.addAll({'unit': new List<List<String>>()});
-    output['unit'].addAll(ingredientsUnit);
 
-    for (int i = 0; i < output['ingredients'].length; i++) {
-      for (int j = 0; j < output['ingredients'][i].length; j++) {
+    output.addAll({"ingredients": new List<List<String>>()});
+    output["ingredients"].addAll(ingredientsNames);
+    output.addAll({"amount": new List<List<double>>()});
+    output["amount"].addAll(ingredientsAmount);
+    output.addAll({"unit": new List<List<String>>()});
+    output["unit"].addAll(ingredientsUnit);
+
+    for (int i = 0; i < output["ingredients"].length; i++) {
+      for (int j = 0; j < output["ingredients"][i].length; j++) {
         // remove leading and trailing white spaces
-        output['ingredients'][i][j] = output['ingredients'][i][j].trim();
-        output['unit'][i][j] = output['unit'][i][j].trim();
+        output["ingredients"][i][j] = output["ingredients"][i][j].trim();
+        output["unit"][i][j] = output["unit"][i][j].trim();
         // remove all ingredients from the list, when all three fields are empty
-        if (output['ingredients'][i][j] == '' &&
-            output['amount'][i][j] == -1 &&
-            output['unit'][i][j] == '') {
-          output['ingredients'][i].removeAt(j);
-          output['amount'][i].removeAt(j);
-          output['unit'][i].removeAt(j);
+        if (output["ingredients"][i][j] == "" &&
+            output["amount"][i][j] == -1 &&
+            output["unit"][i][j] == "") {
+          output["ingredients"][i].removeAt(j);
+          output["amount"][i].removeAt(j);
+          output["unit"][i].removeAt(j);
         }
       }
     }
     // create the output list with the clean ingredient lists
-    for (int i = 0; i < output['ingredients'].length; i++) {
-      if (output['ingredients'][i].isEmpty) {
-        output['ingredients'].remove(output['ingredients'][i]);
-        output['amount'].remove(output['amount'][i]);
-        output['unit'].remove(output['unit'][i]);
+    for (int i = 0; i < output["ingredients"].length; i++) {
+      if (output["ingredients"][i].isEmpty) {
+        output["ingredients"].remove(output["ingredients"][i]);
+        output["amount"].remove(output["amount"][i]);
+        output["unit"].remove(output["unit"][i]);
       }
     }
+
     return output;
+  }
+
+  Future<int> saveFileGetId(File image, String name) async {
+    Directory appDir = await getApplicationDocumentsDirectory();
+    var completer = new Completer<int>();
+
+    String imageLocalPath = appDir.path;
+    int id = await DBProvider.db.getNewIDforTable("Recipe");
+    if (image != null) {
+      final File newImage = await image.copy("$imageLocalPath/$name$id.png");
+      newRecipeImage = null;
+    }
+
+    completer.complete(id);
+    return completer.future;
   }
 }
 
@@ -396,7 +475,7 @@ bool validateNumber(String text) {
   if (text.isEmpty) {
     return true;
   }
-  String pattern = r'^(?!0*[.,]?0+$)\d*[.,]?\d+$';
+  String pattern = r"^(?!0*[.,]?0+$)\d*[.,]?\d+$";
 
   RegExp regex = new RegExp(pattern);
   if (regex.hasMatch(text)) {
@@ -439,7 +518,7 @@ class IngredientsState extends State<Ingredients> {
     sections.children.add(Padding(
       padding: const EdgeInsets.only(left: 52, top: 12, bottom: 12),
       child: Text(
-        'ingredients:',
+        "ingredients:",
         style: TextStyle(
             fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[700]),
       ),
@@ -478,7 +557,7 @@ class IngredientsState extends State<Ingredients> {
         widget.ingredientGlossary,
       ));
     }
-    // add 'add section' and 'remove section' button to column
+    // add "add section" and "remove section" button to column
     sections.children.add(
       Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -488,7 +567,7 @@ class IngredientsState extends State<Ingredients> {
                     padding: const EdgeInsets.only(right: 12),
                     child: OutlineButton.icon(
                       icon: Icon(Icons.remove_circle),
-                      label: Text('Remove section'),
+                      label: Text("Remove section"),
                       onPressed: () {
                         setState(() {
                           // TODO: Callback when a section gets removed
@@ -507,7 +586,7 @@ class IngredientsState extends State<Ingredients> {
                 : null,
             OutlineButton.icon(
               icon: Icon(Icons.add_circle),
-              label: Text('Add section'),
+              label: Text("Add section"),
               onPressed: () {
                 setState(() {
                   _sectionAmount++;
@@ -581,8 +660,8 @@ class _IngredientSectionState extends State<IngredientSection> {
             controller: widget.ingredientGlossary[widget.sectionNumber],
             decoration: InputDecoration(
               icon: Icon(Icons.fastfood),
-              helperText: 'not required (e.g. ingredients of sauce)',
-              labelText: 'section name',
+              helperText: "not required (e.g. ingredients of sauce)",
+              labelText: "section name",
               filled: true,
             ),
           ),
@@ -603,7 +682,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                   controller:
                       widget.ingredientNameController[widget.sectionNumber][i],
                   decoration: InputDecoration(
-                    hintText: 'name',
+                    hintText: "name",
                     filled: true,
                   ),
                 ),
@@ -613,12 +692,17 @@ class _IngredientSectionState extends State<IngredientSection> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: TextFormField(
+                    validator: (value) {
+                      if (validateNumber(value) == false) {
+                        return "no valid number";
+                      }
+                    },
                     controller: widget
                         .ingredientAmountController[widget.sectionNumber][i],
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       filled: true,
-                      hintText: 'amnt',
+                      hintText: "amnt",
                     ),
                   ),
                 ),
@@ -632,7 +716,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                         .ingredientUnitController[widget.sectionNumber][i],
                     decoration: InputDecoration(
                       filled: true,
-                      hintText: 'unit',
+                      hintText: "unit",
                     ),
                   ),
                 ),
@@ -642,7 +726,7 @@ class _IngredientSectionState extends State<IngredientSection> {
         ),
       ));
     }
-    // add 'add ingredient' and 'remove ingredient' to the list
+    // add "add ingredient" and "remove ingredient" to the list
     output.add(
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -652,7 +736,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                   padding: const EdgeInsets.only(right: 10),
                   child: OutlineButton.icon(
                       icon: Icon(Icons.remove_circle_outline),
-                      label: Text('Remove ingredient'),
+                      label: Text("Remove ingredient"),
                       onPressed: () {
                         setState(() {
                           _ingredientFieldsCount--;
@@ -671,7 +755,7 @@ class _IngredientSectionState extends State<IngredientSection> {
               : null,
           OutlineButton.icon(
               icon: Icon(Icons.add_circle_outline),
-              label: Text('Add ingredient'),
+              label: Text("Add ingredient"),
               onPressed: () {
                 // TODO: Add new ingredient to the section
                 setState(() {
@@ -741,7 +825,7 @@ class StepsSectionState extends State<StepsSection> {
                 height: 26,
                 child: Center(
                   child: Text(
-                    '${i + 1}',
+                    "${i + 1}",
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.white),
                   ),
@@ -754,11 +838,12 @@ class StepsSectionState extends State<StepsSection> {
             flex: 4,
             child: Padding(
               padding: const EdgeInsets.only(top: 8.0, right: 12),
-              child: TextField(
+              child: TextFormField(
+                controller: widget.stepsList[i],
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                   filled: true,
-                  hintText: 'description',
+                  hintText: "description",
                 ),
                 maxLines: null,
               ),
@@ -771,7 +856,7 @@ class StepsSectionState extends State<StepsSection> {
     return output;
   }
 
-  // builds the steps section with it's corresponding heading
+  // builds the steps section with it"s corresponding heading
   @override
   Widget build(BuildContext context) {
     Column _ingredients = Column(
@@ -782,7 +867,7 @@ class StepsSectionState extends State<StepsSection> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                'steps:',
+                "steps:",
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -804,7 +889,7 @@ class StepsSectionState extends State<StepsSection> {
                   padding: const EdgeInsets.only(right: 10),
                   child: OutlineButton.icon(
                       icon: Icon(Icons.remove_circle_outline),
-                      label: Text('Remove step'),
+                      label: Text("Remove step"),
                       onPressed: () {
                         setState(() {
                           _stepsFieldCount--;
@@ -817,7 +902,7 @@ class StepsSectionState extends State<StepsSection> {
               : null,
           OutlineButton.icon(
               icon: Icon(Icons.add_circle_outline),
-              label: Text('Add step'),
+              label: Text("Add step"),
               onPressed: () {
                 // TODO: Add new ingredient to the section
                 setState(() {
@@ -834,8 +919,6 @@ class StepsSectionState extends State<StepsSection> {
     return _ingredients;
   }
 }
-
-Vegetable newRecipeVegetable;
 
 // Widget for the radio buttons (vegetarian, vegan, etc.)
 class Vegetarian extends StatefulWidget {
@@ -883,7 +966,7 @@ class _VegetarianState extends State<Vegetarian> {
                 ),
               ),
               Text(
-                'non vegetarian',
+                "non vegetarian",
                 style: TextStyle(fontSize: 16),
               ),
             ]),
@@ -898,7 +981,7 @@ class _VegetarianState extends State<Vegetarian> {
                   ),
                 ),
                 Text(
-                  'vegetarian',
+                  "vegetarian",
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -914,7 +997,7 @@ class _VegetarianState extends State<Vegetarian> {
                   ),
                 ),
                 Text(
-                  'vegan',
+                  "vegan",
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -976,16 +1059,16 @@ class ImageSelectorState extends State<ImageSelector> {
     switch (await showDialog(
         context: context,
         builder: (_) => SimpleDialog(
-              title: Text('Change Picture'),
+              title: Text("Change Picture"),
               children: <Widget>[
                 SimpleDialogOption(
-                  child: Text('Select an image from your gallery'),
+                  child: Text("Select an image from your gallery"),
                   onPressed: () {
                     Navigator.pop(context, Answers.GALLERY);
                   },
                 ),
                 SimpleDialogOption(
-                  child: Text('Take a new photo with camera'),
+                  child: Text("Take a new photo with camera"),
                   onPressed: () {
                     Navigator.pop(context, Answers.PHOTO);
                   },
@@ -999,6 +1082,8 @@ class ImageSelectorState extends State<ImageSelector> {
             // maxHeight: 50.0,
             // maxWidth: 50.0,
           );
+          newRecipeImage = pictureFile;
+
           print("You selected gallery image : " + pictureFile.path);
           setState(() {});
           break;
@@ -1010,6 +1095,8 @@ class ImageSelectorState extends State<ImageSelector> {
             //maxHeight: 50.0,
             //maxWidth: 50.0,
           );
+          newRecipeImage = pictureFile;
+
           print("You selected camera image : " + pictureFile.path);
           setState(() {});
         }
