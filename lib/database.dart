@@ -32,7 +32,8 @@ class DBProvider {
           "preperationTime REAL,"
           "cookingTime REAL,"
           "totalTime REAL,"
-          "servings INTEGER,"
+          "servings REAL,"
+          "vegetable TEXT,"
           "notes TEXT"
           ")");
       await db.execute("CREATE TABLE Steps ("
@@ -42,7 +43,7 @@ class DBProvider {
           "recipe_id INTEGER,"
           "FOREIGN KEY(recipe_id) REFERENCES Recipe(id)"
           ")");
-      await db.execute("CREATE TABLE Section ("
+      await db.execute("CREATE TABLE Sections ("
           "id INTEGER PRIMARY KEY,"
           "number INTEGER,"
           "name TEXT,"
@@ -64,8 +65,6 @@ class DBProvider {
     final db = await database;
     var completer = new Completer<int>();
     int output = 0;
-    print('nnnnnnnnneeeeeeeeeeeewwwwwwwwwwww');
-    print(tablename);
 
     var table = await db.rawQuery("SELECT MAX(id)+1 as id FROM $tablename");
     int id = table.first["id"];
@@ -88,8 +87,9 @@ class DBProvider {
         "cookingTime,"
         "totalTime,"
         "servings,"
+        "vegetable,"
         "notes)"
-        " VALUES (?,?,?,?,?,?,?,?)",
+        " VALUES (?,?,?,?,?,?,?,?,?)",
         [
           newRecipe.id,
           newRecipe.name,
@@ -98,14 +98,15 @@ class DBProvider {
           newRecipe.cookingTime,
           newRecipe.totalTime,
           newRecipe.servings,
+          newRecipe.vegetable.toString(),
           newRecipe.notes
         ]);
     for (int i = 0; i < newRecipe.ingredientsGlossary.length; i++) {
-      int _sectionId = await getNewIDforTable("Section");
+      int _sectionId = await getNewIDforTable("Sections");
 
       var resSections = await db.rawInsert(
-          "INSERT Into Section (id,number,name,recipe_id)"
-          " VALUES (?,?,?)",
+          "INSERT Into Sections (id,number,name,recipe_id)"
+          " VALUES (?,?,?,?)",
           [_sectionId, i, newRecipe.ingredientsGlossary[i], newRecipe.id]);
 
       for (int j = 0; j < newRecipe.ingredientsList[i].length; j++) {
@@ -133,6 +134,68 @@ class DBProvider {
           ]);
     }
 
-    // return res;
+    return resRecipe;
+  }
+
+// TODO: check if getRecipeById is working properly
+  getRecipeById(int id) async {
+    final db = await database;
+    var resRecipe = await db.query("Recipe", where: "id = ?", whereArgs: [id]);
+    if (resRecipe.isEmpty) {
+      return Null;
+    }
+    String name = resRecipe.first["name"];
+    String image = resRecipe.first["image"];
+    double preperationTime = resRecipe.first["preperationTime"];
+    double cookingTime = resRecipe.first["cookingTime"];
+    double totalTime = resRecipe.first["totalTime"];
+    double servings = resRecipe.first["servings"];
+    Vegetable vegetable;
+    if (resRecipe.first["vegetable"] == "Vegetable.NON_VEGETARIAN")
+      vegetable = Vegetable.NON_VEGETARIAN;
+    if (resRecipe.first["vegan"] == "Vegetable.VEGETARIAN")
+      vegetable = Vegetable.VEGETARIAN;
+    if (resRecipe.first["vegan"] == "Vegetable.VEGAN")
+      vegetable = Vegetable.VEGAN;
+    String notes = resRecipe.first["notes"];
+
+    var resSteps = await db
+        .rawQuery("SELECT * FROM Steps WHERE id=$id ORDER BY number ASC");
+    List<String> steps = new List<String>();
+    for (int i = 0; i < resSteps.length; i++) {
+      steps.add(resSteps[i]["description"]);
+    }
+
+    var resSections = await db
+        .rawQuery("SELECT * FROM Sections WHERE id=$id ORDER BY number ASC");
+    List<String> ingredientsGlossary = new List<String>();
+    List<List<String>> ingredientsList = new List<List<String>>();
+    List<List<double>> ingredientsAmount = new List<List<double>>();
+    List<List<String>> ingredientsUnit = new List<List<String>>();
+    for (int i = 0; i < resSections.length; i++) {
+      ingredientsGlossary.add(resSections[i]["name"]);
+      var resIngredients =
+          await db.rawQuery("SELECT * FROM Ingredients WHERE section_id=$id");
+      for (int j = 0; j < resIngredients.length; j++) {
+        ingredientsList[i].add(resIngredients[j]["name"]);
+        ingredientsAmount[i].add(resIngredients[j]["amount"]);
+        ingredientsUnit[i].add(resIngredients[j]["unit"]);
+      }
+    }
+    return Recipe(
+        id: id,
+        name: name,
+        image: image,
+        preperationTime: preperationTime,
+        cookingTime: cookingTime,
+        totalTime: totalTime,
+        servings: servings,
+        ingredientsGlossary: ingredientsGlossary,
+        ingredientsList: ingredientsList,
+        amount: ingredientsAmount,
+        unit: ingredientsUnit,
+        vegetable: vegetable,
+        steps: steps,
+        notes: notes);
   }
 }

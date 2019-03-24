@@ -52,7 +52,7 @@ class AddRecipeFormState extends State<AddRecipeForm> {
   void initState() {
     super.initState();
     saveData = false;
-    newRecipeVegetable =Vegetable.NON_VEGETARIAN;
+    newRecipeVegetable = Vegetable.NON_VEGETARIAN;
     // initialize list of controllers for the dynamic textFields with one element
     ingredientNameController.add(new List<TextEditingController>());
     ingredientNameController[0].add(new TextEditingController());
@@ -318,6 +318,8 @@ class AddRecipeFormState extends State<AddRecipeForm> {
     ingredientGlossary.forEach((controller) {
       controller.dispose();
     });
+    alreadySaved = false;
+    
   }
 
   Future<int> saveRecipe() async {
@@ -332,8 +334,9 @@ class AddRecipeFormState extends State<AddRecipeForm> {
         ingredientAmountController,
         ingredientUnitController);
 
+    int id = await saveFileGetId(newRecipeImage, nameController.text);
     Recipe newRecipe = new Recipe(
-      id: await saveFileGetId(newRecipeImage, nameController.text),
+      id: id,
       name: nameController.text,
       image: imageLocalPath,
       preperationTime: preperationTimeController.text.isEmpty
@@ -354,7 +357,7 @@ class AddRecipeFormState extends State<AddRecipeForm> {
       amount: ingredients["amount"],
       unit: ingredients["unit"],
     );
-    DBProvider.db.newRecipe(newRecipe);
+    int i = await DBProvider.db.newRecipe(newRecipe);
     print('---------------');
     print(ingredients["ingredients"]);
     print(newRecipeVegetable);
@@ -364,7 +367,12 @@ class AddRecipeFormState extends State<AddRecipeForm> {
     print(ingredients["amount"]);
     print(ingredients["unit"]);
     print('---------------');
+    // DELETE
+    var result = DBProvider.db.getRecipeById(id);
+    
+    // DELETE
 
+    alreadySaved = true;
     return 1;
   }
 
