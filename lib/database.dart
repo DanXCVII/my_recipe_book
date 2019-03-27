@@ -62,8 +62,9 @@ class DBProvider {
   }
 
   Future<int> getNewIDforTable(String tablename) async {
+    print('start DB.getNewIDforTable');
     final db = await database;
-    var completer = new Completer<int>();
+    // var completer = new Completer<int>();
     int output = 0;
 
     var table = await db.rawQuery("SELECT MAX(id)+1 as id FROM $tablename");
@@ -72,11 +73,14 @@ class DBProvider {
       output = id;
     }
 
-    completer.complete(output);
-    return completer.future;
+    // completer.complete(output);
+    // return completer.future;
+    print('end DB.getNewIDforTable');
+    return output;
   }
 
   newRecipe(Recipe newRecipe) async {
+    print('start DB.newRecipe()');
     final db = await database;
     var resRecipe = await db.rawInsert(
         "INSERT Into Recipe ("
@@ -133,12 +137,13 @@ class DBProvider {
             newRecipe.id
           ]);
     }
-
+    print('end DB.newRecipe()');
     return resRecipe;
   }
 
 // TODO: check if getRecipeById is working properly
   getRecipeById(int id) async {
+    print('getRecipeById(id)');
     final db = await database;
     var resRecipe = await db.query("Recipe", where: "id = ?", whereArgs: [id]);
     if (resRecipe.isEmpty) {
@@ -153,9 +158,9 @@ class DBProvider {
     Vegetable vegetable;
     if (resRecipe.first["vegetable"] == "Vegetable.NON_VEGETARIAN")
       vegetable = Vegetable.NON_VEGETARIAN;
-    if (resRecipe.first["vegan"] == "Vegetable.VEGETARIAN")
+    else if (resRecipe.first["vegan"] == "Vegetable.VEGETARIAN")
       vegetable = Vegetable.VEGETARIAN;
-    if (resRecipe.first["vegan"] == "Vegetable.VEGAN")
+    else if (resRecipe.first["vegan"] == "Vegetable.VEGAN")
       vegetable = Vegetable.VEGAN;
     String notes = resRecipe.first["notes"];
 
@@ -166,16 +171,19 @@ class DBProvider {
       steps.add(resSteps[i]["description"]);
     }
 
-    var resSections = await db
-        .rawQuery("SELECT * FROM Sections WHERE id=$id ORDER BY number ASC");
+    var resSections = await db.rawQuery(
+        "SELECT * FROM Sections WHERE recipe_id=$id ORDER BY number ASC");
     List<String> ingredientsGlossary = new List<String>();
     List<List<String>> ingredientsList = new List<List<String>>();
     List<List<double>> ingredientsAmount = new List<List<double>>();
     List<List<String>> ingredientsUnit = new List<List<String>>();
     for (int i = 0; i < resSections.length; i++) {
       ingredientsGlossary.add(resSections[i]["name"]);
-      var resIngredients =
-          await db.rawQuery("SELECT * FROM Ingredients WHERE section_id=$id");
+      var resIngredients = await db.rawQuery(
+          "SELECT * FROM Ingredients WHERE section_id=${resSections[i]["id"]}");
+      ingredientsList.add(new List<String>());
+      ingredientsAmount.add(new List<double>());
+      ingredientsUnit.add(new List<String>());
       for (int j = 0; j < resIngredients.length; j++) {
         ingredientsList[i].add(resIngredients[j]["name"]);
         ingredientsAmount[i].add(resIngredients[j]["amount"]);
