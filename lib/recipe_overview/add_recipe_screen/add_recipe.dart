@@ -4,13 +4,14 @@ import "package:image_picker/image_picker.dart";
 import "package:path_provider/path_provider.dart";
 import "dart:async";
 
-import "../recipe.dart";
-import "../database.dart";
+import "../../recipe.dart";
+import "../../database.dart";
+import "./steps_section.dart";
+import "./ingredients_section.dart";
 
 const double categories = 14;
 const double topPadding = 8;
 Vegetable newRecipeVegetable;
-File newRecipeImage;
 
 // TODO ~: Put the AddRecipe Scaffold in a stateless widget
 class AddRecipeForm extends StatefulWidget {
@@ -26,6 +27,11 @@ class AddRecipeFormState extends State<AddRecipeForm> {
   bool buttonEnabled = true;
 
   String imageLocalPath = "";
+  List<List<File>> stepImages = new List<List<File>>();
+  MyImageWrapper selectedRecipeImage = new MyImageWrapper();
+  MyImageWrapper addCategoryImage = new MyImageWrapper();
+  List<String> newRecipeCategories = new List<String>();
+
   // Controllers for the fixed textFields
   TextEditingController nameController = new TextEditingController();
   TextEditingController preperationTimeController = new TextEditingController();
@@ -52,6 +58,7 @@ class AddRecipeFormState extends State<AddRecipeForm> {
   void initState() {
     super.initState();
     newRecipeVegetable = Vegetable.NON_VEGETARIAN;
+    stepImages.add(new List<File>());
     // initialize list of controllers for the dynamic textFields with one element
     ingredientNameController.add(new List<TextEditingController>());
     ingredientNameController[0].add(new TextEditingController());
@@ -84,8 +91,9 @@ class AddRecipeFormState extends State<AddRecipeForm> {
                     if (isIngredientListValid(ingredientNameController,
                         ingredientAmountController, ingredientUnitController)) {
                       /////////// Only do when all data is VALID! ///////////
+
                       saveRecipe().then((_) {
-                        print('dataSAVED!!!!');
+                        print("dataSAVED!!!!");
                       });
                       setState(() {
                         buttonEnabled = false;
@@ -107,7 +115,7 @@ class AddRecipeFormState extends State<AddRecipeForm> {
           key: _formKey,
           child: ListView(children: <Widget>[
             // top section with the add image button
-            ImageSelector(),
+            ImageSelector(selectedRecipeImage),
             // name textField
             Padding(
               padding: const EdgeInsets.all(12.0),
@@ -211,7 +219,7 @@ class AddRecipeFormState extends State<AddRecipeForm> {
               ),
             ),
 
-            // ingredients section with it's heading and text fields and buttons
+            // ingredients section with it"s heading and text fields and buttons
             Ingredients(
               ingredientNameController,
               ingredientAmountController,
@@ -232,7 +240,7 @@ class AddRecipeFormState extends State<AddRecipeForm> {
             // category for radio buttons for vegetarian selector
             Vegetarian(),
             // heading with textFields for steps section
-            StepsSection(stepsList),
+            Steps(stepsList, stepImages),
             // notes textField
             Padding(
               padding: const EdgeInsets.only(
@@ -247,40 +255,7 @@ class AddRecipeFormState extends State<AddRecipeForm> {
                 maxLines: 3,
               ),
             ),
-            // heading for the subcategory selector section
-            Padding(
-                padding: const EdgeInsets.only(left: 54, right: 6, top: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    // TODO: Add button to add a new category
-                    Text(
-                      "select subcategories:",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.grey[700]),
-                    ),
-                  ],
-                )),
-            // category chips
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                child: Wrap(
-                  spacing: 5.0,
-                  runSpacing: 3.0,
-                  children: <Widget>[
-                    MyFilterChip(chipName: "meat"),
-                    MyFilterChip(chipName: "salat"),
-                    MyFilterChip(chipName: "noodles"),
-                    MyFilterChip(chipName: "salat"),
-                    MyFilterChip(chipName: "breakfast"),
-                    MyFilterChip(chipName: "rice"),
-                  ],
-                ),
-              ),
-            )
+            CategorySection(addCategoryImage, newRecipeCategories),
           ]),
         ));
   }
@@ -315,7 +290,7 @@ class AddRecipeFormState extends State<AddRecipeForm> {
   }
 
   Future<void> saveRecipe() async {
-    print('start saveRecipe()');
+    print("start saveRecipe()");
 
     // get the lists for the data of the ingredients
     Map<String, List<List<dynamic>>> ingredients = getCleanIngredientData(
@@ -323,8 +298,17 @@ class AddRecipeFormState extends State<AddRecipeForm> {
         ingredientAmountController,
         ingredientUnitController);
 
+    List<List<String>> stepImagesLocation = new List<List<String>>();
     int recipeId = await DBProvider.db.getNewIDforTable("Recipe");
-    await saveFile(newRecipeImage, nameController.text, recipeId);
+    await saveImage(selectedRecipeImage.getSelectedImage(),
+        "${nameController.text}$recipeId");
+    for (int i = 0; i < stepImages.length; i++) {
+      stepImagesLocation.add(new List<String>());
+      for (int j = 0; j < stepImages[i].length; j++) {
+        saveImage(stepImages[i][j], "$recipeId" + "s" + "$i" + "s" + "$j");
+        stepImagesLocation[i].add("$recipeId" + "s" + "$i" + "s" + "$j");
+      }
+    }
     Recipe newRecipe = new Recipe(
       id: recipeId,
       name: nameController.text,
@@ -340,16 +324,18 @@ class AddRecipeFormState extends State<AddRecipeForm> {
           : double.parse(totalTimeController.text),
       servings: double.parse(servingsController.text),
       steps: removeEmptyStrings(stepsList),
+      stepImages: stepImagesLocation,
       notes: notesController.text,
       vegetable: newRecipeVegetable,
       ingredientsGlossary: getCleanGlossary(ingredientGlossary, ingredients),
       ingredientsList: ingredients["ingredients"],
       amount: ingredients["amount"],
       unit: ingredients["unit"],
+      categories: newRecipeCategories,
     );
     int i = await DBProvider.db.newRecipe(newRecipe);
 /*
-    print('---------------');
+    print("---------------");
     print(ingredients["ingredients"]);
     print(newRecipeVegetable);
     print(stepsList.length);
@@ -357,7 +343,7 @@ class AddRecipeFormState extends State<AddRecipeForm> {
     print(ingredients["ingredients"]);
     print(ingredients["amount"]);
     print(ingredients["unit"]);
-    print('---------------');
+    print("---------------");
 */
     // DELETE
     var result = await DBProvider.db.getRecipeById(recipeId);
@@ -365,7 +351,7 @@ class AddRecipeFormState extends State<AddRecipeForm> {
 
     // DELETE
 
-    print('end saveRecipe()');
+    print("end saveRecipe()");
   }
 
   bool isIngredientListValid(
@@ -484,38 +470,19 @@ class AddRecipeFormState extends State<AddRecipeForm> {
 
     return output;
   }
-
-  Future<void> saveFile(File image, String name, int recipeId) async {
-    print('start saveFile()');
-    Directory appDir = await getApplicationDocumentsDirectory();
-
-    String imageLocalPath = appDir.path;
-    if (image != null) {
-      final File newImage =
-          await image.copy("$imageLocalPath/$name$recipeId.png");
-      newRecipeImage = null;
-    }
-    print('end saveFile()');
-  }
 }
 
-/*
-class SaveData extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return SaveDataState();
+Future<void> saveImage(File image, String name) async {
+  print("start saveFile()");
+  Directory appDir = await getApplicationDocumentsDirectory();
+
+  String imageLocalPath = appDir.path;
+  if (image != null) {
+    await image.copy("$imageLocalPath/$name.png");
   }
+  print("end saveFile()");
 }
 
-class SaveDataState extends State<SaveData> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return null;
-  }
-}
-*/
 bool validateNumber(String text) {
   if (text.isEmpty) {
     return true;
@@ -530,440 +497,8 @@ bool validateNumber(String text) {
   }
 }
 
-class Ingredients extends StatefulWidget {
-  final List<List<TextEditingController>> ingredientNameController;
-  final List<List<TextEditingController>> ingredientAmountController;
-  final List<List<TextEditingController>> ingredientUnitController;
-  final List<TextEditingController> ingredientGlossary;
-
-  Ingredients(
-    this.ingredientNameController,
-    this.ingredientAmountController,
-    this.ingredientUnitController,
-    this.ingredientGlossary,
-  );
-
-  @override
-  State<StatefulWidget> createState() {
-    return IngredientsState();
-  }
-}
-
-class IngredientsState extends State<Ingredients> {
-  int _sectionAmount = 1;
-
-  @override
-  Widget build(BuildContext context) {
-    // Column with all the data of the ingredients inside like heading, textFields etc.
-    Column sections = new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[],
-    );
-    // add the heading to the Column
-    sections.children.add(Padding(
-      padding: const EdgeInsets.only(left: 52, top: 12, bottom: 12),
-      child: Text(
-        "ingredients:",
-        style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[700]),
-      ),
-    ));
-    // add all the sections to the column
-    for (int i = 0; i < _sectionAmount; i++) {
-      sections.children.add(IngredientSection(
-        (int id) {
-          setState(() {
-            widget.ingredientGlossary.removeLast();
-
-            if (_sectionAmount > 1) {
-              _sectionAmount--;
-            }
-          });
-        },
-        // i number of the section in the column
-        i,
-        // callback for when section add is tapped
-        () {
-          setState(() {
-            _sectionAmount++;
-            widget.ingredientGlossary.add(new TextEditingController());
-            widget.ingredientNameController
-                .add(new List<TextEditingController>());
-            widget.ingredientAmountController
-                .add(new List<TextEditingController>());
-            widget.ingredientUnitController
-                .add(new List<TextEditingController>());
-          });
-        },
-        i == _sectionAmount - 1 ? true : false,
-        widget.ingredientNameController,
-        widget.ingredientAmountController,
-        widget.ingredientUnitController,
-        widget.ingredientGlossary,
-      ));
-    }
-    // add "add section" and "remove section" button to column
-    sections.children.add(
-      Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _sectionAmount > 1
-                ? Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: OutlineButton.icon(
-                      icon: Icon(Icons.remove_circle),
-                      label: Text("Remove section"),
-                      onPressed: () {
-                        setState(() {
-                          // TODO: Callback when a section gets removed
-                          if (_sectionAmount > 1) {
-                            widget.ingredientGlossary.removeLast();
-
-                            _sectionAmount--;
-                          }
-                        });
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(30.0),
-                      ),
-                    ),
-                  )
-                : null,
-            OutlineButton.icon(
-              icon: Icon(Icons.add_circle),
-              label: Text("Add section"),
-              onPressed: () {
-                setState(() {
-                  _sectionAmount++;
-                  widget.ingredientGlossary.add(new TextEditingController());
-                  widget.ingredientNameController
-                      .add(new List<TextEditingController>());
-                  widget.ingredientNameController[_sectionAmount - 1]
-                      .add(new TextEditingController());
-                  widget.ingredientAmountController
-                      .add(new List<TextEditingController>());
-                  widget.ingredientAmountController[_sectionAmount - 1]
-                      .add(new TextEditingController());
-                  widget.ingredientUnitController
-                      .add(new List<TextEditingController>());
-                  widget.ingredientUnitController[_sectionAmount - 1]
-                      .add(new TextEditingController());
-                });
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(30.0),
-              ),
-            ),
-          ].where((c) => c != null).toList()),
-    );
-    return sections;
-  }
-}
-
-class IngredientSection extends StatefulWidget {
-  // lists for saving the data
-
-  final List<List<TextEditingController>> ingredientNameController;
-  final List<List<TextEditingController>> ingredientAmountController;
-  final List<List<TextEditingController>> ingredientUnitController;
-  final List<TextEditingController> ingredientGlossary;
-
-  final SectionsCountCallback callbackRemoveSection;
-  final SectionAddCallback callbackAddSection;
-  final int sectionNumber;
-  final bool lastRow;
-
-  IngredientSection(
-    this.callbackRemoveSection,
-    this.sectionNumber,
-    this.callbackAddSection,
-    this.lastRow,
-    this.ingredientNameController,
-    this.ingredientAmountController,
-    this.ingredientUnitController,
-    this.ingredientGlossary,
-  );
-
-  @override
-  State<StatefulWidget> createState() {
-    return _IngredientSectionState();
-  }
-}
-
-class _IngredientSectionState extends State<IngredientSection> {
-  int _ingredientFieldsCount = 1;
-
-  // returns a list of the Rows with the TextFields for the ingredients
-  List<Widget> getIngredientFields() {
-    List<Widget> output = [];
-    output.add(Padding(
-      padding: const EdgeInsets.fromLTRB(12.0, 12, 12, 12),
-      child: Row(
-          children: <Widget>[
-        Expanded(
-          child: TextField(
-            controller: widget.ingredientGlossary[widget.sectionNumber],
-            decoration: InputDecoration(
-              icon: Icon(Icons.fastfood),
-              helperText: "not required (e.g. ingredients of sauce)",
-              labelText: "section name",
-              filled: true,
-            ),
-          ),
-        ),
-      ].where((c) => c != null).toList()),
-    ));
-    // add rows with the ingredient textFields to the List of widgets
-    for (int i = 0; i < _ingredientFieldsCount; i++) {
-      output.add(Padding(
-        padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12, 12),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 40),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                flex: 9,
-                child: TextFormField(
-                  controller:
-                      widget.ingredientNameController[widget.sectionNumber][i],
-                  decoration: InputDecoration(
-                    hintText: "name",
-                    filled: true,
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: TextFormField(
-                    validator: (value) {
-                      if (validateNumber(value) == false) {
-                        return "no valid number";
-                      }
-                    },
-                    controller: widget
-                        .ingredientAmountController[widget.sectionNumber][i],
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: "amnt",
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: TextFormField(
-                    controller: widget
-                        .ingredientUnitController[widget.sectionNumber][i],
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: "unit",
-                    ),
-                  ),
-                ),
-              ),
-            ].where((c) => c != null).toList(),
-          ),
-        ),
-      ));
-    }
-    // add "add ingredient" and "remove ingredient" to the list
-    output.add(
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          _ingredientFieldsCount > 1
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: OutlineButton.icon(
-                      icon: Icon(Icons.remove_circle_outline),
-                      label: Text("Remove ingredient"),
-                      onPressed: () {
-                        setState(() {
-                          _ingredientFieldsCount--;
-                          widget.ingredientNameController[widget.sectionNumber]
-                              .removeLast();
-                          widget
-                              .ingredientAmountController[widget.sectionNumber]
-                              .removeLast();
-                          widget.ingredientUnitController[widget.sectionNumber]
-                              .removeLast();
-                        });
-                      },
-                      shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0))),
-                )
-              : null,
-          OutlineButton.icon(
-              icon: Icon(Icons.add_circle_outline),
-              label: Text("Add ingredient"),
-              onPressed: () {
-                // TODO: Add new ingredient to the section
-                setState(() {
-                  widget.ingredientNameController[widget.sectionNumber]
-                      .add(new TextEditingController());
-                  widget.ingredientAmountController[widget.sectionNumber]
-                      .add(new TextEditingController());
-                  widget.ingredientUnitController[widget.sectionNumber]
-                      .add(new TextEditingController());
-
-                  _ingredientFieldsCount += 1;
-                });
-              },
-              shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(30.0))),
-        ].where((c) => c != null).toList(),
-      ),
-    );
-    return output;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Column _ingredients = Column(
-      children: <Widget>[],
-    );
-    _ingredients.children.addAll(getIngredientFields());
-
-    return _ingredients;
-  }
-}
-
 typedef SectionsCountCallback = void Function(int sections);
 typedef SectionAddCallback = void Function();
-
-class StepsSection extends StatefulWidget {
-  final List<TextEditingController> stepsList;
-
-  StepsSection(this.stepsList);
-
-  @override
-  State<StatefulWidget> createState() {
-    return StepsSectionState();
-  }
-}
-
-class StepsSectionState extends State<StepsSection> {
-  int _stepsFieldCount = 1;
-
-  /// returns a list of Rows (inside the padding) in which
-  /// you can write your steps description.
-  List<Widget> getIngredientFields() {
-    List<Widget> output = [];
-
-    for (int i = 0; i < _stepsFieldCount; i++) {
-      output.add(Row(
-        children: <Widget>[
-          SizedBox(
-            width: 14,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 17.0),
-            child: ClipPath(
-              clipper: CustomIngredientsClipper(),
-              child: Container(
-                width: 26,
-                height: 26,
-                child: Center(
-                  child: Text(
-                    "${i + 1}",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                ),
-                color: Color(0xFF790604),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0, right: 12),
-              child: TextFormField(
-                controller: widget.stepsList[i],
-                keyboardType: TextInputType.multiline,
-                decoration: InputDecoration(
-                  filled: true,
-                  hintText: "description",
-                ),
-                maxLines: null,
-              ),
-            ),
-          ),
-        ],
-      ));
-    }
-
-    return output;
-  }
-
-  // builds the steps section with it"s corresponding heading
-  @override
-  Widget build(BuildContext context) {
-    Column _ingredients = Column(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 56, right: 6, top: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "steps:",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.grey[700]),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-    _ingredients.children.addAll(getIngredientFields());
-    _ingredients.children.addAll([
-      SizedBox(height: 10),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          _stepsFieldCount > 1
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: OutlineButton.icon(
-                      icon: Icon(Icons.remove_circle_outline),
-                      label: Text("Remove step"),
-                      onPressed: () {
-                        setState(() {
-                          _stepsFieldCount--;
-                          widget.stepsList.removeLast();
-                        });
-                      },
-                      shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0))),
-                )
-              : null,
-          OutlineButton.icon(
-              icon: Icon(Icons.add_circle_outline),
-              label: Text("Add step"),
-              onPressed: () {
-                // TODO: Add new ingredient to the section
-                setState(() {
-                  widget.stepsList.add(new TextEditingController());
-                  _stepsFieldCount++;
-                });
-              },
-              shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(30.0))),
-        ].where((c) => c != null).toList(),
-      )
-    ]);
-
-    return _ingredients;
-  }
-}
 
 // Widget for the radio buttons (vegetarian, vegan, etc.)
 class Vegetarian extends StatefulWidget {
@@ -1087,19 +622,33 @@ class CustomStepsClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomStepsClipper oldClipper) => false;
 }
 
+enum Answers { GALLERY, PHOTO }
+
+class MyImageWrapper {
+  File _selectedImage;
+
+  File getSelectedImage() {
+    return _selectedImage;
+  }
+
+  void setSelectedImage(File image) {
+    _selectedImage = image;
+  }
+}
+
 // Top section of the screen where you can select an image for the dish
 class ImageSelector extends StatefulWidget {
+  final MyImageWrapper selectedRecipeImage;
+
+  ImageSelector(this.selectedRecipeImage);
+
   @override
   State<StatefulWidget> createState() {
     return ImageSelectorState();
   }
 }
 
-enum Answers { GALLERY, PHOTO }
-
 class ImageSelectorState extends State<ImageSelector> {
-  File pictureFile;
-
   Future _askUser() async {
     switch (await showDialog(
         context: context,
@@ -1122,30 +671,32 @@ class ImageSelectorState extends State<ImageSelector> {
             ))) {
       case Answers.GALLERY:
         {
-          pictureFile = await ImagePicker.pickImage(
+          File pictureFile = await ImagePicker.pickImage(
             source: ImageSource.gallery,
             // maxHeight: 50.0,
             // maxWidth: 50.0,
           );
-          newRecipeImage = pictureFile;
-
-          print("You selected gallery image : " + pictureFile.path);
-          setState(() {});
+          if (pictureFile != null) {
+            widget.selectedRecipeImage.setSelectedImage(pictureFile);
+            print("You selected gallery image : " + pictureFile.path);
+            setState(() {});
+          }
           break;
         }
       case Answers.PHOTO:
         {
-          pictureFile = await ImagePicker.pickImage(
+          File pictureFile = await ImagePicker.pickImage(
             source: ImageSource.camera,
             //maxHeight: 50.0,
             //maxWidth: 50.0,
           );
-          newRecipeImage = pictureFile;
-
-          print("You selected camera image : " + pictureFile.path);
-          setState(() {});
+          if (pictureFile != null) {
+            widget.selectedRecipeImage.setSelectedImage(pictureFile);
+            print("You selected gallery image : " + pictureFile.path);
+            setState(() {});
+          }
+          break;
         }
-        break;
     }
   }
 
@@ -1154,55 +705,83 @@ class ImageSelectorState extends State<ImageSelector> {
     return SizedBox(
       height: 200,
       child: Center(
-        child: pictureFile == null
-            ? Container(
-                child: Center(
-                    child: IconButton(
-                  onPressed: () {
-                    _askUser();
-                  },
-                  color: Colors.white,
-                  icon: Icon(Icons.add_a_photo),
-                  iconSize: 32,
-                )),
-                width: 110,
-                height: 110,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFF790604),
-                ),
-              )
-            : ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: Container(
-                  child: Image.file(
-                    pictureFile,
-                    fit: BoxFit.cover,
-                  ),
+          child: widget.selectedRecipeImage.getSelectedImage() == null
+              ? Container(
+                  child: Center(
+                      child: IconButton(
+                    onPressed: () {
+                      _askUser();
+                    },
+                    color: Colors.white,
+                    icon: Icon(Icons.add_a_photo),
+                    iconSize: 32,
+                  )),
                   width: 110,
                   height: 110,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
+                    color: Color(0xFF790604),
                   ),
-                )),
-      ),
+                )
+              : Stack(children: <Widget>[
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Container(
+                        child: Image.file(
+                          widget.selectedRecipeImage.getSelectedImage(),
+                          fit: BoxFit.cover,
+                        ),
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                      )),
+                  Opacity(
+                    opacity: 0.3,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black87,
+                      ),
+                      width: 110,
+                      height: 110,
+                    ),
+                  ),
+                  Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(shape: BoxShape.circle),
+                    child: IconButton(
+                      icon: Icon(Icons.add_a_photo),
+                      iconSize: 32,
+                      color: Colors.white,
+                      onPressed: () {
+                        setState(() {
+                          _askUser();
+                        });
+                      },
+                    ),
+                  ),
+                ])),
     );
   }
 }
 
 // creates a filterClip with the given name
-class MyFilterChip extends StatefulWidget {
+class MyCategoryFilterChip extends StatefulWidget {
   final String chipName;
+  final List<String> recipeCategories;
 
-  MyFilterChip({Key key, this.chipName});
+  MyCategoryFilterChip({Key key, this.chipName, this.recipeCategories});
 
   @override
   State<StatefulWidget> createState() {
-    return MyFilterChipState();
+    return MyCategoryFilterChipState();
   }
 }
 
-class MyFilterChipState extends State<MyFilterChip> {
+class MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
   bool _isSelected = false;
 
   @override
@@ -1213,32 +792,224 @@ class MyFilterChipState extends State<MyFilterChip> {
       onSelected: (isSelected) {
         setState(() {
           _isSelected = isSelected;
+          if (isSelected == true) {
+            widget.recipeCategories.add(widget.chipName);
+          } else {
+            widget.recipeCategories.remove(widget.chipName);
+          }
         });
       },
     );
   }
 }
 
-class FutureB extends StatefulWidget {
+class CategorySection extends StatefulWidget {
+  final MyImageWrapper addCategoryImage;
+  final TextEditingController categoryNameController =
+      new TextEditingController();
+  final List<String> recipeCategories;
+
+  CategorySection(this.addCategoryImage, this.recipeCategories);
+
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return FutureBState();
+    return CategorySectionState();
   }
 }
 
-class FutureBState extends State<FutureB> {
+class CategorySectionState extends State<CategorySection> {
+  Future _askUser() async {
+    switch (await showDialog(
+        context: context,
+        builder: (_) => SimpleDialog(
+              title: Text("Change Picture"),
+              children: <Widget>[
+                SimpleDialogOption(
+                  child: Text("Select an image from your gallery"),
+                  onPressed: () {
+                    Navigator.pop(context, Answers.GALLERY);
+                  },
+                ),
+                SimpleDialogOption(
+                  child: Text("Take a new photo with camera"),
+                  onPressed: () {
+                    Navigator.pop(context, Answers.PHOTO);
+                  },
+                ),
+              ],
+            ))) {
+      case Answers.GALLERY:
+        {
+          File pictureFile = await ImagePicker.pickImage(
+            source: ImageSource.gallery,
+            // maxHeight: 50.0,
+            // maxWidth: 50.0,
+          );
+          if (pictureFile != null) {
+            widget.addCategoryImage.setSelectedImage(pictureFile);
+            print("You selected gallery image : " + pictureFile.path);
+            setState(() {});
+          }
+          break;
+        }
+      case Answers.PHOTO:
+        {
+          File pictureFile = await ImagePicker.pickImage(
+            source: ImageSource.camera,
+            //maxHeight: 50.0,
+            //maxWidth: 50.0,
+          );
+          if (pictureFile != null) {
+            widget.addCategoryImage.setSelectedImage(pictureFile);
+            print("You selected gallery image : " + pictureFile.path);
+            setState(() {});
+          }
+          break;
+        }
+    }
+  }
+
+  List<Widget> _getCategoryChips() {
+    print("_getCategoryChips()");
+    List<Widget> output = new List<Widget>();
+    List<String> categoryTitles = Categories.getCategories();
+
+    print(categoryTitles.length);
+    for (int i = 0; i < categoryTitles.length; i++) {
+      output.add(MyCategoryFilterChip(
+        chipName: "${categoryTitles[i]}",
+        recipeCategories: widget.recipeCategories,
+      ));
+    }
+    return output;
+  }
+
+  Future<void> _saveCategory() async {
+    if (Categories.getCategories()
+            .contains(widget.categoryNameController.text) ==
+        false) {
+      String categoryName = widget.categoryNameController.text;
+      if (widget.addCategoryImage.getSelectedImage() != null) {
+        await saveImage(
+            widget.addCategoryImage.getSelectedImage(), categoryName);
+      }
+      await DBProvider.db.newCategory(categoryName);
+      Categories.addCategory(categoryName);
+    } else {
+      // TODO: when category already exists
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    return Column(
+      children: <Widget>[
+        // heading for the subcategory selector section
+        Padding(
+            padding: const EdgeInsets.only(left: 54, right: 6, top: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                // TODO: Add button to add a new category
+                Text(
+                  "select subcategories:",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.grey[700]),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add_circle_outline),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                              title: Text("Add new Category"),
+                              contentPadding:
+                                  EdgeInsets.fromLTRB(15, 24, 15, 0),
+                              content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Center(
+                                        child: widget.addCategoryImage
+                                                    .getSelectedImage() ==
+                                                null
+                                            ? Container(
+                                                child: Center(
+                                                    child: IconButton(
+                                                  onPressed: () {
+                                                    _askUser();
+                                                  },
+                                                  color: Colors.white,
+                                                  icon: Icon(Icons.add_a_photo),
+                                                  iconSize: 24,
+                                                )),
+                                                width: 80,
+                                                height: 80,
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xFF790604),
+                                                ),
+                                              )
+                                            : Stack(children: <Widget>[
+                                                Container(
+                                                  width: 80,
+                                                  height: 80,
+                                                  child: Image.file(
+                                                    widget.addCategoryImage
+                                                        .getSelectedImage(),
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ])),
+                                    SimpleDialogOption(
+                                        child: ListTile(
+                                      title: TextFormField(
+                                        controller:
+                                            widget.categoryNameController,
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          hintText: "name",
+                                        ),
+                                      ),
+                                    )),
+                                  ]),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: Text('Dismiss'),
+                                  onPressed: () {
+                                    Navigator.pop(
+                                        context, AnswersCategory.DISMISS);
+                                  },
+                                ),
+                                FlatButton(
+                                  child: Text('Save'),
+                                  onPressed: () {
+                                    _saveCategory().then((_) {
+                                      Navigator.pop(context);
+                                      setState(() {}); // TODO: Not working
+                                    });
+                                  },
+                                ),
+                              ],
+                            ));
+                  },
+                )
+              ],
+            )),
+        // category chips
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
+            child: Wrap(
+              spacing: 5.0,
+              runSpacing: 3.0,
+              children: _getCategoryChips(),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
-Future<int> future() async {
-  var completer = new Completer<int>();
-
-  print('kek');
-  int i = 0;
-  completer.complete(i);
-  return completer.future;
-}
+enum AnswersCategory { SAVE, DISMISS }

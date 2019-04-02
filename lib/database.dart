@@ -4,6 +4,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import './recipe.dart';
 import 'dart:async';
+import './recipe.dart';
 
 // singleton DBProvider to ensure, that we only use one object
 class DBProvider {
@@ -43,6 +44,12 @@ class DBProvider {
           "recipe_id INTEGER,"
           "FOREIGN KEY(recipe_id) REFERENCES Recipe(id)"
           ")");
+      await db.execute("CREATE TABLE StepImages ("
+          "id INTEGER PRIMARY KEY,"
+          "image TEXT,"
+          "steps_id INTEGER,"
+          "FOREIGN KEY(steps_id) REFERENCES Steps(id)"
+          ")");
       await db.execute("CREATE TABLE Sections ("
           "id INTEGER PRIMARY KEY,"
           "number INTEGER,"
@@ -57,6 +64,16 @@ class DBProvider {
           "unit TEXT,"
           "section_id INTEGER,"
           "FOREIGN KEY(section_id) REFERENCES Section(id)"
+          ")");
+      await db.execute("CREATE TABLE Categories ("
+          "id INTEGER PRIMARY KEY,"
+          "name TEXT"
+          ")");
+      await db.execute("CREATE TABLE RecipeCategories ("
+          "recipe_id INTEGER,"
+          "categories_id INTEGER,"
+          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id)"
+          "FOREIGN KEY(categories_id) REFERENCES Categories(id)"
           ")");
     });
   }
@@ -77,6 +94,15 @@ class DBProvider {
     // return completer.future;
     print('end DB.getNewIDforTable');
     return output;
+  }
+
+  newCategory(String name) async {
+    final db = await database;
+    var res = await db.rawInsert(
+        "INSERT Into Categories (id,name)"
+        " VALUES (?,?)",
+        [await getNewIDforTable("Categories"), name]);
+    return;
   }
 
   newRecipe(Recipe newRecipe) async {
@@ -127,18 +153,57 @@ class DBProvider {
       }
     }
     for (int i = 0; i < newRecipe.steps.length; i++) {
+      int stepsId = await getNewIDforTable("Steps");
+
       var resSections = await db.rawInsert(
           "INSERT Into Steps (id,number,description,recipe_id)"
           " VALUES (?,?,?,?)",
           [
-            await getNewIDforTable("Steps"),
+            stepsId,
             i,
             newRecipe.steps[i],
-            newRecipe.id
+            newRecipe.id,
+          ]);
+      if (newRecipe.stepImages.length > i) {
+        for (int j = 0; j < newRecipe.stepImages[i].length; j++) {
+          var resStepImages = await db.rawInsert(
+              "INSERT Into StepImages (id,image,steps_id)"
+              " VALUES (?,?,?)",
+              [
+                await getNewIDforTable("StepImages"),
+                newRecipe.stepImages[i][j],
+                stepsId,
+              ]);
+        }
+      }
+    }
+
+    List<String> categoryNames = newRecipe.categories;
+    for (int i = 0; i < categoryNames.length; i++) {
+      var resCategories = await db
+          .rawQuery("SELECT id FROM Categories WHERE name=${categoryNames[i]}");
+      var resStepImages = await db.rawInsert(
+          "INSERT Into RecipeCategories (recipe_id,categories_id)"
+          " VALUES (?,?)",
+          [
+            newRecipe.id,
+            resCategories[0]["id"],
           ]);
     }
+
     print('end DB.newRecipe()');
     return resRecipe;
+  }
+
+  Future<List<String>> getCategories() async {
+    final db = await database;
+
+    var resCategories = await db.rawQuery("SELECT * FROM Categories");
+    List<String> categories = new List<String>();
+    for (int i = 0; i < resCategories.length; i++) {
+      categories.add(resCategories[i]["name"]);
+    }
+    return categories;
   }
 
 // TODO: check if getRecipeById is working properly
@@ -167,8 +232,15 @@ class DBProvider {
     var resSteps = await db
         .rawQuery("SELECT * FROM Steps WHERE id=$id ORDER BY number ASC");
     List<String> steps = new List<String>();
+    List<List<String>> stepImages;
     for (int i = 0; i < resSteps.length; i++) {
       steps.add(resSteps[i]["description"]);
+      var resStepImages = await db.rawQuery(
+          "SELECT * FROM StepImages WHERE steps_id=$id ORDER BY id ASC");
+      stepImages.add(new List<String>());
+      for (int j = 0; j < resStepImages.length; j++) {
+        stepImages[i].add(resStepImages[j]["image"]);
+      }
     }
 
     var resSections = await db.rawQuery(
@@ -190,6 +262,15 @@ class DBProvider {
         ingredientsUnit[i].add(resIngredients[j]["unit"]);
       }
     }
+
+    List<String> categories = new List<String>();
+    var resCategories =
+        await db.rawQuery("SELECT * FROM RecipeCategories WHERE recipe_id=$id}"
+            "NATURAL JOIN Categories");
+    for (int i = 0; i < resCategories.length; i++) {
+      categories.add(resCategories[i]["name"]);
+    }
+
     return Recipe(
         id: id,
         name: name,
@@ -204,6 +285,7 @@ class DBProvider {
         unit: ingredientsUnit,
         vegetable: vegetable,
         steps: steps,
-        notes: notes);
+        notes: notes,
+        categories: categories);
   }
 }

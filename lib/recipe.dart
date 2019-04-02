@@ -10,30 +10,34 @@ class Recipe {
   double cookingTime;
   double totalTime;
   double servings;
+  List<String> categories;
   List<List<String>> ingredientsList;
   List<String> ingredientsGlossary = new List<String>();
   List<List<double>> amount = new List<List<double>>();
   List<List<String>> unit = new List<List<String>>();
   Vegetable vegetable;
   List<String> steps = new List<String>();
+  List<List<String>> stepImages = new List<List<String>>();
   String notes;
   // TODO: add categories
 
   Recipe(
-      {this.id,
-      this.name,
+      {@required this.id,
+      @required this.name,
       this.image,
       this.preperationTime,
       this.cookingTime,
       this.totalTime,
-      this.servings,
+      @required this.servings,
       this.ingredientsGlossary,
       this.ingredientsList,
-      this.amount,
+      @required this.amount,
       this.unit,
-      this.vegetable,
+      @required this.vegetable,
       this.steps,
-      this.notes});
+      this.stepImages,
+      this.notes,
+      this.categories});
 
   factory Recipe.fromMap(Map<String, dynamic> json) => new Recipe(
         id: json["id"],
@@ -68,4 +72,29 @@ class Recipe {
         "steps": steps,
         "notes": notes
       };
+}
+
+class Categories {
+  static List<String> _categories;
+
+  Categories({List<String> categories});
+
+  static void setCategories(List<String> categories) {
+    _categories = categories;
+  }
+
+  static void removeCategory(String name) {
+    _categories.remove(name);
+  }
+
+  static void addCategory(String name) {
+    _categories == null? _categories = [name]: _categories.add(name);
+  }
+
+  static List<String> getCategories() {
+    if (_categories == null)
+      return new List<String>();
+    else
+      return _categories;
+  }
 }

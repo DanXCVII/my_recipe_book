@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'recipe_overview/r_category_overview.dart';
-import 'recipe_overview/add_recipe.dart';
+import 'recipe_overview/add_recipe_screen/add_recipe.dart';
 import 'package:flutter/rendering.dart';
 
 /// TODO: Think about how to change the Appbar and body with using a
@@ -79,7 +79,7 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Widget getFloating(String page) {
+  Widget getFloatingB(String page) {
     if (page == 'recipes') {
       return FloatingActionButton(
           backgroundColor: Color(0xFF790604),
@@ -102,7 +102,7 @@ class MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: buildAppBar(title),
-      floatingActionButton: getFloating(title),
+      floatingActionButton: getFloatingB(title),
       body: getSelectedDrawerPage(title),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(canvasColor: Colors.black87),

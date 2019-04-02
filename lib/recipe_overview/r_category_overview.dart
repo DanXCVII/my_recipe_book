@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import "package:path_provider/path_provider.dart";
+import "dart:io";
+
+import '../database.dart';
+import '../recipe.dart';
 
 class RCategoryOverview extends StatefulWidget {
   @override
@@ -15,14 +20,46 @@ class _RCategoryOverviewState extends State<RCategoryOverview> {
 class CategoryGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GridView.extent(
-      maxCrossAxisExtent: 300,
-      padding: const EdgeInsets.all(4),
-      mainAxisSpacing: 4,
-      crossAxisSpacing: 4,
-      children: createDummyCategoryCards(),
+    return FutureBuilder<List<Widget>>(
+      future: getCategoryCards(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return GridView.extent(
+            maxCrossAxisExtent: 300,
+            padding: const EdgeInsets.all(4),
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
+            children: snapshot.data,
+          );
+        }
+        return Center(child: CircularProgressIndicator());
+      },
     );
   }
+}
+
+Future<List<Widget>> getCategoryCards() async {
+  Categories.setCategories(await DBProvider.db.getCategories());
+  Directory appDir = await getApplicationDocumentsDirectory();
+  String imageLocalPath = appDir.path;
+
+  List<Widget> output = new List<Widget>();
+  List<String> categories = Categories.getCategories();
+  for (int i = 0; i < categories.length; i++) {
+    output.add(
+      GridTile(
+        child: Image.asset(
+          '$imageLocalPath/${categories[i]}.png',
+          fit: BoxFit.cover,
+        ), 
+        footer: GridTileBar(
+          title: Text("${categories[i]}"),
+          backgroundColor: Colors.black45,
+        ),
+      ),
+    );
+  }
+  return output;
 }
 
 List<Widget> createDummyCategoryCards() {
