@@ -18,11 +18,11 @@ class Ingredients extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return IngredientsState();
+    return _IngredientsState();
   }
 }
 
-class IngredientsState extends State<Ingredients> {
+class _IngredientsState extends State<Ingredients> {
 
   @override
   Widget build(BuildContext context) {

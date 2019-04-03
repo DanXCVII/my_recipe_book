@@ -49,7 +49,7 @@ Future<List<Widget>> getCategoryCards() async {
     output.add(
       GridTile(
         child: Image.asset(
-          '$imageLocalPath/${categories[i]}.png',
+          '$imageLocalPath/${categories[i].replaceAll(new RegExp(r'[^\w\s]+'),'')}.png',
           fit: BoxFit.cover,
         ), 
         footer: GridTileBar(

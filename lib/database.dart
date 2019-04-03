@@ -180,9 +180,9 @@ class DBProvider {
 
     List<String> categoryNames = newRecipe.categories;
     for (int i = 0; i < categoryNames.length; i++) {
-      var resCategories = await db
-          .rawQuery("SELECT id FROM Categories WHERE name=${categoryNames[i]}");
-      var resStepImages = await db.rawInsert(
+      var resCategories = await db.query("Categories",
+          where: "name = ?", whereArgs: [categoryNames[i]]);
+      var resCategoriesInsert = await db.rawInsert(
           "INSERT Into RecipeCategories (recipe_id,categories_id)"
           " VALUES (?,?)",
           [
@@ -230,13 +230,13 @@ class DBProvider {
     String notes = resRecipe.first["notes"];
 
     var resSteps = await db
-        .rawQuery("SELECT * FROM Steps WHERE id=$id ORDER BY number ASC");
+        .rawQuery("SELECT * FROM Steps WHERE recipe_id=$id ORDER BY number ASC");
     List<String> steps = new List<String>();
-    List<List<String>> stepImages;
+    List<List<String>> stepImages = new List<List<String>>();
     for (int i = 0; i < resSteps.length; i++) {
       steps.add(resSteps[i]["description"]);
       var resStepImages = await db.rawQuery(
-          "SELECT * FROM StepImages WHERE steps_id=$id ORDER BY id ASC");
+          "SELECT * FROM StepImages WHERE steps_id=${resSteps[i]["id"]} ORDER BY id ASC");
       stepImages.add(new List<String>());
       for (int j = 0; j < resStepImages.length; j++) {
         stepImages[i].add(resStepImages[j]["image"]);
@@ -265,8 +265,8 @@ class DBProvider {
 
     List<String> categories = new List<String>();
     var resCategories =
-        await db.rawQuery("SELECT * FROM RecipeCategories WHERE recipe_id=$id}"
-            "NATURAL JOIN Categories");
+        await db.rawQuery("SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id"
+            " WHERE recipe_id=$id");
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]["name"]);
     }
@@ -284,6 +284,7 @@ class DBProvider {
         amount: ingredientsAmount,
         unit: ingredientsUnit,
         vegetable: vegetable,
+        stepImages: stepImages,
         steps: steps,
         notes: notes,
         categories: categories);

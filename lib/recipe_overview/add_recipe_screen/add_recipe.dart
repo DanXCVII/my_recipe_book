@@ -8,6 +8,7 @@ import "../../recipe.dart";
 import "../../database.dart";
 import "./steps_section.dart";
 import "./ingredients_section.dart";
+import './categories_section.dart';
 
 const double categories = 14;
 const double topPadding = 8;
@@ -17,11 +18,11 @@ Vegetable newRecipeVegetable;
 class AddRecipeForm extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return AddRecipeFormState();
+    return _AddRecipeFormState();
   }
 }
 
-class AddRecipeFormState extends State<AddRecipeForm> {
+class _AddRecipeFormState extends State<AddRecipeForm> {
   final _formKey = GlobalKey<FormState>();
   IconButton saveButton;
   bool buttonEnabled = true;
@@ -347,7 +348,6 @@ class AddRecipeFormState extends State<AddRecipeForm> {
 */
     // DELETE
     var result = await DBProvider.db.getRecipeById(recipeId);
-    print(result.ingredientsList.toString());
 
     // DELETE
 
@@ -478,7 +478,8 @@ Future<void> saveImage(File image, String name) async {
 
   String imageLocalPath = appDir.path;
   if (image != null) {
-    await image.copy("$imageLocalPath/$name.png");
+    await image.copy(
+        "$imageLocalPath/${name.replaceAll(new RegExp(r'[^\w\s]+'), '')}.png");
   }
   print("end saveFile()");
 }
@@ -644,11 +645,11 @@ class ImageSelector extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return ImageSelectorState();
+    return _ImageSelectorState();
   }
 }
 
-class ImageSelectorState extends State<ImageSelector> {
+class _ImageSelectorState extends State<ImageSelector> {
   Future _askUser() async {
     switch (await showDialog(
         context: context,
@@ -777,11 +778,11 @@ class MyCategoryFilterChip extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return MyCategoryFilterChipState();
+    return _MyCategoryFilterChipState();
   }
 }
 
-class MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
+class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
   bool _isSelected = false;
 
   @override
@@ -802,214 +803,3 @@ class MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
     );
   }
 }
-
-class CategorySection extends StatefulWidget {
-  final MyImageWrapper addCategoryImage;
-  final TextEditingController categoryNameController =
-      new TextEditingController();
-  final List<String> recipeCategories;
-
-  CategorySection(this.addCategoryImage, this.recipeCategories);
-
-  @override
-  State<StatefulWidget> createState() {
-    return CategorySectionState();
-  }
-}
-
-class CategorySectionState extends State<CategorySection> {
-  Future _askUser() async {
-    switch (await showDialog(
-        context: context,
-        builder: (_) => SimpleDialog(
-              title: Text("Change Picture"),
-              children: <Widget>[
-                SimpleDialogOption(
-                  child: Text("Select an image from your gallery"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.GALLERY);
-                  },
-                ),
-                SimpleDialogOption(
-                  child: Text("Take a new photo with camera"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.PHOTO);
-                  },
-                ),
-              ],
-            ))) {
-      case Answers.GALLERY:
-        {
-          File pictureFile = await ImagePicker.pickImage(
-            source: ImageSource.gallery,
-            // maxHeight: 50.0,
-            // maxWidth: 50.0,
-          );
-          if (pictureFile != null) {
-            widget.addCategoryImage.setSelectedImage(pictureFile);
-            print("You selected gallery image : " + pictureFile.path);
-            setState(() {});
-          }
-          break;
-        }
-      case Answers.PHOTO:
-        {
-          File pictureFile = await ImagePicker.pickImage(
-            source: ImageSource.camera,
-            //maxHeight: 50.0,
-            //maxWidth: 50.0,
-          );
-          if (pictureFile != null) {
-            widget.addCategoryImage.setSelectedImage(pictureFile);
-            print("You selected gallery image : " + pictureFile.path);
-            setState(() {});
-          }
-          break;
-        }
-    }
-  }
-
-  List<Widget> _getCategoryChips() {
-    print("_getCategoryChips()");
-    List<Widget> output = new List<Widget>();
-    List<String> categoryTitles = Categories.getCategories();
-
-    print(categoryTitles.length);
-    for (int i = 0; i < categoryTitles.length; i++) {
-      output.add(MyCategoryFilterChip(
-        chipName: "${categoryTitles[i]}",
-        recipeCategories: widget.recipeCategories,
-      ));
-    }
-    return output;
-  }
-
-  Future<void> _saveCategory() async {
-    if (Categories.getCategories()
-            .contains(widget.categoryNameController.text) ==
-        false) {
-      String categoryName = widget.categoryNameController.text;
-      if (widget.addCategoryImage.getSelectedImage() != null) {
-        await saveImage(
-            widget.addCategoryImage.getSelectedImage(), categoryName);
-      }
-      await DBProvider.db.newCategory(categoryName);
-      Categories.addCategory(categoryName);
-    } else {
-      // TODO: when category already exists
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        // heading for the subcategory selector section
-        Padding(
-            padding: const EdgeInsets.only(left: 54, right: 6, top: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                // TODO: Add button to add a new category
-                Text(
-                  "select subcategories:",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.grey[700]),
-                ),
-                IconButton(
-                  icon: Icon(Icons.add_circle_outline),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                              title: Text("Add new Category"),
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(15, 24, 15, 0),
-                              content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Center(
-                                        child: widget.addCategoryImage
-                                                    .getSelectedImage() ==
-                                                null
-                                            ? Container(
-                                                child: Center(
-                                                    child: IconButton(
-                                                  onPressed: () {
-                                                    _askUser();
-                                                  },
-                                                  color: Colors.white,
-                                                  icon: Icon(Icons.add_a_photo),
-                                                  iconSize: 24,
-                                                )),
-                                                width: 80,
-                                                height: 80,
-                                                decoration: BoxDecoration(
-                                                  color: Color(0xFF790604),
-                                                ),
-                                              )
-                                            : Stack(children: <Widget>[
-                                                Container(
-                                                  width: 80,
-                                                  height: 80,
-                                                  child: Image.file(
-                                                    widget.addCategoryImage
-                                                        .getSelectedImage(),
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                              ])),
-                                    SimpleDialogOption(
-                                        child: ListTile(
-                                      title: TextFormField(
-                                        controller:
-                                            widget.categoryNameController,
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          hintText: "name",
-                                        ),
-                                      ),
-                                    )),
-                                  ]),
-                              actions: <Widget>[
-                                FlatButton(
-                                  child: Text('Dismiss'),
-                                  onPressed: () {
-                                    Navigator.pop(
-                                        context, AnswersCategory.DISMISS);
-                                  },
-                                ),
-                                FlatButton(
-                                  child: Text('Save'),
-                                  onPressed: () {
-                                    _saveCategory().then((_) {
-                                      Navigator.pop(context);
-                                      setState(() {}); // TODO: Not working
-                                    });
-                                  },
-                                ),
-                              ],
-                            ));
-                  },
-                )
-              ],
-            )),
-        // category chips
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            child: Wrap(
-              spacing: 5.0,
-              runSpacing: 3.0,
-              children: _getCategoryChips(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-enum AnswersCategory { SAVE, DISMISS }
