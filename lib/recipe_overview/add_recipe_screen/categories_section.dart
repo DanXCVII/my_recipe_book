@@ -6,7 +6,6 @@ import './add_recipe.dart';
 import '../../recipe.dart';
 import '../../database.dart';
 
-
 class CategorySection extends StatefulWidget {
   final MyImageWrapper addCategoryImage;
   final List<String> recipeCategories;
@@ -29,7 +28,6 @@ class _CategorySectionState extends State<CategorySection> {
   }
 
   List<Widget> _getCategoryChips() {
-    print("_getCategoryChips()");
     List<Widget> output = new List<Widget>();
     List<String> categoryTitles = Categories.getCategories();
 
@@ -67,8 +65,6 @@ class _CategorySectionState extends State<CategorySection> {
 
   @override
   Widget build(BuildContext context) {
-    print('build()()');
-    print(widget.addCategoryImage.getSelectedImage());
     return Column(
       children: <Widget>[
         // heading for the subcategory selector section
@@ -160,6 +156,7 @@ class DialogContent extends StatefulWidget {
   }
 }
 
+// TODO: Maybe fix orientation, when in add category screen OR fix crash when changing orientation
 class _DialogContentState extends State<DialogContent> {
   Future _askUser() async {
     switch (await showDialog(
@@ -293,6 +290,41 @@ class _DialogContentState extends State<DialogContent> {
           ),
         )),
       ],
+    );
+  }
+}
+
+// creates a filterClip with the given name
+class MyCategoryFilterChip extends StatefulWidget {
+  final String chipName;
+  final List<String> recipeCategories;
+
+  MyCategoryFilterChip({Key key, this.chipName, this.recipeCategories});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _MyCategoryFilterChipState();
+  }
+}
+
+class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
+  bool _isSelected = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilterChip(
+      label: Text(widget.chipName),
+      selected: _isSelected,
+      onSelected: (isSelected) {
+        setState(() {
+          _isSelected = isSelected;
+          if (isSelected == true) {
+            widget.recipeCategories.add(widget.chipName);
+          } else {
+            widget.recipeCategories.remove(widget.chipName);
+          }
+        });
+      },
     );
   }
 }

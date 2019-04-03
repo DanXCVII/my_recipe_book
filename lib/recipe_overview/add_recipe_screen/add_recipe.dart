@@ -479,7 +479,7 @@ Future<void> saveImage(File image, String name) async {
   String imageLocalPath = appDir.path;
   if (image != null) {
     await image.copy(
-        "$imageLocalPath/${name.replaceAll(new RegExp(r'[^\w\s]+'), '')}.png");
+        "$imageLocalPath/${name.replaceAll(new RegExp(r'[^\w\v]+'), '')}.png");
   }
   print("end saveFile()");
 }
@@ -769,37 +769,3 @@ class _ImageSelectorState extends State<ImageSelector> {
   }
 }
 
-// creates a filterClip with the given name
-class MyCategoryFilterChip extends StatefulWidget {
-  final String chipName;
-  final List<String> recipeCategories;
-
-  MyCategoryFilterChip({Key key, this.chipName, this.recipeCategories});
-
-  @override
-  State<StatefulWidget> createState() {
-    return _MyCategoryFilterChipState();
-  }
-}
-
-class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
-  bool _isSelected = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return FilterChip(
-      label: Text(widget.chipName),
-      selected: _isSelected,
-      onSelected: (isSelected) {
-        setState(() {
-          _isSelected = isSelected;
-          if (isSelected == true) {
-            widget.recipeCategories.add(widget.chipName);
-          } else {
-            widget.recipeCategories.remove(widget.chipName);
-          }
-        });
-      },
-    );
-  }
-}
