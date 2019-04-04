@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import "dart:io";
 
 enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
 
 class Recipe {
   int id;
   String name;
-  String image;
+  File image;
   double preperationTime;
   double cookingTime;
   double totalTime;
@@ -17,7 +18,7 @@ class Recipe {
   List<List<String>> unit = new List<List<String>>();
   Vegetable vegetable;
   List<String> steps = new List<String>();
-  List<List<String>> stepImages = new List<List<String>>();
+  List<List<File>> stepImages = new List<List<File>>();
   String notes;
   // TODO: add categories
 

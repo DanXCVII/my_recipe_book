@@ -16,6 +16,10 @@ Vegetable newRecipeVegetable;
 
 // TODO ~: Put the AddRecipe Scaffold in a stateless widget
 class AddRecipeForm extends StatefulWidget {
+  final Recipe editRecipe;
+
+  AddRecipeForm({this.editRecipe});
+
   @override
   State<StatefulWidget> createState() {
     return _AddRecipeFormState();
@@ -27,7 +31,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   IconButton saveButton;
   bool buttonEnabled = true;
 
-  String imageLocalPath = "";
   List<List<File>> stepImages = new List<List<File>>();
   MyImageWrapper selectedRecipeImage = new MyImageWrapper();
   MyImageWrapper addCategoryImage = new MyImageWrapper();
@@ -51,9 +54,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       new List<List<TextEditingController>>();
   List<List<TextEditingController>> ingredientUnitController =
       new List<List<TextEditingController>>();
-  List<TextEditingController> ingredientGlossary =
+  List<TextEditingController> ingredientGlossaryController =
       new List<TextEditingController>();
-  List<TextEditingController> stepsList = new List<TextEditingController>();
+  List<TextEditingController> stepsListController = new List<TextEditingController>();
 
   @override
   void initState() {
@@ -67,8 +70,29 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     ingredientAmountController[0].add(new TextEditingController());
     ingredientUnitController.add(new List<TextEditingController>());
     ingredientUnitController[0].add(new TextEditingController());
-    ingredientGlossary.add(new TextEditingController());
-    stepsList.add(new TextEditingController());
+    ingredientGlossaryController.add(new TextEditingController());
+    stepsListController.add(new TextEditingController());
+
+    if(widget.editRecipe != null) {
+      nameController.text = widget.editRecipe.name;
+      preperationTimeController.text = widget.editRecipe.preperationTime.toString();
+      cookingTimeController.text = widget.editRecipe.cookingTime.toString();
+      totalTimeController.text = widget.editRecipe.totalTime.toString();
+      servingsController.text = widget.editRecipe.servings.toString();
+      notesController.text = widget.editRecipe.notes;
+      for(int i = 0; i< widget.editRecipe.ingredientsGlossary.length; i++) {
+        ingredientGlossaryController[i].text = widget.editRecipe.ingredientsGlossary[i];
+        for(int j = 0; j < widget.editRecipe.ingredientsList.length; j++) {
+          ingredientNameController[i][j].text = widget.editRecipe.ingredientsList[i][j];
+          ingredientAmountController[i][j].text = widget.editRecipe.amount[i][j].toString();
+          ingredientUnitController[i][j].text = widget.editRecipe.unit[i][j];
+        }
+      }
+      for(int i = 0; i < widget.editRecipe.steps.length; i++) {
+        stepsListController[i].text = widget.editRecipe.steps[i];
+        // TODO: stepImages and so on
+      }
+    }
   }
 
   @override
@@ -225,7 +249,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               ingredientNameController,
               ingredientAmountController,
               ingredientUnitController,
-              ingredientGlossary,
+              ingredientGlossaryController,
             ),
             // category for vegetarian heading
             Padding(
@@ -241,7 +265,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             // category for radio buttons for vegetarian selector
             Vegetarian(),
             // heading with textFields for steps section
-            Steps(stepsList, stepImages),
+            Steps(stepsListController, stepImages),
             // notes textField
             Padding(
               padding: const EdgeInsets.only(
@@ -285,7 +309,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         controller.dispose();
       });
     });
-    ingredientGlossary.forEach((controller) {
+    ingredientGlossaryController.forEach((controller) {
       controller.dispose();
     });
   }
@@ -304,16 +328,14 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     await saveImage(selectedRecipeImage.getSelectedImage(),
         "${nameController.text}$recipeId");
     for (int i = 0; i < stepImages.length; i++) {
-      stepImagesLocation.add(new List<String>());
       for (int j = 0; j < stepImages[i].length; j++) {
         saveImage(stepImages[i][j], "$recipeId" + "s" + "$i" + "s" + "$j");
-        stepImagesLocation[i].add("$recipeId" + "s" + "$i" + "s" + "$j");
       }
     }
     Recipe newRecipe = new Recipe(
       id: recipeId,
       name: nameController.text,
-      image: imageLocalPath,
+      image: selectedRecipeImage.getSelectedImage(),
       preperationTime: preperationTimeController.text.isEmpty
           ? 0
           : double.parse(preperationTimeController.text),
@@ -324,11 +346,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
           ? 0
           : double.parse(totalTimeController.text),
       servings: double.parse(servingsController.text),
-      steps: removeEmptyStrings(stepsList),
-      stepImages: stepImagesLocation,
+      steps: removeEmptyStrings(stepsListController),
+      stepImages: stepImages,
       notes: notesController.text,
       vegetable: newRecipeVegetable,
-      ingredientsGlossary: getCleanGlossary(ingredientGlossary, ingredients),
+      ingredientsGlossary: getCleanGlossary(ingredientGlossaryController, ingredients),
       ingredientsList: ingredients["ingredients"],
       amount: ingredients["amount"],
       unit: ingredients["unit"],
@@ -768,4 +790,3 @@ class _ImageSelectorState extends State<ImageSelector> {
     );
   }
 }
-
