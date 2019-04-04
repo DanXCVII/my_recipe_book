@@ -215,7 +215,10 @@ class DBProvider {
       return Null;
     }
     String name = resRecipe.first["name"];
-    String image = resRecipe.first["image"];
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String imageLocalPath = appDir.path;
+    File image =  File('$imageLocalPath/${resRecipe.first["image"]}.png');
+
     double preperationTime = resRecipe.first["preperationTime"];
     double cookingTime = resRecipe.first["cookingTime"];
     double totalTime = resRecipe.first["totalTime"];
@@ -229,17 +232,17 @@ class DBProvider {
       vegetable = Vegetable.VEGAN;
     String notes = resRecipe.first["notes"];
 
-    var resSteps = await db
-        .rawQuery("SELECT * FROM Steps WHERE recipe_id=$id ORDER BY number ASC");
+    var resSteps = await db.rawQuery(
+        "SELECT * FROM Steps WHERE recipe_id=$id ORDER BY number ASC");
     List<String> steps = new List<String>();
-    List<List<String>> stepImages = new List<List<String>>();
+    List<List<File>> stepImages = new List<List<File>>();
     for (int i = 0; i < resSteps.length; i++) {
       steps.add(resSteps[i]["description"]);
       var resStepImages = await db.rawQuery(
           "SELECT * FROM StepImages WHERE steps_id=${resSteps[i]["id"]} ORDER BY id ASC");
-      stepImages.add(new List<String>());
+      stepImages.add(new List<File>());
       for (int j = 0; j < resStepImages.length; j++) {
-        stepImages[i].add(resStepImages[j]["image"]);
+        stepImages[i].add(File('$imageLocalPath/${resStepImages[j]["image"]}.png'));
       }
     }
 
@@ -264,9 +267,9 @@ class DBProvider {
     }
 
     List<String> categories = new List<String>();
-    var resCategories =
-        await db.rawQuery("SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id"
-            " WHERE recipe_id=$id");
+    var resCategories = await db.rawQuery(
+        "SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id"
+        " WHERE recipe_id=$id");
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]["name"]);
     }

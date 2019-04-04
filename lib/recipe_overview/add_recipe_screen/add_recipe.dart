@@ -56,7 +56,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       new List<List<TextEditingController>>();
   List<TextEditingController> ingredientGlossaryController =
       new List<TextEditingController>();
-  List<TextEditingController> stepsListController = new List<TextEditingController>();
+  List<TextEditingController> stepsListController =
+      new List<TextEditingController>();
 
   @override
   void initState() {
@@ -73,24 +74,45 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     ingredientGlossaryController.add(new TextEditingController());
     stepsListController.add(new TextEditingController());
 
-    if(widget.editRecipe != null) {
+    if (widget.editRecipe != null) {
       nameController.text = widget.editRecipe.name;
-      preperationTimeController.text = widget.editRecipe.preperationTime.toString();
+      selectedRecipeImage.setSelectedImage(widget.editRecipe.image);
+      preperationTimeController.text =
+          widget.editRecipe.preperationTime.toString();
       cookingTimeController.text = widget.editRecipe.cookingTime.toString();
       totalTimeController.text = widget.editRecipe.totalTime.toString();
       servingsController.text = widget.editRecipe.servings.toString();
       notesController.text = widget.editRecipe.notes;
-      for(int i = 0; i< widget.editRecipe.ingredientsGlossary.length; i++) {
-        ingredientGlossaryController[i].text = widget.editRecipe.ingredientsGlossary[i];
-        for(int j = 0; j < widget.editRecipe.ingredientsList.length; j++) {
-          ingredientNameController[i][j].text = widget.editRecipe.ingredientsList[i][j];
-          ingredientAmountController[i][j].text = widget.editRecipe.amount[i][j].toString();
+      for (int i = 0; i < widget.editRecipe.ingredientsGlossary.length; i++) {
+        ingredientGlossaryController[i].text =
+            widget.editRecipe.ingredientsGlossary[i];
+        for (int j = 0; j < widget.editRecipe.ingredientsList.length; j++) {
+          ingredientNameController[i][j].text =
+              widget.editRecipe.ingredientsList[i][j];
+          ingredientAmountController[i][j].text =
+              widget.editRecipe.amount[i][j].toString();
           ingredientUnitController[i][j].text = widget.editRecipe.unit[i][j];
         }
       }
-      for(int i = 0; i < widget.editRecipe.steps.length; i++) {
+      for (int i = 0; i < widget.editRecipe.steps.length; i++) {
         stepsListController[i].text = widget.editRecipe.steps[i];
-        // TODO: stepImages and so on
+        for (int j = 0; j < widget.editRecipe.stepImages.length; j++) {
+          stepImages[i][j] = widget.editRecipe.stepImages[i][j];
+        }
+      }
+      widget.editRecipe.categories.forEach((category) {
+        newRecipeCategories.add(category);
+      });
+      switch (widget.editRecipe.vegetable) {
+        case Vegetable.NON_VEGETARIAN:
+          newRecipeVegetable = Vegetable.NON_VEGETARIAN;
+          break;
+        case Vegetable.VEGETARIAN:
+          newRecipeVegetable = Vegetable.VEGETARIAN;
+          break;
+        case Vegetable.VEGAN:
+          newRecipeVegetable = Vegetable.VEGAN;
+          break;
       }
     }
   }
@@ -350,7 +372,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       stepImages: stepImages,
       notes: notesController.text,
       vegetable: newRecipeVegetable,
-      ingredientsGlossary: getCleanGlossary(ingredientGlossaryController, ingredients),
+      ingredientsGlossary:
+          getCleanGlossary(ingredientGlossaryController, ingredients),
       ingredientsList: ingredients["ingredients"],
       amount: ingredients["amount"],
       unit: ingredients["unit"],
@@ -497,8 +520,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 Future<void> saveImage(File image, String name) async {
   print("start saveFile()");
   Directory appDir = await getApplicationDocumentsDirectory();
-
   String imageLocalPath = appDir.path;
+
   if (image != null) {
     await image.copy(
         "$imageLocalPath/${name.replaceAll(new RegExp(r'[^\w\v]+'), '')}.png");
@@ -532,6 +555,22 @@ class Vegetarian extends StatefulWidget {
 
 class _VegetarianState extends State<Vegetarian> {
   int _radioValue = 0;
+
+  @override
+  initState() {
+    switch (newRecipeVegetable) {
+      case Vegetable.NON_VEGETARIAN:
+        _radioValue = 0;
+        break;
+      case Vegetable.VEGETARIAN:
+        _radioValue = 1;
+        break;
+      case Vegetable.VEGAN:
+        _radioValue = 2;
+        break;
+    }
+    super.initState();
+  }
 
   void _handleRadioValueChange(int value) {
     setState(() {
