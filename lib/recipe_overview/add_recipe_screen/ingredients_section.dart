@@ -187,6 +187,7 @@ class _IngredientSectionState extends State<IngredientSection> {
         child: Padding(
           padding: const EdgeInsets.only(left: 40),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Expanded(
                 flex: 9,
@@ -205,10 +206,11 @@ class _IngredientSectionState extends State<IngredientSection> {
                   padding: const EdgeInsets.only(left: 10),
                   child: TextFormField(
                     validator: (value) {
-                      if (validateNumber(value) == false) {
+                        if (validateNumber(value) == false && value != "") {
                         return "no valid number";
                       }
                     },
+                    autovalidate: true,
                     controller: widget
                         .ingredientAmountController[widget.sectionNumber][i],
                     keyboardType: TextInputType.number,

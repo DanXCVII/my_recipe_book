@@ -3,6 +3,8 @@ import 'recipe_overview/r_category_overview.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
 import 'package:flutter/rendering.dart';
 
+import './database.dart';
+
 /// TODO: Think about how to change the Appbar and body with using a
 /// StateLess widget for better performance maybe. One way of doing
 /// it would be to make a custom stateful widget which builds an
@@ -23,13 +25,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         primaryColor: Color(0xFF790604), // maybe brown[700]
-         /* canvasColor: Color(0xFF43403D),
+        /* canvasColor: Color(0xFF43403D),
          textSelectionColor: Colors.white,
          backgroundColor: Color(0xFF43403D),
          hintColor: Colors.white,
          textSelectionHandleColor: Colors.white, */
-         iconTheme: IconThemeData(color: Colors.grey[700]),
-         /*textTheme: Theme.of(context).textTheme.apply(
+        iconTheme: IconThemeData(color: Colors.grey[700]),
+        /*textTheme: Theme.of(context).textTheme.apply(
                 bodyColor: Colors.white,
                 displayColor: Colors.white,
               )*/
@@ -85,7 +87,20 @@ class MyHomePageState extends State<MyHomePage> {
           backgroundColor: Color(0xFF790604),
           child: Icon(Icons.add),
           onPressed: () {
+            // TODO: only navigator.pushNamed and not with the editrecipe.
+
+            /*DBProvider.db.getRecipeById(5).then((recipe) {
+              print(recipe.toString());
+              if (recipe == Null) {*/
             Navigator.pushNamed(context, 'addRecipe');
+            /*    return;
+              }
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          new AddRecipeForm(editRecipe: recipe)));
+            });*/
           });
     }
     return null;

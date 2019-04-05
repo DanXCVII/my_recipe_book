@@ -108,6 +108,10 @@ class DBProvider {
   newRecipe(Recipe newRecipe) async {
     print('start DB.newRecipe()');
     final db = await database;
+    String image = "";
+    if (newRecipe.image != null) {
+      image = "${newRecipe.name}${newRecipe.id}";
+    }
     var resRecipe = await db.rawInsert(
         "INSERT Into Recipe ("
         "id,"
@@ -123,7 +127,7 @@ class DBProvider {
         [
           newRecipe.id,
           newRecipe.name,
-          newRecipe.image,
+          image,
           newRecipe.preperationTime,
           newRecipe.cookingTime,
           newRecipe.totalTime,
@@ -171,7 +175,7 @@ class DBProvider {
               " VALUES (?,?,?)",
               [
                 await getNewIDforTable("StepImages"),
-                newRecipe.stepImages[i][j],
+                "${newRecipe.id}" + "s" + "$i" + "s" + "$j",
                 stepsId,
               ]);
         }
@@ -217,7 +221,10 @@ class DBProvider {
     String name = resRecipe.first["name"];
     Directory appDir = await getApplicationDocumentsDirectory();
     String imageLocalPath = appDir.path;
-    File image =  File('$imageLocalPath/${resRecipe.first["image"]}.png');
+    File image;
+    if (resRecipe.first["image"] != "") {
+      image = File('$imageLocalPath/${resRecipe.first["image"]}.png');
+    }
 
     double preperationTime = resRecipe.first["preperationTime"];
     double cookingTime = resRecipe.first["cookingTime"];
@@ -242,7 +249,8 @@ class DBProvider {
           "SELECT * FROM StepImages WHERE steps_id=${resSteps[i]["id"]} ORDER BY id ASC");
       stepImages.add(new List<File>());
       for (int j = 0; j < resStepImages.length; j++) {
-        stepImages[i].add(File('$imageLocalPath/${resStepImages[j]["image"]}.png'));
+        stepImages[i]
+            .add(File('$imageLocalPath/${resStepImages[j]["image"]}.png'));
       }
     }
 
