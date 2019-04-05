@@ -3,8 +3,7 @@ import 'recipe_overview/r_category_overview.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
 import 'package:flutter/rendering.dart';
 
-import './database.dart';
-
+import './recipe_overview/recipe_overview.dart';
 /// TODO: Think about how to change the Appbar and body with using a
 /// StateLess widget for better performance maybe. One way of doing
 /// it would be to make a custom stateful widget which builds an
@@ -89,11 +88,16 @@ class MyHomePageState extends State<MyHomePage> {
           onPressed: () {
             // TODO: only navigator.pushNamed and not with the editrecipe.
 
-            /*DBProvider.db.getRecipeById(5).then((recipe) {
+            /*DBProvider.db.getRecipeById(0).then((recipe) {
               print(recipe.toString());
               if (recipe == Null) {*/
-            Navigator.pushNamed(context, 'addRecipe');
-            /*    return;
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          new RecipeGridView(category: "kuh")));
+            /*Navigator.pushNamed(context, 'addRecipe');
+                return;
               }
               Navigator.push(
                   context,

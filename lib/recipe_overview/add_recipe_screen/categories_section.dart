@@ -312,6 +312,15 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
   bool _isSelected = false;
 
   @override
+  void initState() {
+    super.initState();
+
+    widget.recipeCategories.contains(widget.chipName)
+        ? _isSelected = true
+        : _isSelected = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FilterChip(
       label: Text(widget.chipName),

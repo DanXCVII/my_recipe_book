@@ -94,28 +94,34 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       servingsController.text = widget.editRecipe.servings.toString();
       notesController.text = widget.editRecipe.notes;
       for (int i = 0; i < widget.editRecipe.ingredientsGlossary.length; i++) {
+        if (i > 0) {
+          ingredientGlossaryController.add(new TextEditingController());
+        }
         ingredientGlossaryController[i].text =
             widget.editRecipe.ingredientsGlossary[i];
-        ingredientGlossaryController.add(new TextEditingController());
+
         ingredientNameController.add(new List<TextEditingController>());
         ingredientAmountController.add(new List<TextEditingController>());
         ingredientUnitController.add(new List<TextEditingController>());
         for (int j = 0; j < widget.editRecipe.ingredientsList[i].length; j++) {
+          if (i != 0 || j > 0) {
+            ingredientNameController[i].add(new TextEditingController());
+            ingredientAmountController[i].add(new TextEditingController());
+            ingredientUnitController[i].add(new TextEditingController());
+          }
           ingredientNameController[i][j].text =
               widget.editRecipe.ingredientsList[i][j];
           ingredientAmountController[i][j].text =
               widget.editRecipe.amount[i][j].toString();
           ingredientUnitController[i][j].text = widget.editRecipe.unit[i][j];
-          ingredientNameController[i].add(new TextEditingController());
-          ingredientAmountController[i].add(new TextEditingController());
-          ingredientUnitController[i].add(new TextEditingController());
         }
       }
-      ingredientGlossaryController.removeLast();
       for (int i = 0; i < widget.editRecipe.steps.length; i++) {
+        if (i > 0) {
+          stepsDescController.add(new TextEditingController());
+          stepImages.add(new List<File>());
+        }
         stepsDescController[i].text = widget.editRecipe.steps[i];
-        stepsDescController.add(new TextEditingController());
-        stepImages.add(new List<File>());
 
         for (int j = 0; j < widget.editRecipe.stepImages[i].length; j++) {
           stepImages[i].add(widget.editRecipe.stepImages[i][j]);
@@ -327,7 +333,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               ),
             ),
             // category for radio buttons for vegetarian selector
-            Vegetarian(),
+            Vegetarian(
+              vegetableStatus: selectedRecipeVegetable,
+            ),
             // heading with textFields for steps section
             Steps(stepsDescController, stepImages),
             // notes textField
@@ -628,10 +636,6 @@ class CustomStepsClipper extends CustomClipper<Path> {
 }
 
 enum Answers { GALLERY, PHOTO }
-
-
-
-
 
 // Top section of the screen where you can select an image for the dish
 class ImageSelector extends StatefulWidget {

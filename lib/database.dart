@@ -300,4 +300,18 @@ class DBProvider {
         notes: notes,
         categories: categories);
   }
+
+  Future<List<Recipe>> getRecipesOfCategory(String category) async {
+    final db = await database;
+
+    var resCategories = await db.rawQuery(
+        "SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id "
+        "WHERE Categories.name=\"$category\"");
+    List<Recipe> output = new List<Recipe>();
+    for (int i = 0; i < resCategories.length; i++) {
+      var newRecipe = await getRecipeById(resCategories[i]["recipe_id"]);
+      output.add(newRecipe as Recipe);
+    }
+    return output;
+  }
 }

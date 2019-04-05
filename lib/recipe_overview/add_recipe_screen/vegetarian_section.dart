@@ -7,7 +7,7 @@ import "../../my_wrapper.dart";
 // Widget for the radio buttons (vegetarian, vegan, etc.)
 class Vegetarian extends StatefulWidget {
   final MyVegetableWrapper vegetableStatus;
-  Vegetarian({this.vegetableStatus});
+  Vegetarian({@required this.vegetableStatus});
 
   State<StatefulWidget> createState() {
     return _VegetarianState();
