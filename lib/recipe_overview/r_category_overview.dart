@@ -4,6 +4,7 @@ import "dart:io";
 
 import '../database.dart';
 import '../recipe.dart';
+import './recipe_overview.dart';
 
 class RCategoryOverview extends StatefulWidget {
   @override
@@ -47,14 +48,21 @@ Future<List<Widget>> getCategoryCards() async {
   List<String> categories = Categories.getCategories();
   for (int i = 0; i < categories.length; i++) {
     output.add(
-      GridTile(
-        child: Image.asset(
-          '$imageLocalPath/${categories[i].replaceAll(new RegExp(r'[^\w\v]+'),'')}.png',
-          fit: BoxFit.cover,
-        ), 
-        footer: GridTileBar(
-          title: Text("${categories[i]}"),
-          backgroundColor: Colors.black45,
+      GestureDetector(
+        onTap: () {
+          MaterialPageRoute(
+              builder: (BuildContext context) =>
+                  new RecipeGridView(category: "${categories[i]}"));
+        },
+        child: GridTile(
+          child: Image.asset(
+            '$imageLocalPath/${categories[i].replaceAll(new RegExp(r'[^\w\v]+'), '')}.png',
+            fit: BoxFit.cover,
+          ),
+          footer: GridTileBar(
+            title: Text("${categories[i]}"),
+            backgroundColor: Colors.black45,
+          ),
         ),
       ),
     );

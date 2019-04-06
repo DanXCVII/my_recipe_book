@@ -90,13 +90,13 @@ class MyHomePageState extends State<MyHomePage> {
 
             /*DBProvider.db.getRecipeById(0).then((recipe) {
               print(recipe.toString());
-              if (recipe == Null) {*/
+              if (recipe == Null) {
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (BuildContext context) =>
-                          new RecipeGridView(category: "kuh")));
-            /*Navigator.pushNamed(context, 'addRecipe');
+                          new RecipeGridView(category: "kuh")));*/
+            Navigator.pushNamed(context, 'addRecipe');/*
                 return;
               }
               Navigator.push(

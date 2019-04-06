@@ -36,6 +36,7 @@ class DBProvider {
           "servings REAL,"
           "vegetable TEXT,"
           "notes TEXT"
+          "isFavorite INTEGER"
           ")");
       await db.execute("CREATE TABLE Steps ("
           "id INTEGER PRIMARY KEY,"
@@ -122,8 +123,9 @@ class DBProvider {
         "totalTime,"
         "servings,"
         "vegetable,"
-        "notes)"
-        " VALUES (?,?,?,?,?,?,?,?,?)",
+        "notes,"
+        "isFavorite)"
+        " VALUES (?,?,?,?,?,?,?,?,?,?)",
         [
           newRecipe.id,
           newRecipe.name,
@@ -133,7 +135,8 @@ class DBProvider {
           newRecipe.totalTime,
           newRecipe.servings,
           newRecipe.vegetable.toString(),
-          newRecipe.notes
+          newRecipe.notes,
+          0
         ]);
     for (int i = 0; i < newRecipe.ingredientsGlossary.length; i++) {
       int _sectionId = await getNewIDforTable("Sections");
@@ -230,6 +233,12 @@ class DBProvider {
     double cookingTime = resRecipe.first["cookingTime"];
     double totalTime = resRecipe.first["totalTime"];
     double servings = resRecipe.first["servings"];
+    bool isFavorite;
+    if (resRecipe.first["favorite"] == 1) {
+      isFavorite = true;
+    } else {
+      isFavorite = false;
+    }
     Vegetable vegetable;
     if (resRecipe.first["vegetable"] == "Vegetable.NON_VEGETARIAN")
       vegetable = Vegetable.NON_VEGETARIAN;
@@ -298,7 +307,8 @@ class DBProvider {
         stepImages: stepImages,
         steps: steps,
         notes: notes,
-        categories: categories);
+        categories: categories,
+        isFavorite: isFavorite);
   }
 
   Future<List<Recipe>> getRecipesOfCategory(String category) async {
@@ -313,5 +323,16 @@ class DBProvider {
       output.add(newRecipe as Recipe);
     }
     return output;
+  }
+
+  Future<void> updateFavorite(bool status, int recipeId) async {
+    final db = await database;
+    int newStatus;
+    if (status) {
+      newStatus = 1;
+    } else {
+      newStatus = 0;
+    }
+    await db.rawUpdate("UPDATE Recipe SET favorite = $newStatus WHERE id=$recipeId");
   }
 }

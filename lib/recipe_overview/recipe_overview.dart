@@ -25,6 +25,9 @@ class RecipeGridView extends StatelessWidget {
           ),
           footer: GridTileBar(
             title: Text("${recipes[i].name}"),
+            subtitle: Text(
+                "steps: ${recipes[i].steps.length}, total time: ${recipes[i].totalTime}"),
+            trailing: Favorite(recipes[i]),
             backgroundColor: Colors.black45,
           ),
         ),
@@ -35,19 +38,65 @@ class RecipeGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Widget>>(
-      future: getRecipeCards(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return GridView.extent(
-            maxCrossAxisExtent: 300,
-            padding: const EdgeInsets.all(4),
-            mainAxisSpacing: 4,
-            crossAxisSpacing: 4,
-            children: snapshot.data,
-          );
-        }
-        return Center(child: CircularProgressIndicator());
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('$category'),
+      ),
+      body: FutureBuilder<List<Widget>>(
+        future: getRecipeCards(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return GridView.extent(
+              maxCrossAxisExtent: 300,
+              padding: const EdgeInsets.all(4),
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 4,
+              children: snapshot.data,
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        },
+      ),
+    );
+  }
+}
+
+class Favorite extends StatefulWidget {
+  final Recipe recipe;
+
+  Favorite(this.recipe);
+
+  @override
+  State<StatefulWidget> createState() => FavoriteState();
+}
+
+class FavoriteState extends State<Favorite> {
+  bool isFavorite;
+
+  @override
+  void initState() {
+    isFavorite = widget.recipe.isFavorite;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(isFavorite ? Icons.favorite_border : Icons.favorite),
+      onPressed: () {
+        setState(() {
+          if (isFavorite) {
+            DBProvider.db.updateFavorite(false, widget.recipe.id).then((_) {
+              widget.recipe.isFavorite = false;
+              isFavorite = false;
+            });
+          } else {
+            DBProvider.db.updateFavorite(true, widget.recipe.id).then((_) {
+              widget.recipe.isFavorite = true;
+              isFavorite = true;
+            });
+          }
+        });
       },
     );
   }
