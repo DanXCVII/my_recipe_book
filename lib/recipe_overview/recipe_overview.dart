@@ -40,7 +40,13 @@ class RecipeGridView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$category'),
+        title: Hero(tag: "categoryName", child: Material(
+                        color: Colors.transparent,
+                        child: Text(
+                          "$category",
+                          style: TextStyle(fontSize: 18.0, color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      )),
       ),
       body: FutureBuilder<List<Widget>>(
         future: getRecipeCards(),
@@ -82,21 +88,23 @@ class FavoriteState extends State<Favorite> {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(isFavorite ? Icons.favorite_border : Icons.favorite),
+      icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
       onPressed: () {
-        setState(() {
-          if (isFavorite) {
-            DBProvider.db.updateFavorite(false, widget.recipe.id).then((_) {
+        if (isFavorite) {
+          DBProvider.db.updateFavorite(false, widget.recipe.id).then((_) {
+            setState(() {
               widget.recipe.isFavorite = false;
               isFavorite = false;
             });
-          } else {
-            DBProvider.db.updateFavorite(true, widget.recipe.id).then((_) {
+          });
+        } else {
+          DBProvider.db.updateFavorite(true, widget.recipe.id).then((_) {
+            setState(() {
               widget.recipe.isFavorite = true;
               isFavorite = true;
             });
-          }
-        });
+          });
+        }
       },
     );
   }

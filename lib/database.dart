@@ -35,7 +35,7 @@ class DBProvider {
           "totalTime REAL,"
           "servings REAL,"
           "vegetable TEXT,"
-          "notes TEXT"
+          "notes TEXT,"
           "isFavorite INTEGER"
           ")");
       await db.execute("CREATE TABLE Steps ("
@@ -234,7 +234,7 @@ class DBProvider {
     double totalTime = resRecipe.first["totalTime"];
     double servings = resRecipe.first["servings"];
     bool isFavorite;
-    if (resRecipe.first["favorite"] == 1) {
+    if (resRecipe.first["isFavorite"] == 1) {
       isFavorite = true;
     } else {
       isFavorite = false;
@@ -312,6 +312,7 @@ class DBProvider {
   }
 
   Future<List<Recipe>> getRecipesOfCategory(String category) async {
+    print('getRecipesOfCategory()');
     final db = await database;
 
     var resCategories = await db.rawQuery(
@@ -333,6 +334,6 @@ class DBProvider {
     } else {
       newStatus = 0;
     }
-    await db.rawUpdate("UPDATE Recipe SET favorite = $newStatus WHERE id=$recipeId");
+    await db.rawUpdate("UPDATE Recipe SET isFavorite = $newStatus WHERE id=$recipeId");
   }
 }

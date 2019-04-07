@@ -22,7 +22,7 @@ class CategoryGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Widget>>(
-      future: getCategoryCards(),
+      future: getCategoryCards(context),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return GridView.extent(
@@ -37,37 +37,45 @@ class CategoryGridView extends StatelessWidget {
       },
     );
   }
-}
 
-Future<List<Widget>> getCategoryCards() async {
-  Categories.setCategories(await DBProvider.db.getCategories());
-  Directory appDir = await getApplicationDocumentsDirectory();
-  String imageLocalPath = appDir.path;
+  Future<List<Widget>> getCategoryCards(BuildContext context) async {
+    Categories.setCategories(await DBProvider.db.getCategories());
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String imageLocalPath = appDir.path;
 
-  List<Widget> output = new List<Widget>();
-  List<String> categories = Categories.getCategories();
-  for (int i = 0; i < categories.length; i++) {
-    output.add(
-      GestureDetector(
-        onTap: () {
-          MaterialPageRoute(
-              builder: (BuildContext context) =>
-                  new RecipeGridView(category: "${categories[i]}"));
-        },
-        child: GridTile(
-          child: Image.asset(
-            '$imageLocalPath/${categories[i].replaceAll(new RegExp(r'[^\w\v]+'), '')}.png',
-            fit: BoxFit.cover,
-          ),
-          footer: GridTileBar(
-            title: Text("${categories[i]}"),
-            backgroundColor: Colors.black45,
+    List<Widget> output = new List<Widget>();
+    List<String> categories = Categories.getCategories();
+    for (int i = 0; i < categories.length; i++) {
+      output.add(
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        new RecipeGridView(category: "${categories[i]}")));
+          },
+          child: GridTile(
+            child: Image.asset(
+              '$imageLocalPath/${categories[i].replaceAll(new RegExp(r'[^\w\v]+'), '')}.png',
+              fit: BoxFit.cover,
+            ),
+            footer: GridTileBar(
+              title: Hero(tag: "categoryName", child: Material(
+                        color: Colors.transparent,
+                        child: Text(
+                          "${categories[i]}",
+                          style: TextStyle( color: Colors.white),
+                        ),
+                      )),
+              backgroundColor: Colors.black45,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }
+    return output;
   }
-  return output;
 }
 
 List<Widget> createDummyCategoryCards() {
