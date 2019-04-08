@@ -21,6 +21,7 @@ class Recipe {
   List<List<File>> stepImages = new List<List<File>>();
   String notes;
   bool isFavorite;
+  int complexity;
   // TODO: add categories
 
   Recipe(
@@ -40,6 +41,7 @@ class Recipe {
       this.stepImages,
       this.notes,
       this.categories,
+      this.complexity,
       this.isFavorite});
 
   factory Recipe.fromMap(Map<String, dynamic> json) => new Recipe(

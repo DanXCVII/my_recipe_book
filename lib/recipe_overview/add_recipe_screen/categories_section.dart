@@ -70,7 +70,7 @@ class _CategorySectionState extends State<CategorySection> {
       children: <Widget>[
         // heading for the subcategory selector section
         Padding(
-            padding: const EdgeInsets.only(left: 54, right: 6, top: 12),
+            padding: const EdgeInsets.only(left: 56, right: 6, top: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[

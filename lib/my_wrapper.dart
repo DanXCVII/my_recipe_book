@@ -14,6 +14,20 @@ class MyImageWrapper {
   }
 }
 
+class MyDoubleWrapper {
+  double number;
+
+  MyDoubleWrapper({this.number});
+
+  double getDouble() {
+    return number;
+  }
+
+  void setDouble(double i) {
+    number = i;
+  }
+}
+
 class MyVegetableWrapper {
   Vegetable vegetableStatus;
 

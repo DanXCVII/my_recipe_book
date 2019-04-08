@@ -61,13 +61,15 @@ class CategoryGridView extends StatelessWidget {
               fit: BoxFit.cover,
             ),
             footer: GridTileBar(
-              title: Hero(tag: "categoryName", child: Material(
-                        color: Colors.transparent,
-                        child: Text(
-                          "${categories[i]}",
-                          style: TextStyle( color: Colors.white),
-                        ),
-                      )),
+              title: Hero(
+                  tag: "${categories[i]}",
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      "${categories[i]}",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )),
               backgroundColor: Colors.black45,
             ),
           ),

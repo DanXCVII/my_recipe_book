@@ -36,6 +36,7 @@ class DBProvider {
           "servings REAL,"
           "vegetable TEXT,"
           "notes TEXT,"
+          "complexity INTEGER,"
           "isFavorite INTEGER"
           ")");
       await db.execute("CREATE TABLE Steps ("
@@ -111,7 +112,8 @@ class DBProvider {
     final db = await database;
     String image = "";
     if (newRecipe.image != null) {
-      image = "${newRecipe.name}${newRecipe.id}";
+      image =
+          "${newRecipe.name.replaceAll(new RegExp(r'[^\w\v]+'), '')}${newRecipe.id}";
     }
     var resRecipe = await db.rawInsert(
         "INSERT Into Recipe ("
@@ -124,8 +126,9 @@ class DBProvider {
         "servings,"
         "vegetable,"
         "notes,"
+        "complexity,"
         "isFavorite)"
-        " VALUES (?,?,?,?,?,?,?,?,?,?)",
+        " VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         [
           newRecipe.id,
           newRecipe.name,
@@ -136,6 +139,7 @@ class DBProvider {
           newRecipe.servings,
           newRecipe.vegetable.toString(),
           newRecipe.notes,
+          newRecipe.complexity,
           0
         ]);
     for (int i = 0; i < newRecipe.ingredientsGlossary.length; i++) {
@@ -233,6 +237,7 @@ class DBProvider {
     double cookingTime = resRecipe.first["cookingTime"];
     double totalTime = resRecipe.first["totalTime"];
     double servings = resRecipe.first["servings"];
+    int complexity = resRecipe.first["complexity"];
     bool isFavorite;
     if (resRecipe.first["isFavorite"] == 1) {
       isFavorite = true;
@@ -308,6 +313,7 @@ class DBProvider {
         steps: steps,
         notes: notes,
         categories: categories,
+        complexity: complexity,
         isFavorite: isFavorite);
   }
 
@@ -334,6 +340,7 @@ class DBProvider {
     } else {
       newStatus = 0;
     }
-    await db.rawUpdate("UPDATE Recipe SET isFavorite = $newStatus WHERE id=$recipeId");
+    await db.rawUpdate(
+        "UPDATE Recipe SET isFavorite = $newStatus WHERE id=$recipeId");
   }
 }

@@ -11,6 +11,7 @@ import './ingredients_section.dart';
 import './categories_section.dart';
 import './vegetarian_section.dart';
 import '../../my_wrapper.dart';
+import './complexity_section.dart';
 
 const double categories = 14;
 const double topPadding = 8;
@@ -48,6 +49,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   final List<String> newRecipeCategories = new List<String>();
   final MyImageWrapper addCategoryImage = new MyImageWrapper();
 
+  //////////// for Complexity ////////////
+  final MyDoubleWrapper complexity = new MyDoubleWrapper(number: 5.0);
+  
   //////////// this Widget ////////////
   final TextEditingController nameController = new TextEditingController();
   final TextEditingController preperationTimeController =
@@ -338,7 +342,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             ),
             // heading with textFields for steps section
             Steps(stepsDescController, stepImages),
-            // notes textField
+            // notes textField and heading
             Padding(
               padding: const EdgeInsets.only(
                   right: 12, top: 12, left: 18, bottom: 12),
@@ -352,6 +356,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 maxLines: 3,
               ),
             ),
+            ComplexitySection(complexity: complexity),
             CategorySection(addCategoryImage, newRecipeCategories),
           ]),
         ));
@@ -430,6 +435,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       ingredientsList: ingredients["ingredients"],
       amount: ingredients["amount"],
       unit: ingredients["unit"],
+      complexity: complexity.getDouble().round(),
       categories: newRecipeCategories,
     );
     int i = await DBProvider.db.newRecipe(newRecipe);
@@ -725,8 +731,7 @@ class _ImageSelectorState extends State<ImageSelector> {
                   ),
                 )
               : Stack(children: <Widget>[
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
+                  ClipOval(
                       child: Container(
                         child: Image.file(
                           widget.selectedRecipeImage.getSelectedImage(),

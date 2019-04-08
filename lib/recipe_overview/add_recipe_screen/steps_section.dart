@@ -25,7 +25,7 @@ class _StepsState extends State<Steps> {
     );
     // add the heading to the Column
     steps.children.add(Padding(
-      padding: const EdgeInsets.only(left: 52, top: 12, bottom: 12),
+      padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
       child: Text(
         "steps:",
         style: TextStyle(
