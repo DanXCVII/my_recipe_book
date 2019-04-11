@@ -295,7 +295,6 @@ class DBProvider {
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]["name"]);
     }
-
     return Recipe(
         id: id,
         name: name,
@@ -318,7 +317,6 @@ class DBProvider {
   }
 
   Future<List<Recipe>> getRecipesOfCategory(String category) async {
-    print('getRecipesOfCategory()');
     final db = await database;
 
     var resCategories = await db.rawQuery(

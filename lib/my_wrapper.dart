@@ -35,7 +35,7 @@ class MyVegetableWrapper {
     return vegetableStatus;
   }
 
-  Vegetable setVegetableStatus(Vegetable vegetableStatus) {
-    vegetableStatus = vegetableStatus;
+  void setVegetableStatus(Vegetable vegetableStatus) {
+    this.vegetableStatus = vegetableStatus;
   }
 }

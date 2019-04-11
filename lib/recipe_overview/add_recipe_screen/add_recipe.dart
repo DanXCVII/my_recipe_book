@@ -486,6 +486,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     return output;
   }
 
+  /// sets the length of the glossary for the ingredients section equal to 
+  /// the length list<list<ingredients>> (removes unnessesary sections)
   List<String> getCleanGlossary(List<TextEditingController> glossary,
       Map<String, List<List<dynamic>>> cleanIngredientsData) {
     List<String> output = new List<String>();
