@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import '../recipe.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 
@@ -22,7 +23,7 @@ class RecipeScreen extends StatelessWidget {
         body: CustomScrollView(slivers: <Widget>[
           SliverAppBar(
             floating: false,
-            pinned: true,
+            pinned: false,
             flexibleSpace: FlexibleSpaceBar(
                 title: Hero(
                     tag: recipe.name,
@@ -85,14 +86,14 @@ class RecipeScreen extends StatelessWidget {
                           new CircularStackEntry(
                             <CircularSegmentEntry>[
                               new CircularSegmentEntry(
-                                recipe.preperationTime /
+                                recipe.cookingTime /
                                     (recipe.preperationTime +
                                         recipe.cookingTime),
                                 Colors.blue[800],
                                 rankKey: 'completed',
                               ),
                               new CircularSegmentEntry(
-                                recipe.cookingTime /
+                                recipe.preperationTime /
                                     (recipe.preperationTime +
                                         recipe.cookingTime),
                                 Colors.green[600],
@@ -154,7 +155,7 @@ class RecipeScreen extends StatelessWidget {
                               Text("${recipe.preperationTime} min",
                                   style: TextStyle(color: Colors.white)),
                               Text(
-                                "${recipe.preperationTime} min",
+                                "${recipe.cookingTime} min",
                                 style: TextStyle(color: Colors.white),
                               ),
                             ],
@@ -174,10 +175,150 @@ class RecipeScreen extends StatelessWidget {
                 )
               ],
             ),
-            SizedBox(height: 15),
+            SizedBox(height: 30),
             IngredientsScreen(recipe),
+            SizedBox(height: 30),
+            StepsScreen(recipe),
           ]))
         ]));
+  }
+}
+
+class StepsScreen extends StatefulWidget {
+  final Recipe currentRecipe;
+  final List<Color> stepsColors = [
+    Color(0xff28B404),
+    Color(0xff009BDE),
+    Color(0xffE3B614),
+    Color(0xff8600C5),
+  ];
+
+  StepsScreen(this.currentRecipe);
+
+  @override
+  State<StatefulWidget> createState() => StepsScreenState();
+}
+
+class StepsScreenState extends State<StepsScreen> {
+  List<Widget> getSteps() {
+    List<Widget> output = new List<Widget>();
+
+    for (int i = 0; i < widget.currentRecipe.steps.length; i++) {
+      output.add(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              child: Stack(children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 0, top: 20),
+                  child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: widget
+                              .stepsColors[i % (widget.stepsColors.length)])),
+                ),
+                Text("${i + 1}.",
+                    style: TextStyle(color: Colors.white, fontSize: 54))
+              ]),
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 30),
+              width: MediaQuery.of(context).size.width - 100,
+              child: Text(
+                widget.currentRecipe.steps[i],
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            )
+          ],
+        ),
+      );
+      Wrap stepPics = new Wrap(
+        spacing: 10,
+        children: <Widget>[],
+      );
+      for (int j = 0; j < widget.currentRecipe.stepImages[i].length; j++) {
+        stepPics.children.add(GestureDetector(
+          onTap: () {
+            _showPictureFullView(
+                widget.currentRecipe.stepImages[i][j], "Schritt$i:$j");
+          },
+          child: Hero(
+            tag: "Schritt$i:$j",
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              child: Container(
+                  width: 100,
+                  height: 80,
+                  child: Image.file(
+                    widget.currentRecipe.stepImages[i][j],
+                    fit: BoxFit.cover,
+                  )),
+            ),
+          ),
+        ));
+
+        if (j == widget.currentRecipe.stepImages[i].length - 1) {
+          output.add(Padding(
+            padding: const EdgeInsets.only(left: 80, right: 20, top: 20),
+            child: stepPics,
+          ));
+        }
+      }
+    }
+    return output;
+  }
+
+  void _showPictureFullView(File image, String tag) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => Scaffold(
+            appBar: AppBar(),
+            backgroundColor: Colors.black54,
+            body: Center(
+              child: Hero(tag: tag, child: Image.file(image)),
+            ))));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Column output = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+            height: 40,
+            decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.3)),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        "Directions",
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: headingSize,
+                          fontFamily: "Questrial-Regular",
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )),
+        SizedBox(height: 25),
+      ],
+    );
+    output.children.addAll(getSteps());
+    return Container(
+      color: Color(0xff432D0D),
+      child: output);
   }
 }
 
@@ -206,23 +347,30 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     for (int i = 0;
         i < widget.currentRecipe.ingredientsList[sectionNumber].length;
         i++) {
+      double amount = widget.currentRecipe.amount[sectionNumber][i] /
+          widget.currentRecipe.servings *
+          servings;
+
       output.add(
-        Row(
-          children: <Widget>[
-            IconButton(
-                icon: Icon(Icons.add_circle_outline),
-                onPressed: () {},
-                color: Colors.white),
-            Text(
-              "${widget.currentRecipe.ingredientsList[sectionNumber][i]}",
-              style: TextStyle(fontSize: 18, color: Colors.white),
-            ),
-            Spacer(),
-            Text(
-              "${widget.currentRecipe.amount[sectionNumber][i]} ${widget.currentRecipe.unit[sectionNumber][i]}",
-              style: TextStyle(fontSize: 18, color: Colors.white),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.only(right: 20),
+          child: Row(
+            children: <Widget>[
+              IconButton(
+                  icon: Icon(Icons.add_circle_outline),
+                  onPressed: () {},
+                  color: Colors.white),
+              Text(
+                "${widget.currentRecipe.ingredientsList[sectionNumber][i]}",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+              Spacer(),
+              Text(
+                "${amount} ${widget.currentRecipe.unit[sectionNumber][i]}",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -235,7 +383,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     for (int i = 0; i < widget.currentRecipe.ingredientsGlossary.length; i++) {
       output.add(
         Padding(
-          padding: EdgeInsets.only(top: 30, left: 45),
+          padding: EdgeInsets.only(top: 30, left: 45, right: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -257,6 +405,12 @@ class IngredientsScreenState extends State<IngredientsScreen> {
   }
 
   @override
+  void initState() {
+    servings = widget.currentRecipe.servings;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Column output = Column(
       children: <Widget>[
@@ -273,7 +427,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        "Ingredients for 4 servings",
+                        "Ingredients for $servings servings",
                         style: TextStyle(
                           color: textColor,
                           fontSize: headingSize,
