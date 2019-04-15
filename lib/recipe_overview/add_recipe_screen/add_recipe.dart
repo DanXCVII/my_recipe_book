@@ -403,6 +403,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     });
   }
 
+  /// TODO: Only shows correct information after restart. Needs to be fixed!
   Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
     if (selectedRecipeImage.getSelectedImage().path ==
         await ImagePath.getRecipePath(editRecipe.id)) {
@@ -456,10 +457,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         : recipeId = widget.editRecipe.id;
 
     String recipeImagePath = await ImagePath.getRecipePath(recipeId);
-    String s = selectedRecipeImage.getSelectedImage().path;
-    print("PPPPPPPPPPPPPPPPPPPP");
-    print(s);
-    print("PPPPPPPPPPPPPPPPPPPP");
     await saveImage(selectedRecipeImage.getSelectedImage(), recipeImagePath);
     selectedRecipeImage.setSelectedImage(File(recipeImagePath));
     print(removeEmptyStrings(stepsDescController).length);
