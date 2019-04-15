@@ -47,8 +47,9 @@ class _CategorySectionState extends State<CategorySection> {
         false) {
       String categoryName = categoryNameController.text;
       if (widget.addCategoryImage.getSelectedImage() != null) {
+        String imagePath = await ImagePath.getCategoryPath(categoryName);
         await saveImage(
-            widget.addCategoryImage.getSelectedImage(), categoryName);
+            widget.addCategoryImage.getSelectedImage(), imagePath);
       }
       await DBProvider.db.newCategory(categoryName);
       Categories.addCategory(categoryName);

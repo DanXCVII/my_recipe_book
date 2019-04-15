@@ -4,7 +4,6 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import './recipe.dart';
 import 'dart:async';
-import './recipe.dart';
 
 // singleton DBProvider to ensure, that we only use one object
 class DBProvider {
@@ -81,7 +80,7 @@ class DBProvider {
   }
 
   Future<int> getNewIDforTable(String tablename) async {
-    print('start DB.getNewIDforTable');
+    print('DB.getNewIDforTable');
     final db = await database;
     // var completer = new Completer<int>();
     int output = 0;
@@ -94,7 +93,6 @@ class DBProvider {
 
     // completer.complete(output);
     // return completer.future;
-    print('end DB.getNewIDforTable');
     return output;
   }
 
@@ -112,8 +110,7 @@ class DBProvider {
     final db = await database;
     String image = "";
     if (newRecipe.image != null) {
-      image =
-          "${newRecipe.name.replaceAll(new RegExp(r'[^\w\v]+'), '')}${newRecipe.id}";
+      image = await ImagePath.getRecipePath(newRecipe.id);
     }
     var resRecipe = await db.rawInsert(
         "INSERT Into Recipe ("
@@ -182,7 +179,7 @@ class DBProvider {
               " VALUES (?,?,?)",
               [
                 await getNewIDforTable("StepImages"),
-                "${newRecipe.id}" + "s" + "$i" + "s" + "$j",
+                await ImagePath.getRecipeStepPath(newRecipe.id, i, j),
                 stepsId,
               ]);
         }
@@ -230,7 +227,7 @@ class DBProvider {
     String imageLocalPath = appDir.path;
     File image;
     if (resRecipe.first["image"] != "") {
-      image = File('$imageLocalPath/${resRecipe.first["image"]}.png');
+      image = File('${resRecipe.first["image"]}');
     }
 
     double preperationTime = resRecipe.first["preperationTime"];
@@ -263,8 +260,7 @@ class DBProvider {
           "SELECT * FROM StepImages WHERE steps_id=${resSteps[i]["id"]} ORDER BY id ASC");
       stepImages.add(new List<File>());
       for (int j = 0; j < resStepImages.length; j++) {
-        stepImages[i]
-            .add(File('$imageLocalPath/${resStepImages[j]["image"]}.png'));
+        stepImages[i].add(File('${resStepImages[j]["image"]}'));
       }
     }
 
@@ -314,6 +310,39 @@ class DBProvider {
         categories: categories,
         complexity: complexity,
         isFavorite: isFavorite);
+  }
+
+  Future<void> deleteRecipe(Recipe recipe) async {
+    final db = await database;
+
+    await db.rawDelete("DELETE FROM Recipe WHERE id= ?", [recipe.id]);
+    for (int i = 0; i < recipe.steps.length; i++) {
+      var resSteps = await db.rawQuery("SELECT id FROM Steps"
+          " WHERE description=\"${recipe.steps[i]}\"");
+      await db.rawDelete(
+          "DELETE FROM StepImages WHERE steps_id=?", [resSteps[0]["id"]]);
+    }
+    await db.rawDelete("DELETE FROM Steps WHERE recipe_id=?", [recipe.id]);
+
+    var resSections = await db.rawQuery("SELECT id FROM Sections"
+        " WHERE recipe_id=${recipe.id}");
+    for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
+      await db.rawDelete(
+          "DELETE FROM Ingredients WHERE section_id=?", [resSections[i]["id"]]);
+    }
+    await db.rawDelete("DELETE FROM Sections WHERE recipe_id=?", [recipe.id]);
+    await db.rawDelete(
+        "DELETE FROM RecipeCategories WHERE recipe_id=?", [recipe.id]);
+    
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String imageLocalPathRecipe = "${appDir.path}/${recipe.id}/";
+    var dir = new Directory(imageLocalPathRecipe);
+    dir.deleteSync(recursive: true);
+    
+  }
+
+  Future<void> addToShoppingList(String ingredient, double amount) {
+    // TODO: Implement
   }
 
   Future<List<Recipe>> getRecipesOfCategory(String category) async {

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import "package:path_provider/path_provider.dart";
-import "dart:io";
 
 import '../database.dart';
 import '../recipe.dart';
@@ -11,41 +9,129 @@ class RecipeGridView extends StatelessWidget {
 
   final Map<String, List<Color>> colors = new Map<String, List<Color>>();
 
-  RecipeGridView({@required this.category}){
+  RecipeGridView({@required this.category}) {
     // TODO: Add colors....
-    colors.addAll({"${Vegetable.NON_VEGETARIAN.toString()}1":[Color(0xffef6c00), Color(0xffA40101)],
-    "${Vegetable.NON_VEGETARIAN.toString()}2":[Colors.deepOrange[450], Color(0xffA40101)],
-    "${Vegetable.NON_VEGETARIAN.toString()}3":[Colors.deepOrange[500], Color(0xffC13C3C)],
-    "${Vegetable.NON_VEGETARIAN.toString()}4":[Colors.deepOrange[550], Color(0xffD44444)],
-    "${Vegetable.NON_VEGETARIAN.toString()}5":[Colors.deepOrange[600], Color(0xffE14D4D)],
-    "${Vegetable.NON_VEGETARIAN.toString()}6":[Colors.deepOrange[650], Color(0xffEA5050)],
-    "${Vegetable.NON_VEGETARIAN.toString()}7":[Colors.deepOrange[700], Color(0xffF05252)],
-    "${Vegetable.NON_VEGETARIAN.toString()}8":[Colors.deepOrange[750], Color(0xffF65A5A)],
-    "${Vegetable.NON_VEGETARIAN.toString()}9":[Color(0xffd84315), Color(0xffFC6161)],
-    "${Vegetable.NON_VEGETARIAN.toString()}10":[Color(0xffbf360c), Color(0xffFB6A6A)],
-
-    "${Vegetable.VEGETARIAN.toString()}1":[Colors.deepOrange[400], Colors.red[450]],
-    "${Vegetable.VEGETARIAN.toString()}2":[Colors.deepOrange[450], Colors.red[500]],
-    "${Vegetable.VEGETARIAN.toString()}3":[Colors.deepOrange[500], Colors.red[550]],
-    "${Vegetable.VEGETARIAN.toString()}4":[Colors.deepOrange[550], Colors.red[600]],
-    "${Vegetable.VEGETARIAN.toString()}5":[Colors.deepOrange[600], Colors.red[650]],
-    "${Vegetable.VEGETARIAN.toString()}6":[Colors.deepOrange[650], Colors.red[700]],
-    "${Vegetable.VEGETARIAN.toString()}7":[Colors.deepOrange[700], Colors.red[750]],
-    "${Vegetable.VEGETARIAN.toString()}8":[Colors.deepOrange[750], Colors.red[800]],
-    "${Vegetable.VEGETARIAN.toString()}9":[Colors.deepOrange[800], Colors.red[850]],
-    "${Vegetable.VEGETARIAN.toString()}10":[Colors.deepOrange[850], Colors.red[900]],
-
-    "${Vegetable.VEGAN.toString()}1":[Colors.deepOrange[400], Colors.red[450]],
-    "${Vegetable.VEGAN.toString()}2":[Colors.deepOrange[450], Colors.red[500]],
-    "${Vegetable.VEGAN.toString()}3":[Colors.deepOrange[500], Colors.red[550]],
-    "${Vegetable.VEGAN.toString()}4":[Colors.deepOrange[550], Colors.red[600]],
-    "${Vegetable.VEGAN.toString()}5":[Colors.deepOrange[600], Colors.red[650]],
-    "${Vegetable.VEGAN.toString()}6":[Colors.deepOrange[650], Colors.red[700]],
-    "${Vegetable.VEGAN.toString()}7":[Colors.deepOrange[700], Colors.red[750]],
-    "${Vegetable.VEGAN.toString()}8":[Colors.deepOrange[750], Colors.red[800]],
-    "${Vegetable.VEGAN.toString()}9":[Colors.deepOrange[800], Colors.red[850]],
-    "${Vegetable.VEGAN.toString()}10":[Colors.deepOrange[850], Colors.red[900]],
-    
+    colors.addAll({
+      "${Vegetable.NON_VEGETARIAN.toString()}1": [
+        Color(0xffef6c00),
+        Color(0xffA40101)
+      ],
+      "${Vegetable.NON_VEGETARIAN.toString()}2": [
+        Colors.deepOrange[450],
+        Color(0xffA40101)
+      ],
+      "${Vegetable.NON_VEGETARIAN.toString()}3": [
+        Colors.deepOrange[500],
+        Color(0xffC13C3C)
+      ],
+      "${Vegetable.NON_VEGETARIAN.toString()}4": [
+        Colors.deepOrange[550],
+        Color(0xffD44444)
+      ],
+      "${Vegetable.NON_VEGETARIAN.toString()}5": [
+        Colors.deepOrange[600],
+        Color(0xffE14D4D)
+      ],
+      "${Vegetable.NON_VEGETARIAN.toString()}6": [
+        Colors.deepOrange[650],
+        Color(0xffEA5050)
+      ],
+      "${Vegetable.NON_VEGETARIAN.toString()}7": [
+        Colors.deepOrange[700],
+        Color(0xffF05252)
+      ],
+      "${Vegetable.NON_VEGETARIAN.toString()}8": [
+        Colors.deepOrange[750],
+        Color(0xffF65A5A)
+      ],
+      "${Vegetable.NON_VEGETARIAN.toString()}9": [
+        Color(0xffd84315),
+        Color(0xffFC6161)
+      ],
+      "${Vegetable.NON_VEGETARIAN.toString()}10": [
+        Color(0xffbf360c),
+        Color(0xffFB6A6A)
+      ],
+      "${Vegetable.VEGETARIAN.toString()}1": [
+        Colors.deepOrange[400],
+        Colors.red[450]
+      ],
+      "${Vegetable.VEGETARIAN.toString()}2": [
+        Colors.deepOrange[450],
+        Colors.red[500]
+      ],
+      "${Vegetable.VEGETARIAN.toString()}3": [
+        Colors.deepOrange[500],
+        Colors.red[550]
+      ],
+      "${Vegetable.VEGETARIAN.toString()}4": [
+        Colors.deepOrange[550],
+        Colors.red[600]
+      ],
+      "${Vegetable.VEGETARIAN.toString()}5": [
+        Colors.deepOrange[600],
+        Colors.red[650]
+      ],
+      "${Vegetable.VEGETARIAN.toString()}6": [
+        Colors.deepOrange[650],
+        Colors.red[700]
+      ],
+      "${Vegetable.VEGETARIAN.toString()}7": [
+        Colors.deepOrange[700],
+        Colors.red[750]
+      ],
+      "${Vegetable.VEGETARIAN.toString()}8": [
+        Colors.deepOrange[750],
+        Colors.red[800]
+      ],
+      "${Vegetable.VEGETARIAN.toString()}9": [
+        Colors.deepOrange[800],
+        Colors.red[850]
+      ],
+      "${Vegetable.VEGETARIAN.toString()}10": [
+        Colors.deepOrange[850],
+        Colors.red[900]
+      ],
+      "${Vegetable.VEGAN.toString()}1": [
+        Colors.deepOrange[400],
+        Colors.red[450]
+      ],
+      "${Vegetable.VEGAN.toString()}2": [
+        Colors.deepOrange[450],
+        Colors.red[500]
+      ],
+      "${Vegetable.VEGAN.toString()}3": [
+        Colors.deepOrange[500],
+        Colors.red[550]
+      ],
+      "${Vegetable.VEGAN.toString()}4": [
+        Colors.deepOrange[550],
+        Colors.red[600]
+      ],
+      "${Vegetable.VEGAN.toString()}5": [
+        Colors.deepOrange[600],
+        Colors.red[650]
+      ],
+      "${Vegetable.VEGAN.toString()}6": [
+        Colors.deepOrange[650],
+        Colors.red[700]
+      ],
+      "${Vegetable.VEGAN.toString()}7": [
+        Colors.deepOrange[700],
+        Colors.red[750]
+      ],
+      "${Vegetable.VEGAN.toString()}8": [
+        Colors.deepOrange[750],
+        Colors.red[800]
+      ],
+      "${Vegetable.VEGAN.toString()}9": [
+        Colors.deepOrange[800],
+        Colors.red[850]
+      ],
+      "${Vegetable.VEGAN.toString()}10": [
+        Colors.deepOrange[850],
+        Colors.red[900]
+      ],
     });
   }
 
@@ -73,7 +159,10 @@ class RecipeGridView extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.deepOrange[600], Colors.red[600]],// 400, 500
+                    colors: [
+                      Colors.deepOrange[600],
+                      Colors.red[600]
+                    ], // 400, 500
                     begin: FractionalOffset.topLeft,
                     end: FractionalOffset.bottomRight,
                     stops: [0.0, 1.0],
@@ -191,7 +280,7 @@ class RecipeGridView extends StatelessWidget {
             ),
             Align(
               alignment: Alignment(1.05, -0.6),
-              child: Favorite(recipes[i]),
+              child: Favorite(recipes[i], iconSize: 22,),
             )
           ],
         ),
@@ -255,8 +344,9 @@ class RecipeGridView extends StatelessWidget {
 
 class Favorite extends StatefulWidget {
   final Recipe recipe;
+  final double iconSize;
 
-  Favorite(this.recipe);
+  Favorite(this.recipe, {this.iconSize});
 
   @override
   State<StatefulWidget> createState() => FavoriteState();
@@ -274,8 +364,8 @@ class FavoriteState extends State<Favorite> {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      iconSize: 22,
-      color: Colors.white,
+      iconSize: widget.iconSize == null ? 24 : widget.iconSize,
+      color: isFavorite ? Colors.pink : Colors.white,
       icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
       onPressed: () {
         if (isFavorite) {

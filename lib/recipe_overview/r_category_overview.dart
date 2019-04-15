@@ -57,7 +57,7 @@ class CategoryGridView extends StatelessWidget {
           },
           child: GridTile(
             child: Image.asset(
-              '$imageLocalPath/${categories[i].replaceAll(new RegExp(r'[^\w\v]+'), '')}.png',
+              '${await ImagePath.getCategoryPath(categories[i])}',
               fit: BoxFit.cover,
             ),
             footer: GridTileBar(

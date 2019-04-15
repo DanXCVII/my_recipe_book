@@ -54,6 +54,16 @@ flutter:
    - images/vegetables.jpg
    - images/breakfast.jpg
    - images/rice.jpg
+   - images/termoOne.png
+   - images/termoTwo.png
+   - images/termoThree.png
+   - images/termoFour.png
+   - images/termoFive.png
+   - images/termoSix.png
+   - images/termoSeven.png
+   - images/termoEight.png
+   - images/termoNine.png
+   - images/termoTen.png
 
   fonts:
     - family: Questrial

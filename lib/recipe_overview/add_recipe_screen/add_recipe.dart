@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:async';
+import 'package:path_provider/path_provider.dart';
 
 import '../../recipe.dart';
 import '../../database.dart';
@@ -12,6 +12,7 @@ import './categories_section.dart';
 import './vegetarian_section.dart';
 import '../../my_wrapper.dart';
 import './complexity_section.dart';
+import '../recipe_screen.dart' show RecipeScreen;
 
 const double categories = 14;
 const double topPadding = 8;
@@ -51,7 +52,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   //////////// for Complexity ////////////
   final MyDoubleWrapper complexity = new MyDoubleWrapper(number: 5.0);
-  
+
   //////////// this Widget ////////////
   final TextEditingController nameController = new TextEditingController();
   final TextEditingController preperationTimeController =
@@ -63,8 +64,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   final TextEditingController notesController = new TextEditingController();
   final MyImageWrapper selectedRecipeImage = new MyImageWrapper();
   final MyVegetableWrapper selectedRecipeVegetable = new MyVegetableWrapper();
-
-  Recipe editRecipe;
 
   final _formKey = GlobalKey<FormState>();
   bool buttonEnabled = true;
@@ -169,10 +168,23 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                     if (isIngredientListValid(ingredientNameController,
                         ingredientAmountController, ingredientUnitController)) {
                       /////////// Only do when all data is VALID! ///////////
-
-                      saveRecipe().then((_) {
-                        print("dataSAVED!!!!");
-                      });
+                      if (widget.editRecipe == null) {
+                        saveRecipe().then((_) {
+                          Navigator.pop(context);
+                        });
+                      } else {
+                        deleteOldSaveNewRecipe(widget.editRecipe)
+                            .then((newRecipe) {
+                          newRecipe.isFavorite = widget.editRecipe.isFavorite;
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      RecipeScreen(recipe: newRecipe)));
+                        });
+                      }
                       setState(() {
                         buttonEnabled = false;
                       });
@@ -391,7 +403,45 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     });
   }
 
-  Future<void> saveRecipe() async {
+  Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
+    if (selectedRecipeImage.getSelectedImage().path ==
+        await ImagePath.getRecipePath(editRecipe.id)) {
+      String tmpRecipeImage = await ImagePath.getTmpRecipePath();
+      await saveImage(editRecipe.image, tmpRecipeImage);
+      selectedRecipeImage.setSelectedImage(File(tmpRecipeImage));
+    }
+
+    for (int i = 0; i < stepImages.length; i++) {
+      print(stepImages.length);
+      for (int j = 0; j < stepImages[i].length; j++) {
+        print(stepImages[i].length);
+        if (stepImages[i][j]
+            .path
+            .contains(ImagePath.getRecipeStepDir(editRecipe.id))) {
+          String name = stepImages[i][j].path.split("/").last;
+          String tmpStepImagePath = await ImagePath.getTmpStepPathImage(name);
+          await saveImage(stepImages[i][j], tmpStepImagePath);
+          stepImages[i][j] = File(tmpStepImagePath);
+        }
+      }
+    }
+
+    await DBProvider.db.deleteRecipe(editRecipe);
+    print(selectedRecipeImage.getSelectedImage().path);
+    Recipe newRecipe = await saveRecipe();
+
+    // DELETION
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String imageLocalPathRecipe = "${appDir.path}/tmp";
+    var dir = new Directory(imageLocalPathRecipe);
+    if (await dir.exists()) {
+      dir.deleteSync(recursive: true);
+    }
+
+    return newRecipe;
+  }
+
+  Future<Recipe> saveRecipe() async {
     print("start saveRecipe()");
 
     // get the lists for the data of the ingredients
@@ -400,61 +450,76 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ingredientAmountController,
         ingredientUnitController);
 
-    int recipeId = await DBProvider.db.getNewIDforTable("Recipe");
-    await saveImage(selectedRecipeImage.getSelectedImage(),
-        "${nameController.text}$recipeId");
-    for (int i = 0; i < stepImages.length; i++) {
+    int recipeId;
+    widget.editRecipe == null
+        ? recipeId = await DBProvider.db.getNewIDforTable("Recipe")
+        : recipeId = widget.editRecipe.id;
+
+    String recipeImagePath = await ImagePath.getRecipePath(recipeId);
+    String s = selectedRecipeImage.getSelectedImage().path;
+    print("PPPPPPPPPPPPPPPPPPPP");
+    print(s);
+    print("PPPPPPPPPPPPPPPPPPPP");
+    await saveImage(selectedRecipeImage.getSelectedImage(), recipeImagePath);
+    selectedRecipeImage.setSelectedImage(File(recipeImagePath));
+    print(removeEmptyStrings(stepsDescController).length);
+    for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
-        saveImage(stepImages[i][j], "$recipeId" + "s" + "$i" + "s" + "$j");
+        await saveImage(stepImages[i][j],
+            await ImagePath.getRecipeStepPath(recipeId, i, j));
+        stepImages[i][j] =
+            File(await ImagePath.getRecipeStepPath(recipeId, i, j));
       }
     }
     Recipe newRecipe = new Recipe(
-      id: recipeId,
-      name: nameController.text,
-      image: selectedRecipeImage.getSelectedImage(),
-      preperationTime: preperationTimeController.text.isEmpty
-          ? 0
-          : double.parse(
-              preperationTimeController.text.replaceAll(new RegExp(r','), 'e')),
-      cookingTime: cookingTimeController.text.isEmpty
-          ? 0
-          : double.parse(
-              cookingTimeController.text.replaceAll(new RegExp(r','), 'e')),
-      totalTime: totalTimeController.text.isEmpty
-          ? 0
-          : double.parse(
-              totalTimeController.text.replaceAll(new RegExp(r','), 'e')),
-      servings: double.parse(
-          servingsController.text.replaceAll(new RegExp(r','), 'e')),
-      steps: removeEmptyStrings(stepsDescController),
-      stepImages: stepImages,
-      notes: notesController.text,
-      vegetable: selectedRecipeVegetable.getVegetableStatus(),
-      ingredientsGlossary:
-          getCleanGlossary(ingredientGlossaryController, ingredients),
-      ingredientsList: ingredients["ingredients"],
-      amount: ingredients["amount"],
-      unit: ingredients["unit"],
-      complexity: complexity.getDouble().round(),
-      categories: newRecipeCategories,
-    );
+        id: recipeId,
+        name: nameController.text,
+        image: selectedRecipeImage.getSelectedImage(),
+        preperationTime: preperationTimeController.text.isEmpty
+            ? 0
+            : double.parse(preperationTimeController.text
+                .replaceAll(new RegExp(r','), 'e')),
+        cookingTime: cookingTimeController.text.isEmpty
+            ? 0
+            : double.parse(
+                cookingTimeController.text.replaceAll(new RegExp(r','), 'e')),
+        totalTime: totalTimeController.text.isEmpty
+            ? 0
+            : double.parse(
+                totalTimeController.text.replaceAll(new RegExp(r','), 'e')),
+        servings: double.parse(
+            servingsController.text.replaceAll(new RegExp(r','), 'e')),
+        steps: removeEmptyStrings(stepsDescController),
+        stepImages: stepImages,
+        notes: notesController.text,
+        vegetable: selectedRecipeVegetable.getVegetableStatus(),
+        ingredientsGlossary:
+            getCleanGlossary(ingredientGlossaryController, ingredients),
+        ingredientsList: ingredients["ingredients"],
+        amount: ingredients["amount"],
+        unit: ingredients["unit"],
+        complexity: complexity.getDouble().round(),
+        categories: newRecipeCategories,
+        isFavorite:
+            widget.editRecipe == null ? null : widget.editRecipe.isFavorite);
     int i = await DBProvider.db.newRecipe(newRecipe);
-/*
+    if (widget.editRecipe != null) {
+      await DBProvider.db
+          .updateFavorite(widget.editRecipe.isFavorite, recipeId);
+    }
+
     print("---------------");
     print(ingredients["ingredients"]);
-    print(newRecipeVegetable);
-    print(stepsList.length);
-    print(getCleanGlossary(ingredientGlossary, ingredients));
+    print(getCleanGlossary(ingredientGlossaryController, ingredients));
     print(ingredients["ingredients"]);
     print(ingredients["amount"]);
     print(ingredients["unit"]);
     print("---------------");
-*/
+
     // DELETE
     var result = await DBProvider.db.getRecipeById(recipeId);
 
-    // DELETE
-
+    return newRecipe;
     print("end saveRecipe()");
   }
 
@@ -486,7 +551,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     return output;
   }
 
-  /// sets the length of the glossary for the ingredients section equal to 
+  /// sets the length of the glossary for the ingredients section equal to
   /// the length list<list<ingredients>> (removes unnessesary sections)
   List<String> getCleanGlossary(List<TextEditingController> glossary,
       Map<String, List<List<dynamic>>> cleanIngredientsData) {
@@ -580,15 +645,15 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 }
 
 Future<void> saveImage(File image, String name) async {
-  print("start saveFile()");
-  Directory appDir = await getApplicationDocumentsDirectory();
-  String imageLocalPath = appDir.path;
+  print("saveFile()");
+  print("****************************");
+  print(image.path);
+  print(name);
 
   if (image != null) {
-    await image.copy(
-        "$imageLocalPath/${name.replaceAll(new RegExp(r'[^\w\v]+'), '')}.png");
+    await image.copy("$name");
   }
-  print("end saveFile()");
+  print("****************************");
 }
 
 bool validateNumber(String text) {
@@ -735,16 +800,16 @@ class _ImageSelectorState extends State<ImageSelector> {
               : Stack(children: <Widget>[
                   ClipOval(
                       child: Container(
-                        child: Image.file(
-                          widget.selectedRecipeImage.getSelectedImage(),
-                          fit: BoxFit.cover,
-                        ),
-                        width: 110,
-                        height: 110,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
-                      )),
+                    child: Image.file(
+                      widget.selectedRecipeImage.getSelectedImage(),
+                      fit: BoxFit.cover,
+                    ),
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                  )),
                   Opacity(
                     opacity: 0.3,
                     child: Container(

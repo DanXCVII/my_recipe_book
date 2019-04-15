@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import "dart:io";
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
 
@@ -45,38 +46,89 @@ class Recipe {
       this.isFavorite});
 
   factory Recipe.fromMap(Map<String, dynamic> json) => new Recipe(
-        id: json["id"],
-        name: json["name"],
-        image: json["image"],
-        preperationTime: json["preperationTime"],
-        cookingTime: json["cookingTime"],
-        totalTime: json["totalTime"],
-        servings: json["servings"],
-        ingredientsGlossary: json["ingredientsGlossary"],
-        ingredientsList: json["ingredientsList"],
-        amount: json["amount"],
-        unit: json["unit"],
-        vegetable: json["vegetable"],
-        steps: json["steps"],
-        notes: json["notes"],
+        id: json['id'],
+        name: json['name'],
+        image: json['image'],
+        preperationTime: json['preperationTime'],
+        cookingTime: json['cookingTime'],
+        totalTime: json['totalTime'],
+        servings: json['servings'],
+        ingredientsGlossary: json['ingredientsGlossary'],
+        ingredientsList: json['ingredientsList'],
+        amount: json['amount'],
+        unit: json['unit'],
+        vegetable: json['vegetable'],
+        steps: json['steps'],
+        notes: json['notes'],
       );
 
   Map<String, dynamic> toMap() => {
-        "id": id,
-        "name": name,
-        "image": image,
-        "preperationTime": preperationTime,
-        "cookingTime": cookingTime,
-        "totalTime": totalTime,
-        "servings": servings,
-        "ingredientsGlossary": ingredientsGlossary,
-        "ingredientsList": ingredientsList,
-        "amount": amount,
-        "unit": unit,
-        "vegetable": vegetable,
-        "steps": steps,
-        "notes": notes
+        'id': id,
+        'name': name,
+        'image': image,
+        'preperationTime': preperationTime,
+        'cookingTime': cookingTime,
+        'totalTime': totalTime,
+        'servings': servings,
+        'ingredientsGlossary': ingredientsGlossary,
+        'ingredientsList': ingredientsList,
+        'amount': amount,
+        'unit': unit,
+        'vegetable': vegetable,
+        'steps': steps,
+        'notes': notes
       };
+}
+
+class ImagePath {
+  static String getRecipeStepDir(int recipeId) {
+    return '$recipeId/stepImages';
+  }
+
+  static String getRecipeDir(int recipeId) {
+    return '$recipeId/';
+  }
+
+  static Future<String> getRecipeStepPath(
+      int recipeId, int stepNumber, int number) async {
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String imageLocalPath = appDir.path;
+    await Directory('$imageLocalPath/$recipeId/stepImages')
+        .create(recursive: true);
+    return '$imageLocalPath/$recipeId/stepImages/$recipeId' +
+        's' +
+        '$stepNumber' +
+        's' +
+        '$number.png';
+  }
+
+  static Future<String> getRecipePath(int recipeId) async {
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String imageLocalPath = appDir.path;
+    await Directory('$imageLocalPath/$recipeId').create(recursive: true);
+    return '$imageLocalPath/$recipeId/recipe-$recipeId.png';
+  }
+
+  static Future<String> getTmpRecipePath() async {
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String imageLocalPath = appDir.path;
+    await Directory('$imageLocalPath/tmp').create(recursive: true);
+    return '$imageLocalPath/tmp/recipeTmp.png';
+  }
+
+  static Future<String> getTmpStepPathImage(String name) async {
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String imageLocalPath = appDir.path;
+    await Directory('$imageLocalPath/tmp').create(recursive: true);
+    return '$imageLocalPath/tmp/$name'; // png is included in the string because it's splitted at the end
+  }
+
+  static Future<String> getCategoryPath(String categoryName) async {
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String imageLocalPath = appDir.path;
+    await Directory('$imageLocalPath/categories').create(recursive: true);
+    return '$imageLocalPath/categories/${categoryName.replaceAll(new RegExp(r'[^\w\v]+'), '')}.png';
+  }
 }
 
 class Categories {
@@ -93,7 +145,7 @@ class Categories {
   }
 
   static void addCategory(String name) {
-    _categories == null? _categories = [name]: _categories.add(name);
+    _categories == null ? _categories = [name] : _categories.add(name);
   }
 
   static List<String> getCategories() {

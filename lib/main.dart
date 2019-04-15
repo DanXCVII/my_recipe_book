@@ -3,7 +3,6 @@ import 'recipe_overview/r_category_overview.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
 import 'package:flutter/rendering.dart';
 
-import './recipe_overview/recipe_overview.dart';
 /// TODO: Think about how to change the Appbar and body with using a
 /// StateLess widget for better performance maybe. One way of doing
 /// it would be to make a custom stateful widget which builds an

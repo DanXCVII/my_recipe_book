@@ -237,7 +237,7 @@ class _StepState extends State<Step> {
                   color: Colors.white,
                   onPressed: () {
                     setState(() {
-                      widget.stepImages[i].removeAt(i);
+                      widget.stepImages[widget.stepNumber].removeAt(i);
                     });
                   },
                 ),
