@@ -185,7 +185,7 @@ class RecipeGridView extends StatelessWidget {
                         Align(
                             alignment: Alignment.topCenter,
                             child: Hero(
-                              tag: recipes[i].name,
+                              tag: "recipe-${recipes[i].id}",
                               child: Material(
                                 color: Colors.transparent,
                                 child: Text(

@@ -51,7 +51,7 @@ class RecipeScreen extends StatelessWidget {
                     child: Material(
                         color: Colors.transparent,
                         child: Text(
-                          "${recipe.name}",
+                          "recipe-${recipe.id}",
                           style: TextStyle(
                             fontSize: 18.0,
                             color: textColor,
