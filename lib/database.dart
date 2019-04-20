@@ -242,11 +242,12 @@ class DBProvider {
       isFavorite = false;
     }
     Vegetable vegetable;
+    
     if (resRecipe.first["vegetable"] == "Vegetable.NON_VEGETARIAN")
       vegetable = Vegetable.NON_VEGETARIAN;
-    else if (resRecipe.first["vegan"] == "Vegetable.VEGETARIAN")
+    else if (resRecipe.first["vegetable"] == "Vegetable.VEGETARIAN")
       vegetable = Vegetable.VEGETARIAN;
-    else if (resRecipe.first["vegan"] == "Vegetable.VEGAN")
+    else if (resRecipe.first["vegetable"] == "Vegetable.VEGAN")
       vegetable = Vegetable.VEGAN;
     String notes = resRecipe.first["notes"];
 

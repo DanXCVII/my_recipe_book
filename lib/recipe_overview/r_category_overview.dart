@@ -62,7 +62,7 @@ class CategoryGridView extends StatelessWidget {
             ),
             footer: GridTileBar(
               title: Hero(
-                  tag: "${categories[i]}",
+                  tag: "category-${categories[i]}",
                   child: Material(
                     color: Colors.transparent,
                     child: Text(

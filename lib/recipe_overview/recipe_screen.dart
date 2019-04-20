@@ -17,50 +17,47 @@ class RecipeScreen extends StatelessWidget {
   final GlobalKey<AnimatedCircularChartState> _chartKey =
       new GlobalKey<AnimatedCircularChartState>();
   final Recipe recipe;
+  final Color primaryColor;
 
-  RecipeScreen({@required this.recipe});
+  RecipeScreen({@required this.recipe, @required this.primaryColor});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xFF4B1313),
+        backgroundColor: primaryColor,
         body: CustomScrollView(slivers: <Widget>[
           SliverAppBar(
-            actions: <Widget>[
-              Favorite(recipe),
-              IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              new AddRecipeForm(editRecipe: recipe)));
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.share),
-                onPressed: () {},
-              ),
-            ],
-            floating: false,
-            pinned: false,
-            flexibleSpace: FlexibleSpaceBar(
-                title: Hero(
-                    tag: recipe.name,
-                    child: Material(
-                        color: Colors.transparent,
-                        child: Text(
-                          "recipe-${recipe.id}",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: textColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        )))),
-          ),
+              backgroundColor: primaryColor,
+              actions: <Widget>[
+                Favorite(recipe),
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new AddRecipeForm(editRecipe: recipe)));
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.share),
+                  onPressed: () {},
+                ),
+              ],
+              floating: false,
+              pinned: false,
+              flexibleSpace: FlexibleSpaceBar(
+                  title: Text(
+                recipe.name,
+                style: TextStyle(
+                  fontSize: 18.0,
+                  color: textColor,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ))),
           SliverList(
               delegate: SliverChildListDelegate(<Widget>[
             GestureDetector(
@@ -83,21 +80,21 @@ class RecipeScreen extends StatelessWidget {
             Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                      MediaQuery.of(context).size.width * 0.15,
-                      0,
-                      MediaQuery.of(context).size.width * 0.15,
-                      0),
-                  child: Text(
-                    "${recipe.name}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: textColor,
-                        fontSize: 36,
-                        fontFamily: "Questrial-Regular",
-                        fontWeight: FontWeight.w400),
-                  ),
-                )),
+                    padding: EdgeInsets.fromLTRB(
+                        MediaQuery.of(context).size.width * 0.15,
+                        0,
+                        MediaQuery.of(context).size.width * 0.15,
+                        0),
+                    child: Hero(
+                        tag: "recipe-${recipe.id}",
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Text(
+                            "${recipe.name}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: textColor, fontSize: 26),
+                          ),
+                        )))),
             SizedBox(height: 30),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,6 +266,7 @@ class BottomScreen extends StatelessWidget {
 
     Wrap output = new Wrap(
       children: <Widget>[],
+      runSpacing: 10.0,
       spacing: 10.0,
     );
     for (int i = 0; i < currentRecipe.categories.length; i++) {
