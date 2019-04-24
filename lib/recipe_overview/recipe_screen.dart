@@ -72,7 +72,7 @@ class RecipeScreen extends StatelessWidget {
                     clipper: MyClipper(),
                     child: Container(
                         height: 270,
-                        child: Image.file(recipe.image, fit: BoxFit.cover)),
+                        child: Image.asset(recipe.image, fit: BoxFit.cover)),
                   ),
                 ),
               ),
@@ -245,13 +245,13 @@ String _getImageComplexity(int complexity) {
   return "";
 }
 
-void _showPictureFullView(File image, String tag, BuildContext context) {
+void _showPictureFullView(String image, String tag, BuildContext context) {
   Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => Scaffold(
           appBar: AppBar(),
           backgroundColor: Colors.black54,
           body: Center(
-            child: Hero(tag: tag, child: Image.file(image)),
+            child: Hero(tag: tag, child: Image.asset(image)),
           ))));
 }
 
@@ -426,7 +426,7 @@ class StepsScreen extends StatelessWidget {
               child: Container(
                   width: 100,
                   height: 80,
-                  child: Image.file(
+                  child: Image.asset(
                     currentRecipe.stepImages[i][j],
                     fit: BoxFit.cover,
                   )),

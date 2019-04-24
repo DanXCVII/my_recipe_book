@@ -7,7 +7,7 @@ enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
 class Recipe {
   int id;
   String name;
-  File image;
+  String image;
   double preperationTime;
   double cookingTime;
   double totalTime;
@@ -19,7 +19,7 @@ class Recipe {
   List<List<String>> unit = new List<List<String>>();
   Vegetable vegetable;
   List<String> steps = new List<String>();
-  List<List<File>> stepImages = new List<List<File>>();
+  List<List<String>> stepImages = new List<List<String>>();
   String notes;
   bool isFavorite;
   int complexity;

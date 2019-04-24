@@ -225,9 +225,9 @@ class DBProvider {
     String name = resRecipe.first["name"];
     Directory appDir = await getApplicationDocumentsDirectory();
     String imageLocalPath = appDir.path;
-    File image;
+    String image;
     if (resRecipe.first["image"] != "") {
-      image = File('${resRecipe.first["image"]}');
+      image = resRecipe.first["image"];
     }
 
     double preperationTime = resRecipe.first["preperationTime"];
@@ -254,14 +254,14 @@ class DBProvider {
     var resSteps = await db.rawQuery(
         "SELECT * FROM Steps WHERE recipe_id=$id ORDER BY number ASC");
     List<String> steps = new List<String>();
-    List<List<File>> stepImages = new List<List<File>>();
+    List<List<String>> stepImages = new List<List<String>>();
     for (int i = 0; i < resSteps.length; i++) {
       steps.add(resSteps[i]["description"]);
       var resStepImages = await db.rawQuery(
           "SELECT * FROM StepImages WHERE steps_id=${resSteps[i]["id"]} ORDER BY id ASC");
-      stepImages.add(new List<File>());
+      stepImages.add(new List<String>());
       for (int j = 0; j < resStepImages.length; j++) {
-        stepImages[i].add(File('${resStepImages[j]["image"]}'));
+        stepImages[i].add(resStepImages[j]["image"]);
       }
     }
 

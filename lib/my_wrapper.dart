@@ -3,13 +3,13 @@ import 'dart:io';
 import './recipe.dart';
 
 class MyImageWrapper {
-  File _selectedImage;
+  String _selectedImage;
 
-  File getSelectedImage() {
+  String getSelectedImage() {
     return _selectedImage;
   }
 
-  void setSelectedImage(File image) {
+  void setSelectedImage(String image) {
     _selectedImage = image;
   }
 }

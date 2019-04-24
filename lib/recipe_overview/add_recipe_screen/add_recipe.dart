@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as ImageIO;
 
 import '../../recipe.dart';
 import '../../database.dart';
@@ -42,7 +43,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       new List<TextEditingController>();
 
   //////////// for Steps ////////////
-  final List<List<File>> stepImages = new List<List<File>>();
+  final List<List<String>> stepImages = new List<List<String>>();
   final List<TextEditingController> stepsDescController =
       new List<TextEditingController>();
 
@@ -72,7 +73,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   void initState() {
     super.initState();
     selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
-    stepImages.add(new List<File>());
+    stepImages.add(new List<String>());
     // initialize list of controllers for the dynamic textFields with one element
     ingredientNameController.add(new List<TextEditingController>());
     ingredientNameController[0].add(new TextEditingController());
@@ -122,7 +123,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       for (int i = 0; i < widget.editRecipe.steps.length; i++) {
         if (i > 0) {
           stepsDescController.add(new TextEditingController());
-          stepImages.add(new List<File>());
+          stepImages.add(new List<String>());
         }
         stepsDescController[i].text = widget.editRecipe.steps[i];
 
@@ -405,11 +406,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   /// TODO: Only shows correct information after restart. Needs to be fixed!
   Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
-    if (selectedRecipeImage.getSelectedImage().path ==
+    if (selectedRecipeImage.getSelectedImage() ==
         await ImagePath.getRecipePath(editRecipe.id)) {
       String tmpRecipeImage = await ImagePath.getTmpRecipePath();
-      await saveImage(editRecipe.image, tmpRecipeImage);
-      selectedRecipeImage.setSelectedImage(File(tmpRecipeImage));
+      await saveImage(File(editRecipe.image), tmpRecipeImage, 2000);
+      selectedRecipeImage.setSelectedImage(tmpRecipeImage);
     }
 
     for (int i = 0; i < stepImages.length; i++) {
@@ -417,18 +418,17 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       for (int j = 0; j < stepImages[i].length; j++) {
         print(stepImages[i].length);
         if (stepImages[i][j]
-            .path
             .contains(ImagePath.getRecipeStepDir(editRecipe.id))) {
-          String name = stepImages[i][j].path.split("/").last;
+          String name = stepImages[i][j].split("/").last;
           String tmpStepImagePath = await ImagePath.getTmpStepPathImage(name);
-          await saveImage(stepImages[i][j], tmpStepImagePath);
-          stepImages[i][j] = File(tmpStepImagePath);
+          await saveImage(File(stepImages[i][j]), tmpStepImagePath, 2000);
+          stepImages[i][j] = tmpStepImagePath;
         }
       }
     }
 
     await DBProvider.db.deleteRecipe(editRecipe);
-    print(selectedRecipeImage.getSelectedImage().path);
+    print(selectedRecipeImage.getSelectedImage());
     Recipe newRecipe = await saveRecipe();
 
     // DELETION
@@ -457,15 +457,15 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         : recipeId = widget.editRecipe.id;
 
     String recipeImagePath = await ImagePath.getRecipePath(recipeId);
-    await saveImage(selectedRecipeImage.getSelectedImage(), recipeImagePath);
-    selectedRecipeImage.setSelectedImage(File(recipeImagePath));
+    await saveImage(
+        File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 2000);
+    selectedRecipeImage.setSelectedImage(recipeImagePath);
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
-        await saveImage(stepImages[i][j],
-            await ImagePath.getRecipeStepPath(recipeId, i, j));
-        stepImages[i][j] =
-            File(await ImagePath.getRecipeStepPath(recipeId, i, j));
+        await saveImage(File(stepImages[i][j]),
+            await ImagePath.getRecipeStepPath(recipeId, i, j), 2000);
+        stepImages[i][j] = await ImagePath.getRecipeStepPath(recipeId, i, j);
       }
     }
     Recipe newRecipe = new Recipe(
@@ -641,14 +641,16 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 }
 
-Future<void> saveImage(File image, String name) async {
+Future<void> saveImage(File image, String name, int quality) async {
   print("saveFile()");
   print("****************************");
   print(image.path);
   print(name);
 
   if (image != null) {
-    await image.copy("$name");
+    ImageIO.Image newImage = ImageIO.decodeImage(image.readAsBytesSync());
+    ImageIO.Image resizedImage = ImageIO.copyResize(newImage, quality);
+    new File('$name')..writeAsBytesSync(ImageIO.encodeJpg(newImage));
   }
   print("****************************");
 }
@@ -748,7 +750,7 @@ class _ImageSelectorState extends State<ImageSelector> {
             // maxWidth: 50.0,
           );
           if (pictureFile != null) {
-            widget.selectedRecipeImage.setSelectedImage(pictureFile);
+            widget.selectedRecipeImage.setSelectedImage(pictureFile.path);
             print("You selected gallery image : " + pictureFile.path);
             setState(() {});
           }
@@ -762,7 +764,7 @@ class _ImageSelectorState extends State<ImageSelector> {
             //maxWidth: 50.0,
           );
           if (pictureFile != null) {
-            widget.selectedRecipeImage.setSelectedImage(pictureFile);
+            widget.selectedRecipeImage.setSelectedImage(pictureFile.path);
             print("You selected gallery image : " + pictureFile.path);
             setState(() {});
           }
@@ -797,7 +799,7 @@ class _ImageSelectorState extends State<ImageSelector> {
               : Stack(children: <Widget>[
                   ClipOval(
                       child: Container(
-                    child: Image.file(
+                    child: Image.asset(
                       widget.selectedRecipeImage.getSelectedImage(),
                       fit: BoxFit.cover,
                     ),

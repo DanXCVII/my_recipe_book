@@ -260,7 +260,7 @@ class RecipeGridView extends StatelessWidget {
                     child: Material(
                       color: Colors.transparent,
                       child: ClipOval(
-                        child: Image.file(
+                        child: Image.asset(
                           recipes[i].image,
                           fit: BoxFit.cover,
                         ),

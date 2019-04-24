@@ -49,7 +49,7 @@ class _CategorySectionState extends State<CategorySection> {
       if (widget.addCategoryImage.getSelectedImage() != null) {
         String imagePath = await ImagePath.getCategoryPath(categoryName);
         await saveImage(
-            widget.addCategoryImage.getSelectedImage(), imagePath);
+            File(widget.addCategoryImage.getSelectedImage()), imagePath, 2000);
       }
       await DBProvider.db.newCategory(categoryName);
       Categories.addCategory(categoryName);
@@ -188,7 +188,7 @@ class _DialogContentState extends State<DialogContent> {
             // maxWidth: 50.0,
           );
           if (pictureFile != null) {
-            widget.addCategoryImage.setSelectedImage(pictureFile);
+            widget.addCategoryImage.setSelectedImage(pictureFile.path);
             print("You selected gallery image : " + pictureFile.path);
             setState(() {});
           }
@@ -202,7 +202,7 @@ class _DialogContentState extends State<DialogContent> {
             //maxWidth: 50.0,
           );
           if (pictureFile != null) {
-            widget.addCategoryImage.setSelectedImage(pictureFile);
+            widget.addCategoryImage.setSelectedImage(pictureFile.path);
             print("You selected gallery image : " + pictureFile.path);
             setState(() {});
           }
@@ -245,7 +245,7 @@ class _DialogContentState extends State<DialogContent> {
               : Stack(children: <Widget>[
                   Container(
                       child: Container(
-                    child: Image.file(
+                    child: Image.asset(
                       widget.addCategoryImage.getSelectedImage(),
                       fit: BoxFit.cover,
                     ),

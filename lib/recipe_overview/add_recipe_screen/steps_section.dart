@@ -5,7 +5,7 @@ import "package:image_picker/image_picker.dart";
 
 class Steps extends StatefulWidget {
   final List<TextEditingController> stepsDecriptionController;
-  final List<List<File>> stepImages;
+  final List<List<String>> stepImages;
 
   Steps(this.stepsDecriptionController, this.stepImages);
 
@@ -88,7 +88,7 @@ class _StepsState extends State<Steps> {
               label: Text("Add step"),
               onPressed: () {
                 setState(() {
-                  widget.stepImages.add(new List<File>());
+                  widget.stepImages.add(new List<String>());
                   widget.stepsDecriptionController
                       .add(new TextEditingController());
                 });
@@ -107,7 +107,7 @@ class Step extends StatefulWidget {
   // lists for saving the data
 
   final List<TextEditingController> stepsContoller;
-  final List<List<File>> stepImages;
+  final List<List<String>> stepImages;
 
   final SectionsCountCallback callbackRemoveStep;
   final SectionAddCallback callbackAddStep;
@@ -159,7 +159,7 @@ class _StepState extends State<Step> {
           );
 
           if (newImage != null) {
-            widget.stepImages[widget.stepNumber].add(newImage);
+            widget.stepImages[widget.stepNumber].add(newImage.path);
           }
           setState(() {});
           break;
@@ -173,7 +173,7 @@ class _StepState extends State<Step> {
           );
 
           if (newImage != null) {
-            widget.stepImages[widget.stepNumber].add(newImage);
+            widget.stepImages[widget.stepNumber].add(newImage.path);
           }
           setState(() {});
         }
@@ -211,7 +211,7 @@ class _StepState extends State<Step> {
               ClipRRect(
                   borderRadius: BorderRadius.circular(7),
                   child: Container(
-                    child: Image.file(
+                    child: Image.asset(
                       widget.stepImages[widget.stepNumber][i],
                       fit: BoxFit.cover,
                     ),
