@@ -80,54 +80,85 @@ class Recipe {
       };
 }
 
-class ImagePath {
-  static String getRecipeStepDir(int recipeId) {
+/// Path to::
+/// recipe image
+/// /$recipeId/recipe-$recipeId.jpg
+/// recipe step image
+/// /$recipeId/stepImages/${recipeId}s${stepNumber}s$number.jpg
+///
+/// category image
+/// /categories/${categoryName.replaceAll(new RegExp(r'[^\w\v]+'), '')}.jpg'
+///
+/// recipe image preview
+/// /$recipeId/preview/recipe-$recipeId.jpg
+/// recipe step image preview
+/// /$recipeId/stepImages/preview/${recipeId}s${stepNumber}s$number.jpg
+
+// TODO: Continue
+
+class PathProvider {
+  PathProvider._();
+  static final PathProvider pathProvider = PathProvider._();
+
+  static String _localPath;
+
+  Future<String> get localPath async {
+    if (_localPath != null) return _localPath;
+
+    // if _database is null we instantiate it
+    Directory localDirectory = await getApplicationDocumentsDirectory();
+    return localDirectory.path;
+  }
+
+  String getRecipeStepDir(int recipeId) {
     return '$recipeId/stepImages';
   }
 
-  static String getRecipeDir(int recipeId) {
+  String getRecipeDir(int recipeId) {
     return '$recipeId/';
   }
 
-  static Future<String> getRecipeStepPath(
+  //////////// Paths to the original quality pictures ////////////
+
+  Future<String> getRecipeStepPath(
       int recipeId, int stepNumber, int number) async {
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPath = appDir.path;
+    String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/$recipeId/stepImages')
         .create(recursive: true);
-    return '$imageLocalPath/$recipeId/stepImages/$recipeId' +
-        's' +
-        '$stepNumber' +
-        's' +
-        '$number.png';
+    return '$imageLocalPath/$recipeId/stepImages/${recipeId}s${stepNumber}s$number.jpg';
   }
 
-  static Future<String> getRecipePath(int recipeId) async {
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPath = appDir.path;
+  Future<String> getRecipePath(int recipeId) async {
+    String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/$recipeId').create(recursive: true);
-    return '$imageLocalPath/$recipeId/recipe-$recipeId.png';
+    return '$imageLocalPath/$recipeId/recipe-$recipeId.jpg';
   }
 
-  static Future<String> getTmpRecipePath() async {
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPath = appDir.path;
+  Future<String> getCategoryPath(String categoryName) async {
+    String imageLocalPath = await localPath;
+    await Directory('$imageLocalPath/categories').create(recursive: true);
+    return '$imageLocalPath/categories/${categoryName.replaceAll(new RegExp(r'[^\w\v]+'), '')}.jpg';
+  }
+
+  // TODO: implement getPreview path for category images, recipe and stepImages
+
+  Future<String> getRecipePreviewPath(int recipeId) async {}
+
+  Future<String> getRecipeStepPreviewPath(int recipeId) async {}
+
+  Future<String> getCategoryPreviewPath(int recipeId) async {}
+
+  Future<String> getTmpRecipePath() async {
+    String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/tmp').create(recursive: true);
-    return '$imageLocalPath/tmp/recipeTmp.png';
+    return '$imageLocalPath/tmp/recipeTmp.jpg';
   }
 
   static Future<String> getTmpStepPathImage(String name) async {
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPath = appDir.path;
+    Directory imageLocalPath = await getApplicationDocumentsDirectory()
+      ..path;
     await Directory('$imageLocalPath/tmp').create(recursive: true);
     return '$imageLocalPath/tmp/$name'; // png is included in the string because it's splitted at the end
-  }
-
-  static Future<String> getCategoryPath(String categoryName) async {
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPath = appDir.path;
-    await Directory('$imageLocalPath/categories').create(recursive: true);
-    return '$imageLocalPath/categories/${categoryName.replaceAll(new RegExp(r'[^\w\v]+'), '')}.png';
   }
 }
 

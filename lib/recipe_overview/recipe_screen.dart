@@ -277,7 +277,7 @@ class BottomScreen extends StatelessWidget {
               width: 100,
               height: 100,
               child: Image.asset(
-                await ImagePath.getCategoryPath(currentRecipe.categories[i]),
+                await PathProvider.pathProvider.getCategoryPath(currentRecipe.categories[i]),
                 fit: BoxFit.cover,
               ),
             ),

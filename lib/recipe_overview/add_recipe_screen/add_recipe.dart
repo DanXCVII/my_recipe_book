@@ -407,8 +407,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   /// TODO: Only shows correct information after restart. Needs to be fixed!
   Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
     if (selectedRecipeImage.getSelectedImage() ==
-        await ImagePath.getRecipePath(editRecipe.id)) {
-      String tmpRecipeImage = await ImagePath.getTmpRecipePath();
+        await PathProvider.pathProvider.getRecipePath(editRecipe.id)) {
+      String tmpRecipeImage =
+          await PathProvider.pathProvider.getTmpRecipePath();
       await saveImage(File(editRecipe.image), tmpRecipeImage, 2000);
       selectedRecipeImage.setSelectedImage(tmpRecipeImage);
     }
@@ -417,10 +418,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       print(stepImages.length);
       for (int j = 0; j < stepImages[i].length; j++) {
         print(stepImages[i].length);
-        if (stepImages[i][j]
-            .contains(ImagePath.getRecipeStepDir(editRecipe.id))) {
+        if (stepImages[i][j].contains(
+            PathProvider.pathProvider.getRecipeStepDir(editRecipe.id))) {
           String name = stepImages[i][j].split("/").last;
-          String tmpStepImagePath = await ImagePath.getTmpStepPathImage(name);
+          String tmpStepImagePath =
+              await PathProvider.getTmpStepPathImage(name);
           await saveImage(File(stepImages[i][j]), tmpStepImagePath, 2000);
           stepImages[i][j] = tmpStepImagePath;
         }
@@ -456,16 +458,20 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ? recipeId = await DBProvider.db.getNewIDforTable("Recipe")
         : recipeId = widget.editRecipe.id;
 
-    String recipeImagePath = await ImagePath.getRecipePath(recipeId);
+    String recipeImagePath =
+        await PathProvider.pathProvider.getRecipePath(recipeId);
     await saveImage(
         File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 2000);
     selectedRecipeImage.setSelectedImage(recipeImagePath);
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
-        await saveImage(File(stepImages[i][j]),
-            await ImagePath.getRecipeStepPath(recipeId, i, j), 2000);
-        stepImages[i][j] = await ImagePath.getRecipeStepPath(recipeId, i, j);
+        await saveImage(
+            File(stepImages[i][j]),
+            await PathProvider.pathProvider.getRecipeStepPath(recipeId, i, j),
+            2000);
+        stepImages[i][j] =
+            await PathProvider.pathProvider.getRecipeStepPath(recipeId, i, j);
       }
     }
     Recipe newRecipe = new Recipe(
