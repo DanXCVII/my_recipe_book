@@ -110,7 +110,7 @@ class DBProvider {
     final db = await database;
     String image = "";
     if (newRecipe.image != null) {
-      image = await PathProvider.pathProvider.getRecipePath(newRecipe.id);
+      image = await PathProvider.pP.getRecipePath(newRecipe.id);
     }
     var resRecipe = await db.rawInsert(
         "INSERT Into Recipe ("
@@ -179,7 +179,7 @@ class DBProvider {
               " VALUES (?,?,?)",
               [
                 await getNewIDforTable("StepImages"),
-                await PathProvider.pathProvider.getRecipeStepPath(newRecipe.id, i, j),
+                await PathProvider.pP.getRecipeStepPath(newRecipe.id, i, j),
                 stepsId,
               ]);
         }

@@ -98,7 +98,7 @@ class Recipe {
 
 class PathProvider {
   PathProvider._();
-  static final PathProvider pathProvider = PathProvider._();
+  static final PathProvider pP = PathProvider._();
 
   static String _localPath;
 
@@ -118,20 +118,25 @@ class PathProvider {
     return '$recipeId/';
   }
 
-  //////////// Paths to the original quality pictures ////////////
-
-  Future<String> getRecipeStepPath(
-      int recipeId, int stepNumber, int number) async {
+  Future<String> getRecipeStepNumberDir(int recipeId, int stepNumber) async {
     String imageLocalPath = await localPath;
-    await Directory('$imageLocalPath/$recipeId/stepImages')
-        .create(recursive: true);
-    return '$imageLocalPath/$recipeId/stepImages/${recipeId}s${stepNumber}s$number.jpg';
+    return '$imageLocalPath/$recipeId/stepImages/$stepNumber/';
   }
+
+  //////////// Paths to the ORIGINAL quality pictures ////////////
 
   Future<String> getRecipePath(int recipeId) async {
     String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/$recipeId').create(recursive: true);
     return '$imageLocalPath/$recipeId/recipe-$recipeId.jpg';
+  }
+
+  Future<String> getRecipeStepPath(
+      int recipeId, int stepNumber, int number) async {
+    String imageLocalPath = await localPath;
+    await Directory('$imageLocalPath/$recipeId/stepImages/$stepNumber')
+        .create(recursive: true);
+    return '$imageLocalPath/$recipeId/stepImages/$stepNumber/${recipeId}s${stepNumber}s$number.jpg';
   }
 
   Future<String> getCategoryPath(String categoryName) async {
@@ -140,13 +145,49 @@ class PathProvider {
     return '$imageLocalPath/categories/${categoryName.replaceAll(new RegExp(r'[^\w\v]+'), '')}.jpg';
   }
 
-  // TODO: implement getPreview path for category images, recipe and stepImages
+  //////////// Paths to the PREVIEW quality pictures ////////////
 
-  Future<String> getRecipePreviewPath(int recipeId) async {}
+  Future<String> getRecipePreviewPath(int recipeId) async {
+    String imageLocalPath = await localPath;
+    await Directory('$imageLocalPath/$recipeId/preview')
+        .create(recursive: true);
+    return '$imageLocalPath/$recipeId/preview/recipe-$recipeId.jpg';
+  }
 
-  Future<String> getRecipeStepPreviewPath(int recipeId) async {}
+  Future<String> getRecipeStepPreviewPath(
+      int recipeId, int stepNumber, int number) async {
+    String imageLocalPath = await localPath;
+    await Directory('$imageLocalPath/$recipeId/preview/stepImages/$stepNumber')
+        .create(recursive: true);
+    return '$imageLocalPath/$recipeId/preview/stepImages/$stepNumber/${recipeId}s${stepNumber}s$number.jpg';
+  }
 
-  Future<String> getCategoryPreviewPath(int recipeId) async {}
+  Future<String> getCategoryPreviewPath(String categoryName) async {
+    String imageLocalPath = await localPath;
+    await Directory('$imageLocalPath/categories/preview')
+        .create(recursive: true);
+    return '$imageLocalPath/categories/preview/${categoryName.replaceAll(new RegExp(r'[^\w\v]+'), '')}.jpg';
+  }
+
+  // returns a list of the paths to the preview stepimages of the recipe
+  // TODO: use this method to get the paths instead of the list to the paths in the sql database
+  Future<List<List<String>>> getRecipeStepPreviewPathList(
+      int stepCount, int recipeId) async {
+    List<List<String>> output = [[]];
+    for (int i = 0; i < stepCount; i++) {
+      String stepImageDirectory = await getRecipeStepNumberDir(recipeId, i);
+      if (await Directory(stepImageDirectory).exists()) {
+        Directory stepDir = Directory(stepImageDirectory);
+        for (int j = 0; j < stepDir.listSync().length; j++) {
+          output[i].add(await getRecipeStepPreviewPath(recipeId, i, j));
+        }
+      }
+      output.add([]);
+    }
+    return output;
+  }
+
+  //////////// paths where pictures are stored temporarily ////////////
 
   Future<String> getTmpRecipePath() async {
     String imageLocalPath = await localPath;

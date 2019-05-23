@@ -404,12 +404,13 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     });
   }
 
-  /// TODO: Only shows correct information after restart. Needs to be fixed!
+  /// TODO: Only shows the new recipedata after restart. Needs to be fixed!
+  /// TODO: also save preview images temp
   Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
     if (selectedRecipeImage.getSelectedImage() ==
-        await PathProvider.pathProvider.getRecipePath(editRecipe.id)) {
+        await PathProvider.pP.getRecipePath(editRecipe.id)) {
       String tmpRecipeImage =
-          await PathProvider.pathProvider.getTmpRecipePath();
+          await PathProvider.pP.getTmpRecipePath();
       await saveImage(File(editRecipe.image), tmpRecipeImage, 2000);
       selectedRecipeImage.setSelectedImage(tmpRecipeImage);
     }
@@ -419,7 +420,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       for (int j = 0; j < stepImages[i].length; j++) {
         print(stepImages[i].length);
         if (stepImages[i][j].contains(
-            PathProvider.pathProvider.getRecipeStepDir(editRecipe.id))) {
+            PathProvider.pP.getRecipeStepDir(editRecipe.id))) {
           String name = stepImages[i][j].split("/").last;
           String tmpStepImagePath =
               await PathProvider.getTmpStepPathImage(name);
@@ -459,19 +460,25 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         : recipeId = widget.editRecipe.id;
 
     String recipeImagePath =
-        await PathProvider.pathProvider.getRecipePath(recipeId);
+        await PathProvider.pP.getRecipePath(recipeId);
     await saveImage(
         File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 2000);
+    await saveImage(
+        File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 1000);
     selectedRecipeImage.setSelectedImage(recipeImagePath);
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
         await saveImage(
             File(stepImages[i][j]),
-            await PathProvider.pathProvider.getRecipeStepPath(recipeId, i, j),
+            await PathProvider.pP.getRecipeStepPath(recipeId, i, j),
             2000);
+        await saveImage(
+            File(stepImages[i][j]),
+            await PathProvider.pP.getRecipeStepPreviewPath(recipeId, i, j),
+            500);
         stepImages[i][j] =
-            await PathProvider.pathProvider.getRecipeStepPath(recipeId, i, j);
+            await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
       }
     }
     Recipe newRecipe = new Recipe(
@@ -655,7 +662,7 @@ Future<void> saveImage(File image, String name, int quality) async {
 
   if (image != null) {
     ImageIO.Image newImage = ImageIO.decodeImage(image.readAsBytesSync());
-    ImageIO.Image resizedImage = ImageIO.copyResize(newImage, quality);
+    ImageIO.Image resizedImage = ImageIO.copyResize(newImage, height: quality);
     new File('$name')..writeAsBytesSync(ImageIO.encodeJpg(newImage));
   }
   print("****************************");

@@ -208,7 +208,19 @@ class RecipeScreen extends StatelessWidget {
             SizedBox(height: 30),
             IngredientsScreen(recipe),
             SizedBox(height: 30),
-            StepsScreen(recipe),
+            FutureBuilder<List<List<String>>>(
+              future: PathProvider.pP
+                  .getRecipeStepPreviewPathList(recipe.steps.length, recipe.id),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return StepsScreen(recipe, snapshot.data);
+                }
+                return Container(
+                  height: 70,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              },
+            ),
             Container(
               height: 20,
               decoration: BoxDecoration(color: Colors.black87),
@@ -277,7 +289,8 @@ class BottomScreen extends StatelessWidget {
               width: 100,
               height: 100,
               child: Image.asset(
-                await PathProvider.pathProvider.getCategoryPath(currentRecipe.categories[i]),
+                await PathProvider.pP
+                    .getCategoryPath(currentRecipe.categories[i]),
                 fit: BoxFit.cover,
               ),
             ),
@@ -363,6 +376,8 @@ class BottomScreen extends StatelessWidget {
 }
 
 class StepsScreen extends StatelessWidget {
+  final List<List<String>> stepImages;
+
   final List<Color> stepsColors = [
     Color(0xff28B404),
     Color(0xff009BDE),
@@ -371,7 +386,7 @@ class StepsScreen extends StatelessWidget {
   ];
   final Recipe currentRecipe;
 
-  StepsScreen(this.currentRecipe);
+  StepsScreen(this.currentRecipe, this.stepImages);
 
   List<Widget> getSteps(BuildContext context) {
     List<Widget> output = new List<Widget>();
@@ -413,11 +428,10 @@ class StepsScreen extends StatelessWidget {
         spacing: 10,
         children: <Widget>[],
       );
-      for (int j = 0; j < currentRecipe.stepImages[i].length; j++) {
+      for (int j = 0; j < stepImages[i].length; j++) {
         stepPics.children.add(GestureDetector(
           onTap: () {
-            _showPictureFullView(
-                currentRecipe.stepImages[i][j], "Schritt$i:$j", context);
+            _showPictureFullView(stepImages[i][j], "Schritt$i:$j", context);
           },
           child: Hero(
             tag: "Schritt$i:$j",
@@ -427,14 +441,14 @@ class StepsScreen extends StatelessWidget {
                   width: 100,
                   height: 80,
                   child: Image.asset(
-                    currentRecipe.stepImages[i][j],
+                    stepImages[i][j],
                     fit: BoxFit.cover,
                   )),
             ),
           ),
         ));
 
-        if (j == currentRecipe.stepImages[i].length - 1) {
+        if (j == stepImages[i].length - 1) {
           output.add(Padding(
             padding: const EdgeInsets.only(left: 80, right: 20, top: 20),
             child: stepPics,
