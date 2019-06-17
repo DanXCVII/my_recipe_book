@@ -44,7 +44,7 @@ class _CategorySectionState extends State<CategorySection> {
 
   Future<void> _saveCategory() async {
     if (Categories.getCategories().contains(categoryNameController.text) ==
-        false) {
+        false && categoryNameController.text != "") {
       String categoryName = categoryNameController.text;
       if (widget.addCategoryImage.getSelectedImage() != null) {
         String imagePath =

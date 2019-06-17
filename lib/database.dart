@@ -37,6 +37,7 @@ class DBProvider {
           "notes TEXT,"
           "complexity INTEGER,"
           "isFavorite INTEGER"
+          "ON DELETE CASCADE"
           ")");
       await db.execute("CREATE TABLE Steps ("
           "id INTEGER PRIMARY KEY,"
@@ -44,6 +45,7 @@ class DBProvider {
           "description TEXT,"
           "recipe_id INTEGER,"
           "FOREIGN KEY(recipe_id) REFERENCES Recipe(id)"
+          "ON DELETE CASCADE"
           ")");
       await db.execute("CREATE TABLE StepImages ("
           "id INTEGER PRIMARY KEY,"
@@ -57,6 +59,7 @@ class DBProvider {
           "name TEXT,"
           "recipe_id INTEGER,"
           "FOREIGN KEY(recipe_id) REFERENCES Recipe(id)"
+          "ON DELETE CASCADE"
           ")");
       await db.execute("CREATE TABLE Ingredients ("
           "id INTEGER PRIMARY KEY,"
@@ -76,6 +79,11 @@ class DBProvider {
           "FOREIGN KEY(recipe_id) REFERENCES Recipe(id)"
           "FOREIGN KEY(categories_id) REFERENCES Categories(id)"
           ")");
+      await db.execute("CREATE TABLE ShoppingCart ("
+          "item_id INTEGER PRIMARY KEY,"
+          "name TEXT,"
+          "amount TEXT,"
+      );
     });
   }
 
@@ -98,7 +106,7 @@ class DBProvider {
 
   newCategory(String name) async {
     final db = await database;
-    var res = await db.rawInsert(
+    await db.rawInsert(
         "INSERT Into Categories (id,name)"
         " VALUES (?,?)",
         [await getNewIDforTable("Categories"), name]);
@@ -109,7 +117,7 @@ class DBProvider {
     print('start DB.newRecipe()');
     final db = await database;
     String image = "";
-    if (newRecipe.image != null) {
+    if (newRecipe.imagePath != null) {
       image = await PathProvider.pP.getRecipePath(newRecipe.id);
     }
     var resRecipe = await db.rawInsert(
@@ -142,13 +150,13 @@ class DBProvider {
     for (int i = 0; i < newRecipe.ingredientsGlossary.length; i++) {
       int _sectionId = await getNewIDforTable("Sections");
 
-      var resSections = await db.rawInsert(
+      await db.rawInsert(
           "INSERT Into Sections (id,number,name,recipe_id)"
           " VALUES (?,?,?,?)",
           [_sectionId, i, newRecipe.ingredientsGlossary[i], newRecipe.id]);
 
       for (int j = 0; j < newRecipe.ingredientsList[i].length; j++) {
-        var resSections = await db.rawInsert(
+        await db.rawInsert(
             "INSERT Into Ingredients (id,name,amount,unit,section_id)"
             " VALUES (?,?,?,?,?)",
             [
@@ -163,7 +171,7 @@ class DBProvider {
     for (int i = 0; i < newRecipe.steps.length; i++) {
       int stepsId = await getNewIDforTable("Steps");
 
-      var resSections = await db.rawInsert(
+      await db.rawInsert(
           "INSERT Into Steps (id,number,description,recipe_id)"
           " VALUES (?,?,?,?)",
           [
@@ -174,7 +182,7 @@ class DBProvider {
           ]);
       if (newRecipe.stepImages.length > i) {
         for (int j = 0; j < newRecipe.stepImages[i].length; j++) {
-          var resStepImages = await db.rawInsert(
+          await db.rawInsert(
               "INSERT Into StepImages (id,image,steps_id)"
               " VALUES (?,?,?)",
               [
@@ -190,7 +198,7 @@ class DBProvider {
     for (int i = 0; i < categoryNames.length; i++) {
       var resCategories = await db.query("Categories",
           where: "name = ?", whereArgs: [categoryNames[i]]);
-      var resCategoriesInsert = await db.rawInsert(
+      await db.rawInsert(
           "INSERT Into RecipeCategories (recipe_id,categories_id)"
           " VALUES (?,?)",
           [
@@ -223,8 +231,6 @@ class DBProvider {
       return Null;
     }
     String name = resRecipe.first["name"];
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPath = appDir.path;
     String image;
     if (resRecipe.first["image"] != "") {
       image = resRecipe.first["image"];
@@ -242,7 +248,7 @@ class DBProvider {
       isFavorite = false;
     }
     Vegetable vegetable;
-    
+
     if (resRecipe.first["vegetable"] == "Vegetable.NON_VEGETARIAN")
       vegetable = Vegetable.NON_VEGETARIAN;
     else if (resRecipe.first["vegetable"] == "Vegetable.VEGETARIAN")
@@ -295,7 +301,7 @@ class DBProvider {
     return Recipe(
         id: id,
         name: name,
-        image: image,
+        imagePath: image,
         preperationTime: preperationTime,
         cookingTime: cookingTime,
         totalTime: totalTime,
@@ -317,32 +323,14 @@ class DBProvider {
     final db = await database;
 
     await db.rawDelete("DELETE FROM Recipe WHERE id= ?", [recipe.id]);
-    for (int i = 0; i < recipe.steps.length; i++) {
-      var resSteps = await db.rawQuery("SELECT id FROM Steps"
-          " WHERE description=\"${recipe.steps[i]}\"");
-      await db.rawDelete(
-          "DELETE FROM StepImages WHERE steps_id=?", [resSteps[0]["id"]]);
-    }
-    await db.rawDelete("DELETE FROM Steps WHERE recipe_id=?", [recipe.id]);
 
-    var resSections = await db.rawQuery("SELECT id FROM Sections"
-        " WHERE recipe_id=${recipe.id}");
-    for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
-      await db.rawDelete(
-          "DELETE FROM Ingredients WHERE section_id=?", [resSections[i]["id"]]);
-    }
-    await db.rawDelete("DELETE FROM Sections WHERE recipe_id=?", [recipe.id]);
-    await db.rawDelete(
-        "DELETE FROM RecipeCategories WHERE recipe_id=?", [recipe.id]);
-    
     Directory appDir = await getApplicationDocumentsDirectory();
     String imageLocalPathRecipe = "${appDir.path}/${recipe.id}/";
     var dir = new Directory(imageLocalPathRecipe);
     dir.deleteSync(recursive: true);
-    
   }
 
-  Future<void> addToShoppingList(String ingredient, double amount) {
+  Future<void> addToShoppingList(String ingredient, String amountWithUnit) {
     // TODO: Implement
   }
 

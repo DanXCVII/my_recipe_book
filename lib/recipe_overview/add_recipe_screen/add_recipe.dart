@@ -84,11 +84,12 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     ingredientGlossaryController.add(new TextEditingController());
     stepsDescController.add(new TextEditingController());
 
+    // If a recipe will be edited and not a new one created
     if (widget.editRecipe != null) {
       // TODO: only add data if not null;
       nameController.text = widget.editRecipe.name;
-      if (widget.editRecipe.image != null)
-        selectedRecipeImage.setSelectedImage(widget.editRecipe.image);
+      if (widget.editRecipe.imagePath != null)
+        selectedRecipeImage.setSelectedImage(widget.editRecipe.imagePath);
       preperationTimeController.text =
           widget.editRecipe.preperationTime.toString();
       if (widget.editRecipe.cookingTime != null)
@@ -183,16 +184,16 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                               context,
                               MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                      RecipeScreen(recipe: newRecipe)));
+                                      RecipeScreen(
+                                          recipe: newRecipe,
+                                          primaryColor: getRecipePrimaryColor(
+                                              newRecipe))));
                         });
                       }
                       setState(() {
                         buttonEnabled = false;
                       });
                     } else {
-                      // TODO: show alert with info that ingredients list need to be filled in properly
-                      print(
-                          "show alert with info that ingredients list needs to be filled in properly");
                       showDialog(
                           context: context,
                           builder: (_) => AlertDialog(
@@ -405,25 +406,28 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 
   /// TODO: Only shows the new recipedata after restart. Needs to be fixed!
-  /// TODO: also save preview images temp
   Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
+    // If user hasn't selected a new image (old image stays the same) ..
     if (selectedRecipeImage.getSelectedImage() ==
         await PathProvider.pP.getRecipePath(editRecipe.id)) {
+      // .. temporarily put image in tmp dir befor recipe gets deleted and saved again
       String tmpRecipeImage =
-          await PathProvider.pP.getTmpRecipePath();
-      await saveImage(File(editRecipe.image), tmpRecipeImage, 2000);
+          await PathProvider.pP.getTmpImagePath(editRecipe.imagePath);
+      await saveImage(File(editRecipe.imagePath), tmpRecipeImage, 2000);
       selectedRecipeImage.setSelectedImage(tmpRecipeImage);
     }
 
+    /// temporarily save all step pics (that are not new) in another folder that they don't get lost,
+    /// when the recipe gets deleted.
     for (int i = 0; i < stepImages.length; i++) {
       print(stepImages.length);
       for (int j = 0; j < stepImages[i].length; j++) {
         print(stepImages[i].length);
-        if (stepImages[i][j].contains(
-            PathProvider.pP.getRecipeStepDir(editRecipe.id))) {
-          String name = stepImages[i][j].split("/").last;
+        if (stepImages[i][j]
+            .contains(PathProvider.pP.getRecipeStepDir(editRecipe.id))) {
+          String stepImageName = stepImages[i][j].split("/").last;
           String tmpStepImagePath =
-              await PathProvider.getTmpStepPathImage(name);
+              await PathProvider.pP.getTmpImagePath(stepImageName);
           await saveImage(File(stepImages[i][j]), tmpStepImagePath, 2000);
           stepImages[i][j] = tmpStepImagePath;
         }
@@ -459,8 +463,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ? recipeId = await DBProvider.db.getNewIDforTable("Recipe")
         : recipeId = widget.editRecipe.id;
 
-    String recipeImagePath =
-        await PathProvider.pP.getRecipePath(recipeId);
+    String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
     await saveImage(
         File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 2000);
     await saveImage(
@@ -469,10 +472,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
-        await saveImage(
-            File(stepImages[i][j]),
-            await PathProvider.pP.getRecipeStepPath(recipeId, i, j),
-            2000);
+        await saveImage(File(stepImages[i][j]),
+            await PathProvider.pP.getRecipeStepPath(recipeId, i, j), 2000);
         await saveImage(
             File(stepImages[i][j]),
             await PathProvider.pP.getRecipeStepPreviewPath(recipeId, i, j),
@@ -484,7 +485,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     Recipe newRecipe = new Recipe(
         id: recipeId,
         name: nameController.text,
-        image: selectedRecipeImage.getSelectedImage(),
+        imagePath: selectedRecipeImage.getSelectedImage(),
         preperationTime: preperationTimeController.text.isEmpty
             ? 0
             : double.parse(preperationTimeController.text
@@ -512,7 +513,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         categories: newRecipeCategories,
         isFavorite:
             widget.editRecipe == null ? null : widget.editRecipe.isFavorite);
-    int i = await DBProvider.db.newRecipe(newRecipe);
+    await DBProvider.db.newRecipe(newRecipe);
     if (widget.editRecipe != null) {
       await DBProvider.db
           .updateFavorite(widget.editRecipe.isFavorite, recipeId);
@@ -527,10 +528,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     print("---------------");
 
     // DELETE
-    var result = await DBProvider.db.getRecipeById(recipeId);
+    await DBProvider.db.getRecipeById(recipeId);
 
     return newRecipe;
-    print("end saveRecipe()");
   }
 
   bool isIngredientListValid(

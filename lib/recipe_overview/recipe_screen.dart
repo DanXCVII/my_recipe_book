@@ -62,17 +62,17 @@ class RecipeScreen extends StatelessWidget {
               delegate: SliverChildListDelegate(<Widget>[
             GestureDetector(
               onTap: () {
-                _showPictureFullView(recipe.image, "${recipe.image}", context);
+                _showPictureFullView(recipe.imagePath, "${recipe.imagePath}", context);
               },
               child: Hero(
-                tag: "${recipe.image}",
+                tag: "${recipe.imagePath}",
                 child: Material(
                   color: Colors.transparent,
                   child: ClipPath(
                     clipper: MyClipper(),
                     child: Container(
                         height: 270,
-                        child: Image.asset(recipe.image, fit: BoxFit.cover)),
+                        child: Image.asset(recipe.imagePath, fit: BoxFit.cover)),
                   ),
                 ),
               ),
@@ -568,7 +568,9 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                     style: TextStyle(color: textColor, fontSize: 24)),
                 IconButton(
                   icon: Icon(Icons.add_shopping_cart),
-                  onPressed: () {},
+                  onPressed: () {
+                    // TODO: add ingredients to shopping list
+                  },
                   color: textColor,
                 )
               ],

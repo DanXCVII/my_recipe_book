@@ -105,17 +105,6 @@ class RecipeGridView extends StatelessWidget {
     });
   }
 
-  Color getRecipePrimaryColor(Recipe recipe) {
-    switch(recipe.vegetable) {
-      case Vegetable.NON_VEGETARIAN:
-      return Color(0xff4D0B06);
-      case Vegetable.VEGAN:
-      return Color(0xff133F12);
-      case Vegetable.VEGETARIAN:
-      return Color(0xff074505);
-    }
-  }
-
   List<Color> getGradientReciptColors(Recipe recipe) {
     return colors["${recipe.vegetable.toString()}${recipe.complexity}"];
   }
@@ -256,12 +245,12 @@ class RecipeGridView extends StatelessWidget {
               alignment: Alignment.topCenter,
               child: Container(
                 child: Hero(
-                    tag: "${recipes[i].image}",
+                    tag: "${recipes[i].imagePath}",
                     child: Material(
                       color: Colors.transparent,
                       child: ClipOval(
                         child: Image.asset(
-                          recipes[i].image,
+                          await PathProvider.pP.getRecipePath(recipes[i].id),
                           fit: BoxFit.cover,
                         ),
                       ),

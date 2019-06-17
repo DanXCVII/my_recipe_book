@@ -7,7 +7,7 @@ enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
 class Recipe {
   int id;
   String name;
-  String image;
+  String imagePath;
   double preperationTime;
   double cookingTime;
   double totalTime;
@@ -28,7 +28,7 @@ class Recipe {
   Recipe(
       {@required this.id,
       @required this.name,
-      this.image,
+      this.imagePath,
       this.preperationTime,
       this.cookingTime,
       this.totalTime,
@@ -48,7 +48,7 @@ class Recipe {
   factory Recipe.fromMap(Map<String, dynamic> json) => new Recipe(
         id: json['id'],
         name: json['name'],
-        image: json['image'],
+        imagePath: json['image'],
         preperationTime: json['preperationTime'],
         cookingTime: json['cookingTime'],
         totalTime: json['totalTime'],
@@ -65,7 +65,7 @@ class Recipe {
   Map<String, dynamic> toMap() => {
         'id': id,
         'name': name,
-        'image': image,
+        'image': imagePath,
         'preperationTime': preperationTime,
         'cookingTime': cookingTime,
         'totalTime': totalTime,
@@ -78,6 +78,18 @@ class Recipe {
         'steps': steps,
         'notes': notes
       };
+}
+
+Color getRecipePrimaryColor(Recipe recipe) {
+  switch (recipe.vegetable) {
+    case Vegetable.NON_VEGETARIAN:
+      return Color(0xff4D0B06);
+    case Vegetable.VEGAN:
+      return Color(0xff133F12);
+    case Vegetable.VEGETARIAN:
+      return Color(0xff074505);
+  }
+  return null;
 }
 
 /// Path to::
@@ -151,7 +163,7 @@ class PathProvider {
     String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/$recipeId/preview')
         .create(recursive: true);
-    return '$imageLocalPath/$recipeId/preview/recipe-$recipeId.jpg';
+    return '$imageLocalPath/$recipeId/preview/p-recipe-$recipeId.jpg';
   }
 
   Future<String> getRecipeStepPreviewPath(
@@ -159,14 +171,14 @@ class PathProvider {
     String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/$recipeId/preview/stepImages/$stepNumber')
         .create(recursive: true);
-    return '$imageLocalPath/$recipeId/preview/stepImages/$stepNumber/${recipeId}s${stepNumber}s$number.jpg';
+    return '$imageLocalPath/$recipeId/preview/stepImages/p-$stepNumber/${recipeId}s${stepNumber}s$number.jpg';
   }
 
   Future<String> getCategoryPreviewPath(String categoryName) async {
     String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/categories/preview')
         .create(recursive: true);
-    return '$imageLocalPath/categories/preview/${categoryName.replaceAll(new RegExp(r'[^\w\v]+'), '')}.jpg';
+    return '$imageLocalPath/categories/preview/p-${categoryName.replaceAll(new RegExp(r'[^\w\v]+'), '')}.jpg';
   }
 
   // returns a list of the paths to the preview stepimages of the recipe
@@ -189,17 +201,11 @@ class PathProvider {
 
   //////////// paths where pictures are stored temporarily ////////////
 
-  Future<String> getTmpRecipePath() async {
+  /// param uniqueName must have the ending of the dataformat (*.jpg etc.)
+  Future<String> getTmpImagePath(String uniqueName) async {
     String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/tmp').create(recursive: true);
-    return '$imageLocalPath/tmp/recipeTmp.jpg';
-  }
-
-  static Future<String> getTmpStepPathImage(String name) async {
-    Directory imageLocalPath = await getApplicationDocumentsDirectory()
-      ..path;
-    await Directory('$imageLocalPath/tmp').create(recursive: true);
-    return '$imageLocalPath/tmp/$name'; // png is included in the string because it's splitted at the end
+    return '$imageLocalPath/tmp/uniqueName';
   }
 }
 
