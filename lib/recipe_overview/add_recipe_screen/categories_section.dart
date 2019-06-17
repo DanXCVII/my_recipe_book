@@ -10,6 +10,7 @@ import '../../my_wrapper.dart';
 class CategorySection extends StatefulWidget {
   final MyImageWrapper addCategoryImage;
   final List<String> recipeCategories;
+  final formKey = GlobalKey<FormState>();
 
   CategorySection(this.addCategoryImage, this.recipeCategories);
 
@@ -44,11 +45,11 @@ class _CategorySectionState extends State<CategorySection> {
 
   Future<void> _saveCategory() async {
     if (Categories.getCategories().contains(categoryNameController.text) ==
-        false && categoryNameController.text != "") {
+            false &&
+        categoryNameController.text != "") {
       String categoryName = categoryNameController.text;
       if (widget.addCategoryImage.getSelectedImage() != null) {
-        String imagePath =
-            await PathProvider.pP.getCategoryPath(categoryName);
+        String imagePath = await PathProvider.pP.getCategoryPath(categoryName);
         await saveImage(
             File(widget.addCategoryImage.getSelectedImage()), imagePath, 2000);
       }
@@ -88,40 +89,44 @@ class _CategorySectionState extends State<CategorySection> {
                   icon: Icon(Icons.add_circle_outline),
                   onPressed: () {
                     showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                              title: Text("Add new Category"),
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(15, 24, 15, 0),
-                              content: DialogContent(
-                                widget.addCategoryImage,
-                                widget.recipeCategories,
-                                categoryNameController,
-                                MediaQuery.of(context).orientation,
+                      context: context,
+                      builder: (_) => AlertDialog(
+                            title: Text("Add new Category"),
+                            contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
+                            content: DialogContent(
+                              widget.formKey,
+                              widget.addCategoryImage,
+                              widget.recipeCategories,
+                              categoryNameController,
+                              MediaQuery.of(context).orientation,
+                            ),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('Dismiss'),
+                                onPressed: () {
+                                  Navigator.pop(
+                                      context, AnswersCategory.DISMISS);
+                                  widget.addCategoryImage
+                                      .setSelectedImage(null);
+                                },
                               ),
-                              actions: <Widget>[
-                                FlatButton(
-                                  child: Text('Dismiss'),
-                                  onPressed: () {
-                                    Navigator.pop(
-                                        context, AnswersCategory.DISMISS);
-                                    widget.addCategoryImage
-                                        .setSelectedImage(null);
-                                  },
-                                ),
-                                FlatButton(
-                                  child: Text('Save'),
-                                  onPressed: () {
-                                    _saveCategory().then((_) {
+                              FlatButton(
+                                child: Text('Save'),
+                                onPressed: () {
+                                  _saveCategory().then((_) {
+                                    if (widget.formKey.currentState
+                                        .validate()) {
                                       Navigator.pop(context);
                                       widget.addCategoryImage
                                           .setSelectedImage(null);
                                       setState(() {}); // TODO: Not working
-                                    });
-                                  },
-                                ),
-                              ],
-                            ));
+                                    }
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                    );
                   },
                 )
               ],
@@ -144,13 +149,15 @@ class _CategorySectionState extends State<CategorySection> {
 
 enum AnswersCategory { SAVE, DISMISS }
 
+// TODO: Fix issue that keyboard disappears after pressing on textformfield
 class DialogContent extends StatefulWidget {
   final MyImageWrapper addCategoryImage;
   final TextEditingController categoryNameController;
   final List<String> recipeCategories;
   final Orientation firstOrientation;
+  final GlobalKey formKey;
 
-  DialogContent(this.addCategoryImage, this.recipeCategories,
+  DialogContent(this.formKey, this.addCategoryImage, this.recipeCategories,
       this.categoryNameController, this.firstOrientation);
 
   @override
@@ -276,22 +283,24 @@ class _DialogContentState extends State<DialogContent> {
         ), // TODO: when orientation changes, pop navigator
         SimpleDialogOption(
             child: Padding(
-          padding: const EdgeInsets.only(top: 12.0),
-          child: TextFormField(
-            controller: widget.categoryNameController,
-            autovalidate: true,
-            validator: (value) {
-              if (Categories.getCategories().contains(value))
-                return "category already exists";
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Form(
+                  key: widget.formKey,
+                  child: TextFormField(
+                    controller: widget.categoryNameController,
+                    autovalidate: false,
+                    validator: (value) {
+                      if (Categories.getCategories().contains(value))
+                        return "category already exists";
 
-              if (value == "") return "field must not be empty";
-            },
-            decoration: InputDecoration(
-              filled: true,
-              hintText: "name",
-            ),
-          ),
-        )),
+                      if (value == "") return "field must not be empty";
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      hintText: "name",
+                    ),
+                  ),
+                ))),
       ],
     );
   }

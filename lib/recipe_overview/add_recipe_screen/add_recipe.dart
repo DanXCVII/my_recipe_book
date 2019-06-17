@@ -152,77 +152,77 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.clear),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text("add recipe"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.check),
+            color: buttonEnabled == false ? Colors.grey : Colors.white,
             onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          title: Text("add recipe"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.check),
-              color: buttonEnabled == false ? Colors.grey : Colors.white,
-              onPressed: () {
-                if (buttonEnabled) {
-                  if (_formKey.currentState.validate()) {
-                    if (isIngredientListValid(ingredientNameController,
-                        ingredientAmountController, ingredientUnitController)) {
-                      /////////// Only do when all data is VALID! ///////////
-                      if (widget.editRecipe == null) {
-                        saveRecipe().then((_) {
-                          Navigator.pop(context);
-                        });
-                      } else {
-                        deleteOldSaveNewRecipe(widget.editRecipe)
-                            .then((newRecipe) {
-                          newRecipe.isFavorite = widget.editRecipe.isFavorite;
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      RecipeScreen(
-                                          recipe: newRecipe,
-                                          primaryColor: getRecipePrimaryColor(
-                                              newRecipe))));
-                        });
-                      }
-                      setState(() {
-                        buttonEnabled = false;
+              if (buttonEnabled) {
+                if (_formKey.currentState.validate()) {
+                  if (isIngredientListValid(ingredientNameController,
+                      ingredientAmountController, ingredientUnitController)) {
+                    /////////// Only do when all data is VALID! ///////////
+                    if (widget.editRecipe == null) {
+                      saveRecipe().then((_) {
+                        Navigator.pop(context);
                       });
                     } else {
-                      showDialog(
-                          context: context,
-                          builder: (_) => AlertDialog(
-                                title: Text("No valid data for ingredients"),
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(15, 24, 15, 0),
-                                content: Text(
-                                    "Please fill in the data for the ingredients properly :)"),
-                                actions: <Widget>[
-                                  FlatButton(
-                                    child: Text('Ok'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              ));
+                      deleteOldSaveNewRecipe(widget.editRecipe)
+                          .then((newRecipe) {
+                        newRecipe.isFavorite = widget.editRecipe.isFavorite;
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => RecipeScreen(
+                                    recipe: newRecipe,
+                                    primaryColor:
+                                        getRecipePrimaryColor(newRecipe))));
+                      });
                     }
+                    setState(() {
+                      buttonEnabled = false;
+                    });
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                              title: Text("No valid data for ingredients"),
+                              contentPadding:
+                                  EdgeInsets.fromLTRB(15, 24, 15, 0),
+                              content: Text(
+                                  "Please fill in the data for the ingredients properly :)"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: Text('Ok'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            ));
                   }
-                } else {
-                  return;
                 }
-              },
-            )
-          ],
-        ),
-        body: Form(
-          key: _formKey,
-          child: ListView(children: <Widget>[
+              } else {
+                return;
+              }
+            },
+          )
+        ],
+      ),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(children: <Widget>[
             // top section with the add image button
             ImageSelector(selectedRecipeImage),
             // name textField
@@ -256,7 +256,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                           return "no valid number";
                         }
                       },
-                      autovalidate: true,
+                      autovalidate: false,
                       controller: preperationTimeController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
@@ -277,7 +277,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                           return "no valid number";
                         }
                       },
-                      autovalidate: true,
+                      autovalidate: false,
                       controller: cookingTimeController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
@@ -299,7 +299,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                     return "no valid number";
                   }
                 },
-                autovalidate: true,
+                autovalidate: false,
                 controller: totalTimeController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
@@ -373,7 +373,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             ComplexitySection(complexity: complexity),
             CategorySection(addCategoryImage, newRecipeCategories),
           ]),
-        ));
+        ),
+      ),
+    );
   }
 
   @override

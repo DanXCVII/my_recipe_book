@@ -210,7 +210,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                         return "no valid number";
                       }
                     },
-                    autovalidate: true,
+                    autovalidate: false,
                     controller: widget
                         .ingredientAmountController[widget.sectionNumber][i],
                     keyboardType: TextInputType.number,
