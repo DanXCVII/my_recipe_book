@@ -167,50 +167,46 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             onPressed: () {
               if (buttonEnabled) {
                 if (_formKey.currentState.validate()) {
-                  if (isIngredientListValid(ingredientNameController,
-                      ingredientAmountController, ingredientUnitController)) {
-                    /////////// Only do when all data is VALID! ///////////
-                    if (widget.editRecipe == null) {
-                      saveRecipe().then((_) {
-                        Navigator.pop(context);
-                      });
-                    } else {
-                      deleteOldSaveNewRecipe(widget.editRecipe)
-                          .then((newRecipe) {
-                        newRecipe.isFavorite = widget.editRecipe.isFavorite;
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) => RecipeScreen(
-                                    recipe: newRecipe,
-                                    primaryColor:
-                                        getRecipePrimaryColor(newRecipe))));
-                      });
-                    }
-                    setState(() {
-                      buttonEnabled = false;
+                  /////////// Only do if all data is VALID! ///////////
+                  if (widget.editRecipe == null) {
+                    saveRecipe().then((_) {
+                      Navigator.pop(context);
                     });
                   } else {
-                    showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                              title: Text("No valid data for ingredients"),
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(15, 24, 15, 0),
-                              content: Text(
-                                  "Please fill in the data for the ingredients properly :)"),
-                              actions: <Widget>[
-                                FlatButton(
-                                  child: Text('Ok'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            ));
+                    deleteOldSaveNewRecipe(widget.editRecipe).then((newRecipe) {
+                      newRecipe.isFavorite = widget.editRecipe.isFavorite;
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => RecipeScreen(
+                                  recipe: newRecipe,
+                                  primaryColor:
+                                      getRecipePrimaryColor(newRecipe))));
+                    });
                   }
+                  setState(() {
+                    buttonEnabled = false;
+                  });
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                            title: Text("Check filled in information"),
+                            contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
+                            content: Text(
+                                "Please scroll through the list and check if any data is marked in red. "
+                                "It means that the data is not valid."),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('Ok'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          ));
                 }
               } else {
                 return;
@@ -468,17 +464,17 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
     await saveImage(
         File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 2000);
-    await saveImage(
-        File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 1000);
     selectedRecipeImage.setSelectedImage(recipeImagePath);
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
+        String stepImageLocation = await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
+        String stepImagePreviewLocation = await PathProvider.pP.getRecipeStepPreviewPath(recipeId, i, j);
         await saveImage(File(stepImages[i][j]),
-            await PathProvider.pP.getRecipeStepPath(recipeId, i, j), 2000);
+            stepImageLocation, 2000);
         await saveImage(
             File(stepImages[i][j]),
-            await PathProvider.pP.getRecipeStepPreviewPath(recipeId, i, j),
+            stepImagePreviewLocation,
             500);
         stepImages[i][j] =
             await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
@@ -535,6 +531,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     return newRecipe;
   }
 
+  // TODO: Remove if not needed anymore
   bool isIngredientListValid(
       List<List<TextEditingController>> ingredients,
       List<List<TextEditingController>> amount,

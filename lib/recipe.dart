@@ -169,7 +169,9 @@ class PathProvider {
   Future<String> getRecipeStepPreviewPath(
       int recipeId, int stepNumber, int number) async {
     String imageLocalPath = await localPath;
-    await Directory('$imageLocalPath/$recipeId/preview/stepImages/$stepNumber')
+    // TODO: Create correct directory.
+    await Directory(
+            '$imageLocalPath/$recipeId/preview/stepImages/p-$stepNumber')
         .create(recursive: true);
     return '$imageLocalPath/$recipeId/preview/stepImages/p-$stepNumber/${recipeId}s${stepNumber}s$number.jpg';
   }
