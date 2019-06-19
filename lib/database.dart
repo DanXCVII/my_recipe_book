@@ -37,29 +37,27 @@ class DBProvider {
           "notes TEXT,"
           "complexity INTEGER,"
           "isFavorite INTEGER"
-          "ON DELETE CASCADE"
           ")");
       await db.execute("CREATE TABLE Steps ("
           "id INTEGER PRIMARY KEY,"
           "number TEXT,"
           "description TEXT,"
           "recipe_id INTEGER,"
-          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id)"
-          "ON DELETE CASCADE"
+          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
+          
           ")");
       await db.execute("CREATE TABLE StepImages ("
           "id INTEGER PRIMARY KEY,"
           "image TEXT,"
           "steps_id INTEGER,"
-          "FOREIGN KEY(steps_id) REFERENCES Steps(id)"
+          "FOREIGN KEY(steps_id) REFERENCES Steps(id) ON DELETE CASCADE"
           ")");
       await db.execute("CREATE TABLE Sections ("
           "id INTEGER PRIMARY KEY,"
           "number INTEGER,"
           "name TEXT,"
           "recipe_id INTEGER,"
-          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id)"
-          "ON DELETE CASCADE"
+          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
           ")");
       await db.execute("CREATE TABLE Ingredients ("
           "id INTEGER PRIMARY KEY,"
@@ -67,7 +65,7 @@ class DBProvider {
           "amount REAL,"
           "unit TEXT,"
           "section_id INTEGER,"
-          "FOREIGN KEY(section_id) REFERENCES Section(id)"
+          "FOREIGN KEY(section_id) REFERENCES Section(id) ON DELETE CASCADE"
           ")");
       await db.execute("CREATE TABLE Categories ("
           "id INTEGER PRIMARY KEY,"
@@ -76,13 +74,14 @@ class DBProvider {
       await db.execute("CREATE TABLE RecipeCategories ("
           "recipe_id INTEGER,"
           "categories_id INTEGER,"
-          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id)"
-          "FOREIGN KEY(categories_id) REFERENCES Categories(id)"
+          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE,"
+          "FOREIGN KEY(categories_id) REFERENCES Categories(id) ON DELETE CASCADE"
           ")");
       await db.execute("CREATE TABLE ShoppingCart ("
           "item_id INTEGER PRIMARY KEY,"
           "name TEXT,"
-          "amount TEXT,"
+          "amount TEXT"
+          ")"
       );
     });
   }

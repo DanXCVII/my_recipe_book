@@ -125,7 +125,7 @@ class MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(canvasColor: Colors.black87),
         child: BottomNavigationBar(
-          fixedColor: Colors.brown[800],
+          fixedColor: Colors.white,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
                 icon: Icon(Icons.fastfood), title: Text("recipes")),
