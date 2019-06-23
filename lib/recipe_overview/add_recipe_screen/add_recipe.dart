@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as ImageIO;
+import 'package:flare_flutter/flare_actor.dart';
 
 import '../../recipe.dart';
 import '../../database.dart';
@@ -169,6 +171,25 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 if (_formKey.currentState.validate()) {
                   /////////// Only do if all data is VALID! ///////////
                   if (widget.editRecipe == null) {
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) => AlertDialog(
+                            title: Text("Saving recipe..."),
+                            contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
+                            content: Container(
+                              height: 100,
+                              width: 200,
+                              child: FlareActor(
+                                'animations/writing_pen.flr',
+                                alignment: Alignment.center,
+                                fit: BoxFit.fitWidth,
+                                animation: "Go",
+                              ),
+                            ),
+                          ),
+                    );
                     saveRecipe().then((_) {
                       Navigator.pop(context);
                     });
@@ -186,30 +207,23 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                                       getRecipePrimaryColor(newRecipe))));
                     });
                   }
-                  setState(() {
-                    buttonEnabled = false;
-                  });
+                  //setState(() {
+                  //  buttonEnabled = false;
+                  //});
                 } else {
                   showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                            title: Text("Check filled in information"),
-                            contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
-                            content: Text(
-                                "Please scroll through the list and check if any data is marked in red. "
-                                "It means that the data is not valid."),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: Text('Ok'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          ));
+                    context: context,
+                    builder: (_) => AlertDialog(
+                          title: Text("Check filled in information"),
+                          contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
+                          content: Container(
+                            height: 10,
+                          ),
+                        ),
+                  );
                 }
               } else {
-                return;
+                // TODO: Fill in else case, maybe not needed?
               }
             },
           )
@@ -367,12 +381,14 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               ),
             ),
             ComplexitySection(complexity: complexity),
-            CategorySection(addCategoryImage, newRecipeCategories),
+            CategorySection(addCategoryImage, newRecipeCategories, _formKey),
           ]),
         ),
       ),
     );
   }
+
+  static int getnthPrime(int n) {}
 
   @override
   void dispose() {
@@ -411,7 +427,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       // .. temporarily put image in tmp dir befor recipe gets deleted and saved again
       String tmpRecipeImage =
           await PathProvider.pP.getTmpImagePath(editRecipe.imagePath);
-      await saveImage(File(editRecipe.imagePath), tmpRecipeImage, 2000);
+      await compute(
+          saveImage, [File(editRecipe.imagePath), tmpRecipeImage, 2000]);
       selectedRecipeImage.setSelectedImage(tmpRecipeImage);
     }
 
@@ -426,7 +443,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
           String stepImageName = stepImages[i][j].split("/").last;
           String tmpStepImagePath =
               await PathProvider.pP.getTmpImagePath(stepImageName);
-          await saveImage(File(stepImages[i][j]), tmpStepImagePath, 2000);
+          await compute(
+              saveImage, [File(stepImages[i][j]), tmpStepImagePath, 2000]);
           stepImages[i][j] = tmpStepImagePath;
         }
       }
@@ -462,20 +480,20 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         : recipeId = widget.editRecipe.id;
 
     String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
-    await saveImage(
-        File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 2000);
+    await compute(saveImage,
+        [File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 2000]);
     selectedRecipeImage.setSelectedImage(recipeImagePath);
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
-        String stepImageLocation = await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
-        String stepImagePreviewLocation = await PathProvider.pP.getRecipeStepPreviewPath(recipeId, i, j);
-        await saveImage(File(stepImages[i][j]),
-            stepImageLocation, 2000);
-        await saveImage(
-            File(stepImages[i][j]),
-            stepImagePreviewLocation,
-            500);
+        String stepImageLocation =
+            await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
+        String stepImagePreviewLocation =
+            await PathProvider.pP.getRecipeStepPreviewPath(recipeId, i, j);
+        await compute(
+            saveImage, [File(stepImages[i][j]), stepImageLocation, 2000]);
+        await compute(
+            saveImage, [File(stepImages[i][j]), stepImagePreviewLocation, 500]);
         stepImages[i][j] =
             await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
       }
@@ -653,16 +671,21 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 }
 
-Future<void> saveImage(File image, String name, int quality) async {
-  print("saveFile()");
+/// List of dynamic must have
+/// [0] File image
+/// [1] String name
+/// [2] int quality
+void saveImage(List<dynamic> values) async {
   print("****************************");
-  print(image.path);
-  print(name);
+  print("saveFile()");
+  print(values[0].path);
+  print(values[1]);
 
-  if (image != null) {
-    ImageIO.Image newImage = ImageIO.decodeImage(image.readAsBytesSync());
-    ImageIO.Image resizedImage = ImageIO.copyResize(newImage, height: quality);
-    new File('$name')..writeAsBytesSync(ImageIO.encodeJpg(newImage));
+  if (values[0] != null) {
+    ImageIO.Image newImage = ImageIO.decodeImage(values[0].readAsBytesSync());
+    ImageIO.Image resizedImage =
+        ImageIO.copyResize(newImage, height: values[2]);
+    new File('${values[1]}')..writeAsBytesSync(ImageIO.encodeJpg(newImage));
   }
   print("****************************");
 }

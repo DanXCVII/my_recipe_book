@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 
 import './add_recipe.dart';
@@ -10,9 +11,9 @@ import '../../my_wrapper.dart';
 class CategorySection extends StatefulWidget {
   final MyImageWrapper addCategoryImage;
   final List<String> recipeCategories;
-  final formKey = GlobalKey<FormState>();
+  final formKey;
 
-  CategorySection(this.addCategoryImage, this.recipeCategories);
+  CategorySection(this.addCategoryImage, this.recipeCategories, this.formKey);
 
   @override
   State<StatefulWidget> createState() {
@@ -50,8 +51,11 @@ class _CategorySectionState extends State<CategorySection> {
       String categoryName = categoryNameController.text;
       if (widget.addCategoryImage.getSelectedImage() != null) {
         String imagePath = await PathProvider.pP.getCategoryPath(categoryName);
-        await saveImage(
-            File(widget.addCategoryImage.getSelectedImage()), imagePath, 2000);
+        compute(saveImage, [
+          File(widget.addCategoryImage.getSelectedImage()),
+          imagePath,
+          2000
+        ]);
       }
       await DBProvider.db.newCategory(categoryName);
       Categories.addCategory(categoryName);
@@ -283,24 +287,22 @@ class _DialogContentState extends State<DialogContent> {
         ), // TODO: when orientation changes, pop navigator
         SimpleDialogOption(
             child: Padding(
-                padding: const EdgeInsets.only(top: 12.0),
-                child: Form(
-                  key: widget.formKey,
-                  child: TextFormField(
-                    controller: widget.categoryNameController,
-                    autovalidate: false,
-                    validator: (value) {
-                      if (Categories.getCategories().contains(value))
-                        return "category already exists";
+          padding: const EdgeInsets.only(top: 12.0),
+          child: TextFormField(
+            controller: widget.categoryNameController,
+            autovalidate: false,
+            validator: (value) {
+              if (Categories.getCategories().contains(value))
+                return "category already exists";
 
-                      if (value == "") return "field must not be empty";
-                    },
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: "name",
-                    ),
-                  ),
-                ))),
+              if (value == "") return "field must not be empty";
+            },
+            decoration: InputDecoration(
+              filled: true,
+              hintText: "name",
+            ),
+          ),
+        )),
       ],
     );
   }
