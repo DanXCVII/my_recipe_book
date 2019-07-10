@@ -5,7 +5,6 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as ImageIO;
-import 'package:flare_flutter/flare_actor.dart';
 
 import '../../recipe.dart';
 import '../../database.dart';
