@@ -128,167 +128,122 @@ class RecipeGridView extends StatelessWidget {
         },
         child: Stack(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: gridTileWidth / 5),
-              child: Container(
+            Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: recipeColor, // 400, 500
-                    begin: FractionalOffset.topLeft,
-                    end: FractionalOffset.bottomRight,
-                    stops: [0.0, 1.0],
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(gridTileWidth / 10),
+                    topRight: Radius.circular(gridTileWidth / 10),
+                    bottomRight: Radius.circular(gridTileWidth / 10),
+                    bottomLeft: Radius.circular(gridTileWidth / 2),
                   ),
-                  borderRadius: BorderRadius.circular(gridTileWidth / 8),
-                  boxShadow: [
-                    BoxShadow(
-                      // Shadow of the RecipeCard
-                      color: recipeColor[0],
-                      blurRadius: 5.0, // default 20.0
-                      spreadRadius: 1.5, // default 5.0
-                      offset: Offset(2.0, 2.0),
-                    ),
-                  ],
                 ),
-                child: Padding(
-                    padding: EdgeInsets.fromLTRB(22, gridTileWidth / 4, 22, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Align(
-                            alignment: Alignment.topCenter,
-                            child: Hero(
-                              tag: "recipe-${recipes[i].id}",
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Text(
-                                  "${recipes[i].name}",
-                                  textAlign: TextAlign.center,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14 + gridTileWidth / 50,
-                                      color: Colors.white),
-                                ),
-                              ),
-                            )),
-                        SizedBox(height: 2),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 4.0, right: 4),
-                          child: Divider(color: Colors.white),
-                        ),
-                        SizedBox(height: 2),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Container(
-                              height: gridTileWidth / 3,
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: Text("total time:",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12 + gridTileWidth / 50,
-                                          )),
-                                    ),
-                                    Expanded(
-                                      child: Text("ingredients:",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12 + gridTileWidth / 50,
-                                          )),
-                                    ),
-                                    Expanded(
-                                      child: Text("complexity:",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12 + gridTileWidth / 50,
-                                          )),
-                                    )
-                                  ]),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Hero(
+                        tag: "${recipes[i].imagePath}",
+                        child: Material(
+                          color: Colors.transparent,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(gridTileWidth / 10),
+                              topRight: Radius.circular(gridTileWidth / 10),
                             ),
-                            Container(
-                              height: gridTileWidth / 3,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Text("120",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12 + gridTileWidth / 50,
-                                        )),
-                                  ),
-                                  Expanded(
-                                      child: Text("8",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12 + gridTileWidth / 50,
-                                          ))),
-                                  Expanded(
-                                      child: Text("7",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12 + gridTileWidth / 50,
-                                          ))),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    )),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                child: Hero(
-                    tag: "${recipes[i].imagePath}",
-                    child: Material(
-                      color: Colors.transparent,
-                      child: ClipOval(
-                        child: Image.asset(
-                          await PathProvider.pP.getRecipePath(recipes[i].id),
-                          fit: BoxFit.cover,
+                            child: Image.asset(
+                              await PathProvider.pP
+                                  .getRecipePath(recipes[i].id),
+                              fit: BoxFit.cover,
+                              height: gridTileWidth / 1.2,
+                              width: gridTileWidth + 40,
+                            ),
+                          ),
+                        )),
+                    SizedBox(height: 7),
+                    Padding(
+                      padding: EdgeInsets.only(left: 15, right: 12),
+                      child: Hero(
+                        tag: "recipe-${recipes[i].id}",
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Text(
+                            "${recipes[i].name}",
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 14 + gridTileWidth / 35,
+                            ),
+                          ),
                         ),
                       ),
-                    )),
-                width: (gridTileWidth / 5) * 2,
-                height: (gridTileWidth / 5) * 2,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2.0),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                  left: gridTileWidth / 1.25, top: gridTileWidth / 5.6),
-              child: Favorite(
-                recipes[i],
-                iconSize: 22,
-              ),
-            )
+                    ),
+                    SizedBox(height: 13),
+                    Padding(
+                      padding: EdgeInsets.only(left: gridTileWidth / 3 + 13),
+                      child: Text(
+                        "1h 20min",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 10 + gridTileWidth / 40,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: gridTileWidth / 3 + 13),
+                      child: Text(
+                        "10 ingredients",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 10 + gridTileWidth / 40,
+                        ),
+                      ),
+                    )
+                  ],
+                )),
+            Align(
+                alignment: Alignment.bottomLeft,
+                child: Container(
+                  child: Center(
+                    child: Image.asset(
+                      "images/leaf.png",
+                      height: 35,
+                      width: 35,
+                      fit: BoxFit.scaleDown,
+                    ),
+                  ),
+                  height: gridTileWidth / 3,
+                  width: gridTileWidth / 3,
+                  decoration: BoxDecoration(
+                    color: Color(0xff487D1F),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(gridTileWidth / 2),
+                      topRight: Radius.circular(gridTileWidth / 4),
+                      bottomLeft: Radius.circular(gridTileWidth / 2),
+                      bottomRight: Radius.circular(gridTileWidth / 2),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black38,
+                        blurRadius: 2.0, // default 20.0
+                        spreadRadius: 1.0, // default 5.0
+                        offset: Offset(0.0, 1.5),
+                      ),
+                    ],
+                  ),
+                )),
+            //Padding(
+            // padding: EdgeInsets.only(
+            //      left: gridTileWidth / 1.4, top: gridTileWidth / 40),
+            //  child: Favorite(
+            //    recipes[i],
+            //    iconSize: 22,
+            //  ),
+            //)
           ],
         ),
-      )
-
-          /*GridTile(
-          child: Image.file(
-            recipes[i].image,
-            fit: BoxFit.cover,
-          ),
-          footer: GridTileBar(
-            title: Text("${recipes[i].name}"),
-            subtitle: Text(
-                "steps: ${recipes[i].steps.length}, total time: ${recipes[i].totalTime}"),
-            trailing: Favorite(recipes[i]),
-            backgroundColor: Colors.black45,
-          ),
-        ),*/
-          );
+      ));
     }
     return output;
   }
@@ -318,6 +273,7 @@ class RecipeGridView extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return GridView.extent(
+              childAspectRatio: 0.75,
               maxCrossAxisExtent: 300,
               padding: const EdgeInsets.all(
                   12), // TODO: maybe remove, also the spacing
