@@ -11,7 +11,7 @@ import 'package:flutter/rendering.dart';
 /// stateful widget so.. dunno.
 
 void main() {
-  debugPaintSizeEnabled = true;
+  debugPaintSizeEnabled = false;
   runApp(MyApp());
 }
 

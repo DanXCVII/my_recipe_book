@@ -11,11 +11,14 @@ import '../../recipe.dart';
 import '../../database.dart';
 import './steps_section.dart';
 import './ingredients_section.dart';
+import './savingDialog.dart';
+
 import './categories_section.dart';
 import './vegetarian_section.dart';
 import '../../my_wrapper.dart';
 import './complexity_section.dart';
 import '../recipe_screen.dart' show RecipeScreen;
+import './image_selector.dart' as IS;
 
 const double categories = 14;
 const double topPadding = 8;
@@ -175,20 +178,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                     showDialog(
                       context: context,
                       barrierDismissible: false,
-                      builder: (_) => AlertDialog(
-                            title: Text("Saving recipe..."),
-                            contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
-                            content: Container(
-                              height: 100,
-                              width: 200,
-                              child: FlareActor(
-                                'animations/writing_pen.flr',
-                                alignment: Alignment.center,
-                                fit: BoxFit.fitWidth,
-                                animation: "Go",
-                              ),
-                            ),
-                          ),
+                      builder: (_) => FunkyOverlay(),
                     );
                     saveRecipe().then((_) {
                       Navigator.pop(context);
@@ -214,12 +204,12 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
-                          title: Text("Check filled in information"),
-                          contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
-                          content: Container(
-                            height: 10,
-                          ),
-                        ),
+                      title: Text("Check filled in information"),
+                      contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
+                      content: Container(
+                        height: 10,
+                      ),
+                    ),
                   );
                 }
               } else {
@@ -234,7 +224,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         child: SingleChildScrollView(
           child: Column(children: <Widget>[
             // top section with the add image button
-            ImageSelector(selectedRecipeImage),
+            SizedBox(height: 30),
+            IS.ImageSelector(selectedRecipeImage, 120, Color(0xFF790604)),
+            SizedBox(height: 30),
             // name textField
             Padding(
               padding: const EdgeInsets.all(12.0),
@@ -387,8 +379,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       ),
     );
   }
-
-  static int getnthPrime(int n) {}
 
   @override
   void dispose() {
@@ -743,134 +733,3 @@ class CustomStepsClipper extends CustomClipper<Path> {
 }
 
 enum Answers { GALLERY, PHOTO }
-
-// Top section of the screen where you can select an image for the dish
-class ImageSelector extends StatefulWidget {
-  final MyImageWrapper selectedRecipeImage;
-
-  ImageSelector(this.selectedRecipeImage);
-
-  @override
-  State<StatefulWidget> createState() {
-    return _ImageSelectorState();
-  }
-}
-
-class _ImageSelectorState extends State<ImageSelector> {
-  Future _askUser() async {
-    switch (await showDialog(
-        context: context,
-        builder: (_) => SimpleDialog(
-              title: Text("Change Picture"),
-              children: <Widget>[
-                SimpleDialogOption(
-                  child: Text("Select an image from your gallery"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.GALLERY);
-                  },
-                ),
-                SimpleDialogOption(
-                  child: Text("Take a new photo with camera"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.PHOTO);
-                  },
-                ),
-              ],
-            ))) {
-      case Answers.GALLERY:
-        {
-          File pictureFile = await ImagePicker.pickImage(
-            source: ImageSource.gallery,
-            // maxHeight: 50.0,
-            // maxWidth: 50.0,
-          );
-          if (pictureFile != null) {
-            widget.selectedRecipeImage.setSelectedImage(pictureFile.path);
-            print("You selected gallery image : " + pictureFile.path);
-            setState(() {});
-          }
-          break;
-        }
-      case Answers.PHOTO:
-        {
-          File pictureFile = await ImagePicker.pickImage(
-            source: ImageSource.camera,
-            //maxHeight: 50.0,
-            //maxWidth: 50.0,
-          );
-          if (pictureFile != null) {
-            widget.selectedRecipeImage.setSelectedImage(pictureFile.path);
-            print("You selected gallery image : " + pictureFile.path);
-            setState(() {});
-          }
-          break;
-        }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      child: Center(
-          child: widget.selectedRecipeImage.getSelectedImage() == null
-              ? Container(
-                  child: Center(
-                      child: IconButton(
-                    onPressed: () {
-                      _askUser();
-                    },
-                    color: Colors.white,
-                    icon: Icon(Icons.add_a_photo),
-                    iconSize: 32,
-                  )),
-                  width: 110,
-                  height: 110,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFF790604),
-                  ),
-                )
-              : Stack(children: <Widget>[
-                  ClipOval(
-                      child: Container(
-                    child: Image.asset(
-                      widget.selectedRecipeImage.getSelectedImage(),
-                      fit: BoxFit.cover,
-                    ),
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                  )),
-                  Opacity(
-                    opacity: 0.3,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.black87,
-                      ),
-                      width: 110,
-                      height: 110,
-                    ),
-                  ),
-                  Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(shape: BoxShape.circle),
-                    child: IconButton(
-                      icon: Icon(Icons.add_a_photo),
-                      iconSize: 32,
-                      color: Colors.white,
-                      onPressed: () {
-                        setState(() {
-                          _askUser();
-                        });
-                      },
-                    ),
-                  ),
-                ])),
-    );
-  }
-}
