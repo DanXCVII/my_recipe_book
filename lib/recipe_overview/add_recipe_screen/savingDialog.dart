@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
 
-class FunkyOverlay extends StatefulWidget {
+class SavingDialog extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => FunkyOverlayState();
+  State<StatefulWidget> createState() => SavingDialogState();
 }
 
-class FunkyOverlayState extends State<FunkyOverlay>
+class SavingDialogState extends State<SavingDialog>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation<double> scaleAnimation;

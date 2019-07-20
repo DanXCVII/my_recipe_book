@@ -35,7 +35,7 @@ class _ImageSelectorState extends State<ImageSelector> {
               },
               color: Colors.white,
               icon: Icon(Icons.add_a_photo),
-              iconSize: widget.circleSize/3,
+              iconSize: widget.circleSize / 3,
             )),
           )
         : Center(
@@ -66,7 +66,7 @@ class _ImageSelectorState extends State<ImageSelector> {
                 width: widget.circleSize,
                 height: widget.circleSize,
                 child: IconButton(
-                  iconSize:  widget.circleSize/3,
+                  iconSize: widget.circleSize / 3,
                   icon: Icon(Icons.add_a_photo),
                   color: Colors.white,
                   onPressed: () {

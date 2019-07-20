@@ -94,11 +94,12 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       nameController.text = widget.editRecipe.name;
       if (widget.editRecipe.imagePath != null)
         selectedRecipeImage.setSelectedImage(widget.editRecipe.imagePath);
-      preperationTimeController.text =
-          widget.editRecipe.preperationTime.toString();
-      if (widget.editRecipe.cookingTime != null)
+      if (widget.editRecipe.preperationTime != 0.0)
+        preperationTimeController.text =
+            widget.editRecipe.preperationTime.toString();
+      if (widget.editRecipe.cookingTime != 0.0)
         cookingTimeController.text = widget.editRecipe.cookingTime.toString();
-      if (widget.editRecipe.totalTime != null)
+      if (widget.editRecipe.totalTime != 0.0)
         totalTimeController.text = widget.editRecipe.totalTime.toString();
       servingsController.text = widget.editRecipe.servings.toString();
       notesController.text = widget.editRecipe.notes;
@@ -177,7 +178,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                     showDialog(
                       context: context,
                       barrierDismissible: false,
-                      builder: (_) => FunkyOverlay(),
+                      builder: (_) => SavingDialog(),
                     );
                     saveRecipe().then((_) {
                       Navigator.pop(context);

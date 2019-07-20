@@ -211,6 +211,7 @@ class PathProvider {
   }
 }
 
+// TODO: Maybe obsolete
 class Categories {
   static List<String> _categories;
 

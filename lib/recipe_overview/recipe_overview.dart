@@ -109,6 +109,33 @@ class RecipeGridView extends StatelessWidget {
     return colors["${recipe.vegetable.toString()}${recipe.complexity}"];
   }
 
+  /// returns the image for the icon which is displayed at the bottom left corner
+  /// of the recipe depending on whether recipe is vegetarian, vegan, etc.
+  String getRecipeTypeImage(Vegetable vegetable) {
+    switch (vegetable) {
+      case Vegetable.NON_VEGETARIAN:
+        return "meat";
+      case Vegetable.VEGETARIAN:
+        return "milk";
+      case Vegetable.VEGAN:
+        return "tomato";
+      default: return "no valid input at getRecipeTypeImage()";
+    }
+  }
+
+  Color getRecipeTypeColor(Vegetable vegetable) {
+    switch(vegetable) {
+      case Vegetable.NON_VEGETARIAN:
+      return Color(0xff9C2F00);
+      case Vegetable.VEGAN:
+      return Color(0xff487D1F);
+      case Vegetable.VEGETARIAN:
+      return Color(0xff78B000);
+      default:
+      return Color(0x00000000);
+    }
+  }
+
   Future<List<Widget>> getRecipeCards(
       BuildContext context, double gridTileWidth) async {
     List<Recipe> recipes = await DBProvider.db.getRecipesOfCategory(category);
@@ -119,12 +146,14 @@ class RecipeGridView extends StatelessWidget {
       output.add(GestureDetector(
         onTap: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => new RecipeScreen(
-                        recipe: recipes[i],
-                        primaryColor: getRecipePrimaryColor(recipes[i]),
-                      )));
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => new RecipeScreen(
+                recipe: recipes[i],
+                primaryColor: getRecipePrimaryColor(recipes[i]),
+              ),
+            ),
+          );
         },
         child: Stack(
           children: <Widget>[
@@ -207,7 +236,7 @@ class RecipeGridView extends StatelessWidget {
                 child: Container(
                   child: Center(
                     child: Image.asset(
-                      "images/leaf.png",
+                      "images/${getRecipeTypeImage(recipes[i].vegetable)}.png",
                       height: 35,
                       width: 35,
                       fit: BoxFit.scaleDown,
@@ -216,7 +245,7 @@ class RecipeGridView extends StatelessWidget {
                   height: gridTileWidth / 3,
                   width: gridTileWidth / 3,
                   decoration: BoxDecoration(
-                    color: Color(0xff487D1F),
+                    color: getRecipeTypeColor(recipes[i].vegetable),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(gridTileWidth / 2),
                       topRight: Radius.circular(gridTileWidth / 4),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/database.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
@@ -41,6 +42,11 @@ class RecipeScreen extends StatelessWidget {
                   },
                 ),
                 IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    DBProvider.db.deleteRecipe(recipe).then((_) {Navigator.pop(context);});
+                },),
+                IconButton(
                   icon: Icon(Icons.share),
                   onPressed: () {},
                 ),
@@ -62,7 +68,7 @@ class RecipeScreen extends StatelessWidget {
               delegate: SliverChildListDelegate(<Widget>[
             GestureDetector(
               onTap: () {
-                _showPictureFullView(recipe.imagePath, "${recipe.imagePath}", context);
+                _showPictureFullView(recipe.imagePath, "${recipe.imagePath}${recipe.id}", context);
               },
               child: Hero(
                 tag: "${recipe.imagePath}",

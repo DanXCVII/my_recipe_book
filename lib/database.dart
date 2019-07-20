@@ -17,73 +17,82 @@ class DBProvider {
 
     // if _database is null we instantiate it
     _database = await initDB();
+    await _onConfigure(_database);
     return _database;
+  }
+
+  _onConfigure(Database db) async {
+    // Add support for cascade delete
+    await db.execute("PRAGMA foreign_keys = ON");
   }
 
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "TestDB.db");
-    return await openDatabase(path, version: 1, onOpen: (db) {},
-        onCreate: (Database db, int version) async {
-      await db.execute("CREATE TABLE Recipe ("
-          "id INTEGER PRIMARY KEY,"
-          "name TEXT,"
-          "image TEXT,"
-          "preperationTime REAL,"
-          "cookingTime REAL,"
-          "totalTime REAL,"
-          "servings REAL,"
-          "vegetable TEXT,"
-          "notes TEXT,"
-          "complexity INTEGER,"
-          "isFavorite INTEGER"
-          ")");
-      await db.execute("CREATE TABLE Steps ("
-          "id INTEGER PRIMARY KEY,"
-          "number TEXT,"
-          "description TEXT,"
-          "recipe_id INTEGER,"
-          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
-          
-          ")");
-      await db.execute("CREATE TABLE StepImages ("
-          "id INTEGER PRIMARY KEY,"
-          "image TEXT,"
-          "steps_id INTEGER,"
-          "FOREIGN KEY(steps_id) REFERENCES Steps(id) ON DELETE CASCADE"
-          ")");
-      await db.execute("CREATE TABLE Sections ("
-          "id INTEGER PRIMARY KEY,"
-          "number INTEGER,"
-          "name TEXT,"
-          "recipe_id INTEGER,"
-          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
-          ")");
-      await db.execute("CREATE TABLE Ingredients ("
-          "id INTEGER PRIMARY KEY,"
-          "name TEXT,"
-          "amount REAL,"
-          "unit TEXT,"
-          "section_id INTEGER,"
-          "FOREIGN KEY(section_id) REFERENCES Section(id) ON DELETE CASCADE"
-          ")");
-      await db.execute("CREATE TABLE Categories ("
-          "id INTEGER PRIMARY KEY,"
-          "name TEXT"
-          ")");
-      await db.execute("CREATE TABLE RecipeCategories ("
-          "recipe_id INTEGER,"
-          "categories_id INTEGER,"
-          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE,"
-          "FOREIGN KEY(categories_id) REFERENCES Categories(id) ON DELETE CASCADE"
-          ")");
-      await db.execute("CREATE TABLE ShoppingCart ("
-          "item_id INTEGER PRIMARY KEY,"
-          "name TEXT,"
-          "amount TEXT"
-          ")"
-      );
-    });
+    return await openDatabase(
+      path,
+      onConfigure: _onConfigure,
+      version: 1,
+      onOpen: (db) {},
+      onCreate: (Database db, int version) async {
+        await db.execute("CREATE TABLE Recipe ("
+            "id INTEGER PRIMARY KEY,"
+            "name TEXT,"
+            "image TEXT,"
+            "preperationTime REAL,"
+            "cookingTime REAL,"
+            "totalTime REAL,"
+            "servings REAL,"
+            "vegetable TEXT,"
+            "notes TEXT,"
+            "complexity INTEGER,"
+            "isFavorite INTEGER"
+            ")");
+        await db.execute("CREATE TABLE Steps ("
+            "id INTEGER PRIMARY KEY,"
+            "number TEXT,"
+            "description TEXT,"
+            "recipe_id INTEGER,"
+            "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
+            ")");
+        await db.execute("CREATE TABLE StepImages ("
+            "id INTEGER PRIMARY KEY,"
+            "image TEXT,"
+            "steps_id INTEGER,"
+            "FOREIGN KEY(steps_id) REFERENCES Steps(id) ON DELETE CASCADE"
+            ")");
+        await db.execute("CREATE TABLE Sections ("
+            "id INTEGER PRIMARY KEY,"
+            "number INTEGER,"
+            "name TEXT,"
+            "recipe_id INTEGER,"
+            "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
+            ")");
+        await db.execute("CREATE TABLE Ingredients ("
+            "id INTEGER PRIMARY KEY,"
+            "name TEXT,"
+            "amount REAL,"
+            "unit TEXT,"
+            "section_id INTEGER,"
+            "FOREIGN KEY(section_id) REFERENCES Sections(id) ON DELETE CASCADE"
+            ")");
+        await db.execute("CREATE TABLE Categories ("
+            "id INTEGER PRIMARY KEY,"
+            "name TEXT"
+            ")");
+        await db.execute("CREATE TABLE RecipeCategories ("
+            "recipe_id INTEGER,"
+            "categories_id INTEGER,"
+            "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE,"
+            "FOREIGN KEY(categories_id) REFERENCES Categories(id) ON DELETE CASCADE"
+            ")");
+        await db.execute("CREATE TABLE ShoppingCart ("
+            "item_id INTEGER PRIMARY KEY,"
+            "name TEXT,"
+            "amount TEXT"
+            ")");
+      },
+    );
   }
 
   Future<int> getNewIDforTable(String tablename) async {
@@ -322,6 +331,15 @@ class DBProvider {
     final db = await database;
 
     await db.rawDelete("DELETE FROM Recipe WHERE id= ?", [recipe.id]);
+    // TODO: Delete temporary code
+    var resCategories =
+        await db.rawQuery("SELECT recipe_id FROM RecipeCategories");
+    print("#-#-#-#-#-#-#-#-#-#-#");
+    for (int i = 0; i < resCategories.length; i++) {
+      print(resCategories[i]["recipe_id"]);
+      print(resCategories[i]["categories_id"]);
+    }
+    print("#-#-#-#-#-#-#-#-#-#-#");
 
     Directory appDir = await getApplicationDocumentsDirectory();
     String imageLocalPathRecipe = "${appDir.path}/${recipe.id}/";
@@ -336,11 +354,14 @@ class DBProvider {
   Future<List<Recipe>> getRecipesOfCategory(String category) async {
     final db = await database;
 
-    var resCategories = await db.rawQuery(
-        "SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id "
+    var resCategories = await db.rawQuery("SELECT * FROM RecipeCategories "
+        "INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id "
         "WHERE Categories.name=\"$category\"");
     List<Recipe> output = new List<Recipe>();
     for (int i = 0; i < resCategories.length; i++) {
+      print("#####################");
+      print(resCategories[i]["recipe_id"]);
+      print("#####################");
       var newRecipe = await getRecipeById(resCategories[i]["recipe_id"]);
       output.add(newRecipe as Recipe);
     }

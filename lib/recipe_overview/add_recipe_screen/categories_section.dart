@@ -38,14 +38,13 @@ class _CategorySectionState extends State<CategorySection> {
     super.initState();
   }
 
-  List<Widget> _getCategoryChips() {
+  List<Widget> _getCategoryChips(List<String> categories) {
     List<Widget> output = new List<Widget>();
-    List<String> categoryTitles = Categories.getCategories();
 
-    print(categoryTitles.length);
-    for (int i = 0; i < categoryTitles.length; i++) {
+    print(categories.length);
+    for (int i = 0; i < categories.length; i++) {
       output.add(MyCategoryFilterChip(
-        chipName: "${categoryTitles[i]}",
+        chipName: "${categories[i]}",
         recipeCategories: widget.recipeCategories,
       ));
     }
@@ -112,11 +111,21 @@ class _CategorySectionState extends State<CategorySection> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Container(
-            child: Wrap(
-              spacing: 5.0,
-              runSpacing: 3.0,
-              children: _getCategoryChips(),
-            ),
+            child: FutureBuilder<List<String>>(
+                future: DBProvider.db.getCategories(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Wrap(
+                      spacing: 5.0,
+                      runSpacing: 3.0,
+                      children: _getCategoryChips(snapshot.data),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Text("Error occured");
+                  }
+                  return LinearProgressIndicator();
+                }),
           ),
         ),
       ],
