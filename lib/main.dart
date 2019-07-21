@@ -85,7 +85,7 @@ class MyHomePageState extends State<MyHomePage> {
           backgroundColor: Color(0xFF790604),
           child: Icon(Icons.add),
           onPressed: () {
-            // TODO: only navigator.pushNamed and not with the editrecipe.
+            // TODO: _remove buld
 
             /*DBProvider.db.getRecipeById(0).then((recipe) {
               print(recipe.toString());

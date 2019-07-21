@@ -19,7 +19,6 @@ class ImageSelector extends StatefulWidget {
 class _ImageSelectorState extends State<ImageSelector> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return widget.imageWrapper.getSelectedImage() == null
         ? Container(
             width: widget.circleSize,

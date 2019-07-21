@@ -70,7 +70,6 @@ class _StepsState extends State<Steps> {
                       label: Text("Remove step"),
                       onPressed: () {
                         setState(() {
-                          // TODO: Callback when a section gets removed
                           if (widget.stepsDecriptionController.length > 1) {
                             widget.stepsDecriptionController.removeLast();
                             widget.stepImages.removeLast();
@@ -193,7 +192,6 @@ class _StepState extends State<Step> {
                   child: IconButton(
                 icon: Icon(Icons.add_a_photo),
                 onPressed: (() {
-                  // TODO: Select image
                   _askUser();
                 }),
               )),

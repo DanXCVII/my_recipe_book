@@ -51,30 +51,10 @@ class _CategorySectionState extends State<CategorySection> {
     return output;
   }
 
-  Future<void> _saveCategory() async {
-    if (Categories.getCategories().contains(categoryNameController.text) ==
-            false &&
-        categoryNameController.text != "") {
-      String categoryName = categoryNameController.text;
-      if (widget.addCategoryImage.getSelectedImage() != null) {
-        String imagePath = await PathProvider.pP.getCategoryPath(categoryName);
-        compute(saveImage, [
-          File(widget.addCategoryImage.getSelectedImage()),
-          imagePath,
-          2000
-        ]);
-      }
-      await DBProvider.db.newCategory(categoryName);
-      Categories.addCategory(categoryName);
-    } else {
-      // TODO: when category already exists
-    }
-  }
-
   @override
   void dispose() {
     widget.addCategoryImage.setSelectedImage(null);
-    categoryNameController.dispose(); // TODO: Remove
+    categoryNameController.dispose();
     super.dispose();
   }
 
@@ -88,7 +68,6 @@ class _CategorySectionState extends State<CategorySection> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                // TODO: Add button to add a new category
                 Text(
                   "select subcategories:",
                   style: TextStyle(
@@ -134,8 +113,6 @@ class _CategorySectionState extends State<CategorySection> {
 }
 
 enum AnswersCategory { SAVE, DISMISS }
-
-// TODO: Fix issue that keyboard disappears after pressing on textformfield
 
 // creates a filterClip with the given name
 class MyCategoryFilterChip extends StatefulWidget {
@@ -254,6 +231,7 @@ class CustomDialogState extends State<CustomDialog> {
                 validator: (value) {
                   if (Categories.getCategories().contains(value))
                     return "category already exists";
+                  return null;
                 },
                 decoration: InputDecoration(
                   filled: true,
@@ -267,14 +245,7 @@ class CustomDialogState extends State<CustomDialog> {
                   FlatButton(
                       child: Text("Cancel"),
                       onPressed: () {
-                        if (widget.formKey.currentState.validate()) {
-                          // TODO Prio1: Not validating the category!
-                          _saveCategory().then((_) {
-                            Navigator.pop(context);
-                            widget.addCategoryImage.setSelectedImage(null);
-                            setState(() {}); // TODO: Not working
-                          });
-                        }
+                        Navigator.pop(context);
                       }),
                   FlatButton(
                       child: Text("Save"),
@@ -284,7 +255,7 @@ class CustomDialogState extends State<CustomDialog> {
                           _saveCategory().then((_) {
                             Navigator.pop(context);
                             widget.addCategoryImage.setSelectedImage(null);
-                            setState(() {}); // TODO: Not working
+                            setState(() {});
                           });
                         }
                       })
@@ -306,74 +277,14 @@ class CustomDialogState extends State<CustomDialog> {
     );
   }
 
-  Future _askUser() async {
-    switch (await showDialog(
-        context: context,
-        builder: (_) => SimpleDialog(
-              title: Text("Change Picture"),
-              children: <Widget>[
-                SimpleDialogOption(
-                  child: Text("Select an image from your gallery"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.GALLERY);
-                  },
-                ),
-                SimpleDialogOption(
-                  child: Text("Take a new photo with camera"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.PHOTO);
-                  },
-                ),
-              ],
-            ))) {
-      case Answers.GALLERY:
-        {
-          File pictureFile = await ImagePicker.pickImage(
-            source: ImageSource.gallery,
-            // maxHeight: 50.0,
-            // maxWidth: 50.0,
-          );
-          if (pictureFile != null) {
-            widget.addCategoryImage.setSelectedImage(pictureFile.path);
-            print("You selected gallery image : " + pictureFile.path);
-            setState(() {});
-          }
-          break;
-        }
-      case Answers.PHOTO:
-        {
-          File pictureFile = await ImagePicker.pickImage(
-            source: ImageSource.camera,
-            //maxHeight: 50.0,
-            //maxWidth: 50.0,
-          );
-          if (pictureFile != null) {
-            widget.addCategoryImage.setSelectedImage(pictureFile.path);
-            print("You selected gallery image : " + pictureFile.path);
-            setState(() {});
-          }
-          break;
-        }
-    }
-  }
-
   Future<void> _saveCategory() async {
-    if (Categories.getCategories().contains(categoryNameController.text) ==
-            false &&
-        categoryNameController.text != "") {
-      String categoryName = categoryNameController.text;
-      if (widget.addCategoryImage.getSelectedImage() != null) {
-        String imagePath = await PathProvider.pP.getCategoryPath(categoryName);
-        compute(saveImage, [
-          File(widget.addCategoryImage.getSelectedImage()),
-          imagePath,
-          2000
-        ]);
-      }
-      await DBProvider.db.newCategory(categoryName);
-      Categories.addCategory(categoryName);
-    } else {
-      // TODO: when category already exists
+    String categoryName = categoryNameController.text;
+    if (widget.addCategoryImage.getSelectedImage() != null) {
+      String imagePath = await PathProvider.pP.getCategoryPath(categoryName);
+      compute(saveImage,
+          [File(widget.addCategoryImage.getSelectedImage()), imagePath, 2000]);
     }
+    await DBProvider.db.newCategory(categoryName);
+    Categories.addCategory(categoryName);
   }
 }

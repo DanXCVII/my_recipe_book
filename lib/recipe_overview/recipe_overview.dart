@@ -10,7 +10,6 @@ class RecipeGridView extends StatelessWidget {
   final Map<String, List<Color>> colors = new Map<String, List<Color>>();
 
   RecipeGridView({@required this.category}) {
-    // TODO: Validate that colors are nice
     colors.addAll({
       "${Vegetable.NON_VEGETARIAN.toString()}1": [
         Color(0xffD10C0C),
@@ -142,7 +141,6 @@ class RecipeGridView extends StatelessWidget {
 
     List<Widget> output = new List<Widget>();
     for (int i = 0; i < recipes.length; i++) {
-      List<Color> recipeColor = getGradientReciptColors(recipes[i]);
       output.add(GestureDetector(
         onTap: () {
           Navigator.push(

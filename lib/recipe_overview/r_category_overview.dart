@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import "package:path_provider/path_provider.dart";
-import "dart:io";
+
 
 import '../database.dart';
 import '../recipe.dart';
@@ -38,7 +37,6 @@ class _RCategoryOverviewState extends State<RCategoryOverview> {
                         Navigator.push(
                           context,
                           CupertinoPageRoute(
-                            // TODO: Check if working
                             builder: (BuildContext context) => new RecipeGridView(
                                 category:
                                     "${snapshot.data[index.toDouble() ~/ 2]}"),
@@ -155,28 +153,39 @@ class _RCategoryOverviewState extends State<RCategoryOverview> {
                                 );
                               } else {
                                 return Padding(
-                                  padding:
-                                      EdgeInsets.only(left: 10, bottom: 40, right: 20),
-                                  child: Container(
-                                    height: 90,
-                                    width: 90,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.grey, width: 2),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(35),
-                                        topRight: Radius.circular(15),
-                                        bottomLeft: Radius.circular(15),
-                                        bottomRight: Radius.circular(35),
+                                    padding: EdgeInsets.only(
+                                        left: 10, bottom: 40, right: 20),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  new RecipeGridView(
+                                                      category:
+                                                          "${snapshot.data[index.toDouble() ~/ 2]}"),
+                                            ));
+                                      },
+                                      child: Container(
+                                        height: 90,
+                                        width: 90,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.grey, width: 2),
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(35),
+                                            topRight: Radius.circular(15),
+                                            bottomLeft: Radius.circular(15),
+                                            bottomRight: Radius.circular(35),
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 45,
+                                          color: Colors.grey,
+                                        ),
                                       ),
-                                    ),
-                                    child: Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 45,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                );
+                                    ));
                               }
                             },
                           ),
@@ -227,12 +236,9 @@ class CategoryGridView extends StatelessWidget {
   }
 
   Future<List<Widget>> getCategoryCards(BuildContext context) async {
-    Categories.setCategories(await DBProvider.db.getCategories());
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPath = appDir.path;
+    List<String> categories = await DBProvider.db.getCategories();
 
     List<Widget> output = new List<Widget>();
-    List<String> categories = Categories.getCategories();
     for (int i = 0; i < categories.length; i++) {
       output.add(
         GestureDetector(

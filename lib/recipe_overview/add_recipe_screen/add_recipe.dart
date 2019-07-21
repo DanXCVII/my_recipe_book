@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as ImageIO;
@@ -71,7 +70,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   final MyVegetableWrapper selectedRecipeVegetable = new MyVegetableWrapper();
 
   final _formKey = GlobalKey<FormState>();
-  bool buttonEnabled = true;
 
   @override
   void initState() {
@@ -168,52 +166,49 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.check),
-            color: buttonEnabled == false ? Colors.grey : Colors.white,
+            color: Colors.white,
             onPressed: () {
-              if (buttonEnabled) {
-                if (_formKey.currentState.validate()) {
-                  /////////// Only do if all data is VALID! ///////////
-                  if (widget.editRecipe == null) {
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (_) => SavingDialog(),
-                    );
-                    saveRecipe().then((_) {
-                      Navigator.pop(context);
-                    });
-                  } else {
-                    deleteOldSaveNewRecipe(widget.editRecipe).then((newRecipe) {
-                      newRecipe.isFavorite = widget.editRecipe.isFavorite;
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => RecipeScreen(
-                                  recipe: newRecipe,
-                                  primaryColor:
-                                      getRecipePrimaryColor(newRecipe))));
-                    });
-                  }
-                  //setState(() {
-                  //  buttonEnabled = false;
-                  //});
+              if (_formKey.currentState.validate()) {
+                /////////// Only do if all data is VALID! ///////////
+                FocusScope.of(context).requestFocus(new FocusNode());
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => WillPopScope(
+                      // It disables the back button
+                      onWillPop: () async => false,
+                      child: SavingDialog()),
+                );
+                if (widget.editRecipe == null) {
+                  saveRecipe().then((_) {
+                    Navigator.pop(context);
+                  });
                 } else {
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                      title: Text("Check filled in information"),
-                      contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
-                      content: Container(
-                        height: 10,
-                      ),
-                    ),
-                  );
+                  deleteOldSaveNewRecipe(widget.editRecipe).then((newRecipe) {
+                    newRecipe.isFavorite = widget.editRecipe.isFavorite;
+                    Navigator.pop(context); // loading screen
+                    Navigator.pop(context); // edit recipe screen
+                    Navigator.pop(context); // old recipe screen
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => RecipeScreen(
+                                recipe: newRecipe,
+                                primaryColor:
+                                    getRecipePrimaryColor(newRecipe))));
+                  });
                 }
               } else {
-                // TODO: Fill in else case, maybe not needed?
+                showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: Text("Check filled in information"),
+                    contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
+                    content: Container(
+                      height: 10,
+                    ),
+                  ),
+                );
               }
             },
           )
@@ -234,7 +229,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 validator: (value) {
                   if (value.isEmpty) {
                     return "Please enter a name";
-                  }
+                  } return null;
                 },
                 controller: nameController,
                 decoration: InputDecoration(
@@ -256,7 +251,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                       validator: (value) {
                         if (validateNumber(value) == false && value != "") {
                           return "no valid number";
-                        }
+                        } return null;
                       },
                       autovalidate: false,
                       controller: preperationTimeController,
@@ -277,7 +272,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                       validator: (value) {
                         if (validateNumber(value) == false && value != "") {
                           return "no valid number";
-                        }
+                        } return null;
                       },
                       autovalidate: false,
                       controller: cookingTimeController,
@@ -299,7 +294,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 validator: (value) {
                   if (validateNumber(value) == false && value != "") {
                     return "no valid number";
-                  }
+                  } return null;
                 },
                 autovalidate: false,
                 controller: totalTimeController,
@@ -322,7 +317,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   }
                   if (value.isEmpty) {
                     return "data required";
-                  }
+                  }return null;
                 },
                 controller: servingsController,
                 keyboardType: TextInputType.number,
@@ -466,7 +461,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
     int recipeId;
     widget.editRecipe == null
-        ? recipeId = await DBProvider.db.getNewIDforTable("Recipe")
+        ? recipeId = await DBProvider.db.getNewIDforTable("Recipe", "id")
         : recipeId = widget.editRecipe.id;
 
     String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
@@ -540,22 +535,22 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 
   // TODO: Remove if not needed anymore
-  bool isIngredientListValid(
-      List<List<TextEditingController>> ingredients,
-      List<List<TextEditingController>> amount,
-      List<List<TextEditingController>> unit) {
-    int validator = 0;
-    for (int i = 0; i < ingredients.length; i++) {
-      for (int j = 0; j < ingredients[i].length; j++) {
-        validator = 0;
-        if (ingredients[i][j].text == "") validator++;
-        if (amount[i][j].text == "") validator++;
-        if (unit[i][j].text == "") validator++;
-        if (validator == 1 || validator == 2) return false;
-      }
-    }
-    return true;
-  }
+  //bool isIngredientListValid(
+  //    List<List<TextEditingController>> ingredients,
+  //    List<List<TextEditingController>> amount,
+  //    List<List<TextEditingController>> unit) {
+  //  int validator = 0;
+  //  for (int i = 0; i < ingredients.length; i++) {
+  //    for (int j = 0; j < ingredients[i].length; j++) {
+  //      validator = 0;
+  //      if (ingredients[i][j].text == "") validator++;
+  //      if (amount[i][j].text == "") validator++;
+  //      if (unit[i][j].text == "") validator++;
+  //      if (validator == 1 || validator == 2) return false;
+  //    }
+  //  }
+  //  return true;
+  //}
 
   List<String> removeEmptyStrings(List<TextEditingController> list) {
     List<String> output = new List<String>();
@@ -661,6 +656,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 }
 
+/// Only List of attributs because compute only lets you have one 
+/// argument for the executed method
 /// List of dynamic must have
 /// [0] File image
 /// [1] String name

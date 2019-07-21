@@ -89,19 +89,20 @@ class DBProvider {
         await db.execute("CREATE TABLE ShoppingCart ("
             "item_id INTEGER PRIMARY KEY,"
             "name TEXT,"
-            "amount TEXT"
+            "amount REAL"
             ")");
       },
     );
   }
 
-  Future<int> getNewIDforTable(String tablename) async {
+  Future<int> getNewIDforTable(String tablename, String idName) async {
     print('DB.getNewIDforTable');
     final db = await database;
     // var completer = new Completer<int>();
     int output = 0;
 
-    var table = await db.rawQuery("SELECT MAX(id)+1 as id FROM $tablename");
+    var table =
+        await db.rawQuery("SELECT MAX($idName)+1 as id FROM $tablename");
     int id = table.first["id"];
     if (id != null) {
       output = id;
@@ -117,7 +118,7 @@ class DBProvider {
     await db.rawInsert(
         "INSERT Into Categories (id,name)"
         " VALUES (?,?)",
-        [await getNewIDforTable("Categories"), name]);
+        [await getNewIDforTable("Categories", "id"), name]);
     return;
   }
 
@@ -156,7 +157,7 @@ class DBProvider {
           0
         ]);
     for (int i = 0; i < newRecipe.ingredientsGlossary.length; i++) {
-      int _sectionId = await getNewIDforTable("Sections");
+      int _sectionId = await getNewIDforTable("Sections", "id");
 
       await db.rawInsert(
           "INSERT Into Sections (id,number,name,recipe_id)"
@@ -168,7 +169,7 @@ class DBProvider {
             "INSERT Into Ingredients (id,name,amount,unit,section_id)"
             " VALUES (?,?,?,?,?)",
             [
-              await getNewIDforTable("Ingredients"),
+              await getNewIDforTable("Ingredients", "id"),
               newRecipe.ingredientsList[i][j],
               newRecipe.amount[i][j],
               newRecipe.unit[i][j],
@@ -177,7 +178,7 @@ class DBProvider {
       }
     }
     for (int i = 0; i < newRecipe.steps.length; i++) {
-      int stepsId = await getNewIDforTable("Steps");
+      int stepsId = await getNewIDforTable("Steps", "id");
 
       await db.rawInsert(
           "INSERT Into Steps (id,number,description,recipe_id)"
@@ -194,7 +195,7 @@ class DBProvider {
               "INSERT Into StepImages (id,image,steps_id)"
               " VALUES (?,?,?)",
               [
-                await getNewIDforTable("StepImages"),
+                await getNewIDforTable("StepImages", "id"),
                 await PathProvider.pP.getRecipeStepPath(newRecipe.id, i, j),
                 stepsId,
               ]);
@@ -331,15 +332,6 @@ class DBProvider {
     final db = await database;
 
     await db.rawDelete("DELETE FROM Recipe WHERE id= ?", [recipe.id]);
-    // TODO: Delete temporary code
-    var resCategories =
-        await db.rawQuery("SELECT recipe_id FROM RecipeCategories");
-    print("#-#-#-#-#-#-#-#-#-#-#");
-    for (int i = 0; i < resCategories.length; i++) {
-      print(resCategories[i]["recipe_id"]);
-      print(resCategories[i]["categories_id"]);
-    }
-    print("#-#-#-#-#-#-#-#-#-#-#");
 
     Directory appDir = await getApplicationDocumentsDirectory();
     String imageLocalPathRecipe = "${appDir.path}/${recipe.id}/";
@@ -347,8 +339,41 @@ class DBProvider {
     dir.deleteSync(recursive: true);
   }
 
-  Future<void> addToShoppingList(String ingredient, String amountWithUnit) {
-    // TODO: Implement
+  Future<void> addToShoppingList(Map<String, double> ingredients) async {
+    final db = await database;
+    Batch batch = db.batch();
+
+    List<String> ingredientsList = ingredients.keys.toList();
+
+    int _shoppingCartId = await getNewIDforTable("ShoppingCart", "item_id");
+    for (int i = 0; i < ingredientsList.length; i++) {
+      var resShoppingCart = await db.query("ShoppingCart",
+          where: "name = ?", whereArgs: [ingredientsList[i]]);
+          print(resShoppingCart[0]['name']);
+      if (resShoppingCart.isEmpty) {
+        print("kek");
+        batch.insert('ShoppingCart', {
+          'item_id': '${_shoppingCartId + i}',
+          'name': '${ingredientsList[i]}',
+          'amount': '${ingredients[ingredientsList[i]]}'
+        });
+      } else {
+        await db.rawUpdate(
+        "UPDATE ShoppingCart SET amount = (amount + ${ingredients[ingredientsList[i]]}) WHERE name = '${ingredientsList[i]}'");
+        //batch.update('ShoppingCart',
+        //    {'amount': 'amount' + ingredients[ingredientsList[i]]},
+        //    where: 'name = ?', whereArgs: ['${ingredientsList[i]}']);
+      }
+    }
+    var resCategories = await db.rawQuery("SELECT * FROM ShoppingCart");
+    print("#-#-#-#-#-#-#-#-#-#-#");
+    for (int i = 0; i < resCategories.length; i++) {
+      print(resCategories[i]["name"]);
+      print(resCategories[i]["amount"]);
+    }
+    print("#-#-#-#-#-#-#-#-#-#-#");
+
+    await batch.commit();
   }
 
   Future<List<Recipe>> getRecipesOfCategory(String category) async {

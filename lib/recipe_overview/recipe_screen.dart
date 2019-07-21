@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 
 import '../recipe.dart';
 import './recipe_overview.dart' show Favorite;
@@ -44,8 +42,11 @@ class RecipeScreen extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () {
-                    DBProvider.db.deleteRecipe(recipe).then((_) {Navigator.pop(context);});
-                },),
+                    DBProvider.db.deleteRecipe(recipe).then((_) {
+                      Navigator.pop(context);
+                    });
+                  },
+                ),
                 IconButton(
                   icon: Icon(Icons.share),
                   onPressed: () {},
@@ -68,7 +69,8 @@ class RecipeScreen extends StatelessWidget {
               delegate: SliverChildListDelegate(<Widget>[
             GestureDetector(
               onTap: () {
-                _showPictureFullView(recipe.imagePath, "${recipe.imagePath}${recipe.id}", context);
+                _showPictureFullView(recipe.imagePath,
+                    "${recipe.imagePath}${recipe.id}", context);
               },
               child: Hero(
                 tag: "${recipe.imagePath}",
@@ -78,7 +80,8 @@ class RecipeScreen extends StatelessWidget {
                     clipper: MyClipper(),
                     child: Container(
                         height: 270,
-                        child: Image.asset(recipe.imagePath, fit: BoxFit.cover)),
+                        child:
+                            Image.asset(recipe.imagePath, fit: BoxFit.cover)),
                   ),
                 ),
               ),
@@ -279,9 +282,6 @@ class BottomScreen extends StatelessWidget {
   BottomScreen(this.currentRecipe);
 
   Future<Wrap> getCategories() async {
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPath = appDir.path;
-
     Wrap output = new Wrap(
       children: <Widget>[],
       runSpacing: 10.0,
@@ -322,8 +322,6 @@ class BottomScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     Column output = new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[],
@@ -467,6 +465,7 @@ class StepsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (currentRecipe.steps.isEmpty) return Container();
     Column output = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -516,6 +515,7 @@ class IngredientsScreen extends StatefulWidget {
 
 class IngredientsScreenState extends State<IngredientsScreen> {
   double servings;
+  List<String> saved = new List<String>();
 
   IngredientsScreenState(this.servings);
 
@@ -532,23 +532,41 @@ class IngredientsScreenState extends State<IngredientsScreen> {
       double amount = widget.currentRecipe.amount[sectionNumber][i] /
           widget.currentRecipe.servings *
           servings;
-
+      String ingredientName =
+          "${widget.currentRecipe.ingredientsList[sectionNumber][i]}";
       output.add(
         Padding(
           padding: const EdgeInsets.only(right: 20),
           child: Row(
             children: <Widget>[
               IconButton(
-                  icon: Icon(Icons.add_circle_outline),
-                  onPressed: () {},
-                  color: Colors.white),
+                  icon: saved.contains(ingredientName) ||
+                          saved.contains('<all>') ||
+                          saved.contains('section$sectionNumber')
+                      ? Icon(Icons.check_circle)
+                      : Icon(Icons.add_circle_outline),
+                  onPressed: () {
+                    if (!saved.contains(ingredientName))
+                      DBProvider.db.addToShoppingList(
+                          {ingredientName: amount}).then((_) {
+                        setState(() {
+                          saved = this.saved;
+                          saved.add(ingredientName);
+                        });
+                      });
+                  },
+                  color: saved.contains(ingredientName) ||
+                          saved.contains('<all>') ||
+                          saved.contains('section$sectionNumber')
+                      ? Colors.green
+                      : Colors.white),
               Text(
-                "${widget.currentRecipe.ingredientsList[sectionNumber][i]}",
+                ingredientName,
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               Spacer(),
               Text(
-                "$amount ${widget.currentRecipe.unit[sectionNumber][i]}",
+                "$amount $ingredientName",
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ],
@@ -573,11 +591,23 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                 Text("${widget.currentRecipe.ingredientsGlossary[i]}",
                     style: TextStyle(color: textColor, fontSize: 24)),
                 IconButton(
-                  icon: Icon(Icons.add_shopping_cart),
+                  icon: saved.contains("section$i") || saved.contains('<all>')
+                      ? Icon(Icons.shopping_cart)
+                      : Icon(Icons.add_shopping_cart),
                   onPressed: () {
-                    // TODO: add ingredients to shopping list
+                    Map<String, double> ingredients = ingredientsToMap(
+                        [widget.currentRecipe.ingredientsList[i]],
+                        [widget.currentRecipe.amount[i]]);
+                    DBProvider.db.addToShoppingList(ingredients).then((_) {
+                      setState(() {
+                        saved = this.saved;
+                        saved.add("section$i");
+                      });
+                    });
                   },
-                  color: textColor,
+                  color: saved.contains("section$i") || saved.contains('<all>')
+                      ? Colors.green
+                      : textColor,
                 )
               ],
             ),
@@ -590,6 +620,17 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     return output;
   }
 
+  Map<String, double> ingredientsToMap(
+      List<List<String>> ingredients, List<List<double>> amount) {
+    Map<String, double> ingredientsMap = {};
+    for (int i = 0; i < ingredients.length; i++) {
+      for (int j = 0; j < ingredients[i].length; j++) {
+        ingredientsMap.addAll({"${ingredients[i][j]}": amount[i][j]});
+      }
+    }
+    return ingredientsMap;
+  }
+
   @override
   void initState() {
     servings = widget.currentRecipe.servings;
@@ -598,6 +639,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.currentRecipe.ingredientsList.isEmpty) return Container();
     Column output = Column(
       children: <Widget>[
         Container(
@@ -621,11 +663,25 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(
-                          Icons.add_shopping_cart,
-                          color: textColor,
-                        ),
-                        onPressed: () {},
+                        icon: !saved.contains('<all>')
+                            ? Icon(Icons.add_shopping_cart)
+                            : Icon(Icons.shopping_cart),
+                        color:
+                            !saved.contains('<all>') ? textColor : Colors.green,
+                        onPressed: () {
+                          Map<String, double> ingredientsData =
+                              ingredientsToMap(
+                                  widget.currentRecipe.ingredientsList,
+                                  widget.currentRecipe.amount);
+                          DBProvider.db
+                              .addToShoppingList(ingredientsData)
+                              .then((_) {
+                            setState(() {
+                              saved = this.saved;
+                              saved.add('<all>');
+                            });
+                          });
+                        },
                       )
                     ],
                   ),
