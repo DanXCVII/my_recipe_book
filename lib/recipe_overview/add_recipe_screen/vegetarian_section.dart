@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 
 import "../../recipe.dart";
-import './add_recipe.dart';
 import "../../my_wrapper.dart";
 
 // Widget for the radio buttons (vegetarian, vegan, etc.)
@@ -39,7 +38,6 @@ class _VegetarianState extends State<Vegetarian> {
 
       switch (_radioValue) {
         case 0:
-          // TODO: save vegetable to editRecipe
           widget.vegetableStatus.setVegetableStatus(Vegetable.NON_VEGETARIAN);
           break;
         case 1:

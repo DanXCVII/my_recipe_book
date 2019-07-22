@@ -17,82 +17,92 @@ class DBProvider {
 
     // if _database is null we instantiate it
     _database = await initDB();
+    await _onConfigure(_database);
     return _database;
+  }
+
+  _onConfigure(Database db) async {
+    // Add support for cascade delete
+    await db.execute("PRAGMA foreign_keys = ON");
   }
 
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "TestDB.db");
-    return await openDatabase(path, version: 1, onOpen: (db) {},
-        onCreate: (Database db, int version) async {
-      await db.execute("CREATE TABLE Recipe ("
-          "id INTEGER PRIMARY KEY,"
-          "name TEXT,"
-          "image TEXT,"
-          "preperationTime REAL,"
-          "cookingTime REAL,"
-          "totalTime REAL,"
-          "servings REAL,"
-          "vegetable TEXT,"
-          "notes TEXT,"
-          "complexity INTEGER,"
-          "isFavorite INTEGER"
-          ")");
-      await db.execute("CREATE TABLE Steps ("
-          "id INTEGER PRIMARY KEY,"
-          "number TEXT,"
-          "description TEXT,"
-          "recipe_id INTEGER,"
-          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
-          
-          ")");
-      await db.execute("CREATE TABLE StepImages ("
-          "id INTEGER PRIMARY KEY,"
-          "image TEXT,"
-          "steps_id INTEGER,"
-          "FOREIGN KEY(steps_id) REFERENCES Steps(id) ON DELETE CASCADE"
-          ")");
-      await db.execute("CREATE TABLE Sections ("
-          "id INTEGER PRIMARY KEY,"
-          "number INTEGER,"
-          "name TEXT,"
-          "recipe_id INTEGER,"
-          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
-          ")");
-      await db.execute("CREATE TABLE Ingredients ("
-          "id INTEGER PRIMARY KEY,"
-          "name TEXT,"
-          "amount REAL,"
-          "unit TEXT,"
-          "section_id INTEGER,"
-          "FOREIGN KEY(section_id) REFERENCES Section(id) ON DELETE CASCADE"
-          ")");
-      await db.execute("CREATE TABLE Categories ("
-          "id INTEGER PRIMARY KEY,"
-          "name TEXT"
-          ")");
-      await db.execute("CREATE TABLE RecipeCategories ("
-          "recipe_id INTEGER,"
-          "categories_id INTEGER,"
-          "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE,"
-          "FOREIGN KEY(categories_id) REFERENCES Categories(id) ON DELETE CASCADE"
-          ")");
-      await db.execute("CREATE TABLE ShoppingCart ("
-          "item_id INTEGER PRIMARY KEY,"
-          "name TEXT,"
-          "amount TEXT"
-          ")"
-      );
-    });
+    return await openDatabase(
+      path,
+      onConfigure: _onConfigure,
+      version: 1,
+      onOpen: (db) {},
+      onCreate: (Database db, int version) async {
+        await db.execute("CREATE TABLE Recipe ("
+            "id INTEGER PRIMARY KEY,"
+            "name TEXT,"
+            "image TEXT,"
+            "preperationTime REAL,"
+            "cookingTime REAL,"
+            "totalTime REAL,"
+            "servings REAL,"
+            "vegetable TEXT,"
+            "notes TEXT,"
+            "complexity INTEGER,"
+            "isFavorite INTEGER"
+            ")");
+        await db.execute("CREATE TABLE Steps ("
+            "id INTEGER PRIMARY KEY,"
+            "number TEXT,"
+            "description TEXT,"
+            "recipe_id INTEGER,"
+            "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
+            ")");
+        await db.execute("CREATE TABLE StepImages ("
+            "id INTEGER PRIMARY KEY,"
+            "image TEXT,"
+            "steps_id INTEGER,"
+            "FOREIGN KEY(steps_id) REFERENCES Steps(id) ON DELETE CASCADE"
+            ")");
+        await db.execute("CREATE TABLE Sections ("
+            "id INTEGER PRIMARY KEY,"
+            "number INTEGER,"
+            "name TEXT,"
+            "recipe_id INTEGER,"
+            "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
+            ")");
+        await db.execute("CREATE TABLE Ingredients ("
+            "id INTEGER PRIMARY KEY,"
+            "name TEXT,"
+            "amount REAL,"
+            "unit TEXT,"
+            "section_id INTEGER,"
+            "FOREIGN KEY(section_id) REFERENCES Sections(id) ON DELETE CASCADE"
+            ")");
+        await db.execute("CREATE TABLE Categories ("
+            "id INTEGER PRIMARY KEY,"
+            "name TEXT"
+            ")");
+        await db.execute("CREATE TABLE RecipeCategories ("
+            "recipe_id INTEGER,"
+            "categories_id INTEGER,"
+            "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE,"
+            "FOREIGN KEY(categories_id) REFERENCES Categories(id) ON DELETE CASCADE"
+            ")");
+        await db.execute("CREATE TABLE ShoppingCart ("
+            "item_id INTEGER PRIMARY KEY,"
+            "name TEXT,"
+            "amount REAL"
+            ")");
+      },
+    );
   }
 
-  Future<int> getNewIDforTable(String tablename) async {
+  Future<int> getNewIDforTable(String tablename, String idName) async {
     print('DB.getNewIDforTable');
     final db = await database;
     // var completer = new Completer<int>();
     int output = 0;
 
-    var table = await db.rawQuery("SELECT MAX(id)+1 as id FROM $tablename");
+    var table =
+        await db.rawQuery("SELECT MAX($idName)+1 as id FROM $tablename");
     int id = table.first["id"];
     if (id != null) {
       output = id;
@@ -108,7 +118,7 @@ class DBProvider {
     await db.rawInsert(
         "INSERT Into Categories (id,name)"
         " VALUES (?,?)",
-        [await getNewIDforTable("Categories"), name]);
+        [await getNewIDforTable("Categories", "id"), name]);
     return;
   }
 
@@ -147,7 +157,7 @@ class DBProvider {
           0
         ]);
     for (int i = 0; i < newRecipe.ingredientsGlossary.length; i++) {
-      int _sectionId = await getNewIDforTable("Sections");
+      int _sectionId = await getNewIDforTable("Sections", "id");
 
       await db.rawInsert(
           "INSERT Into Sections (id,number,name,recipe_id)"
@@ -159,7 +169,7 @@ class DBProvider {
             "INSERT Into Ingredients (id,name,amount,unit,section_id)"
             " VALUES (?,?,?,?,?)",
             [
-              await getNewIDforTable("Ingredients"),
+              await getNewIDforTable("Ingredients", "id"),
               newRecipe.ingredientsList[i][j],
               newRecipe.amount[i][j],
               newRecipe.unit[i][j],
@@ -168,7 +178,7 @@ class DBProvider {
       }
     }
     for (int i = 0; i < newRecipe.steps.length; i++) {
-      int stepsId = await getNewIDforTable("Steps");
+      int stepsId = await getNewIDforTable("Steps", "id");
 
       await db.rawInsert(
           "INSERT Into Steps (id,number,description,recipe_id)"
@@ -185,7 +195,7 @@ class DBProvider {
               "INSERT Into StepImages (id,image,steps_id)"
               " VALUES (?,?,?)",
               [
-                await getNewIDforTable("StepImages"),
+                await getNewIDforTable("StepImages", "id"),
                 await PathProvider.pP.getRecipeStepPath(newRecipe.id, i, j),
                 stepsId,
               ]);
@@ -329,18 +339,54 @@ class DBProvider {
     dir.deleteSync(recursive: true);
   }
 
-  Future<void> addToShoppingList(String ingredient, String amountWithUnit) {
-    // TODO: Implement
+  Future<void> addToShoppingList(Map<String, double> ingredients) async {
+    final db = await database;
+    Batch batch = db.batch();
+
+    List<String> ingredientsList = ingredients.keys.toList();
+
+    int _shoppingCartId = await getNewIDforTable("ShoppingCart", "item_id");
+    for (int i = 0; i < ingredientsList.length; i++) {
+      var resShoppingCart = await db.query("ShoppingCart",
+          where: "name = ?", whereArgs: [ingredientsList[i]]);
+          print(resShoppingCart[0]['name']);
+      if (resShoppingCart.isEmpty) {
+        print("kek");
+        batch.insert('ShoppingCart', {
+          'item_id': '${_shoppingCartId + i}',
+          'name': '${ingredientsList[i]}',
+          'amount': '${ingredients[ingredientsList[i]]}'
+        });
+      } else {
+        await db.rawUpdate(
+        "UPDATE ShoppingCart SET amount = (amount + ${ingredients[ingredientsList[i]]}) WHERE name = '${ingredientsList[i]}'");
+        //batch.update('ShoppingCart',
+        //    {'amount': 'amount' + ingredients[ingredientsList[i]]},
+        //    where: 'name = ?', whereArgs: ['${ingredientsList[i]}']);
+      }
+    }
+    var resCategories = await db.rawQuery("SELECT * FROM ShoppingCart");
+    print("#-#-#-#-#-#-#-#-#-#-#");
+    for (int i = 0; i < resCategories.length; i++) {
+      print(resCategories[i]["name"]);
+      print(resCategories[i]["amount"]);
+    }
+    print("#-#-#-#-#-#-#-#-#-#-#");
+
+    await batch.commit();
   }
 
   Future<List<Recipe>> getRecipesOfCategory(String category) async {
     final db = await database;
 
-    var resCategories = await db.rawQuery(
-        "SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id "
+    var resCategories = await db.rawQuery("SELECT * FROM RecipeCategories "
+        "INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id "
         "WHERE Categories.name=\"$category\"");
     List<Recipe> output = new List<Recipe>();
     for (int i = 0; i < resCategories.length; i++) {
+      print("#####################");
+      print(resCategories[i]["recipe_id"]);
+      print("#####################");
       var newRecipe = await getRecipeById(resCategories[i]["recipe_id"]);
       output.add(newRecipe as Recipe);
     }

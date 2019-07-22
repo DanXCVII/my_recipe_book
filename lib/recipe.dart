@@ -23,7 +23,6 @@ class Recipe {
   String notes;
   bool isFavorite;
   int complexity;
-  // TODO: add categories
 
   Recipe(
       {@required this.id,
@@ -169,7 +168,6 @@ class PathProvider {
   Future<String> getRecipeStepPreviewPath(
       int recipeId, int stepNumber, int number) async {
     String imageLocalPath = await localPath;
-    // TODO: Create correct directory.
     await Directory(
             '$imageLocalPath/$recipeId/preview/stepImages/p-$stepNumber')
         .create(recursive: true);
@@ -184,7 +182,7 @@ class PathProvider {
   }
 
   // returns a list of the paths to the preview stepimages of the recipe
-  // TODO: use this method to get the paths instead of the list to the paths in the sql database
+  // TODO: use this method to get the paths instead of the list to the paths from the sql database
   Future<List<List<String>>> getRecipeStepPreviewPathList(
       int stepCount, int recipeId) async {
     List<List<String>> output = [[]];
@@ -211,27 +209,4 @@ class PathProvider {
   }
 }
 
-class Categories {
-  static List<String> _categories;
 
-  Categories({List<String> categories});
-
-  static void setCategories(List<String> categories) {
-    _categories = categories;
-  }
-
-  static void removeCategory(String name) {
-    _categories.remove(name);
-  }
-
-  static void addCategory(String name) {
-    _categories == null ? _categories = [name] : _categories.add(name);
-  }
-
-  static List<String> getCategories() {
-    if (_categories == null)
-      return new List<String>();
-    else
-      return _categories;
-  }
-}

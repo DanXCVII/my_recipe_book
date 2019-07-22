@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as ImageIO;
@@ -9,11 +9,14 @@ import '../../recipe.dart';
 import '../../database.dart';
 import './steps_section.dart';
 import './ingredients_section.dart';
+import './savingDialog.dart';
+
 import './categories_section.dart';
 import './vegetarian_section.dart';
 import '../../my_wrapper.dart';
 import './complexity_section.dart';
 import '../recipe_screen.dart' show RecipeScreen;
+import './image_selector.dart' as IS;
 
 const double categories = 14;
 const double topPadding = 8;
@@ -67,7 +70,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   final MyVegetableWrapper selectedRecipeVegetable = new MyVegetableWrapper();
 
   final _formKey = GlobalKey<FormState>();
-  bool buttonEnabled = true;
 
   @override
   void initState() {
@@ -90,11 +92,12 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       nameController.text = widget.editRecipe.name;
       if (widget.editRecipe.imagePath != null)
         selectedRecipeImage.setSelectedImage(widget.editRecipe.imagePath);
-      preperationTimeController.text =
-          widget.editRecipe.preperationTime.toString();
-      if (widget.editRecipe.cookingTime != null)
+      if (widget.editRecipe.preperationTime != 0.0)
+        preperationTimeController.text =
+            widget.editRecipe.preperationTime.toString();
+      if (widget.editRecipe.cookingTime != 0.0)
         cookingTimeController.text = widget.editRecipe.cookingTime.toString();
-      if (widget.editRecipe.totalTime != null)
+      if (widget.editRecipe.totalTime != 0.0)
         totalTimeController.text = widget.editRecipe.totalTime.toString();
       servingsController.text = widget.editRecipe.servings.toString();
       notesController.text = widget.editRecipe.notes;
@@ -163,53 +166,49 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.check),
-            color: buttonEnabled == false ? Colors.grey : Colors.white,
+            color: Colors.white,
             onPressed: () {
-              if (buttonEnabled) {
-                if (_formKey.currentState.validate()) {
-                  /////////// Only do if all data is VALID! ///////////
-                  if (widget.editRecipe == null) {
-                    saveRecipe().then((_) {
-                      Navigator.pop(context);
-                    });
-                  } else {
-                    deleteOldSaveNewRecipe(widget.editRecipe).then((newRecipe) {
-                      newRecipe.isFavorite = widget.editRecipe.isFavorite;
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => RecipeScreen(
-                                  recipe: newRecipe,
-                                  primaryColor:
-                                      getRecipePrimaryColor(newRecipe))));
-                    });
-                  }
-                  setState(() {
-                    buttonEnabled = false;
+              if (_formKey.currentState.validate()) {
+                /////////// Only do if all data is VALID! ///////////
+                FocusScope.of(context).requestFocus(new FocusNode());
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => WillPopScope(
+                      // It disables the back button
+                      onWillPop: () async => false,
+                      child: SavingDialog()),
+                );
+                if (widget.editRecipe == null) {
+                  saveRecipe().then((_) {
+                    Navigator.pop(context);
                   });
                 } else {
-                  showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                            title: Text("Check filled in information"),
-                            contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
-                            content: Text(
-                                "Please scroll through the list and check if any data is marked in red. "
-                                "It means that the data is not valid."),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: Text('Ok'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          ));
+                  deleteOldSaveNewRecipe(widget.editRecipe).then((newRecipe) {
+                    newRecipe.isFavorite = widget.editRecipe.isFavorite;
+                    Navigator.pop(context); // loading screen
+                    Navigator.pop(context); // edit recipe screen
+                    Navigator.pop(context); // old recipe screen
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => RecipeScreen(
+                                recipe: newRecipe,
+                                primaryColor:
+                                    getRecipePrimaryColor(newRecipe))));
+                  });
                 }
               } else {
-                return;
+                showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: Text("Check filled in information"),
+                    contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
+                    content: Container(
+                      height: 10,
+                    ),
+                  ),
+                );
               }
             },
           )
@@ -220,7 +219,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         child: SingleChildScrollView(
           child: Column(children: <Widget>[
             // top section with the add image button
-            ImageSelector(selectedRecipeImage),
+            SizedBox(height: 30),
+            IS.ImageSelector(selectedRecipeImage, 120, Color(0xFF790604)),
+            SizedBox(height: 30),
             // name textField
             Padding(
               padding: const EdgeInsets.all(12.0),
@@ -228,7 +229,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 validator: (value) {
                   if (value.isEmpty) {
                     return "Please enter a name";
-                  }
+                  } return null;
                 },
                 controller: nameController,
                 decoration: InputDecoration(
@@ -250,7 +251,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                       validator: (value) {
                         if (validateNumber(value) == false && value != "") {
                           return "no valid number";
-                        }
+                        } return null;
                       },
                       autovalidate: false,
                       controller: preperationTimeController,
@@ -271,7 +272,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                       validator: (value) {
                         if (validateNumber(value) == false && value != "") {
                           return "no valid number";
-                        }
+                        } return null;
                       },
                       autovalidate: false,
                       controller: cookingTimeController,
@@ -293,7 +294,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 validator: (value) {
                   if (validateNumber(value) == false && value != "") {
                     return "no valid number";
-                  }
+                  } return null;
                 },
                 autovalidate: false,
                 controller: totalTimeController,
@@ -316,7 +317,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   }
                   if (value.isEmpty) {
                     return "data required";
-                  }
+                  }return null;
                 },
                 controller: servingsController,
                 keyboardType: TextInputType.number,
@@ -367,7 +368,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               ),
             ),
             ComplexitySection(complexity: complexity),
-            CategorySection(addCategoryImage, newRecipeCategories),
+            CategorySection(addCategoryImage, newRecipeCategories, _formKey),
           ]),
         ),
       ),
@@ -411,7 +412,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       // .. temporarily put image in tmp dir befor recipe gets deleted and saved again
       String tmpRecipeImage =
           await PathProvider.pP.getTmpImagePath(editRecipe.imagePath);
-      await saveImage(File(editRecipe.imagePath), tmpRecipeImage, 2000);
+      await compute(
+          saveImage, [File(editRecipe.imagePath), tmpRecipeImage, 2000]);
       selectedRecipeImage.setSelectedImage(tmpRecipeImage);
     }
 
@@ -426,7 +428,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
           String stepImageName = stepImages[i][j].split("/").last;
           String tmpStepImagePath =
               await PathProvider.pP.getTmpImagePath(stepImageName);
-          await saveImage(File(stepImages[i][j]), tmpStepImagePath, 2000);
+          await compute(
+              saveImage, [File(stepImages[i][j]), tmpStepImagePath, 2000]);
           stepImages[i][j] = tmpStepImagePath;
         }
       }
@@ -458,24 +461,24 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
     int recipeId;
     widget.editRecipe == null
-        ? recipeId = await DBProvider.db.getNewIDforTable("Recipe")
+        ? recipeId = await DBProvider.db.getNewIDforTable("Recipe", "id")
         : recipeId = widget.editRecipe.id;
 
     String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
-    await saveImage(
-        File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 2000);
+    await compute(saveImage,
+        [File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 2000]);
     selectedRecipeImage.setSelectedImage(recipeImagePath);
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
-        String stepImageLocation = await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
-        String stepImagePreviewLocation = await PathProvider.pP.getRecipeStepPreviewPath(recipeId, i, j);
-        await saveImage(File(stepImages[i][j]),
-            stepImageLocation, 2000);
-        await saveImage(
-            File(stepImages[i][j]),
-            stepImagePreviewLocation,
-            500);
+        String stepImageLocation =
+            await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
+        String stepImagePreviewLocation =
+            await PathProvider.pP.getRecipeStepPreviewPath(recipeId, i, j);
+        await compute(
+            saveImage, [File(stepImages[i][j]), stepImageLocation, 2000]);
+        await compute(
+            saveImage, [File(stepImages[i][j]), stepImagePreviewLocation, 500]);
         stepImages[i][j] =
             await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
       }
@@ -532,22 +535,22 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 
   // TODO: Remove if not needed anymore
-  bool isIngredientListValid(
-      List<List<TextEditingController>> ingredients,
-      List<List<TextEditingController>> amount,
-      List<List<TextEditingController>> unit) {
-    int validator = 0;
-    for (int i = 0; i < ingredients.length; i++) {
-      for (int j = 0; j < ingredients[i].length; j++) {
-        validator = 0;
-        if (ingredients[i][j].text == "") validator++;
-        if (amount[i][j].text == "") validator++;
-        if (unit[i][j].text == "") validator++;
-        if (validator == 1 || validator == 2) return false;
-      }
-    }
-    return true;
-  }
+  //bool isIngredientListValid(
+  //    List<List<TextEditingController>> ingredients,
+  //    List<List<TextEditingController>> amount,
+  //    List<List<TextEditingController>> unit) {
+  //  int validator = 0;
+  //  for (int i = 0; i < ingredients.length; i++) {
+  //    for (int j = 0; j < ingredients[i].length; j++) {
+  //      validator = 0;
+  //      if (ingredients[i][j].text == "") validator++;
+  //      if (amount[i][j].text == "") validator++;
+  //      if (unit[i][j].text == "") validator++;
+  //      if (validator == 1 || validator == 2) return false;
+  //    }
+  //  }
+  //  return true;
+  //}
 
   List<String> removeEmptyStrings(List<TextEditingController> list) {
     List<String> output = new List<String>();
@@ -653,16 +656,23 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 }
 
-Future<void> saveImage(File image, String name, int quality) async {
-  print("saveFile()");
+/// Only List of attributs because compute only lets you have one 
+/// argument for the executed method
+/// List of dynamic must have
+/// [0] File image
+/// [1] String name
+/// [2] int quality
+void saveImage(List<dynamic> values) async {
   print("****************************");
-  print(image.path);
-  print(name);
+  print("saveFile()");
+  print(values[0].path);
+  print(values[1]);
 
-  if (image != null) {
-    ImageIO.Image newImage = ImageIO.decodeImage(image.readAsBytesSync());
-    ImageIO.Image resizedImage = ImageIO.copyResize(newImage, height: quality);
-    new File('$name')..writeAsBytesSync(ImageIO.encodeJpg(newImage));
+  if (values[0] != null) {
+    ImageIO.Image newImage = ImageIO.decodeImage(values[0].readAsBytesSync());
+    ImageIO.Image resizedImage =
+        ImageIO.copyResize(newImage, height: values[2]);
+    new File('${values[1]}')..writeAsBytesSync(ImageIO.encodeJpg(newImage));
   }
   print("****************************");
 }
@@ -720,134 +730,3 @@ class CustomStepsClipper extends CustomClipper<Path> {
 }
 
 enum Answers { GALLERY, PHOTO }
-
-// Top section of the screen where you can select an image for the dish
-class ImageSelector extends StatefulWidget {
-  final MyImageWrapper selectedRecipeImage;
-
-  ImageSelector(this.selectedRecipeImage);
-
-  @override
-  State<StatefulWidget> createState() {
-    return _ImageSelectorState();
-  }
-}
-
-class _ImageSelectorState extends State<ImageSelector> {
-  Future _askUser() async {
-    switch (await showDialog(
-        context: context,
-        builder: (_) => SimpleDialog(
-              title: Text("Change Picture"),
-              children: <Widget>[
-                SimpleDialogOption(
-                  child: Text("Select an image from your gallery"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.GALLERY);
-                  },
-                ),
-                SimpleDialogOption(
-                  child: Text("Take a new photo with camera"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.PHOTO);
-                  },
-                ),
-              ],
-            ))) {
-      case Answers.GALLERY:
-        {
-          File pictureFile = await ImagePicker.pickImage(
-            source: ImageSource.gallery,
-            // maxHeight: 50.0,
-            // maxWidth: 50.0,
-          );
-          if (pictureFile != null) {
-            widget.selectedRecipeImage.setSelectedImage(pictureFile.path);
-            print("You selected gallery image : " + pictureFile.path);
-            setState(() {});
-          }
-          break;
-        }
-      case Answers.PHOTO:
-        {
-          File pictureFile = await ImagePicker.pickImage(
-            source: ImageSource.camera,
-            //maxHeight: 50.0,
-            //maxWidth: 50.0,
-          );
-          if (pictureFile != null) {
-            widget.selectedRecipeImage.setSelectedImage(pictureFile.path);
-            print("You selected gallery image : " + pictureFile.path);
-            setState(() {});
-          }
-          break;
-        }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      child: Center(
-          child: widget.selectedRecipeImage.getSelectedImage() == null
-              ? Container(
-                  child: Center(
-                      child: IconButton(
-                    onPressed: () {
-                      _askUser();
-                    },
-                    color: Colors.white,
-                    icon: Icon(Icons.add_a_photo),
-                    iconSize: 32,
-                  )),
-                  width: 110,
-                  height: 110,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFF790604),
-                  ),
-                )
-              : Stack(children: <Widget>[
-                  ClipOval(
-                      child: Container(
-                    child: Image.asset(
-                      widget.selectedRecipeImage.getSelectedImage(),
-                      fit: BoxFit.cover,
-                    ),
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                  )),
-                  Opacity(
-                    opacity: 0.3,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.black87,
-                      ),
-                      width: 110,
-                      height: 110,
-                    ),
-                  ),
-                  Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(shape: BoxShape.circle),
-                    child: IconButton(
-                      icon: Icon(Icons.add_a_photo),
-                      iconSize: 32,
-                      color: Colors.white,
-                      onPressed: () {
-                        setState(() {
-                          _askUser();
-                        });
-                      },
-                    ),
-                  ),
-                ])),
-    );
-  }
-}

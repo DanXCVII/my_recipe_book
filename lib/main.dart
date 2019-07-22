@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'recipe_overview/r_category_overview.dart';
+import 'shopping_cart/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
 import 'package:flutter/rendering.dart';
 
@@ -73,6 +74,7 @@ class MyHomePageState extends State<MyHomePage> {
         return RCategoryOverview();
       case 'favorites':
       case 'shopping cart':
+        return ShoppingCart();
       case 'calendar':
       default:
         return Center(child: Text('This page is not yet implemented'));
@@ -85,7 +87,7 @@ class MyHomePageState extends State<MyHomePage> {
           backgroundColor: Color(0xFF790604),
           child: Icon(Icons.add),
           onPressed: () {
-            // TODO: only navigator.pushNamed and not with the editrecipe.
+            // TODO: _remove buld
 
             /*DBProvider.db.getRecipeById(0).then((recipe) {
               print(recipe.toString());

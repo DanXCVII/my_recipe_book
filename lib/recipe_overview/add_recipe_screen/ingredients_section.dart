@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 
 import "./add_recipe.dart";
 
-
 class Ingredients extends StatefulWidget {
   final List<List<TextEditingController>> ingredientNameController;
   final List<List<TextEditingController>> ingredientAmountController;
@@ -23,7 +22,6 @@ class Ingredients extends StatefulWidget {
 }
 
 class _IngredientsState extends State<Ingredients> {
-
   @override
   Widget build(BuildContext context) {
     // Column with all the data of the ingredients inside like heading, textFields etc.
@@ -84,9 +82,13 @@ class _IngredientsState extends State<Ingredients> {
                       label: Text("Remove section"),
                       onPressed: () {
                         setState(() {
-                          // TODO: Callback when a section gets removed
                           if (widget.ingredientGlossary.length > 1) {
+                            print(widget.ingredientAmountController.length);
                             widget.ingredientGlossary.removeLast();
+                            widget.ingredientAmountController.removeLast();
+                            widget.ingredientNameController.removeLast();
+                            widget.ingredientUnitController.removeLast();
+                            print(widget.ingredientAmountController.length);
                           }
                         });
                       },
@@ -181,7 +183,9 @@ class _IngredientSectionState extends State<IngredientSection> {
       ].where((c) => c != null).toList()),
     ));
     // add rows with the ingredient textFields to the List of widgets
-    for (int i = 0; i < widget.ingredientNameController[widget.sectionNumber].length; i++) {
+    for (int i = 0;
+        i < widget.ingredientNameController[widget.sectionNumber].length;
+        i++) {
       output.add(Padding(
         padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12, 12),
         child: Padding(
@@ -206,9 +210,9 @@ class _IngredientSectionState extends State<IngredientSection> {
                   padding: const EdgeInsets.only(left: 10),
                   child: TextFormField(
                     validator: (value) {
-                        if (validateNumber(value) == false && value != "") {
+                      if (validateNumber(value) == false && value != "") {
                         return "no valid number";
-                      }
+                      } return null;
                     },
                     autovalidate: false,
                     controller: widget
@@ -270,7 +274,6 @@ class _IngredientSectionState extends State<IngredientSection> {
               icon: Icon(Icons.add_circle_outline),
               label: Text("Add ingredient"),
               onPressed: () {
-                // TODO: Add new ingredient to the section
                 setState(() {
                   widget.ingredientNameController[widget.sectionNumber]
                       .add(new TextEditingController());
