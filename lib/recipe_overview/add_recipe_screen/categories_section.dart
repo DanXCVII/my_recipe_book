@@ -229,8 +229,9 @@ class CustomDialogState extends State<CustomDialog> {
                 controller: categoryNameController,
                 autovalidate: true,
                 validator: (value) {
-                  if (Categories.getCategories().contains(value))
-                    return "category already exists";
+                  // TODO: Validate if category already exists
+                  //if (Categories.getCategories().contains(value))
+                  //  return "category already exists";
                   return null;
                 },
                 decoration: InputDecoration(
@@ -285,6 +286,5 @@ class CustomDialogState extends State<CustomDialog> {
           [File(widget.addCategoryImage.getSelectedImage()), imagePath, 2000]);
     }
     await DBProvider.db.newCategory(categoryName);
-    Categories.addCategory(categoryName);
   }
 }
