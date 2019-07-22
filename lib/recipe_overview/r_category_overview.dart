@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 import '../database.dart';
 import '../recipe.dart';
 import './recipe_screen.dart';
@@ -163,7 +162,7 @@ class _RCategoryOverviewState extends State<RCategoryOverview> {
                                               builder: (BuildContext context) =>
                                                   new RecipeGridView(
                                                       category:
-                                                          "${snapshot.data[index.toDouble() ~/ 2]}"),
+                                                          "${snapshot.data[(index.toDouble()-1)~/ 2]}"),
                                             ));
                                       },
                                       child: Container(

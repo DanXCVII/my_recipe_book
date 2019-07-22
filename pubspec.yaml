@@ -69,6 +69,10 @@ flutter:
    - images/tomato.png
    - images/meat.png
    - images/milk.png
+   - images/banana.png
+   - images/bread.png
+   - images/apple.png
+   - images/circles.png
 
    - animations/writing_pen.flr
 
