@@ -91,6 +91,27 @@ Color getRecipePrimaryColor(Recipe recipe) {
   return null;
 }
 
+class ShoppingCart {
+ List<String> ingredientNames;
+  List<double> ingredientsAmount;
+  List<String> ingredientsUnit;
+
+  ShoppingCart(
+      {this.ingredientNames, this.ingredientsAmount, this.ingredientsUnit});
+
+  void setIngredientNames(List<String> ingredientNames) {
+    this.ingredientNames = ingredientNames;
+  }
+
+  void setIngredientsAmount(List<double> ingredientsAmount) {
+    this.ingredientsAmount = ingredientsAmount;
+  }
+
+  void setIngredientsUnit(List<String> ingredientsUnit) {
+    this.ingredientsUnit = ingredientsUnit;
+  }
+}
+
 /// Path to::
 /// recipe image
 /// /$recipeId/recipe-$recipeId.jpg
@@ -208,5 +229,3 @@ class PathProvider {
     return '$imageLocalPath/tmp/uniqueName';
   }
 }
-
-

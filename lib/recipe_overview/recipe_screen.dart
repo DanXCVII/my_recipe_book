@@ -529,11 +529,12 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     for (int i = 0;
         i < widget.currentRecipe.ingredientsList[sectionNumber].length;
         i++) {
-      double amount = widget.currentRecipe.amount[sectionNumber][i] /
+      double ingredientAmount = widget.currentRecipe.amount[sectionNumber][i] /
           widget.currentRecipe.servings *
           servings;
       String ingredientName =
           "${widget.currentRecipe.ingredientsList[sectionNumber][i]}";
+      String ingredientUnit = widget.currentRecipe.unit[sectionNumber][i];
       output.add(
         Padding(
           padding: const EdgeInsets.only(right: 20),
@@ -546,14 +547,17 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                       ? Icon(Icons.check_circle)
                       : Icon(Icons.add_circle_outline),
                   onPressed: () {
-                    if (!saved.contains(ingredientName))
-                      DBProvider.db.addToShoppingList(
-                          {ingredientName: amount}).then((_) {
+                    if (!saved.contains(ingredientName) &&
+                        !saved.contains('<all>') &&
+                        !saved.contains('section$sectionNumber')) {
+                      DBProvider.db.addToShoppingList([ingredientName],
+                          [ingredientAmount], [ingredientUnit]).then((_) {
                         setState(() {
                           saved = this.saved;
                           saved.add(ingredientName);
                         });
                       });
+                    }
                   },
                   color: saved.contains(ingredientName) ||
                           saved.contains('<all>') ||
@@ -566,7 +570,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
               ),
               Spacer(),
               Text(
-                "$amount $ingredientName",
+                "$ingredientAmount $ingredientUnit",
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ],
@@ -595,15 +599,20 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                       ? Icon(Icons.shopping_cart)
                       : Icon(Icons.add_shopping_cart),
                   onPressed: () {
-                    Map<String, double> ingredients = ingredientsToMap(
-                        [widget.currentRecipe.ingredientsList[i]],
-                        [widget.currentRecipe.amount[i]]);
-                    DBProvider.db.addToShoppingList(ingredients).then((_) {
-                      setState(() {
-                        saved = this.saved;
-                        saved.add("section$i");
+                    if (!saved.contains("section$i") &&
+                        !saved.contains('<all>')) {
+                      DBProvider.db
+                          .addToShoppingList(
+                              widget.currentRecipe.ingredientsList[i],
+                              widget.currentRecipe.amount[i],
+                              widget.currentRecipe.unit[i])
+                          .then((_) {
+                        setState(() {
+                          saved = this.saved;
+                          saved.add("section$i");
+                        });
                       });
-                    });
+                    }
                   },
                   color: saved.contains("section$i") || saved.contains('<all>')
                       ? Colors.green
@@ -620,15 +629,22 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     return output;
   }
 
-  Map<String, double> ingredientsToMap(
-      List<List<String>> ingredients, List<List<double>> amount) {
-    Map<String, double> ingredientsMap = {};
-    for (int i = 0; i < ingredients.length; i++) {
-      for (int j = 0; j < ingredients[i].length; j++) {
-        ingredientsMap.addAll({"${ingredients[i][j]}": amount[i][j]});
-      }
+  List<double> doubleListListToSingleList(List<List<double>> listList) {
+    List<double> singleList = [];
+
+    for (int i = 0; i < listList.length; i++) {
+      singleList.addAll(listList[i]);
     }
-    return ingredientsMap;
+    return singleList;
+  }
+
+  List<String> stringListListToSingleList(List<List<String>> listList) {
+    List<String> singleList = [];
+
+    for (int i = 0; i < listList.length; i++) {
+      singleList.addAll(listList[i]);
+    }
+    return singleList;
   }
 
   @override
@@ -669,18 +685,22 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                         color:
                             !saved.contains('<all>') ? textColor : Colors.green,
                         onPressed: () {
-                          Map<String, double> ingredientsData =
-                              ingredientsToMap(
-                                  widget.currentRecipe.ingredientsList,
-                                  widget.currentRecipe.amount);
-                          DBProvider.db
-                              .addToShoppingList(ingredientsData)
-                              .then((_) {
-                            setState(() {
-                              saved = this.saved;
-                              saved.add('<all>');
+                          if (!saved.contains('<all>')) {
+                            DBProvider.db
+                                .addToShoppingList(
+                                    stringListListToSingleList(
+                                        widget.currentRecipe.ingredientsList),
+                                    doubleListListToSingleList(
+                                        widget.currentRecipe.amount),
+                                    stringListListToSingleList(
+                                        widget.currentRecipe.unit))
+                                .then((_) {
+                              setState(() {
+                                saved = this.saved;
+                                saved.add('<all>');
+                              });
                             });
-                          });
+                          }
                         },
                       )
                     ],

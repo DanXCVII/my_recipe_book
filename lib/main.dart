@@ -73,8 +73,11 @@ class MyHomePageState extends State<MyHomePage> {
       case 'recipes':
         return RCategoryOverview();
       case 'favorites':
+        return Center(
+          child: Text("kek"),
+        );
       case 'shopping cart':
-        return ShoppingCart();
+        return ShoppingCartScreen();
       case 'calendar':
       default:
         return Center(child: Text('This page is not yet implemented'));
@@ -97,7 +100,8 @@ class MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(
                       builder: (BuildContext context) =>
                           new RecipeGridView(category: "kuh")));*/
-            Navigator.pushNamed(context, 'addRecipe');/*
+            Navigator.pushNamed(context, 'addRecipe');
+            /*
                 return;
               }
               Navigator.push(
