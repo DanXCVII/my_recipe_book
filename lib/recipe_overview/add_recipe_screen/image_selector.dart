@@ -17,9 +17,11 @@ class ImageSelector extends StatefulWidget {
 }
 
 class _ImageSelectorState extends State<ImageSelector> {
+  File selectedImageFile;
+
   @override
   Widget build(BuildContext context) {
-    return widget.imageWrapper.getSelectedImage() == null
+    return selectedImageFile == null
         ? Container(
             width: widget.circleSize,
             height: widget.circleSize,
@@ -41,8 +43,9 @@ class _ImageSelectorState extends State<ImageSelector> {
             child: Stack(children: <Widget>[
               ClipOval(
                 child: Container(
-                  child: Image.asset(
-                    widget.imageWrapper.getSelectedImage(),
+                  child: Image.file(
+                    // widget.imageWrapper.getSelectedImage(),
+                    selectedImageFile,
                     fit: BoxFit.cover,
                   ),
                   width: widget.circleSize,
@@ -107,7 +110,9 @@ class _ImageSelectorState extends State<ImageSelector> {
           if (pictureFile != null) {
             widget.imageWrapper.setSelectedImage(pictureFile.path);
             print("You selected gallery image : " + pictureFile.path);
-            setState(() {});
+            setState(() {
+              selectedImageFile = pictureFile;
+            });
           }
           break;
         }
@@ -118,10 +123,13 @@ class _ImageSelectorState extends State<ImageSelector> {
             //maxHeight: 50.0,
             //maxWidth: 50.0,
           );
+
           if (pictureFile != null) {
             widget.imageWrapper.setSelectedImage(pictureFile.path);
             print("You selected gallery image : " + pictureFile.path);
-            setState(() {});
+            setState(() {
+              selectedImageFile = pictureFile;
+            });
           }
           break;
         }

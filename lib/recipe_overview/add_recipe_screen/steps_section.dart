@@ -129,6 +129,8 @@ class Step extends StatefulWidget {
 }
 
 class _StepState extends State<Step> {
+  List<File> selectedImageFiles = [];
+
   Future _askUser() async {
     switch (await showDialog(
         context: context,
@@ -160,7 +162,10 @@ class _StepState extends State<Step> {
           if (newImage != null) {
             widget.stepImages[widget.stepNumber].add(newImage.path);
           }
-          setState(() {});
+          setState(() {
+            selectedImageFiles.add(newImage);
+            selectedImageFiles = this.selectedImageFiles;
+          });
           break;
         }
       case Answers.PHOTO:
@@ -174,7 +179,10 @@ class _StepState extends State<Step> {
           if (newImage != null) {
             widget.stepImages[widget.stepNumber].add(newImage.path);
           }
-          setState(() {});
+          setState(() {
+            selectedImageFiles.add(newImage);
+            selectedImageFiles = this.selectedImageFiles;
+          });
         }
         break;
     }
@@ -209,8 +217,9 @@ class _StepState extends State<Step> {
               ClipRRect(
                   borderRadius: BorderRadius.circular(7),
                   child: Container(
-                    child: Image.asset(
-                      widget.stepImages[widget.stepNumber][i],
+                    child: Image.file(
+                      // widget.stepImages[widget.stepNumber][i],
+                      selectedImageFiles[i],
                       fit: BoxFit.cover,
                     ),
                     width: 80,
@@ -236,6 +245,7 @@ class _StepState extends State<Step> {
                   onPressed: () {
                     setState(() {
                       widget.stepImages[widget.stepNumber].removeAt(i);
+                      selectedImageFiles.removeAt(i);
                     });
                   },
                 ),
