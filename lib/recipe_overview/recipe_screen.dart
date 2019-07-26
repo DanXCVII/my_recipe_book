@@ -550,8 +550,12 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                     if (!saved.contains(ingredientName) &&
                         !saved.contains('<all>') &&
                         !saved.contains('section$sectionNumber')) {
-                      DBProvider.db.addToShoppingList([ingredientName],
-                          [ingredientAmount], [ingredientUnit]).then((_) {
+                      DBProvider.db
+                          .addToShoppingList(ShoppingCart(
+                              ingredientNames: [ingredientName],
+                              ingredientsAmount: [ingredientAmount],
+                              ingredientsUnit: [ingredientUnit]))
+                          .then((_) {
                         setState(() {
                           saved = this.saved;
                           saved.add(ingredientName);
@@ -602,10 +606,11 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                     if (!saved.contains("section$i") &&
                         !saved.contains('<all>')) {
                       DBProvider.db
-                          .addToShoppingList(
-                              widget.currentRecipe.ingredientsList[i],
-                              widget.currentRecipe.amount[i],
-                              widget.currentRecipe.unit[i])
+                          .addToShoppingList(ShoppingCart(
+                              ingredientNames:
+                                  widget.currentRecipe.ingredientsList[i],
+                              ingredientsAmount: widget.currentRecipe.amount[i],
+                              ingredientsUnit: widget.currentRecipe.unit[i]))
                           .then((_) {
                         setState(() {
                           saved = this.saved;
@@ -687,13 +692,14 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                         onPressed: () {
                           if (!saved.contains('<all>')) {
                             DBProvider.db
-                                .addToShoppingList(
-                                    stringListListToSingleList(
+                                .addToShoppingList(ShoppingCart(
+                                    ingredientNames: stringListListToSingleList(
                                         widget.currentRecipe.ingredientsList),
-                                    doubleListListToSingleList(
-                                        widget.currentRecipe.amount),
-                                    stringListListToSingleList(
-                                        widget.currentRecipe.unit))
+                                    ingredientsAmount:
+                                        doubleListListToSingleList(
+                                            widget.currentRecipe.amount),
+                                    ingredientsUnit: stringListListToSingleList(
+                                        widget.currentRecipe.unit)))
                                 .then((_) {
                               setState(() {
                                 saved = this.saved;

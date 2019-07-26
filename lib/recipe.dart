@@ -79,6 +79,14 @@ class Recipe {
       };
 }
 
+class Ingredient {
+  String name;
+  int amount;
+  String unit;
+
+  Ingredient(this.name, this.amount, this.unit);
+}
+
 Color getRecipePrimaryColor(Recipe recipe) {
   switch (recipe.vegetable) {
     case Vegetable.NON_VEGETARIAN:
@@ -92,23 +100,20 @@ Color getRecipePrimaryColor(Recipe recipe) {
 }
 
 class ShoppingCart {
- List<String> ingredientNames;
+  List<String> ingredientNames;
   List<double> ingredientsAmount;
   List<String> ingredientsUnit;
+  List<bool> checked;
 
   ShoppingCart(
-      {this.ingredientNames, this.ingredientsAmount, this.ingredientsUnit});
-
-  void setIngredientNames(List<String> ingredientNames) {
-    this.ingredientNames = ingredientNames;
-  }
-
-  void setIngredientsAmount(List<double> ingredientsAmount) {
-    this.ingredientsAmount = ingredientsAmount;
-  }
-
-  void setIngredientsUnit(List<String> ingredientsUnit) {
-    this.ingredientsUnit = ingredientsUnit;
+      {this.ingredientNames,
+      this.ingredientsAmount,
+      this.ingredientsUnit,
+      this.checked}) {
+    if (checked == null)
+      for (int i = 0; i < ingredientNames.length; i++) {
+        checked.add(false);
+      }
   }
 }
 

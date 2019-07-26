@@ -90,7 +90,8 @@ class DBProvider {
             "item_id INTEGER PRIMARY KEY,"
             "name TEXT,"
             "amount REAL,"
-            "unit TEXT"
+            "unit,"
+            "checked INTEGER"
             ")");
       },
     );
@@ -340,28 +341,27 @@ class DBProvider {
     dir.deleteSync(recursive: true);
   }
 
-  Future<void> addToShoppingList(List<String> ingredientNames,
-      List<double> ingredientsAmount, List<String> ingredientsUnit) async {
+  Future<void> addToShoppingList(ShoppingCart shoppingCart) async {
     final db = await database;
     Batch batch = db.batch();
 
     int _shoppingCartId = await getNewIDforTable("ShoppingCart", "item_id");
-    for (int i = 0; i < ingredientNames.length; i++) {
+    for (int i = 0; i < shoppingCart.ingredientNames.length; i++) {
       var resShoppingCart = await db.rawQuery("SELECT * FROM ShoppingCart "
-          "WHERE name = '${ingredientNames[i]}' AND "
-          "unit = '${ingredientsUnit[i]}'");
+          "WHERE name = '${shoppingCart.ingredientNames[i]}' AND "
+          "unit = '${shoppingCart.ingredientsUnit[i]}'");
       if (resShoppingCart.isEmpty) {
         print("kek");
         batch.insert('ShoppingCart', {
           'item_id': '${_shoppingCartId + i}',
-          'name': '${ingredientNames[i]}',
-          'amount': '${ingredientsAmount[i]}',
-          'unit': '${ingredientsUnit[i]}'
+          'name': '${shoppingCart.ingredientNames[i]}',
+          'amount': '${shoppingCart.ingredientsAmount[i]}',
+          'unit': '${shoppingCart.ingredientsUnit[i]}'
         });
       } else {
         await db.rawUpdate(
-            "UPDATE ShoppingCart SET amount = (amount + ${ingredientsAmount[i]}) "
-            "WHERE name = '${ingredientNames[i]}'");
+            "UPDATE ShoppingCart SET amount = (amount + ${shoppingCart.ingredientsAmount[i]}) "
+            "WHERE name = '${shoppingCart.ingredientNames[i]}'");
         //batch.update('ShoppingCart',
         //    {'amount': 'amount' + ingredients[ingredientsList[i]]},
         //    where: 'name = ?', whereArgs: ['${ingredientsList[i]}']);
