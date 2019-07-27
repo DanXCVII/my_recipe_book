@@ -131,6 +131,14 @@ class Step extends StatefulWidget {
 class _StepState extends State<Step> {
   List<File> selectedImageFiles = [];
 
+  @override
+  void initState() {
+    super.initState();
+    for (int i = 0; i < widget.stepImages[widget.stepNumber].length; i++) {
+      selectedImageFiles.add(File(widget.stepImages[widget.stepNumber][i]));
+    }
+  }
+
   Future _askUser() async {
     switch (await showDialog(
         context: context,

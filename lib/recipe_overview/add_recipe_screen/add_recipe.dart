@@ -33,7 +33,6 @@ class AddRecipeForm extends StatefulWidget {
     return _AddRecipeFormState();
   }
 }
-// TODO:prio 1 when editing recipe, pictures are not shown because of Image.file
 class _AddRecipeFormState extends State<AddRecipeForm> {
   //////////// for Ingredients ////////////
   final List<List<TextEditingController>> ingredientNameController =

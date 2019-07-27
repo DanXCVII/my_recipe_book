@@ -20,6 +20,14 @@ class _ImageSelectorState extends State<ImageSelector> {
   File selectedImageFile;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.imageWrapper.selectedImage != null) {
+      selectedImageFile = File(widget.imageWrapper.selectedImage);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return selectedImageFile == null
         ? Container(
