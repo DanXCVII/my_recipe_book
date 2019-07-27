@@ -1,29 +1,21 @@
 import './recipe.dart';
 
 class MyImageWrapper {
-  String _selectedImage;
+  String selectedImage;
 
-  String getSelectedImage() {
-    return _selectedImage;
-  }
+  MyImageWrapper({this.selectedImage});
+}
 
-  void setSelectedImage(String image) {
-    _selectedImage = image;
-  }
+class MyBooleanWrapper {
+  bool myBool;
+
+  MyBooleanWrapper({this.myBool});
 }
 
 class MyDoubleWrapper {
-  double number;
+  double myDouble;
 
-  MyDoubleWrapper({this.number});
-
-  double getDouble() {
-    return number;
-  }
-
-  void setDouble(double i) {
-    number = i;
-  }
+  MyDoubleWrapper({this.myDouble});
 }
 
 class MyVegetableWrapper {

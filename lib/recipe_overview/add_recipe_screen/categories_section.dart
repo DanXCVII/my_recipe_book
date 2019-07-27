@@ -53,7 +53,7 @@ class _CategorySectionState extends State<CategorySection> {
 
   @override
   void dispose() {
-    widget.addCategoryImage.setSelectedImage(null);
+    widget.addCategoryImage.selectedImage = null;
     categoryNameController.dispose();
     super.dispose();
   }
@@ -255,7 +255,7 @@ class CustomDialogState extends State<CustomDialog> {
                           // TODO Prio1: Not validating the category!
                           _saveCategory().then((_) {
                             Navigator.pop(context);
-                            widget.addCategoryImage.setSelectedImage(null);
+                            widget.addCategoryImage.selectedImage = null;
                             setState(() {});
                           });
                         }
@@ -280,10 +280,10 @@ class CustomDialogState extends State<CustomDialog> {
 
   Future<void> _saveCategory() async {
     String categoryName = categoryNameController.text;
-    if (widget.addCategoryImage.getSelectedImage() != null) {
+    if (widget.addCategoryImage.selectedImage != null) {
       String imagePath = await PathProvider.pP.getCategoryPath(categoryName);
       compute(saveImage,
-          [File(widget.addCategoryImage.getSelectedImage()), imagePath, 2000]);
+          [File(widget.addCategoryImage.selectedImage), imagePath, 2000]);
     }
     await DBProvider.db.newCategory(categoryName);
   }

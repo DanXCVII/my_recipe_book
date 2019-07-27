@@ -210,9 +210,9 @@ class _IngredientSectionState extends State<IngredientSection> {
                   padding: const EdgeInsets.only(left: 10),
                   child: TextFormField(
                     validator: (value) {
-                      if (validateNumber(value) == false && value != "") {
+                      if (validateNumber(value) == false && value != "")
                         return "no valid number";
-                      } return null;
+                      return null;
                     },
                     autovalidate: false,
                     controller: widget

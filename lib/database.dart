@@ -166,15 +166,15 @@ class DBProvider {
           " VALUES (?,?,?,?)",
           [_sectionId, i, newRecipe.ingredientsGlossary[i], newRecipe.id]);
 
-      for (int j = 0; j < newRecipe.ingredientsList[i].length; j++) {
+      for (int j = 0; j < newRecipe.ingredients[i].length; j++) {
         await db.rawInsert(
             "INSERT Into Ingredients (id,name,amount,unit,section_id)"
             " VALUES (?,?,?,?,?)",
             [
               await getNewIDforTable("Ingredients", "id"),
-              newRecipe.ingredientsList[i][j],
-              newRecipe.amount[i][j],
-              newRecipe.unit[i][j],
+              newRecipe.ingredients[i][j].name,
+              newRecipe.ingredients[i][j].amount,
+              newRecipe.ingredients[i][j].unit,
               _sectionId
             ]);
       }
@@ -285,20 +285,15 @@ class DBProvider {
     var resSections = await db.rawQuery(
         "SELECT * FROM Sections WHERE recipe_id=$id ORDER BY number ASC");
     List<String> ingredientsGlossary = new List<String>();
-    List<List<String>> ingredientsList = new List<List<String>>();
-    List<List<double>> ingredientsAmount = new List<List<double>>();
-    List<List<String>> ingredientsUnit = new List<List<String>>();
+    List<List<Ingredient>> ingredients = [[]];
     for (int i = 0; i < resSections.length; i++) {
       ingredientsGlossary.add(resSections[i]["name"]);
       var resIngredients = await db.rawQuery(
           "SELECT * FROM Ingredients WHERE section_id=${resSections[i]["id"]}");
-      ingredientsList.add(new List<String>());
-      ingredientsAmount.add(new List<double>());
-      ingredientsUnit.add(new List<String>());
+      ingredients.add([]);
       for (int j = 0; j < resIngredients.length; j++) {
-        ingredientsList[i].add(resIngredients[j]["name"]);
-        ingredientsAmount[i].add(resIngredients[j]["amount"]);
-        ingredientsUnit[i].add(resIngredients[j]["unit"]);
+        ingredients[i].add(Ingredient(resIngredients[j]["name"],
+            resIngredients[j]["amount"], resIngredients[j]['unit']));
       }
     }
 
@@ -318,9 +313,7 @@ class DBProvider {
         totalTime: totalTime,
         servings: servings,
         ingredientsGlossary: ingredientsGlossary,
-        ingredientsList: ingredientsList,
-        amount: ingredientsAmount,
-        unit: ingredientsUnit,
+        ingredients: ingredients,
         vegetable: vegetable,
         stepImages: stepImages,
         steps: steps,
@@ -341,33 +334,38 @@ class DBProvider {
     dir.deleteSync(recursive: true);
   }
 
-  Future<void> addToShoppingList(ShoppingCart shoppingCart) async {
+  Future<void> addToShoppingList(List<Ingredient> ingredients) async {
     final db = await database;
     Batch batch = db.batch();
 
     int _shoppingCartId = await getNewIDforTable("ShoppingCart", "item_id");
-    for (int i = 0; i < shoppingCart.ingredientNames.length; i++) {
+    for (int i = 0; i < ingredients.length; i++) {
+      // Check if there is already one of the ingredients in the ShoppinCart table
       var resShoppingCart = await db.rawQuery("SELECT * FROM ShoppingCart "
-          "WHERE name = '${shoppingCart.ingredientNames[i]}' AND "
-          "unit = '${shoppingCart.ingredientsUnit[i]}'");
+          "WHERE name = '${ingredients[i].name}' AND "
+          "unit = '${ingredients[i].unit}' AND "
+          'checked = 0');
+      // If not, insert new one
       if (resShoppingCart.isEmpty) {
-        print("kek");
         batch.insert('ShoppingCart', {
           'item_id': '${_shoppingCartId + i}',
-          'name': '${shoppingCart.ingredientNames[i]}',
-          'amount': '${shoppingCart.ingredientsAmount[i]}',
-          'unit': '${shoppingCart.ingredientsUnit[i]}'
+          'name': '${ingredients[i].name}',
+          'amount': '${ingredients[i].amount}',
+          'unit': '${ingredients[i].unit}',
+          'checked': '0'
         });
+        // Else, update the amount
       } else {
         await db.rawUpdate(
-            "UPDATE ShoppingCart SET amount = (amount + ${shoppingCart.ingredientsAmount[i]}) "
-            "WHERE name = '${shoppingCart.ingredientNames[i]}'");
+            "UPDATE ShoppingCart SET amount = (amount + ${ingredients[i].amount}) "
+            "WHERE name = '${ingredients[i].name}'");
         //batch.update('ShoppingCart',
         //    {'amount': 'amount' + ingredients[ingredientsList[i]]},
         //    where: 'name = ?', whereArgs: ['${ingredientsList[i]}']);
       }
     }
     var resShoppingCart = await db.rawQuery("SELECT * FROM ShoppingCart");
+    /*
     print('#-#-#-#-#-#-#-#-#-');
     for (int i = 0; i < resShoppingCart.length; i++) {
       print(resShoppingCart[i]['name']);
@@ -375,25 +373,70 @@ class DBProvider {
       print(resShoppingCart[i]['unit']);
     }
     print('#-#-#-#-#-#-#-#-#-');
+*/
+    await batch.commit();
+  }
 
+  Future<void> checkIngredient(Ingredient ingredient, bool checked) async {
+    final db = await database;
+    int checkedInt = 0;
+    if (checked) checkedInt = 1;
+    await db.rawUpdate('UPDATE ShoppingCart SET checked = $checkedInt '
+        'WHERE name = \'${ingredient.name}\' AND amount = ${ingredient.amount} AND unit = \'${ingredient.unit}\'');
+  }
+
+  Future<void> deleteFromShoppingCart(Ingredient ingredient) async {
+    final db = await database;
+    await db.rawDelete(
+        'DELETE FROM ShoppingCart WHERE name = \'${ingredient.name}\' AND '
+        'amount = ${ingredient.amount} AND unit = \'${ingredient.unit}\'');
+  }
+
+  Future<void> removeFromShoppingCart(List<Ingredient> ingredients) async {
+    final db = await database;
+    Batch batch = db.batch();
+
+    for (int i = 0; i < ingredients.length; i++) {
+      // Select the amount of the ingredient in the shoppingCart
+      var resShoppingCart =
+          await db.rawQuery('SELECT amount FROM ShoppingCart WHERE '
+              'name = \'${ingredients[i].name}\' '
+              'AND unit = \'${ingredients[i].unit}\' '
+              'AND checked = 0');
+      // if the updated amount is 0, delete the ingredient from the shoppingCart
+      if (resShoppingCart[0]['amount'] - ingredients[i].amount <= 0) {
+        await deleteFromShoppingCart(ingredients[i]);
+      } // else, update the amount
+      else {
+        double newAmount = resShoppingCart[0]['amount'] - ingredients[i].amount;
+        batch.update('ShoppingCart', {'amount': '$newAmount'},
+            where: 'name = ? AND amount = ? AND unit = ?',
+            whereArgs: [
+              '${ingredients[i].name}',
+              '${resShoppingCart[0]['amount']}',
+              '${ingredients[i].unit}'
+            ]);
+      }
+    }
     await batch.commit();
   }
 
   Future<ShoppingCart> getShoppingCartIngredients() async {
     final db = await database;
-    List<String> ingredientNames = [];
-    List<double> ingredientsAmount = [];
-    List<String> ingredientsUnit = [];
+    List<Ingredient> ingredients = [];
+    List<bool> checked = [];
     var resShoppingCart = await db.rawQuery("SELECT * FROM ShoppingCart");
     for (int i = 0; i < resShoppingCart.length; i++) {
-      ingredientNames.add(resShoppingCart[i]['name']);
-      ingredientsAmount.add(resShoppingCart[i]['amount']);
-      ingredientsUnit.add(resShoppingCart[i]['unit']);
+      ingredients.add(Ingredient(resShoppingCart[i]['name'],
+          resShoppingCart[i]['amount'], resShoppingCart[i]['unit']));
+      resShoppingCart[i]['checked'] == 0
+          ? checked.add(false)
+          : checked.add(true);
     }
     return (ShoppingCart(
-        ingredientNames: ingredientNames,
-        ingredientsAmount: ingredientsAmount,
-        ingredientsUnit: ingredientsUnit));
+      ingredients: ingredients,
+      checked: checked,
+    ));
   }
 
   Future<List<Recipe>> getRecipesOfCategory(String category) async {

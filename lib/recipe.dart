@@ -13,10 +13,8 @@ class Recipe {
   double totalTime;
   double servings;
   List<String> categories;
-  List<List<String>> ingredientsList;
   List<String> ingredientsGlossary = new List<String>();
-  List<List<double>> amount = new List<List<double>>();
-  List<List<String>> unit = new List<List<String>>();
+  List<List<Ingredient>> ingredients = new List<List<Ingredient>>();
   Vegetable vegetable;
   List<String> steps = new List<String>();
   List<List<String>> stepImages = new List<List<String>>();
@@ -33,9 +31,7 @@ class Recipe {
       this.totalTime,
       @required this.servings,
       this.ingredientsGlossary,
-      this.ingredientsList,
-      @required this.amount,
-      this.unit,
+      this.ingredients,
       @required this.vegetable,
       this.steps,
       this.stepImages,
@@ -53,9 +49,7 @@ class Recipe {
         totalTime: json['totalTime'],
         servings: json['servings'],
         ingredientsGlossary: json['ingredientsGlossary'],
-        ingredientsList: json['ingredientsList'],
-        amount: json['amount'],
-        unit: json['unit'],
+        ingredients: json['ingredients'],
         vegetable: json['vegetable'],
         steps: json['steps'],
         notes: json['notes'],
@@ -70,9 +64,7 @@ class Recipe {
         'totalTime': totalTime,
         'servings': servings,
         'ingredientsGlossary': ingredientsGlossary,
-        'ingredientsList': ingredientsList,
-        'amount': amount,
-        'unit': unit,
+        'ingredients': ingredients,
         'vegetable': vegetable,
         'steps': steps,
         'notes': notes
@@ -81,7 +73,7 @@ class Recipe {
 
 class Ingredient {
   String name;
-  int amount;
+  double amount;
   String unit;
 
   Ingredient(this.name, this.amount, this.unit);
@@ -100,20 +92,14 @@ Color getRecipePrimaryColor(Recipe recipe) {
 }
 
 class ShoppingCart {
-  List<String> ingredientNames;
-  List<double> ingredientsAmount;
-  List<String> ingredientsUnit;
+  List<Ingredient> ingredients;
   List<bool> checked;
 
-  ShoppingCart(
-      {this.ingredientNames,
-      this.ingredientsAmount,
-      this.ingredientsUnit,
-      this.checked}) {
-    if (checked == null)
-      for (int i = 0; i < ingredientNames.length; i++) {
-        checked.add(false);
-      }
+  ShoppingCart({this.ingredients, this.checked}) {
+    if (checked == null) checked = [];
+    for (int i = 0; i < ingredients.length; i++) {
+      checked.add(false);
+    }
   }
 }
 

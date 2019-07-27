@@ -33,7 +33,7 @@ class AddRecipeForm extends StatefulWidget {
     return _AddRecipeFormState();
   }
 }
-
+// TODO:prio 1 when editing recipe, pictures are not shown because of Image.file
 class _AddRecipeFormState extends State<AddRecipeForm> {
   //////////// for Ingredients ////////////
   final List<List<TextEditingController>> ingredientNameController =
@@ -55,7 +55,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   final MyImageWrapper addCategoryImage = new MyImageWrapper();
 
   //////////// for Complexity ////////////
-  final MyDoubleWrapper complexity = new MyDoubleWrapper(number: 5.0);
+  final MyDoubleWrapper complexity = new MyDoubleWrapper(myDouble: 5.0);
 
   //////////// this Widget ////////////
   final TextEditingController nameController = new TextEditingController();
@@ -91,7 +91,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       // TODO: only add data if not null;
       nameController.text = widget.editRecipe.name;
       if (widget.editRecipe.imagePath != null)
-        selectedRecipeImage.setSelectedImage(widget.editRecipe.imagePath);
+        selectedRecipeImage.selectedImage = widget.editRecipe.imagePath;
       if (widget.editRecipe.preperationTime != 0.0)
         preperationTimeController.text =
             widget.editRecipe.preperationTime.toString();
@@ -111,17 +111,18 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ingredientNameController.add(new List<TextEditingController>());
         ingredientAmountController.add(new List<TextEditingController>());
         ingredientUnitController.add(new List<TextEditingController>());
-        for (int j = 0; j < widget.editRecipe.ingredientsList[i].length; j++) {
+        for (int j = 0; j < widget.editRecipe.ingredients[i].length; j++) {
           if (i != 0 || j > 0) {
             ingredientNameController[i].add(new TextEditingController());
             ingredientAmountController[i].add(new TextEditingController());
             ingredientUnitController[i].add(new TextEditingController());
           }
           ingredientNameController[i][j].text =
-              widget.editRecipe.ingredientsList[i][j];
+              widget.editRecipe.ingredients[i][j].name;
           ingredientAmountController[i][j].text =
-              widget.editRecipe.amount[i][j].toString();
-          ingredientUnitController[i][j].text = widget.editRecipe.unit[i][j];
+              widget.editRecipe.ingredients[i][j].amount.toString();
+          ingredientUnitController[i][j].text =
+              widget.editRecipe.ingredients[i][j].unit;
         }
       }
       for (int i = 0; i < widget.editRecipe.steps.length; i++) {
@@ -168,6 +169,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             icon: Icon(Icons.check),
             color: Colors.white,
             onPressed: () {
+              // TODO: Check if ingredients data is not only partially filled in
               if (_formKey.currentState.validate()) {
                 /////////// Only do if all data is VALID! ///////////
                 FocusScope.of(context).requestFocus(new FocusNode());
@@ -229,7 +231,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 validator: (value) {
                   if (value.isEmpty) {
                     return "Please enter a name";
-                  } return null;
+                  }
+                  return null;
                 },
                 controller: nameController,
                 decoration: InputDecoration(
@@ -251,7 +254,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                       validator: (value) {
                         if (validateNumber(value) == false && value != "") {
                           return "no valid number";
-                        } return null;
+                        }
+                        return null;
                       },
                       autovalidate: false,
                       controller: preperationTimeController,
@@ -272,7 +276,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                       validator: (value) {
                         if (validateNumber(value) == false && value != "") {
                           return "no valid number";
-                        } return null;
+                        }
+                        return null;
                       },
                       autovalidate: false,
                       controller: cookingTimeController,
@@ -294,7 +299,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 validator: (value) {
                   if (validateNumber(value) == false && value != "") {
                     return "no valid number";
-                  } return null;
+                  }
+                  return null;
                 },
                 autovalidate: false,
                 controller: totalTimeController,
@@ -317,7 +323,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   }
                   if (value.isEmpty) {
                     return "data required";
-                  }return null;
+                  }
+                  return null;
                 },
                 controller: servingsController,
                 keyboardType: TextInputType.number,
@@ -407,14 +414,14 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   /// TODO: Only shows the new recipedata after restart. Needs to be fixed!
   Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
     // If user hasn't selected a new image (old image stays the same) ..
-    if (selectedRecipeImage.getSelectedImage() ==
+    if (selectedRecipeImage.selectedImage ==
         await PathProvider.pP.getRecipePath(editRecipe.id)) {
       // .. temporarily put image in tmp dir befor recipe gets deleted and saved again
       String tmpRecipeImage =
           await PathProvider.pP.getTmpImagePath(editRecipe.imagePath);
       await compute(
           saveImage, [File(editRecipe.imagePath), tmpRecipeImage, 2000]);
-      selectedRecipeImage.setSelectedImage(tmpRecipeImage);
+      selectedRecipeImage.selectedImage = tmpRecipeImage;
     }
 
     /// temporarily save all step pics (that are not new) in another folder that they don't get lost,
@@ -436,7 +443,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     }
 
     await DBProvider.db.deleteRecipe(editRecipe);
-    print(selectedRecipeImage.getSelectedImage());
+    print(selectedRecipeImage.selectedImage);
     Recipe newRecipe = await saveRecipe();
 
     // DELETION
@@ -454,7 +461,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     print("start saveRecipe()");
 
     // get the lists for the data of the ingredients
-    Map<String, List<List<dynamic>>> ingredients = getCleanIngredientData(
+    List<List<Ingredient>> ingredients = getCleanIngredientData(
         ingredientNameController,
         ingredientAmountController,
         ingredientUnitController);
@@ -466,8 +473,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
     String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
     await compute(saveImage,
-        [File(selectedRecipeImage.getSelectedImage()), recipeImagePath, 2000]);
-    selectedRecipeImage.setSelectedImage(recipeImagePath);
+        [File(selectedRecipeImage.selectedImage), recipeImagePath, 2000]);
+    selectedRecipeImage.selectedImage = recipeImagePath;
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
@@ -486,7 +493,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     Recipe newRecipe = new Recipe(
         id: recipeId,
         name: nameController.text,
-        imagePath: selectedRecipeImage.getSelectedImage(),
+        imagePath: selectedRecipeImage.selectedImage,
         preperationTime: preperationTimeController.text.isEmpty
             ? 0
             : double.parse(preperationTimeController.text
@@ -507,10 +514,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         vegetable: selectedRecipeVegetable.getVegetableStatus(),
         ingredientsGlossary:
             getCleanGlossary(ingredientGlossaryController, ingredients),
-        ingredientsList: ingredients["ingredients"],
-        amount: ingredients["amount"],
-        unit: ingredients["unit"],
-        complexity: complexity.getDouble().round(),
+        ingredients: ingredients,
+        complexity: complexity.myDouble.round(),
         categories: newRecipeCategories,
         isFavorite:
             widget.editRecipe == null ? null : widget.editRecipe.isFavorite);
@@ -521,11 +526,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     }
 
     print("---------------");
-    print(ingredients["ingredients"]);
     print(getCleanGlossary(ingredientGlossaryController, ingredients));
-    print(ingredients["ingredients"]);
-    print(ingredients["amount"]);
-    print(ingredients["unit"]);
+    print(ingredients);
     print("---------------");
 
     // DELETE
@@ -534,7 +536,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     return newRecipe;
   }
 
-  // TODO: Remove if not needed anymore
+  // TODO: Remove if not needed anymore BUT CHECK
   //bool isIngredientListValid(
   //    List<List<TextEditingController>> ingredients,
   //    List<List<TextEditingController>> amount,
@@ -566,15 +568,13 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   /// sets the length of the glossary for the ingredients section equal to
   /// the length list<list<ingredients>> (removes unnessesary sections)
   List<String> getCleanGlossary(List<TextEditingController> glossary,
-      Map<String, List<List<dynamic>>> cleanIngredientsData) {
+      List<List<Ingredient>> cleanIngredientsData) {
     List<String> output = new List<String>();
     for (int i = 0; i < glossary.length; i++) {
       output.add(glossary[i].text);
     }
 
-    for (int i = cleanIngredientsData["ingredients"].length;
-        i < glossary.length;
-        i++) {
+    for (int i = cleanIngredientsData.length; i < glossary.length; i++) {
       output.removeLast();
     }
 
@@ -583,15 +583,15 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   /// removes all leading and trailing whitespaces and empty ingredients from the lists
   /// of ingredients and
-  Map<String, List<List<dynamic>>> getCleanIngredientData(
+  List<List<Ingredient>> getCleanIngredientData(
       List<List<TextEditingController>> ingredients,
       List<List<TextEditingController>> amount,
       List<List<TextEditingController>> unit) {
     /// creating the three lists with the data of the ingredients
     /// by getting the data of the controllers.
-    List<List<String>> ingredientsNames = new List<List<String>>();
+    List<List<String>> ingredientsNames = [[]];
     for (int i = 0; i < ingredients.length; i++) {
-      ingredientsNames.add(new List<String>());
+      ingredientsNames.add([]);
       for (int j = 0; j < ingredients[i].length; j++) {
         ingredientsNames[i].add(ingredients[i][j].text);
       }
@@ -616,47 +616,48 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       }
     }
 
+    print(ingredientsNames);
+    print(ingredientsAmount);
+    print(ingredientsUnit);
+
     /// Map which will be the clean map with the list of the ingredients
     /// data.
-    Map<String, List<List<dynamic>>> output =
-        new Map<String, List<List<dynamic>>>();
+    List<List<Ingredient>> cleanIngredientsData = [[]];
 
-    output.addAll({"ingredients": new List<List<String>>()});
-    output["ingredients"].addAll(ingredientsNames);
-    output.addAll({"amount": new List<List<double>>()});
-    output["amount"].addAll(ingredientsAmount);
-    output.addAll({"unit": new List<List<String>>()});
-    output["unit"].addAll(ingredientsUnit);
+    for (int i = 0; i < ingredientsNames.length; i++) {
+      cleanIngredientsData.add([]);
+      for (int j = 0; j < ingredientsNames[i].length; j++)
+        cleanIngredientsData[i].add(Ingredient(ingredientsNames[i][j],
+            ingredientsAmount[i][j], ingredientsUnit[i][j]));
+    }
 
-    for (int i = 0; i < output["ingredients"].length; i++) {
-      for (int j = 0; j < output["ingredients"][i].length; j++) {
+    for (int i = 0; i < cleanIngredientsData.length; i++) {
+      for (int j = 0; j < cleanIngredientsData[i].length; j++) {
         // remove leading and trailing white spaces
-        output["ingredients"][i][j] = output["ingredients"][i][j].trim();
-        output["unit"][i][j] = output["unit"][i][j].trim();
+        cleanIngredientsData[i][j].name =
+            cleanIngredientsData[i][j].name.trim();
+        cleanIngredientsData[i][j].unit =
+            cleanIngredientsData[i][j].unit.trim();
         // remove all ingredients from the list, when all three fields are empty
-        if (output["ingredients"][i][j] == "" &&
-            output["amount"][i][j] == -1 &&
-            output["unit"][i][j] == "") {
-          output["ingredients"][i].removeAt(j);
-          output["amount"][i].removeAt(j);
-          output["unit"][i].removeAt(j);
+        if (cleanIngredientsData[i][j].name == "" &&
+            cleanIngredientsData[i][j].amount == -1 &&
+            cleanIngredientsData[i][j].unit == "") {
+          cleanIngredientsData[i].removeAt(j);
         }
       }
     }
     // create the output list with the clean ingredient lists
-    for (int i = 0; i < output["ingredients"].length; i++) {
-      if (output["ingredients"][i].isEmpty) {
-        output["ingredients"].remove(output["ingredients"][i]);
-        output["amount"].remove(output["amount"][i]);
-        output["unit"].remove(output["unit"][i]);
+    for (int i = 0; i < cleanIngredientsData.length; i++) {
+      if (cleanIngredientsData[i].isEmpty) {
+        cleanIngredientsData.remove(cleanIngredientsData[i]);
       }
     }
 
-    return output;
+    return cleanIngredientsData;
   }
 }
 
-/// Only List of attributs because compute only lets you have one 
+/// Only List of attributs because compute only lets you have one
 /// argument for the executed method
 /// List of dynamic must have
 /// [0] File image

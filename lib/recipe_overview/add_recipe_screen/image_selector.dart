@@ -108,7 +108,7 @@ class _ImageSelectorState extends State<ImageSelector> {
             // maxWidth: 50.0,
           );
           if (pictureFile != null) {
-            widget.imageWrapper.setSelectedImage(pictureFile.path);
+            widget.imageWrapper.selectedImage = pictureFile.path;
             print("You selected gallery image : " + pictureFile.path);
             setState(() {
               selectedImageFile = pictureFile;
@@ -125,7 +125,7 @@ class _ImageSelectorState extends State<ImageSelector> {
           );
 
           if (pictureFile != null) {
-            widget.imageWrapper.setSelectedImage(pictureFile.path);
+            widget.imageWrapper.selectedImage = pictureFile.path;
             print("You selected gallery image : " + pictureFile.path);
             setState(() {
               selectedImageFile = pictureFile;

@@ -22,6 +22,8 @@ class RecipeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double otherTime =
+        recipe.totalTime - recipe.preperationTime - recipe.cookingTime;
     return Scaffold(
         backgroundColor: primaryColor,
         body: CustomScrollView(slivers: <Widget>[
@@ -118,19 +120,23 @@ class RecipeScreen extends StatelessWidget {
                           new CircularStackEntry(
                             <CircularSegmentEntry>[
                               new CircularSegmentEntry(
-                                recipe.cookingTime /
-                                    (recipe.preperationTime +
-                                        recipe.cookingTime),
+                                recipe.cookingTime / recipe.totalTime,
                                 Colors.blue[700],
                                 rankKey: 'completed',
                               ),
                               new CircularSegmentEntry(
-                                recipe.preperationTime /
-                                    (recipe.preperationTime +
-                                        recipe.cookingTime),
+                                recipe.preperationTime / recipe.totalTime,
                                 Colors.green[500],
                                 rankKey: 'remaining',
                               ),
+                              recipe.cookingTime + recipe.preperationTime ==
+                                      recipe.totalTime
+                                  ? new CircularSegmentEntry(0, Colors.black)
+                                  : new CircularSegmentEntry(
+                                      recipe.totalTime -
+                                          recipe.preperationTime -
+                                          recipe.cookingTime / recipe.totalTime,
+                                      Colors.pink)
                             ],
                             rankKey: 'progress',
                           ),
@@ -180,6 +186,23 @@ class RecipeScreen extends StatelessWidget {
                                   ),
                                 ],
                               ),
+                              recipe.cookingTime + recipe.preperationTime ==
+                                      recipe.totalTime
+                                  ? Container()
+                                  : Row(
+                                      children: <Widget>[
+                                        Container(
+                                            width: 5,
+                                            height: 5,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.pink)),
+                                        Text(
+                                          " rest: ",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
                             ],
                           ),
                           Column(
@@ -190,6 +213,13 @@ class RecipeScreen extends StatelessWidget {
                                 "${recipe.cookingTime} min",
                                 style: TextStyle(color: Colors.white),
                               ),
+                              recipe.cookingTime + recipe.preperationTime ==
+                                      recipe.totalTime
+                                  ? Container()
+                                  : Text(
+                                      "$otherTime min",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                             ],
                           )
                         ],
@@ -515,7 +545,7 @@ class IngredientsScreen extends StatefulWidget {
 
 class IngredientsScreenState extends State<IngredientsScreen> {
   double servings;
-  List<String> saved = new List<String>();
+  List<Ingredient> saved = [];
 
   IngredientsScreenState(this.servings);
 
@@ -527,54 +557,57 @@ class IngredientsScreenState extends State<IngredientsScreen> {
       ),
     );
     for (int i = 0;
-        i < widget.currentRecipe.ingredientsList[sectionNumber].length;
+        i < widget.currentRecipe.ingredients[sectionNumber].length;
         i++) {
-      double ingredientAmount = widget.currentRecipe.amount[sectionNumber][i] /
-          widget.currentRecipe.servings *
-          servings;
-      String ingredientName =
-          "${widget.currentRecipe.ingredientsList[sectionNumber][i]}";
-      String ingredientUnit = widget.currentRecipe.unit[sectionNumber][i];
+      Ingredient currentIngredient =
+          widget.currentRecipe.ingredients[sectionNumber][i];
+
       output.add(
         Padding(
           padding: const EdgeInsets.only(right: 20),
           child: Row(
             children: <Widget>[
               IconButton(
-                  icon: saved.contains(ingredientName) ||
-                          saved.contains('<all>') ||
-                          saved.contains('section$sectionNumber')
+                  icon: saved.contains(currentIngredient)
                       ? Icon(Icons.check_circle)
                       : Icon(Icons.add_circle_outline),
                   onPressed: () {
-                    if (!saved.contains(ingredientName) &&
-                        !saved.contains('<all>') &&
-                        !saved.contains('section$sectionNumber')) {
+                    /// if the saved List doesn't contain the ingredientName ->
+                    /// add the not yet added ingredients to shoppingCart and
+                    /// update saved
+                    if (!saved.contains(currentIngredient)) {
                       DBProvider.db
-                          .addToShoppingList(ShoppingCart(
-                              ingredientNames: [ingredientName],
-                              ingredientsAmount: [ingredientAmount],
-                              ingredientsUnit: [ingredientUnit]))
-                          .then((_) {
+                          .addToShoppingList([currentIngredient]).then((_) {
                         setState(() {
                           saved = this.saved;
-                          saved.add(ingredientName);
+                          saved.add(currentIngredient);
+                        });
+                      });
+                    }
+
+                    /// else, remove the ingrdient from the shoppingCart and
+                    /// update saved list
+                    else {
+                      DBProvider.db.removeFromShoppingCart(
+                          [currentIngredient]).then((_) {
+                        setState(() {
+                          saved = this.saved;
+                          saved.remove(widget
+                              .currentRecipe.ingredients[sectionNumber][i]);
                         });
                       });
                     }
                   },
-                  color: saved.contains(ingredientName) ||
-                          saved.contains('<all>') ||
-                          saved.contains('section$sectionNumber')
+                  color: saved.contains(currentIngredient)
                       ? Colors.green
                       : Colors.white),
               Text(
-                ingredientName,
+                currentIngredient.name,
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               Spacer(),
               Text(
-                "$ingredientAmount $ingredientUnit",
+                "${currentIngredient.amount} ${currentIngredient.unit}",
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ],
@@ -589,6 +622,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     List<Widget> output = new List<Widget>();
 
     for (int i = 0; i < widget.currentRecipe.ingredientsGlossary.length; i++) {
+      List<Ingredient> sectionIngredients = widget.currentRecipe.ingredients[i];
       if (widget.currentRecipe.ingredientsGlossary[i] != "") {
         output.add(
           Padding(
@@ -599,29 +633,38 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                 Text("${widget.currentRecipe.ingredientsGlossary[i]}",
                     style: TextStyle(color: textColor, fontSize: 24)),
                 IconButton(
-                  icon: saved.contains("section$i") || saved.contains('<all>')
+                  icon: containsList(saved, sectionIngredients)
                       ? Icon(Icons.shopping_cart)
                       : Icon(Icons.add_shopping_cart),
                   onPressed: () {
-                    if (!saved.contains("section$i") &&
-                        !saved.contains('<all>')) {
-                      DBProvider.db
-                          .addToShoppingList(ShoppingCart(
-                              ingredientNames:
-                                  widget.currentRecipe.ingredientsList[i],
-                              ingredientsAmount: widget.currentRecipe.amount[i],
-                              ingredientsUnit: widget.currentRecipe.unit[i]))
+                    /// if shopping cart contains all the ingredients in the section
+                    /// -> remove them from the database and saved List
+                    if (containsList(saved, sectionIngredients)) {
+                      checkAndRemoveFromCart(sectionIngredients, saved)
                           .then((_) {
                         setState(() {
                           saved = this.saved;
-                          saved.add("section$i");
+                          for (final i in sectionIngredients) {
+                            saved.remove(i);
+                          }
+                        });
+                      });
+                      // else: add them to the database and saved list
+                    } else {
+                      checkAndAddToCart(sectionIngredients, saved).then((_) {
+                        setState(() {
+                          saved = this.saved;
+                          for (final i in sectionIngredients) {
+                            if (!saved.contains(i)) saved.add(i);
+                          }
                         });
                       });
                     }
                   },
-                  color: saved.contains("section$i") || saved.contains('<all>')
-                      ? Colors.green
-                      : textColor,
+                  color:
+                      containsList(saved, widget.currentRecipe.ingredients[i])
+                          ? Colors.green
+                          : textColor,
                 )
               ],
             ),
@@ -634,17 +677,30 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     return output;
   }
 
-  List<double> doubleListListToSingleList(List<List<double>> listList) {
-    List<double> singleList = [];
+  Future<void> checkAndAddToCart(
+      List<Ingredient> ingredients, List<Ingredient> saved) async {
+    List<Ingredient> addToCart = [];
 
-    for (int i = 0; i < listList.length; i++) {
-      singleList.addAll(listList[i]);
+    for (int i = 0; i < ingredients.length; i++) {
+      if (!saved.contains(ingredients[i])) addToCart.add(ingredients[i]);
     }
-    return singleList;
+    await DBProvider.db.addToShoppingList(addToCart);
   }
 
-  List<String> stringListListToSingleList(List<List<String>> listList) {
-    List<String> singleList = [];
+  Future<void> checkAndRemoveFromCart(
+      List<Ingredient> ingredients, List<Ingredient> saved) async {
+    List<Ingredient> removeFromCart = [];
+
+    for (int i = 0; i < ingredients.length; i++) {
+      if (saved.contains(ingredients[i])) removeFromCart.add(ingredients[i]);
+    }
+    DBProvider.db.removeFromShoppingCart(removeFromCart);
+  }
+
+  /// Takes a List<List<Ingredient>> and flattens it to a List<Ingredient>
+  /// with still all the ingredients inside
+  List<Ingredient> flattenIngredients(List<List<Ingredient>> listList) {
+    List<Ingredient> singleList = [];
 
     for (int i = 0; i < listList.length; i++) {
       singleList.addAll(listList[i]);
@@ -660,7 +716,10 @@ class IngredientsScreenState extends State<IngredientsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.currentRecipe.ingredientsList.isEmpty) return Container();
+    if (widget.currentRecipe.ingredients.isEmpty) return Container();
+    List<Ingredient> allIngredients =
+        flattenIngredients(widget.currentRecipe.ingredients);
+
     Column output = Column(
       children: <Widget>[
         Container(
@@ -684,26 +743,30 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                         ),
                       ),
                       IconButton(
-                        icon: !saved.contains('<all>')
-                            ? Icon(Icons.add_shopping_cart)
-                            : Icon(Icons.shopping_cart),
-                        color:
-                            !saved.contains('<all>') ? textColor : Colors.green,
+                        icon: containsList(saved, allIngredients)
+                            ? Icon(Icons.shopping_cart)
+                            : Icon(Icons.add_shopping_cart),
+                        color: containsList(saved, allIngredients)
+                            ? Colors.green
+                            : textColor,
                         onPressed: () {
-                          if (!saved.contains('<all>')) {
-                            DBProvider.db
-                                .addToShoppingList(ShoppingCart(
-                                    ingredientNames: stringListListToSingleList(
-                                        widget.currentRecipe.ingredientsList),
-                                    ingredientsAmount:
-                                        doubleListListToSingleList(
-                                            widget.currentRecipe.amount),
-                                    ingredientsUnit: stringListListToSingleList(
-                                        widget.currentRecipe.unit)))
+                          /// if the saved list contains all ingredients
+                          /// -> remove them from the database and saved list
+                          if (containsList(saved, allIngredients)) {
+                            checkAndRemoveFromCart(saved, allIngredients)
                                 .then((_) {
                               setState(() {
                                 saved = this.saved;
-                                saved.add('<all>');
+                                for (final i in allIngredients) saved.remove(i);
+                              });
+                            });
+
+                            /// else, add the not yet added ingredients to the
+                            /// database and saved list
+                          } else {
+                            checkAndAddToCart(allIngredients, saved).then((_) {
+                              setState(() {
+                                saved = allIngredients;
                               });
                             });
                           }
@@ -736,4 +799,11 @@ class MyClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+bool containsList(List<Ingredient> list, List<Ingredient> contains) {
+  for (int i = 0; i < contains.length; i++) {
+    if (!list.contains(contains[i])) return false;
+  }
+  return true;
 }

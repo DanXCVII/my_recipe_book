@@ -29,14 +29,14 @@ class ComplexitySectionState extends State<ComplexitySection> {
         ),
         Padding(
           padding: EdgeInsets.only(left: 24, right: 24),
-                  child: Slider(
-            label: "${widget.complexity.getDouble().toString()}",
+          child: Slider(
+            label: "${widget.complexity.myDouble.toString()}",
             onChanged: (value) {
               setState(() {
-                widget.complexity.setDouble(value);
+                widget.complexity.myDouble = value;
               });
             },
-            value: widget.complexity.getDouble(),
+            value: widget.complexity.myDouble,
             divisions: 9,
             min: 1,
             max: 10,

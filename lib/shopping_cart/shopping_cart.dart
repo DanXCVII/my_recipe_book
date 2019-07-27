@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../database.dart';
 import '../recipe.dart';
+import '../my_wrapper.dart';
 
 class ShoppingCartScreen extends StatelessWidget {
   @override
@@ -42,7 +43,7 @@ class ShoppingCartScreen extends StatelessWidget {
                     )),
                 Padding(
                   padding: EdgeInsets.only(
-                      left: ((MediaQuery.of(context).size.width / 2) - 200),
+                      left: ((MediaQuery.of(context).size.width / 2) - 190),
                       top: 30),
                   child: Image.asset(
                     'images/bread.png',
@@ -73,13 +74,23 @@ class ShoppingCartScreen extends StatelessWidget {
               future: DBProvider.db.getShoppingCartIngredients(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data.ingredientsAmount.isNotEmpty)
+                  if (snapshot.data.ingredients.isNotEmpty)
                     return Container(
                         height: MediaQuery.of(context).size.height - 335,
-                        child: ListView(
-                            children: buildShoppingList(snapshot.data)));
+                        child: Padding(
+                            padding: EdgeInsets.only(left: 25, right: 25),
+                            child: IngredientsList(
+                                ingredients: snapshot.data.ingredients,
+                                checked: snapshot.data.checked)));
                   else
-                    return Center(child: Text("Nothing added yet"));
+                    return Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height - 400,
+                        child: Center(
+                            child: Text(
+                          "Nothing added yet",
+                          style: TextStyle(fontSize: 22, fontFamily: 'Ribeye'),
+                        )));
                 }
                 return Center(child: CircularProgressIndicator());
               },
@@ -89,58 +100,94 @@ class ShoppingCartScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  // TODO: Continue
-  List<Widget> buildShoppingList(ShoppingCart sC) {
-    List<Widget> output = [];
-    for (int i = 0; i < sC.ingredientNames.length; i++) {
-      output.add(
-        Padding(
-          padding: EdgeInsets.only(left: 20, right: 20),
-          child: Container(
-            decoration: BoxDecoration(
-                border: Border(
-                    top: BorderSide(width: 1.5),
-                    left: BorderSide(width: 1.5),
-                    right: BorderSide(width: 1.5),
-                    bottom: BorderSide(
-                        width: i == sC.ingredientNames.length - 1 ? 1.5 : 0))),
-            child: IngredientRow(
-              ingredientName: sC.ingredientNames[i],
-              ingredientAmount: sC.ingredientsAmount[i],
-              ingredientUnit: sC.ingredientsUnit[i],
+class IngredientsList extends StatefulWidget {
+  List<Ingredient> ingredients;
+  List<bool> checked;
+
+  IngredientsList({this.ingredients, this.checked, Key key}) : super(key: key);
+
+  _IngredientsListState createState() => _IngredientsListState();
+}
+
+class _IngredientsListState extends State<IngredientsList> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: widget.ingredients.length,
+      itemBuilder: (context, index) {
+        String ingredientName = widget.ingredients[index].name;
+        double ingredientAmount = widget.ingredients[index].amount;
+        String ingredientUnit = widget.ingredients[index].unit;
+        return Dismissible(
+          key: Key('$ingredientName$ingredientAmount$ingredientUnit'),
+          onDismissed: (_) {
+            DBProvider.db
+                .deleteFromShoppingCart(widget.ingredients[index])
+                .then((_) {
+              setState(() {
+                widget.ingredients.removeAt(index);
+                widget.checked.removeAt(index);
+              });
+            });
+          },
+          background: Container(
+            color: Colors.red,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Icon(Icons.delete, color: Colors.white)),
+                Padding(
+                    padding: EdgeInsets.only(right: 10),
+                    child: Icon(Icons.delete, color: Colors.white)),
+              ],
             ),
           ),
-        ),
-      );
-    }
-    return output;
+          child: Container(
+            decoration: BoxDecoration(
+                color: Color(0xffFEF3E1),
+                border: Border(
+                    top: BorderSide(width: 2),
+                    left: BorderSide(width: 2),
+                    right: BorderSide(width: 2),
+                    bottom: BorderSide(
+                        width:
+                            index == widget.ingredients.length - 1 ? 2 : 0))),
+            child: IngredientRow(
+                ingredient: widget.ingredients[index],
+                checked: widget.checked,
+                checkedIndex: index),
+          ),
+        );
+      },
+    );
   }
 }
 
 class IngredientRow extends StatefulWidget {
-  final String ingredientName;
-  final double ingredientAmount;
-  final String ingredientUnit;
+  final Ingredient ingredient;
+  final List<bool> checked;
+  final int checkedIndex;
+
+  /// checked and checkedIndex because the Row needs to tell
+  /// the overlaying List that an item is checked.
+  /// One way: Using Wrapper and passing the wrapper
+  /// Other way like here: Passing the list and the index
 
   IngredientRow({
     Key key,
-    this.ingredientName,
-    this.ingredientAmount,
-    this.ingredientUnit,
+    this.ingredient,
+    this.checked,
+    this.checkedIndex,
   }) : super(key: key);
 
   _IngredientRowState createState() => _IngredientRowState();
 }
 
 class _IngredientRowState extends State<IngredientRow> {
-  bool saved;
-  @override
-  void initState() {
-    super.initState();
-    saved = false;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -149,17 +196,32 @@ class _IngredientRowState extends State<IngredientRow> {
           height: 50,
           width: 50,
           decoration:
-              BoxDecoration(border: Border(right: BorderSide(width: 1.5))),
+              BoxDecoration(border: Border(right: BorderSide(width: 2))),
           child: Center(
             child: IconButton(
               iconSize: 30,
               icon: Icon(Icons.check_circle_outline),
-              color: saved == true ? Colors.green : Colors.grey,
+              color: widget.checked[widget.checkedIndex] == true
+                  ? Colors.green
+                  : Colors.grey,
               onPressed: () {
-                if (!saved)
-                  setState(() {
-                    saved = true;
+                if (!widget.checked[widget.checkedIndex])
+                  DBProvider.db
+                      .checkIngredient(widget.ingredient, true)
+                      .then((_) {
+                    setState(() {
+                      widget.checked[widget.checkedIndex] = true;
+                    });
                   });
+                else {
+                  DBProvider.db
+                      .checkIngredient(widget.ingredient, false)
+                      .then((_) {
+                    setState(() {
+                      widget.checked[widget.checkedIndex] = false;
+                    });
+                  });
+                }
               },
             ),
           ),
@@ -168,8 +230,11 @@ class _IngredientRowState extends State<IngredientRow> {
           padding: EdgeInsets.only(left: 10),
           child: Text(
             //'SpaghettiSauce von der Kuh mit ganz viel ',
-            '${widget.ingredientName}',
-            style: TextStyle(fontSize: 18),
+            '${widget.ingredient.name}',
+            style: widget.checked[widget.checkedIndex]
+                ? TextStyle(
+                    fontSize: 18, decoration: TextDecoration.lineThrough)
+                : TextStyle(fontSize: 18),
           ),
         ),
         Spacer(),
@@ -177,11 +242,14 @@ class _IngredientRowState extends State<IngredientRow> {
             height: 50,
             width: 99,
             decoration:
-                BoxDecoration(border: Border(left: BorderSide(width: 1.5))),
+                BoxDecoration(border: Border(left: BorderSide(width: 2))),
             child: Center(
               child: Text(
-                '${widget.ingredientAmount} ${widget.ingredientUnit}',
-                style: TextStyle(fontSize: 18),
+                '${widget.ingredient.amount} ${widget.ingredient.unit}',
+                style: widget.checked[widget.checkedIndex]
+                    ? TextStyle(
+                        fontSize: 18, decoration: TextDecoration.lineThrough)
+                    : TextStyle(fontSize: 18),
                 overflow: TextOverflow.clip,
                 maxLines: 1,
               ),
@@ -195,10 +263,9 @@ class NotePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paintStroke = Paint()
-      ..strokeWidth = 4
       ..style = PaintingStyle.stroke
       ..color = Colors.black
-      ..strokeWidth = 2;
+      ..strokeWidth = 4;
 
     final paintFill = Paint()
       ..color = Color(0xffFEF3E1)
