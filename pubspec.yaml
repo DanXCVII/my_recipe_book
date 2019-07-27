@@ -73,6 +73,7 @@ flutter:
    - images/bread.png
    - images/apple.png
    - images/circles.png
+   - images/default.png
 
    - animations/writing_pen.flr
 

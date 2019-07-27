@@ -22,6 +22,7 @@ class RecipeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(recipe.imagePath);
     double otherTime =
         recipe.totalTime - recipe.preperationTime - recipe.cookingTime;
     return Scaffold(
@@ -69,25 +70,27 @@ class RecipeScreen extends StatelessWidget {
               ))),
           SliverList(
               delegate: SliverChildListDelegate(<Widget>[
-            GestureDetector(
-              onTap: () {
-                _showPictureFullView(recipe.imagePath,
-                    "${recipe.imagePath}${recipe.id}", context);
-              },
-              child: Hero(
-                tag: "${recipe.imagePath}",
-                child: Material(
-                  color: Colors.transparent,
-                  child: ClipPath(
-                    clipper: MyClipper(),
-                    child: Container(
-                        height: 270,
-                        child:
-                            Image.asset(recipe.imagePath, fit: BoxFit.cover)),
+            recipe.imagePath == 'images/default.png'
+                ? Container()
+                : GestureDetector(
+                    onTap: () {
+                      _showPictureFullView(recipe.imagePath,
+                          "${recipe.imagePath}${recipe.id}", context);
+                    },
+                    child: Hero(
+                      tag: "${recipe.imagePath}",
+                      child: Material(
+                        color: Colors.transparent,
+                        child: ClipPath(
+                          clipper: MyClipper(),
+                          child: Container(
+                              height: 270,
+                              child: Image.asset(recipe.imagePath,
+                                  fit: BoxFit.cover)),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
             Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
@@ -716,10 +719,9 @@ class IngredientsScreenState extends State<IngredientsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.currentRecipe.ingredients.isEmpty) return Container();
     List<Ingredient> allIngredients =
         flattenIngredients(widget.currentRecipe.ingredients);
-
+    if (allIngredients.isEmpty) return Container();
     Column output = Column(
       children: <Widget>[
         Container(

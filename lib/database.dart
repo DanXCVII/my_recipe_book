@@ -128,8 +128,11 @@ class DBProvider {
     print('start DB.newRecipe()');
     final db = await database;
     String image = "";
-    if (newRecipe.imagePath != null) {
+    if (newRecipe.imagePath != null &&
+        newRecipe.imagePath != 'images/default.png') {
       image = await PathProvider.pP.getRecipePath(newRecipe.id);
+    } else {
+      image = 'images/default.png';
     }
     var resRecipe = await db.rawInsert(
         "INSERT Into Recipe ("

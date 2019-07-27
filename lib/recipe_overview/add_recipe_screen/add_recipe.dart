@@ -33,6 +33,7 @@ class AddRecipeForm extends StatefulWidget {
     return _AddRecipeFormState();
   }
 }
+
 class _AddRecipeFormState extends State<AddRecipeForm> {
   //////////// for Ingredients ////////////
   final List<List<TextEditingController>> ingredientNameController =
@@ -169,7 +170,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             color: Colors.white,
             onPressed: () {
               // TODO: Check if ingredients data is not only partially filled in
-              if (_formKey.currentState.validate()) {
+              if (_formKey.currentState.validate() &&
+                  isIngredientListValid(ingredientNameController,
+                      ingredientAmountController, ingredientUnitController)) {
                 /////////// Only do if all data is VALID! ///////////
                 FocusScope.of(context).requestFocus(new FocusNode());
                 showDialog(
@@ -471,9 +474,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         : recipeId = widget.editRecipe.id;
 
     String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
-    await compute(saveImage,
-        [File(selectedRecipeImage.selectedImage), recipeImagePath, 2000]);
-    selectedRecipeImage.selectedImage = recipeImagePath;
+    if (selectedRecipeImage.selectedImage != null) {
+      await compute(saveImage,
+          [File(selectedRecipeImage.selectedImage), recipeImagePath, 2000]);
+      selectedRecipeImage.selectedImage = recipeImagePath;
+    }
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
@@ -535,23 +540,22 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     return newRecipe;
   }
 
-  // TODO: Remove if not needed anymore BUT CHECK
-  //bool isIngredientListValid(
-  //    List<List<TextEditingController>> ingredients,
-  //    List<List<TextEditingController>> amount,
-  //    List<List<TextEditingController>> unit) {
-  //  int validator = 0;
-  //  for (int i = 0; i < ingredients.length; i++) {
-  //    for (int j = 0; j < ingredients[i].length; j++) {
-  //      validator = 0;
-  //      if (ingredients[i][j].text == "") validator++;
-  //      if (amount[i][j].text == "") validator++;
-  //      if (unit[i][j].text == "") validator++;
-  //      if (validator == 1 || validator == 2) return false;
-  //    }
-  //  }
-  //  return true;
-  //}
+  bool isIngredientListValid(
+      List<List<TextEditingController>> ingredients,
+      List<List<TextEditingController>> amount,
+      List<List<TextEditingController>> unit) {
+    int validator = 0;
+    for (int i = 0; i < ingredients.length; i++) {
+      for (int j = 0; j < ingredients[i].length; j++) {
+        validator = 0;
+        if (ingredients[i][j].text == "") validator++;
+        if (amount[i][j].text == "") validator++;
+        if (unit[i][j].text == "") validator++;
+        if (validator == 1 || validator == 2) return false;
+      }
+    }
+    return true;
+  }
 
   List<String> removeEmptyStrings(List<TextEditingController> list) {
     List<String> output = new List<String>();
