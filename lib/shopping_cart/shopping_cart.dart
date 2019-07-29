@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../database.dart';
 import '../recipe.dart';
-import '../my_wrapper.dart';
+import '../helper.dart';
 
 class ShoppingCartScreen extends StatelessWidget {
   @override
@@ -135,14 +135,13 @@ class _IngredientsListState extends State<IngredientsList> {
           background: Container(
             color: Colors.red,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Padding(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Icon(Icons.delete, color: Colors.white)),
-                Padding(
-                    padding: EdgeInsets.only(right: 10),
-                    child: Icon(Icons.delete, color: Colors.white)),
+                Icon(Icons.delete, color: Colors.white),
+                Text(
+                  ' Delete from List',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                )
               ],
             ),
           ),
@@ -245,7 +244,7 @@ class _IngredientRowState extends State<IngredientRow> {
                 BoxDecoration(border: Border(left: BorderSide(width: 2))),
             child: Center(
               child: Text(
-                '${widget.ingredient.amount} ${widget.ingredient.unit}',
+                '${cutDouble(widget.ingredient.amount)} ${widget.ingredient.unit}',
                 style: widget.checked[widget.checkedIndex]
                     ? TextStyle(
                         fontSize: 18, decoration: TextDecoration.lineThrough)

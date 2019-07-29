@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 
@@ -38,13 +37,13 @@ class _CategorySectionState extends State<CategorySection> {
     super.initState();
   }
 
-  List<Widget> _getCategoryChips(List<String> categories) {
+  List<Widget> _getCategoryChips(List<String> categoryNames) {
     List<Widget> output = new List<Widget>();
 
-    print(categories.length);
-    for (int i = 0; i < categories.length; i++) {
+    print(categoryNames.length);
+    for (int i = 0; i < categoryNames.length; i++) {
       output.add(MyCategoryFilterChip(
-        chipName: "${categories[i]}",
+        chipName: "${categoryNames[i]}",
         recipeCategories: widget.recipeCategories,
       ));
     }
@@ -90,14 +89,17 @@ class _CategorySectionState extends State<CategorySection> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Container(
-            child: FutureBuilder<List<String>>(
+            child: FutureBuilder<List<RecipeCategory>>(
                 future: DBProvider.db.getCategories(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
+                    List<String> categoryNames = [];
+                    for (final category in snapshot.data)
+                      categoryNames.add(category.name);
                     return Wrap(
                       spacing: 5.0,
                       runSpacing: 3.0,
-                      children: _getCategoryChips(snapshot.data),
+                      children: _getCategoryChips(categoryNames),
                     );
                   }
                   if (snapshot.hasError) {
@@ -280,11 +282,12 @@ class CustomDialogState extends State<CustomDialog> {
 
   Future<void> _saveCategory() async {
     String categoryName = categoryNameController.text;
+    String imagePath = '';
     if (widget.addCategoryImage.selectedImage != null) {
-      String imagePath = await PathProvider.pP.getCategoryPath(categoryName);
+      imagePath = await PathProvider.pP.getCategoryPath(categoryName);
       compute(saveImage,
           [File(widget.addCategoryImage.selectedImage), imagePath, 2000]);
     }
-    await DBProvider.db.newCategory(categoryName);
+    await DBProvider.db.newCategory(categoryName, imagePath);
   }
 }

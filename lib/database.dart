@@ -23,76 +23,77 @@ class DBProvider {
 
   _onConfigure(Database db) async {
     // Add support for cascade delete
-    await db.execute("PRAGMA foreign_keys = ON");
+    await db.execute('PRAGMA foreign_keys = ON');
   }
 
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "TestDB.db");
+    String path = join(documentsDirectory.path, 'TestDB.db');
     return await openDatabase(
       path,
       onConfigure: _onConfigure,
       version: 1,
       onOpen: (db) {},
       onCreate: (Database db, int version) async {
-        await db.execute("CREATE TABLE Recipe ("
-            "id INTEGER PRIMARY KEY,"
-            "name TEXT,"
-            "image TEXT,"
-            "preperationTime REAL,"
-            "cookingTime REAL,"
-            "totalTime REAL,"
-            "servings REAL,"
-            "vegetable TEXT,"
-            "notes TEXT,"
-            "complexity INTEGER,"
-            "isFavorite INTEGER"
-            ")");
-        await db.execute("CREATE TABLE Steps ("
-            "id INTEGER PRIMARY KEY,"
-            "number TEXT,"
-            "description TEXT,"
-            "recipe_id INTEGER,"
-            "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
-            ")");
-        await db.execute("CREATE TABLE StepImages ("
-            "id INTEGER PRIMARY KEY,"
-            "image TEXT,"
-            "steps_id INTEGER,"
-            "FOREIGN KEY(steps_id) REFERENCES Steps(id) ON DELETE CASCADE"
-            ")");
-        await db.execute("CREATE TABLE Sections ("
-            "id INTEGER PRIMARY KEY,"
-            "number INTEGER,"
-            "name TEXT,"
-            "recipe_id INTEGER,"
-            "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE"
-            ")");
-        await db.execute("CREATE TABLE Ingredients ("
-            "id INTEGER PRIMARY KEY,"
-            "name TEXT,"
-            "amount REAL,"
-            "unit TEXT,"
-            "section_id INTEGER,"
-            "FOREIGN KEY(section_id) REFERENCES Sections(id) ON DELETE CASCADE"
-            ")");
-        await db.execute("CREATE TABLE Categories ("
-            "id INTEGER PRIMARY KEY,"
-            "name TEXT"
-            ")");
-        await db.execute("CREATE TABLE RecipeCategories ("
-            "recipe_id INTEGER,"
-            "categories_id INTEGER,"
-            "FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE,"
-            "FOREIGN KEY(categories_id) REFERENCES Categories(id) ON DELETE CASCADE"
-            ")");
-        await db.execute("CREATE TABLE ShoppingCart ("
-            "item_id INTEGER PRIMARY KEY,"
-            "name TEXT,"
-            "amount REAL,"
-            "unit,"
-            "checked INTEGER"
-            ")");
+        await db.execute('CREATE TABLE Recipe ('
+            'id INTEGER PRIMARY KEY,'
+            'name TEXT,'
+            'image TEXT,'
+            'preperationTime REAL,'
+            'cookingTime REAL,'
+            'totalTime REAL,'
+            'servings REAL,'
+            'vegetable TEXT,'
+            'notes TEXT,'
+            'complexity INTEGER,'
+            'isFavorite INTEGER'
+            ')');
+        await db.execute('CREATE TABLE Steps ('
+            'id INTEGER PRIMARY KEY,'
+            'number TEXT,'
+            'description TEXT,'
+            'recipe_id INTEGER,'
+            'FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE'
+            ')');
+        await db.execute('CREATE TABLE StepImages ('
+            'id INTEGER PRIMARY KEY,'
+            'image TEXT,'
+            'steps_id INTEGER,'
+            'FOREIGN KEY(steps_id) REFERENCES Steps(id) ON DELETE CASCADE'
+            ')');
+        await db.execute('CREATE TABLE Sections ('
+            'id INTEGER PRIMARY KEY,'
+            'number INTEGER,'
+            'name TEXT,'
+            'recipe_id INTEGER,'
+            'FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE'
+            ')');
+        await db.execute('CREATE TABLE Ingredients ('
+            'id INTEGER PRIMARY KEY,'
+            'name TEXT,'
+            'amount REAL,'
+            'unit TEXT,'
+            'section_id INTEGER,'
+            'FOREIGN KEY(section_id) REFERENCES Sections(id) ON DELETE CASCADE'
+            ')');
+        await db.execute('CREATE TABLE Categories ('
+            'id INTEGER PRIMARY KEY,'
+            'name TEXT,'
+            'image TEXT'
+            ')');
+        await db.execute('CREATE TABLE RecipeCategories ('
+            'recipe_id INTEGER,'
+            'categories_id INTEGER,'
+            'FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE,'
+            'FOREIGN KEY(categories_id) REFERENCES Categories(id) ON DELETE CASCADE'
+            ')');
+        await db.execute('CREATE TABLE ShoppingCart ('
+            'item_id INTEGER PRIMARY KEY,'
+            'name TEXT,'
+            'amount REAL,'
+            'unit,'
+            'checked INTEGER'
+            ')');
       },
     );
   }
@@ -104,8 +105,8 @@ class DBProvider {
     int output = 0;
 
     var table =
-        await db.rawQuery("SELECT MAX($idName)+1 as id FROM $tablename");
-    int id = table.first["id"];
+        await db.rawQuery('SELECT MAX($idName)+1 as id FROM $tablename');
+    int id = table.first['id'];
     if (id != null) {
       output = id;
     }
@@ -115,19 +116,22 @@ class DBProvider {
     return output;
   }
 
-  newCategory(String name) async {
+  /// add new category to database with categoryname and
+  /// picture if the user selected a picture
+  newCategory(String name, String picture) async {
     final db = await database;
+
     await db.rawInsert(
-        "INSERT Into Categories (id,name)"
-        " VALUES (?,?)",
-        [await getNewIDforTable("Categories", "id"), name]);
+        'INSERT Into Categories (id,name,image)'
+        ' VALUES (?,?,?)',
+        [await getNewIDforTable('Categories', 'id'), name, picture]);
     return;
   }
 
   newRecipe(Recipe newRecipe) async {
     print('start DB.newRecipe()');
     final db = await database;
-    String image = "";
+    String image = '';
     if (newRecipe.imagePath != null &&
         newRecipe.imagePath != 'images/default.png') {
       image = await PathProvider.pP.getRecipePath(newRecipe.id);
@@ -135,19 +139,19 @@ class DBProvider {
       image = 'images/default.png';
     }
     var resRecipe = await db.rawInsert(
-        "INSERT Into Recipe ("
-        "id,"
-        "name,"
-        "image,"
-        "preperationTime,"
-        "cookingTime,"
-        "totalTime,"
-        "servings,"
-        "vegetable,"
-        "notes,"
-        "complexity,"
-        "isFavorite)"
-        " VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        'INSERT Into Recipe ('
+        'id,'
+        'name,'
+        'image,'
+        'preperationTime,'
+        'cookingTime,'
+        'totalTime,'
+        'servings,'
+        'vegetable,'
+        'notes,'
+        'complexity,'
+        'isFavorite)'
+        ' VALUES (?,?,?,?,?,?,?,?,?,?,?)',
         [
           newRecipe.id,
           newRecipe.name,
@@ -162,19 +166,19 @@ class DBProvider {
           0
         ]);
     for (int i = 0; i < newRecipe.ingredientsGlossary.length; i++) {
-      int _sectionId = await getNewIDforTable("Sections", "id");
+      int _sectionId = await getNewIDforTable('Sections', 'id');
 
       await db.rawInsert(
-          "INSERT Into Sections (id,number,name,recipe_id)"
-          " VALUES (?,?,?,?)",
+          'INSERT Into Sections (id,number,name,recipe_id)'
+          ' VALUES (?,?,?,?)',
           [_sectionId, i, newRecipe.ingredientsGlossary[i], newRecipe.id]);
 
       for (int j = 0; j < newRecipe.ingredients[i].length; j++) {
         await db.rawInsert(
-            "INSERT Into Ingredients (id,name,amount,unit,section_id)"
-            " VALUES (?,?,?,?,?)",
+            'INSERT Into Ingredients (id,name,amount,unit,section_id)'
+            ' VALUES (?,?,?,?,?)',
             [
-              await getNewIDforTable("Ingredients", "id"),
+              await getNewIDforTable('Ingredients', 'id'),
               newRecipe.ingredients[i][j].name,
               newRecipe.ingredients[i][j].amount,
               newRecipe.ingredients[i][j].unit,
@@ -183,11 +187,11 @@ class DBProvider {
       }
     }
     for (int i = 0; i < newRecipe.steps.length; i++) {
-      int stepsId = await getNewIDforTable("Steps", "id");
+      int stepsId = await getNewIDforTable('Steps', 'id');
 
       await db.rawInsert(
-          "INSERT Into Steps (id,number,description,recipe_id)"
-          " VALUES (?,?,?,?)",
+          'INSERT Into Steps (id,number,description,recipe_id)'
+          ' VALUES (?,?,?,?)',
           [
             stepsId,
             i,
@@ -197,10 +201,10 @@ class DBProvider {
       if (newRecipe.stepImages.length > i) {
         for (int j = 0; j < newRecipe.stepImages[i].length; j++) {
           await db.rawInsert(
-              "INSERT Into StepImages (id,image,steps_id)"
-              " VALUES (?,?,?)",
+              'INSERT Into StepImages (id,image,steps_id)'
+              ' VALUES (?,?,?)',
               [
-                await getNewIDforTable("StepImages", "id"),
+                await getNewIDforTable('StepImages', 'id'),
                 await PathProvider.pP.getRecipeStepPath(newRecipe.id, i, j),
                 stepsId,
               ]);
@@ -210,14 +214,14 @@ class DBProvider {
 
     List<String> categoryNames = newRecipe.categories;
     for (int i = 0; i < categoryNames.length; i++) {
-      var resCategories = await db.query("Categories",
-          where: "name = ?", whereArgs: [categoryNames[i]]);
+      var resCategories = await db.query('Categories',
+          where: 'name = ?', whereArgs: [categoryNames[i]]);
       await db.rawInsert(
-          "INSERT Into RecipeCategories (recipe_id,categories_id)"
-          " VALUES (?,?)",
+          'INSERT Into RecipeCategories (recipe_id,categories_id)'
+          ' VALUES (?,?)',
           [
             newRecipe.id,
-            resCategories[0]["id"],
+            resCategories[0]['id'],
           ]);
     }
 
@@ -225,13 +229,15 @@ class DBProvider {
     return resRecipe;
   }
 
-  Future<List<String>> getCategories() async {
+  Future<List<RecipeCategory>> getCategories() async {
     final db = await database;
 
-    var resCategories = await db.rawQuery("SELECT * FROM Categories");
-    List<String> categories = new List<String>();
+    var resCategories = await db.rawQuery('SELECT * FROM Categories');
+    List<RecipeCategory> categories = new List<RecipeCategory>();
     for (int i = 0; i < resCategories.length; i++) {
-      categories.add(resCategories[i]["name"]);
+      categories.add(RecipeCategory(
+          name: resCategories[i]['name'],
+          imagePath: resCategories[i]['image']));
     }
     return categories;
   }
@@ -240,72 +246,72 @@ class DBProvider {
   getRecipeById(int id) async {
     print('getRecipeById(id)');
     final db = await database;
-    var resRecipe = await db.query("Recipe", where: "id = ?", whereArgs: [id]);
+    var resRecipe = await db.query('Recipe', where: 'id = ?', whereArgs: [id]);
     if (resRecipe.isEmpty) {
       return Null;
     }
-    String name = resRecipe.first["name"];
+    String name = resRecipe.first['name'];
     String image;
-    if (resRecipe.first["image"] != "") {
-      image = resRecipe.first["image"];
+    if (resRecipe.first['image'] != '') {
+      image = resRecipe.first['image'];
     }
 
-    double preperationTime = resRecipe.first["preperationTime"];
-    double cookingTime = resRecipe.first["cookingTime"];
-    double totalTime = resRecipe.first["totalTime"];
-    double servings = resRecipe.first["servings"];
-    int complexity = resRecipe.first["complexity"];
+    double preperationTime = resRecipe.first['preperationTime'];
+    double cookingTime = resRecipe.first['cookingTime'];
+    double totalTime = resRecipe.first['totalTime'];
+    double servings = resRecipe.first['servings'];
+    int complexity = resRecipe.first['complexity'];
     bool isFavorite;
-    if (resRecipe.first["isFavorite"] == 1) {
+    if (resRecipe.first['isFavorite'] == 1) {
       isFavorite = true;
     } else {
       isFavorite = false;
     }
     Vegetable vegetable;
 
-    if (resRecipe.first["vegetable"] == "Vegetable.NON_VEGETARIAN")
+    if (resRecipe.first['vegetable'] == 'Vegetable.NON_VEGETARIAN')
       vegetable = Vegetable.NON_VEGETARIAN;
-    else if (resRecipe.first["vegetable"] == "Vegetable.VEGETARIAN")
+    else if (resRecipe.first['vegetable'] == 'Vegetable.VEGETARIAN')
       vegetable = Vegetable.VEGETARIAN;
-    else if (resRecipe.first["vegetable"] == "Vegetable.VEGAN")
+    else if (resRecipe.first['vegetable'] == 'Vegetable.VEGAN')
       vegetable = Vegetable.VEGAN;
-    String notes = resRecipe.first["notes"];
+    String notes = resRecipe.first['notes'];
 
     var resSteps = await db.rawQuery(
-        "SELECT * FROM Steps WHERE recipe_id=$id ORDER BY number ASC");
+        'SELECT * FROM Steps WHERE recipe_id=$id ORDER BY number ASC');
     List<String> steps = new List<String>();
     List<List<String>> stepImages = new List<List<String>>();
     for (int i = 0; i < resSteps.length; i++) {
-      steps.add(resSteps[i]["description"]);
+      steps.add(resSteps[i]['description']);
       var resStepImages = await db.rawQuery(
-          "SELECT * FROM StepImages WHERE steps_id=${resSteps[i]["id"]} ORDER BY id ASC");
+          'SELECT * FROM StepImages WHERE steps_id=${resSteps[i]['id']} ORDER BY id ASC');
       stepImages.add(new List<String>());
       for (int j = 0; j < resStepImages.length; j++) {
-        stepImages[i].add(resStepImages[j]["image"]);
+        stepImages[i].add(resStepImages[j]['image']);
       }
     }
 
     var resSections = await db.rawQuery(
-        "SELECT * FROM Sections WHERE recipe_id=$id ORDER BY number ASC");
+        'SELECT * FROM Sections WHERE recipe_id=$id ORDER BY number ASC');
     List<String> ingredientsGlossary = new List<String>();
     List<List<Ingredient>> ingredients = [[]];
     for (int i = 0; i < resSections.length; i++) {
-      ingredientsGlossary.add(resSections[i]["name"]);
+      ingredientsGlossary.add(resSections[i]['name']);
       var resIngredients = await db.rawQuery(
-          "SELECT * FROM Ingredients WHERE section_id=${resSections[i]["id"]}");
+          'SELECT * FROM Ingredients WHERE section_id=${resSections[i]['id']}');
       ingredients.add([]);
       for (int j = 0; j < resIngredients.length; j++) {
-        ingredients[i].add(Ingredient(resIngredients[j]["name"],
-            resIngredients[j]["amount"], resIngredients[j]['unit']));
+        ingredients[i].add(Ingredient(resIngredients[j]['name'],
+            resIngredients[j]['amount'], resIngredients[j]['unit']));
       }
     }
 
     List<String> categories = new List<String>();
     var resCategories = await db.rawQuery(
-        "SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id"
-        " WHERE recipe_id=$id");
+        'SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id'
+        ' WHERE recipe_id=$id');
     for (int i = 0; i < resCategories.length; i++) {
-      categories.add(resCategories[i]["name"]);
+      categories.add(resCategories[i]['name']);
     }
     return Recipe(
         id: id,
@@ -329,10 +335,10 @@ class DBProvider {
   Future<void> deleteRecipe(Recipe recipe) async {
     final db = await database;
 
-    await db.rawDelete("DELETE FROM Recipe WHERE id= ?", [recipe.id]);
+    await db.rawDelete('DELETE FROM Recipe WHERE id= ?', [recipe.id]);
 
     Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPathRecipe = "${appDir.path}/${recipe.id}/";
+    String imageLocalPathRecipe = '${appDir.path}/${recipe.id}/';
     var dir = new Directory(imageLocalPathRecipe);
     dir.deleteSync(recursive: true);
   }
@@ -341,10 +347,10 @@ class DBProvider {
     final db = await database;
     Batch batch = db.batch();
 
-    int _shoppingCartId = await getNewIDforTable("ShoppingCart", "item_id");
+    int _shoppingCartId = await getNewIDforTable('ShoppingCart', 'item_id');
     for (int i = 0; i < ingredients.length; i++) {
       // Check if there is already one of the ingredients in the ShoppinCart table
-      var resShoppingCart = await db.rawQuery("SELECT * FROM ShoppingCart "
+      var resShoppingCart = await db.rawQuery('SELECT * FROM ShoppingCart '
           "WHERE name = '${ingredients[i].name}' AND "
           "unit = '${ingredients[i].unit}' AND "
           'checked = 0');
@@ -360,14 +366,14 @@ class DBProvider {
         // Else, update the amount
       } else {
         await db.rawUpdate(
-            "UPDATE ShoppingCart SET amount = (amount + ${ingredients[i].amount}) "
+            'UPDATE ShoppingCart SET amount = (amount + ${ingredients[i].amount}) '
             "WHERE name = '${ingredients[i].name}'");
         //batch.update('ShoppingCart',
         //    {'amount': 'amount' + ingredients[ingredientsList[i]]},
         //    where: 'name = ?', whereArgs: ['${ingredientsList[i]}']);
       }
     }
-    var resShoppingCart = await db.rawQuery("SELECT * FROM ShoppingCart");
+    var resShoppingCart = await db.rawQuery('SELECT * FROM ShoppingCart');
     /*
     print('#-#-#-#-#-#-#-#-#-');
     for (int i = 0; i < resShoppingCart.length; i++) {
@@ -428,7 +434,7 @@ class DBProvider {
     final db = await database;
     List<Ingredient> ingredients = [];
     List<bool> checked = [];
-    var resShoppingCart = await db.rawQuery("SELECT * FROM ShoppingCart");
+    var resShoppingCart = await db.rawQuery('SELECT * FROM ShoppingCart');
     for (int i = 0; i < resShoppingCart.length; i++) {
       ingredients.add(Ingredient(resShoppingCart[i]['name'],
           resShoppingCart[i]['amount'], resShoppingCart[i]['unit']));
@@ -442,21 +448,35 @@ class DBProvider {
     ));
   }
 
-  Future<List<Recipe>> getRecipesOfCategory(String category) async {
+  Future<List<Recipe>> getRecipesOfCategory(String categoryName) async {
     final db = await database;
 
-    var resCategories = await db.rawQuery("SELECT * FROM RecipeCategories "
-        "INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id "
-        "WHERE Categories.name=\"$category\"");
+    var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
+        'INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id '
+        'WHERE Categories.name=\'$categoryName\'');
     List<Recipe> output = new List<Recipe>();
     for (int i = 0; i < resCategories.length; i++) {
-      print("#####################");
-      print(resCategories[i]["recipe_id"]);
-      print("#####################");
-      var newRecipe = await getRecipeById(resCategories[i]["recipe_id"]);
+      print('#####################');
+      print(resCategories[i]['recipe_id']);
+      print('#####################');
+      Recipe newRecipe = await getRecipeById(resCategories[i]['recipe_id']);
       output.add(newRecipe as Recipe);
     }
     return output;
+  }
+
+  Future<List<Recipe>> getRecipesOfNoCategory() async {
+    final db = await database;
+
+    List<Recipe> recipes = [];
+    var resRecipe = await db.rawQuery('SELECT id FROM Recipe '
+        'WHERE id NOT IN (SELECT recipe_id FROM RecipeCategories)');
+
+    for (int i = 0; i < resRecipe.length; i++) {
+      recipes.add(await getRecipeById(resRecipe[i]['id']));
+    }
+
+    return recipes;
   }
 
   Future<void> updateFavorite(bool status, int recipeId) async {
@@ -468,6 +488,6 @@ class DBProvider {
       newStatus = 0;
     }
     await db.rawUpdate(
-        "UPDATE Recipe SET isFavorite = $newStatus WHERE id=$recipeId");
+        'UPDATE Recipe SET isFavorite = $newStatus WHERE id=$recipeId');
   }
 }

@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => MyHomePage(),
-        'recipeCategoryOverview': (context) => RCategoryOverview(),
+        'recipeCategoryOverview': (context) => CategoryOverview(),
         'addRecipe': (context) => AddRecipeForm(),
       },
     );
@@ -71,7 +71,7 @@ class MyHomePageState extends State<MyHomePage> {
   Widget getSelectedDrawerPage(String page) {
     switch (page) {
       case 'recipes':
-        return RCategoryOverview();
+        return CategoryOverview();
       case 'favorites':
         return Center(
           child: Text("kek"),

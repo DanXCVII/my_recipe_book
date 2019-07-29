@@ -5,6 +5,7 @@ import '../recipe.dart';
 import './recipe_overview.dart' show Favorite;
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import './add_recipe_screen/add_recipe.dart' show AddRecipeForm;
+import '../helper.dart';
 
 const double timeTextsize = 15;
 const double timeText = 17;
@@ -136,9 +137,10 @@ class RecipeScreen extends StatelessWidget {
                                       recipe.totalTime
                                   ? new CircularSegmentEntry(0, Colors.black)
                                   : new CircularSegmentEntry(
-                                      recipe.totalTime -
-                                          recipe.preperationTime -
-                                          recipe.cookingTime / recipe.totalTime,
+                                      (recipe.totalTime -
+                                              recipe.preperationTime -
+                                              recipe.cookingTime) /
+                                          recipe.totalTime,
                                       Colors.pink)
                             ],
                             rankKey: 'progress',
@@ -610,7 +612,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
               ),
               Spacer(),
               Text(
-                "${currentIngredient.amount} ${currentIngredient.unit}",
+                "${cutDouble(currentIngredient.amount)} ${currentIngredient.unit}",
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ],
@@ -734,16 +736,72 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 12, right: 12),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        "Ingredients for $servings servings",
+                        "Ingredients for",
                         style: TextStyle(
                           color: textColor,
                           fontSize: headingSize,
                           fontFamily: "Questrial-Regular",
                         ),
                       ),
+                      IconButton(
+                        icon: Icon(Icons.remove_circle_outline,
+                            color: Colors.white),
+                        onPressed: () {
+                          if (servings <= 1) return;
+                          List<List<Ingredient>> ingredients =
+                              widget.currentRecipe.ingredients;
+                          for (int i = 0; i < ingredients.length; i++) {
+                            for (int j = 0; j < ingredients[i].length; j++) {
+                              ingredients[i][j].amount =
+                                  ((servings - 1) / servings) *
+                                      ingredients[i][j].amount;
+                            }
+                          }
+                          setState(() {
+                            servings = servings - 1;
+                          });
+                        },
+                      ),
+                      Text(
+                        '$servings',
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: headingSize,
+                          fontFamily: "Questrial-Regular",
+                        ),
+                      ),
+
+                      IconButton(
+                        icon:
+                            Icon(Icons.add_circle_outline, color: Colors.white),
+                        onPressed: () {
+                          List<List<Ingredient>> ingredients =
+                              widget.currentRecipe.ingredients;
+                          for (int i = 0; i < ingredients.length; i++) {
+                            for (int j = 0; j < ingredients[i].length; j++) {
+                              ingredients[i][j].amount =
+                                  ((servings + 1) / servings) *
+                                      ingredients[i][j].amount;
+                            }
+                          }
+                          setState(() {
+                            servings = servings + 1;
+                          });
+                        },
+                      ),
+                      Text(
+                        'servings',
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: headingSize,
+                          fontFamily: "Questrial-Regular",
+                        ),
+                      ),
+                      Spacer(),
+                      // TODO: Maybe remove add all ingredients button or replace
+                      /*
                       IconButton(
                         icon: containsList(saved, allIngredients)
                             ? Icon(Icons.shopping_cart)
@@ -773,7 +831,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                             });
                           }
                         },
-                      )
+                      )*/
                     ],
                   ),
                 ),
