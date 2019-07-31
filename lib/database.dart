@@ -504,6 +504,20 @@ class DBProvider {
     return recipes;
   }
 
+  Future<List<Recipe>> getFavoriteRecipes() async {
+    var db = await database;
+
+    List<Recipe> favorites = [];
+
+    var resFavorites =
+        await db.query('Recipe', where: 'isFavorite = ?', whereArgs: ['1']);
+
+    for (int i = 0; i < resFavorites.length; i++) {
+      favorites.add(await getRecipeById(resFavorites[i]['id']));
+    }
+    return favorites;
+  }
+
   Future<void> updateFavorite(bool status, int recipeId) async {
     final db = await database;
     int newStatus;

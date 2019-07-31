@@ -3,6 +3,7 @@ import 'recipe_overview/r_category_overview.dart';
 import 'shopping_cart/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
 import 'package:flutter/rendering.dart';
+import './favortie_screen/favorite_screen.dart';
 
 /// TODO: Think about how to change the Appbar and body with using a
 /// StateLess widget for better performance maybe. One way of doing
@@ -73,9 +74,7 @@ class MyHomePageState extends State<MyHomePage> {
       case 'recipes':
         return CategoryOverview();
       case 'favorites':
-        return Center(
-          child: Text("kek"),
-        );
+        return FavoriteScreen();
       case 'shopping cart':
         return ShoppingCartScreen();
       case 'calendar':
