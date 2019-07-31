@@ -8,6 +8,7 @@ class Recipe {
   int id;
   String name;
   String imagePath;
+  String imagePreviewPath;
   double preperationTime;
   double cookingTime;
   double totalTime;
@@ -26,6 +27,7 @@ class Recipe {
       {@required this.id,
       @required this.name,
       this.imagePath,
+      this.imagePreviewPath,
       this.preperationTime,
       this.cookingTime,
       this.totalTime,

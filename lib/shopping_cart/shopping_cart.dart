@@ -56,41 +56,62 @@ class ShoppingCartScreen extends StatelessWidget {
               'images/circles.png',
               height: 10,
             ),
-            Padding(
-              padding: EdgeInsets.only(left: 20, right: 20, top: 15),
-              child: Row(
-                children: <Widget>[
-                  Text('check',
-                      style: TextStyle(fontFamily: 'Ribeye', fontSize: 16)),
-                  Text('     ware',
-                      style: TextStyle(fontFamily: 'Ribeye', fontSize: 16)),
-                  Spacer(),
-                  Text('amount   ',
-                      style: TextStyle(fontFamily: 'Ribeye', fontSize: 16))
-                ],
-              ),
-            ),
             FutureBuilder<ShoppingCart>(
               future: DBProvider.db.getShoppingCartIngredients(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data.ingredients.isNotEmpty)
-                    return Container(
-                        height: MediaQuery.of(context).size.height - 335,
-                        child: Padding(
-                            padding: EdgeInsets.only(left: 25, right: 25),
+                    return Padding(
+                      padding:
+                          const EdgeInsets.only(left: 25, right: 25, top: 15.0),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Text('check',
+                                  style: TextStyle(
+                                      fontFamily: 'Ribeye', fontSize: 16)),
+                              Text('     ware',
+                                  style: TextStyle(
+                                      fontFamily: 'Ribeye', fontSize: 16)),
+                              Spacer(),
+                              Text('amount   ',
+                                  style: TextStyle(
+                                      fontFamily: 'Ribeye', fontSize: 16))
+                            ],
+                          ),
+                          Container(
+                            height: MediaQuery.of(context).size.height - 335,
                             child: IngredientsList(
                                 ingredients: snapshot.data.ingredients,
-                                checked: snapshot.data.checked)));
+                                checked: snapshot.data.checked),
+                          )
+                        ],
+                      ),
+                    );
                   else
-                    return Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height - 400,
-                        child: Center(
-                            child: Text(
-                          "Nothing added yet",
-                          style: TextStyle(fontSize: 22, fontFamily: 'Ribeye'),
-                        )));
+                    return Stack(
+                      children: <Widget>[
+                        Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height - 400,
+                            child: Center(
+                                child: Text(
+                              "Nothing added yet",
+                              style: TextStyle(
+                                  fontSize: 26, fontFamily: 'RibeyeMarrow'),
+                            ))),
+                        Container(
+                            height:
+                                (MediaQuery.of(context).size.height - 415
+                                ) / 2,
+                            child: Align(
+                                alignment: Alignment(
+                                  1,1
+                                ),
+                                child: Image.asset('images/cookingPen.png', height: 75,)))
+                      ],
+                    );
                 }
                 return Center(child: CircularProgressIndicator());
               },
@@ -103,8 +124,8 @@ class ShoppingCartScreen extends StatelessWidget {
 }
 
 class IngredientsList extends StatefulWidget {
-  List<Ingredient> ingredients;
-  List<bool> checked;
+  final List<Ingredient> ingredients;
+  final List<bool> checked;
 
   IngredientsList({this.ingredients, this.checked, Key key}) : super(key: key);
 

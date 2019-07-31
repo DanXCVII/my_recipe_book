@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'dart:math';
 import 'package:path_provider/path_provider.dart';
 import './recipe.dart';
 import 'dart:async';
@@ -78,7 +79,7 @@ class DBProvider {
             ')');
         await db.execute('CREATE TABLE Categories ('
             'id INTEGER PRIMARY KEY,'
-            'name TEXT,'
+            'categoryName TEXT,'
             'image TEXT'
             ')');
         await db.execute('CREATE TABLE RecipeCategories ('
@@ -122,7 +123,7 @@ class DBProvider {
     final db = await database;
 
     await db.rawInsert(
-        'INSERT Into Categories (id,name,image)'
+        'INSERT Into Categories (id,categoryName,image)'
         ' VALUES (?,?,?)',
         [await getNewIDforTable('Categories', 'id'), name, picture]);
     return;
@@ -133,10 +134,10 @@ class DBProvider {
     final db = await database;
     String image = '';
     if (newRecipe.imagePath != null &&
-        newRecipe.imagePath != 'images/default.png') {
+        newRecipe.imagePath != 'images/radnomFood.png') {
       image = await PathProvider.pP.getRecipePath(newRecipe.id);
     } else {
-      image = 'images/default.png';
+      image = 'images/randomFood.png';
     }
     var resRecipe = await db.rawInsert(
         'INSERT Into Recipe ('
@@ -215,7 +216,7 @@ class DBProvider {
     List<String> categoryNames = newRecipe.categories;
     for (int i = 0; i < categoryNames.length; i++) {
       var resCategories = await db.query('Categories',
-          where: 'name = ?', whereArgs: [categoryNames[i]]);
+          where: 'categoryName = ?', whereArgs: [categoryNames[i]]);
       await db.rawInsert(
           'INSERT Into RecipeCategories (recipe_id,categories_id)'
           ' VALUES (?,?)',
@@ -236,7 +237,7 @@ class DBProvider {
     List<RecipeCategory> categories = new List<RecipeCategory>();
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(RecipeCategory(
-          name: resCategories[i]['name'],
+          name: resCategories[i]['categoryName'],
           imagePath: resCategories[i]['image']));
     }
     return categories;
@@ -311,12 +312,16 @@ class DBProvider {
         'SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id'
         ' WHERE recipe_id=$id');
     for (int i = 0; i < resCategories.length; i++) {
-      categories.add(resCategories[i]['name']);
+      categories.add(resCategories[i]['categoryName']);
     }
+
     return Recipe(
         id: id,
         name: name,
         imagePath: image,
+        imagePreviewPath: image == "images/randomFood.png"
+            ? 'images/randomFood.png'
+            : await PathProvider.pP.getRecipePreviewPath(id),
         preperationTime: preperationTime,
         cookingTime: cookingTime,
         totalTime: totalTime,
@@ -341,6 +346,26 @@ class DBProvider {
     String imageLocalPathRecipe = '${appDir.path}/${recipe.id}/';
     var dir = new Directory(imageLocalPathRecipe);
     dir.deleteSync(recursive: true);
+  }
+
+  Future<String> getRandomRecipeImageFromCategory(String categoryName) async {
+    var db = await database;
+
+    var resRrr = await db.rawQuery('SELECT Recipe.id FROM Recipe');
+    var rrr = await db.rawQuery('SELECT * FROM RecipeCategories');
+    var cat = await db.rawQuery('SELECT * FROM Categories');
+
+    var resRecipes = await db.rawQuery('SELECT Recipe.id FROM RecipeCategories '
+        'INNER JOIN Categories ON RecipeCategories.categories_id=Categories.id '
+        'INNER JOIN Recipe ON RecipeCategories.recipe_id=Recipe.id '
+        "WHERE categoryName = '$categoryName'");
+
+    Random r = Random();
+    if (resRecipes.length == 0) return '';
+    int randomRecipe =
+        resRecipes.length == 1 ? 0 : r.nextInt(resRecipes.length);
+
+    return PathProvider.pP.getRecipePreviewPath(resRecipes[randomRecipe]['id']);
   }
 
   Future<void> addToShoppingList(List<Ingredient> ingredients) async {
@@ -453,7 +478,7 @@ class DBProvider {
 
     var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id '
-        'WHERE Categories.name=\'$categoryName\'');
+        'WHERE categoryName=\'$categoryName\'');
     List<Recipe> output = new List<Recipe>();
     for (int i = 0; i < resCategories.length; i++) {
       print('#####################');

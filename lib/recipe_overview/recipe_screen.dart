@@ -71,7 +71,7 @@ class RecipeScreen extends StatelessWidget {
               ))),
           SliverList(
               delegate: SliverChildListDelegate(<Widget>[
-            recipe.imagePath == 'images/default.png'
+            recipe.imagePath == 'images/randomFood.png'
                 ? Container()
                 : GestureDetector(
                     onTap: () {
@@ -79,7 +79,7 @@ class RecipeScreen extends StatelessWidget {
                           "${recipe.imagePath}${recipe.id}", context);
                     },
                     child: Hero(
-                      tag: "${recipe.imagePath}",
+                      tag: "${recipe.imagePath}-${recipe.id}",
                       child: Material(
                         color: Colors.transparent,
                         child: ClipPath(
@@ -269,9 +269,41 @@ class RecipeScreen extends StatelessWidget {
               height: 20,
               decoration: BoxDecoration(color: Colors.black87),
             ),
-            BottomScreen(recipe),
+            recipe.notes != ""
+                ? NotesSection(notes: recipe.notes)
+                : Container(),
+            recipe.categories.length > 0 ? CategoriesSection(categories: recipe.categories):Container(),
           ]))
         ]));
+  }
+}
+
+class NotesSection extends StatelessWidget {
+  final String notes;
+
+  const NotesSection({this.notes, Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Notes",
+          style: TextStyle(
+            color: textColor,
+            fontSize: 24,
+            fontFamily: "Questrial-Regular",
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.only(top: 20, bottom: 20),
+            child: Text(
+              notes,
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ))
+      ],
+    );
   }
 }
 
@@ -311,10 +343,47 @@ void _showPictureFullView(String image, String tag, BuildContext context) {
           ))));
 }
 
-class BottomScreen extends StatelessWidget {
-  final Recipe currentRecipe;
+class CategoriesSection extends StatelessWidget {
+  final List<String> categories;
 
-  BottomScreen(this.currentRecipe);
+  CategoriesSection({this.categories});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Color(0xff51473b),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 30, top: 30, bottom: 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              "Categories",
+              style: TextStyle(
+                color: textColor,
+                fontSize: 24,
+                fontFamily: "Questrial-Regular",
+              ),
+            ),
+            FutureBuilder<Wrap>(
+                future: getCategories(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: snapshot.data,
+                    );
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                })
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<Wrap> getCategories() async {
     Wrap output = new Wrap(
@@ -322,7 +391,7 @@ class BottomScreen extends StatelessWidget {
       runSpacing: 10.0,
       spacing: 10.0,
     );
-    for (int i = 0; i < currentRecipe.categories.length; i++) {
+    for (int i = 0; i < categories.length; i++) {
       output.children.add(ClipOval(
         child: Stack(
           children: <Widget>[
@@ -330,8 +399,8 @@ class BottomScreen extends StatelessWidget {
               width: 100,
               height: 100,
               child: Image.asset(
-                await PathProvider.pP
-                    .getCategoryPath(currentRecipe.categories[i]),
+                await DBProvider.db.getRandomRecipeImageFromCategory(
+                    categories[i]),
                 fit: BoxFit.cover,
               ),
             ),
@@ -342,7 +411,7 @@ class BottomScreen extends StatelessWidget {
                 height: 40,
                 child: Center(
                   child: Text(
-                    "${currentRecipe.categories[i]}",
+                    "${categories[i]}",
                     style: TextStyle(color: Colors.white),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -353,64 +422,6 @@ class BottomScreen extends StatelessWidget {
       ));
     }
     return output;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Column output = new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[],
-    );
-    if (currentRecipe.notes != "") {
-      output.children.addAll([
-        Text(
-          "Notes",
-          style: TextStyle(
-            color: textColor,
-            fontSize: 24,
-            fontFamily: "Questrial-Regular",
-          ),
-        ),
-        Padding(
-            padding: EdgeInsets.only(top: 20, bottom: 20),
-            child: Text(
-              currentRecipe.notes,
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ))
-      ]);
-    }
-
-    output.children.addAll([
-      Text(
-        "Categories",
-        style: TextStyle(
-          color: textColor,
-          fontSize: 24,
-          fontFamily: "Questrial-Regular",
-        ),
-      ),
-      FutureBuilder<Wrap>(
-          future: getCategories(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: snapshot.data,
-              );
-            }
-            return Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          })
-    ]);
-
-    return (Container(
-      color: Color(0xff51473b),
-      child: Padding(
-          padding: const EdgeInsets.only(left: 30, top: 30, bottom: 30),
-          child: output),
-    ));
   }
 }
 

@@ -422,7 +422,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       String tmpRecipeImage =
           await PathProvider.pP.getTmpImagePath(editRecipe.imagePath);
       await compute(
-          saveImage, [File(editRecipe.imagePath), tmpRecipeImage, 2000]);
+          saveImage, [File(editRecipe.imagePath), tmpRecipeImage, 300]);
       selectedRecipeImage.selectedImage = tmpRecipeImage;
     }
 
@@ -473,11 +473,14 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ? recipeId = await DBProvider.db.getNewIDforTable("Recipe", "id")
         : recipeId = widget.editRecipe.id;
 
-    String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
+    // Saving the Recipe image and RecipePreviewImage (Recipe Image with lower quality)
     if (selectedRecipeImage.selectedImage != null) {
+      String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
       await compute(saveImage,
           [File(selectedRecipeImage.selectedImage), recipeImagePath, 2000]);
       selectedRecipeImage.selectedImage = recipeImagePath;
+      String recipeImagePreviewPath = await PathProvider.pP.getRecipePreviewPath(recipeId);
+      await compute(saveImage, [File(selectedRecipeImage.selectedImage), recipeImagePreviewPath, 400]);
     }
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
@@ -676,7 +679,7 @@ void saveImage(List<dynamic> values) async {
     ImageIO.Image newImage = ImageIO.decodeImage(values[0].readAsBytesSync());
     ImageIO.Image resizedImage =
         ImageIO.copyResize(newImage, height: values[2]);
-    new File('${values[1]}')..writeAsBytesSync(ImageIO.encodeJpg(newImage));
+    new File('${values[1]}')..writeAsBytesSync(ImageIO.encodeJpg(resizedImage));
   }
   print("****************************");
 }

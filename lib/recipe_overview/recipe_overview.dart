@@ -1,6 +1,7 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
+import 'dart:math';
 
 import '../database.dart';
 import '../recipe.dart';
@@ -73,90 +74,62 @@ Map<String, List<Color>> colors = {
 };
 
 class RecipeGridView extends StatelessWidget {
-  final RecipeCategory category;
+  final String category;
   final List<Recipe> recipes;
+  final int randomCategoryImage;
 
-  const RecipeGridView({this.category, this.recipes, Key key})
+  const RecipeGridView(
+      {this.category,
+      @required this.randomCategoryImage,
+      @required this.recipes,
+      Key key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Recipe>>(
-      future: category != null
-          ? DBProvider.db.getRecipesOfCategory(category.name)
-          : DBProvider.db.getRecipesOfNoCategory(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData && category != null && category.imagePath != '') {
-          return Container(
-            color: Colors.white,
-            child: CustomScrollView(slivers: <Widget>[
-              SliverAppBar(
-                expandedHeight: 200.0,
-                floating: false,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  title: Text(category.name),
-                  background: Container(
-                    decoration: new BoxDecoration(
-                      image: new DecorationImage(
-                        image: new ExactAssetImage('${category.imagePath}'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: new BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                      child: Container(
-                        decoration:
-                            BoxDecoration(color: Colors.white.withOpacity(0.0)),
-                      ),
-                    ),
+    if (category != null) {
+      return Container(
+        color: Colors.white,
+        child: CustomScrollView(slivers: <Widget>[
+          SliverAppBar(
+            expandedHeight: 200.0,
+            floating: false,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text(category),
+              background: Container(
+                decoration: new BoxDecoration(
+                  image: new DecorationImage(
+                    image: new ExactAssetImage(
+                        '${recipes[randomCategoryImage].imagePreviewPath}'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: new BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                  child: Container(
+                    decoration:
+                        BoxDecoration(color: Colors.white.withOpacity(0.0)),
                   ),
                 ),
               ),
-              SliverPadding(
-                padding: EdgeInsets.all(12),
-                sliver: SliverGrid.extent(
-                  childAspectRatio: 0.75,
-                  maxCrossAxisExtent: 300,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  children: getRecipeCards(snapshot.data),
-                ),
-              )
-            ]),
-          );
-        } else if (snapshot.hasData) {
-          return Scaffold(
-            // backgroundColor: Color(0xff959595),
-            appBar: AppBar(
-              title: Hero(
-                  tag: "category-$category",
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      "${category != null ? category.name : 'no category'}",
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  )),
             ),
-            body: GridView.extent(
+          ),
+          SliverPadding(
+            padding: EdgeInsets.all(12),
+            sliver: SliverGrid.extent(
               childAspectRatio: 0.75,
               maxCrossAxisExtent: 300,
-              padding: const EdgeInsets.all(
-                  12), // TODO: maybe remove, also the spacing
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              children: getRecipeCards(snapshot.data),
+              children: getRecipeCards(recipes),
             ),
-          );
-        }
-        return Center(child: CircularProgressIndicator());
-      },
-    );
+          )
+        ]),
+      );
+    }
+    return Center(child: Text('You have no recipes under this category.'));
   }
 
   List<Widget> getRecipeCards(List<Recipe> recipes) {
@@ -208,7 +181,7 @@ class RecipeCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Hero(
-                      tag: "${recipe.imagePath}",
+                      tag: "${recipe.imagePath}-${recipe.id}",
                       child: Material(
                         color: Colors.transparent,
                         child: ClipRRect(
@@ -216,8 +189,10 @@ class RecipeCard extends StatelessWidget {
                             topLeft: Radius.circular(gridTileWidth / 10),
                             topRight: Radius.circular(gridTileWidth / 10),
                           ),
-                          child: Image.asset(
-                            recipe.imagePath,
+                          child: FadeInImage(
+                            image: AssetImage(recipe.imagePreviewPath),
+                            placeholder: MemoryImage(kTransparentImage),
+                            fadeInDuration: Duration(milliseconds: 250),
                             fit: BoxFit.cover,
                             height: gridTileWidth / 1.2,
                             width: gridTileWidth + 40,
@@ -250,7 +225,7 @@ class RecipeCard extends StatelessWidget {
                     child: Material(
                       color: Colors.transparent,
                       child: Text(
-                        "1h 20min",
+                        getTimeHoursMinutes(recipe.totalTime),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: TextStyle(
@@ -265,7 +240,7 @@ class RecipeCard extends StatelessWidget {
                     child: Material(
                       color: Colors.transparent,
                       child: Text(
-                        "10 ingredients",
+                        "${getIngredientCount(recipe.ingredients)} ingredients",
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: TextStyle(
@@ -308,6 +283,24 @@ class RecipeCard extends StatelessWidget {
                   ],
                 ),
               )),
+          recipe.isFavorite == true
+              ? Align(
+                  alignment: Alignment(0.95, -0.95),
+                  child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.pink[300],
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
+                          )),
+                      child: Center(
+                          child: Image.asset(
+                        'images/heart.png',
+                        height: 25,
+                      ))),
+                )
+              : Container(),
           //Padding(
           // padding: EdgeInsets.only(
           //      left: gridTileWidth / 1.4, top: gridTileWidth / 40),
@@ -319,6 +312,21 @@ class RecipeCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String getTimeHoursMinutes(double min) {
+    if (min ~/ 60 > 0) {
+      return "${min ~/ 60}h ${min - (min ~/ 60)}min";
+    }
+    return "$min min";
+  }
+
+  int getIngredientCount(List<List<Ingredient>> ingredients) {
+    int ingredientCount = 0;
+    for (final List<Ingredient> i in ingredients) {
+      if (i != null) ingredientCount += i.length;
+    }
+    return ingredientCount;
   }
 
   Color getRecipeTypeColor(Vegetable vegetable) {
