@@ -38,7 +38,7 @@ class DBProvider {
       onCreate: (Database db, int version) async {
         await db.execute('CREATE TABLE Recipe ('
             'id INTEGER PRIMARY KEY,'
-            'name TEXT,'
+            'recipeName TEXT,'
             'image TEXT,'
             'preperationTime REAL,'
             'cookingTime REAL,'
@@ -65,13 +65,13 @@ class DBProvider {
         await db.execute('CREATE TABLE Sections ('
             'id INTEGER PRIMARY KEY,'
             'number INTEGER,'
-            'name TEXT,'
+            'sectionName TEXT,'
             'recipe_id INTEGER,'
             'FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE'
             ')');
         await db.execute('CREATE TABLE Ingredients ('
             'id INTEGER PRIMARY KEY,'
-            'name TEXT,'
+            'ingredientName TEXT,'
             'amount REAL,'
             'unit TEXT,'
             'section_id INTEGER,'
@@ -142,7 +142,7 @@ class DBProvider {
     var resRecipe = await db.rawInsert(
         'INSERT Into Recipe ('
         'id,'
-        'name,'
+        'recipeName,'
         'image,'
         'preperationTime,'
         'cookingTime,'
@@ -170,13 +170,13 @@ class DBProvider {
       int _sectionId = await getNewIDforTable('Sections', 'id');
 
       await db.rawInsert(
-          'INSERT Into Sections (id,number,name,recipe_id)'
+          'INSERT Into Sections (id,number,sectionName,recipe_id)'
           ' VALUES (?,?,?,?)',
           [_sectionId, i, newRecipe.ingredientsGlossary[i], newRecipe.id]);
 
       for (int j = 0; j < newRecipe.ingredients[i].length; j++) {
         await db.rawInsert(
-            'INSERT Into Ingredients (id,name,amount,unit,section_id)'
+            'INSERT Into Ingredients (id,ingredientName,amount,unit,section_id)'
             ' VALUES (?,?,?,?,?)',
             [
               await getNewIDforTable('Ingredients', 'id'),
@@ -251,7 +251,7 @@ class DBProvider {
     if (resRecipe.isEmpty) {
       return Null;
     }
-    String name = resRecipe.first['name'];
+    String name = resRecipe.first['recipeName'];
     String image;
     if (resRecipe.first['image'] != '') {
       image = resRecipe.first['image'];
@@ -297,12 +297,12 @@ class DBProvider {
     List<String> ingredientsGlossary = new List<String>();
     List<List<Ingredient>> ingredients = [[]];
     for (int i = 0; i < resSections.length; i++) {
-      ingredientsGlossary.add(resSections[i]['name']);
+      ingredientsGlossary.add(resSections[i]['sectionName']);
       var resIngredients = await db.rawQuery(
           'SELECT * FROM Ingredients WHERE section_id=${resSections[i]['id']}');
       ingredients.add([]);
       for (int j = 0; j < resIngredients.length; j++) {
-        ingredients[i].add(Ingredient(resIngredients[j]['name'],
+        ingredients[i].add(Ingredient(resIngredients[j]['ingredientName'],
             resIngredients[j]['amount'], resIngredients[j]['unit']));
       }
     }
@@ -471,6 +471,98 @@ class DBProvider {
       ingredients: ingredients,
       checked: checked,
     ));
+  }
+
+  Future<List<Recipe>> getRecpiesOfCategori(String categoryName) async {
+    final db = await database;
+    // alle daten von recipe
+    var resRecipes = await db.rawQuery('SELECT * FROM RecipeCategories '
+        'INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id '
+        'NATURAL INNER JOIN Recipe '
+        "WHERE categoryName='\'$categoryName\'' "
+        'ORDER BY recipe_id ASC');
+
+    // ingredients
+    var resIngredients = await db.rawQuery('SELECT * FROM Ingredients '
+        'NATURAL INNER JOIN Sections '
+        'WHERE recipe_id IN (SELECT recipe_id FROM RecipeCategories '
+        'INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id '
+        "WHERE categoryName='\'$categoryName\'' "
+        'ORDER BY recipe_id ASC, '
+        'number ASC');
+    print(resIngredients.toString());
+
+    var resSteps = await db.rawQuery('SELECT * FROM StepImages '
+        'NATURAL INNER JOIN Steps '
+        'WHERE recipe_id IN (SELECT recipe_id FROM RecipeCategories '
+        'INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id '
+        "WHERE categoryName='\'$categoryName\'' "
+        'ORDER BY recipe_id ASC, '
+        'number ASC');
+    print(resSteps);
+
+    int j = 0; // index der ingredients
+    int l = 0; // index der steps
+    int k = 0; // index der sections
+    List<List<Ingredient>> ingredients = [[]];
+    List<String> ingredientsGlossary = [];
+    List<List<String>> stepImages = [[]];
+    List<String> steps = [];
+
+    for (int i = 0; i < resRecipes.length; i++) {
+      if (resIngredients[j]['recipe_id'] == resRecipes[i]['id']) {
+        k = 0;
+        ingredients = [[]];
+        ingredientsGlossary = [];
+        ingredientsGlossary.add(resIngredients[j]['sectionName']);
+        ingredients.add([]);
+        k = 0;
+        ingredients[k].add(Ingredient(
+          resIngredients[j]['Ingredients.name'],
+          resIngredients[j]['amount'],
+          resIngredients[j]['unit'],
+        ));
+        while (resIngredients[j]['recipe_id'] == resRecipes[i]['id'] &&
+            resIngredients[j + 1]['recipe_id'] ==
+                resIngredients[j]['recipe_id']) {
+          if (resIngredients[j]['number'] < resIngredients[j + 1]['number']) {
+            k++;
+            ingredientsGlossary.add(resIngredients[j + 1]['sectionName']);
+            ingredients.add([]);
+          }
+          ingredients[k].add(Ingredient(
+            resIngredients[j + 1]['Ingredients.name'],
+            resIngredients[j + 1]['amount'],
+            resIngredients[j + 1]['unit'],
+          ));
+          j++;
+        }
+        j++;
+      } // Steps
+      l = 0;
+      if (resSteps[l]['recipe_id'] == resSteps[i]['id']) {
+        k = 0;
+        stepImages = [[]];
+        steps = [];
+        steps.add(resSteps[l]['description']);
+        stepImages.add([]);
+        k = 0;
+        stepImages[k].add(resSteps[l]['image']);
+        while (resSteps[l]['recipe_id'] == resRecipes[i]['id'] &&
+            resSteps[l + 1]['recipe_id'] == resSteps[l]['recipe_id']) {
+          if (resSteps[l]['number'] < resSteps[l + 1]['number']) {
+            k++;
+            ingredientsGlossary.add(resSteps[l + 1]['description']);
+            ingredients.add([]);
+          }
+          stepImages[k].add(resSteps[l + 1]['image']);
+
+          l++;
+        }
+        l++;
+      }
+      
+    }
   }
 
   Future<List<Recipe>> getRecipesOfCategory(String categoryName) async {
