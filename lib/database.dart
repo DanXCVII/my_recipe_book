@@ -243,7 +243,6 @@ class DBProvider {
     return categories;
   }
 
-// TODO: check if getRecipeById is working properly
   getRecipeById(int id) async {
     print('getRecipeById(id)');
     final db = await database;
@@ -351,10 +350,6 @@ class DBProvider {
   Future<String> getRandomRecipeImageFromCategory(String categoryName) async {
     var db = await database;
 
-    var resRrr = await db.rawQuery('SELECT Recipe.id FROM Recipe');
-    var rrr = await db.rawQuery('SELECT * FROM RecipeCategories');
-    var cat = await db.rawQuery('SELECT * FROM Categories');
-
     var resRecipes = await db.rawQuery('SELECT Recipe.id FROM RecipeCategories '
         'INNER JOIN Categories ON RecipeCategories.categories_id=Categories.id '
         'INNER JOIN Recipe ON RecipeCategories.recipe_id=Recipe.id '
@@ -393,21 +388,8 @@ class DBProvider {
         await db.rawUpdate(
             'UPDATE ShoppingCart SET amount = (amount + ${ingredients[i].amount}) '
             "WHERE name = '${ingredients[i].name}'");
-        //batch.update('ShoppingCart',
-        //    {'amount': 'amount' + ingredients[ingredientsList[i]]},
-        //    where: 'name = ?', whereArgs: ['${ingredientsList[i]}']);
       }
     }
-    var resShoppingCart = await db.rawQuery('SELECT * FROM ShoppingCart');
-    /*
-    print('#-#-#-#-#-#-#-#-#-');
-    for (int i = 0; i < resShoppingCart.length; i++) {
-      print(resShoppingCart[i]['name']);
-      print(resShoppingCart[i]['amount']);
-      print(resShoppingCart[i]['unit']);
-    }
-    print('#-#-#-#-#-#-#-#-#-');
-*/
     await batch.commit();
   }
 
@@ -496,21 +478,31 @@ class DBProvider {
         'NATURAL INNER JOIN Steps '
         'WHERE recipe_id IN (SELECT recipe_id FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.id=RecipeCategories.categories_id '
-        "WHERE categoryName='\'$categoryName\'' "
+        "WHERE categoryName=\'$categoryName\'"
         'ORDER BY recipe_id ASC, '
         'number ASC');
     print(resSteps);
 
+    var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
+        'NATURAL INNER JOIN Recipe '
+        'NATURAL INNER JOIN Categories '
+        "WHERE categoryName=\'$categoryName\'"
+        'ORDER BY recipe_id ASC');
+
+    List<Recipe> recipes;
     int j = 0; // index der ingredients
     int l = 0; // index der steps
     int k = 0; // index der sections
+    int m = 0; // index der categories
     List<List<Ingredient>> ingredients = [[]];
     List<String> ingredientsGlossary = [];
     List<List<String>> stepImages = [[]];
     List<String> steps = [];
+    List<String> categories = [];
 
     for (int i = 0; i < resRecipes.length; i++) {
-      if (resIngredients[j]['recipe_id'] == resRecipes[i]['id']) {
+      if (resIngredients.length > j &&
+          resIngredients[j]['recipe_id'] == resRecipes[i]['id']) {
         k = 0;
         ingredients = [[]];
         ingredientsGlossary = [];
@@ -522,7 +514,8 @@ class DBProvider {
           resIngredients[j]['amount'],
           resIngredients[j]['unit'],
         ));
-        while (resIngredients[j]['recipe_id'] == resRecipes[i]['id'] &&
+        while (resIngredients.length > j + 1 &&
+            resIngredients[j]['recipe_id'] == resRecipes[i]['id'] &&
             resIngredients[j + 1]['recipe_id'] ==
                 resIngredients[j]['recipe_id']) {
           if (resIngredients[j]['number'] < resIngredients[j + 1]['number']) {
@@ -539,8 +532,9 @@ class DBProvider {
         }
         j++;
       } // Steps
-      l = 0;
-      if (resSteps[l]['recipe_id'] == resSteps[i]['id']) {
+
+      if (resSteps.length > l &&
+          resSteps[l]['recipe_id'] == resRecipes[i]['id']) {
         k = 0;
         stepImages = [[]];
         steps = [];
@@ -548,7 +542,8 @@ class DBProvider {
         stepImages.add([]);
         k = 0;
         stepImages[k].add(resSteps[l]['image']);
-        while (resSteps[l]['recipe_id'] == resRecipes[i]['id'] &&
+        while (resSteps.length > l + 1 &&
+            resSteps[l]['recipe_id'] == resRecipes[i]['id'] &&
             resSteps[l + 1]['recipe_id'] == resSteps[l]['recipe_id']) {
           if (resSteps[l]['number'] < resSteps[l + 1]['number']) {
             k++;
@@ -561,8 +556,55 @@ class DBProvider {
         }
         l++;
       }
-      
+      categories = [];
+
+      while (resCategories.length > m &&
+          resCategories[m]['recipe_id'] == resRecipes[i]['id']) {
+        categories.add(resCategories[m]['name']);
+        m++;
+      }
+
+      String imagePath = resRecipes[i]['image'];
+
+      Vegetable vegetable;
+
+      if (resRecipes[i]['vegetable'] == 'Vegetable.NON_VEGETARIAN')
+        vegetable = Vegetable.NON_VEGETARIAN;
+      else if (resRecipes[i]['vegetable'] == 'Vegetable.VEGETARIAN')
+        vegetable = Vegetable.VEGETARIAN;
+      else if (resRecipes[i]['vegetable'] == 'Vegetable.VEGAN')
+        vegetable = Vegetable.VEGAN;
+
+      bool isFavorite;
+      if (resRecipes[i]['isFavorite'] == 1) {
+        isFavorite = true;
+      } else {
+        isFavorite = false;
+      }
+
+      recipes.add(Recipe(
+          id: resRecipes[i]['id'],
+          name: resRecipes[i]['recipeName'],
+          imagePath: resRecipes[i]['image'],
+          imagePreviewPath: imagePath == "images/randomFood.png"
+              ? 'images/randomFood.png'
+              : await PathProvider.pP.getRecipePreviewPath(resRecipes[i]['id']),
+          preperationTime: resRecipes[i]['preperationTime'],
+          cookingTime: resRecipes[i]['cookingTime'],
+          totalTime: resRecipes[i]['totalTime'],
+          servings: resRecipes[i]['servings'],
+          ingredientsGlossary: ingredientsGlossary,
+          ingredients: ingredients,
+          vegetable: vegetable,
+          notes: resRecipes[i]['notes'],
+          complexity: resRecipes[i]['complexity'],
+          isFavorite: isFavorite,
+          stepImages: stepImages,
+          steps: steps,
+          categories: categories 
+          ));
     }
+    return recipes;
   }
 
   Future<List<Recipe>> getRecipesOfCategory(String categoryName) async {
@@ -577,7 +619,7 @@ class DBProvider {
       print(resCategories[i]['recipe_id']);
       print('#####################');
       Recipe newRecipe = await getRecipeById(resCategories[i]['recipe_id']);
-      output.add(newRecipe as Recipe);
+      output.add(newRecipe);
     }
     return output;
   }

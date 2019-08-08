@@ -58,17 +58,7 @@ class RecipeScreen extends StatelessWidget {
               ],
               floating: false,
               pinned: false,
-              flexibleSpace: FlexibleSpaceBar(
-                  title: Text(
-                recipe.name,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: textColor,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ))),
+              flexibleSpace: FlexibleSpaceBar()),
           SliverList(
               delegate: SliverChildListDelegate(<Widget>[
             recipe.imagePath == 'images/randomFood.png'
@@ -272,7 +262,9 @@ class RecipeScreen extends StatelessWidget {
             recipe.notes != ""
                 ? NotesSection(notes: recipe.notes)
                 : Container(),
-            recipe.categories.length > 0 ? CategoriesSection(categories: recipe.categories):Container(),
+            recipe.categories.length > 0
+                ? CategoriesSection(categories: recipe.categories)
+                : Container(),
           ]))
         ]));
   }
@@ -399,8 +391,8 @@ class CategoriesSection extends StatelessWidget {
               width: 100,
               height: 100,
               child: Image.asset(
-                await DBProvider.db.getRandomRecipeImageFromCategory(
-                    categories[i]),
+                await DBProvider.db
+                    .getRandomRecipeImageFromCategory(categories[i]),
                 fit: BoxFit.cover,
               ),
             ),

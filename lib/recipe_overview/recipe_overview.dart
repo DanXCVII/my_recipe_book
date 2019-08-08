@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'dart:math';
 
 import '../database.dart';
 import '../recipe.dart';

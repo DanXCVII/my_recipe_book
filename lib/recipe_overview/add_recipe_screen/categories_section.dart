@@ -177,8 +177,8 @@ class CustomDialogState extends State<CustomDialog> {
 
   @override
   initState() {
-    categoryNameController = new TextEditingController();
     super.initState();
+    categoryNameController = new TextEditingController();
   }
 
   @override

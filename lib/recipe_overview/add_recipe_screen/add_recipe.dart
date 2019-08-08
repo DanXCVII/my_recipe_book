@@ -88,7 +88,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
     // If a recipe will be edited and not a new one created
     if (widget.editRecipe != null) {
-      // TODO: only add data if not null;
       nameController.text = widget.editRecipe.name;
       if (widget.editRecipe.imagePath != null)
         selectedRecipeImage.selectedImage = widget.editRecipe.imagePath;
@@ -479,8 +478,13 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       await compute(saveImage,
           [File(selectedRecipeImage.selectedImage), recipeImagePath, 2000]);
       selectedRecipeImage.selectedImage = recipeImagePath;
-      String recipeImagePreviewPath = await PathProvider.pP.getRecipePreviewPath(recipeId);
-      await compute(saveImage, [File(selectedRecipeImage.selectedImage), recipeImagePreviewPath, 400]);
+      String recipeImagePreviewPath =
+          await PathProvider.pP.getRecipePreviewPath(recipeId);
+      await compute(saveImage, [
+        File(selectedRecipeImage.selectedImage),
+        recipeImagePreviewPath,
+        400
+      ]);
     }
     print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {

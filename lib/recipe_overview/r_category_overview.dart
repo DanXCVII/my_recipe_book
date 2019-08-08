@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/recipe_overview/add_recipe_screen/add_recipe.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:math';
 
@@ -53,15 +52,8 @@ class RecipeRow extends StatelessWidget {
             if (recipelistF.data.isEmpty) {
               return Container();
             }
-            int recipeCount;
-            if (recipelistF.data.length >= 10) {
-              recipeCount = 10;
-            }
-            recipeCount = recipelistF.data.length;
             Random randomRecipe = new Random();
             return Column(
-              /// TODO: change FutureBuilder to beginning of build method to fetch all recipes
-              /// and pass them to the next screen.
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 20),
@@ -283,7 +275,6 @@ class CategoryGridView extends StatelessWidget {
   }
 
   Future<List<Widget>> getCategoryCards(BuildContext context) async {
-    Random randomRecipe = new Random();
     List<RecipeCategory> categories = await DBProvider.db.getCategories();
 
     List<Widget> output = new List<Widget>();
