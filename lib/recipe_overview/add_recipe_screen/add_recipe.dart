@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as ImageIO;
+import 'package:flutter/services.dart';
 
 import '../../recipe.dart';
 import '../../database.dart';
@@ -89,7 +90,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     // If a recipe will be edited and not a new one created
     if (widget.editRecipe != null) {
       nameController.text = widget.editRecipe.name;
-      if (widget.editRecipe.imagePath != null)
+      if (widget.editRecipe.imagePath != "images/randomFood.png")
         selectedRecipeImage.selectedImage = widget.editRecipe.imagePath;
       if (widget.editRecipe.preperationTime != 0.0)
         preperationTimeController.text =
@@ -192,6 +193,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                     Navigator.pop(context); // loading screen
                     Navigator.pop(context); // edit recipe screen
                     Navigator.pop(context); // old recipe screen
+                    imageCache.clear();
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -428,9 +430,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     /// temporarily save all step pics (that are not new) in another folder that they don't get lost,
     /// when the recipe gets deleted.
     for (int i = 0; i < stepImages.length; i++) {
-      print(stepImages.length);
       for (int j = 0; j < stepImages[i].length; j++) {
-        print(stepImages[i].length);
         if (stepImages[i][j]
             .contains(PathProvider.pP.getRecipeStepDir(editRecipe.id))) {
           String stepImageName = stepImages[i][j].split("/").last;
@@ -444,7 +444,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     }
 
     await DBProvider.db.deleteRecipe(editRecipe);
-    print(selectedRecipeImage.selectedImage);
     Recipe newRecipe = await saveRecipe();
 
     // DELETION
@@ -459,8 +458,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 
   Future<Recipe> saveRecipe() async {
-    print("start saveRecipe()");
-
     // get the lists for the data of the ingredients
     List<List<Ingredient>> ingredients = getCleanIngredientData(
         ingredientNameController,
@@ -473,7 +470,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         : recipeId = widget.editRecipe.id;
 
     // Saving the Recipe image and RecipePreviewImage (Recipe Image with lower quality)
-    if (selectedRecipeImage.selectedImage != null) {
+    if (selectedRecipeImage.selectedImage != 'images/randomFood.png' &&
+        selectedRecipeImage.selectedImage != null) {
       String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
       await compute(saveImage,
           [File(selectedRecipeImage.selectedImage), recipeImagePath, 2000]);
@@ -486,7 +484,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         400
       ]);
     }
-    print(removeEmptyStrings(stepsDescController).length);
     for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
         String stepImageLocation =
@@ -502,45 +499,46 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       }
     }
     Recipe newRecipe = new Recipe(
-        id: recipeId,
-        name: nameController.text,
-        imagePath: selectedRecipeImage.selectedImage,
-        imagePreviewPath: selectedRecipeImage != null ? await PathProvider.pP.getRecipePreviewPath(recipeId) : "images/randomFood.png",
-        preperationTime: preperationTimeController.text.isEmpty
-            ? 0
-            : double.parse(preperationTimeController.text
-                .replaceAll(new RegExp(r','), 'e')),
-        cookingTime: cookingTimeController.text.isEmpty
-            ? 0
-            : double.parse(
-                cookingTimeController.text.replaceAll(new RegExp(r','), 'e')),
-        totalTime: totalTimeController.text.isEmpty
-            ? 0
-            : double.parse(
-                totalTimeController.text.replaceAll(new RegExp(r','), 'e')),
-        servings: double.parse(
-            servingsController.text.replaceAll(new RegExp(r','), 'e')),
-        steps: removeEmptyStrings(stepsDescController),
-        stepImages: stepImages,
-        notes: notesController.text,
-        vegetable: selectedRecipeVegetable.getVegetableStatus(),
-        ingredientsGlossary:
-            getCleanGlossary(ingredientGlossaryController, ingredients),
-        ingredients: ingredients,
-        complexity: complexity.myDouble.round(),
-        categories: newRecipeCategories,
-        isFavorite:
-            widget.editRecipe == null ? false : widget.editRecipe.isFavorite);
+      id: recipeId,
+      name: nameController.text,
+      imagePath: selectedRecipeImage.selectedImage != null
+          ? await PathProvider.pP.getRecipePath(recipeId)
+          : "images/randomFood.png",
+      imagePreviewPath: selectedRecipeImage.selectedImage != null
+          ? await PathProvider.pP.getRecipePreviewPath(recipeId)
+          : "images/randomFood.png",
+      preperationTime: preperationTimeController.text.isEmpty
+          ? 0
+          : double.parse(
+              preperationTimeController.text.replaceAll(new RegExp(r','), 'e')),
+      cookingTime: cookingTimeController.text.isEmpty
+          ? 0
+          : double.parse(
+              cookingTimeController.text.replaceAll(new RegExp(r','), 'e')),
+      totalTime: totalTimeController.text.isEmpty
+          ? 0
+          : double.parse(
+              totalTimeController.text.replaceAll(new RegExp(r','), 'e')),
+      servings: double.parse(
+          servingsController.text.replaceAll(new RegExp(r','), 'e')),
+      steps: removeEmptyStrings(stepsDescController),
+      stepImages: stepImages,
+      notes: notesController.text,
+      vegetable: selectedRecipeVegetable.getVegetableStatus(),
+      ingredientsGlossary:
+          getCleanGlossary(ingredientGlossaryController, ingredients),
+      ingredients: ingredients,
+      complexity: complexity.myDouble.round(),
+      categories: newRecipeCategories,
+      isFavorite:
+          widget.editRecipe == null ? false : widget.editRecipe.isFavorite,
+    );
     await DBProvider.db.newRecipe(newRecipe);
     if (widget.editRecipe != null) {
+      widget.editRecipe.setEqual(newRecipe);
       await DBProvider.db
           .updateFavorite(widget.editRecipe.isFavorite, recipeId);
     }
-
-    print("---------------");
-    print(getCleanGlossary(ingredientGlossaryController, ingredients));
-    print(ingredients);
-    print("---------------");
 
     // DELETE
     await DBProvider.db.getRecipeById(recipeId);
@@ -627,10 +625,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       }
     }
 
-    print(ingredientsNames);
-    print(ingredientsAmount);
-    print(ingredientsUnit);
-
     /// Map which will be the clean map with the list of the ingredients
     /// data.
     List<List<Ingredient>> cleanIngredientsData = [[]];
@@ -675,18 +669,12 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 /// [1] String name
 /// [2] int quality
 void saveImage(List<dynamic> values) async {
-  print("****************************");
-  print("saveFile()");
-  print(values[0].path);
-  print(values[1]);
-
   if (values[0] != null) {
     ImageIO.Image newImage = ImageIO.decodeImage(values[0].readAsBytesSync());
     ImageIO.Image resizedImage =
         ImageIO.copyResize(newImage, height: values[2]);
     new File('${values[1]}')..writeAsBytesSync(ImageIO.encodeJpg(resizedImage));
   }
-  print("****************************");
 }
 
 bool validateNumber(String text) {

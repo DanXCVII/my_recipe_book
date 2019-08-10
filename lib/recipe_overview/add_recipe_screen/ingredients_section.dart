@@ -27,21 +27,24 @@ class _IngredientsState extends State<Ingredients> {
     // Column with all the data of the ingredients inside like heading, textFields etc.
     Column sections = new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[],
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
+          child: Text(
+            "ingredients:",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.grey[700]),
+          ),
+        )
+      ],
     );
-    // add the heading to the Column
-    sections.children.add(Padding(
-      padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
-      child: Text(
-        "ingredients:",
-        style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[700]),
-      ),
-    ));
     // add all the sections to the column
     for (int i = 0; i < widget.ingredientGlossary.length; i++) {
       sections.children.add(IngredientSection(
         (int id) {
+          // callback when section remove is tapped
           setState(() {
             if (widget.ingredientGlossary.length > 1) {
               widget.ingredientGlossary.removeLast();
@@ -69,7 +72,7 @@ class _IngredientsState extends State<Ingredients> {
         widget.ingredientGlossary,
       ));
     }
-    // add "add section" and "remove section" button to column
+    // Add remove and add section button
     sections.children.add(
       Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -81,16 +84,7 @@ class _IngredientsState extends State<Ingredients> {
                       icon: Icon(Icons.remove_circle),
                       label: Text("Remove section"),
                       onPressed: () {
-                        setState(() {
-                          if (widget.ingredientGlossary.length > 1) {
-                            print(widget.ingredientAmountController.length);
-                            widget.ingredientGlossary.removeLast();
-                            widget.ingredientAmountController.removeLast();
-                            widget.ingredientNameController.removeLast();
-                            widget.ingredientUnitController.removeLast();
-                            print(widget.ingredientAmountController.length);
-                          }
-                        });
+                        updateAndRemoveController();
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0),
@@ -102,24 +96,7 @@ class _IngredientsState extends State<Ingredients> {
               icon: Icon(Icons.add_circle),
               label: Text("Add section"),
               onPressed: () {
-                setState(() {
-                  widget.ingredientGlossary.add(new TextEditingController());
-                  widget.ingredientNameController
-                      .add(new List<TextEditingController>());
-                  widget.ingredientNameController[
-                          widget.ingredientGlossary.length - 1]
-                      .add(new TextEditingController());
-                  widget.ingredientAmountController
-                      .add(new List<TextEditingController>());
-                  widget.ingredientAmountController[
-                          widget.ingredientGlossary.length - 1]
-                      .add(new TextEditingController());
-                  widget.ingredientUnitController
-                      .add(new List<TextEditingController>());
-                  widget.ingredientUnitController[
-                          widget.ingredientGlossary.length - 1]
-                      .add(new TextEditingController());
-                });
+                updateAndAddController();
               },
               shape: RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0),
@@ -128,6 +105,32 @@ class _IngredientsState extends State<Ingredients> {
           ].where((c) => c != null).toList()),
     );
     return sections;
+  }
+
+  void updateAndRemoveController() {
+    setState(() {
+      if (widget.ingredientGlossary.length > 1) {
+        widget.ingredientGlossary.removeLast();
+        widget.ingredientAmountController.removeLast();
+        widget.ingredientNameController.removeLast();
+        widget.ingredientUnitController.removeLast();
+      }
+    });
+  }
+
+  void updateAndAddController() {
+    setState(() {
+      widget.ingredientGlossary.add(new TextEditingController());
+      widget.ingredientNameController.add(new List<TextEditingController>());
+      widget.ingredientNameController[widget.ingredientGlossary.length - 1]
+          .add(new TextEditingController());
+      widget.ingredientAmountController.add(new List<TextEditingController>());
+      widget.ingredientAmountController[widget.ingredientGlossary.length - 1]
+          .add(new TextEditingController());
+      widget.ingredientUnitController.add(new List<TextEditingController>());
+      widget.ingredientUnitController[widget.ingredientGlossary.length - 1]
+          .add(new TextEditingController());
+    });
   }
 }
 

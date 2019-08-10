@@ -40,7 +40,6 @@ class _CategorySectionState extends State<CategorySection> {
   List<Widget> _getCategoryChips(List<String> categoryNames) {
     List<Widget> output = new List<Widget>();
 
-    print(categoryNames.length);
     for (int i = 0; i < categoryNames.length; i++) {
       output.add(MyCategoryFilterChip(
         chipName: "${categoryNames[i]}",

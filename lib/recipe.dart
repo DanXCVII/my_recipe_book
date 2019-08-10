@@ -71,6 +71,26 @@ class Recipe {
         'steps': steps,
         'notes': notes
       };
+
+  void setEqual(Recipe r) {
+    this.id = r.id;
+    this.name = r.name;
+    this.imagePath = r.imagePath;
+    this.imagePreviewPath = r.imagePreviewPath;
+    this.preperationTime = r.preperationTime;
+    this.cookingTime = r.cookingTime;
+    this.totalTime = r.totalTime;
+    this.servings = r.servings;
+    this.ingredientsGlossary = r.ingredientsGlossary;
+    this.ingredients = r.ingredients;
+    this.vegetable = r.vegetable;
+    this.steps = r.steps;
+    this.stepImages = r.stepImages;
+    this.notes = r.notes;
+    this.categories = r.categories;
+    this.complexity = r.complexity;
+    this.isFavorite = r.isFavorite;
+  }
 }
 
 class Ingredient {

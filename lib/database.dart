@@ -100,7 +100,6 @@ class DBProvider {
   }
 
   Future<int> getNewIDforTable(String tablename, String idName) async {
-    print('DB.getNewIDforTable');
     final db = await database;
     // var completer = new Completer<int>();
     int output = 0;
@@ -130,16 +129,8 @@ class DBProvider {
   }
 
   newRecipe(Recipe newRecipe) async {
-    print('start DB.newRecipe()');
     final db = await database;
 
-    String image = '';
-    if (newRecipe.imagePath != null &&
-        newRecipe.imagePath != 'images/radnomFood.png') {
-      image = await PathProvider.pP.getRecipePath(newRecipe.id);
-    } else {
-      image = 'images/randomFood.png';
-    }
     var resRecipe = await db.rawInsert(
         'INSERT Into Recipe ('
         'id,'
@@ -157,7 +148,7 @@ class DBProvider {
         [
           newRecipe.id,
           newRecipe.name,
-          image,
+          newRecipe.imagePath,
           newRecipe.preperationTime,
           newRecipe.cookingTime,
           newRecipe.totalTime,
@@ -234,7 +225,6 @@ class DBProvider {
       }
     }
 
-    print('end DB.newRecipe()');
     return resRecipe;
   }
 
@@ -252,7 +242,6 @@ class DBProvider {
   }
 
   getRecipeById(int id) async {
-    print('getRecipeById(id)');
     final db = await database;
     var resRecipe = await db.query('Recipe', where: 'id = ?', whereArgs: [id]);
     if (resRecipe.isEmpty) {
@@ -474,6 +463,7 @@ class DBProvider {
     ));
   }
 
+/*
   Future<List<Recipe>> getRecpiesOfCategori(String categoryName) async {
     final db = await database;
     // alle daten von recipe
@@ -624,7 +614,7 @@ class DBProvider {
     }
     return recipes;
   }
-
+*/
   Future<List<Recipe>> getRecipesOfCategory(String categoryName) async {
     MainScreenRecipes singleton = MainScreenRecipes();
     if (singleton.recipes[categoryName] != null)
@@ -637,9 +627,6 @@ class DBProvider {
         'WHERE categoryName=\'$categoryName\'');
     List<Recipe> output = new List<Recipe>();
     for (int i = 0; i < resCategories.length; i++) {
-      print('#####################');
-      print(resCategories[i]['recipe_id']);
-      print('#####################');
       Recipe newRecipe = await getRecipeById(resCategories[i]['recipe_id']);
       output.add(newRecipe);
     }

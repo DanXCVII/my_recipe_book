@@ -128,11 +128,18 @@ class MyHomePageState extends State<MyHomePage> {
                 icon: Icon(Icons.fastfood), title: Text("recipes")),
             BottomNavigationBarItem(
                 icon: _selectedIndex == 1
-                    ? Icon(Icons.favorite)
+                    ? Icon(
+                        Icons.favorite,
+                        color: Colors.pink,
+                      )
                     : Icon(Icons.favorite_border),
                 title: Text("favorites")),
             BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_cart), title: Text("shopping cart")),
+                icon: Icon(
+                  Icons.shopping_cart,
+                  color: _selectedIndex == 2 ? Colors.grey : Colors.white,
+                ),
+                title: Text("shopping cart")),
 
             /// Maybe remove calendar section and simply import the things to shop
             /// to the default calendar.

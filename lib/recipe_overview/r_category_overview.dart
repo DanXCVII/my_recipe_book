@@ -144,7 +144,6 @@ class RecipeHozizontalList extends StatelessWidget {
             leftPadding = 0;
           }
           if (index < recipeCount) {
-            print(recipes[index].imagePath);
             return GestureDetector(
               onTap: () {
                 Navigator.push(

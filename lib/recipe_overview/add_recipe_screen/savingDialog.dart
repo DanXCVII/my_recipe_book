@@ -28,6 +28,12 @@ class SavingDialogState extends State<SavingDialog>
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Center(
       child: Material(

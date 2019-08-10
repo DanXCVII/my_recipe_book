@@ -112,12 +112,9 @@ class _ImageSelectorState extends State<ImageSelector> {
         {
           File pictureFile = await ImagePicker.pickImage(
             source: ImageSource.gallery,
-            // maxHeight: 50.0,
-            // maxWidth: 50.0,
           );
           if (pictureFile != null) {
             widget.imageWrapper.selectedImage = pictureFile.path;
-            print("You selected gallery image : " + pictureFile.path);
             setState(() {
               selectedImageFile = pictureFile;
             });
@@ -128,13 +125,10 @@ class _ImageSelectorState extends State<ImageSelector> {
         {
           File pictureFile = await ImagePicker.pickImage(
             source: ImageSource.camera,
-            //maxHeight: 50.0,
-            //maxWidth: 50.0,
           );
 
           if (pictureFile != null) {
             widget.imageWrapper.selectedImage = pictureFile.path;
-            print("You selected gallery image : " + pictureFile.path);
             setState(() {
               selectedImageFile = pictureFile;
             });
