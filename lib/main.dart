@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/SplashScreen.dart';
+import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/recipe.dart';
 import 'recipe_overview/r_category_overview.dart';
 import 'shopping_cart/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
@@ -38,7 +41,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => MyHomePage(),
+        '/': (context) => SplashScreen(),
         'recipeCategoryOverview': (context) => CategoryOverview(),
         'addRecipe': (context) => AddRecipeForm(),
       },
@@ -95,6 +98,13 @@ class MyHomePageState extends State<MyHomePage> {
     return null;
   }
 
+  Color getBackgroundColor(String page) {
+    if (page == 'recipes')
+      return Color(0xffFEF3E1);
+    else if (page == 'favorites') return Color(0xffFFCDD9);
+    return Colors.white;
+  }
+
   @override
   Widget build(BuildContext context) {
     /// title equals null only when we start the app
@@ -108,6 +118,7 @@ class MyHomePageState extends State<MyHomePage> {
       appBar: buildAppBar(title),
       floatingActionButton: getFloatingB(title),
       body: getSelectedDrawerPage(title),
+      backgroundColor: getBackgroundColor(title),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(canvasColor: Colors.black87),
         child: BottomNavigationBar(

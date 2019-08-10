@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
- enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
+enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
 
 class Recipe {
   int id;
@@ -110,6 +110,13 @@ class RecipeCategory {
   String imagePath;
 
   RecipeCategory({this.name, this.imagePath});
+}
+
+class SearchRecipe {
+  String name;
+  int id;
+
+  SearchRecipe({this.name, this.id});
 }
 
 /// Path to::

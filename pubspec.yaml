@@ -79,6 +79,7 @@ flutter:
    - images/randomFood.png
    - images/heart.png
    - images/rightArrow.png
+   - images/cookingHat.png
 
    - animations/writing_pen.flr
 

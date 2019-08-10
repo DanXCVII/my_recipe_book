@@ -505,6 +505,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         id: recipeId,
         name: nameController.text,
         imagePath: selectedRecipeImage.selectedImage,
+        imagePreviewPath: selectedRecipeImage != null ? await PathProvider.pP.getRecipePreviewPath(recipeId) : "images/randomFood.png",
         preperationTime: preperationTimeController.text.isEmpty
             ? 0
             : double.parse(preperationTimeController.text
@@ -529,7 +530,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         complexity: complexity.myDouble.round(),
         categories: newRecipeCategories,
         isFavorite:
-            widget.editRecipe == null ? null : widget.editRecipe.isFavorite);
+            widget.editRecipe == null ? false : widget.editRecipe.isFavorite);
     await DBProvider.db.newRecipe(newRecipe);
     if (widget.editRecipe != null) {
       await DBProvider.db

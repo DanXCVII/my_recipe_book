@@ -88,7 +88,7 @@ class RecipeGridView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (category != null) {
       return Container(
-        color: Colors.white,
+        color: Color(0xffFEF3E1),
         child: CustomScrollView(slivers: <Widget>[
           SliverAppBar(
             expandedHeight: 200.0,
@@ -137,6 +137,7 @@ class RecipeGridView extends StatelessWidget {
       recipeCards.add(
         RecipeCard(
           recipe: recipes[i],
+          recipeColor: Color(0xffE5E0D6),
         ),
       );
     }
@@ -146,7 +147,8 @@ class RecipeGridView extends StatelessWidget {
 
 class RecipeCard extends StatelessWidget {
   final Recipe recipe;
-  const RecipeCard({this.recipe, Key key}) : super(key: key);
+  final Color recipeColor;
+  const RecipeCard({this.recipe, this.recipeColor, Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +170,7 @@ class RecipeCard extends StatelessWidget {
         children: <Widget>[
           Container(
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: recipeColor == null ? Color(0xffDFDBD6) : recipeColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(gridTileWidth / 10),
                   topRight: Radius.circular(gridTileWidth / 10),
@@ -315,7 +317,7 @@ class RecipeCard extends StatelessWidget {
 
   String getTimeHoursMinutes(double min) {
     if (min ~/ 60 > 0) {
-      return "${min ~/ 60}h ${min - (min ~/ 60)}min";
+      return "${min ~/ 60}h ${min - (min ~/ 60 * 60)}min";
     }
     return "$min min";
   }

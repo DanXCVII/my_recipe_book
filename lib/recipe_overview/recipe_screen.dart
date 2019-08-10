@@ -24,8 +24,10 @@ class RecipeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print(recipe.imagePath);
-    double otherTime =
+    double remainingTime =
         recipe.totalTime - recipe.preperationTime - recipe.cookingTime;
+    double otherTime;
+    remainingTime > 0 ? otherTime = remainingTime : otherTime = 0;
     return Scaffold(
         backgroundColor: primaryColor,
         body: CustomScrollView(slivers: <Widget>[
@@ -277,25 +279,28 @@ class NotesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          "Notes",
-          style: TextStyle(
-            color: textColor,
-            fontSize: 24,
-            fontFamily: "Questrial-Regular",
-          ),
-        ),
-        Padding(
-            padding: EdgeInsets.only(top: 20, bottom: 20),
-            child: Text(
-              notes,
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ))
-      ],
-    );
+    return Container(
+        padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
+        color: Color(0xff51473b),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              "Notes",
+              style: TextStyle(
+                color: textColor,
+                fontSize: 24,
+                fontFamily: "Questrial-Regular",
+              ),
+            ),
+            Padding(
+                padding: EdgeInsets.only(top: 20, bottom: 20),
+                child: Text(
+                  notes,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ))
+          ],
+        ));
   }
 }
 

@@ -15,27 +15,13 @@ class FavoriteScreen extends StatelessWidget {
             if (snapshot.data.length == 0)
               return Center(
                   child: Text('You have no recipes under this category.'));
-            return Container(
-              color: Colors.white,
-              child: CustomScrollView(slivers: <Widget>[
-                SliverAppBar(
-                  expandedHeight: 200.0,
-                  floating: false,
-                  flexibleSpace: FlexibleSpaceBar(
-                      centerTitle: true,
-                      background: Image.asset('')),
-                ),
-                SliverPadding(
-                  padding: EdgeInsets.all(12),
-                  sliver: SliverGrid.extent(
-                    childAspectRatio: 0.75,
-                    maxCrossAxisExtent: 300,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    children: getRecipeCards(snapshot.data),
-                  ),
-                )
-              ]),
+            return GridView.extent(
+              padding: EdgeInsets.all(12),
+              childAspectRatio: 0.75,
+              maxCrossAxisExtent: 300,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              children: getRecipeCards(snapshot.data),
             );
           } else {
             return Center(
@@ -51,6 +37,7 @@ class FavoriteScreen extends StatelessWidget {
       recipeCards.add(
         RecipeCard(
           recipe: recipes[i],
+          recipeColor: Color(0xffE2A1B1),
         ),
       );
     }
