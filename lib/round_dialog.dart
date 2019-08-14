@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flare_flutter/flare_actor.dart';
 
-class SavingDialog extends StatefulWidget {
+class RoundDialog extends StatefulWidget {
+  Widget childWidget;
+  double size;
+
+  RoundDialog(this.childWidget, this.size);
+
   @override
-  State<StatefulWidget> createState() => SavingDialogState();
+  State<StatefulWidget> createState() => RoundDialogState();
 }
 
-class SavingDialogState extends State<SavingDialog>
+class RoundDialogState extends State<RoundDialog>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation<double> scaleAnimation;
@@ -47,17 +51,12 @@ class SavingDialogState extends State<SavingDialog>
                   color: Color(0xFF790604),
                   shape: BoxShape.circle,
                 ),
-                width: 150,
-                height: 150,
+                width: widget.size,
+                height: widget.size,
               ),
             ),
             Center(
-              child: FlareActor(
-                'animations/writing_pen.flr',
-                alignment: Alignment.center,
-                fit: BoxFit.fitWidth,
-                animation: "Go",
-              ),
+              child: widget.childWidget
             ),
           ]),
         ),

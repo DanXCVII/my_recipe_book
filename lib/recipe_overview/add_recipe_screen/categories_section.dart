@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:io';
 
-import './add_recipe.dart';
 import '../../recipe.dart';
 import '../../database.dart';
-import '../../my_wrapper.dart';
-import './image_selector.dart' as IS;
 
 class Consts {
   Consts._();
@@ -16,11 +12,10 @@ class Consts {
 }
 
 class CategorySection extends StatefulWidget {
-  final MyImageWrapper addCategoryImage;
   final List<String> recipeCategories;
   final GlobalKey<FormState> formKey;
 
-  CategorySection(this.addCategoryImage, this.recipeCategories, this.formKey);
+  CategorySection(this.recipeCategories, this.formKey);
 
   @override
   State<StatefulWidget> createState() {
@@ -51,7 +46,6 @@ class _CategorySectionState extends State<CategorySection> {
 
   @override
   void dispose() {
-    widget.addCategoryImage.selectedImage = null;
     categoryNameController.dispose();
     super.dispose();
   }
@@ -79,7 +73,7 @@ class _CategorySectionState extends State<CategorySection> {
                     showDialog(
                         context: context,
                         builder: (_) => CustomDialog(
-                            widget.addCategoryImage, widget.formKey));
+                             widget.formKey));
                   },
                 )
               ],
@@ -160,10 +154,9 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
 }
 
 class CustomDialog extends StatefulWidget {
-  final MyImageWrapper addCategoryImage;
   final GlobalKey<FormState> formKey;
 
-  CustomDialog(this.addCategoryImage, this.formKey);
+  CustomDialog( this.formKey);
 
   @override
   State<StatefulWidget> createState() {
@@ -256,7 +249,6 @@ class CustomDialogState extends State<CustomDialog> {
                           // TODO Prio1: Not validating the category!
                           _saveCategory().then((_) {
                             Navigator.pop(context);
-                            widget.addCategoryImage.selectedImage = null;
                             setState(() {});
                           });
                         }
@@ -266,27 +258,12 @@ class CustomDialogState extends State<CustomDialog> {
             ],
           ),
         ),
-        Positioned(
-          left: Consts.padding,
-          right: Consts.padding,
-          child: IS.ImageSelector(
-            widget.addCategoryImage,
-            120,
-            Color(0xFF790604),
-          ),
-        )
       ],
     );
   }
 
   Future<void> _saveCategory() async {
     String categoryName = categoryNameController.text;
-    String imagePath = '';
-    if (widget.addCategoryImage.selectedImage != null) {
-      imagePath = await PathProvider.pP.getCategoryPath(categoryName);
-      compute(saveImage,
-          [File(widget.addCategoryImage.selectedImage), imagePath, 2000]);
-    }
-    await DBProvider.db.newCategory(categoryName, imagePath);
+    await DBProvider.db.newCategory(categoryName);
   }
 }

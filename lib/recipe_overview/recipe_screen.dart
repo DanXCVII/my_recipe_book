@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../recipe.dart';
+import '../gallery_view.dart';
 import './recipe_overview.dart' show Favorite;
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import './add_recipe_screen/add_recipe.dart' show AddRecipeForm;
@@ -18,8 +20,10 @@ class RecipeScreen extends StatelessWidget {
       new GlobalKey<AnimatedCircularChartState>();
   final Recipe recipe;
   final Color primaryColor;
+  final String heroImageTag;
 
-  RecipeScreen({@required this.recipe, @required this.primaryColor});
+  RecipeScreen(
+      {@required this.recipe, @required this.primaryColor, this.heroImageTag});
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +51,7 @@ class RecipeScreen extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.delete),
+                  tooltip: "delete",
                   onPressed: () {
                     DBProvider.db.deleteRecipe(recipe).then((_) {
                       Navigator.pop(context);
@@ -71,7 +76,7 @@ class RecipeScreen extends StatelessWidget {
                           "${recipe.imagePath}${recipe.id}", context);
                     },
                     child: Hero(
-                      tag: "${recipe.imagePath}-${recipe.id}",
+                      tag: heroImageTag,
                       child: Material(
                         color: Colors.transparent,
                         child: ClipPath(
@@ -246,10 +251,12 @@ class RecipeScreen extends StatelessWidget {
             SizedBox(height: 30),
             FutureBuilder<List<List<String>>>(
               future: PathProvider.pP
-                  .getRecipeStepPreviewPathList(recipe.steps.length, recipe.id),
+                  .getRecipeStepPreviewPathList(recipe.stepImages, recipe.id),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return StepsScreen(recipe, snapshot.data);
+                  print(recipe.stepImages.toString());
+                  return StepsScreen(
+                      recipe.steps, snapshot.data, recipe.stepImages);
                 }
                 return Container(
                   height: 70,
@@ -328,6 +335,36 @@ String _getImageComplexity(int complexity) {
       return "termoTen";
   }
   return "";
+}
+
+void _showStepFullView(
+  List<List<String>> stepImages,
+  List<String> description,
+  int stepNumber,
+  int imageNumber,
+  BuildContext context,
+) {
+  List<String> flatStepImages = [];
+  List<String> imageDescription = [];
+  int imageIndex = 0;
+  for (int i = 0; i < stepImages.length; i++) {
+    if (i < stepNumber) imageIndex += stepImages[i].length;
+    for (int j = 0; j < stepImages[i].length; j++) {
+      imageDescription.add(description[i]);
+      flatStepImages.add(stepImages[i][j]);
+    }
+  }
+  imageIndex += imageNumber;
+
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GalleryPhotoView(
+          initialIndex: imageIndex,
+          galleryItems: flatStepImages,
+          descriptions: imageDescription,
+        ),
+      ));
 }
 
 void _showPictureFullView(String image, String tag, BuildContext context) {
@@ -423,7 +460,9 @@ class CategoriesSection extends StatelessWidget {
 }
 
 class StepsScreen extends StatelessWidget {
+  final List<List<String>> stepPreviewImages;
   final List<List<String>> stepImages;
+  final List<String> steps;
 
   final List<Color> stepsColors = [
     Color(0xff28B404),
@@ -431,14 +470,13 @@ class StepsScreen extends StatelessWidget {
     Color(0xffE3B614),
     Color(0xff8600C5),
   ];
-  final Recipe currentRecipe;
 
-  StepsScreen(this.currentRecipe, this.stepImages);
+  StepsScreen(this.steps, this.stepPreviewImages, @required this.stepImages);
 
   List<Widget> getSteps(BuildContext context) {
     List<Widget> output = new List<Widget>();
 
-    for (int i = 0; i < currentRecipe.steps.length; i++) {
+    for (int i = 0; i < steps.length; i++) {
       output.add(
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -463,7 +501,7 @@ class StepsScreen extends StatelessWidget {
               padding: EdgeInsets.only(top: 30),
               width: MediaQuery.of(context).size.width - 100,
               child: Text(
-                currentRecipe.steps[i],
+                steps[i],
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             )
@@ -475,27 +513,31 @@ class StepsScreen extends StatelessWidget {
         spacing: 10,
         children: <Widget>[],
       );
-      for (int j = 0; j < stepImages[i].length; j++) {
+      for (int j = 0; j < stepPreviewImages[i].length; j++) {
         stepPics.children.add(GestureDetector(
           onTap: () {
-            _showPictureFullView(stepImages[i][j], "Schritt$i:$j", context);
+            _showStepFullView(stepImages, steps, i, j, context);
           },
           child: Hero(
             tag: "Schritt$i:$j",
             child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              child: Container(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                child: Container(
                   width: 100,
                   height: 80,
-                  child: Image.asset(
-                    stepImages[i][j],
+                  child: FadeInImage(
+                    fadeInDuration: Duration(milliseconds: 100),
+                    placeholder: MemoryImage(kTransparentImage),
+                    image: AssetImage(
+                      stepPreviewImages[i][j],
+                    ),
                     fit: BoxFit.cover,
-                  )),
-            ),
+                  ),
+                )),
           ),
         ));
 
-        if (j == stepImages[i].length - 1) {
+        if (j == stepPreviewImages[i].length - 1) {
           output.add(Padding(
             padding: const EdgeInsets.only(left: 80, right: 20, top: 20),
             child: stepPics,
@@ -508,7 +550,8 @@ class StepsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (currentRecipe.steps.isEmpty) return Container();
+    print(stepPreviewImages.toString());
+    if (steps.isEmpty) return Container();
     Column output = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -722,12 +765,6 @@ class IngredientsScreenState extends State<IngredientsScreen> {
   }
 
   @override
-  void initState() {
-    servings = widget.currentRecipe.servings;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     List<Ingredient> allIngredients =
         flattenIngredients(widget.currentRecipe.ingredients);
@@ -808,7 +845,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                         ),
                       ),
                       Spacer(),
-                      // TODO: Maybe remove add all ingredients button or replace
+                      // TODO: Maybe remove "add all ingredients" button or replace
                       /*
                       IconButton(
                         icon: containsList(saved, allIngredients)

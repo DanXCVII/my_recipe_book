@@ -79,8 +79,7 @@ class DBProvider {
             ')');
         await db.execute('CREATE TABLE Categories ('
             'id INTEGER PRIMARY KEY,'
-            'categoryName TEXT,'
-            'image TEXT'
+            'categoryName TEXT'
             ')');
         await db.execute('CREATE TABLE RecipeCategories ('
             'recipe_id INTEGER,'
@@ -118,13 +117,13 @@ class DBProvider {
 
   /// add new category to database with categoryname and
   /// picture if the user selected a picture
-  newCategory(String name, String picture) async {
+  newCategory(String name) async {
     final db = await database;
 
     await db.rawInsert(
-        'INSERT Into Categories (id,categoryName,image)'
-        ' VALUES (?,?,?)',
-        [await getNewIDforTable('Categories', 'id'), name, picture]);
+        'INSERT Into Categories (id,categoryName)'
+        ' VALUES (?,?)',
+        [await getNewIDforTable('Categories', 'id'), name]);
     return;
   }
 
@@ -198,7 +197,7 @@ class DBProvider {
               ' VALUES (?,?,?)',
               [
                 await getNewIDforTable('StepImages', 'id'),
-                await PathProvider.pP.getRecipeStepPath(newRecipe.id, i, j),
+                newRecipe.stepImages[i][j],
                 stepsId,
               ]);
         }
@@ -235,8 +234,7 @@ class DBProvider {
     List<RecipeCategory> categories = new List<RecipeCategory>();
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(RecipeCategory(
-          name: resCategories[i]['categoryName'],
-          imagePath: resCategories[i]['image']));
+          name: resCategories[i]['categoryName'], imagePath: null));
     }
     return categories;
   }
@@ -310,7 +308,6 @@ class DBProvider {
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
     }
-
     return Recipe(
         id: id,
         name: name,
@@ -331,6 +328,12 @@ class DBProvider {
         categories: categories,
         complexity: complexity,
         isFavorite: isFavorite);
+  }
+
+  Future<void> deleteRecipeFromDatabase(Recipe recipe) async {
+    final db = await database;
+
+    await db.rawDelete('DELETE FROM Recipe WHERE id= ?', [recipe.id]);
   }
 
   Future<void> deleteRecipe(Recipe recipe) async {

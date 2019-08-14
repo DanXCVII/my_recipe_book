@@ -9,7 +9,9 @@ import './recipe_screen.dart';
 import './recipe_overview.dart';
 
 // Builds the Rows of all the categories
-class CategoryOverview extends StatelessWidget {
+class RecipeCategoryOverview extends StatelessWidget {
+  const RecipeCategoryOverview({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<RecipeCategory>>(
@@ -144,6 +146,10 @@ class RecipeHozizontalList extends StatelessWidget {
             leftPadding = 0;
           }
           if (index < recipeCount) {
+            final String heroTag =
+                '${recipes[index].id}$categoryName${recipes[index].imagePath}';
+            print(heroTag);
+
             return GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -152,6 +158,7 @@ class RecipeHozizontalList extends StatelessWidget {
                     builder: (BuildContext context) => new RecipeScreen(
                       recipe: recipes[index],
                       primaryColor: getRecipePrimaryColor(recipes[index]),
+                      heroImageTag: heroTag,
                     ),
                   ),
                 );
@@ -170,21 +177,25 @@ class RecipeHozizontalList extends StatelessWidget {
                       //   child: Material(
                       //     color: Colors.transparent,
                       //     child:
-                      ClipRRect(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(35),
-                              topRight: Radius.circular(15),
-                              bottomLeft: Radius.circular(15),
-                              bottomRight: Radius.circular(35)),
-                          child: FadeInImage(
-                            // image: AssetImage(recipes[index].imagePath),
-                            image: AssetImage(recipes[index].imagePreviewPath),
-                            fadeInDuration: const Duration(milliseconds: 250),
-                            placeholder: MemoryImage(kTransparentImage),
-                            height: 90,
-                            width: 90,
-                            fit: BoxFit.cover,
-                          )),
+                      Hero(
+                        tag: heroTag,
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(35),
+                                topRight: Radius.circular(15),
+                                bottomLeft: Radius.circular(15),
+                                bottomRight: Radius.circular(35)),
+                            child: FadeInImage(
+                              // image: AssetImage(recipes[index].imagePath),
+                              image:
+                                  AssetImage(recipes[index].imagePreviewPath),
+                              fadeInDuration: const Duration(milliseconds: 250),
+                              placeholder: MemoryImage(kTransparentImage),
+                              height: 90,
+                              width: 90,
+                              fit: BoxFit.cover,
+                            )),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(top: 4, left: 10, right: 10),
                         child: Text(recipes[index].name,

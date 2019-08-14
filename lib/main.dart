@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
-        'recipeCategoryOverview': (context) => CategoryOverview(),
+        'recipeCategoryOverview': (context) => RecipeCategoryOverview(),
         'addRecipe': (context) => AddRecipeForm(),
       },
     );
@@ -55,6 +55,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
+  final List<Widget> pages = [
+    RecipeCategoryOverview(key: PageStorageKey('Page1')),
+    FavoriteScreen(key: PageStorageKey('Page2')),
+    ShoppingCartScreen(key: PageStorageKey('Page3')),
+    Center(child: Text('This page is not yet implemented')),
+  ];
+  final PageStorageBucket bucket = PageStorageBucket();
   String title;
   int _selectedIndex = 0;
 
@@ -70,20 +77,6 @@ class MyHomePageState extends State<MyHomePage> {
         )
       ],
     );
-  }
-
-  Widget getSelectedDrawerPage(String page) {
-    switch (page) {
-      case 'recipes':
-        return CategoryOverview();
-      case 'favorites':
-        return FavoriteScreen();
-      case 'shopping cart':
-        return ShoppingCartScreen();
-      case 'calendar':
-      default:
-        return Center(child: Text('This page is not yet implemented'));
-    }
   }
 
   Widget getFloatingB(String page) {
@@ -117,7 +110,10 @@ class MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: buildAppBar(title),
       floatingActionButton: getFloatingB(title),
-      body: getSelectedDrawerPage(title),
+      body: PageStorage(
+        child: pages[_selectedIndex],
+        bucket: bucket,
+      ),
       backgroundColor: getBackgroundColor(title),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(canvasColor: Colors.black87),

@@ -152,6 +152,7 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String heroImageTag = "${recipe.imagePath}-${recipe.id}";
     double deviceWidth = MediaQuery.of(context).size.width;
     double gridTileWidth = deviceWidth / (deviceWidth / 300.floor() + 1);
     return GestureDetector(
@@ -162,6 +163,7 @@ class RecipeCard extends StatelessWidget {
             builder: (BuildContext context) => new RecipeScreen(
               recipe: recipe,
               primaryColor: getRecipePrimaryColor(recipe),
+              heroImageTag: heroImageTag,
             ),
           ),
         );
@@ -182,7 +184,7 @@ class RecipeCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Hero(
-                      tag: "${recipe.imagePath}-${recipe.id}",
+                      tag: heroImageTag,
                       child: Material(
                         color: Colors.transparent,
                         child: ClipRRect(

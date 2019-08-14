@@ -170,7 +170,7 @@ class PathProvider {
   }
 
   String getRecipeStepDir(int recipeId) {
-    return '$recipeId/stepImages';
+    return '$recipeId/stepImages/';
   }
 
   String getRecipeDir(int recipeId) {
@@ -179,7 +179,18 @@ class PathProvider {
 
   Future<String> getRecipeStepNumberDir(int recipeId, int stepNumber) async {
     String imageLocalPath = await localPath;
+    await Directory('$imageLocalPath/$recipeId/stepImages/$stepNumber/')
+        .create(recursive: true);
     return '$imageLocalPath/$recipeId/stepImages/$stepNumber/';
+  }
+
+  Future<String> getRecipeStepPreviewNumberDir(
+      int recipeId, int stepNumber) async {
+    String imageLocalPath = await localPath;
+    await Directory(
+            '$imageLocalPath/$recipeId/preview/stepImages/p-$stepNumber')
+        .create(recursive: true);
+    return '$imageLocalPath/$recipeId/preview/stepImages/p-$stepNumber/';
   }
 
   //////////// Paths to the ORIGINAL quality pictures ////////////
@@ -213,6 +224,7 @@ class PathProvider {
     return '$imageLocalPath/$recipeId/preview/p-recipe-$recipeId.jpg';
   }
 
+/*
   Future<String> getRecipeStepPreviewPath(
       int recipeId, int stepNumber, int number) async {
     String imageLocalPath = await localPath;
@@ -221,7 +233,7 @@ class PathProvider {
         .create(recursive: true);
     return '$imageLocalPath/$recipeId/preview/stepImages/p-$stepNumber/${recipeId}s${stepNumber}s$number.jpg';
   }
-
+*/
   Future<String> getCategoryPreviewPath(String categoryName) async {
     String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/categories/preview')
@@ -232,18 +244,20 @@ class PathProvider {
   // returns a list of the paths to the preview stepimages of the recipe
   // TODO: use this method to get the paths instead of the list to the paths from the sql database
   Future<List<List<String>>> getRecipeStepPreviewPathList(
-      int stepCount, int recipeId) async {
+      List<List<String>> stepImages, int recipeId) async {
     List<List<String>> output = [[]];
-    for (int i = 0; i < stepCount; i++) {
-      String stepImageDirectory = await getRecipeStepNumberDir(recipeId, i);
-      if (await Directory(stepImageDirectory).exists()) {
-        Directory stepDir = Directory(stepImageDirectory);
-        for (int j = 0; j < stepDir.listSync().length; j++) {
-          output[i].add(await getRecipeStepPreviewPath(recipeId, i, j));
-        }
-      }
+    for (int i = 0; i < stepImages.length; i++) {
+      String dir = await getRecipeStepPreviewNumberDir(recipeId, i + 1);
       output.add([]);
+      for (int j = 0; j < stepImages[i].length; j++) {
+        String currentImage = stepImages[i][j];
+        output[i].add(dir +
+            'p-' +
+            currentImage.substring(
+                currentImage.lastIndexOf('/') + 1, currentImage.length));
+      }
     }
+    print(output.toString());
     return output;
   }
 

@@ -5,8 +5,13 @@ import '../recipe.dart';
 import '../helper.dart';
 
 class ShoppingCartScreen extends StatelessWidget {
+  const ShoppingCartScreen({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    precacheImage(AssetImage('images/apple.png'), context);
+    precacheImage(AssetImage('images/banana.png'), context);
+    precacheImage(AssetImage('images/bread.png'), context);
     return Padding(
       padding: EdgeInsets.all(5),
       child: CustomPaint(
@@ -103,13 +108,13 @@ class ShoppingCartScreen extends StatelessWidget {
                             ))),
                         Container(
                             height:
-                                (MediaQuery.of(context).size.height - 415
-                                ) / 2,
+                                (MediaQuery.of(context).size.height - 415) / 2,
                             child: Align(
-                                alignment: Alignment(
-                                  1,1
-                                ),
-                                child: Image.asset('images/cookingPen.png', height: 75,)))
+                                alignment: Alignment(1, 1),
+                                child: Image.asset(
+                                  'images/cookingPen.png',
+                                  height: 75,
+                                )))
                       ],
                     );
                 }
