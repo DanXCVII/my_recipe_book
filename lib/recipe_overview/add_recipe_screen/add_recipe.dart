@@ -72,8 +72,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  int recipeId;
-
   @override
   void initState() {
     super.initState();
@@ -203,7 +201,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                     Navigator.pop(context); // loading screen
                     Navigator.pop(context); // edit recipe screen
                     Navigator.pop(context); // old recipe screen
-                    imageCache.clear();
+                    //imageCache.clear();
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -242,8 +240,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               circleSize: 120,
               color: Color(0xFF790604),
               // type: IS.TypeRC.RECIPE,
-              //editRecipeId:
-              //    widget.editRecipe == null ? null : widget.editRecipe.id,
+              recipeId:
+                  widget.editRecipe == null ? null : widget.editRecipe.id,
             ),
             SizedBox(height: 30),
             // name textField
@@ -381,7 +379,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               vegetableStatus: selectedRecipeVegetable,
             ),
             // heading with textFields for steps section
-            Steps(stepsDescController, stepImages, recipeId),
+            Steps(stepsDescController, stepImages,
+                widget.editRecipe != null ? widget.editRecipe.id : null),
             // notes textField and heading
             Padding(
               padding: const EdgeInsets.only(
@@ -397,7 +396,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               ),
             ),
             ComplexitySection(complexity: complexity),
-            CategorySection( newRecipeCategories, _formKey),
+            CategorySection(newRecipeCategories, _formKey),
           ]),
         ),
       ),
@@ -515,8 +514,12 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
       }
     }*/
-    if (recipeId == null)
+    int recipeId;
+    if (widget.editRecipe == null)
       recipeId = await DBProvider.db.getNewIDforTable('recipe', 'id');
+    else {
+      recipeId = widget.editRecipe.id;
+    }
     Recipe newRecipe = new Recipe(
       id: recipeId,
       name: nameController.text,

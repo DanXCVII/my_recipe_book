@@ -224,7 +224,6 @@ class _StepState extends State<Step> {
     String newStepImageName = getStepImageName(newImage.path);
     String newStepImagePreviewName = 'p-' + newStepImageName;
 
-    print(newStepImageName);
 
     // TODO: Decide later if it's nicer to instantly save the image or do it at the end..
     int recipeId;
@@ -343,7 +342,6 @@ class _StepState extends State<Step> {
         .getRecipeStepNumberDir(recipeId, stepNumber - 1)
         .then((path) {
       File(path + widget.stepImages[stepNumber][number]).deleteSync();
-      print(path);
     });
 
     setState(() {

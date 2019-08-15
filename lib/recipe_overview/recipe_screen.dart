@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'dart:ui';
+import 'dart:math';
 
 import '../recipe.dart';
+import './recipe_overview.dart';
 import '../gallery_view.dart';
 import './recipe_overview.dart' show Favorite;
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
@@ -27,7 +30,6 @@ class RecipeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(recipe.imagePath);
     double remainingTime =
         recipe.totalTime - recipe.preperationTime - recipe.cookingTime;
     double otherTime;
@@ -41,6 +43,7 @@ class RecipeScreen extends StatelessWidget {
                 Favorite(recipe),
                 IconButton(
                   icon: Icon(Icons.edit),
+                  tooltip: 'edit',
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -60,6 +63,7 @@ class RecipeScreen extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.share),
+                  tooltip: 'share recipe',
                   onPressed: () {},
                 ),
               ],
@@ -72,8 +76,8 @@ class RecipeScreen extends StatelessWidget {
                 ? Container()
                 : GestureDetector(
                     onTap: () {
-                      _showPictureFullView(recipe.imagePath,
-                          "${recipe.imagePath}${recipe.id}", context);
+                      _showPictureFullView(
+                          recipe.imagePath, heroImageTag, context);
                     },
                     child: Hero(
                       tag: heroImageTag,
@@ -254,7 +258,6 @@ class RecipeScreen extends StatelessWidget {
                   .getRecipeStepPreviewPathList(recipe.stepImages, recipe.id),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  print(recipe.stepImages.toString());
                   return StepsScreen(
                       recipe.steps, snapshot.data, recipe.stepImages);
                 }
@@ -363,6 +366,7 @@ void _showStepFullView(
           initialIndex: imageIndex,
           galleryItems: flatStepImages,
           descriptions: imageDescription,
+          heroTag: "Schritt$stepNumber:$imageNumber",
         ),
       ));
 }
@@ -426,36 +430,87 @@ class CategoriesSection extends StatelessWidget {
       spacing: 10.0,
     );
     for (int i = 0; i < categories.length; i++) {
-      output.children.add(ClipOval(
-        child: Stack(
-          children: <Widget>[
-            Container(
-              width: 100,
-              height: 100,
-              child: Image.asset(
-                await DBProvider.db
-                    .getRandomRecipeImageFromCategory(categories[i]),
-                fit: BoxFit.cover,
-              ),
-            ),
-            Container(
-                margin: EdgeInsets.only(top: 30),
-                decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.4)),
-                width: 100,
-                height: 40,
-                child: Center(
-                  child: Text(
-                    "${categories[i]}",
-                    style: TextStyle(color: Colors.white),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ))
-          ],
-        ),
+      output.children.add(CategoryCircle(
+        categoryName: categories[i],
+        imageName:
+            await DBProvider.db.getRandomRecipeImageFromCategory(categories[i]),
       ));
     }
     return output;
+  }
+}
+
+class CategoryCircle extends StatefulWidget {
+  final String categoryName;
+  final String imageName;
+
+  CategoryCircle({
+    this.categoryName,
+    this.imageName,
+    Key key,
+  }) : super(key: key);
+
+  _CategoryCircleState createState() => _CategoryCircleState();
+}
+
+class _CategoryCircleState extends State<CategoryCircle> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: () {
+          Random rand = new Random();
+          DBProvider.db.getRecipesOfCategory(widget.categoryName).then((r) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => new RecipeGridView(
+                    category: widget.categoryName == null
+                        ? 'no category'
+                        : widget.categoryName,
+                    randomCategoryImage:
+                        r.length != 1 ? rand.nextInt(r.length) : 0,
+                    recipes: r),
+              ),
+            );
+          });
+        },
+        child: ClipOval(
+          child: Stack(
+            children: <Widget>[
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(widget.imageName),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+                  child: Container(
+                    decoration:
+                        BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                  ),
+                ),
+              ),
+              Container(
+                  margin: EdgeInsets.only(top: 30),
+                  decoration:
+                      BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.4)),
+                  width: 100,
+                  height: 40,
+                  child: Center(
+                    child: Text(
+                      widget.categoryName,
+                      style: TextStyle(color: Colors.white),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ))
+            ],
+          ),
+        ));
   }
 }
 
@@ -550,7 +605,6 @@ class StepsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(stepPreviewImages.toString());
     if (steps.isEmpty) return Container();
     Column output = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -627,6 +681,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                   icon: saved.contains(currentIngredient)
                       ? Icon(Icons.check_circle)
                       : Icon(Icons.add_circle_outline),
+                      tooltip: 'Add to shopping Cart',
                   onPressed: () {
                     /// if the saved List doesn't contain the ingredientName ->
                     /// add the not yet added ingredients to shoppingCart and
@@ -692,6 +747,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                   icon: containsList(saved, sectionIngredients)
                       ? Icon(Icons.shopping_cart)
                       : Icon(Icons.add_shopping_cart),
+                      tooltip: 'add to shopping cart',
                   onPressed: () {
                     /// if shopping cart contains all the ingredients in the section
                     /// -> remove them from the database and saved List
@@ -793,6 +849,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                       IconButton(
                         icon: Icon(Icons.remove_circle_outline,
                             color: Colors.white),
+                            tooltip: 'decrease servings',
                         onPressed: () {
                           if (servings <= 1) return;
                           List<List<Ingredient>> ingredients =
@@ -821,6 +878,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                       IconButton(
                         icon:
                             Icon(Icons.add_circle_outline, color: Colors.white),
+                            tooltip: 'increase servings',
                         onPressed: () {
                           List<List<Ingredient>> ingredients =
                               widget.currentRecipe.ingredients;

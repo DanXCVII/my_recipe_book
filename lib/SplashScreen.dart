@@ -39,16 +39,16 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> loadData() async {
-    MainScreenRecipes r = MainScreenRecipes();
+    
     List<RecipeCategory> categories = await DBProvider.db.getCategories();
     int maxIndex;
     categories.length > 7 ? maxIndex = 7 : maxIndex = categories.length;
     for (int i = 0; i < maxIndex; i++) {
       List<Recipe> recipeList =
           await DBProvider.db.getRecipesOfCategory(categories[i].name);
-      r.addRecipes(categories[i].name, recipeList);
     }
     onDoneLoading();
+    
   }
 
   onDoneLoading() async {

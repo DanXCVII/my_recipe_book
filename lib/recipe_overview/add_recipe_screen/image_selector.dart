@@ -126,10 +126,10 @@ class _ImageSelectorState extends State<ImageSelector> {
           );
 
           int recipeId;
-          recipeId == null
+          widget.recipeId == null
               ? recipeId = recipeId =
                   await DBProvider.db.getNewIDforTable('recipe', 'id')
-              : recipeId = recipeId;
+              : recipeId = widget.recipeId;
           String recipeImagePath =
               await PathProvider.pP.getRecipePath(recipeId);
 

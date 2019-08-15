@@ -8,9 +8,24 @@ import '../recipe.dart';
 import './recipe_screen.dart';
 import './recipe_overview.dart';
 
+class RecipeCategoryOverview extends StatefulWidget {
+  RecipeCategoryOverview({Key key}) : super(key: key);
+
+  _RecipeCategoryOverviewState createState() => _RecipeCategoryOverviewState();
+}
+
 // Builds the Rows of all the categories
-class RecipeCategoryOverview extends StatelessWidget {
-  const RecipeCategoryOverview({Key key}) : super(key: key);
+
+class _RecipeCategoryOverviewState extends State<RecipeCategoryOverview>
+    with AutomaticKeepAliveClientMixin<RecipeCategoryOverview> {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    print('initState()');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +37,22 @@ class RecipeCategoryOverview extends StatelessWidget {
             return ListView.builder(
                 itemCount: categoryNames.length + 1,
                 itemBuilder: (context, index) {
-                  if (index == categoryNames.length) {
-                    return RecipeRow(category: null);
-                  }
-                  return RecipeRow(category: categoryNames[index]);
+                  return FutureBuilder<List<Recipe>>(
+                      future: index != categoryNames.length
+                          ? DBProvider.db
+                              .getRecipesOfCategory(categoryNames[index].name)
+                          : DBProvider.db.getRecipesOfNoCategory(),
+                      builder: (context, recipelistF) {
+                        if (recipelistF.hasData) {
+                          return RecipeRow(
+                            recipes: recipelistF.data,
+                            category: index == categoryNames.length
+                                ? null
+                                : categoryNames[index],
+                          );
+                        }
+                        return CircularProgressIndicator();
+                      });
                 });
           } else {
             return Center(
@@ -40,75 +67,54 @@ class RecipeCategoryOverview extends StatelessWidget {
 /// scrollable "List" of kinda circles with the recipes of that category
 class RecipeRow extends StatelessWidget {
   final RecipeCategory category;
+  final List<Recipe> recipes;
 
-  const RecipeRow({this.category, Key key}) : super(key: key);
+  const RecipeRow({this.recipes, this.category, Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Recipe>>(
-        future: category != null
-            ? DBProvider.db.getRecipesOfCategory(category.name)
-            : DBProvider.db.getRecipesOfNoCategory(),
-        builder: (context, recipelistF) {
-          if (recipelistF.hasData) {
-            if (recipelistF.data.isEmpty) {
-              return Container();
-            }
-            Random randomRecipe = new Random();
-            return Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(left: 20),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (BuildContext context) => new RecipeGridView(
-                            category: category == null
-                                ? 'no category'
-                                : category.name,
-                            randomCategoryImage: recipelistF.data.length != 1
-                                ? randomRecipe.nextInt(recipelistF.data.length)
-                                : 0,
-                            recipes: recipelistF.data,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          top: 12.0, bottom: 10.0, right: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            category != null ? category.name : 'no category',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 20),
-                          ),
-                          Icon(Icons.arrow_forward_ios),
-                        ],
-                      ),
-                    ),
+    Random r = new Random();
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (BuildContext context) => new RecipeGridView(
+                    category: category == null ? 'no category' : category.name,
+                    randomCategoryImage: recipes.length != 1
+                        ? r.nextInt(recipes.length > 0 ? recipes.length : 1)
+                        : 0,
+                    recipes: recipes,
                   ),
                 ),
-                RecipeHozizontalList(
-                  recipes: recipelistF.data,
-                  categoryName:
-                      category == null ? 'no category' : category.name,
-                )
-              ],
-            );
-          }
-          return Container(
-            height: 178,
-            child: Center(
-              child: CircularProgressIndicator(),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12.0, bottom: 10.0, right: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    category != null ? category.name : 'no category',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                  ),
+                  Icon(Icons.arrow_forward_ios),
+                ],
+              ),
             ),
-          );
-        });
+          ),
+        ),
+        RecipeHozizontalList(
+          recipes: recipes,
+          categoryName: category == null ? 'no category' : category.name,
+        )
+      ],
+    );
   }
 }
 
@@ -148,7 +154,6 @@ class RecipeHozizontalList extends StatelessWidget {
           if (index < recipeCount) {
             final String heroTag =
                 '${recipes[index].id}$categoryName${recipes[index].imagePath}';
-            print(heroTag);
 
             return GestureDetector(
               onTap: () {
@@ -390,6 +395,10 @@ List<Widget> createDummyCategoryCards() {
 }
 
 class RecipeSearch extends SearchDelegate<SearchRecipe> {
+  final List<String> recipeNames;
+
+  RecipeSearch(this.recipeNames);
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -414,13 +423,42 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
 
   @override
   Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    return null;
+    if (recipeNames.isEmpty) {
+      return Center(child: CircularProgressIndicator());
+    }
+    final results = recipeNames.where(
+        (recipeName) => recipeName.toLowerCase().contains(query.toLowerCase()));
+    return ListView.builder(
+        itemCount: recipeNames.length * 2,
+        itemBuilder: (context, index) {
+          if ((index - 1) % 2 == 0 && index != 0) {
+            return Divider();
+          }
+          return ListTile(
+            title: Text(recipeNames[index ~/ 2]),
+            onTap: () {
+              DBProvider.db
+                  .getRecipeByName(recipeNames[index ~/ 2])
+                  .then((recipe) {
+                close(context, null);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => new RecipeScreen(
+                      recipe: recipe,
+                      primaryColor: getRecipePrimaryColor(recipe),
+                      heroImageTag: 'heroTag',
+                    ),
+                  ),
+                );
+              });
+            },
+          );
+        });
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    // TODO: implement buildSuggestions
-    return null;
+    return buildResults(context);
   }
 }

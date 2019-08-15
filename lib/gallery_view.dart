@@ -3,16 +3,18 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter/material.dart';
 
 class GalleryPhotoView extends StatefulWidget {
-  GalleryPhotoView({
-    this.initialIndex,
-    @required this.galleryItems,
-    this.descriptions,
-  }) : pageController = PageController(initialPage: initialIndex);
-
+  final String heroTag;
   final int initialIndex;
   final PageController pageController;
   final List<String> galleryItems;
   final List<String> descriptions;
+
+  GalleryPhotoView({
+    this.heroTag,
+    this.initialIndex,
+    @required this.galleryItems,
+    this.descriptions,
+  }) : pageController = PageController(initialPage: initialIndex);
 
   @override
   State<StatefulWidget> createState() {
@@ -73,7 +75,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
       initialScale: PhotoViewComputedScale.contained,
       minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
       maxScale: PhotoViewComputedScale.covered * 1.1,
-      heroTag: index,
+      heroTag: index == widget.initialIndex ? widget.heroTag : index,
     );
   }
 }

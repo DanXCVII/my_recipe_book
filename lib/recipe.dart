@@ -245,7 +245,7 @@ class PathProvider {
   // TODO: use this method to get the paths instead of the list to the paths from the sql database
   Future<List<List<String>>> getRecipeStepPreviewPathList(
       List<List<String>> stepImages, int recipeId) async {
-    List<List<String>> output = [[]];
+    List<List<String>> output = [];
     for (int i = 0; i < stepImages.length; i++) {
       String dir = await getRecipeStepPreviewNumberDir(recipeId, i + 1);
       output.add([]);
@@ -257,7 +257,6 @@ class PathProvider {
                 currentImage.lastIndexOf('/') + 1, currentImage.length));
       }
     }
-    print(output.toString());
     return output;
   }
 

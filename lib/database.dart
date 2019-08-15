@@ -216,14 +216,14 @@ class DBProvider {
             resCategories[0]['id'],
           ]);
     }
-
+/*
     MainScreenRecipes singleton = MainScreenRecipes();
     for (int i = 0; i < newRecipe.categories.length; i++) {
       if (singleton.getRecipesOfCategory(newRecipe.categories[i]) != null) {
         singleton.addRecipeToCategory(newRecipe.categories[i], newRecipe);
       }
     }
-
+*/
     return resRecipe;
   }
 
@@ -274,13 +274,13 @@ class DBProvider {
 
     var resSteps = await db.rawQuery(
         'SELECT * FROM Steps WHERE recipe_id=$id ORDER BY number ASC');
-    List<String> steps = new List<String>();
-    List<List<String>> stepImages = new List<List<String>>();
+    List<String> steps = [];
+    List<List<String>> stepImages = [[]];
     for (int i = 0; i < resSteps.length; i++) {
       steps.add(resSteps[i]['description']);
       var resStepImages = await db.rawQuery(
           'SELECT * FROM StepImages WHERE steps_id=${resSteps[i]['id']} ORDER BY id ASC');
-      stepImages.add(new List<String>());
+      stepImages.add([]);
       for (int j = 0; j < resStepImages.length; j++) {
         stepImages[i].add(resStepImages[j]['image']);
       }
@@ -330,6 +330,27 @@ class DBProvider {
         isFavorite: isFavorite);
   }
 
+  Future<Recipe> getRecipeByName(String name) async {
+    var db = await database;
+
+    var resRecipes =
+        await db.rawQuery('SELECT id FROM recipe WHERE recipeName = ?', [name]);
+    return await getRecipeById(resRecipes[0]['id']);
+  }
+
+  Future<List<String>> getRecipeNames() async {
+    var db = await database;
+
+    var resRecipes = await db.rawQuery('SELECT recipeName FROM recipe');
+
+    List<String> recipeNames = [];
+
+    for (int i = 0; i < resRecipes.length; i++) {
+      recipeNames.add(resRecipes[i]['recipeName']);
+    }
+    return recipeNames;
+  }
+
   Future<void> deleteRecipeFromDatabase(Recipe recipe) async {
     final db = await database;
 
@@ -338,14 +359,14 @@ class DBProvider {
 
   Future<void> deleteRecipe(Recipe recipe) async {
     final db = await database;
-
+    /*
     MainScreenRecipes singleton = MainScreenRecipes();
     for (int i = 0; i < recipe.categories.length; i++) {
       if (singleton.getRecipesOfCategory(recipe.categories[i]) != null) {
         singleton.removeRecipeFromCategory(recipe.categories[i], recipe);
       }
     }
-
+*/
     await db.rawDelete('DELETE FROM Recipe WHERE id= ?', [recipe.id]);
 
     Directory appDir = await getApplicationDocumentsDirectory();
@@ -619,10 +640,11 @@ class DBProvider {
   }
 */
   Future<List<Recipe>> getRecipesOfCategory(String categoryName) async {
+    /*
     MainScreenRecipes singleton = MainScreenRecipes();
     if (singleton.recipes[categoryName] != null)
       return singleton.recipes[categoryName];
-
+*/
     final db = await database;
 
     var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '

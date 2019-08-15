@@ -61,7 +61,6 @@ class MyHomePageState extends State<MyHomePage> {
     ShoppingCartScreen(key: PageStorageKey('Page3')),
     Center(child: Text('This page is not yet implemented')),
   ];
-  final PageStorageBucket bucket = PageStorageBucket();
   String title;
   int _selectedIndex = 0;
 
@@ -73,7 +72,11 @@ class MyHomePageState extends State<MyHomePage> {
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.search),
-          onPressed: () {},
+          onPressed: () {
+            DBProvider.db.getRecipeNames().then((recipeNames) {
+              showSearch(context: context, delegate: RecipeSearch(recipeNames));
+            });
+          },
         )
       ],
     );
@@ -100,9 +103,6 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    /// title equals null only when we start the app
-    /// otherwise, when a drawer item is selected, we set the new title
-    /// via setState()
     if (title == null) {
       title = "recipes";
     }
@@ -110,9 +110,13 @@ class MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: buildAppBar(title),
       floatingActionButton: getFloatingB(title),
-      body: PageStorage(
+      /*body: PageStorage(
         child: pages[_selectedIndex],
         bucket: bucket,
+      ),*/
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: pages,
       ),
       backgroundColor: getBackgroundColor(title),
       bottomNavigationBar: Theme(

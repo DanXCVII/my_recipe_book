@@ -6,6 +6,19 @@ import '../database.dart';
 import '../recipe.dart';
 import './recipe_screen.dart';
 
+const Map<int, Color> complexityColors = {
+  1: Color(0xff28E424),
+  2: Color(0xff4ED220),
+  3: Color(0xff33B51E),
+  4: Color(0xff188E24),
+  5: Color(0xff135B12),
+  6: Color(0xff691A1A),
+  7: Color(0xff892020),
+  8: Color(0xffB51E1E),
+  9: Color(0xffDC1818),
+  10: Color(0xffFD0000)
+};
+
 Map<String, List<Color>> colors = {
   "${Vegetable.NON_VEGETARIAN.toString()}1": [
     Color(0xffD10C0C),
@@ -86,7 +99,7 @@ class RecipeGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (category != null) {
+    if (recipes.isNotEmpty) {
       return Container(
         color: Color(0xffFEF3E1),
         child: CustomScrollView(slivers: <Widget>[
@@ -98,14 +111,14 @@ class RecipeGridView extends StatelessWidget {
               centerTitle: true,
               title: Text(category),
               background: Container(
-                decoration: new BoxDecoration(
-                  image: new DecorationImage(
-                    image: new ExactAssetImage(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: ExactAssetImage(
                         '${recipes[randomCategoryImage].imagePreviewPath}'),
                     fit: BoxFit.cover,
                   ),
                 ),
-                child: new BackdropFilter(
+                child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
                   child: Container(
                     decoration:
@@ -128,7 +141,31 @@ class RecipeGridView extends StatelessWidget {
         ]),
       );
     }
-    return Center(child: Text('You have no recipes under this category.'));
+    return Scaffold(
+      backgroundColor: Color(0xffFEF3E1),
+      appBar: AppBar(),
+      body: Stack(
+        children: <Widget>[
+          Align(
+            alignment: Alignment(0, -0.5),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                "No recipes under this category",
+                style: TextStyle(fontSize: 30, fontFamily: 'RibeyeMarrow', fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Image.asset(
+              'images/hatWithSpoonFork.png',
+              height: 280,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   List<Widget> getRecipeCards(List<Recipe> recipes) {

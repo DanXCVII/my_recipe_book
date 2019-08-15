@@ -3,8 +3,22 @@ import '../recipe_overview/recipe_overview.dart';
 import '../recipe.dart';
 import '../database.dart';
 
-class FavoriteScreen extends StatelessWidget {
-  const FavoriteScreen({Key key}) : super(key: key);
+class FavoriteScreen extends StatefulWidget {
+  FavoriteScreen({Key key}) : super(key: key);
+
+  _FavoriteScreenState createState() => _FavoriteScreenState();
+}
+
+class _FavoriteScreenState extends State<FavoriteScreen>
+    with AutomaticKeepAliveClientMixin<FavoriteScreen> {
+@override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() { 
+    super.initState();
+    print('initState');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,20 +29,32 @@ class FavoriteScreen extends StatelessWidget {
             if (snapshot.data.length == 0)
               return Center(
                   child: Text('You have no recipes under this category.'));
-            return GridView.extent(
-              padding: EdgeInsets.all(12),
-              childAspectRatio: 0.75,
-              maxCrossAxisExtent: 300,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              children: getRecipeCards(snapshot.data),
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
+            return FavoriteRecipeCards(
+              favoriteRecipes: snapshot.data,
             );
           }
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         });
+  }
+}
+
+class FavoriteRecipeCards extends StatelessWidget {
+  final List<Recipe> favoriteRecipes;
+
+  const FavoriteRecipeCards({this.favoriteRecipes, Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.extent(
+      padding: EdgeInsets.all(12),
+      childAspectRatio: 0.75,
+      maxCrossAxisExtent: 300,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      children: getRecipeCards(favoriteRecipes),
+    );
   }
 
   List<Widget> getRecipeCards(List<Recipe> recipes) {
