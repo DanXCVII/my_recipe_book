@@ -22,7 +22,6 @@ import './image_selector.dart' as IS;
 const double categories = 14;
 const double topPadding = 8;
 
-// TODO ~: Put the AddRecipe Scaffold in a stateless widget
 
 class AddRecipeForm extends StatefulWidget {
   final Recipe editRecipe;
@@ -69,7 +68,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   final MyImageWrapper selectedRecipeImage = new MyImageWrapper();
   final MyVegetableWrapper selectedRecipeVegetable = new MyVegetableWrapper();
 
-  final _formKey = GlobalKey<FormState>();
+  static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -200,7 +199,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                     Navigator.pop(context); // loading screen
                     Navigator.pop(context); // edit recipe screen
                     Navigator.pop(context); // old recipe screen
-                    //imageCache.clear();
+                    imageCache.clear(); // TODO: Maybe optimize and only clear nessesary date.. maybe not..
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -448,7 +447,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     });
   }
 
-  /// TODO: Only shows the new recipedata after restart. Needs to be fixed!
+  /// TODO: Fix that cached image will still show and not the new one
   Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
     await DBProvider.db.deleteRecipeFromDatabase(editRecipe);
     Recipe newRecipe = await saveRecipe();

@@ -204,7 +204,6 @@ class DBProvider {
         'recipe_id': newRecipe.id,
         'categories_name': resCategories[0]['categoryName'],
       });
-      await batch.commit();
 
 /*
     MainScreenRecipes singleton = MainScreenRecipes();
@@ -215,6 +214,7 @@ class DBProvider {
     }
 */
     }
+    await batch.commit();
   }
 
   Future<void> updateCategoryOrder(List<String> categories) async {
@@ -302,7 +302,7 @@ class DBProvider {
 
     List<String> categories = new List<String>();
     var resCategories = await db.rawQuery(
-        'SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.name=RecipeCategories.categories_name'
+        'SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name'
         ' WHERE recipe_id=$id');
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
