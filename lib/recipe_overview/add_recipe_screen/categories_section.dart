@@ -8,7 +8,6 @@ class Consts {
   Consts._();
 
   static const double padding = 16.0;
-  static const double avatarRadius = 66.0;
 }
 
 class CategorySection extends StatefulWidget {
@@ -72,8 +71,7 @@ class _CategorySectionState extends State<CategorySection> {
                   onPressed: () {
                     showDialog(
                         context: context,
-                        builder: (_) => CustomDialog(
-                             widget.formKey));
+                        builder: (_) => CategoryAddDialog(widget.formKey));
                   },
                 )
               ],
@@ -82,13 +80,13 @@ class _CategorySectionState extends State<CategorySection> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Container(
-            child: FutureBuilder<List<RecipeCategory>>(
+            child: FutureBuilder<List<String>>(
                 future: DBProvider.db.getCategories(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<String> categoryNames = [];
                     for (final category in snapshot.data)
-                      categoryNames.add(category.name);
+                      categoryNames.add(category);
                     return Wrap(
                       spacing: 5.0,
                       runSpacing: 3.0,
@@ -153,18 +151,18 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
   }
 }
 
-class CustomDialog extends StatefulWidget {
+class CategoryAddDialog extends StatefulWidget {
   final GlobalKey<FormState> formKey;
 
-  CustomDialog( this.formKey);
+  CategoryAddDialog(this.formKey);
 
   @override
   State<StatefulWidget> createState() {
-    return CustomDialogState();
+    return CategoryAddDialogState();
   }
 }
 
-class CustomDialogState extends State<CustomDialog> {
+class CategoryAddDialogState extends State<CategoryAddDialog> {
   TextEditingController categoryNameController;
 
   @override
@@ -189,13 +187,10 @@ class CustomDialogState extends State<CustomDialog> {
     return Stack(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.only(
-            top: Consts.avatarRadius + Consts.padding,
-            bottom: Consts.padding,
-            left: Consts.padding,
-            right: Consts.padding,
+          padding: EdgeInsets.all(
+            Consts.padding,
           ),
-          margin: EdgeInsets.only(top: Consts.avatarRadius),
+          margin: EdgeInsets.only(top: Consts.padding),
           decoration: new BoxDecoration(
             color: Colors.white,
             shape: BoxShape.rectangle,
@@ -211,13 +206,6 @@ class CustomDialogState extends State<CustomDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min, // To make the card compact
             children: <Widget>[
-              Text(
-                "new Category",
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: categoryNameController,
@@ -230,7 +218,7 @@ class CustomDialogState extends State<CustomDialog> {
                 },
                 decoration: InputDecoration(
                   filled: true,
-                  hintText: "new category name",
+                  hintText: "category name",
                 ),
               ),
               SizedBox(height: 24.0),

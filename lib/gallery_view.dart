@@ -3,14 +3,14 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter/material.dart';
 
 class GalleryPhotoView extends StatefulWidget {
-  final String heroTag;
+  final List<String> heroTags;
   final int initialIndex;
   final PageController pageController;
   final List<String> galleryItems;
   final List<String> descriptions;
 
   GalleryPhotoView({
-    this.heroTag,
+    this.heroTags,
     this.initialIndex,
     @required this.galleryItems,
     this.descriptions,
@@ -40,32 +40,34 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          decoration: BoxDecoration(color: Colors.black), // TODO: Maybe change
-          constraints: BoxConstraints.expand(
-            height: MediaQuery.of(context).size.height,
-          ),
-          child: Stack(
-            alignment: Alignment.bottomLeft,
-            children: <Widget>[
-              PhotoViewGallery.builder(
-                scrollPhysics: const BouncingScrollPhysics(),
-                builder: _buildItem,
-                itemCount: widget.galleryItems.length,
-                loadingChild: Center(child: CircularProgressIndicator()),
-                backgroundDecoration: BoxDecoration(color: Colors.black),
-                pageController: widget.pageController,
-                onPageChanged: onPageChanged,
-              ),
-              Container(
+        decoration: BoxDecoration(color: Colors.black), // TODO: Maybe change
+        constraints: BoxConstraints.expand(
+          height: MediaQuery.of(context).size.height,
+        ),
+        child: Stack(
+          alignment: Alignment.bottomLeft,
+          children: <Widget>[
+            PhotoViewGallery.builder(
+              scrollPhysics: const BouncingScrollPhysics(),
+              builder: _buildItem,
+              itemCount: widget.galleryItems.length,
+              loadingChild: Center(child: CircularProgressIndicator()),
+              backgroundDecoration: BoxDecoration(color: Colors.black),
+              pageController: widget.pageController,
+              onPageChanged: onPageChanged,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              color: Color.fromRGBO(0, 0, 0, 0.3),
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
                   widget.descriptions[currentIndex],
                   style: const TextStyle(
                       color: Colors.white, fontSize: 17.0, decoration: null),
-                ),
-              )
-            ],
-          )),
+                ))
+          ],
+        ),
+      ),
     );
   }
 
@@ -73,9 +75,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
     return PhotoViewGalleryPageOptions(
       imageProvider: AssetImage(widget.galleryItems[index]),
       initialScale: PhotoViewComputedScale.contained,
-      minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
-      maxScale: PhotoViewComputedScale.covered * 1.1,
-      heroTag: index == widget.initialIndex ? widget.heroTag : index,
+      minScale: PhotoViewComputedScale.contained * (1.0),
+      maxScale: PhotoViewComputedScale.covered * 1.5,
+      heroTag: widget.heroTags[index],
     );
   }
 }

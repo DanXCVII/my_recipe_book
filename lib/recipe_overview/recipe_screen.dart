@@ -3,6 +3,7 @@ import 'package:my_recipe_book/database.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:ui';
 import 'dart:math';
+import 'package:share/share.dart';
 
 import '../recipe.dart';
 import './recipe_overview.dart';
@@ -64,7 +65,9 @@ class RecipeScreen extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.share),
                   tooltip: 'share recipe',
-                  onPressed: () {},
+                  onPressed: () {
+                    Share.share(getRecipeAsString(recipe));
+                  },
                 ),
               ],
               floating: false,
@@ -280,6 +283,29 @@ class RecipeScreen extends StatelessWidget {
           ]))
         ]));
   }
+
+  String getRecipeAsString(Recipe recipe) {
+    String recipeText = 'Recipename: ${recipe.name}\n'
+        'preperation Time: ${recipe.preperationTime}\n'
+        'cooking Time: ${recipe.cookingTime}\n'
+        'total Time: ${recipe.totalTime}\n'
+        '';
+    for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
+      recipeText =
+          recipeText += 'ingredients for: ${recipe.ingredientsGlossary[i]}:\n';
+      for (int j = 0; j < recipe.ingredients[i].length; i++) {
+        recipeText += '${recipe.ingredients[i][j].name} '
+            '${recipe.ingredients[i][j].amount} '
+            '${recipe.ingredients[i][j].unit}\n';
+      }
+    }
+    for (final String step in recipe.steps) {
+      recipeText += '$step\n';
+    }
+    recipeText += recipe.notes;
+    // TODO: Continue
+    return recipeText;
+  }
 }
 
 class NotesSection extends StatelessWidget {
@@ -349,12 +375,14 @@ void _showStepFullView(
 ) {
   List<String> flatStepImages = [];
   List<String> imageDescription = [];
+  List<String> heroTags = [];
   int imageIndex = 0;
   for (int i = 0; i < stepImages.length; i++) {
     if (i < stepNumber) imageIndex += stepImages[i].length;
     for (int j = 0; j < stepImages[i].length; j++) {
       imageDescription.add(description[i]);
       flatStepImages.add(stepImages[i][j]);
+      heroTags.add("Schritt$i:$j");
     }
   }
   imageIndex += imageNumber;
@@ -366,7 +394,7 @@ void _showStepFullView(
           initialIndex: imageIndex,
           galleryItems: flatStepImages,
           descriptions: imageDescription,
-          heroTag: "Schritt$stepNumber:$imageNumber",
+          heroTags: heroTags,
         ),
       ));
 }
@@ -681,7 +709,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                   icon: saved.contains(currentIngredient)
                       ? Icon(Icons.check_circle)
                       : Icon(Icons.add_circle_outline),
-                      tooltip: 'Add to shopping Cart',
+                  tooltip: 'Add to shopping Cart',
                   onPressed: () {
                     /// if the saved List doesn't contain the ingredientName ->
                     /// add the not yet added ingredients to shoppingCart and
@@ -747,7 +775,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                   icon: containsList(saved, sectionIngredients)
                       ? Icon(Icons.shopping_cart)
                       : Icon(Icons.add_shopping_cart),
-                      tooltip: 'add to shopping cart',
+                  tooltip: 'add to shopping cart',
                   onPressed: () {
                     /// if shopping cart contains all the ingredients in the section
                     /// -> remove them from the database and saved List
@@ -849,7 +877,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                       IconButton(
                         icon: Icon(Icons.remove_circle_outline,
                             color: Colors.white),
-                            tooltip: 'decrease servings',
+                        tooltip: 'decrease servings',
                         onPressed: () {
                           if (servings <= 1) return;
                           List<List<Ingredient>> ingredients =
@@ -878,7 +906,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                       IconButton(
                         icon:
                             Icon(Icons.add_circle_outline, color: Colors.white),
-                            tooltip: 'increase servings',
+                        tooltip: 'increase servings',
                         onPressed: () {
                           List<List<Ingredient>> ingredients =
                               widget.currentRecipe.ingredients;

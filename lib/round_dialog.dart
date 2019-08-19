@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class RoundDialog extends StatefulWidget {
-  Widget childWidget;
-  double size;
+  final Widget childWidget;
+  final double size;
 
   RoundDialog(this.childWidget, this.size);
 

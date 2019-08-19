@@ -9,13 +9,9 @@ class FavoriteScreen extends StatefulWidget {
   _FavoriteScreenState createState() => _FavoriteScreenState();
 }
 
-class _FavoriteScreenState extends State<FavoriteScreen>
-    with AutomaticKeepAliveClientMixin<FavoriteScreen> {
-@override
-  bool get wantKeepAlive => true;
-
+class _FavoriteScreenState extends State<FavoriteScreen> {
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     print('initState');
   }
@@ -63,7 +59,6 @@ class FavoriteRecipeCards extends StatelessWidget {
       recipeCards.add(
         RecipeCard(
           recipe: recipes[i],
-          recipeColor: Color(0xffE2A1B1),
         ),
       );
     }

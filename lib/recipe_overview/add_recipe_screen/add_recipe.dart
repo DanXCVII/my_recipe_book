@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'dart:math';
 
 import '../../recipe.dart';
 import '../../database.dart';
@@ -215,16 +214,32 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 }
               } else {
                 showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: Text("Check filled in information"),
-                    contentPadding: EdgeInsets.fromLTRB(15, 24, 15, 0),
-                    content: Container(
-                      height: 10,
-                    ),
-                  ),
-                );
+                    context: context, builder: (_) => NotCompleteDialog());
               }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.art_track),
+            onPressed: () {
+              FocusScope.of(context).requestFocus(new FocusNode());
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => WillPopScope(
+                    // It disables the back button
+                    onWillPop: () async => false,
+                    child: RoundDialog(
+                        FlareActor(
+                          'animations/writing_pen.flr',
+                          alignment: Alignment.center,
+                          fit: BoxFit.fitWidth,
+                          animation: "Go",
+                        ),
+                        150)),
+              );
+              saveDummyData().then((_) {
+                Navigator.pop(context);
+              });
             },
           )
         ],
@@ -240,8 +255,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               circleSize: 120,
               color: Color(0xFF790604),
               // type: IS.TypeRC.RECIPE,
-              recipeId:
-                  widget.editRecipe == null ? null : widget.editRecipe.id,
+              recipeId: widget.editRecipe == null ? null : widget.editRecipe.id,
             ),
             SizedBox(height: 30),
             // name textField
@@ -434,50 +448,117 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   /// TODO: Only shows the new recipedata after restart. Needs to be fixed!
   Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
-    /*
-    // If user hasn't selected a new image (old image stays the same) ..
-    if (selectedRecipeImage.selectedImage ==
-        await PathProvider.pP.getRecipePath(editRecipe.id)) {
-      // .. temporarily put image in tmp dir befor recipe gets deleted and saved again
-      String tmpRecipeImage =
-          await PathProvider.pP.getTmpImagePath(editRecipe.imagePath);
-      // remove code when not needed anymore
-      saveImage(File(editRecipe.imagePath), tmpRecipeImage, 300);
-      saveImage(File(editRecipe.imagePath), tmpRecipeImage, 300);
-      selectedRecipeImage.selectedImage = tmpRecipeImage;
-    }*/
-
-    /// temporarily save all step pics (that are not new) in another folder that they don't get lost,
-    /// when the recipe gets deleted.
-    /*
-    for (int i = 0; i < stepImages.length; i++) {
-      for (int j = 0; j < stepImages[i].length; j++) {
-        if (stepImages[i][j]
-            .contains(PathProvider.pP.getRecipeStepDir(editRecipe.id))) {
-          String stepImageName = stepImages[i][j].split("/").last;
-          String tmpStepImagePath =
-              await PathProvider.pP.getTmpImagePath(stepImageName);
-          saveImage(File(stepImages[i][j]), tmpStepImagePath, 2000);
-          stepImages[i][j] = tmpStepImagePath;
-        }
-      }
-    }
-    */
-
     await DBProvider.db.deleteRecipeFromDatabase(editRecipe);
     Recipe newRecipe = await saveRecipe();
 
-    // DELETION
-    /*
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPathRecipe = "${appDir.path}/tmp";
-    var dir = new Directory(imageLocalPathRecipe);
-    if (await dir.exists()) {
-      dir.deleteSync(recursive: true);
-    }
-    */
-
     return newRecipe;
+  }
+
+  Future<void> saveDummyData() async {
+    await DBProvider.db.newCategory('Hauptseisen');
+    await DBProvider.db.newCategory('Vorspeisen');
+    await DBProvider.db.newCategory('Nachtisch');
+    await DBProvider.db.newCategory('Gemüselastig');
+    int id1 = await DBProvider.db.getNewIDforTable('recipe', 'id');
+    print(id1);
+    print('lolololololol');
+
+    String imagePath = await PathProvider.pP.getRecipePath(id1);
+    String imagePreviewPath = await PathProvider.pP.getRecipePreviewPath(id1);
+
+    await saveImage(File('/storage/emulated/0/Download/recipeData/meat.jpg'),
+        imagePath, 2000);
+    //await saveImage(File('/storage/emulated/0/Download/recipeDate/meat.jpg'),
+    //    imagePreviewPath, 300);
+    Recipe r1 = new Recipe(
+      id: id1,
+      name: 'Steack mit Bratsauce',
+      imagePath: imagePath,
+      imagePreviewPath: imagePreviewPath,
+      preperationTime: 15,
+      cookingTime: 60,
+      totalTime: 90,
+      servings: 3,
+      ingredientsGlossary: ['Steacksauce', 'Steack'],
+      ingredients: [
+        [
+          Ingredient('Rosmarin', 5, 'Zweige'),
+          Ingredient('Mehl', 300, 'g'),
+          Ingredient('Curry', 1, 'EL'),
+          Ingredient('Gewürze', 3, 'Priesen')
+        ],
+        [Ingredient('Rohrzucker', 50, 'g'), Ingredient('Steak', 700, 'g')],
+      ],
+      complexity: 4,
+      vegetable: Vegetable.NON_VEGETARIAN,
+      steps: [
+        'Flank Steak mit Rohrzucker und Salz bestreuen, anschließend mit Teriyakisauce marinieren '
+            'und sanft einmassieren. Im Kühlschrank für 2 bis 3 Stunden ziehen lassen und danach 30 '
+            'Minuten bei Zimmertemperatur ruhen lassen.',
+        'Flank Steak etwa 2 Minuten bei geschlossenem Deckel grillen, für ein Rautenmuster um 45 Grad '
+            'drehen und bei geschlossenem Deckel etwa 2 Minuten weitergrillen. Die Rückseite des Steaks '
+            'auf die gleiche Weise grillen.',
+        'Das gegrillte Steak wieder in die Teriyakisauce zurücklegen und auf dem Grill eine indirekte '
+            'Zone einrichten. Einen Bratenkorb mittig auf den Grill legen, Steak hineinlegen und Deckel '
+            'schließen. Nach 10 bis 15 Minuten Steak herausnehmen und kurz ruhen lassen.'
+      ],
+      stepImages: [
+        [
+          await saveStepImage(
+              File('/storage/emulated/0/Download/recipeData/meat1.jpg'), id1, 1)
+        ],
+        [
+          await saveStepImage(
+              File('/storage/emulated/0/Download/recipeData/meat2.jpg'),
+              id1,
+              2),
+          await saveStepImage(
+              File('/storage/emulated/0/Download/recipeData/meat3.jpg'), id1, 2)
+        ],
+        []
+      ],
+      notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
+      isFavorite: false,
+      categories: ['Hauptspeisen'],
+    );
+    await DBProvider.db.newRecipe(r1);
+  }
+
+  /// ONLY FOR DUMMY RECIPES, VERY TEMPORARY AND NOT NICE CODED
+  /// TODO: Remove later
+  Future<String> saveStepImage(
+      File newImage, int recipeId, int stepNumber) async {
+    String output;
+    String newStepImageName = getStepImageName(newImage.path);
+    String newStepImagePreviewName = 'p-' + newStepImageName;
+
+    String stepImagePath =
+        await PathProvider.pP.getRecipeStepNumberDir(recipeId, stepNumber + 1) +
+            newStepImageName;
+    output = stepImagePath;
+
+    saveImage(
+      newImage,
+      stepImagePath,
+      2000,
+    );
+    saveImage(
+      newImage,
+      await PathProvider.pP
+              .getRecipeStepPreviewNumberDir(recipeId, stepNumber + 1) +
+          newStepImagePreviewName,
+      250,
+    );
+    return output;
+  }
+
+  // TODO: Remove later / Only for dummyRecipes
+  String getStepImageName(String selectedImagePath) {
+    Random random = new Random();
+    int dotIndex = selectedImagePath.indexOf('.');
+    String ending =
+        selectedImagePath.substring(dotIndex, selectedImagePath.length);
+    return random.nextInt(10000).toString() + ending;
   }
 
   Future<Recipe> saveRecipe() async {
@@ -787,3 +868,71 @@ class CustomStepsClipper extends CustomClipper<Path> {
 }
 
 enum Answers { GALLERY, PHOTO }
+
+class NotCompleteDialog extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return NotCompleteDialogState();
+  }
+}
+
+class NotCompleteDialogState extends State<NotCompleteDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Consts.padding),
+      ),
+      elevation: 0.0,
+      backgroundColor: Colors.transparent,
+      child: dialogContent(context),
+    );
+  }
+
+  Widget dialogContent(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          padding: EdgeInsets.all(
+            Consts.padding,
+          ),
+          margin: EdgeInsets.only(top: Consts.padding),
+          decoration: new BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(Consts.padding),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10.0,
+                offset: const Offset(0.0, 10.0),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // To make the card compact
+            children: <Widget>[
+              SizedBox(height: 16.0),
+              Text('Check filled in information', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),),
+              SizedBox(height: 16),
+              Text(
+                  'it seems, that you haven’t filled in the required fields. '
+                  'Please check for any red marked text fields.'),
+              SizedBox(height: 8.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  FlatButton(
+                      child: Text("Alright"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      })
+                ],
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

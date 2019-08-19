@@ -124,6 +124,9 @@ class _ImageSelectorState extends State<ImageSelector> {
           File pictureFile = await ImagePicker.pickImage(
             source: ImageSource.gallery,
           );
+          print('------------...........----------');
+          print(pictureFile.path);
+          print('------------...........----------');
 
           int recipeId;
           widget.recipeId == null

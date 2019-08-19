@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/SplashScreen.dart';
 import 'package:my_recipe_book/database.dart';
-import 'package:my_recipe_book/recipe.dart';
+import 'package:my_recipe_book/recipe_overview/category_manager_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'recipe_overview/r_category_overview.dart';
 import 'shopping_cart/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
-import 'package:flutter/rendering.dart';
 import './favortie_screen/favorite_screen.dart';
+import './search.dart';
+
+import 'package:flutter/rendering.dart';
+import 'dart:math';
 
 /// TODO: Think about how to change the Appbar and body with using a
 /// StateLess widget for better performance maybe. One way of doing
@@ -22,6 +27,8 @@ void main() {
 
 class MyApp extends StatelessWidget {
   final appTitle = 'Drawer Demo';
+
+  MyApp();
 
   @override
   Widget build(BuildContext context) {
@@ -42,34 +49,73 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
-        'recipeCategoryOverview': (context) => RecipeCategoryOverview(),
         'addRecipe': (context) => AddRecipeForm(),
+        'manageCategory': (context) => CategoryManager(),
       },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  final bool recipeCatOverview;
+
+  MyHomePage(this.recipeCatOverview);
+
   @override
-  MyHomePageState createState() => MyHomePageState();
+  MyHomePageState createState() =>
+      MyHomePageState(recipeCatOverview: recipeCatOverview);
 }
 
-class MyHomePageState extends State<MyHomePage> {
-  final List<Widget> pages = [
-    RecipeCategoryOverview(key: PageStorageKey('Page1')),
-    FavoriteScreen(key: PageStorageKey('Page2')),
-    ShoppingCartScreen(key: PageStorageKey('Page3')),
-    Center(child: Text('This page is not yet implemented')),
-  ];
+class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  Future<SharedPreferences> prefs;
+  bool recipeCatOverview;
   String title;
   int _selectedIndex = 0;
 
-  MyHomePageState({Key key, String title});
+  MyHomePageState({Key key, String title, @required this.recipeCatOverview});
+  AnimationController _controller;
+  static const List<IconData> icons = const [
+    Icons.grid_on,
+    Icons.description,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    prefs = SharedPreferences.getInstance();
+    _controller = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+  }
 
   AppBar buildAppBar(String title) {
     return AppBar(
       title: Text(title),
       actions: <Widget>[
+        _selectedIndex == 0
+            ? IconButton(
+                icon: Icon(Icons.swap_vertical_circle),
+                onPressed: () {
+                  prefs.then((prefs) {
+                    if (recipeCatOverview) {
+                      prefs.setBool('recipeCatOverview', false).then((_) {
+                        setState(() {
+                          recipeCatOverview = false;
+                        });
+                      });
+                      recipeCatOverview = false;
+                    } else {
+                      prefs.setBool('recipeCatOverview', true).then((_) {
+                        setState(() {
+                          recipeCatOverview = true;
+                        });
+                      });
+                    }
+                  });
+                },
+              )
+            : null,
         IconButton(
           icon: Icon(Icons.search),
           onPressed: () {
@@ -78,18 +124,68 @@ class MyHomePageState extends State<MyHomePage> {
             });
           },
         )
-      ],
+      ].where((child) => child != null).toList(),
     );
   }
 
   Widget getFloatingB(String page) {
+    Color backgroundColor = Theme.of(context).primaryColor;
+    //  Color foregroundColor = Theme.of(context).accentColor;
     if (page == 'recipes') {
-      return FloatingActionButton(
-          backgroundColor: Color(0xFF790604),
-          child: Icon(Icons.add),
-          onPressed: () {
-            Navigator.pushNamed(context, 'addRecipe');
-          });
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(icons.length, (int index) {
+          Widget child = Container(
+            height: 70.0,
+            width: 56.0,
+            alignment: FractionalOffset.topCenter,
+            child: ScaleTransition(
+              scale: CurvedAnimation(
+                parent: _controller,
+                curve: Interval(0.0, 1.0 - index / icons.length / 2.0,
+                    curve: Curves.easeOut),
+              ),
+              child: FloatingActionButton(
+                heroTag: null,
+                backgroundColor: Colors.white,
+                mini: true,
+                child: Icon(icons[index], color: backgroundColor),
+                onPressed: () {
+                  _controller.reverse();
+                  index == 1
+                      ? Navigator.pushNamed(context, 'addRecipe')
+                      : Navigator.pushNamed(context, 'manageCategory');
+                },
+              ),
+            ),
+          );
+          return child;
+        }).toList()
+          ..add(
+            FloatingActionButton(
+              backgroundColor: backgroundColor,
+              heroTag: null,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (BuildContext context, Widget child) {
+                  return Transform(
+                    transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
+                    alignment: FractionalOffset.center,
+                    child:
+                        Icon(_controller.isDismissed ? Icons.add : Icons.close),
+                  );
+                },
+              ),
+              onPressed: () {
+                if (_controller.isDismissed) {
+                  _controller.forward();
+                } else {
+                  _controller.reverse();
+                }
+              },
+            ),
+          ),
+      );
     }
     return null;
   }
@@ -97,7 +193,7 @@ class MyHomePageState extends State<MyHomePage> {
   Color getBackgroundColor(String page) {
     if (page == 'recipes')
       return Color(0xffFEF3E1);
-    else if (page == 'favorites') return Color(0xffFFCDD9);
+    else if (page == 'favorites') return Color(0xffFFE3FC);
     return Colors.white;
   }
 
@@ -106,17 +202,20 @@ class MyHomePageState extends State<MyHomePage> {
     if (title == null) {
       title = "recipes";
     }
-
+    print(recipeCatOverview.toString());
     return Scaffold(
       appBar: buildAppBar(title),
       floatingActionButton: getFloatingB(title),
-      /*body: PageStorage(
-        child: pages[_selectedIndex],
-        bucket: bucket,
-      ),*/
       body: IndexedStack(
         index: _selectedIndex,
-        children: pages,
+        children: [
+          CategoryOverview(
+            recipeCatOverview: recipeCatOverview,
+          ),
+          FavoriteScreen(key: PageStorageKey('Page2')),
+          ShoppingCartScreen(key: PageStorageKey('Page3')),
+          Center(child: Text('This page is not yet implemented')),
+        ],
       ),
       backgroundColor: getBackgroundColor(title),
       bottomNavigationBar: Theme(

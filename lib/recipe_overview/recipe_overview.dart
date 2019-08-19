@@ -19,6 +19,12 @@ const Map<int, Color> complexityColors = {
   10: Color(0xffFD0000)
 };
 
+Map<Vegetable, Color> recipeCardBackgroundColors = {
+  Vegetable.NON_VEGETARIAN: Color(0xffE9D0D0),
+  Vegetable.VEGAN: Color(0xffD5E2DB),
+  Vegetable.VEGETARIAN: Color(0xffDBE4D3)
+};
+
 Map<String, List<Color>> colors = {
   "${Vegetable.NON_VEGETARIAN.toString()}1": [
     Color(0xffD10C0C),
@@ -152,7 +158,10 @@ class RecipeGridView extends StatelessWidget {
               padding: const EdgeInsets.all(12.0),
               child: Text(
                 "No recipes under this category",
-                style: TextStyle(fontSize: 30, fontFamily: 'RibeyeMarrow', fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    fontSize: 30,
+                    fontFamily: 'RibeyeMarrow',
+                    fontWeight: FontWeight.w500),
               ),
             ),
           ),
@@ -174,7 +183,6 @@ class RecipeGridView extends StatelessWidget {
       recipeCards.add(
         RecipeCard(
           recipe: recipes[i],
-          recipeColor: Color(0xffE5E0D6),
         ),
       );
     }
@@ -182,13 +190,16 @@ class RecipeGridView extends StatelessWidget {
   }
 }
 
+FontWeight itemsFW = FontWeight.w600;
+
 class RecipeCard extends StatelessWidget {
   final Recipe recipe;
-  final Color recipeColor;
-  const RecipeCard({this.recipe, this.recipeColor, Key key}) : super(key: key);
+
+  const RecipeCard({this.recipe, Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    print(recipe.vegetable.toString());
     final String heroImageTag = "${recipe.imagePath}-${recipe.id}";
     double deviceWidth = MediaQuery.of(context).size.width;
     double gridTileWidth = deviceWidth / (deviceWidth / 300.floor() + 1);
@@ -208,15 +219,17 @@ class RecipeCard extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           Container(
-              decoration: BoxDecoration(
-                color: recipeColor == null ? Color(0xffDFDBD6) : recipeColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(gridTileWidth / 10),
-                  topRight: Radius.circular(gridTileWidth / 10),
-                  bottomRight: Radius.circular(gridTileWidth / 10),
-                  bottomLeft: Radius.circular(gridTileWidth / 2),
-                ),
+            decoration: BoxDecoration(
+              color: recipeCardBackgroundColors[recipe.vegetable],
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(gridTileWidth / 10),
+                topRight: Radius.circular(gridTileWidth / 10),
+                bottomRight: Radius.circular(gridTileWidth / 10),
+                bottomLeft: Radius.circular(gridTileWidth / 10),
               ),
+            ),
+            child: Material(
+              color: Colors.transparent,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -234,7 +247,7 @@ class RecipeCard extends StatelessWidget {
                             placeholder: MemoryImage(kTransparentImage),
                             fadeInDuration: Duration(milliseconds: 250),
                             fit: BoxFit.cover,
-                            height: gridTileWidth / 1.2,
+                            height: gridTileWidth / 1.25,
                             width: gridTileWidth + 40,
                           ),
                         ),
@@ -261,39 +274,58 @@ class RecipeCard extends StatelessWidget {
                   ),
                   SizedBox(height: 13),
                   Padding(
-                    padding: EdgeInsets.only(left: gridTileWidth / 3 + 13),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(
-                        getTimeHoursMinutes(recipe.totalTime),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 10 + gridTileWidth / 40,
+                    padding: EdgeInsets.only(left: 15, right: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          getTimeHoursMinutes(recipe.totalTime),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontWeight: itemsFW,
+                            fontSize: 10 + gridTileWidth / 40,
+                          ),
                         ),
-                      ),
+                        Text(
+                          "${getIngredientCount(recipe.ingredients)} ingredients",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontWeight: itemsFW,
+                            fontSize: 10 + gridTileWidth / 40,
+                          ),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              height: 14,
+                              width: 14,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: complexityColors[recipe.complexity],
+                              ),
+                            ),
+                            Text(
+                              " effort",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontWeight: itemsFW,
+                                fontSize: 10 + gridTileWidth / 40,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(left: gridTileWidth / 3 + 13),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(
-                        "${getIngredientCount(recipe.ingredients)} ingredients",
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 10 + gridTileWidth / 40,
-                        ),
-                      ),
-                    ),
-                  )
                 ],
-              )),
+              ),
+            ),
+          ),
           Align(
-              alignment: Alignment.bottomLeft,
+              alignment: Alignment.bottomRight,
               child: Container(
                 child: Center(
                   child: Image.asset(
@@ -305,23 +337,6 @@ class RecipeCard extends StatelessWidget {
                 ),
                 height: gridTileWidth / 3,
                 width: gridTileWidth / 3,
-                decoration: BoxDecoration(
-                  color: getRecipeTypeColor(recipe.vegetable),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(gridTileWidth / 2),
-                    topRight: Radius.circular(gridTileWidth / 4),
-                    bottomLeft: Radius.circular(gridTileWidth / 2),
-                    bottomRight: Radius.circular(gridTileWidth / 2),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black38,
-                      blurRadius: 2.0, // default 20.0
-                      spreadRadius: 1.0, // default 5.0
-                      offset: Offset(0.0, 1.5),
-                    ),
-                  ],
-                ),
               )),
           recipe.isFavorite == true
               ? Align(

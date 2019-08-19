@@ -757,3 +757,68 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
     }
   }
 }*/
+
+
+
+
+
+
+
+
+
+////// FLOATING ACTION BUTTON //////////
+/*
+Column(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(icons.length, (int index) {
+          Widget child = Container(
+            height: 70.0,
+            width: 56.0,
+            alignment: FractionalOffset.topCenter,
+            child: ScaleTransition(
+              scale: CurvedAnimation(
+                parent: _controller,
+                curve: Interval(0.0, 1.0 - index / icons.length / 2.0,
+                    curve: Curves.easeOut),
+              ),
+              child: FloatingActionButton(
+                heroTag: null,
+                backgroundColor: Colors.white,
+                mini: true,
+                child: Icon(icons[index], color: backgroundColor),
+                onPressed: () {
+                  index == 1
+                      ? Navigator.pushNamed(context, 'addRecipe')
+                      : Navigator.pushNamed(context, 'manageCategory');
+                },
+              ),
+            ),
+          );
+          return child;
+        }).toList()
+          ..add(
+            FloatingActionButton(
+              backgroundColor: backgroundColor,
+              heroTag: null,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (BuildContext context, Widget child) {
+                  return Transform(
+                    transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
+                    alignment: FractionalOffset.center,
+                    child:
+                        Icon(_controller.isDismissed ? Icons.add : Icons.close),
+                  );
+                },
+              ),
+              onPressed: () {
+                if (_controller.isDismissed) {
+                  _controller.forward();
+                } else {
+                  _controller.reverse();
+                }
+              },
+            ),
+          ),
+      );
+      */
