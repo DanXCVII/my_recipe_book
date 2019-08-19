@@ -23,8 +23,22 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.length == 0)
-              return Center(
-                  child: Text('You have no recipes under this category.'));
+              return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      height: 80,
+                      child: Image.asset('images/bigHeart.png'),
+                    ),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('You have no recipes under this category.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 26, fontFamily: 'RibeyeMarrow')),
+                    ),
+                  ]);
             return FavoriteRecipeCards(
               favoriteRecipes: snapshot.data,
             );

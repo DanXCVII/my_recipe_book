@@ -83,7 +83,7 @@ class DBProvider {
             ')');
         await db.execute('CREATE TABLE RecipeCategories ('
             'recipe_id INTEGER,'
-            'categories_name INTEGER,'
+            'categories_name TEXT,'
             'FOREIGN KEY(recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE,'
             'FOREIGN KEY(categories_name) REFERENCES Categories(categoryName) ON DELETE CASCADE'
             ')');
@@ -222,8 +222,30 @@ class DBProvider {
     Batch b = db.batch();
 
     for (int i = 0; i < categories.length; i++) {
-      b.update('Categories', {'name': categories[i], 'number': i});
+      b.update('Categories', {'number': i},
+          where: 'categoryName = ?', whereArgs: ['${categories[i]}']);
     }
+    await b.commit();
+  }
+
+  Future<List<String>> getCategoriesWithRecipes() async {
+    final db = await database;
+
+    var resTMP = await db.rawQuery('SELECT * FROM RecipeCategories');
+
+    var resCategories = await db.rawQuery(
+      'SELECT categoryName, count(recipe_id) FROM Categories '
+      'INNER JOIN RecipeCategories ON Categories.categoryName = RecipeCategories.categories_name '
+      'GROUP BY categoryName '
+      'HAVING COUNT(*) > 0 '
+      'ORDER BY number',
+    );
+
+    List<String> categories = [];
+    for (int i = 0; i < resCategories.length; i++) {
+      categories.add(resCategories[i]['categoryName']);
+    }
+    return categories;
   }
 
   Future<List<String>> getCategories() async {
@@ -379,7 +401,7 @@ class DBProvider {
 
     var resRecipes = await db.rawQuery(
         'SELECT Recipe.id, Recipe.image FROM RecipeCategories '
-        'INNER JOIN Categories ON RecipeCategories.categories_id=Categories.id '
+        'INNER JOIN Categories ON RecipeCategories.categories_name=Categories.categoryName '
         'INNER JOIN Recipe ON RecipeCategories.recipe_id=Recipe.id '
         "WHERE categoryName = '$categoryName'");
 

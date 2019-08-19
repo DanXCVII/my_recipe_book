@@ -21,7 +21,11 @@ class _CategoryManagerState extends State<CategoryManager> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.check),
-            onPressed: () {},
+            onPressed: () {
+              DBProvider.db.updateCategoryOrder(categories).then((_) {
+                Navigator.pop(context);
+              });
+            },
           )
         ],
       ),

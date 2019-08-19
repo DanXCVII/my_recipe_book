@@ -289,7 +289,7 @@ class RecipeScreen extends StatelessWidget {
         'preperation Time: ${recipe.preperationTime}\n'
         'cooking Time: ${recipe.cookingTime}\n'
         'total Time: ${recipe.totalTime}\n'
-        '';
+        'recipe for ${recipe.servings} servings:';
     for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
       recipeText =
           recipeText += 'ingredients for: ${recipe.ingredientsGlossary[i]}:\n';

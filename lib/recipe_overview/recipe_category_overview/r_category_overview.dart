@@ -47,7 +47,7 @@ class _RecipeCategoryOverviewState extends State<RecipeCategoryOverview> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<String>>(
-        future: DBProvider.db.getCategories(),
+        future: DBProvider.db.getCategoriesWithRecipes(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<String> categoryNames = snapshot.data;
@@ -69,11 +69,17 @@ class _RecipeCategoryOverviewState extends State<RecipeCategoryOverview> {
                           );
                         }
                         return Container(
-                            height: 70, child: CircularProgressIndicator());
+                            height: 110,
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ));
                       });
                 });
           } else {
-            return Container(height: 70, child: CircularProgressIndicator());
+            return Container(
+              height: 110,
+              child: Center(child: CircularProgressIndicator()),
+            );
           }
         });
   }
@@ -89,6 +95,7 @@ class RecipeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (recipes.isEmpty) return Container();
     Random r = new Random();
     return Column(
       children: <Widget>[
