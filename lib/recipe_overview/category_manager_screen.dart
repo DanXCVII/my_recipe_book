@@ -11,12 +11,13 @@ class CategoryManager extends StatefulWidget {
 
 class _CategoryManagerState extends State<CategoryManager> {
   List<String> categories;
-  final formKey = new GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    print(categories.toString());
     return Scaffold(
       appBar: AppBar(
+        title: Text('manage categories'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.check),
@@ -28,14 +29,16 @@ class _CategoryManagerState extends State<CategoryManager> {
           backgroundColor: Color(0xFF790604),
           child: Icon(Icons.add),
           onPressed: () {
-            showDialog(
-                context: context, builder: (_) => CategoryAddDialog(formKey));
+            showDialog(context: context, builder: (_) => CategoryAddDialog());
           }),
       body: FutureBuilder<List<String>>(
         future: DBProvider.db.getCategories(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            categories = snapshot.data;
+            if (categories == null)
+              categories = snapshot.data;
+            else if (categories.length == snapshot.data.length - 1)
+              categories.add(snapshot.data.last);
             if (categories.isEmpty) {
               return Center(
                 child: Text('You have no categories'),
@@ -43,9 +46,7 @@ class _CategoryManagerState extends State<CategoryManager> {
             }
             return ReorderableListView(
               onReorder: (oldIndex, newIndex) {
-                setState(() {
-                  _updateItems(oldIndex, newIndex);
-                });
+                _updateItems(oldIndex, newIndex);
               },
               children: buildCategories(categories),
             );
@@ -58,23 +59,36 @@ class _CategoryManagerState extends State<CategoryManager> {
 
   List<Widget> buildCategories(List<String> categories) {
     List<Widget> categoryTiles = [];
-    for (final c in categories) {
-      categoryTiles.add(ListTile(
-        key: Key(c),
-        title: Text(c),
-        trailing: IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () {},
+    for (int i = 0; i < categories.length; i++) {
+      categoryTiles.add(
+        ListTile(
+          key: Key(categories[i]),
+          title: Text(categories[i]),
+          leading: Icon(Icons.reorder),
+          trailing: IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              DBProvider.db.removeCategory(categories[i]).then((_) {
+                setState(() {
+                  categories.remove(categories[i]);
+                });
+              });
+            },
+          ),
         ),
-      ));
-      categoryTiles.add(Divider());
+      );
     }
     return categoryTiles;
   }
 
   void _updateItems(int oldIndex, newIndex) {
-    String tmp = categories[oldIndex];
-    categories[oldIndex] = categories[newIndex];
-    categories[newIndex] = tmp;
+    setState(() {
+      print(oldIndex.toString() + '--------->' + newIndex.toString());
+      if (newIndex > oldIndex) newIndex -= 1;
+      String tmp = categories[oldIndex];
+      categories[oldIndex] = categories[newIndex];
+      categories[newIndex] = tmp;
+      print(categories.toString());
+    });
   }
 }

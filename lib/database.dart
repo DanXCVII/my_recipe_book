@@ -125,8 +125,15 @@ class DBProvider {
         ' VALUES (?,?)',
         [
           name,
-          getNewIDforTable('Categories', 'number')
+          await getNewIDforTable('Categories', 'number'),
         ]);
+    return;
+  }
+
+  removeCategory(String name) async {
+    final db = await database;
+
+    await db.rawDelete('DELETE FROM Categories WHERE categoryName= ?', [name]);
     return;
   }
 

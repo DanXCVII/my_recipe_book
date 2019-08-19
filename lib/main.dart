@@ -4,7 +4,7 @@ import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/recipe_overview/category_manager_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'recipe_overview/r_category_overview.dart';
+import 'recipe_overview/recipe_category_overview/r_category_overview.dart';
 import 'shopping_cart/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
 import './favortie_screen/favorite_screen.dart';

@@ -12,9 +12,8 @@ class Consts {
 
 class CategorySection extends StatefulWidget {
   final List<String> recipeCategories;
-  final GlobalKey<FormState> formKey;
 
-  CategorySection(this.recipeCategories, this.formKey);
+  CategorySection(this.recipeCategories);
 
   @override
   State<StatefulWidget> createState() {
@@ -70,8 +69,7 @@ class _CategorySectionState extends State<CategorySection> {
                   icon: Icon(Icons.add_circle_outline),
                   onPressed: () {
                     showDialog(
-                        context: context,
-                        builder: (_) => CategoryAddDialog(widget.formKey));
+                        context: context, builder: (_) => CategoryAddDialog());
                   },
                 )
               ],
@@ -152,9 +150,8 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
 }
 
 class CategoryAddDialog extends StatefulWidget {
-  final GlobalKey<FormState> formKey;
 
-  CategoryAddDialog(this.formKey);
+  CategoryAddDialog();
 
   @override
   State<StatefulWidget> createState() {
@@ -164,6 +161,8 @@ class CategoryAddDialog extends StatefulWidget {
 
 class CategoryAddDialogState extends State<CategoryAddDialog> {
   TextEditingController categoryNameController;
+static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+
 
   @override
   initState() {
@@ -203,47 +202,52 @@ class CategoryAddDialogState extends State<CategoryAddDialog> {
               ),
             ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min, // To make the card compact
-            children: <Widget>[
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: categoryNameController,
-                autovalidate: true,
-                validator: (value) {
-                  // TODO: Validate if category already exists
-                  //if (Categories.getCategories().contains(value))
-                  //  return "category already exists";
-                  return null;
-                },
-                decoration: InputDecoration(
-                  filled: true,
-                  hintText: "category name",
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // To make the card compact
+              children: <Widget>[
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: categoryNameController,
+                  validator: (value) {
+                    DBProvider.db.getCategories().then((categoryList) {
+                      if (categoryList.contains(value)) {
+                        return 'category already exists';
+                      }
+                      return null;
+                    });
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: "category name",
+                  ),
                 ),
-              ),
-              SizedBox(height: 24.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  FlatButton(
-                      child: Text("Cancel"),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                  FlatButton(
-                      child: Text("Save"),
-                      onPressed: () {
-                        if (widget.formKey.currentState.validate()) {
-                          // TODO Prio1: Not validating the category!
-                          _saveCategory().then((_) {
-                            Navigator.pop(context);
-                            setState(() {});
-                          });
-                        }
-                      })
-                ],
-              )
-            ],
+                SizedBox(height: 24.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    FlatButton(
+                        child: Text("Cancel"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
+                    FlatButton(
+                        child: Text("Save"),
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            // TODO Prio1: Not validating the category!
+                            _saveCategory().then((_) {
+                              Navigator.pop(context);
+                              setState(() {});
+                            });
+                          }
+                        })
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ],

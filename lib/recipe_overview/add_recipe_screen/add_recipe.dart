@@ -244,175 +244,177 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
           )
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(children: <Widget>[
-            // top section with the add image button
-            SizedBox(height: 30),
-            IS.ImageSelector(
-              imageWrapper: selectedRecipeImage,
-              circleSize: 120,
-              color: Color(0xFF790604),
-              // type: IS.TypeRC.RECIPE,
-              recipeId: widget.editRecipe == null ? null : widget.editRecipe.id,
-            ),
-            SizedBox(height: 30),
-            // name textField
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: TextFormField(
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return "Please enter a name";
-                  }
-                  return null;
-                },
-                controller: nameController,
-                decoration: InputDecoration(
-                  filled: true,
-                  labelText: "name",
-                  icon: Icon(Icons.android),
+      body: SingleChildScrollView(
+        child: Column(children: <Widget>[
+          // top section with the add image button
+          SizedBox(height: 30),
+          IS.ImageSelector(
+            imageWrapper: selectedRecipeImage,
+            circleSize: 120,
+            color: Color(0xFF790604),
+            // type: IS.TypeRC.RECIPE,
+            recipeId: widget.editRecipe == null ? null : widget.editRecipe.id,
+          ),
+          SizedBox(height: 30),
+          // name textField
+          Form(
+            key: _formKey,
+            child: Column(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: TextFormField(
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return "Please enter a name";
+                    }
+                    return null;
+                  },
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    labelText: "name",
+                    icon: Icon(Icons.android),
+                  ),
                 ),
               ),
-            ),
-            // time textFields
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (validateNumber(value) == false && value != "") {
-                          return "no valid number";
-                        }
-                        return null;
-                      },
-                      autovalidate: false,
-                      controller: preperationTimeController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        filled: true,
-                        labelText: "preperation time",
-                        icon: Icon(Icons.access_time),
+              // time textFields
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    flex: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: TextFormField(
+                        validator: (value) {
+                          if (validateNumber(value) == false && value != "") {
+                            return "no valid number";
+                          }
+                          return null;
+                        },
+                        autovalidate: false,
+                        controller: preperationTimeController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          filled: true,
+                          labelText: "preperation time",
+                          icon: Icon(Icons.access_time),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (validateNumber(value) == false && value != "") {
-                          return "no valid number";
-                        }
-                        return null;
-                      },
-                      autovalidate: false,
-                      controller: cookingTimeController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        filled: true,
-                        labelText:
-                            "cooking time", // TODO: Maybe change name to something which isn"t so much related to cooking with heat
+                  Expanded(
+                    flex: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: TextFormField(
+                        validator: (value) {
+                          if (validateNumber(value) == false && value != "") {
+                            return "no valid number";
+                          }
+                          return null;
+                        },
+                        autovalidate: false,
+                        controller: cookingTimeController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          filled: true,
+                          labelText:
+                              "cooking time", // TODO: Maybe change name to something which isn"t so much related to cooking with heat
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 52, top: 12, right: 12, bottom: 12),
-              child: TextFormField(
-                validator: (value) {
-                  if (validateNumber(value) == false && value != "") {
-                    return "no valid number";
-                  }
-                  return null;
-                },
-                autovalidate: false,
-                controller: totalTimeController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  helperText: "in minutes",
-                  filled: true,
-                  labelText: "total time",
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 52, top: 12, right: 12, bottom: 12),
+                child: TextFormField(
+                  validator: (value) {
+                    if (validateNumber(value) == false && value != "") {
+                      return "no valid number";
+                    }
+                    return null;
+                  },
+                  autovalidate: false,
+                  controller: totalTimeController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    helperText: "in minutes",
+                    filled: true,
+                    labelText: "total time",
+                  ),
                 ),
               ),
-            ),
-            // servings textField
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 12, top: 12, bottom: 12, right: 200),
-              child: TextFormField(
-                validator: (value) {
-                  if (validateNumber(value) == false) {
-                    return "no valid number";
-                  }
-                  if (value.isEmpty) {
-                    return "data required";
-                  }
-                  return null;
-                },
-                controller: servingsController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  filled: true,
-                  labelText: "servings",
-                  icon: Icon(Icons.local_dining),
+              // servings textField
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 12, top: 12, bottom: 12, right: 200),
+                child: TextFormField(
+                  validator: (value) {
+                    if (validateNumber(value) == false) {
+                      return "no valid number";
+                    }
+                    if (value.isEmpty) {
+                      return "data required";
+                    }
+                    return null;
+                  },
+                  controller: servingsController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    filled: true,
+                    labelText: "servings",
+                    icon: Icon(Icons.local_dining),
+                  ),
                 ),
               ),
-            ),
 
-            // ingredients section with it"s heading and text fields and buttons
-            Ingredients(
-              ingredientNameController,
-              ingredientAmountController,
-              ingredientUnitController,
-              ingredientGlossaryController,
-            ),
-            // category for vegetarian heading
-            Padding(
-              padding: const EdgeInsets.only(left: 56, top: 12),
-              child: Text(
-                "select a category:",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.grey[700]),
+              // ingredients section with it"s heading and text fields and buttons
+              Ingredients(
+                ingredientNameController,
+                ingredientAmountController,
+                ingredientUnitController,
+                ingredientGlossaryController,
               ),
-            ),
-            // category for radio buttons for vegetarian selector
-            Vegetarian(
-              vegetableStatus: selectedRecipeVegetable,
-            ),
-            // heading with textFields for steps section
-            Steps(stepsDescController, stepImages,
-                widget.editRecipe != null ? widget.editRecipe.id : null),
-            // notes textField and heading
-            Padding(
-              padding: const EdgeInsets.only(
-                  right: 12, top: 12, left: 18, bottom: 12),
-              child: TextField(
-                controller: notesController,
-                decoration: InputDecoration(
-                  labelText: "notes",
-                  filled: true,
-                  icon: Icon(Icons.assignment),
+              // category for vegetarian heading
+              Padding(
+                padding: const EdgeInsets.only(left: 56, top: 12),
+                child: Text(
+                  "select a category:",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.grey[700]),
                 ),
-                maxLines: 3,
               ),
-            ),
-            ComplexitySection(complexity: complexity),
-            CategorySection(newRecipeCategories, _formKey),
-          ]),
-        ),
+              // category for radio buttons for vegetarian selector
+              Vegetarian(
+                vegetableStatus: selectedRecipeVegetable,
+              ),
+              // heading with textFields for steps section
+              Steps(stepsDescController, stepImages,
+                  widget.editRecipe != null ? widget.editRecipe.id : null),
+              // notes textField and heading
+              Padding(
+                padding: const EdgeInsets.only(
+                    right: 12, top: 12, left: 18, bottom: 12),
+                child: TextField(
+                  controller: notesController,
+                  decoration: InputDecoration(
+                    labelText: "notes",
+                    filled: true,
+                    icon: Icon(Icons.assignment),
+                  ),
+                  maxLines: 3,
+                ),
+              ),
+            ]),
+          ),
+          ComplexitySection(complexity: complexity),
+          CategorySection(newRecipeCategories),
+        ]),
       ),
     );
   }
@@ -913,10 +915,12 @@ class NotCompleteDialogState extends State<NotCompleteDialog> {
             mainAxisSize: MainAxisSize.min, // To make the card compact
             children: <Widget>[
               SizedBox(height: 16.0),
-              Text('Check filled in information', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),),
-              SizedBox(height: 16),
               Text(
-                  'it seems, that you haven’t filled in the required fields. '
+                'Check filled in information',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+              ),
+              SizedBox(height: 16),
+              Text('it seems, that you haven’t filled in the required fields. '
                   'Please check for any red marked text fields.'),
               SizedBox(height: 8.0),
               Row(

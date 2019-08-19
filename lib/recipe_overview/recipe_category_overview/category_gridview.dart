@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
 
-import '../database.dart';
-import '../recipe.dart';
+import '../../database.dart';
+import '../../recipe.dart';
 
 class CategoryGridView extends StatelessWidget {
   @override

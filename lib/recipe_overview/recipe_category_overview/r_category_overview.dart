@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:math';
 
-import '../database.dart';
-import '../recipe.dart';
-import './recipe_screen.dart';
+import '../../database.dart';
+import '../../recipe.dart';
+import './../recipe_screen.dart';
 import './category_gridview.dart';
-import './recipe_overview.dart';
+import './../recipe_overview.dart';
 
 class CategoryOverview extends StatefulWidget {
   final bool recipeCatOverview;
