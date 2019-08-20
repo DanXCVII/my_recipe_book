@@ -4,6 +4,7 @@ import 'package:transparent_image/transparent_image.dart';
 
 import '../database.dart';
 import '../recipe.dart';
+import '../search.dart';
 import './recipe_screen.dart';
 
 const Map<int, Color> complexityColors = {
@@ -110,6 +111,11 @@ class RecipeGridView extends StatelessWidget {
         color: Color(0xffFEF3E1),
         child: CustomScrollView(slivers: <Widget>[
           SliverAppBar(
+            actions: <Widget>[IconButton(icon: Icon(Icons.search),onPressed: () {
+              DBProvider.db.getRecipeNames().then((recipeNames) {
+              showSearch(context: context, delegate: RecipeSearch(recipeNames));
+            });
+            },)],
             expandedHeight: 200.0,
             floating: false,
             pinned: true,

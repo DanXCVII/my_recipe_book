@@ -14,7 +14,6 @@ class _CategoryManagerState extends State<CategoryManager> {
 
   @override
   Widget build(BuildContext context) {
-    print(categories.toString());
     return Scaffold(
       appBar: AppBar(
         title: Text('manage categories'),
@@ -87,12 +86,10 @@ class _CategoryManagerState extends State<CategoryManager> {
 
   void _updateItems(int oldIndex, newIndex) {
     setState(() {
-      print(oldIndex.toString() + '--------->' + newIndex.toString());
       if (newIndex > oldIndex) newIndex -= 1;
       String tmp = categories[oldIndex];
       categories[oldIndex] = categories[newIndex];
       categories[newIndex] = tmp;
-      print(categories.toString());
     });
   }
 }

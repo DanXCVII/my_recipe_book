@@ -39,12 +39,6 @@ class RecipeCategoryOverview extends StatefulWidget {
 
 class _RecipeCategoryOverviewState extends State<RecipeCategoryOverview> {
   @override
-  void initState() {
-    print('initState()');
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<String>>(
         future: DBProvider.db.getCategoriesWithRecipes(),
@@ -176,7 +170,7 @@ class RecipeHozizontalList extends StatelessWidget {
           }
           if (index < recipeCount) {
             final String heroTag =
-                '${recipes[index].id}$categoryName${recipes[index].imagePath}';
+                '${recipes[index].id}$categoryName--${recipes[index].imagePath}';
 
             return GestureDetector(
               onTap: () {

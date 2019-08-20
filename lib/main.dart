@@ -202,7 +202,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     if (title == null) {
       title = "recipes";
     }
-    print(recipeCatOverview.toString());
     return Scaffold(
       appBar: buildAppBar(title),
       floatingActionButton: getFloatingB(title),

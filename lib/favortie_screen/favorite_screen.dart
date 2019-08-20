@@ -11,12 +11,6 @@ class FavoriteScreen extends StatefulWidget {
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
   @override
-  void initState() {
-    super.initState();
-    print('initState');
-  }
-
-  @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Recipe>>(
         future: DBProvider.db.getFavoriteRecipes(),

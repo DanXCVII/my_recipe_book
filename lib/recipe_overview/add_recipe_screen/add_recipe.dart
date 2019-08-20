@@ -22,7 +22,6 @@ import './image_selector.dart' as IS;
 const double categories = 14;
 const double topPadding = 8;
 
-
 class AddRecipeForm extends StatefulWidget {
   final Recipe editRecipe;
 
@@ -169,9 +168,42 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             color: Colors.white,
             onPressed: () {
               // TODO: Check if ingredients data is not only partially filled in
-              if (_formKey.currentState.validate() &&
-                  isIngredientListValid(ingredientNameController,
-                      ingredientAmountController, ingredientUnitController)) {
+              if (!_formKey.currentState.validate()) {
+                showDialog(
+                    context: context,
+                    builder: (_) => NotCompleteDialog(
+                          title: 'Check filled in information',
+                          description:
+                              'it seems, that you haven’t filled in the required fields. '
+                              'Please check for any red marked text fields.',
+                        ));
+              } else if (!isIngredientListValid(
+                ingredientNameController,
+                ingredientAmountController,
+                ingredientUnitController,
+              )) {
+                showDialog(
+                    context: context,
+                    builder: (_) => NotCompleteDialog(
+                          title: 'Check your ingredients input',
+                          description: 'it seems to be that you have only partially filled out the '
+                          'data for the ingredients. Please correct that :)',
+                        ));
+              } else if (!isGlossaryValid(
+                ingredientNameController,
+                ingredientAmountController,
+                ingredientUnitController,
+                ingredientGlossaryController,
+              )) {
+                showDialog(
+                    context: context,
+                    builder: (_) => NotCompleteDialog(
+                          title: 'Check your ingredients section fields',
+                          description:
+                              'if you have multiple sections, you need to provide a title '
+                              'for each section.',
+                        ));
+              } else {
                 /////////// Only do if all data is VALID! ///////////
                 FocusScope.of(context).requestFocus(new FocusNode());
                 showDialog(
@@ -199,7 +231,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                     Navigator.pop(context); // loading screen
                     Navigator.pop(context); // edit recipe screen
                     Navigator.pop(context); // old recipe screen
-                    imageCache.clear(); // TODO: Maybe optimize and only clear nessesary date.. maybe not..
+                    imageCache
+                        .clear(); // TODO: Maybe optimize and only clear nessesary date.. maybe not..
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -211,9 +244,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                                 )));
                   });
                 }
-              } else {
-                showDialog(
-                    context: context, builder: (_) => NotCompleteDialog());
               }
             },
           ),
@@ -650,10 +680,28 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     return newRecipe;
   }
 
-  bool isIngredientListValid(
+  bool isGlossaryValid(
       List<List<TextEditingController>> ingredients,
       List<List<TextEditingController>> amount,
-      List<List<TextEditingController>> unit) {
+      List<List<TextEditingController>> unit,
+      List<TextEditingController> ingredientsGlossary) {
+    List<List<Ingredient>> ingredientList =
+        getCleanIngredientData(ingredients, amount, unit);
+    List<String> ingredientGlossary =
+        getCleanGlossary(ingredientsGlossary, ingredientList);
+    print(ingredientList.toString());
+    print(ingredientGlossary.toString());
+    if (ingredientList.length > 1 &&
+        ingredientGlossary.length < ingredientList.length) return false;
+
+    return true;
+  }
+
+  bool isIngredientListValid(
+    List<List<TextEditingController>> ingredients,
+    List<List<TextEditingController>> amount,
+    List<List<TextEditingController>> unit,
+  ) {
     int validator = 0;
     for (int i = 0; i < ingredients.length; i++) {
       for (int j = 0; j < ingredients[i].length; j++) {
@@ -680,6 +728,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   /// sets the length of the glossary for the ingredients section equal to
   /// the length list<list<ingredients>> (removes unnessesary sections)
+  /// After that, it removes the empty strings in the glossary
   List<String> getCleanGlossary(List<TextEditingController> glossary,
       List<List<Ingredient>> cleanIngredientsData) {
     List<String> output = new List<String>();
@@ -689,6 +738,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
     for (int i = cleanIngredientsData.length; i < glossary.length; i++) {
       output.removeLast();
+    }
+    for (int i = 0; i < output.length; i++) {
+      if (output[i] == '') output.removeAt(i);
     }
 
     return output;
@@ -729,7 +781,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       }
     }
 
-    /// Map which will be the clean map with the list of the ingredients
+    /// List which will be the clean list with the list of the ingredients
     /// data.
     List<List<Ingredient>> cleanIngredientsData = [[]];
 
@@ -756,11 +808,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       }
     }
     // create the output list with the clean ingredient lists
-    for (int i = 0; i < cleanIngredientsData.length; i++) {
-      if (cleanIngredientsData[i].isEmpty) {
-        cleanIngredientsData.remove(cleanIngredientsData[i]);
-      }
-    }
+    cleanIngredientsData.removeWhere((item) => item.isEmpty);
+    print(cleanIngredientsData.toString());
 
     return cleanIngredientsData;
   }
@@ -871,6 +920,11 @@ class CustomStepsClipper extends CustomClipper<Path> {
 enum Answers { GALLERY, PHOTO }
 
 class NotCompleteDialog extends StatefulWidget {
+  final String title;
+  final String description;
+
+  NotCompleteDialog({this.title, this.description});
+
   @override
   State<StatefulWidget> createState() {
     return NotCompleteDialogState();
@@ -915,12 +969,11 @@ class NotCompleteDialogState extends State<NotCompleteDialog> {
             children: <Widget>[
               SizedBox(height: 16.0),
               Text(
-                'Check filled in information',
+                widget.title,
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
               ),
               SizedBox(height: 16),
-              Text('it seems, that you haven’t filled in the required fields. '
-                  'Please check for any red marked text fields.'),
+              Text(widget.description),
               SizedBox(height: 8.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,

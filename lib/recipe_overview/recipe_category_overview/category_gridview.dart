@@ -10,7 +10,7 @@ class CategoryGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<String>>(
-      future: DBProvider.db.getCategories(),
+      future: DBProvider.db.getCategoriesWithRecipes(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return GridView.extent(
