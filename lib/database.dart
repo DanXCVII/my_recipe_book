@@ -262,14 +262,18 @@ class DBProvider {
 
   getRecipeById(int id) async {
     final db = await database;
+    final appDir = await getApplicationDocumentsDirectory();
+    final String appPath = appDir.path;
+
     var resRecipe = await db.query('Recipe', where: 'id = ?', whereArgs: [id]);
     if (resRecipe.isEmpty) {
       return Null;
     }
     String name = resRecipe.first['recipeName'];
     String image;
-    if (resRecipe.first['image'] != '') {
-      image = resRecipe.first['image'];
+    if (resRecipe.first['image'] != '' ||
+        resRecipe.first['image'] != 'images/randomFood.png') {
+      image = appPath + resRecipe.first['image'];
     }
 
     double preperationTime = resRecipe.first['preperationTime'];
@@ -303,7 +307,7 @@ class DBProvider {
           'SELECT * FROM StepImages WHERE steps_id=${resSteps[i]['id']} ORDER BY id ASC');
       stepImages.add([]);
       for (int j = 0; j < resStepImages.length; j++) {
-        stepImages[i].add(resStepImages[j]['image']);
+        stepImages[i].add(appPath + resStepImages[j]['image']);
       }
     }
 
@@ -324,8 +328,9 @@ class DBProvider {
 
     List<String> categories = new List<String>();
     var resCategories = await db.rawQuery(
-        'SELECT * FROM RecipeCategories INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name'
-        ' WHERE recipe_id=$id');
+        'SELECT * FROM RecipeCategories '
+        'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
+        'WHERE recipe_id=$id');
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
     }
