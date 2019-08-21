@@ -10,7 +10,7 @@ import '../../recipe.dart';
 import '../../database.dart';
 import './steps_section.dart';
 import './ingredients_section.dart';
-import '../../round_dialog.dart';
+import '../../dialogs.dart';
 
 import './categories_section.dart';
 import './vegetarian_section.dart';
@@ -171,11 +171,16 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               if (!_formKey.currentState.validate()) {
                 showDialog(
                     context: context,
-                    builder: (_) => NotCompleteDialog(
-                          title: 'Check filled in information',
-                          description:
-                              'it seems, that you haven’t filled in the required fields. '
-                              'Please check for any red marked text fields.',
+                    builder: (_) => RoundEdgeDialog(
+                          title: Text(
+                            'Check filled in information',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w700, fontSize: 21),
+                          ),
+                          bottomSection: Text(
+                            'it seems, that you haven’t filled in the required fields. '
+                            'Please check for any red marked text fields.',
+                          ),
                         ));
               } else if (!isIngredientListValid(
                 ingredientNameController,
@@ -184,10 +189,16 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               )) {
                 showDialog(
                     context: context,
-                    builder: (_) => NotCompleteDialog(
-                          title: 'Check your ingredients input',
-                          description: 'it seems to be that you have only partially filled out the '
-                          'data for the ingredients. Please correct that :)',
+                    builder: (_) => RoundEdgeDialog(
+                          title: Text(
+                            'Check your ingredients input',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w700, fontSize: 21),
+                          ),
+                          bottomSection: Text(
+                            'it seems to be that you have only partially filled out the '
+                            'data for the ingredients. Please correct that :)',
+                          ),
                         ));
               } else if (!isGlossaryValid(
                 ingredientNameController,
@@ -197,11 +208,15 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               )) {
                 showDialog(
                     context: context,
-                    builder: (_) => NotCompleteDialog(
-                          title: 'Check your ingredients section fields',
-                          description:
+                    builder: (_) => RoundEdgeDialog(
+                          title: Text(
+                            'Check your ingredients section fields',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w700, fontSize: 21),
+                          ),
+                          bottomSection: Text(
                               'if you have multiple sections, you need to provide a title '
-                              'for each section.',
+                              'for each section.'),
                         ));
               } else {
                 /////////// Only do if all data is VALID! ///////////
@@ -477,7 +492,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     });
   }
 
-  /// TODO: Fix that cached image will still show and not the new one
+  /// TODO: ~~Fix that cached image will still show and not the new one
   Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
     await DBProvider.db.deleteRecipeFromDatabase(editRecipe);
     Recipe newRecipe = await saveRecipe();
@@ -494,8 +509,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     print(id1);
     print('lolololololol');
 
-    String imagePath = await PathProvider.pP.getRecipePath(id1);
-    String imagePreviewPath = await PathProvider.pP.getRecipePreviewPath(id1);
+    String imagePath = PathProvider.pP.getRecipePath(id1, '.jpg');
+    String imagePreviewPath = PathProvider.pP.getRecipePreviewPath(id1, '.jpg');
 
     await saveImage(File('/storage/emulated/0/Download/recipeData/meat.jpg'),
         imagePath, 2000);
@@ -632,15 +647,23 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     else {
       recipeId = widget.editRecipe.id;
     }
+    String imageDatatype;
+    String recipeImage = selectedRecipeImage.selectedImage;
+    if (recipeImage != null) {
+      imageDatatype =
+          recipeImage.substring(recipeImage.length - 4, recipeImage.length);
+    }
+
     Recipe newRecipe = new Recipe(
       id: recipeId,
       name: nameController.text,
-      imagePath: selectedRecipeImage.selectedImage != null
-          ? await PathProvider.pP.getRecipePath(recipeId)
+      imagePath: recipeImage != null
+          ? PathProvider.pP.getRecipePath(recipeId, imageDatatype)
           : "images/randomFood.png",
-      imagePreviewPath: selectedRecipeImage.selectedImage != null
-          ? await PathProvider.pP.getRecipePreviewPath(recipeId)
-          : "images/randomFood.png",
+
+      /// imagePreviewPath: recipeImage != null
+      ///     ? await PathProvider.pP.getRecipePreviewPathFull(recipeId)
+      ///     : "images/randomFood.png",
       preperationTime: preperationTimeController.text.isEmpty
           ? 0
           : double.parse(
@@ -674,10 +697,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
           .updateFavorite(widget.editRecipe.isFavorite, recipeId);
     }
 
-    // DELETE
-    await DBProvider.db.getRecipeById(recipeId);
+    Recipe thisRecipe = await DBProvider.db.getRecipeById(recipeId, true);
 
-    return newRecipe;
+    return thisRecipe;
   }
 
   bool isGlossaryValid(
@@ -919,76 +941,3 @@ class CustomStepsClipper extends CustomClipper<Path> {
 
 enum Answers { GALLERY, PHOTO }
 
-class NotCompleteDialog extends StatefulWidget {
-  final String title;
-  final String description;
-
-  NotCompleteDialog({this.title, this.description});
-
-  @override
-  State<StatefulWidget> createState() {
-    return NotCompleteDialogState();
-  }
-}
-
-class NotCompleteDialogState extends State<NotCompleteDialog> {
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Consts.padding),
-      ),
-      elevation: 0.0,
-      backgroundColor: Colors.transparent,
-      child: dialogContent(context),
-    );
-  }
-
-  Widget dialogContent(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.all(
-            Consts.padding,
-          ),
-          margin: EdgeInsets.only(top: Consts.padding),
-          decoration: new BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(Consts.padding),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10.0,
-                offset: const Offset(0.0, 10.0),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min, // To make the card compact
-            children: <Widget>[
-              SizedBox(height: 16.0),
-              Text(
-                widget.title,
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
-              ),
-              SizedBox(height: 16),
-              Text(widget.description),
-              SizedBox(height: 8.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  FlatButton(
-                      child: Text("Alright"),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      })
-                ],
-              )
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}

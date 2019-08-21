@@ -6,7 +6,6 @@ import 'dart:math';
 
 import "dart:io";
 import "./add_recipe.dart";
-import '../../round_dialog.dart';
 
 class Steps extends StatefulWidget {
   final List<TextEditingController> stepsDecriptionController;
@@ -112,11 +111,13 @@ class _StepsState extends State<Steps> {
   }
 
   void removeStep(int stepNumber, int recipeId) {
-    PathProvider.pP.getRecipeStepNumberDir(recipeId, stepNumber).then((path) {
+    PathProvider.pP
+        .getRecipeStepNumberDirFull(recipeId, stepNumber)
+        .then((path) {
       Directory(path).deleteSync(recursive: true);
     });
     PathProvider.pP
-        .getRecipeStepPreviewNumberDir(recipeId, stepNumber)
+        .getRecipeStepPreviewNumberDirFull(recipeId, stepNumber)
         .then((path) {
       Directory(path).deleteSync(recursive: true);
     });
@@ -224,26 +225,27 @@ class _StepState extends State<Step> {
     String newStepImageName = getStepImageName(newImage.path);
     String newStepImagePreviewName = 'p-' + newStepImageName;
 
-
     // TODO: Decide later if it's nicer to instantly save the image or do it at the end..
     int recipeId;
     widget.recipeId == null
         ? recipeId = await DBProvider.db.getNewIDforTable('recipe', 'id')
         : recipeId = widget.recipeId;
-    String stepImagePath = await PathProvider.pP
-            .getRecipeStepNumberDir(recipeId, widget.stepNumber + 1) +
+    String stepImagePathFull = await PathProvider.pP
+            .getRecipeStepNumberDirFull(recipeId, widget.stepNumber + 1) +
         newStepImageName;
-    widget.stepImages[widget.stepNumber].add(stepImagePath);
+    String stepImagePath =
+        PathProvider.pP.getRecipeStepNumberDir(recipeId, widget.stepNumber + 1);
+    widget.stepImages[widget.stepNumber].add(stepImagePath + newStepImageName);
 
     saveImage(
       newImage,
-      stepImagePath,
+      stepImagePathFull,
       2000,
     );
     saveImage(
       newImage,
-      await PathProvider.pP
-              .getRecipeStepPreviewNumberDir(recipeId, widget.stepNumber + 1) +
+      await PathProvider.pP.getRecipeStepPreviewNumberDirFull(
+              recipeId, widget.stepNumber + 1) +
           newStepImagePreviewName,
       250,
     );
@@ -253,9 +255,8 @@ class _StepState extends State<Step> {
   /// e.g.: 3242.jpg
   String getStepImageName(String selectedImagePath) {
     Random random = new Random();
-    int dotIndex = selectedImagePath.indexOf('.');
     String ending =
-        selectedImagePath.substring(dotIndex, selectedImagePath.length);
+        selectedImagePath.substring(selectedImagePath.length-4, selectedImagePath.length);
     return random.nextInt(10000).toString() + ending;
   }
 
@@ -334,12 +335,12 @@ class _StepState extends State<Step> {
   /// but the position is not fixed so..
   void removeImage(int recipeId, int stepNumber, int number) {
     PathProvider.pP
-        .getRecipeStepPreviewNumberDir(recipeId, stepNumber - 1)
+        .getRecipeStepPreviewNumberDirFull(recipeId, stepNumber - 1)
         .then((path) {
       File(path + widget.stepImages[stepNumber][number]).deleteSync();
     });
     PathProvider.pP
-        .getRecipeStepNumberDir(recipeId, stepNumber - 1)
+        .getRecipeStepNumberDirFull(recipeId, stepNumber - 1)
         .then((path) {
       File(path + widget.stepImages[stepNumber][number]).deleteSync();
     });

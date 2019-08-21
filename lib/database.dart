@@ -260,10 +260,11 @@ class DBProvider {
     return categories;
   }
 
-  getRecipeById(int id) async {
+  getRecipeById(int id, bool fullImagePaths) async {
     final db = await database;
     final appDir = await getApplicationDocumentsDirectory();
-    final String appPath = appDir.path;
+    String preString;
+    fullImagePaths ? preString = appDir.path : preString = '';
 
     var resRecipe = await db.query('Recipe', where: 'id = ?', whereArgs: [id]);
     if (resRecipe.isEmpty) {
@@ -273,7 +274,7 @@ class DBProvider {
     String image;
     if (resRecipe.first['image'] != '' ||
         resRecipe.first['image'] != 'images/randomFood.png') {
-      image = appPath + resRecipe.first['image'];
+      image = preString + resRecipe.first['image'];
     }
 
     double preperationTime = resRecipe.first['preperationTime'];
@@ -307,7 +308,7 @@ class DBProvider {
           'SELECT * FROM StepImages WHERE steps_id=${resSteps[i]['id']} ORDER BY id ASC');
       stepImages.add([]);
       for (int j = 0; j < resStepImages.length; j++) {
-        stepImages[i].add(appPath + resStepImages[j]['image']);
+        stepImages[i].add(preString + resStepImages[j]['image']);
       }
     }
 
@@ -327,8 +328,7 @@ class DBProvider {
     }
 
     List<String> categories = new List<String>();
-    var resCategories = await db.rawQuery(
-        'SELECT * FROM RecipeCategories '
+    var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
         'WHERE recipe_id=$id');
     for (int i = 0; i < resCategories.length; i++) {
@@ -340,7 +340,8 @@ class DBProvider {
         imagePath: image,
         imagePreviewPath: image == "images/randomFood.png"
             ? 'images/randomFood.png'
-            : await PathProvider.pP.getRecipePreviewPath(id),
+            : await PathProvider.pP.getRecipePreviewPathFull(
+                id, image.substring(image.length - 4, image.length)),
         preperationTime: preperationTime,
         cookingTime: cookingTime,
         totalTime: totalTime,
@@ -361,7 +362,7 @@ class DBProvider {
 
     var resRecipes =
         await db.rawQuery('SELECT id FROM recipe WHERE recipeName = ?', [name]);
-    return await getRecipeById(resRecipes[0]['id']);
+    return await getRecipeById(resRecipes[0]['id'], true);
   }
 
   Future<List<String>> getRecipeNames() async {
@@ -416,8 +417,12 @@ class DBProvider {
         resRecipes.length == 1 ? 0 : r.nextInt(resRecipes.length);
 
     return resRecipes[randomRecipe]['image'] != 'images/randomFood.png'
-        ? await PathProvider.pP
-            .getRecipePreviewPath(resRecipes[randomRecipe]['id'])
+        ? await PathProvider.pP.getRecipePreviewPathFull(
+            resRecipes[randomRecipe]['id'],
+            // dataType
+            resRecipes[randomRecipe]['image'].subString(
+                resRecipes[randomRecipe]['image'].length - 4,
+                resRecipes[randomRecipe]['image'].length))
         : 'images/randomFood.png';
   }
 
@@ -678,7 +683,8 @@ class DBProvider {
         'WHERE categoryName=\'$categoryName\'');
     List<Recipe> output = new List<Recipe>();
     for (int i = 0; i < resCategories.length; i++) {
-      Recipe newRecipe = await getRecipeById(resCategories[i]['recipe_id']);
+      Recipe newRecipe =
+          await getRecipeById(resCategories[i]['recipe_id'], true);
       output.add(newRecipe);
     }
     return output;
@@ -692,7 +698,7 @@ class DBProvider {
         'WHERE id NOT IN (SELECT recipe_id FROM RecipeCategories)');
 
     for (int i = 0; i < resRecipe.length; i++) {
-      recipes.add(await getRecipeById(resRecipe[i]['id']));
+      recipes.add(await getRecipeById(resRecipe[i]['id'], true));
     }
 
     return recipes;
@@ -707,7 +713,7 @@ class DBProvider {
         await db.query('Recipe', where: 'isFavorite = ?', whereArgs: ['1']);
 
     for (int i = 0; i < resFavorites.length; i++) {
-      favorites.add(await getRecipeById(resFavorites[i]['id']));
+      favorites.add(await getRecipeById(resFavorites[i]['id'], true));
     }
     return favorites;
   }

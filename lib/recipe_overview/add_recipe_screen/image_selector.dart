@@ -124,24 +124,24 @@ class _ImageSelectorState extends State<ImageSelector> {
           File pictureFile = await ImagePicker.pickImage(
             source: ImageSource.gallery,
           );
-          print('------------...........----------');
           print(pictureFile.path);
-          print('------------...........----------');
-
-          int recipeId;
-          widget.recipeId == null
-              ? recipeId = recipeId =
-                  await DBProvider.db.getNewIDforTable('recipe', 'id')
-              : recipeId = widget.recipeId;
-          String recipeImagePath =
-              await PathProvider.pP.getRecipePath(recipeId);
-
-          saveImage(pictureFile, recipeImagePath, 2000);
-          String recipeImagePreviewPath =
-              await PathProvider.pP.getRecipePreviewPath(recipeId);
-          saveImage(pictureFile, recipeImagePreviewPath, 300);
 
           if (pictureFile != null) {
+            int recipeId;
+            widget.recipeId == null
+                ? recipeId = recipeId =
+                    await DBProvider.db.getNewIDforTable('recipe', 'id')
+                : recipeId = widget.recipeId;
+            String dataType = pictureFile.path.substring(
+                pictureFile.path.length - 4, pictureFile.path.length);
+            String recipeImagePathFull =
+                await PathProvider.pP.getRecipePathFull(recipeId, dataType);
+
+            saveImage(pictureFile, recipeImagePathFull, 2000);
+            String recipeImagePreviewPath = await PathProvider.pP
+                .getRecipePreviewPathFull(recipeId, dataType);
+            saveImage(pictureFile, recipeImagePreviewPath, 300);
+
             widget.imageWrapper.selectedImage = pictureFile.path;
             setState(() {
               selectedImageFile = pictureFile;
