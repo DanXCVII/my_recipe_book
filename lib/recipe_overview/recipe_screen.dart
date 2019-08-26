@@ -1,9 +1,15 @@
+import 'dart:io';
+
+import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:ui';
 import 'dart:math';
 import 'package:share/share.dart';
+import 'dart:convert';
+import 'package:archive/archive.dart';
 
 import '../recipe.dart';
 import './recipe_overview.dart';
@@ -31,6 +37,7 @@ class RecipeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(recipe.toString());
     double remainingTime =
         recipe.totalTime - recipe.preperationTime - recipe.cookingTime;
     double otherTime;
@@ -42,6 +49,13 @@ class RecipeScreen extends StatelessWidget {
               backgroundColor: primaryColor,
               actions: <Widget>[
                 Favorite(recipe),
+                IconButton(
+                  icon: Icon(Icons.import_export),
+                  tooltip: 'export',
+                  onPressed: () {
+                    exportRecipe(recipe).then((_) {});
+                  },
+                ),
                 IconButton(
                   icon: Icon(Icons.edit),
                   tooltip: 'edit',
@@ -284,25 +298,61 @@ class RecipeScreen extends StatelessWidget {
         ]));
   }
 
+  Future<bool> exportRecipe(Recipe recipe) async {
+    // TODO: Continue
+    Directory appDir = await getApplicationDocumentsDirectory();
+    Directory recipeDir =
+        Directory(await PathProvider.pP.getRecipeDir(recipe.id));
+    await Directory('${appDir.path}/share/').create(recursive: true);
+
+    final file = File('${appDir.path}/share/recipe1.json');
+    Map<String, dynamic> jsonMap = recipe.toMap();
+    String json = jsonEncode(jsonMap);
+    await file.writeAsString(json);
+
+    var encoder = ZipFileEncoder();
+    encoder.create('${appDir.path}/share/share.zip');
+    encoder.addFile(file);
+    encoder.addDirectory(recipeDir);
+    encoder.close();
+
+    return true;
+  }
+
+  void replaceFileNames(Directory directory, int newId) {
+    List files = directory.listSync(recursive: true);
+
+    for (var file in files) {
+      if (file is File && file.path.contains('recipe')) {
+        String recipeName = file.path
+            .substring(file.path.lastIndexOf('/') + 1, file.path.length);
+        String path = file.path.substring(0, file.path.lastIndexOf('/'));
+        recipeName.replaceAll(RegExp(r'\d{1,}'), newId.toString());
+        file.rename(path + recipeName);
+      }
+    }
+  }
+
   String getRecipeAsString(Recipe recipe) {
     String recipeText = 'Recipename: ${recipe.name}\n'
-        'preperation Time: ${recipe.preperationTime}\n'
-        'cooking Time: ${recipe.cookingTime}\n'
-        'total Time: ${recipe.totalTime}\n'
-        'recipe for ${recipe.servings} servings:';
+        'preperation Time: ${recipe.preperationTime} min\n'
+        'cooking Time: ${recipe.cookingTime} min\n'
+        'total Time: ${recipe.totalTime} min\n'
+        'recipe for ${recipe.servings} servings:\n';
     for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
-      recipeText =
-          recipeText += 'ingredients for: ${recipe.ingredientsGlossary[i]}:\n';
-      for (int j = 0; j < recipe.ingredients[i].length; i++) {
+      recipeText += 'ingredients for ${recipe.ingredientsGlossary[i]}:\n';
+      for (int j = 0; j < recipe.ingredients[i].length; j++) {
         recipeText += '${recipe.ingredients[i][j].name} '
             '${recipe.ingredients[i][j].amount} '
             '${recipe.ingredients[i][j].unit}\n';
       }
     }
+    int i = 1;
     for (final String step in recipe.steps) {
-      recipeText += '$step\n';
+      recipeText += '$i. $step\n';
+      i++;
     }
-    recipeText += recipe.notes;
+    recipeText += 'notes: ' + recipe.notes;
     // TODO: Continue
     return recipeText;
   }

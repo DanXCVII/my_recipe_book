@@ -26,8 +26,8 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
   int currentIndex;
   @override
   void initState() {
-    currentIndex = widget.initialIndex;
     super.initState();
+    currentIndex = widget.initialIndex;
   }
 
   void onPageChanged(int index) {
@@ -39,6 +39,10 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+      ),
       body: Container(
         decoration: BoxDecoration(color: Colors.black), // TODO: Maybe change
         constraints: BoxConstraints.expand(
@@ -57,8 +61,8 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
               onPageChanged: onPageChanged,
             ),
             Container(
-              width: MediaQuery.of(context).size.width,
-              color: Color.fromRGBO(0, 0, 0, 0.3),
+                width: MediaQuery.of(context).size.width,
+                color: Color.fromRGBO(0, 0, 0, 0.3),
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
                   widget.descriptions[currentIndex],

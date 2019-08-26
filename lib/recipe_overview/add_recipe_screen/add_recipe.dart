@@ -14,6 +14,7 @@ import '../../dialogs.dart';
 
 import './categories_section.dart';
 import './vegetarian_section.dart';
+import './validation_clean_up.dart';
 import '../../my_wrapper.dart';
 import './complexity_section.dart';
 import '../recipe_screen.dart' show RecipeScreen;
@@ -35,22 +36,17 @@ class AddRecipeForm extends StatefulWidget {
 
 class _AddRecipeFormState extends State<AddRecipeForm> {
   //////////// for Ingredients ////////////
-  final List<List<TextEditingController>> ingredientNameController =
-      new List<List<TextEditingController>>();
-  final List<List<TextEditingController>> ingredientAmountController =
-      new List<List<TextEditingController>>();
-  final List<List<TextEditingController>> ingredientUnitController =
-      new List<List<TextEditingController>>();
-  final List<TextEditingController> ingredientGlossaryController =
-      new List<TextEditingController>();
+  final List<List<TextEditingController>> ingredientNameController = [[]];
+  final List<List<TextEditingController>> ingredientAmountController = [[]];
+  final List<List<TextEditingController>> ingredientUnitController = [[]];
+  final List<TextEditingController> ingredientGlossaryController = [];
 
   //////////// for Steps ////////////
-  final List<List<String>> stepImages = new List<List<String>>();
-  final List<TextEditingController> stepsDescController =
-      new List<TextEditingController>();
+  final List<List<String>> stepImages = [[]];
+  final List<TextEditingController> stepsDescController = [];
 
   //////////// for Category ////////////
-  final List<String> newRecipeCategories = new List<String>();
+  final List<String> newRecipeCategories = [];
 
   //////////// for Complexity ////////////
   final MyDoubleWrapper complexity = new MyDoubleWrapper(myDouble: 5.0);
@@ -69,18 +65,19 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  // TODO: Delete old not saved data when opening addRecipe
   @override
   void initState() {
     super.initState();
 
     selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
-    stepImages.add(new List<String>());
+    stepImages.add([]);
     // initialize list of controllers for the dynamic textFields with one element
-    ingredientNameController.add(new List<TextEditingController>());
+    ingredientNameController.add([]);
     ingredientNameController[0].add(new TextEditingController());
-    ingredientAmountController.add(new List<TextEditingController>());
+    ingredientAmountController.add([]);
     ingredientAmountController[0].add(new TextEditingController());
-    ingredientUnitController.add(new List<TextEditingController>());
+    ingredientUnitController.add([]);
     ingredientUnitController[0].add(new TextEditingController());
     ingredientGlossaryController.add(new TextEditingController());
     stepsDescController.add(new TextEditingController());
@@ -106,9 +103,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ingredientGlossaryController[i].text =
             widget.editRecipe.ingredientsGlossary[i];
 
-        ingredientNameController.add(new List<TextEditingController>());
-        ingredientAmountController.add(new List<TextEditingController>());
-        ingredientUnitController.add(new List<TextEditingController>());
+        ingredientNameController.add([]);
+        ingredientAmountController.add([]);
+        ingredientUnitController.add([]);
         for (int j = 0; j < widget.editRecipe.ingredients[i].length; j++) {
           if (i != 0 || j > 0) {
             ingredientNameController[i].add(new TextEditingController());
@@ -126,11 +123,12 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       for (int i = 0; i < widget.editRecipe.steps.length; i++) {
         if (i > 0) {
           stepsDescController.add(new TextEditingController());
-          stepImages.add(new List<String>());
+          stepImages.add([]);
         }
         stepsDescController[i].text = widget.editRecipe.steps[i];
 
         for (int j = 0; j < widget.editRecipe.stepImages[i].length; j++) {
+          // TODO: When editing recipe, the fullPath to the image is set here
           stepImages[i].add(widget.editRecipe.stepImages[i][j]);
         }
       }
@@ -506,8 +504,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     await DBProvider.db.newCategory('Nachtisch');
     await DBProvider.db.newCategory('Gemüselastig');
     int id1 = await DBProvider.db.getNewIDforTable('recipe', 'id');
-    print(id1);
-    print('lolololololol');
 
     String imagePath = PathProvider.pP.getRecipePath(id1, '.jpg');
     String imagePreviewPath = PathProvider.pP.getRecipePreviewPath(id1, '.jpg');
@@ -528,12 +524,15 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       ingredientsGlossary: ['Steacksauce', 'Steack'],
       ingredients: [
         [
-          Ingredient('Rosmarin', 5, 'Zweige'),
-          Ingredient('Mehl', 300, 'g'),
-          Ingredient('Curry', 1, 'EL'),
-          Ingredient('Gewürze', 3, 'Priesen')
+          Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
+          Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
+          Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
+          Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
         ],
-        [Ingredient('Rohrzucker', 50, 'g'), Ingredient('Steak', 700, 'g')],
+        [
+          Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
+          Ingredient(name: 'Steak', amount: 700, unit: 'g')
+        ],
       ],
       complexity: 4,
       vegetable: Vegetable.NON_VEGETARIAN,
@@ -653,7 +652,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       imageDatatype =
           recipeImage.substring(recipeImage.length - 4, recipeImage.length);
     }
-
+    print('loooooool');
+    print(recipeImage);
     Recipe newRecipe = new Recipe(
       id: recipeId,
       name: nameController.text,
@@ -702,41 +702,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     return thisRecipe;
   }
 
-  bool isGlossaryValid(
-      List<List<TextEditingController>> ingredients,
-      List<List<TextEditingController>> amount,
-      List<List<TextEditingController>> unit,
-      List<TextEditingController> ingredientsGlossary) {
-    List<List<Ingredient>> ingredientList =
-        getCleanIngredientData(ingredients, amount, unit);
-    List<String> ingredientGlossary =
-        getCleanGlossary(ingredientsGlossary, ingredientList);
-    print(ingredientList.toString());
-    print(ingredientGlossary.toString());
-    if (ingredientList.length > 1 &&
-        ingredientGlossary.length < ingredientList.length) return false;
-
-    return true;
-  }
-
-  bool isIngredientListValid(
-    List<List<TextEditingController>> ingredients,
-    List<List<TextEditingController>> amount,
-    List<List<TextEditingController>> unit,
-  ) {
-    int validator = 0;
-    for (int i = 0; i < ingredients.length; i++) {
-      for (int j = 0; j < ingredients[i].length; j++) {
-        validator = 0;
-        if (ingredients[i][j].text == "") validator++;
-        if (amount[i][j].text == "") validator++;
-        if (unit[i][j].text == "") validator++;
-        if (validator == 1 || validator == 2) return false;
-      }
-    }
-    return true;
-  }
-
   List<String> removeEmptyStrings(List<TextEditingController> list) {
     List<String> output = new List<String>();
 
@@ -746,94 +711,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       }
     }
     return output;
-  }
-
-  /// sets the length of the glossary for the ingredients section equal to
-  /// the length list<list<ingredients>> (removes unnessesary sections)
-  /// After that, it removes the empty strings in the glossary
-  List<String> getCleanGlossary(List<TextEditingController> glossary,
-      List<List<Ingredient>> cleanIngredientsData) {
-    List<String> output = new List<String>();
-    for (int i = 0; i < glossary.length; i++) {
-      output.add(glossary[i].text);
-    }
-
-    for (int i = cleanIngredientsData.length; i < glossary.length; i++) {
-      output.removeLast();
-    }
-    for (int i = 0; i < output.length; i++) {
-      if (output[i] == '') output.removeAt(i);
-    }
-
-    return output;
-  }
-
-  /// removes all leading and trailing whitespaces and empty ingredients from the lists
-  /// of ingredients and
-  List<List<Ingredient>> getCleanIngredientData(
-      List<List<TextEditingController>> ingredients,
-      List<List<TextEditingController>> amount,
-      List<List<TextEditingController>> unit) {
-    /// creating the three lists with the data of the ingredients
-    /// by getting the data of the controllers.
-    List<List<String>> ingredientsNames = [[]];
-    for (int i = 0; i < ingredients.length; i++) {
-      ingredientsNames.add([]);
-      for (int j = 0; j < ingredients[i].length; j++) {
-        ingredientsNames[i].add(ingredients[i][j].text);
-      }
-    }
-
-    List<List<double>> ingredientsAmount = new List<List<double>>();
-    for (int i = 0; i < amount.length; i++) {
-      ingredientsAmount.add(new List<double>());
-      for (int j = 0; j < amount[i].length; j++) {
-        String addValue = "-1";
-        if (amount[i][j].text != "") addValue = amount[i][j].text;
-        ingredientsAmount[i]
-            .add(double.parse(addValue.replaceAll(new RegExp(r','), 'e')));
-      }
-    }
-
-    List<List<String>> ingredientsUnit = new List<List<String>>();
-    for (int i = 0; i < unit.length; i++) {
-      ingredientsUnit.add(new List<String>());
-      for (int j = 0; j < unit[i].length; j++) {
-        ingredientsUnit[i].add(unit[i][j].text);
-      }
-    }
-
-    /// List which will be the clean list with the list of the ingredients
-    /// data.
-    List<List<Ingredient>> cleanIngredientsData = [[]];
-
-    for (int i = 0; i < ingredientsNames.length; i++) {
-      cleanIngredientsData.add([]);
-      for (int j = 0; j < ingredientsNames[i].length; j++)
-        cleanIngredientsData[i].add(Ingredient(ingredientsNames[i][j],
-            ingredientsAmount[i][j], ingredientsUnit[i][j]));
-    }
-
-    for (int i = 0; i < cleanIngredientsData.length; i++) {
-      for (int j = 0; j < cleanIngredientsData[i].length; j++) {
-        // remove leading and trailing white spaces
-        cleanIngredientsData[i][j].name =
-            cleanIngredientsData[i][j].name.trim();
-        cleanIngredientsData[i][j].unit =
-            cleanIngredientsData[i][j].unit.trim();
-        // remove all ingredients from the list, when all three fields are empty
-        if (cleanIngredientsData[i][j].name == "" &&
-            cleanIngredientsData[i][j].amount == -1 &&
-            cleanIngredientsData[i][j].unit == "") {
-          cleanIngredientsData[i].removeAt(j);
-        }
-      }
-    }
-    // create the output list with the clean ingredient lists
-    cleanIngredientsData.removeWhere((item) => item.isEmpty);
-    print(cleanIngredientsData.toString());
-
-    return cleanIngredientsData;
   }
 }
 
@@ -940,4 +817,3 @@ class CustomStepsClipper extends CustomClipper<Path> {
 }
 
 enum Answers { GALLERY, PHOTO }
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:groovin_material_icons/groovin_material_icons.dart';
 
 import '../database.dart';
 import '../recipe.dart';
@@ -159,14 +160,29 @@ class _IngredientsListState extends State<IngredientsList> {
             });
           },
           background: Container(
+              color: Colors.red,
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Icon(
+                        GroovinMaterialIcons.delete_sweep,
+                        color: Colors.white,
+                      ),
+                    )
+                  ])),
+          secondaryBackground: Container(
             color: Colors.red,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                Icon(Icons.delete, color: Colors.white),
-                Text(
-                  ' Delete from List',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: Icon(
+                    GroovinMaterialIcons.delete_sweep,
+                    color: Colors.white,
+                  ),
                 )
               ],
             ),
@@ -225,7 +241,11 @@ class _IngredientRowState extends State<IngredientRow> {
           child: Center(
             child: IconButton(
               iconSize: 30,
-              icon: Icon(Icons.check_circle_outline),
+              icon: Icon(
+                widget.checked[widget.checkedIndex] == true
+                    ? GroovinMaterialIcons.check_circle_outline
+                    : GroovinMaterialIcons.circle_outline,
+              ),
               color: widget.checked[widget.checkedIndex] == true
                   ? Colors.green
                   : Colors.grey,

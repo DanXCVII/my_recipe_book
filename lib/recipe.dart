@@ -42,20 +42,60 @@ class Recipe {
       this.complexity,
       this.isFavorite});
 
-  factory Recipe.fromMap(Map<String, dynamic> json) => new Recipe(
-        id: json['id'],
-        name: json['name'],
-        imagePath: json['image'],
-        preperationTime: json['preperationTime'],
-        cookingTime: json['cookingTime'],
-        totalTime: json['totalTime'],
-        servings: json['servings'],
-        ingredientsGlossary: json['ingredientsGlossary'],
-        ingredients: json['ingredients'],
-        vegetable: json['vegetable'],
-        steps: json['steps'],
-        notes: json['notes'],
-      );
+  @override
+  String toString() {
+    return ('id : $id\n'
+        'name : $name\n'
+        'imagePath : $imagePath\n'
+        'imagePreviewPath : $imagePreviewPath\n'
+        'preperationTime : $preperationTime\n'
+        'cookingTime : $cookingTime\n'
+        'totalTime : $totalTime\n'
+        'servings : $servings\n'
+        'ingredientsGlossary : ${ingredientsGlossary.toString()}\n'
+        'ingredients : ${ingredients.toString()}\n'
+        'vegetable : ${vegetable.toString()}\n'
+        'steps : ${steps.toString()}\n'
+        'stepImages : ${stepImages.toString()}\n'
+        'notes : $notes\n'
+        'categories : ${categories.toString()}\n'
+        'complexity : $complexity\n'
+        'isFavorite : $isFavorite');
+  }
+
+  factory Recipe.fromMap(Map<String, dynamic> json) {
+    Vegetable vegetable;
+    if (json['vegetable'] == Vegetable.NON_VEGETARIAN.toString()) {
+      vegetable = Vegetable.NON_VEGETARIAN;
+    } else if (json['vegetable'] == Vegetable.VEGETARIAN.toString()) {
+      vegetable = Vegetable.VEGETARIAN;
+    } else {
+      vegetable = Vegetable.VEGAN;
+    }
+
+    return new Recipe(
+      id: json['id'],
+      name: json['name'],
+      imagePath: json['image'],
+      preperationTime: json['preperationTime'],
+      cookingTime: json['cookingTime'],
+      totalTime: json['totalTime'],
+      servings: json['servings'],
+      categories: List<String>.from(json['categories']),
+      ingredientsGlossary: List<String>.from(json['ingredientsGlossary']),
+      stepImages: List<List<String>>.from(json['stepImages'])
+          .map((i) => List<String>.from(i).toList())
+          .toList(),
+      ingredients: List<List<Map<String, dynamic>>>.from(json['ingredients'])
+          .map((l) => List<Map<String, dynamic>>.from(l)
+              .map((i) => Ingredient.fromMap(i))
+              .toList())
+          .toList(),
+      vegetable: vegetable,
+      steps: List<String>.from(json['steps']),
+      notes: json['notes'],
+    );
+  }
 
   Map<String, dynamic> toMap() => {
         'id': id,
@@ -65,10 +105,14 @@ class Recipe {
         'cookingTime': cookingTime,
         'totalTime': totalTime,
         'servings': servings,
+        'categories': categories,
         'ingredientsGlossary': ingredientsGlossary,
-        'ingredients': ingredients,
-        'vegetable': vegetable,
+        'ingredients': ingredients
+            .map((list) => list.map((ingred) => ingred.toMap()).toList())
+            .toList(),
+        'vegetable': vegetable.toString(),
         'steps': steps,
+        'stepImages': stepImages,
         'notes': notes
       };
 
@@ -98,7 +142,19 @@ class Ingredient {
   double amount;
   String unit;
 
-  Ingredient(this.name, this.amount, this.unit);
+  Ingredient({this.name, this.amount, this.unit});
+
+  factory Ingredient.fromMap(Map<String, dynamic> json) => new Ingredient(
+        name: json['id'],
+        amount: json['amount'],
+        unit: json['unit'],
+      );
+
+  Map<String, dynamic> toMap() => {
+        'name': name,
+        'amount': amount,
+        'unit': unit,
+      };
 }
 
 Color getRecipePrimaryColor(Recipe recipe) {
@@ -173,8 +229,9 @@ class PathProvider {
     return '$recipeId/stepImages/';
   }
 
-  String getRecipeDir(int recipeId) {
-    return '$recipeId/';
+  Future<String> getRecipeDir(int recipeId) async {
+    String imageLocalPath = await localPath;
+    return '$imageLocalPath/$recipeId';
   }
 
   Future<String> getRecipeStepNumberDirFull(
@@ -237,12 +294,14 @@ class PathProvider {
       output.add([]);
       for (int j = 0; j < stepImages[i].length; j++) {
         String currentImage = stepImages[i][j];
+        print(currentImage);
         output[i].add(dir +
             'p-' +
             currentImage.substring(
                 currentImage.lastIndexOf('/') + 1, currentImage.length));
       }
     }
+
     return output;
   }
 }

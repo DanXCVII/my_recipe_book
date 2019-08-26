@@ -155,11 +155,12 @@ class DBProvider {
       'isFavorite': 0
     });
 
-    for (int i = 0; i < newRecipe.ingredientsGlossary.length; i++) {
-      int _sectionId = await getNewIDforTable('Sections', 'id');
+    int uniqueIdSections = await getNewIDforTable('Sections', 'id');
+    int uniqueIdIngredients = await getNewIDforTable('Ingredients', 'id');
 
+    for (int i = 0; i < newRecipe.ingredientsGlossary.length; i++) {
       batch.insert('Sections', {
-        'id': _sectionId,
+        'id': uniqueIdSections + i,
         'number': i,
         'sectionName': newRecipe.ingredientsGlossary[i],
         'recipe_id': newRecipe.id
@@ -167,19 +168,22 @@ class DBProvider {
 
       for (int j = 0; j < newRecipe.ingredients[i].length; j++) {
         batch.insert('Ingredients', {
-          'id': await getNewIDforTable('Ingredients', 'id'),
+          'id': uniqueIdIngredients + j,
           'ingredientName': newRecipe.ingredients[i][j].name,
           'amount': newRecipe.ingredients[i][j].amount,
           'unit': newRecipe.ingredients[i][j].unit,
-          'section_id': _sectionId
+          'section_id': uniqueIdSections + i
         });
       }
+      uniqueIdIngredients += newRecipe.ingredients[i].length;
     }
-    for (int i = 0; i < newRecipe.steps.length; i++) {
-      int stepsId = await getNewIDforTable('Steps', 'id');
 
+    int uniqueIdSteps = await getNewIDforTable('Steps', 'id');
+    int uniqueIdStepImages = await getNewIDforTable('StepImages', 'id');
+
+    for (int i = 0; i < newRecipe.steps.length; i++) {
       batch.insert('Steps', {
-        'id': stepsId,
+        'id': uniqueIdSteps + i,
         'number': i,
         'description': newRecipe.steps[i],
         'recipe_id': newRecipe.id
@@ -188,11 +192,12 @@ class DBProvider {
       if (newRecipe.stepImages.length > i) {
         for (int j = 0; j < newRecipe.stepImages[i].length; j++) {
           batch.insert('StepImages', {
-            'id': await getNewIDforTable('StepImages', 'id'),
+            'id': uniqueIdStepImages + j,
             'image': newRecipe.stepImages[i][j],
-            'steps_id': stepsId
+            'steps_id': uniqueIdSteps + i
           });
         }
+        uniqueIdStepImages += newRecipe.stepImages[i].length;
       }
     }
 
@@ -272,10 +277,16 @@ class DBProvider {
     }
     String name = resRecipe.first['recipeName'];
     String image;
-    if (resRecipe.first['image'] != '' ||
-        resRecipe.first['image'] != 'images/randomFood.png') {
+    if (resRecipe.first['image'] != 'images/randomFood.png') {
       image = preString + resRecipe.first['image'];
+    } else {
+      image = resRecipe.first['image'];
     }
+    String previewPath;
+    image == "images/randomFood.png"
+        ? previewPath = 'images/randomFood.png'
+        : previewPath = await PathProvider.pP.getRecipePreviewPathFull(
+            id, image.substring(image.length - 4, image.length));
 
     double preperationTime = resRecipe.first['preperationTime'];
     double cookingTime = resRecipe.first['cookingTime'];
@@ -301,7 +312,7 @@ class DBProvider {
     var resSteps = await db.rawQuery(
         'SELECT * FROM Steps WHERE recipe_id=$id ORDER BY number ASC');
     List<String> steps = [];
-    List<List<String>> stepImages = [[]];
+    List<List<String>> stepImages = [];
     for (int i = 0; i < resSteps.length; i++) {
       steps.add(resSteps[i]['description']);
       var resStepImages = await db.rawQuery(
@@ -322,8 +333,11 @@ class DBProvider {
           'SELECT * FROM Ingredients WHERE section_id=${resSections[i]['id']}');
       ingredients.add([]);
       for (int j = 0; j < resIngredients.length; j++) {
-        ingredients[i].add(Ingredient(resIngredients[j]['ingredientName'],
-            resIngredients[j]['amount'], resIngredients[j]['unit']));
+        ingredients[i].add(Ingredient(
+          name: resIngredients[j]['ingredientName'],
+          amount: resIngredients[j]['amount'],
+          unit: resIngredients[j]['unit'],
+        ));
       }
     }
 
@@ -334,14 +348,14 @@ class DBProvider {
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
     }
+    print('kaaaaaaaaaaaaaaak');
+    print(image);
+
     return Recipe(
         id: id,
         name: name,
         imagePath: image,
-        imagePreviewPath: image == "images/randomFood.png"
-            ? 'images/randomFood.png'
-            : await PathProvider.pP.getRecipePreviewPathFull(
-                id, image.substring(image.length - 4, image.length)),
+        imagePreviewPath: previewPath,
         preperationTime: preperationTime,
         cookingTime: cookingTime,
         totalTime: totalTime,
@@ -420,7 +434,7 @@ class DBProvider {
         ? await PathProvider.pP.getRecipePreviewPathFull(
             resRecipes[randomRecipe]['id'],
             // dataType
-            resRecipes[randomRecipe]['image'].subString(
+            resRecipes[randomRecipe]['image'].substring(
                 resRecipes[randomRecipe]['image'].length - 4,
                 resRecipes[randomRecipe]['image'].length))
         : 'images/randomFood.png';
@@ -506,8 +520,11 @@ class DBProvider {
     List<bool> checked = [];
     var resShoppingCart = await db.rawQuery('SELECT * FROM ShoppingCart');
     for (int i = 0; i < resShoppingCart.length; i++) {
-      ingredients.add(Ingredient(resShoppingCart[i]['name'],
-          resShoppingCart[i]['amount'], resShoppingCart[i]['unit']));
+      ingredients.add(Ingredient(
+        name: resShoppingCart[i]['name'],
+        amount: resShoppingCart[i]['amount'],
+        unit: resShoppingCart[i]['unit'],
+      ));
       resShoppingCart[i]['checked'] == 0
           ? checked.add(false)
           : checked.add(true);

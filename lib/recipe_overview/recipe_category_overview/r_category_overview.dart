@@ -9,26 +9,6 @@ import './../recipe_screen.dart';
 import './category_gridview.dart';
 import './../recipe_overview.dart';
 
-class CategoryOverview extends StatefulWidget {
-  final bool recipeCatOverview;
-
-  CategoryOverview({@required this.recipeCatOverview, Key key})
-      : super(key: key);
-
-  _CategoryOverviewState createState() => _CategoryOverviewState();
-}
-
-class _CategoryOverviewState extends State<CategoryOverview> {
-  @override
-  Widget build(BuildContext context) {
-    if (widget.recipeCatOverview) {
-      return RecipeCategoryOverview();
-    } else {
-      return CategoryGridView();
-    }
-  }
-}
-
 class RecipeCategoryOverview extends StatefulWidget {
   RecipeCategoryOverview({Key key}) : super(key: key);
 

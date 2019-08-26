@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/recipe.dart';
 import "package:image_picker/image_picker.dart";
+import 'package:path_provider/path_provider.dart';
 import 'dart:math';
 
 import "dart:io";
@@ -158,9 +159,17 @@ class _StepState extends State<Step> {
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < widget.stepImages[widget.stepNumber].length; i++) {
-      selectedImageFiles.add(File(widget.stepImages[widget.stepNumber][i]));
-    }
+    /// When editing a recipe, it initializes the data for the images:
+    /// - adds the files to the selectedFiles
+    /// - removes the applicationDirectory afterwars
+    getApplicationDocumentsDirectory().then((appDir) {
+      for (int i = 0; i < widget.stepImages[widget.stepNumber].length; i++) {
+        String currentImage = widget.stepImages[widget.stepNumber][i];
+        selectedImageFiles.add(File(currentImage));
+        widget.stepImages[widget.stepNumber][i] =
+            currentImage.substring(appDir.path.length, currentImage.length);
+      }
+    });
   }
 
   Future _askUser() async {
@@ -255,8 +264,8 @@ class _StepState extends State<Step> {
   /// e.g.: 3242.jpg
   String getStepImageName(String selectedImagePath) {
     Random random = new Random();
-    String ending =
-        selectedImagePath.substring(selectedImagePath.length-4, selectedImagePath.length);
+    String ending = selectedImagePath.substring(
+        selectedImagePath.length - 4, selectedImagePath.length);
     return random.nextInt(10000).toString() + ending;
   }
 
