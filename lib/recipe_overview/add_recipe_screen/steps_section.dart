@@ -159,16 +159,22 @@ class _StepState extends State<Step> {
   @override
   void initState() {
     super.initState();
+
     /// When editing a recipe, it initializes the data for the images:
     /// - adds the files to the selectedFiles
     /// - removes the applicationDirectory afterwars
+    for (int i = 0; i < widget.stepImages[widget.stepNumber].length; i++) {
+      String currentImage = widget.stepImages[widget.stepNumber][i];
+      selectedImageFiles.add(File(currentImage));
+    }
     getApplicationDocumentsDirectory().then((appDir) {
       for (int i = 0; i < widget.stepImages[widget.stepNumber].length; i++) {
         String currentImage = widget.stepImages[widget.stepNumber][i];
-        selectedImageFiles.add(File(currentImage));
         widget.stepImages[widget.stepNumber][i] =
             currentImage.substring(appDir.path.length, currentImage.length);
       }
+      print('00000000000');
+      print(widget.stepImages);
     });
   }
 

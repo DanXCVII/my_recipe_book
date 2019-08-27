@@ -3,14 +3,15 @@ import 'package:my_recipe_book/SplashScreen.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/recipe_overview/category_manager_screen.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_category_overview/category_gridview.dart';
+import 'package:my_recipe_book/settings/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:file_picker/file_picker.dart';
 
 import 'recipe_overview/recipe_category_overview/r_category_overview.dart';
 import 'shopping_cart/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
 import './favortie_screen/favorite_screen.dart';
 import './search.dart';
-import './recipe.dart';
 
 import 'package:flutter/rendering.dart';
 import 'dart:math';
@@ -134,50 +135,52 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         IconButton(
           icon: Icon(Icons.adb),
           onPressed: () {
-            var r = Recipe(
-              id: 1,
-              name: 'Steack mit Bratsauce',
-              imagePath: 'imagePath',
-              imagePreviewPath: 'imagePreviewPath',
-              servings: 3,
-              ingredientsGlossary: ['Steacksauce', 'Steack'],
-              ingredients: [
-                [
-                  Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
-                  Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
-                  Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
-                  Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
-                ],
-                [
-                  Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
-                  Ingredient(name: 'Steak', amount: 700, unit: 'g')
-                ],
-              ],
-              complexity: 4,
-              vegetable: Vegetable.NON_VEGETARIAN,
-              steps: [
-                'step1',
-                'step2 kek',
-              ],
-              stepImages: [
-                [], [],
-                // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
-                // [
-                //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
-                // ],
-              ],
-              notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
-              isFavorite: false,
-              categories: ['Hauptspeisen'],
-            ); // TODO: Continue
-            var json = r.toMap();
-            Recipe rrr = Recipe.fromMap(json);
-            print(rrr.toString());
+            // var r = Recipe(
+            //   id: 1,
+            //   name: 'Steack mit Bratsauce',
+            //   imagePath: 'imagePath',
+            //   imagePreviewPath: 'imagePreviewPath',
+            //   servings: 3,
+            //   ingredientsGlossary: ['Steacksauce', 'Steack'],
+            //   ingredients: [
+            //     [
+            //       Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
+            //       Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
+            //       Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
+            //       Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
+            //     ],
+            //     [
+            //       Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
+            //       Ingredient(name: 'Steak', amount: 700, unit: 'g')
+            //     ],
+            //   ],
+            //   complexity: 4,
+            //   vegetable: Vegetable.NON_VEGETARIAN,
+            //   steps: [
+            //     'step1',
+            //     'step2 kek',
+            //   ],
+            //   stepImages: [
+            //     [], [],
+            //     // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
+            //     // [
+            //     //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
+            //     // ],
+            //   ],
+            //   notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
+            //   isFavorite: false,
+            //   categories: ['Hauptspeisen'],
+            // ); // TODO: Continue
+            // var json = r.toMap();
+            // Recipe rrr = Recipe.fromMap(json);
+            // print(rrr.toString());
           },
         )
       ].where((child) => child != null).toList(),
     );
   }
+
+
 
   Widget getFloatingB(String page) {
     Color backgroundColor = Theme.of(context).primaryColor;
@@ -266,6 +269,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           FavoriteScreen(key: PageStorageKey('Page2')),
           ShoppingCartScreen(key: PageStorageKey('Page3')),
           Center(child: Text('This page is not yet implemented')),
+          Settings(),
         ],
       ),
       backgroundColor: getBackgroundColor(title),

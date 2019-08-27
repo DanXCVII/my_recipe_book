@@ -77,20 +77,23 @@ class Recipe {
       id: json['id'],
       name: json['name'],
       imagePath: json['image'],
+      imagePreviewPath: json['imagePreviewPath'],
       preperationTime: json['preperationTime'],
       cookingTime: json['cookingTime'],
       totalTime: json['totalTime'],
+      complexity: json['complexity'],
       servings: json['servings'],
       categories: List<String>.from(json['categories']),
       ingredientsGlossary: List<String>.from(json['ingredientsGlossary']),
-      stepImages: List<List<String>>.from(json['stepImages'])
+      stepImages: List<List<dynamic>>.from(json['stepImages'])
           .map((i) => List<String>.from(i).toList())
           .toList(),
-      ingredients: List<List<Map<String, dynamic>>>.from(json['ingredients'])
+      ingredients: List<List<dynamic>>.from(json['ingredients'])
           .map((l) => List<Map<String, dynamic>>.from(l)
               .map((i) => Ingredient.fromMap(i))
               .toList())
-          .toList(),
+          .toList()
+            ..removeLast(),
       vegetable: vegetable,
       steps: List<String>.from(json['steps']),
       notes: json['notes'],
@@ -101,10 +104,12 @@ class Recipe {
         'id': id,
         'name': name,
         'image': imagePath,
+        'imagePreviewPath': imagePreviewPath,
         'preperationTime': preperationTime,
         'cookingTime': cookingTime,
         'totalTime': totalTime,
         'servings': servings,
+        'complexity': complexity,
         'categories': categories,
         'ingredientsGlossary': ingredientsGlossary,
         'ingredients': ingredients
@@ -145,7 +150,7 @@ class Ingredient {
   Ingredient({this.name, this.amount, this.unit});
 
   factory Ingredient.fromMap(Map<String, dynamic> json) => new Ingredient(
-        name: json['id'],
+        name: json['name'],
         amount: json['amount'],
         unit: json['unit'],
       );

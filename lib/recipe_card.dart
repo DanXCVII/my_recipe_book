@@ -152,6 +152,25 @@ class RecipeCard extends StatelessWidget {
                 height: gridTileWidth / 3,
                 width: gridTileWidth / 3,
               )),
+          Hero(
+              tag: heroImageTag,
+              child: Material(
+                color: Colors.transparent,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(gridTileWidth / 10),
+                    topRight: Radius.circular(gridTileWidth / 10),
+                  ),
+                  child: FadeInImage(
+                    image: AssetImage(recipe.imagePreviewPath),
+                    placeholder: MemoryImage(kTransparentImage),
+                    fadeInDuration: Duration(milliseconds: 250),
+                    fit: BoxFit.cover,
+                    height: gridTileWidth / 1.25,
+                    width: gridTileWidth + 40,
+                  ),
+                ),
+              )),
           recipe.isFavorite == true
               ? Align(
                   alignment: Alignment(0.95, -0.95),
@@ -178,25 +197,6 @@ class RecipeCard extends StatelessWidget {
           //    iconSize: 22,
           //  ),
           //)
-          Hero(
-              tag: heroImageTag,
-              child: Material(
-                color: Colors.transparent,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(gridTileWidth / 10),
-                    topRight: Radius.circular(gridTileWidth / 10),
-                  ),
-                  child: FadeInImage(
-                    image: AssetImage(recipe.imagePreviewPath),
-                    placeholder: MemoryImage(kTransparentImage),
-                    fadeInDuration: Duration(milliseconds: 250),
-                    fit: BoxFit.cover,
-                    height: gridTileWidth / 1.25,
-                    width: gridTileWidth + 40,
-                  ),
-                ),
-              )),
         ],
       ),
     );

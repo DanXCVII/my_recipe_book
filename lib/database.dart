@@ -119,14 +119,19 @@ class DBProvider {
   /// picture if the user selected a picture
   newCategory(String name) async {
     final db = await database;
+    try {
+      await db.rawInsert(
+          'INSERT Into Categories (categoryName,number)'
+          ' VALUES (?,?)',
+          [
+            name,
+            await getNewIDforTable('Categories', 'number'),
+          ]);
+    } catch (e) {
+      print('Error adding recipe\n'
+          '${e.toString()}');
+    }
 
-    await db.rawInsert(
-        'INSERT Into Categories (categoryName,number)'
-        ' VALUES (?,?)',
-        [
-          name,
-          await getNewIDforTable('Categories', 'number'),
-        ]);
     return;
   }
 
@@ -137,6 +142,9 @@ class DBProvider {
     return;
   }
 
+  /// the path to the imageFiles must be specified like the the following:
+  /// path from appDir to imageFile:
+  /// example: /4/recipe-4.jpg
   newRecipe(Recipe newRecipe) async {
     final db = await database;
     Batch batch = db.batch();
@@ -319,6 +327,7 @@ class DBProvider {
           'SELECT * FROM StepImages WHERE steps_id=${resSteps[i]['id']} ORDER BY id ASC');
       stepImages.add([]);
       for (int j = 0; j < resStepImages.length; j++) {
+        print(resStepImages[j]['image']);
         stepImages[i].add(preString + resStepImages[j]['image']);
       }
     }
@@ -348,8 +357,6 @@ class DBProvider {
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
     }
-    print('kaaaaaaaaaaaaaaak');
-    print(image);
 
     return Recipe(
         id: id,

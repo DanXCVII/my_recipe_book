@@ -244,6 +244,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                     Navigator.pop(context); // loading screen
                     Navigator.pop(context); // edit recipe screen
                     Navigator.pop(context); // old recipe screen
+                    Navigator.pop(context); // recipes
                     imageCache
                         .clear(); // TODO: Maybe optimize and only clear nessesary date.. maybe not..
                     Navigator.push(

@@ -19,6 +19,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             if (snapshot.data.length == 0)
               return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Container(
                       height: 80,
