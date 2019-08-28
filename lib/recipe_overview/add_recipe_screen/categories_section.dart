@@ -60,9 +60,9 @@ class _CategorySectionState extends State<CategorySection> {
                 Text(
                   "select subcategories:",
                   style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.grey[700]),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 IconButton(
                   icon: Icon(Icons.add_circle_outline),
@@ -149,7 +149,6 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
 }
 
 class CategoryAddDialog extends StatefulWidget {
-
   CategoryAddDialog();
 
   @override
@@ -160,8 +159,7 @@ class CategoryAddDialog extends StatefulWidget {
 
 class CategoryAddDialogState extends State<CategoryAddDialog> {
   TextEditingController categoryNameController;
-static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-
+  static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   @override
   initState() {
@@ -190,7 +188,7 @@ static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
           ),
           margin: EdgeInsets.only(top: Consts.padding),
           decoration: new BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).dialogBackgroundColor,
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(Consts.padding),
             boxShadow: [

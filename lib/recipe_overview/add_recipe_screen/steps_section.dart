@@ -34,8 +34,7 @@ class _StepsState extends State<Steps> {
       padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
       child: Text(
         "steps:",
-        style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[700]),
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       ),
     ));
     // add all the sections to the column
@@ -44,20 +43,6 @@ class _StepsState extends State<Steps> {
         widget.stepsDecriptionController,
         // i number of the section in the column
         i,
-        // callback for when "add step" is tapped
-        () {
-          setState(() {
-            widget.stepsDecriptionController.add(new TextEditingController());
-          });
-        },
-        // callback for when "remove step" is tapped
-        (int id) {
-          setState(() {
-            if (widget.stepsDecriptionController.length > 1) {
-              widget.stepsDecriptionController.removeLast();
-            }
-          });
-        },
         i == widget.stepsDecriptionController.length - 1 ? true : false,
         widget.stepImages, widget.recipeId,
       ));
@@ -138,14 +123,12 @@ class Step extends StatefulWidget {
   final List<TextEditingController> stepsContoller;
   final List<List<String>> stepImages;
 
-  final SectionsCountCallback callbackRemoveStep;
-  final SectionAddCallback callbackAddStep;
   final int stepNumber;
   final bool lastRow;
   final int recipeId;
 
-  Step(this.stepsContoller, this.stepNumber, this.callbackAddStep,
-      this.callbackRemoveStep, this.lastRow, this.stepImages, this.recipeId);
+  Step(this.stepsContoller, this.stepNumber, this.lastRow, this.stepImages,
+      this.recipeId);
 
   @override
   State<StatefulWidget> createState() {
@@ -173,8 +156,6 @@ class _StepState extends State<Step> {
         widget.stepImages[widget.stepNumber][i] =
             currentImage.substring(appDir.path.length, currentImage.length);
       }
-      print('00000000000');
-      print(widget.stepImages);
     });
   }
 

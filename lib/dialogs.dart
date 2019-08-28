@@ -97,7 +97,7 @@ class RoundEdgeDialogState extends State<RoundEdgeDialog> {
           ),
           margin: EdgeInsets.only(top: 16),
           decoration: new BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).dialogBackgroundColor,
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [

@@ -426,10 +426,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 padding: const EdgeInsets.only(left: 56, top: 12),
                 child: Text(
                   "select a category:",
+                  textAlign: TextAlign.left,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Colors.grey[700]),
+                     ),
                 ),
               ),
               // category for radio buttons for vegetarian selector

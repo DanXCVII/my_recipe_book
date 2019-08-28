@@ -5,11 +5,19 @@ import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/main.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:path_provider/path_provider.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   const Settings({Key key}) : super(key: key);
+
+  @override
+  _SettingsState createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
+  bool _brightTheme;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +32,21 @@ class Settings extends StatelessWidget {
               title: Text('import Recipe'),
             ),
           ),
+          Divider(),
           SwitchListTile(
             title: Text('Switch Theme'),
-            onChanged: (value) {},
-            value: true,
+            onChanged: (value) {
+              if (value)
+                setState(() {
+                  _brightTheme = true;
+                  _changeTheme(context, MyThemeKeys.LIGHT);
+                });
+              else {
+                _brightTheme = false;
+                _changeTheme(context, MyThemeKeys.DARK);
+              }
+            },
+            value: _brightTheme == null ? true : _brightTheme,
           ),
           Divider(),
           ListTile(title: Text('About me')),
@@ -67,7 +86,6 @@ class Settings extends StatelessWidget {
     importDir.deleteSync(recursive: true);
   }
 
-  // Saves the recipe, read from the json file, in the local database
   Future<void> importRecipeToDatabase(
       Directory importDir, int newRecipeId) async {
     List files = importDir.listSync(recursive: true);
@@ -119,7 +137,6 @@ class Settings extends StatelessWidget {
     return recipe;
   }
 
-  // exstracts the zip to the destination directory
   Future<void> exstractZip(File encode, String destination) async {
     List<int> bytes = encode.readAsBytesSync();
 
@@ -186,5 +203,10 @@ class Settings extends StatelessWidget {
       }
     }
     return newRecipeDir;
+  }
+
+  void _changeTheme(BuildContext buildContext, MyThemeKeys key) {
+    print(key.toString());
+    CustomTheme.instanceOf(buildContext).changeTheme(key);
   }
 }

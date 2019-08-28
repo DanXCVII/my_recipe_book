@@ -34,8 +34,7 @@ class _IngredientsState extends State<Ingredients> {
             "ingredients:",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Colors.grey[700]),
+                fontSize: 16,),
           ),
         )
       ],
@@ -43,28 +42,9 @@ class _IngredientsState extends State<Ingredients> {
     // add all the sections to the column
     for (int i = 0; i < widget.ingredientGlossary.length; i++) {
       sections.children.add(IngredientSection(
-        (int id) {
-          // callback when section remove is tapped
-          setState(() {
-            if (widget.ingredientGlossary.length > 1) {
-              widget.ingredientGlossary.removeLast();
-            }
-          });
-        },
         // i number of the section in the column
         i,
         // callback for when section add is tapped
-        () {
-          setState(() {
-            widget.ingredientGlossary.add(new TextEditingController());
-            widget.ingredientNameController
-                .add(new List<TextEditingController>());
-            widget.ingredientAmountController
-                .add(new List<TextEditingController>());
-            widget.ingredientUnitController
-                .add(new List<TextEditingController>());
-          });
-        },
         i == widget.ingredientGlossary.length - 1 ? true : false,
         widget.ingredientNameController,
         widget.ingredientAmountController,
@@ -142,15 +122,11 @@ class IngredientSection extends StatefulWidget {
   final List<List<TextEditingController>> ingredientUnitController;
   final List<TextEditingController> ingredientGlossary;
 
-  final SectionsCountCallback callbackRemoveSection;
-  final SectionAddCallback callbackAddSection;
   final int sectionNumber;
   final bool lastRow;
 
   IngredientSection(
-    this.callbackRemoveSection,
     this.sectionNumber,
-    this.callbackAddSection,
     this.lastRow,
     this.ingredientNameController,
     this.ingredientAmountController,

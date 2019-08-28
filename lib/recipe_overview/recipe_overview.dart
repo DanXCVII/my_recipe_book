@@ -87,9 +87,8 @@ class RecipeGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (recipes.isNotEmpty) {
-      return Container(
-        color: Color(0xffFEF3E1),
-        child: CustomScrollView(slivers: <Widget>[
+      return Scaffold(
+        body: CustomScrollView(slivers: <Widget>[
           SliverAppBar(
             actions: <Widget>[
               IconButton(
@@ -140,7 +139,6 @@ class RecipeGridView extends StatelessWidget {
       );
     }
     return Scaffold(
-      backgroundColor: Color(0xffFEF3E1),
       appBar: AppBar(),
       body: Stack(
         children: <Widget>[
@@ -153,7 +151,10 @@ class RecipeGridView extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 30,
                     fontFamily: 'RibeyeMarrow',
-                    fontWeight: FontWeight.w500),
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).backgroundColor == Colors.white
+                        ? Colors.black
+                        : Colors.white),
               ),
             ),
           ),

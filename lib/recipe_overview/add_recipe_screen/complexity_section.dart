@@ -22,9 +22,9 @@ class ComplexitySectionState extends State<ComplexitySection> {
           child: Text(
             "complexity/effort:",
             style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Colors.grey[700]),
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
           ),
         ),
         Padding(

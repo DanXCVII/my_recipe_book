@@ -27,7 +27,11 @@ class ShoppingCartScreen extends StatelessWidget {
                   child: Text(
                     'Your\nShopping List',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 35, fontFamily: 'Ribeye'),
+                    style: TextStyle(
+                      fontSize: 35,
+                      fontFamily: 'Ribeye',
+                      color: Colors.black,
+                    ),
                   ),
                 )),
                 Padding(
@@ -76,14 +80,23 @@ class ShoppingCartScreen extends StatelessWidget {
                             children: <Widget>[
                               Text('check',
                                   style: TextStyle(
-                                      fontFamily: 'Ribeye', fontSize: 16)),
+                                    fontFamily: 'Ribeye',
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  )),
                               Text('     ware',
                                   style: TextStyle(
-                                      fontFamily: 'Ribeye', fontSize: 16)),
+                                    fontFamily: 'Ribeye',
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  )),
                               Spacer(),
                               Text('amount   ',
                                   style: TextStyle(
-                                      fontFamily: 'Ribeye', fontSize: 16))
+                                    fontFamily: 'Ribeye',
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ))
                             ],
                           ),
                           Container(
@@ -105,7 +118,10 @@ class ShoppingCartScreen extends StatelessWidget {
                                 child: Text(
                               "Nothing added yet",
                               style: TextStyle(
-                                  fontSize: 26, fontFamily: 'RibeyeMarrow'),
+                                fontSize: 26,
+                                fontFamily: 'RibeyeMarrow',
+                                color: Colors.black,
+                              ),
                             ))),
                         Container(
                             height:
@@ -278,7 +294,10 @@ class _IngredientRowState extends State<IngredientRow> {
             '${widget.ingredient.name}',
             style: widget.checked[widget.checkedIndex]
                 ? TextStyle(
-                    fontSize: 18, decoration: TextDecoration.lineThrough)
+                    fontSize: 18,
+                    decoration: TextDecoration.lineThrough,
+                    color: Colors.black,
+                  )
                 : TextStyle(fontSize: 18),
           ),
         ),
@@ -293,7 +312,9 @@ class _IngredientRowState extends State<IngredientRow> {
                 '${cutDouble(widget.ingredient.amount)} ${widget.ingredient.unit}',
                 style: widget.checked[widget.checkedIndex]
                     ? TextStyle(
-                        fontSize: 18, decoration: TextDecoration.lineThrough)
+                        fontSize: 18,
+                        decoration: TextDecoration.lineThrough,
+                        color: Colors.black)
                     : TextStyle(fontSize: 18),
                 overflow: TextOverflow.clip,
                 maxLines: 1,

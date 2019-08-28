@@ -11,6 +11,7 @@ import 'shopping_cart/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
 import './favortie_screen/favorite_screen.dart';
 import './search.dart';
+import './theming.dart';
 
 import 'package:flutter/rendering.dart';
 import 'dart:math';
@@ -24,7 +25,7 @@ import 'dart:math';
 
 void main() {
   debugPaintSizeEnabled = false;
-  runApp(MyApp());
+  runApp(CustomTheme(initialThemeKey: MyThemeKeys.LIGHT, child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -35,19 +36,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        primaryColor: Color(0xFF790604), // maybe brown[700]
-        /* canvasColor: Color(0xFF43403D),
-         textSelectionColor: Colors.white,
-         backgroundColor: Color(0xFF43403D),
-         hintColor: Colors.white,
-         textSelectionHandleColor: Colors.white, */
-        iconTheme: IconThemeData(color: Colors.grey[700]),
-        /*textTheme: Theme.of(context).textTheme.apply(
-                bodyColor: Colors.white,
-                displayColor: Colors.white,
-              )*/
-      ),
+      theme: CustomTheme.of(context),
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
@@ -179,8 +168,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
-
-
   Widget getFloatingB(String page) {
     Color backgroundColor = Theme.of(context).primaryColor;
     //  Color foregroundColor = Theme.of(context).accentColor;
@@ -225,7 +212,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
                     alignment: FractionalOffset.center,
                     child:
-                        Icon(_controller.isDismissed ? Icons.add : Icons.close),
+                        Icon(_controller.isDismissed ? Icons.add : Icons.close, color: Colors.white,),
                   );
                 },
               ),
@@ -245,9 +232,16 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   Color getBackgroundColor(String page) {
     if (page == 'recipes')
-      return Color(0xffFEF3E1);
-    else if (page == 'favorites') return Color(0xffFFE3FC);
-    return Colors.white;
+      return Theme.of(context).backgroundColor == Colors.white
+          ? Color(0xffFEF3E1)
+          : Color(0xff202125);
+    else if (page == 'favorites')
+      return Theme.of(context).backgroundColor == Colors.white
+          ? Color(0xffFFE3FC)
+          : Color(0xffFF71C6);
+    return Theme.of(context).backgroundColor == Colors.white
+        ? Colors.white
+        : Color(0xff202125);
   }
 
   @override

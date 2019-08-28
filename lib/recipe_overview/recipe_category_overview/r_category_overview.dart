@@ -97,7 +97,12 @@ class RecipeRow extends StatelessWidget {
                   Text(
                     category != null ? category : 'no category',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                        color: Theme.of(context).backgroundColor == Colors.white
+                            ? Colors.black
+                            : Colors.white),
                   ),
                   Icon(Icons.arrow_forward_ios),
                 ],
@@ -203,7 +208,12 @@ class RecipeHozizontalList extends StatelessWidget {
                             textAlign: TextAlign.center,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: new TextStyle(fontWeight: FontWeight.w700)),
+                            style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context).backgroundColor ==
+                                        Colors.white
+                                    ? Colors.black
+                                    : Colors.white)),
                       ),
                     ],
                   ),

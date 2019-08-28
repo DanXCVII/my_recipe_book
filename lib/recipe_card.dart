@@ -3,10 +3,16 @@ import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-Map<Vegetable, Color> recipeCardBackgroundColors = {
+Map<Vegetable, Color> recipeCardBackgroundColorsBright = {
   Vegetable.NON_VEGETARIAN: Color(0xffE9D0D0),
   Vegetable.VEGAN: Color(0xffD5E2DB),
   Vegetable.VEGETARIAN: Color(0xffDBE4D3)
+};
+
+Map<Vegetable, Color> recipeCardBackgroundColorsDark = {
+  Vegetable.NON_VEGETARIAN: Color(0xffD89A62),
+  Vegetable.VEGAN: Color(0xff4FD05B),
+  Vegetable.VEGETARIAN: Color(0xff68D866)
 };
 
 const Map<int, Color> complexityColors = {
@@ -52,8 +58,9 @@ class RecipeCard extends StatelessWidget {
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-              border: Border.all(width: 1, color: Colors.grey),
-              color: recipeCardBackgroundColors[recipe.vegetable],
+              color: Theme.of(context).backgroundColor == Colors.white
+                  ? recipeCardBackgroundColorsBright[recipe.vegetable]
+                  : recipeCardBackgroundColorsDark[recipe.vegetable],
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(gridTileWidth / 10),
                 topRight: Radius.circular(gridTileWidth / 10),
@@ -79,9 +86,9 @@ class RecipeCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14 + gridTileWidth / 35,
-                          ),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14 + gridTileWidth / 35,
+                              color: Colors.black),
                         ),
                       ),
                     ),
@@ -99,6 +106,7 @@ class RecipeCard extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: itemsFW,
                             fontSize: 10 + gridTileWidth / 40,
+                            color: Colors.black,
                           ),
                         ),
                         Text(
@@ -108,6 +116,7 @@ class RecipeCard extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: itemsFW,
                             fontSize: 10 + gridTileWidth / 40,
+                            color: Colors.black,
                           ),
                         ),
                         Row(
@@ -127,6 +136,7 @@ class RecipeCard extends StatelessWidget {
                               style: TextStyle(
                                 fontWeight: itemsFW,
                                 fontSize: 10 + gridTileWidth / 40,
+                                color: Colors.black,
                               ),
                             ),
                           ],
