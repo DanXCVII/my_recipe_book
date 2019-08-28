@@ -302,6 +302,7 @@ class RecipeScreen extends StatelessWidget {
   }
 
   Future<bool> exportRecipe(Recipe recipe) async {
+    // TODO: Not properly exporting empty recipe
     // TODO: Continue
     Directory tmpDir = await pP.getTemporaryDirectory();
     Directory recipeDir =
@@ -316,9 +317,10 @@ class RecipeScreen extends StatelessWidget {
     var encoder = ZipFileEncoder();
     encoder.create('${tmpDir.path}/share/${recipe.name}.zip');
     encoder.addFile(file);
-    encoder.addDirectory(recipeDir);
+    if (recipeDir.existsSync()) {
+      encoder.addDirectory(recipeDir);
+    }
     encoder.close();
-    print('${tmpDir.path}/share/share.zip');
 
     // Share.file(
     //   path: '${tmpDir.path}/share/share.zip',
@@ -326,7 +328,7 @@ class RecipeScreen extends StatelessWidget {
     //   mimeType: ShareType.TYPE_FILE,
     // ).share();
 
-    ShareExtend.share('${tmpDir.path}/share/share.zip', "file");
+    ShareExtend.share('${tmpDir.path}/share/${recipe.name}.zip', "file");
 
     return true;
   }

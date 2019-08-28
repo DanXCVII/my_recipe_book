@@ -243,9 +243,7 @@ class DBProvider {
 
   Future<List<String>> getCategoriesWithRecipes() async {
     final db = await database;
-
-    var resTMP = await db.rawQuery('SELECT * FROM RecipeCategories');
-
+    
     var resCategories = await db.rawQuery(
       'SELECT categoryName, count(recipe_id) FROM Categories '
       'INNER JOIN RecipeCategories ON Categories.categoryName = RecipeCategories.categories_name '

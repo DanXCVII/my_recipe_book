@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../recipe.dart';
 import '../../database.dart';
 
 class Consts {

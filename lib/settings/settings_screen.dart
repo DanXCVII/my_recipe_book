@@ -24,15 +24,23 @@ class Settings extends StatelessWidget {
               title: Text('import Recipe'),
             ),
           ),
+          SwitchListTile(
+            title: Text('Switch Theme'),
+            onChanged: (value) {},
+            value: true,
+          ),
           Divider(),
           ListTile(title: Text('About me')),
-          ListTile(title: Text('Rate this app'))
+          Divider(),
+          ListTile(title: Text('Rate this app')),
+          Divider(),
         ],
       ),
     );
   }
 
   Future<void> importRecipe() async {
+    // TODO: error importing empty recipe
     var tmpDir = await getTemporaryDirectory();
     var newRecipeId = await DBProvider.db.getNewIDforTable('recipe', 'id');
     var newRecipeDir =
@@ -53,7 +61,9 @@ class Settings extends StatelessWidget {
     await exstractZip(File(_path), importDir.path);
     Directory newTmpRecipeDir = replaceFileNames(importDir, newRecipeId);
     newRecipeDir.createSync(recursive: true);
-    newTmpRecipeDir.renameSync(newRecipeDir.path)..createSync(recursive: true);
+    if (newTmpRecipeDir != null)
+      newTmpRecipeDir.renameSync(newRecipeDir.path)
+        ..createSync(recursive: true);
     await importRecipeToDatabase(importDir, newRecipeId);
     importDir.deleteSync(recursive: true);
   }
@@ -69,7 +79,9 @@ class Settings extends StatelessWidget {
         Map<String, dynamic> jsonMap = jsonDecode(json);
         Recipe rr = Recipe.fromMap(jsonMap);
         Recipe newRecipe = await updateRecipe(rr, newRecipeId);
+
         await DBProvider.db.newRecipe(newRecipe);
+
         for (String c in newRecipe.categories) {
           await DBProvider.db.newCategory(c);
         }
@@ -80,20 +92,24 @@ class Settings extends StatelessWidget {
   }
 
   Future<Recipe> updateRecipe(Recipe recipe, int newRecipeId) async {
-    String recipeImagePath = changeIdInPath(
-        recipe.imagePath.substring(
-            recipe.imagePath.lastIndexOf(RegExp(r'\/[0-9]\/')),
-            recipe.imagePath.length),
-        newRecipeId);
-    String recipeImagePreviewPath = changeIdInPath(
-        recipe.imagePreviewPath.substring(
-            recipe.imagePreviewPath.lastIndexOf(RegExp(r'\/[0-9]\/')),
-            recipe.imagePreviewPath.length),
-        newRecipeId);
-
     recipe.id = newRecipeId;
-    recipe.imagePath = recipeImagePath;
-    recipe.imagePreviewPath = recipeImagePreviewPath;
+
+    if (recipe.imagePath.lastIndexOf(RegExp(r'\/[0-9]\/')) != -1) {
+      String recipeImagePath = changeIdInPath(
+          recipe.imagePath.substring(
+              recipe.imagePath.lastIndexOf(RegExp(r'\/[0-9]\/')),
+              recipe.imagePath.length),
+          newRecipeId);
+      String recipeImagePreviewPath = changeIdInPath(
+          recipe.imagePreviewPath.substring(
+              recipe.imagePreviewPath.lastIndexOf(RegExp(r'\/[0-9]\/')),
+              recipe.imagePreviewPath.length),
+          newRecipeId);
+
+      recipe.imagePath = recipeImagePath;
+      recipe.imagePreviewPath = recipeImagePreviewPath;
+    }
+
     for (int i = 0; i < recipe.stepImages.length; i++)
       for (int j = 0; j < recipe.stepImages[i].length; j++) {
         recipe.stepImages[i][j] =

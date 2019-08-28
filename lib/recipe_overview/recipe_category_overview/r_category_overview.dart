@@ -6,7 +6,6 @@ import 'dart:math';
 import '../../database.dart';
 import '../../recipe.dart';
 import './../recipe_screen.dart';
-import './category_gridview.dart';
 import './../recipe_overview.dart';
 
 class RecipeCategoryOverview extends StatefulWidget {
