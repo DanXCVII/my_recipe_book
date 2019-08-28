@@ -40,7 +40,6 @@ class Settings extends StatelessWidget {
   }
 
   Future<void> importRecipe() async {
-    // TODO: error importing empty recipe
     var tmpDir = await getTemporaryDirectory();
     var newRecipeId = await DBProvider.db.getNewIDforTable('recipe', 'id');
     var newRecipeDir =

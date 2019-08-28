@@ -302,8 +302,6 @@ class RecipeScreen extends StatelessWidget {
   }
 
   Future<bool> exportRecipe(Recipe recipe) async {
-    // TODO: Not properly exporting empty recipe
-    // TODO: Continue
     Directory tmpDir = await pP.getTemporaryDirectory();
     Directory recipeDir =
         Directory(await PathProvider.pP.getRecipeDir(recipe.id));
