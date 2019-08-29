@@ -38,7 +38,6 @@ class RecipeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(recipe.toString());
     double remainingTime =
         recipe.totalTime - recipe.preperationTime - recipe.cookingTime;
     double otherTime;

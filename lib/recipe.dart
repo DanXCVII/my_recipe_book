@@ -299,7 +299,6 @@ class PathProvider {
       output.add([]);
       for (int j = 0; j < stepImages[i].length; j++) {
         String currentImage = stepImages[i][j];
-        print(currentImage);
         output[i].add(dir +
             'p-' +
             currentImage.substring(

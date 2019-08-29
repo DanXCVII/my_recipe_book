@@ -36,7 +36,6 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(recipe.vegetable.toString());
     double deviceWidth = MediaQuery.of(context).size.width;
     double gridTileWidth = deviceWidth / (deviceWidth / 300.floor() + 1);
     return GestureDetector(
@@ -245,16 +244,18 @@ class RecipeCard extends StatelessWidget {
 
   /// returns the image for the icon which is displayed at the bottom left corner
   /// of the recipe depending on whether recipe is vegetarian, vegan, etc.
-  String getRecipeTypeImage(Vegetable vegetable) {
-    switch (vegetable) {
-      case Vegetable.NON_VEGETARIAN:
-        return "meat";
-      case Vegetable.VEGETARIAN:
-        return "milk";
-      case Vegetable.VEGAN:
-        return "tomato";
-      default:
-        return "no valid input at getRecipeTypeImage()";
-    }
+
+}
+
+String getRecipeTypeImage(Vegetable vegetable) {
+  switch (vegetable) {
+    case Vegetable.NON_VEGETARIAN:
+      return "meat";
+    case Vegetable.VEGETARIAN:
+      return "milk";
+    case Vegetable.VEGAN:
+      return "tomato";
+    default:
+      return "no valid input at getRecipeTypeImage()";
   }
 }

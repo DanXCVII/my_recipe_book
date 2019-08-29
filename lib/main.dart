@@ -7,6 +7,7 @@ import 'package:my_recipe_book/recipe_overview/category_manager_screen.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_category_overview/category_gridview.dart';
 import 'package:my_recipe_book/settings/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 import 'recipe_overview/recipe_category_overview/r_category_overview.dart';
 import 'shopping_cart/shopping_cart.dart';
@@ -37,6 +38,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
     return MaterialApp(
       theme: CustomTheme.of(context),
       initialRoute: '/',
