@@ -5,7 +5,7 @@ import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
-import 'package:my_recipe_book/main.dart';
+import '../theming.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -34,7 +34,7 @@ class _SettingsState extends State<Settings> {
           ),
           Divider(),
           SwitchListTile(
-            title: Text('Switch Theme'),
+            title: Text('switch to dark theme'),
             onChanged: (value) {
               if (value)
                 setState(() {
@@ -49,9 +49,9 @@ class _SettingsState extends State<Settings> {
             value: _brightTheme == null ? true : _brightTheme,
           ),
           Divider(),
-          ListTile(title: Text('About me')),
+          ListTile(title: Text('about me')),
           Divider(),
-          ListTile(title: Text('Rate this app')),
+          ListTile(title: Text('rate this app')),
           Divider(),
         ],
       ),

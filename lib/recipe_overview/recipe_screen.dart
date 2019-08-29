@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:path_provider/path_provider.dart' as pP;
 import 'package:share_extend/share_extend.dart';
@@ -32,9 +31,10 @@ class RecipeScreen extends StatelessWidget {
   final Recipe recipe;
   final Color primaryColor;
   final String heroImageTag;
+  final String heroTitle;
 
   RecipeScreen(
-      {@required this.recipe, @required this.primaryColor, this.heroImageTag});
+      {@required this.recipe, @required this.primaryColor, this.heroImageTag, this.heroTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +122,7 @@ class RecipeScreen extends StatelessWidget {
                         MediaQuery.of(context).size.width * 0.15,
                         0),
                     child: Hero(
-                        tag: "recipe-${recipe.id}",
+                        tag: heroTitle,
                         child: Material(
                           color: Colors.transparent,
                           child: Text(

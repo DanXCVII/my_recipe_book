@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/SplashScreen.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/random_recipe/random_recipe.dart';
 import 'package:my_recipe_book/recipe_overview/category_manager_screen.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_category_overview/category_gridview.dart';
 import 'package:my_recipe_book/settings/settings_screen.dart';
@@ -211,8 +213,10 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   return Transform(
                     transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
                     alignment: FractionalOffset.center,
-                    child:
-                        Icon(_controller.isDismissed ? Icons.add : Icons.close, color: Colors.white,),
+                    child: Icon(
+                      _controller.isDismissed ? Icons.add : Icons.close,
+                      color: Colors.white,
+                    ),
                   );
                 },
               ),
@@ -232,13 +236,11 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   Color getBackgroundColor(String page) {
     if (page == 'recipes')
-      return Theme.of(context).backgroundColor == Colors.white
-          ? Color(0xffFEF3E1)
-          : Color(0xff202125);
+      return Theme.of(context).scaffoldBackgroundColor;
     else if (page == 'favorites')
       return Theme.of(context).backgroundColor == Colors.white
           ? Color(0xffFFE3FC)
-          : Color(0xffFF71C6);
+          : Color(0xff572944);
     return Theme.of(context).backgroundColor == Colors.white
         ? Colors.white
         : Color(0xff202125);
@@ -261,7 +263,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           ),
           FavoriteScreen(key: PageStorageKey('Page2')),
           ShoppingCartScreen(key: PageStorageKey('Page3')),
-          Center(child: Text('This page is not yet implemented')),
+          RandomRecipe(),
           Settings(),
         ],
       ),
@@ -272,28 +274,28 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           fixedColor: Colors.white,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                icon: Icon(Icons.fastfood), title: Text("recipes")),
+                icon: Icon(
+                  GroovinMaterialIcons.notebook,
+                  color: _selectedIndex == 0 ? Colors.brown[400] : Colors.white,
+                ),
+                title: Text("recipes")),
             BottomNavigationBarItem(
                 icon: _selectedIndex == 1
-                    ? Icon(
-                        Icons.favorite,
-                        color: Colors.pink,
-                      )
+                    ? Icon(Icons.favorite, color: Colors.pink)
                     : Icon(Icons.favorite_border),
                 title: Text("favorites")),
             BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.shopping_cart,
-                  color: _selectedIndex == 2 ? Colors.grey : Colors.white,
-                ),
+                icon: Icon(Icons.shopping_cart,
+                    color: _selectedIndex == 2 ? Colors.grey : Colors.white),
                 title: Text("shopping cart")),
-
-            /// Maybe remove calendar section and simply import the things to shop
-            /// to the default calendar.
             BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today), title: Text("calendar")),
+                icon: Icon(GroovinMaterialIcons.dice_multiple,
+                    color: _selectedIndex == 3 ? Colors.green : Colors.white),
+                title: Text("feelin' lucky?!")),
             BottomNavigationBarItem(
-                icon: Icon(Icons.settings), title: Text("settings"))
+                icon: Icon(Icons.settings,
+                    color: _selectedIndex == 4 ? Colors.grey : Colors.white),
+                title: Text("settings"))
           ],
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,

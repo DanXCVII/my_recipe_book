@@ -132,7 +132,7 @@ class RecipeGridView extends StatelessWidget {
               maxCrossAxisExtent: 300,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              children: getRecipeCards(recipes),
+              children: getRecipeCards(recipes, context),
             ),
           )
         ]),
@@ -170,12 +170,20 @@ class RecipeGridView extends StatelessWidget {
     );
   }
 
-  List<Widget> getRecipeCards(List<Recipe> recipes) {
+  List<Widget> getRecipeCards(List<Recipe> recipes, BuildContext context) {
     List<RecipeCard> recipeCards = [];
     for (int i = 0; i < recipes.length; i++) {
       recipeCards.add(
         RecipeCard(
           recipe: recipes[i],
+          shadow: Theme.of(context).backgroundColor == Colors.white
+              ? Colors.grey[400]
+              : Colors.black,
+          cardColor: Theme.of(context).backgroundColor == Colors.white
+              ? Color(0xffFFE8C2)
+              : Color(0xff34363D),
+          heroImageTag: "${recipes[i].imagePath}-${recipes[i].id}",
+          heroTitle: "recipe-${recipes[i].id}",
         ),
       );
     }

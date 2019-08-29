@@ -61,6 +61,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                       recipe: recipe,
                       primaryColor: getRecipePrimaryColor(recipe),
                       heroImageTag: 'heroTag',
+                      heroTitle: 'heroTitle',
                     ),
                   ),
                 );

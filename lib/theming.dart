@@ -59,9 +59,9 @@ class MyThemes {
   static final ThemeData darkTheme = ThemeData(
     primaryColor: Color(0xFF790604),
     brightness: Brightness.dark,
-    backgroundColor: Color(0xff202125),
-    scaffoldBackgroundColor: Color(0xff202125),
-    accentColor: Colors.white,
+    backgroundColor: Color(0xff212225),
+    scaffoldBackgroundColor: Color(0xff212225),
+    accentColor: Colors.grey[800],
   );
 
   static ThemeData getThemeFromKey(MyThemeKeys themeKey) {

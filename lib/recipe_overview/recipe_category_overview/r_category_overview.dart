@@ -102,7 +102,7 @@ class RecipeRow extends StatelessWidget {
                         fontSize: 20,
                         color: Theme.of(context).backgroundColor == Colors.white
                             ? Colors.black
-                            : Colors.white),
+                            : Colors.grey[200]),
                   ),
                   Icon(Icons.arrow_forward_ios),
                 ],
@@ -165,6 +165,7 @@ class RecipeHozizontalList extends StatelessWidget {
                       recipe: recipes[index],
                       primaryColor: getRecipePrimaryColor(recipes[index]),
                       heroImageTag: heroTag,
+                      heroTitle: '${recipes[index].id}-${recipes[index].name}',
                     ),
                   ),
                 );
@@ -186,21 +187,21 @@ class RecipeHozizontalList extends StatelessWidget {
                       Hero(
                         tag: heroTag,
                         child: ClipRRect(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(35),
-                                topRight: Radius.circular(15),
-                                bottomLeft: Radius.circular(15),
-                                bottomRight: Radius.circular(35)),
-                            child: FadeInImage(
-                              // image: AssetImage(recipes[index].imagePath),
-                              image:
-                                  AssetImage(recipes[index].imagePreviewPath),
-                              fadeInDuration: const Duration(milliseconds: 250),
-                              placeholder: MemoryImage(kTransparentImage),
-                              height: 90,
-                              width: 90,
-                              fit: BoxFit.cover,
-                            )),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(35),
+                              topRight: Radius.circular(15),
+                              bottomLeft: Radius.circular(15),
+                              bottomRight: Radius.circular(35)),
+                          child: FadeInImage(
+                            // image: AssetImage(recipes[index].imagePath),
+                            image: AssetImage(recipes[index].imagePreviewPath),
+                            fadeInDuration: const Duration(milliseconds: 250),
+                            placeholder: MemoryImage(kTransparentImage),
+                            height: 90,
+                            width: 90,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 4, left: 10, right: 10),
@@ -209,11 +210,11 @@ class RecipeHozizontalList extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                                 color: Theme.of(context).backgroundColor ==
                                         Colors.white
-                                    ? Colors.black
-                                    : Colors.white)),
+                                    ? Colors.grey[800]
+                                    : Colors.grey[300])),
                       ),
                     ],
                   ),

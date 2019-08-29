@@ -58,16 +58,26 @@ class FavoriteRecipeCards extends StatelessWidget {
       maxCrossAxisExtent: 300,
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
-      children: getRecipeCards(favoriteRecipes),
+      children: getRecipeCards(favoriteRecipes, context),
     );
   }
 
-  List<Widget> getRecipeCards(List<Recipe> recipes) {
+  List<Widget> getRecipeCards(List<Recipe> recipes, BuildContext context) {
     List<RecipeCard> recipeCards = [];
     for (int i = 0; i < recipes.length; i++) {
       recipeCards.add(
         RecipeCard(
           recipe: recipes[i],
+          shadow: 
+          Theme.of(context).backgroundColor == Colors.white
+              ? Colors.grey[400]
+              : Colors.grey[900]
+              ,
+          cardColor: Theme.of(context).backgroundColor == Colors.white
+              ? Color(0xffFFCDEB)
+              : Color(0xff792C59),
+          heroImageTag: "${recipes[i].imagePath}--${recipes[i].id}",
+          heroTitle: "recipe--${recipes[i].id}",
         ),
       );
     }

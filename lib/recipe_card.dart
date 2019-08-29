@@ -3,18 +3,6 @@ import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-Map<Vegetable, Color> recipeCardBackgroundColorsBright = {
-  Vegetable.NON_VEGETARIAN: Color(0xffE9D0D0),
-  Vegetable.VEGAN: Color(0xffD5E2DB),
-  Vegetable.VEGETARIAN: Color(0xffDBE4D3)
-};
-
-Map<Vegetable, Color> recipeCardBackgroundColorsDark = {
-  Vegetable.NON_VEGETARIAN: Color(0xffD89A62),
-  Vegetable.VEGAN: Color(0xff4FD05B),
-  Vegetable.VEGETARIAN: Color(0xff68D866)
-};
-
 const Map<int, Color> complexityColors = {
   1: Color(0xff28E424),
   2: Color(0xff4ED220),
@@ -32,13 +20,23 @@ FontWeight itemsFW = FontWeight.w500;
 
 class RecipeCard extends StatelessWidget {
   final Recipe recipe;
+  final Color shadow;
+  final Color cardColor;
+  final String heroImageTag;
+  final String heroTitle;
 
-  const RecipeCard({this.recipe, Key key}) : super(key: key);
+  const RecipeCard({
+    this.recipe,
+    @required this.shadow,
+    @required this.cardColor,
+    @required this.heroImageTag,
+    @required this.heroTitle,
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     print(recipe.vegetable.toString());
-    final String heroImageTag = "${recipe.imagePath}-${recipe.id}";
     double deviceWidth = MediaQuery.of(context).size.width;
     double gridTileWidth = deviceWidth / (deviceWidth / 300.floor() + 1);
     return GestureDetector(
@@ -50,6 +48,7 @@ class RecipeCard extends StatelessWidget {
               recipe: recipe,
               primaryColor: getRecipePrimaryColor(recipe),
               heroImageTag: heroImageTag,
+              heroTitle: heroTitle,
             ),
           ),
         );
@@ -58,9 +57,15 @@ class RecipeCard extends StatelessWidget {
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).backgroundColor == Colors.white
-                  ? recipeCardBackgroundColorsBright[recipe.vegetable]
-                  : recipeCardBackgroundColorsDark[recipe.vegetable],
+              color: cardColor,
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(2, 2),
+                  blurRadius: 3,
+                  spreadRadius: 1,
+                  color: shadow,
+                ),
+              ],
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(gridTileWidth / 10),
                 topRight: Radius.circular(gridTileWidth / 10),
@@ -73,11 +78,30 @@ class RecipeCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  SizedBox(height: gridTileWidth / 1.25 + 7),
+                  Hero(
+                      tag: heroImageTag,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(gridTileWidth / 10),
+                            topRight: Radius.circular(gridTileWidth / 10),
+                          ),
+                          child: FadeInImage(
+                            image: AssetImage(recipe.imagePreviewPath),
+                            placeholder: MemoryImage(kTransparentImage),
+                            fadeInDuration: Duration(milliseconds: 250),
+                            fit: BoxFit.cover,
+                            height: gridTileWidth / 1.25,
+                            width: gridTileWidth + 40,
+                          ),
+                        ),
+                      )),
+                  SizedBox(height: 7),
                   Padding(
                     padding: EdgeInsets.only(left: 15, right: 12),
                     child: Hero(
-                      tag: "recipe-${recipe.id}",
+                      tag: heroTitle,
                       child: Material(
                         color: Colors.transparent,
                         child: Text(
@@ -86,9 +110,9 @@ class RecipeCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14 + gridTileWidth / 35,
-                              color: Colors.black),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14 + gridTileWidth / 35,
+                          ),
                         ),
                       ),
                     ),
@@ -106,7 +130,6 @@ class RecipeCard extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: itemsFW,
                             fontSize: 10 + gridTileWidth / 40,
-                            color: Colors.black,
                           ),
                         ),
                         Text(
@@ -116,7 +139,6 @@ class RecipeCard extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: itemsFW,
                             fontSize: 10 + gridTileWidth / 40,
-                            color: Colors.black,
                           ),
                         ),
                         Row(
@@ -136,7 +158,6 @@ class RecipeCard extends StatelessWidget {
                               style: TextStyle(
                                 fontWeight: itemsFW,
                                 fontSize: 10 + gridTileWidth / 40,
-                                color: Colors.black,
                               ),
                             ),
                           ],
@@ -162,25 +183,7 @@ class RecipeCard extends StatelessWidget {
                 height: gridTileWidth / 3,
                 width: gridTileWidth / 3,
               )),
-          Hero(
-              tag: heroImageTag,
-              child: Material(
-                color: Colors.transparent,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(gridTileWidth / 10),
-                    topRight: Radius.circular(gridTileWidth / 10),
-                  ),
-                  child: FadeInImage(
-                    image: AssetImage(recipe.imagePreviewPath),
-                    placeholder: MemoryImage(kTransparentImage),
-                    fadeInDuration: Duration(milliseconds: 250),
-                    fit: BoxFit.cover,
-                    height: gridTileWidth / 1.25,
-                    width: gridTileWidth + 40,
-                  ),
-                ),
-              )),
+
           recipe.isFavorite == true
               ? Align(
                   alignment: Alignment(0.95, -0.95),
