@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
 
-enum MyThemeKeys { LIGHT, DARK }
+enum MyThemeKeys { LIGHT, DARK, OLEDBLACK }
 
 class _CustomTheme extends InheritedWidget {
   final CustomThemeState data;
@@ -64,12 +63,22 @@ class MyThemes {
     accentColor: Colors.grey[800],
   );
 
+  static final ThemeData oledblackTheme = ThemeData(
+    primaryColor: Color(0xff363636),
+    brightness: Brightness.dark,
+    backgroundColor: Colors.black,
+    scaffoldBackgroundColor: Colors.black,
+    accentColor: Colors.grey[800],
+  );
+
   static ThemeData getThemeFromKey(MyThemeKeys themeKey) {
     switch (themeKey) {
       case MyThemeKeys.LIGHT:
         return lightTheme;
       case MyThemeKeys.DARK:
         return darkTheme;
+      case MyThemeKeys.OLEDBLACK:
+        return oledblackTheme;
 
       default:
         return lightTheme;

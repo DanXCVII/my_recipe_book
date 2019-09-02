@@ -1,3 +1,7 @@
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:my_recipe_book/models/selected_index.dart';
+import 'package:scoped_model/scoped_model.dart';
+
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/SplashScreen.dart';
@@ -28,28 +32,33 @@ import 'dart:math';
 
 void main() {
   debugPaintSizeEnabled = false;
-  runApp(CustomTheme(initialThemeKey: MyThemeKeys.LIGHT, child: MyApp()));
+  runApp(CustomTheme(
+      initialThemeKey: MyThemeKeys.LIGHT, child: MyApp(MainPageNavigator())));
 }
 
 class MyApp extends StatelessWidget {
+  final MainPageNavigator bottomNavIndex;
   final appTitle = 'Drawer Demo';
 
-  MyApp();
+  MyApp(this.bottomNavIndex);
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
-    return MaterialApp(
-      theme: CustomTheme.of(context),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => SplashScreen(),
-        'addRecipe': (context) => AddRecipeForm(),
-        'manageCategory': (context) => CategoryManager(),
-      },
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    return ScopedModel<MainPageNavigator>(
+      model: bottomNavIndex,
+      child: MaterialApp(
+        theme: CustomTheme.of(context),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => SplashScreen(),
+          'addRecipe': (context) => AddRecipeForm(),
+          'manageCategory': (context) => CategoryManager(),
+        },
+      ),
     );
   }
 }
@@ -67,8 +76,6 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Future<SharedPreferences> prefs;
   bool recipeCatOverview;
-  String title;
-  int _selectedIndex = 0;
 
   MyHomePageState({Key key, String title, @required this.recipeCatOverview});
   AnimationController _controller;
@@ -76,7 +83,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     Icons.grid_on,
     Icons.description,
   ];
-  Widget _animatedWidget;
+  Widget _initialAnimatedWidget;
 
   @override
   void initState() {
@@ -87,32 +94,35 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 100),
     );
     recipeCatOverview == true
-        ? _animatedWidget = RecipeCategoryOverview()
-        : _animatedWidget = CategoryGridView();
+        ? _initialAnimatedWidget = RecipeCategoryOverview()
+        : _initialAnimatedWidget = CategoryGridView();
   }
 
-  AppBar buildAppBar(String title) {
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  AppBar buildAppBar(String title, MainPageNavigator bottomNavIndex) {
     return AppBar(
       title: Text(title),
       actions: <Widget>[
-        _selectedIndex == 0
+        bottomNavIndex.index == 0
             ? IconButton(
-                icon: Icon(Icons.swap_vertical_circle),
+                icon: Icon(GroovinMaterialIcons.grid_large),
                 onPressed: () {
                   prefs.then((prefs) {
-                    if (recipeCatOverview) {
+                    if (bottomNavIndex.currentMainView
+                        is RecipeCategoryOverview) {
                       prefs.setBool('recipeCatOverview', false).then((_) {
-                        setState(() {
-                          recipeCatOverview = false;
-                          _animatedWidget = CategoryGridView();
-                        });
+                        bottomNavIndex
+                            .changeCurrentMainView(CategoryGridView());
                       });
                     } else {
                       prefs.setBool('recipeCatOverview', true).then((_) {
-                        setState(() {
-                          recipeCatOverview = true;
-                          _animatedWidget = RecipeCategoryOverview();
-                        });
+                        bottomNavIndex
+                            .changeCurrentMainView(RecipeCategoryOverview());
                       });
                     }
                   });
@@ -246,104 +256,106 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       return Theme.of(context).backgroundColor == Colors.white
           ? Color(0xffFFE3FC)
           : Color(0xff572944);
-    return Theme.of(context).backgroundColor == Colors.white
-        ? Colors.white
-        : Color(0xff202125);
+    return Theme.of(context).scaffoldBackgroundColor;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (title == null) {
-      title = "recipes";
-    }
-    return Scaffold(
-      appBar: buildAppBar(title),
-      floatingActionButton: getFloatingB(title),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          AnimatedSwitcher(
-            duration: Duration(milliseconds: 200),
-            child: _animatedWidget,
-          ),
-          FavoriteScreen(key: PageStorageKey('Page2')),
-          ShoppingCartScreen(key: PageStorageKey('Page3')),
-          RandomRecipe(),
-          Settings(),
-        ],
-      ),
-      backgroundColor: getBackgroundColor(title),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(canvasColor: Colors.black87),
-        child: BottomNavigationBar(
-          fixedColor: Colors.white,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(
-                  GroovinMaterialIcons.notebook,
-                  color: _selectedIndex == 0 ? Colors.brown[400] : Colors.white,
-                ),
-                title: Text("recipes")),
-            BottomNavigationBarItem(
-                icon: _selectedIndex == 1
-                    ? Icon(Icons.favorite, color: Colors.pink)
-                    : Icon(Icons.favorite_border),
-                title: Text("favorites")),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_cart,
-                    color: _selectedIndex == 2 ? Colors.grey : Colors.white),
-                title: Text("shopping cart")),
-            BottomNavigationBarItem(
-                icon: Icon(GroovinMaterialIcons.dice_multiple,
-                    color: _selectedIndex == 3 ? Colors.green : Colors.white),
-                title: Text("feelin' lucky?!")),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings,
-                    color: _selectedIndex == 4 ? Colors.grey : Colors.white),
-                title: Text("settings"))
+    return ScopedModelDescendant<MainPageNavigator>(
+        builder: (context, child, model) {
+      model.initCurrentMainView(_initialAnimatedWidget);
+      return Scaffold(
+        appBar: buildAppBar(model.title, model),
+        floatingActionButton: getFloatingB(model.title),
+        body: IndexedStack(
+          index: model.index,
+          children: [
+            AnimatedSwitcher(
+              duration: Duration(milliseconds: 200),
+              child: model.currentMainView,
+            ),
+            FavoriteScreen(key: PageStorageKey('Page2')),
+            ShoppingCartScreen(key: PageStorageKey('Page3')),
+            RandomRecipe(),
+            Settings(),
           ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
         ),
-      ),
-    );
+        backgroundColor: getBackgroundColor(model.title),
+        bottomNavigationBar: Theme(
+            data: Theme.of(context).copyWith(canvasColor: Colors.black87),
+            child: BottomNavyBar(
+                backgroundColor: Color(0xff232323),
+                animationDuration: Duration(milliseconds: 150),
+                selectedIndex: model.index,
+                showElevation: true,
+                onItemSelected: (index) => _onItemTapped(model, index),
+                items: [
+                  BottomNavyBarItem(
+                      icon: Icon(GroovinMaterialIcons.notebook),
+                      title: Text('recipes'),
+                      activeColor: Colors.orange,
+                      inactiveColor: Colors.white),
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.favorite),
+                    title: Text('favorites'),
+                    activeColor: Colors.pink,
+                    inactiveColor: Colors.white,
+                  ),
+                  BottomNavyBarItem(
+                      icon: Icon(Icons.shopping_basket),
+                      title: Text('basket'),
+                      activeColor: Colors.brown[300],
+                      inactiveColor: Colors.white),
+                  BottomNavyBarItem(
+                    icon: Icon(GroovinMaterialIcons.dice_multiple),
+                    title: Text('dice'),
+                    activeColor: Colors.green,
+                    inactiveColor: Colors.white,
+                  ),
+                  BottomNavyBarItem(
+                      icon: Icon(Icons.settings),
+                      title: Text('settings'),
+                      activeColor: Colors.grey[100],
+                      inactiveColor: Colors.white)
+                ])
+
+            // BottomNavigationBar(
+            //   fixedColor: Colors.white,
+            //   items: <BottomNavigationBarItem>[
+            //     BottomNavigationBarItem(
+            //         icon: Icon(
+            //           GroovinMaterialIcons.notebook,
+            //           color: _selectedIndex == 0 ? Colors.brown[400] : Colors.white,
+            //         ),
+            //         title: Text("recipes")),
+            //     BottomNavigationBarItem(
+            //         icon: _selectedIndex == 1
+            //             ? Icon(Icons.favorite, color: Colors.pink)
+            //             : Icon(Icons.favorite_border),
+            //         title: Text("favorites")),
+            //     BottomNavigationBarItem(
+            //         icon: Icon(Icons.shopping_cart,
+            //             color: _selectedIndex == 2 ? Colors.grey : Colors.white),
+            //         title: Text("shopping cart")),
+            //     BottomNavigationBarItem(
+            //         icon: Icon(GroovinMaterialIcons.dice_multiple,
+            //             color: _selectedIndex == 3 ? Colors.green : Colors.white),
+            //         title: Text("feelin' lucky?!")),
+            //     BottomNavigationBarItem(
+            //         icon: Icon(Icons.settings,
+            //             color: _selectedIndex == 4 ? Colors.grey : Colors.white),
+            //         title: Text("settings"))
+            //   ],
+            //   currentIndex: _selectedIndex,
+            //   onTap: _onItemTapped,
+            // ),
+            ),
+      );
+    });
   }
 
-  void _onItemTapped(int index) {
-    switch (index) {
-      case 0:
-        setState(() {
-          _selectedIndex = index;
-          title = "recipes";
-        });
-        return;
-      case 1:
-        setState(() {
-          _selectedIndex = index;
-          title = "favorites";
-        });
-        return;
-      case 2:
-        setState(() {
-          _selectedIndex = index;
-          title = "shopping cart";
-        });
-        return;
-      case 3:
-        setState(() {
-          _selectedIndex = index;
-          title = "calendar";
-        });
-        return;
-      case 4:
-        setState(() {
-          _selectedIndex = index;
-          title = "settings";
-        });
-        return;
-      default:
-        print('Selected a drawerItem which does not exist!');
-        return;
-    }
+  void _onItemTapped(MainPageNavigator mainPageNavigator, int index) {
+    print(index);
+    mainPageNavigator.changeIndex(index);
   }
 }

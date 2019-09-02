@@ -1,0 +1,328 @@
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:my_recipe_book/random_recipe/anchored_widget.dart';
+import 'package:my_recipe_book/random_recipe/random_recipe.dart';
+import 'package:my_recipe_book/random_recipe/recipe_card_big.dart';
+import 'package:my_recipe_book/random_recipe/recipe_engine.dart';
+import 'package:scoped_model/scoped_model.dart';
+import 'package:my_recipe_book/models/selected_index.dart';
+
+import '../recipe.dart';
+
+class CardStack extends StatefulWidget {
+  final RecipeEngine recipeEngine;
+
+  CardStack({
+    this.recipeEngine,
+    Key key,
+  }) : super(key: key);
+
+  _CardStackState createState() => _CardStackState();
+}
+
+class _CardStackState extends State<CardStack> {
+  Key _frontCard;
+  RecipeDecision _currentRecipeD;
+  double _nextCardScale = 0.9;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.recipeEngine.addListener(_onRecipeChange);
+
+    _currentRecipeD = widget.recipeEngine.currentRecipeD;
+    _currentRecipeD.addListener(_onRecipeChange);
+
+    _frontCard = Key(_currentRecipeD.recipe.name);
+  }
+
+  @override
+  void didUpdateWidget(CardStack oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print('uuuuuupdate');
+
+    if (widget.recipeEngine != oldWidget.recipeEngine) {
+      oldWidget.recipeEngine.removeListener(_onRecipeEngineChange);
+      widget.recipeEngine.addListener(_onRecipeEngineChange);
+
+      if (_currentRecipeD != null) {
+        _currentRecipeD.removeListener(_onRecipeChange);
+      }
+      _currentRecipeD = widget.recipeEngine.currentRecipeD;
+      if (_currentRecipeD != null) {
+        _currentRecipeD.addListener(_onRecipeChange);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_currentRecipeD != null) {
+      _currentRecipeD.removeListener(_onRecipeChange);
+    }
+
+    widget.recipeEngine.removeListener(_onRecipeEngineChange);
+
+    super.dispose();
+  }
+
+  void _onRecipeEngineChange() {
+    setState(() {
+      if (_currentRecipeD != null) {
+        _currentRecipeD.removeListener(_onRecipeChange);
+      }
+      _currentRecipeD = widget.recipeEngine.currentRecipeD;
+      if (_currentRecipeD != null) {
+        _currentRecipeD.addListener(_onRecipeChange);
+      }
+
+      _frontCard = Key(_currentRecipeD.recipe.name);
+    });
+  }
+
+  void _onRecipeChange() {
+    setState(() {});
+  }
+
+  void _onSlideUpdate(double distance) {
+    setState(() {
+      _nextCardScale = 0.9 + (0.1 * (distance / 100.0)).clamp(0.0, 0.1);
+    });
+  }
+
+  Widget _buildBackCard() {
+    print('BackCard' + widget.recipeEngine.nextRecipeD.recipe.name);
+    return Transform(
+      transform: Matrix4.identity()..scale(_nextCardScale, _nextCardScale),
+      alignment: Alignment.center,
+      child: RecipeCardBig(
+        recipe: widget.recipeEngine.nextRecipeD.recipe,
+      ),
+    );
+  }
+
+  Widget _buildFrontCard() {
+    print('FrontCard' + widget.recipeEngine.currentRecipeD.recipe.name);
+    return RecipeCardBig(
+      key: _frontCard,
+      recipe: widget.recipeEngine.currentRecipeD.recipe,
+    );
+  }
+
+  void _onSlideOutComplete() {
+    print('_onslideoutcomplete');
+    RecipeDecision currentRecipeD = widget.recipeEngine.currentRecipeD;
+
+    currentRecipeD.makeDecision();
+
+    widget.recipeEngine.cycleRecipeD();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        DraggableCard(
+          card: _buildBackCard(),
+          isDraggable: false,
+        ),
+        DraggableCard(
+          card: _buildFrontCard(),
+          onSlideUpdate: _onSlideUpdate,
+          onSlideOutComplete: _onSlideOutComplete,
+        ),
+      ],
+    );
+  }
+}
+
+class DraggableCard extends StatefulWidget {
+  final Widget card;
+  final bool isDraggable;
+  final Function(double distance) onSlideUpdate;
+  final Function() onSlideOutComplete;
+
+  DraggableCard({
+    this.card,
+    this.isDraggable = true,
+    this.onSlideUpdate,
+    this.onSlideOutComplete,
+    Key key,
+  }) : super(key: key);
+
+  _DraggableCardState createState() => _DraggableCardState();
+}
+
+class _DraggableCardState extends State<DraggableCard>
+    with TickerProviderStateMixin {
+  GlobalKey recipeCardKey = new GlobalKey(debugLabel: 'recipe_card_key');
+  Offset cardOffset = const Offset(0.0, 0.0);
+  Offset dragStart;
+  Offset dragPosition;
+  Offset slideBackStart;
+  AnimationController slideBackAnimation;
+  Tween<Offset> slideOutTween;
+  AnimationController slideOutAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    slideBackAnimation = AnimationController(
+      duration: Duration(milliseconds: 1000),
+      vsync: this,
+    )
+      ..addListener(() => setState(() {
+            cardOffset = Offset.lerp(slideBackStart, const Offset(0.0, 0.0),
+                Curves.elasticOut.transform(slideBackAnimation.value));
+
+            if (null != widget.onSlideUpdate) {
+              widget.onSlideUpdate(cardOffset.distance);
+            }
+          }))
+      ..addStatusListener((AnimationStatus status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            dragStart = null;
+            slideBackStart = null;
+            dragPosition = null;
+          });
+        }
+      });
+
+    slideOutAnimation =
+        AnimationController(duration: Duration(milliseconds: 500), vsync: this)
+          ..addListener(() {
+            setState(() {
+              cardOffset = slideOutTween.evaluate(slideOutAnimation);
+
+              if (null != widget.onSlideUpdate) {
+                widget.onSlideUpdate(cardOffset.distance);
+              }
+            });
+          })
+          ..addStatusListener((AnimationStatus status) {
+            if (status == AnimationStatus.completed) {
+              setState(() {
+                dragStart = null;
+                dragPosition = null;
+                slideOutTween = null;
+
+                if (widget.onSlideOutComplete != null) {
+                  widget.onSlideOutComplete();
+                }
+              });
+            }
+          });
+  }
+
+  @override
+  void didUpdateWidget(DraggableCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.card.key != oldWidget.card.key) {
+      cardOffset = Offset(0.0, 0.0);
+    }
+  }
+
+  @override
+  void dispose() {
+    slideBackAnimation.dispose();
+    super.dispose();
+  }
+
+  void _onPanStart(DragStartDetails details) {
+    dragStart = details.globalPosition;
+
+    if (slideBackAnimation.isAnimating) {
+      slideBackAnimation.stop(canceled: true);
+    }
+  }
+
+  void _onPanUpdate(DragUpdateDetails details) {
+    setState(() {
+      dragPosition = details.globalPosition;
+      cardOffset = dragPosition - dragStart;
+
+      if (null != widget.onSlideUpdate) {
+        widget.onSlideUpdate(cardOffset.distance);
+      }
+    });
+  }
+
+  void _onPanEnd(DragEndDetails details) {
+    final dragVector = cardOffset / cardOffset.distance;
+    final isInLeftRegion = (cardOffset.dx / context.size.width) < -0.45;
+    final isInRightRegion = (cardOffset.dx / context.size.width) > 0.45;
+    final isInTopRegion = (cardOffset.dy / context.size.height) < -0.40;
+
+    print(isInTopRegion);
+
+    setState(() {
+      if (isInLeftRegion || isInRightRegion) {
+        slideOutTween = Tween(
+            begin: cardOffset, end: dragVector * (2 * context.size.width));
+        slideOutAnimation.forward(from: 0.0);
+      } else if (isInTopRegion) {
+        slideOutTween = Tween(
+            begin: cardOffset, end: dragVector * (2 * context.size.height));
+        slideOutAnimation.forward(from: 0.0);
+      } else {
+        slideBackStart = cardOffset;
+        slideBackAnimation.forward(from: 0.0);
+      }
+    });
+  }
+
+  double _rotation(Rect dragBounds) {
+    if (dragStart != null) {
+      final rotationCornerMultiplier =
+          dragStart.dy >= dragBounds.top + (dragBounds.height / 2) ? -1 : 1;
+      return (pi / 8) *
+          (cardOffset.dx / dragBounds.width) *
+          rotationCornerMultiplier;
+    } else {
+      return 0.0;
+    }
+  }
+
+  Offset _rotationOrigin(Rect dragBounds) {
+    if (dragStart != null) {
+      return dragStart - dragBounds.topLeft;
+    } else {
+      return Offset(0.0, 0.0);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScopedModelDescendant<MainPageNavigator>(
+      builder: (context, child, model) => AnchoredOverlay(
+          showOverlay: model.index == 3 ? true : false,
+          child: Center(),
+          overlayBuilder: (context, anchorBounds, anchor) {
+            return CenterAbout(
+              position: anchor,
+              child: Transform(
+                transform:
+                    Matrix4.translationValues(cardOffset.dx, cardOffset.dy, 0.0)
+                      ..rotateZ(_rotation(anchorBounds)),
+                origin: _rotationOrigin(anchorBounds),
+                child: Container(
+                  key: recipeCardKey,
+                  width: anchorBounds.width,
+                  height: anchorBounds.height,
+                  padding: EdgeInsets.all(16),
+                  child: GestureDetector(
+                    onPanStart: _onPanStart,
+                    onPanUpdate: _onPanUpdate,
+                    onPanEnd: _onPanEnd,
+                    child: widget.card,
+                  ),
+                ),
+              ),
+            );
+          }),
+    );
+  }
+}

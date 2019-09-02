@@ -1,8 +1,193 @@
 import 'package:flutter/material.dart';
-import './anchored_widget.dart';
 import 'package:my_recipe_book/database.dart';
-import 'package:my_recipe_book/recipe.dart';
-import '../recipe_card.dart';
+import 'package:my_recipe_book/random_recipe/recipe_engine.dart';
+
+import '../recipe.dart';
+import 'draggable_card.dart';
+
+final RecipeEngine recipeEngine = RecipeEngine(
+    recipeDecisions: [
+  Recipe(
+    id: 1,
+    name: '1. Steack mit Bratsauce',
+    imagePath: 'images/breakfast.jpg',
+    imagePreviewPath: 'images/breakfast.jpg',
+    servings: 3,
+    ingredientsGlossary: ['Steacksauce', 'Steack'],
+    ingredients: [
+      [
+        Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
+        Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
+        Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
+        Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
+      ],
+      [
+        Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
+        Ingredient(name: 'Steak', amount: 700, unit: 'g')
+      ],
+    ],
+    complexity: 4,
+    vegetable: Vegetable.NON_VEGETARIAN,
+    steps: [
+      'step1',
+      'step2 kek',
+    ],
+    stepImages: [
+      [], [],
+      // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
+      // [
+      //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
+      // ],
+    ],
+    notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
+    isFavorite: false,
+    categories: ['Hauptspeisen'],
+  ),
+  Recipe(
+    id: 1,
+    name: '2. LAAAST',
+    imagePath: 'images/meat.jpg',
+    imagePreviewPath: 'images/meat.jpg',
+    servings: 3,
+    ingredientsGlossary: ['Steacksauce', 'Steack'],
+    ingredients: [
+      [
+        Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
+        Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
+        Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
+        Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
+      ],
+      [
+        Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
+        Ingredient(name: 'Steak', amount: 700, unit: 'g')
+      ],
+    ],
+    complexity: 4,
+    vegetable: Vegetable.NON_VEGETARIAN,
+    steps: [
+      'step1',
+      'step2 kek',
+    ],
+    stepImages: [
+      [], [],
+      // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
+      // [
+      //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
+      // ],
+    ],
+    notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
+    isFavorite: false,
+    categories: ['Hauptspeisen'],
+  ),
+  Recipe(
+    id: 1,
+    name: '3. Spaghetti',
+    imagePath: 'images/meat.jpg',
+    imagePreviewPath: 'images/meat.jpg',
+    servings: 3,
+    ingredientsGlossary: ['Steacksauce', 'Steack'],
+    ingredients: [
+      [
+        Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
+        Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
+        Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
+        Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
+      ],
+      [
+        Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
+        Ingredient(name: 'Steak', amount: 700, unit: 'g')
+      ],
+    ],
+    complexity: 4,
+    vegetable: Vegetable.NON_VEGETARIAN,
+    steps: [
+      'step1',
+      'step2 kek',
+    ],
+    stepImages: [
+      [], [],
+      // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
+      // [
+      //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
+      // ],
+    ],
+    notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
+    isFavorite: false,
+    categories: ['Hauptspeisen'],
+  ),
+  Recipe(
+    id: 1,
+    name: '4. Spaghetti',
+    imagePath: 'images/meat.jpg',
+    imagePreviewPath: 'images/meat.jpg',
+    servings: 3,
+    ingredientsGlossary: ['Steacksauce', 'Steack'],
+    ingredients: [
+      [
+        Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
+        Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
+        Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
+        Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
+      ],
+      [
+        Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
+        Ingredient(name: 'Steak', amount: 700, unit: 'g')
+      ],
+    ],
+    complexity: 4,
+    vegetable: Vegetable.NON_VEGETARIAN,
+    steps: [
+      'step1',
+      'step2 kek',
+    ],
+    stepImages: [
+      [], [],
+      // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
+      // [
+      //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
+      // ],
+    ],
+    notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
+    isFavorite: false,
+    categories: ['Hauptspeisen'],
+  ),
+  Recipe(
+    id: 1,
+    name: '5. Spaghetti',
+    imagePath: 'images/meat.jpg',
+    imagePreviewPath: 'images/meat.jpg',
+    servings: 3,
+    ingredientsGlossary: ['Steacksauce', 'Steack'],
+    ingredients: [
+      [
+        Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
+        Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
+        Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
+        Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
+      ],
+      [
+        Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
+        Ingredient(name: 'Steak', amount: 700, unit: 'g')
+      ],
+    ],
+    complexity: 4,
+    vegetable: Vegetable.NON_VEGETARIAN,
+    steps: [
+      'step1',
+      'step2 kek',
+    ],
+    stepImages: [
+      [], [],
+      // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
+      // [
+      //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
+      // ],
+    ],
+    notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
+    isFavorite: false,
+    categories: ['Hauptspeisen'],
+  ),
+].map((recipe) => RecipeDecision(recipe: recipe)).toList());
 
 class RandomRecipe extends StatefulWidget {
   RandomRecipe({Key key}) : super(key: key);
@@ -11,123 +196,21 @@ class RandomRecipe extends StatefulWidget {
 }
 
 class _RandomRecipeState extends State<RandomRecipe> {
-  Widget _buildCardStack(Recipe temporaryRecipe) {
-    return AnchoredOverlay(
-        showOverlay: true,
-        child: Center(),
-        overlayBuilder: (context, anchorBounds, anchor) {
-          return CenterAbout(
-            position: anchor,
-            child: Container(
-                width: anchorBounds.width,
-                height: anchorBounds.height,
-                padding: EdgeInsets.all(16),
-                child: RecipeCardBig(
-                  recipe: temporaryRecipe,
-                )),
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Container();
     return FutureBuilder<dynamic>(
       future: DBProvider.db.getRecipeById(0, true),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          print(snapshot.data.toString());
-          return _buildCardStack(snapshot.data);
+          return CardStack(
+            // TODO: Pass in the recipes here
+            recipeEngine: recipeEngine,
+          );
         }
         return (Center(
           child: CircularProgressIndicator(),
         ));
       },
-    );
-  }
-}
-
-class RecipeCardBig extends StatelessWidget {
-  final Recipe recipe;
-
-  const RecipeCardBig({this.recipe, Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 5,
-                spreadRadius: 2,
-                color: Colors.grey[400],
-              )
-            ]),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
-                    Image.asset(
-                      recipe.imagePath,
-                      fit: BoxFit.cover,
-                    ),
-                    Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          color: Colors.white.withOpacity(0.6),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.8 -
-                                          20,
-                                  child: Text(
-                                    recipe.name,
-                                    style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  "images/${getRecipeTypeImage(recipe.vegetable)}.png",
-                                  height: 35,
-                                  width: 35,
-                                  fit: BoxFit.scaleDown,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ))
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Column(
-                children: <Widget>[],
-              ),
-            )
-          ],
-        ),
-      ),
     );
   }
 }

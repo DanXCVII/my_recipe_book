@@ -428,9 +428,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   "select a category:",
                   textAlign: TextAlign.left,
                   style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                     ),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
               // category for radio buttons for vegetarian selector
@@ -604,7 +604,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     Random random = new Random();
     int dotIndex = selectedImagePath.indexOf('.');
     String ending =
-        selectedImagePath.substring(dotIndex, selectedImagePath.length);
+        selectedImagePath.substring(dotIndex);
     return random.nextInt(10000).toString() + ending;
   }
 
@@ -652,10 +652,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     String recipeImage = selectedRecipeImage.selectedImage;
     if (recipeImage != null) {
       imageDatatype =
-          recipeImage.substring(recipeImage.length - 4, recipeImage.length);
+          recipeImage.substring(recipeImage.lastIndexOf('.'));
     }
-    print('loooooool');
-    print(recipeImage);
+
     Recipe newRecipe = new Recipe(
       id: recipeId,
       name: nameController.text,

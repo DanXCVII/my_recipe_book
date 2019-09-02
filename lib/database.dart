@@ -325,7 +325,6 @@ class DBProvider {
           'SELECT * FROM StepImages WHERE steps_id=${resSteps[i]['id']} ORDER BY id ASC');
       stepImages.add([]);
       for (int j = 0; j < resStepImages.length; j++) {
-        print(resStepImages[j]['image']);
         stepImages[i].add(preString + resStepImages[j]['image']);
       }
     }

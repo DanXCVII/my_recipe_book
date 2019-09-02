@@ -132,8 +132,8 @@ class _ImageSelectorState extends State<ImageSelector> {
                 ? recipeId = recipeId =
                     await DBProvider.db.getNewIDforTable('recipe', 'id')
                 : recipeId = widget.recipeId;
-            String dataType = pictureFile.path.substring(
-                pictureFile.path.length - 4, pictureFile.path.length);
+            String dataType =
+                pictureFile.path.substring(pictureFile.path.lastIndexOf('.'));
             String recipeImagePathFull =
                 await PathProvider.pP.getRecipePathFull(recipeId, dataType);
 

@@ -25,6 +25,8 @@ const double paddingBottomTime = 5;
 const double headingSize = 20;
 const Color textColor = Colors.white;
 
+enum PopupOptions { EXPORT, DELETE }
+
 class RecipeScreen extends StatelessWidget {
   final GlobalKey<AnimatedCircularChartState> _chartKey =
       new GlobalKey<AnimatedCircularChartState>();
@@ -34,7 +36,10 @@ class RecipeScreen extends StatelessWidget {
   final String heroTitle;
 
   RecipeScreen(
-      {@required this.recipe, @required this.primaryColor, this.heroImageTag, this.heroTitle});
+      {@required this.recipe,
+      @required this.primaryColor,
+      this.heroImageTag,
+      this.heroTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -50,13 +55,6 @@ class RecipeScreen extends StatelessWidget {
               actions: <Widget>[
                 Favorite(recipe),
                 IconButton(
-                  icon: Icon(Icons.import_export),
-                  tooltip: 'export',
-                  onPressed: () {
-                    exportRecipe(recipe).then((_) {});
-                  },
-                ),
-                IconButton(
                   icon: Icon(Icons.edit),
                   tooltip: 'edit',
                   onPressed: () {
@@ -68,21 +66,27 @@ class RecipeScreen extends StatelessWidget {
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete),
-                  tooltip: "delete",
-                  onPressed: () {
-                    DBProvider.db.deleteRecipe(recipe).then((_) {
-                      Navigator.pop(context);
-                    });
-                  },
-                ),
-                IconButton(
                   icon: Icon(Icons.share),
                   tooltip: 'share recipe',
                   onPressed: () {
                     Share.plainText(
                             text: getRecipeAsString(recipe), title: 'Rezept')
                         .share();
+                  },
+                ),
+                PopupMenuButton<PopupOptions>(
+                  onSelected: (value) => _choiceAction(value, context),
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem(
+                        value: PopupOptions.EXPORT,
+                        child: Text('export as zip'),
+                      ),
+                      PopupMenuItem(
+                        value: PopupOptions.DELETE,
+                        child: Text('delete'),
+                      )
+                    ];
                   },
                 ),
               ],
@@ -298,6 +302,16 @@ class RecipeScreen extends StatelessWidget {
                 : Container(),
           ]))
         ]));
+  }
+
+  _choiceAction(PopupOptions value, context) {
+    if (value == PopupOptions.DELETE) {
+      DBProvider.db.deleteRecipe(recipe).then((_) {
+        Navigator.pop(context);
+      });
+    } else if (value == PopupOptions.EXPORT) {
+      exportRecipe(recipe).then((_) {});
+    }
   }
 
   Future<bool> exportRecipe(Recipe recipe) async {
@@ -886,17 +900,6 @@ class IngredientsScreenState extends State<IngredientsScreen> {
       if (saved.contains(ingredients[i])) removeFromCart.add(ingredients[i]);
     }
     DBProvider.db.removeFromShoppingCart(removeFromCart);
-  }
-
-  /// Takes a List<List<Ingredient>> and flattens it to a List<Ingredient>
-  /// with still all the ingredients inside
-  List<Ingredient> flattenIngredients(List<List<Ingredient>> listList) {
-    List<Ingredient> singleList = [];
-
-    for (int i = 0; i < listList.length; i++) {
-      singleList.addAll(listList[i]);
-    }
-    return singleList;
   }
 
   @override

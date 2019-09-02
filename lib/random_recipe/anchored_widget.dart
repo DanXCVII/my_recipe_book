@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class AnchoredOverlay extends StatelessWidget {
   final bool showOverlay;
-  final Widget Function(BuildContext, Rect anchorBounds, Offset anchor) overlayBuilder;
+  final Widget Function(BuildContext, Rect anchorBounds, Offset anchor)
+      overlayBuilder;
   final Widget child;
 
   AnchoredOverlay({
@@ -25,8 +26,10 @@ class AnchoredOverlay extends StatelessWidget {
               // To calculate the "anchor" point we grab the render box of
               // our parent Container and then we find the center of that box.
               RenderBox box = context.findRenderObject() as RenderBox;
-              final topLeft = box.size.topLeft(box.localToGlobal(const Offset(0.0, 0.0)));
-              final bottomRight = box.size.bottomRight(box.localToGlobal(const Offset(0.0, 0.0)));
+              final topLeft =
+                  box.size.topLeft(box.localToGlobal(const Offset(0.0, 0.0)));
+              final bottomRight = box.size
+                  .bottomRight(box.localToGlobal(const Offset(0.0, 0.0)));
               final Rect anchorBounds = Rect.fromLTRB(
                 topLeft.dx,
                 topLeft.dy,
@@ -58,7 +61,7 @@ class OverlayBuilder extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _OverlayBuilderState createState() => new _OverlayBuilderState();
+  _OverlayBuilderState createState() => _OverlayBuilderState();
 }
 
 class _OverlayBuilderState extends State<OverlayBuilder> {
@@ -99,7 +102,7 @@ class _OverlayBuilderState extends State<OverlayBuilder> {
   void showOverlay() {
     if (overlayEntry == null) {
       // Create the overlay.
-      overlayEntry = new OverlayEntry(
+      overlayEntry = OverlayEntry(
         builder: widget.overlayBuilder,
       );
       addToOverlay(overlayEntry);
@@ -141,7 +144,6 @@ class _OverlayBuilderState extends State<OverlayBuilder> {
 }
 
 class CenterAbout extends StatelessWidget {
-
   final Offset position;
   final Widget child;
 
@@ -153,10 +155,10 @@ class CenterAbout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Positioned(
+    return Positioned(
       left: position.dx,
       top: position.dy,
-      child: new FractionalTranslation(
+      child: FractionalTranslation(
         translation: const Offset(-0.5, -0.5),
         child: child,
       ),
