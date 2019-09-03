@@ -49,6 +49,7 @@ class MyThemes {
     backgroundColor: Colors.white,
     scaffoldBackgroundColor: Color(0xffFEF3E1),
     canvasColor: Colors.white,
+    cardColor: Color(0xffFEF3E1),
     /* textSelectionColor: Colors.white,
          hintColor: Colors.white,
          textSelectionHandleColor: Colors.white, */
@@ -58,6 +59,7 @@ class MyThemes {
   static final ThemeData darkTheme = ThemeData(
     primaryColor: Color(0xFF790604),
     brightness: Brightness.dark,
+    cardColor: Color(0xff34363D),
     backgroundColor: Color(0xff212225),
     scaffoldBackgroundColor: Color(0xff212225),
     accentColor: Colors.grey[800],
@@ -66,6 +68,7 @@ class MyThemes {
   static final ThemeData oledblackTheme = ThemeData(
     primaryColor: Color(0xff363636),
     brightness: Brightness.dark,
+    cardColor: Color(0xff34363D),
     backgroundColor: Colors.black,
     scaffoldBackgroundColor: Colors.black,
     accentColor: Colors.grey[800],

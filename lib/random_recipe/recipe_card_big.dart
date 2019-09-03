@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../helper.dart';
@@ -25,13 +24,15 @@ class RecipeCardBig extends StatelessWidget {
     return Material(
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
                 blurRadius: 5,
                 spreadRadius: 2,
-                color: Colors.grey[400],
+                color: Theme.of(context).backgroundColor == Colors.white
+                    ? Colors.grey[400]
+                    : Colors.black,
               )
             ]),
         child: Padding(
@@ -44,14 +45,16 @@ class RecipeCardBig extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
-                    Image.asset(
+                    Hero(
+                      tag: '${recipe.id}-${recipe.name}',
+                      child:Image.asset(
                       recipe.imagePath,
                       fit: BoxFit.cover,
-                    ),
+                    ),),
                     Align(
                         alignment: Alignment.bottomCenter,
                         child: Container(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Theme.of(context).cardColor.withOpacity(0.6),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -160,7 +163,7 @@ class RecipeCardBig extends StatelessWidget {
                             children: <Widget>[
                               Text('complexity', style: smallHeading),
                               Text(
-                                recipe.complexity.toString(),
+                                recipe.effort.toString(),
                                 style: complexityNumberStyle,
                               ),
                             ],

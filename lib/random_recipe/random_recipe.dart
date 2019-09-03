@@ -11,6 +11,9 @@ final RecipeEngine recipeEngine = RecipeEngine(
     id: 1,
     name: '1. Steack mit Bratsauce',
     imagePath: 'images/breakfast.jpg',
+    totalTime: 20,
+    preperationTime: 5,
+    cookingTime: 10,
     imagePreviewPath: 'images/breakfast.jpg',
     servings: 3,
     ingredientsGlossary: ['Steacksauce', 'Steack'],
@@ -26,7 +29,7 @@ final RecipeEngine recipeEngine = RecipeEngine(
         Ingredient(name: 'Steak', amount: 700, unit: 'g')
       ],
     ],
-    complexity: 4,
+    effort: 4,
     vegetable: Vegetable.NON_VEGETARIAN,
     steps: [
       'step1',
@@ -49,6 +52,9 @@ final RecipeEngine recipeEngine = RecipeEngine(
     imagePath: 'images/meat.jpg',
     imagePreviewPath: 'images/meat.jpg',
     servings: 3,
+    totalTime: 20,
+    preperationTime: 5,
+    cookingTime: 10,
     ingredientsGlossary: ['Steacksauce', 'Steack'],
     ingredients: [
       [
@@ -62,7 +68,7 @@ final RecipeEngine recipeEngine = RecipeEngine(
         Ingredient(name: 'Steak', amount: 700, unit: 'g')
       ],
     ],
-    complexity: 4,
+    effort: 4,
     vegetable: Vegetable.NON_VEGETARIAN,
     steps: [
       'step1',
@@ -85,6 +91,9 @@ final RecipeEngine recipeEngine = RecipeEngine(
     imagePath: 'images/meat.jpg',
     imagePreviewPath: 'images/meat.jpg',
     servings: 3,
+    totalTime: 20,
+    preperationTime: 5,
+    cookingTime: 10,
     ingredientsGlossary: ['Steacksauce', 'Steack'],
     ingredients: [
       [
@@ -98,7 +107,7 @@ final RecipeEngine recipeEngine = RecipeEngine(
         Ingredient(name: 'Steak', amount: 700, unit: 'g')
       ],
     ],
-    complexity: 4,
+    effort: 4,
     vegetable: Vegetable.NON_VEGETARIAN,
     steps: [
       'step1',
@@ -121,6 +130,9 @@ final RecipeEngine recipeEngine = RecipeEngine(
     imagePath: 'images/meat.jpg',
     imagePreviewPath: 'images/meat.jpg',
     servings: 3,
+    totalTime: 20,
+    preperationTime: 5,
+    cookingTime: 10,
     ingredientsGlossary: ['Steacksauce', 'Steack'],
     ingredients: [
       [
@@ -134,7 +146,7 @@ final RecipeEngine recipeEngine = RecipeEngine(
         Ingredient(name: 'Steak', amount: 700, unit: 'g')
       ],
     ],
-    complexity: 4,
+    effort: 4,
     vegetable: Vegetable.NON_VEGETARIAN,
     steps: [
       'step1',
@@ -157,6 +169,9 @@ final RecipeEngine recipeEngine = RecipeEngine(
     imagePath: 'images/meat.jpg',
     imagePreviewPath: 'images/meat.jpg',
     servings: 3,
+    totalTime: 20,
+    preperationTime: 5,
+    cookingTime: 10,
     ingredientsGlossary: ['Steacksauce', 'Steack'],
     ingredients: [
       [
@@ -170,7 +185,7 @@ final RecipeEngine recipeEngine = RecipeEngine(
         Ingredient(name: 'Steak', amount: 700, unit: 'g')
       ],
     ],
-    complexity: 4,
+    effort: 4,
     vegetable: Vegetable.NON_VEGETARIAN,
     steps: [
       'step1',

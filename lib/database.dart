@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:my_recipe_book/helper.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:math';
@@ -159,7 +160,7 @@ class DBProvider {
       'servings': newRecipe.servings,
       'vegetable': newRecipe.vegetable.toString(),
       'notes': newRecipe.notes,
-      'complexity': newRecipe.complexity,
+      'complexity': newRecipe.effort,
       'isFavorite': 0
     });
 
@@ -243,7 +244,7 @@ class DBProvider {
 
   Future<List<String>> getCategoriesWithRecipes() async {
     final db = await database;
-    
+
     var resCategories = await db.rawQuery(
       'SELECT categoryName, count(recipe_id) FROM Categories '
       'INNER JOIN RecipeCategories ON Categories.categoryName = RecipeCategories.categories_name '
@@ -371,7 +372,7 @@ class DBProvider {
         steps: steps,
         notes: notes,
         categories: categories,
-        complexity: complexity,
+        effort: complexity,
         isFavorite: isFavorite);
   }
 
@@ -381,6 +382,78 @@ class DBProvider {
     var resRecipes =
         await db.rawQuery('SELECT id FROM recipe WHERE recipeName = ?', [name]);
     return await getRecipeById(resRecipes[0]['id'], true);
+  }
+
+  Future<dynamic> getRecipePreviewById(int id, bool fullImagePaths) async {
+    final db = await database;
+    final appDir = await getApplicationDocumentsDirectory();
+    String preString;
+    fullImagePaths ? preString = appDir.path : preString = '';
+
+    var resRecipe = await db.query('Recipe', where: 'id = ?', whereArgs: [id]);
+    if (resRecipe.isEmpty) {
+      return Null;
+    }
+    String name = resRecipe.first['recipeName'];
+    String image;
+    if (resRecipe.first['image'] != 'images/randomFood.png') {
+      image = preString + resRecipe.first['image'];
+    } else {
+      image = resRecipe.first['image'];
+    }
+    String previewPath;
+    image == "images/randomFood.png"
+        ? previewPath = 'images/randomFood.png'
+        : previewPath = await PathProvider.pP.getRecipePreviewPathFull(
+            id, image.substring(image.length - 4, image.length));
+
+    double rTotalTime = resRecipe.first['totalTime'];
+
+    String totalTime = getTimeHoursMinutes(rTotalTime);
+
+    int effort = resRecipe.first['complexity'];
+    bool isFavorite;
+    if (resRecipe.first['isFavorite'] == 1) {
+      isFavorite = true;
+    } else {
+      isFavorite = false;
+    }
+    Vegetable vegetable;
+
+    if (resRecipe.first['vegetable'] == 'Vegetable.NON_VEGETARIAN')
+      vegetable = Vegetable.NON_VEGETARIAN;
+    else if (resRecipe.first['vegetable'] == 'Vegetable.VEGETARIAN')
+      vegetable = Vegetable.VEGETARIAN;
+    else if (resRecipe.first['vegetable'] == 'Vegetable.VEGAN')
+      vegetable = Vegetable.VEGAN;
+
+    var resSections = await db.rawQuery(
+        'SELECT * FROM Sections WHERE recipe_id=$id ORDER BY number ASC');
+    int ingredientAmount = 0;
+    for (int i = 0; i < resSections.length; i++) {
+      var resIngredients = await db.rawQuery(
+          'SELECT * FROM Ingredients WHERE section_id=${resSections[i]['id']}');
+      ingredientAmount += resIngredients.length;
+    }
+
+    List<String> categories = new List<String>();
+    var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
+        'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
+        'WHERE recipe_id=$id');
+    for (int i = 0; i < resCategories.length; i++) {
+      categories.add(resCategories[i]['categoryName']);
+    }
+
+    return RecipePreview(
+        id: id,
+        name: name,
+        imagePreviewPath: previewPath,
+        totalTime: totalTime,
+        ingredientsAmount: ingredientAmount,
+        vegetable: vegetable,
+        categories: categories,
+        effort: effort,
+        isFavorite: isFavorite);
   }
 
   Future<List<String>> getRecipeNames() async {
@@ -417,7 +490,7 @@ class DBProvider {
     Directory appDir = await getApplicationDocumentsDirectory();
     String imageLocalPathRecipe = '${appDir.path}/${recipe.id}/';
     var dir = new Directory(imageLocalPathRecipe);
-    dir.deleteSync(recursive: true);
+    if (await dir.exists()) dir.deleteSync(recursive: true);
   }
 
   Future<String> getRandomRecipeImageFromCategory(String categoryName) async {
@@ -691,12 +764,24 @@ class DBProvider {
     return recipes;
   }
 */
+  Future<List<RecipePreview>> getRecipePreviewOfCategory(
+      String categoryName) async {
+    final db = await database;
+
+    var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
+        'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
+        'WHERE categoryName=\'$categoryName\'');
+    List<RecipePreview> output = new List<RecipePreview>();
+    for (int i = 0; i < resCategories.length; i++) {
+      RecipePreview newRecipe =
+          await getRecipePreviewById(resCategories[i]['recipe_id'], true);
+      output.add(newRecipe);
+    }
+    return output;
+  }
+
+/*
   Future<List<Recipe>> getRecipesOfCategory(String categoryName) async {
-    /*
-    MainScreenRecipes singleton = MainScreenRecipes();
-    if (singleton.recipes[categoryName] != null)
-      return singleton.recipes[categoryName];
-*/
     final db = await database;
 
     var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
@@ -710,7 +795,8 @@ class DBProvider {
     }
     return output;
   }
-
+*/
+/*
   Future<List<Recipe>> getRecipesOfNoCategory() async {
     final db = await database;
 
@@ -724,7 +810,36 @@ class DBProvider {
 
     return recipes;
   }
+*/
+  Future<List<RecipePreview>> getRecipePreviewOfNoCategory() async {
+    final db = await database;
 
+    List<RecipePreview> recipes = [];
+    var resRecipe = await db.rawQuery('SELECT id FROM Recipe '
+        'WHERE id NOT IN (SELECT recipe_id FROM RecipeCategories)');
+
+    for (int i = 0; i < resRecipe.length; i++) {
+      recipes.add(await getRecipePreviewById(resRecipe[i]['id'], true));
+    }
+
+    return recipes;
+  }
+
+  Future<List<RecipePreview>> getFavoriteRecipePreviews() async {
+    var db = await database;
+
+    List<RecipePreview> favorites = [];
+
+    var resFavorites =
+        await db.query('Recipe', where: 'isFavorite = ?', whereArgs: ['1']);
+
+    for (int i = 0; i < resFavorites.length; i++) {
+      favorites.add(await getRecipePreviewById(resFavorites[i]['id'], true));
+    }
+    return favorites;
+  }
+
+/*
   Future<List<Recipe>> getFavoriteRecipes() async {
     var db = await database;
 
@@ -738,7 +853,7 @@ class DBProvider {
     }
     return favorites;
   }
-
+*/
   Future<void> updateFavorite(bool status, int recipeId) async {
     final db = await database;
     int newStatus;

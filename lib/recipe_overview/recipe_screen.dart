@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:path_provider/path_provider.dart' as pP;
+import 'package:scoped_model/scoped_model.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:ui';
@@ -50,10 +52,11 @@ class RecipeScreen extends StatelessWidget {
     return Scaffold(
         backgroundColor: primaryColor,
         body: CustomScrollView(slivers: <Widget>[
-          SliverAppBar(
+          ScopedModelDescendant<RecipeKeeper>(
+            builder: (context, child, model) => SliverAppBar(
               backgroundColor: primaryColor,
               actions: <Widget>[
-                Favorite(recipe),
+                Favorite(recipe, model),
                 IconButton(
                   icon: Icon(Icons.edit),
                   tooltip: 'edit',
@@ -62,7 +65,9 @@ class RecipeScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                new AddRecipeForm(editRecipe: recipe)));
+                                new AddRecipeForm(
+                                  editRecipe: recipe,
+                                )));
                   },
                 ),
                 IconButton(
@@ -75,7 +80,7 @@ class RecipeScreen extends StatelessWidget {
                   },
                 ),
                 PopupMenuButton<PopupOptions>(
-                  onSelected: (value) => _choiceAction(value, context),
+                  onSelected: (value) => _choiceAction(value, context, model),
                   itemBuilder: (BuildContext context) {
                     return [
                       PopupMenuItem(
@@ -92,7 +97,9 @@ class RecipeScreen extends StatelessWidget {
               ],
               floating: false,
               pinned: false,
-              flexibleSpace: FlexibleSpaceBar()),
+              flexibleSpace: FlexibleSpaceBar(),
+            ),
+          ),
           SliverList(
               delegate: SliverChildListDelegate(<Widget>[
             recipe.imagePath == 'images/randomFood.png'
@@ -266,7 +273,7 @@ class RecipeScreen extends StatelessWidget {
                         child: Container(
                             height: 120,
                             child: Image.asset(
-                                "images/${_getImageComplexity(recipe.complexity.round())}.png")),
+                                "images/${_getImageComplexity(recipe.effort.round())}.png")),
                       )
                     ],
                   ),
@@ -304,11 +311,12 @@ class RecipeScreen extends StatelessWidget {
         ]));
   }
 
-  _choiceAction(PopupOptions value, context) {
+  _choiceAction(PopupOptions value, context, RecipeKeeper rKeeper) {
     if (value == PopupOptions.DELETE) {
       DBProvider.db.deleteRecipe(recipe).then((_) {
         Navigator.pop(context);
       });
+      rKeeper.deleteRecipeWithName(recipe.name);
     } else if (value == PopupOptions.EXPORT) {
       exportRecipe(recipe).then((_) {});
     }
@@ -552,17 +560,19 @@ class _CategoryCircleState extends State<CategoryCircle> {
     return GestureDetector(
         onTap: () {
           Random rand = new Random();
-          DBProvider.db.getRecipesOfCategory(widget.categoryName).then((r) {
+          DBProvider.db
+              .getRecipePreviewOfCategory(widget.categoryName)
+              .then((r) {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (BuildContext context) => new RecipeGridView(
-                    category: widget.categoryName == null
-                        ? 'no category'
-                        : widget.categoryName,
-                    randomCategoryImage:
-                        r.length != 1 ? rand.nextInt(r.length) : 0,
-                    recipes: r),
+                  category: widget.categoryName == null
+                      ? 'no category'
+                      : widget.categoryName,
+                  randomCategoryImage:
+                      r.length != 1 ? rand.nextInt(r.length) : 0,
+                ),
               ),
             );
           });

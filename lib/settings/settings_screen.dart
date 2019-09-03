@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../intro_screen.dart';
 import '../theming.dart';
 import './import_recipe.dart';
 
@@ -47,7 +49,7 @@ class _SettingsState extends State<Settings> {
                         border: Border.all(
                             width: 1,
                             color: Theme.of(context).textTheme.body1.color),
-                        color: Colors.white,
+                        color: Color(0xffFEF3E1),
                       ),
                     ),
                   ),
@@ -92,6 +94,16 @@ class _SettingsState extends State<Settings> {
                 ],
               ),
             ),
+          ),
+          Divider(),
+          ListTile(
+            title: Text('view intro'),
+            onTap: () {
+              SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => IntroScreen(
+                      true))); // TODO: recipeCategoryOverview not always true!
+            },
           ),
           Divider(),
           ListTile(title: Text('about me')),

@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../database.dart';
 import '../recipe.dart';
@@ -74,70 +76,76 @@ Map<String, List<Color>> colors = {
 
 class RecipeGridView extends StatelessWidget {
   final String category;
-  final List<Recipe> recipes;
   final int randomCategoryImage;
 
   const RecipeGridView(
-      {this.category,
-      @required this.randomCategoryImage,
-      @required this.recipes,
-      Key key})
+      {this.category, @required this.randomCategoryImage, Key key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (recipes.isNotEmpty) {
-      return Scaffold(
-        body: CustomScrollView(slivers: <Widget>[
-          SliverAppBar(
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () {
-                  DBProvider.db.getRecipeNames().then((recipeNames) {
-                    showSearch(
-                        context: context, delegate: RecipeSearch(recipeNames));
-                  });
-                },
-              )
-            ],
-            expandedHeight: 200.0,
-            floating: false,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Text(category),
-              background: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: ExactAssetImage(
-                        '${recipes[randomCategoryImage].imagePreviewPath}'),
-                    fit: BoxFit.cover,
+    return ScopedModelDescendant<RecipeKeeper>(
+        builder: (context, child, model) {
+      List<RecipePreview> recipePreviews = model.getRecipesOfCategory(category);
+      if (recipePreviews.isNotEmpty) {
+        return Scaffold(
+          body: CustomScrollView(slivers: <Widget>[
+            SliverAppBar(
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    DBProvider.db.getRecipeNames().then((recipeNames) {
+                      showSearch(
+                          context: context,
+                          delegate: RecipeSearch(recipeNames));
+                    });
+                  },
+                )
+              ],
+              expandedHeight: 200.0,
+              floating: false,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: true,
+                title: Text(category),
+                background: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage(
+                          '${recipePreviews[randomCategoryImage].imagePreviewPath}'),
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                  child: Container(
-                    decoration:
-                        BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                    child: Container(
+                      decoration:
+                          BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          SliverPadding(
-            padding: EdgeInsets.all(12),
-            sliver: SliverGrid.extent(
-              childAspectRatio: 0.75,
-              maxCrossAxisExtent: 300,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              children: getRecipeCards(recipes, context),
-            ),
-          )
-        ]),
-      );
-    }
+            SliverPadding(
+              padding: EdgeInsets.all(12),
+              sliver: SliverGrid.extent(
+                childAspectRatio: 0.75,
+                maxCrossAxisExtent: 300,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                children: getRecipeCards(recipePreviews, context),
+              ),
+            )
+          ]),
+        );
+      } else {
+        return noRecipeScreen(context);
+      }
+    });
+  }
+
+  Widget noRecipeScreen(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: Stack(
@@ -170,19 +178,17 @@ class RecipeGridView extends StatelessWidget {
     );
   }
 
-  List<Widget> getRecipeCards(List<Recipe> recipes, BuildContext context) {
+  List<Widget> getRecipeCards(
+      List<RecipePreview> recipes, BuildContext context) {
     List<RecipeCard> recipeCards = [];
     for (int i = 0; i < recipes.length; i++) {
       recipeCards.add(
         RecipeCard(
-          recipe: recipes[i],
+          recipePreview: recipes[i],
           shadow: Theme.of(context).backgroundColor == Colors.white
               ? Colors.grey[400]
               : Colors.black,
-          cardColor: Theme.of(context).backgroundColor == Colors.white
-              ? Color(0xffFFE8C2)
-              : Color(0xff34363D),
-          heroImageTag: "${recipes[i].imagePath}-${recipes[i].id}",
+          heroImageTag: "${recipes[i].imagePreviewPath}-${recipes[i].id}",
           heroTitle: "recipe-${recipes[i].id}",
         ),
       );
@@ -194,8 +200,9 @@ class RecipeGridView extends StatelessWidget {
 class Favorite extends StatefulWidget {
   final Recipe recipe;
   final double iconSize;
+  final RecipeKeeper rKeeper;
 
-  Favorite(this.recipe, {this.iconSize});
+  Favorite(this.recipe, this.rKeeper, {this.iconSize});
 
   @override
   State<StatefulWidget> createState() => FavoriteState();
@@ -218,6 +225,7 @@ class FavoriteState extends State<Favorite> {
       icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
       onPressed: () {
         if (isFavorite) {
+          widget.rKeeper.removeFromFavorites(widget.recipe.name);
           DBProvider.db.updateFavorite(false, widget.recipe.id).then((_) {
             setState(() {
               widget.recipe.isFavorite = false;
@@ -225,6 +233,7 @@ class FavoriteState extends State<Favorite> {
             });
           });
         } else {
+          widget.rKeeper.addFavorite(widget.recipe);
           DBProvider.db.updateFavorite(true, widget.recipe.id).then((_) {
             setState(() {
               widget.recipe.isFavorite = true;

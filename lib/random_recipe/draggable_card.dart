@@ -1,10 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:my_recipe_book/random_recipe/anchored_widget.dart';
-import 'package:my_recipe_book/random_recipe/random_recipe.dart';
 import 'package:my_recipe_book/random_recipe/recipe_card_big.dart';
 import 'package:my_recipe_book/random_recipe/recipe_engine.dart';
+import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 
@@ -29,7 +30,7 @@ class _CardStackState extends State<CardStack> {
   @override
   void initState() {
     super.initState();
-    widget.recipeEngine.addListener(_onRecipeChange);
+    widget.recipeEngine.addListener(_onRecipeEngineChange);
 
     _currentRecipeD = widget.recipeEngine.currentRecipeD;
     _currentRecipeD.addListener(_onRecipeChange);
@@ -40,7 +41,6 @@ class _CardStackState extends State<CardStack> {
   @override
   void didUpdateWidget(CardStack oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print('uuuuuupdate');
 
     if (widget.recipeEngine != oldWidget.recipeEngine) {
       oldWidget.recipeEngine.removeListener(_onRecipeEngineChange);
@@ -92,7 +92,6 @@ class _CardStackState extends State<CardStack> {
   }
 
   Widget _buildBackCard() {
-    print('BackCard' + widget.recipeEngine.nextRecipeD.recipe.name);
     return Transform(
       transform: Matrix4.identity()..scale(_nextCardScale, _nextCardScale),
       alignment: Alignment.center,
@@ -103,7 +102,6 @@ class _CardStackState extends State<CardStack> {
   }
 
   Widget _buildFrontCard() {
-    print('FrontCard' + widget.recipeEngine.currentRecipeD.recipe.name);
     return RecipeCardBig(
       key: _frontCard,
       recipe: widget.recipeEngine.currentRecipeD.recipe,
@@ -111,7 +109,6 @@ class _CardStackState extends State<CardStack> {
   }
 
   void _onSlideOutComplete() {
-    print('_onslideoutcomplete');
     RecipeDecision currentRecipeD = widget.recipeEngine.currentRecipeD;
 
     currentRecipeD.makeDecision();
@@ -130,6 +127,7 @@ class _CardStackState extends State<CardStack> {
         DraggableCard(
           card: _buildFrontCard(),
           onSlideUpdate: _onSlideUpdate,
+          recipe: widget.recipeEngine.currentRecipeD.recipe,
           onSlideOutComplete: _onSlideOutComplete,
         ),
       ],
@@ -141,12 +139,14 @@ class DraggableCard extends StatefulWidget {
   final Widget card;
   final bool isDraggable;
   final Function(double distance) onSlideUpdate;
+  final Recipe recipe;
   final Function() onSlideOutComplete;
 
   DraggableCard({
     this.card,
     this.isDraggable = true,
     this.onSlideUpdate,
+    this.recipe,
     this.onSlideOutComplete,
     Key key,
   }) : super(key: key);
@@ -156,7 +156,7 @@ class DraggableCard extends StatefulWidget {
 
 class _DraggableCardState extends State<DraggableCard>
     with TickerProviderStateMixin {
-  GlobalKey recipeCardKey = new GlobalKey(debugLabel: 'recipe_card_key');
+  GlobalKey recipeCardKey = GlobalKey(debugLabel: 'recipe_card_key');
   Offset cardOffset = const Offset(0.0, 0.0);
   Offset dragStart;
   Offset dragPosition;
@@ -256,8 +256,6 @@ class _DraggableCardState extends State<DraggableCard>
     final isInRightRegion = (cardOffset.dx / context.size.width) > 0.45;
     final isInTopRegion = (cardOffset.dy / context.size.height) < -0.40;
 
-    print(isInTopRegion);
-
     setState(() {
       if (isInLeftRegion || isInRightRegion) {
         slideOutTween = Tween(
@@ -313,12 +311,31 @@ class _DraggableCardState extends State<DraggableCard>
                   width: anchorBounds.width,
                   height: anchorBounds.height,
                   padding: EdgeInsets.all(16),
-                  child: GestureDetector(
-                    onPanStart: _onPanStart,
-                    onPanUpdate: _onPanUpdate,
-                    onPanEnd: _onPanEnd,
-                    child: widget.card,
-                  ),
+                  child: widget.isDraggable
+                      ? GestureDetector(
+                          onTap: () {
+                            model.changeOverlayStatus(false);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) => RecipeScreen(
+                                  recipe: widget.recipe,
+                                  primaryColor:
+                                      getRecipePrimaryColor(widget.recipe.vegetable),
+                                  heroImageTag:
+                                      '${widget.recipe.id}-${widget.recipe.name}',
+                                  heroTitle:
+                                      '${widget.recipe.id}--${widget.recipe.name}',
+                                ),
+                              ),
+                            );
+                          },
+                          onPanStart: _onPanStart,
+                          onPanUpdate: _onPanUpdate,
+                          onPanEnd: _onPanEnd,
+                          child: widget.card,
+                        )
+                      : widget.card,
                 ),
               ),
             );

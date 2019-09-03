@@ -21,7 +21,7 @@ class Recipe {
   List<List<String>> stepImages = new List<List<String>>();
   String notes;
   bool isFavorite;
-  int complexity;
+  int effort;
 
   Recipe(
       {@required this.id,
@@ -39,7 +39,7 @@ class Recipe {
       this.stepImages,
       this.notes,
       this.categories,
-      this.complexity,
+      this.effort,
       this.isFavorite});
 
   @override
@@ -59,7 +59,7 @@ class Recipe {
         'stepImages : ${stepImages.toString()}\n'
         'notes : $notes\n'
         'categories : ${categories.toString()}\n'
-        'complexity : $complexity\n'
+        'complexity : $effort\n'
         'isFavorite : $isFavorite');
   }
 
@@ -81,7 +81,7 @@ class Recipe {
       preperationTime: json['preperationTime'],
       cookingTime: json['cookingTime'],
       totalTime: json['totalTime'],
-      complexity: json['complexity'],
+      effort: json['complexity'],
       servings: json['servings'],
       categories: List<String>.from(json['categories']),
       ingredientsGlossary: List<String>.from(json['ingredientsGlossary']),
@@ -109,7 +109,7 @@ class Recipe {
         'cookingTime': cookingTime,
         'totalTime': totalTime,
         'servings': servings,
-        'complexity': complexity,
+        'complexity': effort,
         'categories': categories,
         'ingredientsGlossary': ingredientsGlossary,
         'ingredients': ingredients
@@ -137,9 +137,43 @@ class Recipe {
     this.stepImages = r.stepImages;
     this.notes = r.notes;
     this.categories = r.categories;
-    this.complexity = r.complexity;
+    this.effort = r.effort;
     this.isFavorite = r.isFavorite;
   }
+}
+
+class RecipePreview {
+  int id;
+  String name;
+  String imagePreviewPath;
+  String totalTime;
+  int ingredientsAmount;
+  int effort;
+  bool isFavorite;
+  Vegetable vegetable;
+  List<String> categories;
+
+  RecipePreview({
+    this.id,
+    this.name,
+    this.totalTime,
+    this.imagePreviewPath,
+    this.ingredientsAmount,
+    this.effort,
+    this.vegetable,
+    this.isFavorite,
+    this.categories,
+  });
+
+  get rId => id;
+  get rName => name;
+  get rTotalTime => totalTime;
+  get rIngredientsAmount => ingredientsAmount;
+  get rEffort => effort;
+  get rVegetable => vegetable;
+  get rIsFavorite => isFavorite;
+  get rImagePreviewPath => imagePreviewPath;
+  get rCategories => categories;
 }
 
 class Ingredient {
@@ -162,8 +196,8 @@ class Ingredient {
       };
 }
 
-Color getRecipePrimaryColor(Recipe recipe) {
-  switch (recipe.vegetable) {
+Color getRecipePrimaryColor(Vegetable vegetable) {
+  switch (vegetable) {
     case Vegetable.NON_VEGETARIAN:
       return Color(0xff4D0B06);
     case Vegetable.VEGAN:

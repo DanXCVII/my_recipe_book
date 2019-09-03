@@ -41,6 +41,9 @@ dependencies:
   bottom_navy_bar: ^5.2.0
   curved_navigation_bar: ^0.3.0
   scoped_model: ^1.0.1
+  page_transition: ^1.1.4
+  intro_views_flutter: ^2.6.0
+
   share:
     git:
      url: https://github.com/d-silveira/flutter-share.git
@@ -96,6 +99,12 @@ flutter:
    - images/cookingHat.png
    - images/hatWithSpoonFork.png
    - images/bigHeart.png
+   - images/key.png
+   - images/lock.png
+   - images/dices.png
+   - images/spielfigur.png
+   - images/letter.png
+   - images/postbox.png
 
    - animations/writing_pen.flr
 
@@ -109,6 +118,9 @@ flutter:
     - family: RibeyeMarrow
       fonts:
         - asset: fonts/RibeyeMarrow-Regular.ttf
+    - family: Rancho
+      fonts:
+        - asset: fonts/Rancho-Regular.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

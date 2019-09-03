@@ -298,7 +298,10 @@ class _IngredientRowState extends State<IngredientRow> {
                     decoration: TextDecoration.lineThrough,
                     color: Colors.black,
                   )
-                : TextStyle(fontSize: 18),
+                : TextStyle(
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
           ),
         ),
         Spacer(),
@@ -315,7 +318,10 @@ class _IngredientRowState extends State<IngredientRow> {
                         fontSize: 18,
                         decoration: TextDecoration.lineThrough,
                         color: Colors.black)
-                    : TextStyle(fontSize: 18),
+                    : TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
                 overflow: TextOverflow.clip,
                 maxLines: 1,
               ),

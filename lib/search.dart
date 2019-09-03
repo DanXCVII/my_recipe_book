@@ -59,7 +59,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                   MaterialPageRoute(
                     builder: (BuildContext context) => new RecipeScreen(
                       recipe: recipe,
-                      primaryColor: getRecipePrimaryColor(recipe),
+                      primaryColor: getRecipePrimaryColor(recipe.vegetable),
                       heroImageTag: 'heroTag',
                       heroTitle: 'heroTitle',
                     ),

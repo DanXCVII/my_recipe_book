@@ -1,7 +1,9 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import 'package:page_transition/page_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/SplashScreen.dart';
@@ -32,15 +34,23 @@ import 'dart:math';
 
 void main() {
   debugPaintSizeEnabled = false;
-  runApp(CustomTheme(
-      initialThemeKey: MyThemeKeys.LIGHT, child: MyApp(MainPageNavigator())));
+  runApp(
+    CustomTheme(
+      initialThemeKey: MyThemeKeys.LIGHT,
+      child: MyApp(
+        MainPageNavigator(),
+        RecipeKeeper(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   final MainPageNavigator bottomNavIndex;
+  final RecipeKeeper recipeKeeper;
   final appTitle = 'Drawer Demo';
 
-  MyApp(this.bottomNavIndex);
+  MyApp(this.bottomNavIndex, this.recipeKeeper);
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +60,18 @@ class MyApp extends StatelessWidget {
     ]);
     return ScopedModel<MainPageNavigator>(
       model: bottomNavIndex,
-      child: MaterialApp(
-        theme: CustomTheme.of(context),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => SplashScreen(),
-          'addRecipe': (context) => AddRecipeForm(),
-          'manageCategory': (context) => CategoryManager(),
-        },
+      child: ScopedModel<RecipeKeeper>(
+        model: recipeKeeper,
+        child: MaterialApp(
+          theme: CustomTheme.of(context),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => SplashScreen(
+                  recipeKeeper: recipeKeeper,
+                  mainPageNavigator: bottomNavIndex,
+                ),
+          },
+        ),
       ),
     );
   }
@@ -210,8 +224,19 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 onPressed: () {
                   _controller.reverse();
                   index == 1
-                      ? Navigator.pushNamed(context, 'addRecipe')
-                      : Navigator.pushNamed(context, 'manageCategory');
+                      ? Navigator.push(
+                          context,
+                          PageTransition(
+                              duration: Duration(milliseconds: 150),
+                              type: PageTransitionType.downToUp,
+                              child: AddRecipeForm()))
+                      : Navigator.push(
+                          context,
+                          PageTransition(
+                              duration: Duration(milliseconds: 150),
+                              type: PageTransitionType.downToUp,
+                              child: CategoryManager()),
+                        );
                 },
               ),
             ),
@@ -250,12 +275,17 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Color getBackgroundColor(String page) {
-    if (page == 'recipes')
+    if (page == 'recipes') {
       return Theme.of(context).scaffoldBackgroundColor;
-    else if (page == 'favorites')
+    } else if (page == 'favorites') {
       return Theme.of(context).backgroundColor == Colors.white
           ? Color(0xffFFE3FC)
           : Color(0xff572944);
+    } else if (page == 'shopping cart') {
+      return Theme.of(context).backgroundColor;
+    } else if (page == 'roll the dice') {
+      return Theme.of(context).backgroundColor;
+    }
     return Theme.of(context).scaffoldBackgroundColor;
   }
 
@@ -274,8 +304,8 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               duration: Duration(milliseconds: 200),
               child: model.currentMainView,
             ),
-            FavoriteScreen(key: PageStorageKey('Page2')),
-            ShoppingCartScreen(key: PageStorageKey('Page3')),
+            FavoriteScreen(),
+            ShoppingCartScreen(),
             RandomRecipe(),
             Settings(),
           ],
@@ -308,7 +338,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       inactiveColor: Colors.white),
                   BottomNavyBarItem(
                     icon: Icon(GroovinMaterialIcons.dice_multiple),
-                    title: Text('dice'),
+                    title: Text('roll the dice'),
                     activeColor: Colors.green,
                     inactiveColor: Colors.white,
                   ),

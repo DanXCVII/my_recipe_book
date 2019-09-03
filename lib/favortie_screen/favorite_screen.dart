@@ -1,54 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:scoped_model/scoped_model.dart';
 import '../recipe_card.dart';
 import '../recipe.dart';
-import '../database.dart';
 
-class FavoriteScreen extends StatefulWidget {
-  FavoriteScreen({Key key}) : super(key: key);
-
-  _FavoriteScreenState createState() => _FavoriteScreenState();
-}
-
-class _FavoriteScreenState extends State<FavoriteScreen> {
+class FavoriteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Recipe>>(
-        future: DBProvider.db.getFavoriteRecipes(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.length == 0)
-              return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      height: 80,
-                      child: Image.asset('images/bigHeart.png'),
-                    ),
-                    SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('You have no recipes under this category.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 26, fontFamily: 'RibeyeMarrow')),
-                    ),
-                  ]);
-            return FavoriteRecipeCards(
-              favoriteRecipes: snapshot.data,
-            );
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        });
+    return ScopedModelDescendant<RecipeKeeper>(
+        builder: (context, child, model) {
+      if (model.favorites.length == 0) {
+        return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                height: 80,
+                child: Image.asset('images/bigHeart.png'),
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('You have no recipes under this category.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 26, fontFamily: 'RibeyeMarrow')),
+              ),
+            ]);
+      } else {
+        return FavoriteRecipeCards(
+          favoriteRecipePreviews: model.favorites,
+        );
+      }
+    });
   }
 }
 
 class FavoriteRecipeCards extends StatelessWidget {
-  final List<Recipe> favoriteRecipes;
+  final List<RecipePreview> favoriteRecipePreviews;
 
-  const FavoriteRecipeCards({this.favoriteRecipes, Key key}) : super(key: key);
+  const FavoriteRecipeCards({this.favoriteRecipePreviews, Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -58,25 +49,21 @@ class FavoriteRecipeCards extends StatelessWidget {
       maxCrossAxisExtent: 300,
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
-      children: getRecipeCards(favoriteRecipes, context),
+      children: getRecipeCards(favoriteRecipePreviews, context),
     );
   }
 
-  List<Widget> getRecipeCards(List<Recipe> recipes, BuildContext context) {
+  List<Widget> getRecipeCards(
+      List<RecipePreview> recipes, BuildContext context) {
     List<RecipeCard> recipeCards = [];
     for (int i = 0; i < recipes.length; i++) {
       recipeCards.add(
         RecipeCard(
-          recipe: recipes[i],
-          shadow: 
-          Theme.of(context).backgroundColor == Colors.white
+          recipePreview: recipes[i],
+          shadow: Theme.of(context).backgroundColor == Colors.white
               ? Colors.grey[400]
-              : Colors.grey[900]
-              ,
-          cardColor: Theme.of(context).backgroundColor == Colors.white
-              ? Color(0xffFFCDEB)
-              : Color(0xff792C59),
-          heroImageTag: "${recipes[i].imagePath}--${recipes[i].id}",
+              : Colors.grey[900],
+          heroImageTag: "${recipes[i].imagePreviewPath}--${recipes[i].id}",
           heroTitle: "recipe--${recipes[i].id}",
         ),
       );

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+import 'helper.dart';
 
 const Map<int, Color> complexityColors = {
   1: Color(0xff28E424),
@@ -19,16 +22,14 @@ const Map<int, Color> complexityColors = {
 FontWeight itemsFW = FontWeight.w500;
 
 class RecipeCard extends StatelessWidget {
-  final Recipe recipe;
+  final RecipePreview recipePreview;
   final Color shadow;
-  final Color cardColor;
   final String heroImageTag;
   final String heroTitle;
 
   const RecipeCard({
-    this.recipe,
+    this.recipePreview,
     @required this.shadow,
-    @required this.cardColor,
     @required this.heroImageTag,
     @required this.heroTitle,
     Key key,
@@ -40,23 +41,25 @@ class RecipeCard extends StatelessWidget {
     double gridTileWidth = deviceWidth / (deviceWidth / 300.floor() + 1);
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => new RecipeScreen(
-              recipe: recipe,
-              primaryColor: getRecipePrimaryColor(recipe),
-              heroImageTag: heroImageTag,
-              heroTitle: heroTitle,
+        DBProvider.db.getRecipeById(recipePreview.id, true).then((recipe) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => new RecipeScreen(
+                recipe: recipe,
+                primaryColor: getRecipePrimaryColor(recipePreview.vegetable),
+                heroImageTag: heroImageTag,
+                heroTitle: heroTitle,
+              ),
             ),
-          ),
-        );
+          );
+        });
       },
       child: Stack(
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-              color: cardColor,
+              color: Theme.of(context).cardColor,
               boxShadow: [
                 BoxShadow(
                   offset: Offset(2, 2),
@@ -87,7 +90,7 @@ class RecipeCard extends StatelessWidget {
                             topRight: Radius.circular(gridTileWidth / 10),
                           ),
                           child: FadeInImage(
-                            image: AssetImage(recipe.imagePreviewPath),
+                            image: AssetImage(recipePreview.imagePreviewPath),
                             placeholder: MemoryImage(kTransparentImage),
                             fadeInDuration: Duration(milliseconds: 250),
                             fit: BoxFit.cover,
@@ -104,7 +107,7 @@ class RecipeCard extends StatelessWidget {
                       child: Material(
                         color: Colors.transparent,
                         child: Text(
-                          "${recipe.name}",
+                          "${recipePreview.name}",
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
@@ -123,7 +126,7 @@ class RecipeCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          getTimeHoursMinutes(recipe.totalTime),
+                          recipePreview.totalTime,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(
@@ -132,7 +135,7 @@ class RecipeCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "${getIngredientCount(recipe.ingredients)} ingredients",
+                          "${recipePreview.ingredientsAmount} ingredients",
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(
@@ -147,7 +150,7 @@ class RecipeCard extends StatelessWidget {
                               width: 14,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: complexityColors[recipe.complexity],
+                                color: complexityColors[recipePreview.effort],
                               ),
                             ),
                             Text(
@@ -173,7 +176,7 @@ class RecipeCard extends StatelessWidget {
               child: Container(
                 child: Center(
                   child: Image.asset(
-                    "images/${getRecipeTypeImage(recipe.vegetable)}.png",
+                    "images/${getRecipeTypeImage(recipePreview.vegetable)}.png",
                     height: 35,
                     width: 35,
                     fit: BoxFit.scaleDown,
@@ -183,7 +186,7 @@ class RecipeCard extends StatelessWidget {
                 width: gridTileWidth / 3,
               )),
 
-          recipe.isFavorite == true
+          recipePreview.isFavorite == true
               ? Align(
                   alignment: Alignment(0.95, -0.95),
                   child: Container(
@@ -212,13 +215,6 @@ class RecipeCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String getTimeHoursMinutes(double min) {
-    if (min ~/ 60 > 0) {
-      return "${min ~/ 60}h ${min - (min ~/ 60 * 60)}min";
-    }
-    return "$min min";
   }
 
   int getIngredientCount(List<List<Ingredient>> ingredients) {

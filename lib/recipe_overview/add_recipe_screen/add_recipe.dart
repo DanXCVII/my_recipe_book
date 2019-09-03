@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'dart:math';
 
 import '../../recipe.dart';
@@ -26,7 +28,9 @@ const double topPadding = 8;
 class AddRecipeForm extends StatefulWidget {
   final Recipe editRecipe;
 
-  AddRecipeForm({this.editRecipe});
+  AddRecipeForm({
+    this.editRecipe,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -161,106 +165,109 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ),
         title: Text("add recipe"),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.check),
-            color: Colors.white,
-            onPressed: () {
-              // TODO: Check if ingredients data is not only partially filled in
-              if (!_formKey.currentState.validate()) {
-                showDialog(
-                    context: context,
-                    builder: (_) => RoundEdgeDialog(
-                          title: Text(
-                            'Check filled in information',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 21),
-                          ),
-                          bottomSection: Text(
-                            'it seems, that you haven’t filled in the required fields. '
-                            'Please check for any red marked text fields.',
-                          ),
-                        ));
-              } else if (!isIngredientListValid(
-                ingredientNameController,
-                ingredientAmountController,
-                ingredientUnitController,
-              )) {
-                showDialog(
-                    context: context,
-                    builder: (_) => RoundEdgeDialog(
-                          title: Text(
-                            'Check your ingredients input',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 21),
-                          ),
-                          bottomSection: Text(
-                            'it seems to be that you have only partially filled out the '
-                            'data for the ingredients. Please correct that :)',
-                          ),
-                        ));
-              } else if (!isGlossaryValid(
-                ingredientNameController,
-                ingredientAmountController,
-                ingredientUnitController,
-                ingredientGlossaryController,
-              )) {
-                showDialog(
-                    context: context,
-                    builder: (_) => RoundEdgeDialog(
-                          title: Text(
-                            'Check your ingredients section fields',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 21),
-                          ),
-                          bottomSection: Text(
-                              'if you have multiple sections, you need to provide a title '
-                              'for each section.'),
-                        ));
-              } else {
-                /////////// Only do if all data is VALID! ///////////
-                FocusScope.of(context).requestFocus(new FocusNode());
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (_) => WillPopScope(
-                      // It disables the back button
-                      onWillPop: () async => false,
-                      child: RoundDialog(
-                          FlareActor(
-                            'animations/writing_pen.flr',
-                            alignment: Alignment.center,
-                            fit: BoxFit.fitWidth,
-                            animation: "Go",
-                          ),
-                          150)),
-                );
-                if (widget.editRecipe == null) {
-                  saveRecipe().then((_) {
-                    Navigator.pop(context);
-                  });
+          ScopedModelDescendant<RecipeKeeper>(builder: (context, child, model) {
+            return IconButton(
+              icon: Icon(Icons.check),
+              color: Colors.white,
+              onPressed: () {
+                // TODO: Check if ingredients data is not only partially filled in
+                if (!_formKey.currentState.validate()) {
+                  showDialog(
+                      context: context,
+                      builder: (_) => RoundEdgeDialog(
+                            title: Text(
+                              'Check filled in information',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700, fontSize: 21),
+                            ),
+                            bottomSection: Text(
+                              'it seems, that you haven’t filled in the required fields. '
+                              'Please check for any red marked text fields.',
+                            ),
+                          ));
+                } else if (!isIngredientListValid(
+                  ingredientNameController,
+                  ingredientAmountController,
+                  ingredientUnitController,
+                )) {
+                  showDialog(
+                      context: context,
+                      builder: (_) => RoundEdgeDialog(
+                            title: Text(
+                              'Check your ingredients input',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700, fontSize: 21),
+                            ),
+                            bottomSection: Text(
+                              'it seems to be that you have only partially filled out the '
+                              'data for the ingredients. Please correct that :)',
+                            ),
+                          ));
+                } else if (!isGlossaryValid(
+                  ingredientNameController,
+                  ingredientAmountController,
+                  ingredientUnitController,
+                  ingredientGlossaryController,
+                )) {
+                  showDialog(
+                      context: context,
+                      builder: (_) => RoundEdgeDialog(
+                            title: Text(
+                              'Check your ingredients section fields',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700, fontSize: 21),
+                            ),
+                            bottomSection: Text(
+                                'if you have multiple sections, you need to provide a title '
+                                'for each section.'),
+                          ));
                 } else {
-                  deleteOldSaveNewRecipe(widget.editRecipe).then((newRecipe) {
-                    newRecipe.isFavorite = widget.editRecipe.isFavorite;
-                    Navigator.pop(context); // loading screen
-                    Navigator.pop(context); // edit recipe screen
-                    Navigator.pop(context); // old recipe screen
-                    Navigator.pop(context); // recipes
-                    imageCache
-                        .clear(); // TODO: Maybe optimize and only clear nessesary date.. maybe not..
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => RecipeScreen(
-                                  recipe: newRecipe,
-                                  primaryColor:
-                                      getRecipePrimaryColor(newRecipe),
-                                  heroImageTag: 'null',
-                                )));
-                  });
+                  /////////// Only do if all data is VALID! ///////////
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => WillPopScope(
+                        // It disables the back button
+                        onWillPop: () async => false,
+                        child: RoundDialog(
+                            FlareActor(
+                              'animations/writing_pen.flr',
+                              alignment: Alignment.center,
+                              fit: BoxFit.fitWidth,
+                              animation: "Go",
+                            ),
+                            150)),
+                  );
+                  if (widget.editRecipe == null) {
+                    saveRecipe(model).then((_) {
+                      Navigator.pop(context);
+                    });
+                  } else {
+                    deleteOldSaveNewRecipe(widget.editRecipe, model)
+                        .then((newRecipe) {
+                      newRecipe.isFavorite = widget.editRecipe.isFavorite;
+                      Navigator.pop(context); // loading screen
+                      Navigator.pop(context); // edit recipe screen
+                      Navigator.pop(context); // old recipe screen
+                      Navigator.pop(context); // recipes
+                      imageCache
+                          .clear(); // TODO: Maybe optimize and only clear nessesary date.. maybe not..
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => RecipeScreen(
+                                    recipe: newRecipe,
+                                    primaryColor: getRecipePrimaryColor(
+                                        newRecipe.vegetable),
+                                    heroImageTag: 'null',
+                                  )));
+                    });
+                  }
                 }
-              }
-            },
-          ),
+              },
+            );
+          }),
           IconButton(
             icon: Icon(Icons.art_track),
             onPressed: () {
@@ -493,9 +500,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 
   /// TODO: ~~Fix that cached image will still show and not the new one
-  Future<Recipe> deleteOldSaveNewRecipe(Recipe editRecipe) async {
+  Future<Recipe> deleteOldSaveNewRecipe(
+      Recipe editRecipe, RecipeKeeper rKeeper) async {
+    rKeeper.deleteRecipeWithName(editRecipe.name);
     await DBProvider.db.deleteRecipeFromDatabase(editRecipe);
-    Recipe newRecipe = await saveRecipe();
+    Recipe newRecipe = await saveRecipe(rKeeper);
 
     return newRecipe;
   }
@@ -536,7 +545,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
           Ingredient(name: 'Steak', amount: 700, unit: 'g')
         ],
       ],
-      complexity: 4,
+      effort: 4,
       vegetable: Vegetable.NON_VEGETARIAN,
       steps: [
         'Flank Steak mit Rohrzucker und Salz bestreuen, anschließend mit Teriyakisauce marinieren '
@@ -603,12 +612,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   String getStepImageName(String selectedImagePath) {
     Random random = new Random();
     int dotIndex = selectedImagePath.indexOf('.');
-    String ending =
-        selectedImagePath.substring(dotIndex);
+    String ending = selectedImagePath.substring(dotIndex);
     return random.nextInt(10000).toString() + ending;
   }
 
-  Future<Recipe> saveRecipe() async {
+  Future<Recipe> saveRecipe(RecipeKeeper rKeeper) async {
     // get the lists for the data of the ingredients
     List<List<Ingredient>> ingredients = getCleanIngredientData(
         ingredientNameController,
@@ -651,8 +659,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     String imageDatatype;
     String recipeImage = selectedRecipeImage.selectedImage;
     if (recipeImage != null) {
-      imageDatatype =
-          recipeImage.substring(recipeImage.lastIndexOf('.'));
+      imageDatatype = recipeImage.substring(recipeImage.lastIndexOf('.'));
     }
 
     Recipe newRecipe = new Recipe(
@@ -686,7 +693,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       ingredientsGlossary:
           getCleanGlossary(ingredientGlossaryController, ingredients),
       ingredients: ingredients,
-      complexity: complexity.myDouble.round(),
+      effort: complexity.myDouble.round(),
       categories: newRecipeCategories,
       isFavorite:
           widget.editRecipe == null ? false : widget.editRecipe.isFavorite,
@@ -699,7 +706,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     }
 
     Recipe thisRecipe = await DBProvider.db.getRecipeById(recipeId, true);
-
+    rKeeper.addRecipe(thisRecipe);
     return thisRecipe;
   }
 

@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../../database.dart';
 import '../../recipe.dart';
@@ -9,65 +11,36 @@ import '../../recipe.dart';
 class CategoryGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<String>>(
-      future: DBProvider.db.getCategoriesWithRecipes(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return GridView.extent(
-              maxCrossAxisExtent: 300,
-              padding: const EdgeInsets.all(4),
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
-              children: getCategories(snapshot.data));
-        }
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+    return ScopedModelDescendant<RecipeKeeper>(
+        builder: (context, child, model) {
+      if (model.isInitialised) {
+        return GridView.extent(
+            maxCrossAxisExtent: 300,
+            padding: const EdgeInsets.all(4),
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
+            children: getCategories(model.categories, model));
+      }
+    });
   }
 
-  List<Widget> getCategories(List<String> categoryNames) {
+  List<Widget> getCategories(List<String> categoryNames, RecipeKeeper rKeeper) {
     List<Widget> gridTiles = [];
 
     for (final String category in categoryNames) {
-      gridTiles.add(FutureBuilder<List<Recipe>>(
-        future: DBProvider.db.getRecipesOfCategory(category),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return CategoryGridTile(
-              recipes: snapshot.data,
-              category: category,
-            );
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ));
+      List<RecipePreview> recipes = rKeeper.getRecipesOfCategory(category);
+      if (recipes.isNotEmpty)
+        gridTiles.add(CategoryGridTile(
+          recipes: recipes,
+          category: category,
+        ));
     }
-    gridTiles.add(
-      FutureBuilder<List<Recipe>>(
-        future: DBProvider.db.getRecipesOfNoCategory(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return CategoryGridTile(
-              recipes: snapshot.data,
-              category: 'no category',
-            );
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
-    );
     return gridTiles;
   }
 }
 
 class CategoryGridTile extends StatelessWidget {
-  final List<Recipe> recipes;
+  final List<RecipePreview> recipes;
   final String category;
 
   const CategoryGridTile({this.recipes, this.category, Key key})
@@ -80,7 +53,7 @@ class CategoryGridTile extends StatelessWidget {
     int rand;
     if (recipes.isNotEmpty) {
       rand = r.nextInt(recipes.length);
-      imageAsset = recipes[rand].imagePath;
+      imageAsset = recipes[rand].rImagePreviewPath;
     } else {
       imageAsset = "images/randomFood.png";
     }
@@ -91,7 +64,6 @@ class CategoryGridTile extends StatelessWidget {
               MaterialPageRoute(
                   builder: (BuildContext context) => RecipeGridView(
                         category: category,
-                        recipes: recipes,
                         randomCategoryImage: rand,
                       )));
         },
