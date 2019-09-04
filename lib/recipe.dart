@@ -5,7 +5,6 @@ import 'package:path_provider/path_provider.dart';
 enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
 
 class Recipe {
-  int id;
   String name;
   String imagePath;
   String imagePreviewPath;
@@ -24,7 +23,7 @@ class Recipe {
   int effort;
 
   Recipe(
-      {@required this.id,
+      {
       @required this.name,
       this.imagePath,
       this.imagePreviewPath,
@@ -44,7 +43,7 @@ class Recipe {
 
   @override
   String toString() {
-    return ('id : $id\n'
+    return (
         'name : $name\n'
         'imagePath : $imagePath\n'
         'imagePreviewPath : $imagePreviewPath\n'
@@ -74,7 +73,6 @@ class Recipe {
     }
 
     return new Recipe(
-      id: json['id'],
       name: json['name'],
       imagePath: json['image'],
       imagePreviewPath: json['imagePreviewPath'],
@@ -101,7 +99,6 @@ class Recipe {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
         'name': name,
         'image': imagePath,
         'imagePreviewPath': imagePreviewPath,
@@ -122,7 +119,6 @@ class Recipe {
       };
 
   void setEqual(Recipe r) {
-    this.id = r.id;
     this.name = r.name;
     this.imagePath = r.imagePath;
     this.imagePreviewPath = r.imagePreviewPath;
@@ -143,7 +139,6 @@ class Recipe {
 }
 
 class RecipePreview {
-  int id;
   String name;
   String imagePreviewPath;
   String totalTime;
@@ -154,7 +149,6 @@ class RecipePreview {
   List<String> categories;
 
   RecipePreview({
-    this.id,
     this.name,
     this.totalTime,
     this.imagePreviewPath,
@@ -165,7 +159,6 @@ class RecipePreview {
     this.categories,
   });
 
-  get rId => id;
   get rName => name;
   get rTotalTime => totalTime;
   get rIngredientsAmount => ingredientsAmount;
@@ -264,72 +257,73 @@ class PathProvider {
     return localDirectory.path;
   }
 
-  String getRecipeStepDir(int recipeId) {
-    return '$recipeId/stepImages/';
+  String getRecipeStepDir(String recipeName) {
+    return '.$recipeName/stepImages/';
   }
 
-  Future<String> getRecipeDir(int recipeId) async {
+  Future<String> getRecipeDir(String recipeName) async {
     String imageLocalPath = await localPath;
-    return '$imageLocalPath/$recipeId';
+    return '$imageLocalPath/.$recipeName';
   }
 
   Future<String> getRecipeStepNumberDirFull(
-      int recipeId, int stepNumber) async {
+      String recipeName, int stepNumber) async {
     String imageLocalPath = await localPath;
-    await Directory('$imageLocalPath/$recipeId/stepImages/$stepNumber/')
+    await Directory('$imageLocalPath/.$recipeName/stepImages/$stepNumber/')
         .create(recursive: true);
-    return '$imageLocalPath/$recipeId/stepImages/$stepNumber/';
+    return '$imageLocalPath/.$recipeName/stepImages/$stepNumber/';
   }
 
-  String getRecipeStepNumberDir(int recipeId, int stepNumber) {
-    return '/$recipeId/stepImages/$stepNumber/';
+  String getRecipeStepNumberDir(String recipeName, int stepNumber) {
+    return '/.$recipeName/stepImages/$stepNumber/';
   }
 
   Future<String> getRecipeStepPreviewNumberDirFull(
-      int recipeId, int stepNumber) async {
+      String recipeName, int stepNumber) async {
     String imageLocalPath = await localPath;
     await Directory(
-            '$imageLocalPath/$recipeId/preview/stepImages/p-$stepNumber')
+            '$imageLocalPath/.$recipeName/preview/stepImages/p-$stepNumber')
         .create(recursive: true);
-    return '$imageLocalPath/$recipeId/preview/stepImages/p-$stepNumber/';
+    return '$imageLocalPath/.$recipeName/preview/stepImages/p-$stepNumber/';
   }
 
-  String getRecipeStepPreviewNumberDir(int recipeId, int stepNumber) {
-    return '/$recipeId/preview/stepImages/p-$stepNumber/';
+  String getRecipeStepPreviewNumberDir(String recipeName, int stepNumber) {
+    return '/.$recipeName/preview/stepImages/p-$stepNumber/';
   }
 
   //////////// Paths to the ORIGINAL quality pictures ////////////
 
-  Future<String> getRecipePathFull(int recipeId, String ending) async {
+  Future<String> getRecipePathFull(String recipeName, String ending) async {
     String imageLocalPath = await localPath;
-    await Directory('$imageLocalPath/$recipeId').create(recursive: true);
-    return '$imageLocalPath/$recipeId/recipe-$recipeId' + ending;
+    await Directory('$imageLocalPath/.$recipeName').create(recursive: true);
+    return '$imageLocalPath/.$recipeName/recipeName' + ending;
   }
 
-  String getRecipePath(int recipeId, String ending) {
-    return '/$recipeId/recipe-$recipeId' + ending;
+  String getRecipePath(String recipeName, String ending) {
+    return '/.$recipeName/recipeName' + ending;
   }
 
   //////////// Paths to the PREVIEW quality pictures ////////////
 
-  Future<String> getRecipePreviewPathFull(int recipeId, String ending) async {
+  Future<String> getRecipePreviewPathFull(
+      String recipeName, String ending) async {
     String imageLocalPath = await localPath;
-    await Directory('$imageLocalPath/$recipeId/preview')
+    await Directory('$imageLocalPath/.$recipeName/preview')
         .create(recursive: true);
-    return '$imageLocalPath/$recipeId/preview/p-recipe-$recipeId' + ending;
+    return '$imageLocalPath/.$recipeName/preview/p-$recipeName' + ending;
   }
 
-  String getRecipePreviewPath(int recipeId, String ending) {
-    return '/$recipeId/preview/p-recipe-$recipeId' + ending;
+  String getRecipePreviewPath(String recipeName, String ending) {
+    return '/.$recipeName/preview/p-recipe-$recipeName' + ending;
   }
 
   // returns a list of the paths to the preview stepimages of the recipe
   // TODO: use this method to get the paths instead of the list to the paths from the sql database
   Future<List<List<String>>> getRecipeStepPreviewPathList(
-      List<List<String>> stepImages, int recipeId) async {
+      List<List<String>> stepImages, String recipeName) async {
     List<List<String>> output = [];
     for (int i = 0; i < stepImages.length; i++) {
-      String dir = await getRecipeStepPreviewNumberDirFull(recipeId, i + 1);
+      String dir = await getRecipeStepPreviewNumberDirFull(recipeName, i + 1);
       output.add([]);
       for (int j = 0; j < stepImages[i].length; j++) {
         String currentImage = stepImages[i][j];

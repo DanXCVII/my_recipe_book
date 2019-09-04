@@ -46,7 +46,7 @@ class RecipeCardBig extends StatelessWidget {
                   fit: StackFit.expand,
                   children: <Widget>[
                     Hero(
-                      tag: '${recipe.id}-${recipe.name}',
+                      tag: '${recipe.name}',
                       child:Image.asset(
                       recipe.imagePath,
                       fit: BoxFit.cover,

@@ -8,7 +8,6 @@ import 'draggable_card.dart';
 final RecipeEngine recipeEngine = RecipeEngine(
     recipeDecisions: [
   Recipe(
-    id: 1,
     name: '1. Steack mit Bratsauce',
     imagePath: 'images/breakfast.jpg',
     totalTime: 20,
@@ -47,7 +46,6 @@ final RecipeEngine recipeEngine = RecipeEngine(
     categories: ['Hauptspeisen'],
   ),
   Recipe(
-    id: 1,
     name: '2. LAAAST',
     imagePath: 'images/meat.jpg',
     imagePreviewPath: 'images/meat.jpg',
@@ -86,7 +84,6 @@ final RecipeEngine recipeEngine = RecipeEngine(
     categories: ['Hauptspeisen'],
   ),
   Recipe(
-    id: 1,
     name: '3. Spaghetti',
     imagePath: 'images/meat.jpg',
     imagePreviewPath: 'images/meat.jpg',
@@ -125,7 +122,6 @@ final RecipeEngine recipeEngine = RecipeEngine(
     categories: ['Hauptspeisen'],
   ),
   Recipe(
-    id: 1,
     name: '4. Spaghetti',
     imagePath: 'images/meat.jpg',
     imagePreviewPath: 'images/meat.jpg',
@@ -164,7 +160,6 @@ final RecipeEngine recipeEngine = RecipeEngine(
     categories: ['Hauptspeisen'],
   ),
   Recipe(
-    id: 1,
     name: '5. Spaghetti',
     imagePath: 'images/meat.jpg',
     imagePreviewPath: 'images/meat.jpg',
@@ -214,7 +209,7 @@ class _RandomRecipeState extends State<RandomRecipe> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<dynamic>(
-      future: DBProvider.db.getRecipeById(0, true),
+      future: DBProvider.db.getRecipeByName('', true),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return CardStack(

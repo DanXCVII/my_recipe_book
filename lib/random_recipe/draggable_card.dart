@@ -323,9 +323,9 @@ class _DraggableCardState extends State<DraggableCard>
                                   primaryColor:
                                       getRecipePrimaryColor(widget.recipe.vegetable),
                                   heroImageTag:
-                                      '${widget.recipe.id}-${widget.recipe.name}',
+                                      '${widget.recipe.name}',
                                   heroTitle:
-                                      '${widget.recipe.id}--${widget.recipe.name}',
+                                      'title-${widget.recipe.name}',
                                 ),
                               ),
                             );

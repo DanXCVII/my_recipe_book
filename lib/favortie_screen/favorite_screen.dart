@@ -63,8 +63,8 @@ class FavoriteRecipeCards extends StatelessWidget {
           shadow: Theme.of(context).backgroundColor == Colors.white
               ? Colors.grey[400]
               : Colors.grey[900],
-          heroImageTag: "${recipes[i].imagePreviewPath}--${recipes[i].id}",
-          heroTitle: "recipe--${recipes[i].id}",
+          heroImageTag: "${recipes[i].imagePreviewPath}--${recipes[i].name}",
+          heroTitle: "recipe--${recipes[i].name}",
         ),
       );
     }

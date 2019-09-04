@@ -285,7 +285,7 @@ class RecipeScreen extends StatelessWidget {
             SizedBox(height: 30),
             FutureBuilder<List<List<String>>>(
               future: PathProvider.pP
-                  .getRecipeStepPreviewPathList(recipe.stepImages, recipe.id),
+                  .getRecipeStepPreviewPathList(recipe.stepImages, recipe.name),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return StepsScreen(
@@ -325,7 +325,7 @@ class RecipeScreen extends StatelessWidget {
   Future<bool> exportRecipe(Recipe recipe) async {
     Directory tmpDir = await pP.getTemporaryDirectory();
     Directory recipeDir =
-        Directory(await PathProvider.pP.getRecipeDir(recipe.id));
+        Directory(await PathProvider.pP.getRecipeDir(recipe.name));
     await Directory('${tmpDir.path}/share/').create(recursive: true);
 
     File file = File('${tmpDir.path}/share/recipe.json');

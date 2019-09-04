@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:my_recipe_book/io/io_operations.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'dart:math';
@@ -303,7 +304,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             circleSize: 120,
             color: Color(0xFF790604),
             // type: IS.TypeRC.RECIPE,
-            recipeId: widget.editRecipe == null ? null : widget.editRecipe.id,
+            recipeName:
+                widget.editRecipe == null ? 'tmp' : widget.editRecipe.name,
           ),
           SizedBox(height: 30),
           // name textField
@@ -445,8 +447,17 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 vegetableStatus: selectedRecipeVegetable,
               ),
               // heading with textFields for steps section
-              Steps(stepsDescController, stepImages,
-                  widget.editRecipe != null ? widget.editRecipe.id : null),
+              widget.editRecipe != null
+                  ? Steps(
+                      stepsDescController,
+                      stepImages,
+                      recipeName: widget.editRecipe.name,
+                    )
+                  : Steps(
+                      stepsDescController,
+                      stepImages,
+                    ),
+
               // notes textField and heading
               Padding(
                 padding: const EdgeInsets.only(
@@ -516,15 +527,16 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     await DBProvider.db.newCategory('Gemüselastig');
     int id1 = await DBProvider.db.getNewIDforTable('recipe', 'id');
 
-    String imagePath = PathProvider.pP.getRecipePath(id1, '.jpg');
-    String imagePreviewPath = PathProvider.pP.getRecipePreviewPath(id1, '.jpg');
+    String imagePath =
+        PathProvider.pP.getRecipePath('Steack mit Bratsauce', '.jpg');
+    String imagePreviewPath =
+        PathProvider.pP.getRecipePreviewPath('Steack mit Bratsauce', '.jpg');
 
     await saveImage(File('/storage/emulated/0/Download/recipeData/meat.jpg'),
         imagePath, 2000);
     //await saveImage(File('/storage/emulated/0/Download/recipeDate/meat.jpg'),
     //    imagePreviewPath, 300);
     Recipe r1 = new Recipe(
-      id: id1,
       name: 'Steack mit Bratsauce',
       imagePath: imagePath,
       imagePreviewPath: imagePreviewPath,
@@ -561,15 +573,19 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       stepImages: [
         [
           await saveStepImage(
-              File('/storage/emulated/0/Download/recipeData/meat1.jpg'), id1, 1)
+              File('/storage/emulated/0/Download/recipeData/meat1.jpg'),
+              'Steack mit Bratsauce',
+              1)
         ],
         [
           await saveStepImage(
               File('/storage/emulated/0/Download/recipeData/meat2.jpg'),
-              id1,
+              'Steack mit Bratsauce',
               2),
           await saveStepImage(
-              File('/storage/emulated/0/Download/recipeData/meat3.jpg'), id1, 2)
+              File('/storage/emulated/0/Download/recipeData/meat3.jpg'),
+              'Steack mit Bratsauce',
+              2)
         ],
         []
       ],
@@ -583,14 +599,14 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   /// ONLY FOR DUMMY RECIPES, VERY TEMPORARY AND NOT NICE CODED
   /// TODO: Remove later
   Future<String> saveStepImage(
-      File newImage, int recipeId, int stepNumber) async {
+      File newImage, String recipeName, int stepNumber) async {
     String output;
     String newStepImageName = getStepImageName(newImage.path);
     String newStepImagePreviewName = 'p-' + newStepImageName;
 
-    String stepImagePath =
-        await PathProvider.pP.getRecipeStepNumberDir(recipeId, stepNumber + 1) +
-            newStepImageName;
+    String stepImagePath = await PathProvider.pP
+            .getRecipeStepNumberDir(recipeName, stepNumber + 1) +
+        newStepImageName;
     output = stepImagePath;
 
     saveImage(
@@ -600,9 +616,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     );
     saveImage(
       newImage,
-      await PathProvider.pP
-              .getRecipeStepPreviewNumberDir(recipeId, stepNumber + 1) +
-          newStepImagePreviewName,
+      recipeName,
       250,
     );
     return output;
@@ -650,23 +664,19 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
       }
     }*/
-    int recipeId;
-    if (widget.editRecipe == null)
-      recipeId = await DBProvider.db.getNewIDforTable('recipe', 'id');
-    else {
-      recipeId = widget.editRecipe.id;
-    }
+
     String imageDatatype;
     String recipeImage = selectedRecipeImage.selectedImage;
     if (recipeImage != null) {
       imageDatatype = recipeImage.substring(recipeImage.lastIndexOf('.'));
     }
 
+    String recipeName = nameController.text;
+
     Recipe newRecipe = new Recipe(
-      id: recipeId,
-      name: nameController.text,
+      name: recipeName,
       imagePath: recipeImage != null
-          ? PathProvider.pP.getRecipePath(recipeId, imageDatatype)
+          ? PathProvider.pP.getRecipePath(nameController.text, imageDatatype)
           : "images/randomFood.png",
 
       /// imagePreviewPath: recipeImage != null
@@ -702,10 +712,10 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     if (widget.editRecipe != null) {
       widget.editRecipe.setEqual(newRecipe);
       await DBProvider.db
-          .updateFavorite(widget.editRecipe.isFavorite, recipeId);
+          .updateFavorite(widget.editRecipe.isFavorite, recipeName);
     }
 
-    Recipe thisRecipe = await DBProvider.db.getRecipeById(recipeId, true);
+    Recipe thisRecipe = await DBProvider.db.getRecipeByName(recipeName, true);
     rKeeper.addRecipe(thisRecipe);
     return thisRecipe;
   }

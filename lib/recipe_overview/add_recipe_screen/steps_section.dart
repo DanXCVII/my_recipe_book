@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/recipe.dart';
 import "package:image_picker/image_picker.dart";
 import 'package:path_provider/path_provider.dart';
@@ -11,9 +12,10 @@ import "./add_recipe.dart";
 class Steps extends StatefulWidget {
   final List<TextEditingController> stepsDecriptionController;
   final List<List<String>> stepImages;
-  final int recipeId;
+  final String recipeName;
 
-  Steps(this.stepsDecriptionController, this.stepImages, this.recipeId);
+  Steps(this.stepsDecriptionController, this.stepImages,
+      {this.recipeName = 'tmp'});
 
   @override
   State<StatefulWidget> createState() {
@@ -44,7 +46,7 @@ class _StepsState extends State<Steps> {
         // i number of the section in the column
         i,
         i == widget.stepsDecriptionController.length - 1 ? true : false,
-        widget.stepImages, widget.recipeId,
+        widget.stepImages, widget.recipeName,
       ));
     }
     // add "add section" and "remove section" button to column
@@ -59,17 +61,8 @@ class _StepsState extends State<Steps> {
                       icon: Icon(Icons.remove_circle),
                       label: Text("Remove step"),
                       onPressed: () {
-                        widget.recipeId == null
-                            ? DBProvider.db
-                                .getNewIDforTable('recipe', 'id')
-                                .then((id) {
-                                removeStep(
-                                    widget.stepsDecriptionController.length,
-                                    id);
-                              })
-                            : removeStep(
-                                widget.stepsDecriptionController.length,
-                                widget.recipeId);
+                        removeStep(widget.stepsDecriptionController.length,
+                            widget.recipeName);
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0),
@@ -96,14 +89,14 @@ class _StepsState extends State<Steps> {
     return steps;
   }
 
-  void removeStep(int stepNumber, int recipeId) {
+  void removeStep(int stepNumber, String recipeName) {
     PathProvider.pP
-        .getRecipeStepNumberDirFull(recipeId, stepNumber)
+        .getRecipeStepNumberDirFull(recipeName, stepNumber)
         .then((path) {
       Directory(path).deleteSync(recursive: true);
     });
     PathProvider.pP
-        .getRecipeStepPreviewNumberDirFull(recipeId, stepNumber)
+        .getRecipeStepPreviewNumberDirFull(recipeName, stepNumber)
         .then((path) {
       Directory(path).deleteSync(recursive: true);
     });
@@ -125,10 +118,10 @@ class Step extends StatefulWidget {
 
   final int stepNumber;
   final bool lastRow;
-  final int recipeId;
+  final String recipeName;
 
   Step(this.stepsContoller, this.stepNumber, this.lastRow, this.stepImages,
-      this.recipeId);
+      this.recipeName);
 
   @override
   State<StatefulWidget> createState() {
@@ -189,7 +182,12 @@ class _StepState extends State<Step> {
           );
 
           if (newImage != null) {
-            await saveStepImages(newImage);
+            widget.recipeName != null
+                ? widget.stepImages[widget.stepNumber].add(
+                    await IO.saveStepImage(newImage, widget.stepNumber,
+                        recipeName: widget.recipeName))
+                : widget.stepImages[widget.stepNumber]
+                    .add(await IO.saveStepImage(newImage, widget.stepNumber));
           }
           setState(() {
             selectedImageFiles.add(newImage);
@@ -199,6 +197,7 @@ class _StepState extends State<Step> {
         }
       case Answers.PHOTO:
         {
+          /*
           File newImage = await ImagePicker.pickImage(
             source: ImageSource.camera,
             //maxHeight: 50.0,
@@ -212,48 +211,10 @@ class _StepState extends State<Step> {
             selectedImageFiles.add(newImage);
             selectedImageFiles = this.selectedImageFiles;
           });
+          */
         }
         break;
     }
-  }
-
-  Future<void> saveStepImages(File newImage) async {
-    String newStepImageName = getStepImageName(newImage.path);
-    String newStepImagePreviewName = 'p-' + newStepImageName;
-
-    // TODO: Decide later if it's nicer to instantly save the image or do it at the end..
-    int recipeId;
-    widget.recipeId == null
-        ? recipeId = await DBProvider.db.getNewIDforTable('recipe', 'id')
-        : recipeId = widget.recipeId;
-    String stepImagePathFull = await PathProvider.pP
-            .getRecipeStepNumberDirFull(recipeId, widget.stepNumber + 1) +
-        newStepImageName;
-    String stepImagePath =
-        PathProvider.pP.getRecipeStepNumberDir(recipeId, widget.stepNumber + 1);
-    widget.stepImages[widget.stepNumber].add(stepImagePath + newStepImageName);
-
-    saveImage(
-      newImage,
-      stepImagePathFull,
-      2000,
-    );
-    saveImage(
-      newImage,
-      await PathProvider.pP.getRecipeStepPreviewNumberDirFull(
-              recipeId, widget.stepNumber + 1) +
-          newStepImagePreviewName,
-      250,
-    );
-  }
-
-  /// returns a random name with the same datafile ending as the selectedImagePath
-  /// e.g.: 3242.jpg
-  String getStepImageName(String selectedImagePath) {
-    Random random = new Random();
-    String ending = selectedImagePath.substring(
-        selectedImagePath.length - 4, selectedImagePath.length);
-    return random.nextInt(10000).toString() + ending;
   }
 
   // returns a list of the Rows with the TextFields for the ingredients
@@ -311,13 +272,7 @@ class _StepState extends State<Step> {
                   icon: Icon(Icons.remove_circle_outline),
                   color: Colors.white,
                   onPressed: () {
-                    widget.recipeId == null
-                        ? DBProvider.db
-                            .getNewIDforTable('recipe', 'id')
-                            .then((recipeId) {
-                            removeImage(recipeId, widget.stepNumber, i);
-                          })
-                        : removeImage(widget.recipeId, widget.stepNumber, i);
+                    removeImage(widget.recipeName, widget.stepNumber, i);
                   },
                 ),
               ),
@@ -329,17 +284,9 @@ class _StepState extends State<Step> {
 
   /// TODO: Doesn't really work, because the naming of the pictures is related to the position of them
   /// but the position is not fixed so..
-  void removeImage(int recipeId, int stepNumber, int number) {
-    PathProvider.pP
-        .getRecipeStepPreviewNumberDirFull(recipeId, stepNumber - 1)
-        .then((path) {
-      File(path + widget.stepImages[stepNumber][number]).deleteSync();
-    });
-    PathProvider.pP
-        .getRecipeStepNumberDirFull(recipeId, stepNumber - 1)
-        .then((path) {
-      File(path + widget.stepImages[stepNumber][number]).deleteSync();
-    });
+  void removeImage(String recipeName, int stepNumber, int number) {
+    IO.deleteStepImage(
+        recipeName, stepNumber, widget.stepImages[stepNumber][number]);
 
     setState(() {
       widget.stepImages[stepNumber].removeAt(number);

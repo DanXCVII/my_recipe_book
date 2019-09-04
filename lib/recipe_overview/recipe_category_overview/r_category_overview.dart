@@ -141,12 +141,12 @@ class RecipeHozizontalList extends StatelessWidget {
           }
           if (index < recipeCount) {
             final String heroTag =
-                '${recipePreviews[index].id}$categoryName--${recipePreviews[index].imagePreviewPath}';
+                '${recipePreviews[index].name}$categoryName--${recipePreviews[index].imagePreviewPath}';
 
             return GestureDetector(
               onTap: () {
                 DBProvider.db
-                    .getRecipeById(recipePreviews[index].id, true)
+                    .getRecipeByName(recipePreviews[index].name, true)
                     .then((recipe) {
                   Navigator.push(
                     context,
@@ -157,7 +157,7 @@ class RecipeHozizontalList extends StatelessWidget {
                             recipePreviews[index].vegetable),
                         heroImageTag: heroTag,
                         heroTitle:
-                            '${recipePreviews[index].id}-${recipePreviews[index].name}',
+                            '${recipePreviews[index].name}-${recipePreviews[index].name}',
                       ),
                     ),
                   );

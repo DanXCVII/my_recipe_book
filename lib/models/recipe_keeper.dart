@@ -97,7 +97,6 @@ class RecipeKeeper extends Model {
     }
 
     return RecipePreview(
-      id: recipe.id,
       name: recipe.name,
       totalTime: getTimeHoursMinutes(recipe.totalTime),
       imagePreviewPath: recipe.imagePreviewPath,

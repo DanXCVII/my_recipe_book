@@ -188,8 +188,8 @@ class RecipeGridView extends StatelessWidget {
           shadow: Theme.of(context).backgroundColor == Colors.white
               ? Colors.grey[400]
               : Colors.black,
-          heroImageTag: "${recipes[i].imagePreviewPath}-${recipes[i].id}",
-          heroTitle: "recipe-${recipes[i].id}",
+          heroImageTag: "${recipes[i].imagePreviewPath}",
+          heroTitle: "recipe-${recipes[i].name}",
         ),
       );
     }
@@ -226,7 +226,7 @@ class FavoriteState extends State<Favorite> {
       onPressed: () {
         if (isFavorite) {
           widget.rKeeper.removeFromFavorites(widget.recipe.name);
-          DBProvider.db.updateFavorite(false, widget.recipe.id).then((_) {
+          DBProvider.db.updateFavorite(false, widget.recipe.name).then((_) {
             setState(() {
               widget.recipe.isFavorite = false;
               isFavorite = false;
@@ -234,7 +234,7 @@ class FavoriteState extends State<Favorite> {
           });
         } else {
           widget.rKeeper.addFavorite(widget.recipe);
-          DBProvider.db.updateFavorite(true, widget.recipe.id).then((_) {
+          DBProvider.db.updateFavorite(true, widget.recipe.name).then((_) {
             setState(() {
               widget.recipe.isFavorite = true;
               isFavorite = true;

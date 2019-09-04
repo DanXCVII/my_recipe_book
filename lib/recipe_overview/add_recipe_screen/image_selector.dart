@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/my_wrapper.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -12,13 +13,13 @@ class ImageSelector extends StatefulWidget {
   final MyImageWrapper imageWrapper;
   final double circleSize;
   final Color color;
-  final int recipeId;
+  final String recipeName;
 
   ImageSelector({
     @required this.imageWrapper,
     @required this.circleSize,
     @required this.color,
-    this.recipeId,
+    this.recipeName = 'tmp',
   });
 
   @override
@@ -127,20 +128,7 @@ class _ImageSelectorState extends State<ImageSelector> {
           print(pictureFile.path);
 
           if (pictureFile != null) {
-            int recipeId;
-            widget.recipeId == null
-                ? recipeId = recipeId =
-                    await DBProvider.db.getNewIDforTable('recipe', 'id')
-                : recipeId = widget.recipeId;
-            String dataType =
-                pictureFile.path.substring(pictureFile.path.lastIndexOf('.'));
-            String recipeImagePathFull =
-                await PathProvider.pP.getRecipePathFull(recipeId, dataType);
-
-            saveImage(pictureFile, recipeImagePathFull, 2000);
-            String recipeImagePreviewPath = await PathProvider.pP
-                .getRecipePreviewPathFull(recipeId, dataType);
-            saveImage(pictureFile, recipeImagePreviewPath, 300);
+            await IO.saveRecipeImage(pictureFile, widget.recipeName);
 
             widget.imageWrapper.selectedImage = pictureFile.path;
             setState(() {
@@ -151,6 +139,7 @@ class _ImageSelectorState extends State<ImageSelector> {
         }
       case Answers.PHOTO:
         {
+          /*
           File pictureFile = await ImagePicker.pickImage(
             source: ImageSource.camera,
           );
@@ -162,6 +151,7 @@ class _ImageSelectorState extends State<ImageSelector> {
             });
           }
           break;
+          */
         }
     }
   }

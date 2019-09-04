@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
@@ -51,7 +50,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
             title: Text(recipeNames[index ~/ 2]),
             onTap: () {
               DBProvider.db
-                  .getRecipeByName(recipeNames[index ~/ 2])
+                  .getRecipeByName(recipeNames[index ~/ 2], true)
                   .then((recipe) {
                 close(context, null);
                 Navigator.push(
