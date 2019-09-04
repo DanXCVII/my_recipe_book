@@ -42,7 +42,7 @@ dependencies:
   curved_navigation_bar: ^0.3.0
   scoped_model: ^1.0.1
   page_transition: ^1.1.4
-  intro_views_flutter: ^2.6.0
+  intro_slider: ^2.2.8
 
   share:
     git:

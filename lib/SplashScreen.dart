@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:my_recipe_book/intro_screen.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import './database.dart';
-import 'recipe.dart';
 import 'main.dart';
 
 class SplashScreen extends StatefulWidget {

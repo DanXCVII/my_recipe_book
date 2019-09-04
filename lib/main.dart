@@ -70,6 +70,8 @@ class MyApp extends StatelessWidget {
                   recipeKeeper: recipeKeeper,
                   mainPageNavigator: bottomNavIndex,
                 ),
+            '/add-recipe': (context) => AddRecipeForm(),
+            '/manage-categories': (context) => CategoryManager(),
           },
         ),
       ),
@@ -224,19 +226,8 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 onPressed: () {
                   _controller.reverse();
                   index == 1
-                      ? Navigator.push(
-                          context,
-                          PageTransition(
-                              duration: Duration(milliseconds: 150),
-                              type: PageTransitionType.downToUp,
-                              child: AddRecipeForm()))
-                      : Navigator.push(
-                          context,
-                          PageTransition(
-                              duration: Duration(milliseconds: 150),
-                              type: PageTransitionType.downToUp,
-                              child: CategoryManager()),
-                        );
+                      ? Navigator.pushNamed(context, '/add-recipe')
+                      : Navigator.pushNamed(context, '/manage-categories');
                 },
               ),
             ),

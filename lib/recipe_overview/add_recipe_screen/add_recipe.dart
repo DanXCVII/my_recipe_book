@@ -722,46 +722,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 }
 
-/// Only List of attributs because compute only lets you have one
-/// argument for the executed method
-
-Future<void> saveImage(File image, String name, int resolution) async {
-  if (image != null) {
-    final File newImage = await image.copy(name);
-    print('UUUUUUUUUNNNNNNNNNNNNDDDDDDDDDD');
-    /*
-    ImageProperties properties =
-        await FlutterNativeImage.getImageProperties(newImage.path);
-    double quality = resolution / (properties.height + properties.width) * 100;
-    if (quality > 100) quality = 100;
-    print(properties.height);
-    print(quality);
-    File compressedFile = await FlutterNativeImage.compressImage(newImage.path,
-        quality: quality.toInt(), percentage: 100);
-        */
-
-    await FlutterImageCompress.compressAndGetFile(
-      image.path,
-      name,
-      minHeight: resolution,
-      minWidth: resolution,
-      quality: 95,
-    );
-
-    print('GGGGGGGOOOOOOOOOOOOOOOOOOOOOOOO');
-    // compressedFile.copy(name);
-    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    // print(quality);
-
-    /*
-    ImageIO.Image newImage = ImageIO.decodeImage(values[0].readAsBytesSync());
-    ImageIO.Image resizedImage =
-        ImageIO.copyResize(newImage, height: values[2]);
-    new File('${values[1]}')..writeAsBytesSync(ImageIO.encodeJpg(resizedImage));
-    */
-  }
-}
-
 void showSavingDialog(BuildContext context) {
   showDialog(
       context: context,

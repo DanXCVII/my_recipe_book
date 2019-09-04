@@ -64,10 +64,8 @@ class RecipeRow extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                PageTransition(
-                  duration: Duration(milliseconds: 150),
-                  type: PageTransitionType.rightToLeft,
-                  child: new RecipeGridView(
+                MaterialPageRoute(
+                  builder: (context) => RecipeGridView(
                     category: category == null ? 'no category' : category,
                     randomCategoryImage: recipePreviews.length != 1
                         ? r.nextInt(recipePreviews.length > 0

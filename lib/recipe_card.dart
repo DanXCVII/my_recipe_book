@@ -4,8 +4,6 @@ import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-import 'helper.dart';
-
 const Map<int, Color> complexityColors = {
   1: Color(0xff28E424),
   2: Color(0xff4ED220),
