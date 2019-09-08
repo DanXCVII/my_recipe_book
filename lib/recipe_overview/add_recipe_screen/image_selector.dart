@@ -1,13 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/my_wrapper.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'add_recipe.dart';
-
-import '../../recipe.dart';
 
 class ImageSelector extends StatefulWidget {
   final MyImageWrapper imageWrapper;
@@ -125,9 +121,10 @@ class _ImageSelectorState extends State<ImageSelector> {
           File pictureFile = await ImagePicker.pickImage(
             source: ImageSource.gallery,
           );
-          print(pictureFile.path);
 
           if (pictureFile != null) {
+            print(pictureFile.path);
+
             await IO.saveRecipeImage(pictureFile, widget.recipeName);
 
             widget.imageWrapper.selectedImage = pictureFile.path;

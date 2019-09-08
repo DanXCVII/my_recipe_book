@@ -316,7 +316,7 @@ class DBProvider {
     String notes = resRecipe.first['notes'];
 
     var resSteps = await db.rawQuery(
-        'SELECT * FROM Steps WHERE recipe_name=$recipeName ORDER BY number ASC');
+        'SELECT * FROM Steps WHERE recipe_name=\'$recipeName\' ORDER BY number ASC');
     List<String> steps = [];
     List<List<String>> stepImages = [];
     for (int i = 0; i < resSteps.length; i++) {
@@ -330,7 +330,7 @@ class DBProvider {
     }
 
     var resSections = await db.rawQuery(
-        'SELECT * FROM Sections WHERE recipe_name=$recipeName ORDER BY number ASC');
+        'SELECT * FROM Sections WHERE recipe_name=\'$recipeName\' ORDER BY number ASC');
     List<String> ingredientsGlossary = new List<String>();
     List<List<Ingredient>> ingredients = [[]];
     for (int i = 0; i < resSections.length; i++) {
@@ -350,7 +350,7 @@ class DBProvider {
     List<String> categories = new List<String>();
     var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
-        'WHERE recipe_name=$recipeName');
+        'WHERE recipe_name=\'$recipeName\'');
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
     }
@@ -420,7 +420,7 @@ class DBProvider {
       vegetable = Vegetable.VEGAN;
 
     var resSections = await db.rawQuery(
-        'SELECT * FROM Sections WHERE recipe_name=$recipeName ORDER BY number ASC');
+        'SELECT * FROM Sections WHERE recipe_name=\'$recipeName\' ORDER BY number ASC');
     int ingredientAmount = 0;
     for (int i = 0; i < resSections.length; i++) {
       var resIngredients = await db.rawQuery(
@@ -431,7 +431,7 @@ class DBProvider {
     List<String> categories = new List<String>();
     var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
-        'WHERE recipe_name=$recipeName');
+        'WHERE recipe_name=\'$recipeName\'');
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
     }
@@ -447,15 +447,26 @@ class DBProvider {
         isFavorite: isFavorite);
   }
 
+  Future<bool> doesRecipeExist(String recipeName) async {
+    var db = await database;
+    var resRecipe = await db
+        .query('Recipe', where: 'recipe_name = ?', whereArgs: [recipeName]);
+    if (resRecipe.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   Future<List<String>> getRecipeNames() async {
     var db = await database;
 
-    var resRecipes = await db.rawQuery('SELECT recipeName FROM recipe');
+    var resRecipes = await db.rawQuery('SELECT recipe_name FROM recipe');
 
     List<String> recipeNames = [];
 
     for (int i = 0; i < resRecipes.length; i++) {
-      recipeNames.add(resRecipes[i]['recipeName']);
+      recipeNames.add(resRecipes[i]['recipe_name']);
     }
     return recipeNames;
   }
@@ -463,10 +474,11 @@ class DBProvider {
   Future<void> deleteRecipeFromDatabase(Recipe recipe) async {
     final db = await database;
 
-    await db.rawDelete('DELETE FROM Recipe WHERE recipe_name= ?', [recipe.name]);
+    await db
+        .rawDelete('DELETE FROM Recipe WHERE recipe_name= ?', [recipe.name]);
   }
 
-  Future<void> deleteRecipe(Recipe recipe) async {
+  Future<void> deleteRecipe(String recipeName) async {
     final db = await database;
     /*
     MainScreenRecipes singleton = MainScreenRecipes();
@@ -476,10 +488,10 @@ class DBProvider {
       }
     }
 */
-    await db.rawDelete('DELETE FROM Recipe WHERE recipe_name= ?', [recipe.name]);
+    await db.rawDelete('DELETE FROM Recipe WHERE recipe_name= ?', [recipeName]);
 
     Directory appDir = await getApplicationDocumentsDirectory();
-    String imageLocalPathRecipe = '${appDir.path}/.${recipe.name}/';
+    String imageLocalPathRecipe = '${appDir.path}/.$recipeName/';
     var dir = new Directory(imageLocalPathRecipe);
     if (await dir.exists()) dir.deleteSync(recursive: true);
   }
@@ -810,7 +822,8 @@ class DBProvider {
         'WHERE recipe_name NOT IN (SELECT recipe_name FROM RecipeCategories)');
 
     for (int i = 0; i < resRecipe.length; i++) {
-      recipes.add(await getRecipePreviewByName(resRecipe[i]['recipe_name'], true));
+      recipes
+          .add(await getRecipePreviewByName(resRecipe[i]['recipe_name'], true));
     }
 
     return recipes;
@@ -825,7 +838,8 @@ class DBProvider {
         await db.query('Recipe', where: 'isFavorite = ?', whereArgs: ['1']);
 
     for (int i = 0; i < resFavorites.length; i++) {
-      favorites.add(await getRecipePreviewByName(resFavorites[i]['recipe_name'], true));
+      favorites.add(
+          await getRecipePreviewByName(resFavorites[i]['recipe_name'], true));
     }
     return favorites;
   }
@@ -854,7 +868,7 @@ class DBProvider {
       newStatus = 0;
     }
     await db.rawUpdate(
-        'UPDATE Recipe SET isFavorite = $newStatus WHERE recipe_name=$recipeName');
+        'UPDATE Recipe SET isFavorite = $newStatus WHERE recipe_name=\'$recipeName\'');
   }
 }
 

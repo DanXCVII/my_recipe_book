@@ -3,7 +3,6 @@ import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'package:page_transition/page_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/SplashScreen.dart';
@@ -24,13 +23,6 @@ import './theming.dart';
 
 import 'package:flutter/rendering.dart';
 import 'dart:math';
-
-/// TODO: Think about how to change the Appbar and body with using a
-/// StateLess widget for better performance maybe. One way of doing
-/// it would be to make a custom stateful widget which builds an
-/// AppBar and a custom stateful widget for the suitable body but
-/// it turns out to be pretty much the same as a scaffold in a
-/// stateful widget so.. dunno.
 
 void main() {
   debugPaintSizeEnabled = false;
@@ -376,7 +368,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   void _onItemTapped(MainPageNavigator mainPageNavigator, int index) {
-    print(index);
     mainPageNavigator.changeIndex(index);
   }
 }

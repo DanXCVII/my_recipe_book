@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../../database.dart';
 
@@ -76,26 +78,14 @@ class _CategorySectionState extends State<CategorySection> {
         // category chips
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Container(
-            child: FutureBuilder<List<String>>(
-                future: DBProvider.db.getCategories(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    List<String> categoryNames = [];
-                    for (final category in snapshot.data)
-                      categoryNames.add(category);
-                    return Wrap(
-                      spacing: 5.0,
-                      runSpacing: 3.0,
-                      children: _getCategoryChips(categoryNames),
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    return Text("Error occured");
-                  }
-                  return LinearProgressIndicator();
-                }),
-          ),
+          child: Container(child: ScopedModelDescendant<RecipeKeeper>(
+              builder: (context, child, model) {
+            return Wrap(
+              spacing: 5.0,
+              runSpacing: 3.0,
+              children: _getCategoryChips(model.rCategories),
+            );
+          })),
         ),
       ],
     );
@@ -230,17 +220,20 @@ class CategoryAddDialogState extends State<CategoryAddDialog> {
                         onPressed: () {
                           Navigator.pop(context);
                         }),
-                    FlatButton(
-                        child: Text("Save"),
-                        onPressed: () {
-                          if (_formKey.currentState.validate()) {
-                            // TODO Prio1: Not validating the category!
-                            _saveCategory().then((_) {
-                              Navigator.pop(context);
-                              setState(() {});
-                            });
-                          }
-                        })
+                    ScopedModelDescendant<RecipeKeeper>(
+                        builder: (context, child, model) {
+                      return FlatButton(
+                          child: Text("Save"),
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              // TODO Prio1: Not validating the category!
+                              _saveCategory(model).then((_) {
+                                Navigator.pop(context);
+                                setState(() {});
+                              });
+                            }
+                          });
+                    })
                   ],
                 )
               ],
@@ -251,8 +244,9 @@ class CategoryAddDialogState extends State<CategoryAddDialog> {
     );
   }
 
-  Future<void> _saveCategory() async {
+  Future<void> _saveCategory(RecipeKeeper rKeeper) async {
     String categoryName = categoryNameController.text;
+    rKeeper.addCategory(categoryNameController.text);
     await DBProvider.db.newCategory(categoryName);
   }
 }

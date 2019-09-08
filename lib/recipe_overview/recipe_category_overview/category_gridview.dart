@@ -5,7 +5,6 @@ import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import '../../database.dart';
 import '../../recipe.dart';
 
 class CategoryGridView extends StatelessWidget {
@@ -19,7 +18,7 @@ class CategoryGridView extends StatelessWidget {
             padding: const EdgeInsets.all(4),
             mainAxisSpacing: 4,
             crossAxisSpacing: 4,
-            children: getCategories(model.categories, model));
+            children: getCategories(model.rCategories, model));
       }
     });
   }

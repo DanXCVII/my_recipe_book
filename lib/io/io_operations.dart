@@ -5,6 +5,24 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../recipe.dart';
 
+Future<void> renameRecipeData(
+    String oldRecipeName, String fileExtension, String newRecipeName) async {
+  Directory oldRecipeDir =
+      Directory(await PathProvider.pP.getRecipeDir(oldRecipeName));
+  await oldRecipeDir.rename(await PathProvider.pP.getRecipeDir(newRecipeName));
+
+  File oldRecipeImageFile = File(await PathProvider.pP
+      .getRecipeOldPathFull(oldRecipeName, newRecipeName, fileExtension));
+  await oldRecipeImageFile.rename(
+      await PathProvider.pP.getRecipePathFull(newRecipeName, fileExtension));
+
+  File oldRecipePreviewImageFile = File(await PathProvider.pP
+      .getRecipePreviewOldPathFull(
+          oldRecipeName, newRecipeName, fileExtension));
+  await oldRecipePreviewImageFile.rename(await PathProvider.pP
+      .getRecipePreviewPathFull(newRecipeName, fileExtension));
+}
+
 Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
   String dataType =
       pictureFile.path.substring(pictureFile.path.lastIndexOf('.'));
@@ -12,20 +30,20 @@ Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
       await PathProvider.pP.getRecipePathFull(recipeName, dataType);
 
   saveImage(pictureFile, recipeImagePathFull, 2000);
-  String recipeImagePreviewPath =
+  String recipeImagePreviewPathFull =
       await PathProvider.pP.getRecipePreviewPathFull(recipeName, dataType);
-  saveImage(pictureFile, recipeImagePreviewPath, 300);
+  saveImage(pictureFile, recipeImagePreviewPathFull, 300);
 }
 
 Future<void> deleteStepImage(
     String recipeName, int stepNumber, String imageFileName) async {
   PathProvider.pP
-      .getRecipeStepPreviewNumberDirFull(recipeName, stepNumber - 1)
+      .getRecipeStepPreviewNumberDirFull(recipeName, stepNumber)
       .then((path) {
-    File(path + imageFileName).deleteSync();
+    File(path + 'p-' + imageFileName).deleteSync();
   });
   PathProvider.pP
-      .getRecipeStepNumberDirFull(recipeName, stepNumber - 1)
+      .getRecipeStepNumberDirFull(recipeName, stepNumber)
       .then((path) {
     File(path + imageFileName).deleteSync();
   });
@@ -45,13 +63,11 @@ Future<String> saveStepImage(File newImage, int stepNumber,
   String newStepImageName = getStepImageName(newImage.path);
   String newStepImagePreviewName = 'p-' + newStepImageName;
 
-  // TODO: Decide later if it's nicer to instantly save the image or do it at the end..
-
-  String stepImagePathFull = await PathProvider.pP
-          .getRecipeStepNumberDirFull(recipeName, stepNumber + 1) +
-      newStepImageName;
+  String stepImagePathFull =
+      await PathProvider.pP.getRecipeStepNumberDirFull(recipeName, stepNumber) +
+          newStepImageName;
   String stepImagePath =
-      PathProvider.pP.getRecipeStepNumberDir(recipeName, stepNumber + 1);
+      PathProvider.pP.getRecipeStepNumberDir(recipeName, stepNumber);
 
   saveImage(
     newImage,
@@ -61,7 +77,7 @@ Future<String> saveStepImage(File newImage, int stepNumber,
   saveImage(
     newImage,
     await PathProvider.pP
-            .getRecipeStepPreviewNumberDirFull(recipeName, stepNumber + 1) +
+            .getRecipeStepPreviewNumberDirFull(recipeName, stepNumber) +
         newStepImagePreviewName,
     250,
   );
@@ -70,7 +86,7 @@ Future<String> saveStepImage(File newImage, int stepNumber,
 
 Future<void> saveImage(File image, String name, int resolution) async {
   if (image != null) {
-    final File newImage = await image.copy(name);
+    await image.copy(name);
     print('UUUUUUUUUNNNNNNNNNNNNDDDDDDDDDD');
     /*
     ImageProperties properties =
@@ -88,8 +104,10 @@ Future<void> saveImage(File image, String name, int resolution) async {
       name,
       minHeight: resolution,
       minWidth: resolution,
-      quality: 95,
     );
+
+    print(image.path);
+    print(name);
 
     print('GGGGGGGOOOOOOOOOOOOOOOOOOOOOOOO');
     // compressedFile.copy(name);

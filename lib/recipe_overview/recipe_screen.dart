@@ -45,6 +45,8 @@ class RecipeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(recipe.imagePath);
+    print(recipe.imagePreviewPath);
     double remainingTime =
         recipe.totalTime - recipe.preperationTime - recipe.cookingTime;
     double otherTime;
@@ -313,10 +315,9 @@ class RecipeScreen extends StatelessWidget {
 
   _choiceAction(PopupOptions value, context, RecipeKeeper rKeeper) {
     if (value == PopupOptions.DELETE) {
-      DBProvider.db.deleteRecipe(recipe).then((_) {
+      rKeeper.deleteRecipeWithName(recipe.name, true).then((_) {
         Navigator.pop(context);
       });
-      rKeeper.deleteRecipeWithName(recipe.name);
     } else if (value == PopupOptions.EXPORT) {
       exportRecipe(recipe).then((_) {});
     }
@@ -324,32 +325,32 @@ class RecipeScreen extends StatelessWidget {
 
   Future<bool> exportRecipe(Recipe recipe) async {
     Directory tmpDir = await pP.getTemporaryDirectory();
+    saveRecipeZipToCache('${tmpDir.path}/share');
+
+    ShareExtend.share('${tmpDir.path}/share/${recipe.name}.zip', "file");
+
+    return true;
+  }
+
+  Future<void> saveRecipeZipToCache(String exportPath) async {
+    Recipe exportRecipe =
+        await DBProvider.db.getRecipeByName(recipe.name, false);
     Directory recipeDir =
         Directory(await PathProvider.pP.getRecipeDir(recipe.name));
-    await Directory('${tmpDir.path}/share/').create(recursive: true);
+    await Directory('$exportPath').create(recursive: true);
 
-    File file = File('${tmpDir.path}/share/recipe.json');
-    Map<String, dynamic> jsonMap = recipe.toMap();
+    File file = File('$exportPath/${recipe.name}.json');
+    Map<String, dynamic> jsonMap = exportRecipe.toMap();
     String json = jsonEncode(jsonMap);
     await file.writeAsString(json);
 
     var encoder = ZipFileEncoder();
-    encoder.create('${tmpDir.path}/share/${recipe.name}.zip');
+    encoder.create('$exportPath/${recipe.name}.zip');
     encoder.addFile(file);
     if (recipeDir.existsSync()) {
       encoder.addDirectory(recipeDir);
     }
     encoder.close();
-
-    // Share.file(
-    //   path: '${tmpDir.path}/share/share.zip',
-
-    //   mimeType: ShareType.TYPE_FILE,
-    // ).share();
-
-    ShareExtend.share('${tmpDir.path}/share/${recipe.name}.zip', "file");
-
-    return true;
   }
 
   String getRecipeAsString(Recipe recipe) {

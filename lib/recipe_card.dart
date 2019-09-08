@@ -39,7 +39,7 @@ class RecipeCard extends StatelessWidget {
     double gridTileWidth = deviceWidth / (deviceWidth / 300.floor() + 1);
     return GestureDetector(
       onTap: () {
-        DBProvider.db.getRecipeById(recipePreview.id, true).then((recipe) {
+        DBProvider.db.getRecipeByName(recipePreview.name, true).then((recipe) {
           Navigator.push(
             context,
             MaterialPageRoute(

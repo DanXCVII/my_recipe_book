@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import 'add_recipe_screen/categories_section.dart';
 
@@ -18,14 +20,17 @@ class _CategoryManagerState extends State<CategoryManager> {
       appBar: AppBar(
         title: Text('manage categories'),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.check),
-            onPressed: () {
-              DBProvider.db.updateCategoryOrder(categories).then((_) {
-                Navigator.pop(context);
-              });
-            },
-          )
+          ScopedModelDescendant<RecipeKeeper>(builder: (context, child, model) {
+            return IconButton(
+              icon: Icon(Icons.check),
+              onPressed: () {
+                model.updateCategoryOrder(categories);
+                DBProvider.db.updateCategoryOrder(categories).then((_) {
+                  Navigator.pop(context);
+                });
+              },
+            );
+          }),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -34,35 +39,28 @@ class _CategoryManagerState extends State<CategoryManager> {
           onPressed: () {
             showDialog(context: context, builder: (_) => CategoryAddDialog());
           }),
-      body: FutureBuilder<List<String>>(
-        future: DBProvider.db.getCategories(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (categories == null)
-              categories = snapshot.data;
-            else if (categories.length == snapshot.data.length - 1)
-              categories.add(snapshot.data.last);
-            if (categories.isEmpty) {
-              return Center(
-                child: Text('You have no categories'),
-              );
-            }
-            return ReorderableListView(
-              onReorder: (oldIndex, newIndex) {
-                _updateItems(oldIndex, newIndex);
-              },
-              children: buildCategories(categories),
-            );
-          }
-          return Center(child: CircularProgressIndicator());
-        },
-      ),
+      body:
+          ScopedModelDescendant<RecipeKeeper>(builder: (context, child, model) {
+        this.categories = model.rCategories;
+        if (model.rCategories.length == 1) {
+          return Center(
+            child: Text('You have no categories'),
+          );
+        } else {
+          return ReorderableListView(
+            onReorder: (oldIndex, newIndex) {
+              _updateItems(oldIndex, newIndex);
+            },
+            children: buildCategories(this.categories, model),
+          );
+        }
+      }),
     );
   }
 
-  List<Widget> buildCategories(List<String> categories) {
+  List<Widget> buildCategories(List<String> categories, RecipeKeeper rKeeper) {
     List<Widget> categoryTiles = [];
-    for (int i = 0; i < categories.length; i++) {
+    for (int i = 0; i < categories.length-1; i++) {
       categoryTiles.add(
         ListTile(
           key: Key(categories[i]),
@@ -73,6 +71,7 @@ class _CategoryManagerState extends State<CategoryManager> {
             onPressed: () {
               DBProvider.db.removeCategory(categories[i]).then((_) {
                 setState(() {
+                  rKeeper.removeCategory(categories[i]);
                   categories.remove(categories[i]);
                 });
               });

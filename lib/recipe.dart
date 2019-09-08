@@ -23,8 +23,7 @@ class Recipe {
   int effort;
 
   Recipe(
-      {
-      @required this.name,
+      {@required this.name,
       this.imagePath,
       this.imagePreviewPath,
       this.preperationTime,
@@ -43,8 +42,7 @@ class Recipe {
 
   @override
   String toString() {
-    return (
-        'name : $name\n'
+    return ('name : $name\n'
         'imagePath : $imagePath\n'
         'imagePreviewPath : $imagePreviewPath\n'
         'preperationTime : $preperationTime\n'
@@ -258,49 +256,71 @@ class PathProvider {
   }
 
   String getRecipeStepDir(String recipeName) {
-    return '.$recipeName/stepImages/';
+    // return '.$recipeName/stepImages/';
+    return '$recipeName/stepImages/';
   }
 
   Future<String> getRecipeDir(String recipeName) async {
     String imageLocalPath = await localPath;
-    return '$imageLocalPath/.$recipeName';
+    // return '$imageLocalPath/.$recipeName';
+    return '$imageLocalPath/$recipeName';
   }
 
   Future<String> getRecipeStepNumberDirFull(
       String recipeName, int stepNumber) async {
     String imageLocalPath = await localPath;
-    await Directory('$imageLocalPath/.$recipeName/stepImages/$stepNumber/')
+    // await Directory('$imageLocalPath/.$recipeName/stepImages/$stepNumber/')
+    await Directory('$imageLocalPath/$recipeName/stepImages/$stepNumber/')
         .create(recursive: true);
-    return '$imageLocalPath/.$recipeName/stepImages/$stepNumber/';
+    return '$imageLocalPath/$recipeName/stepImages/$stepNumber/';
   }
 
   String getRecipeStepNumberDir(String recipeName, int stepNumber) {
-    return '/.$recipeName/stepImages/$stepNumber/';
+    // return '/.$recipeName/stepImages/$stepNumber/';
+    return '/$recipeName/stepImages/$stepNumber/';
   }
 
   Future<String> getRecipeStepPreviewNumberDirFull(
       String recipeName, int stepNumber) async {
     String imageLocalPath = await localPath;
     await Directory(
-            '$imageLocalPath/.$recipeName/preview/stepImages/p-$stepNumber')
+            // '$imageLocalPath/.$recipeName/preview/stepImages/p-$stepNumber')
+            '$imageLocalPath/$recipeName/preview/stepImages/p-$stepNumber')
         .create(recursive: true);
-    return '$imageLocalPath/.$recipeName/preview/stepImages/p-$stepNumber/';
+    // return '$imageLocalPath/.$recipeName/preview/stepImages/p-$stepNumber/';
+    return '$imageLocalPath/$recipeName/preview/stepImages/p-$stepNumber/';
   }
 
   String getRecipeStepPreviewNumberDir(String recipeName, int stepNumber) {
-    return '/.$recipeName/preview/stepImages/p-$stepNumber/';
+    // return '/.$recipeName/preview/stepImages/p-$stepNumber/';
+    return '/$recipeName/preview/stepImages/p-$stepNumber/';
   }
 
   //////////// Paths to the ORIGINAL quality pictures ////////////
 
+  Future<String> getRecipeOldPathFull(
+      String oldRecipeName, String newRecipeName, String ending) async {
+    String imageLocalPath = await localPath;
+    return '$imageLocalPath/$newRecipeName/$oldRecipeName' + ending;
+  }
+
+  Future<String> getRecipePreviewOldPathFull(
+      String oldRecipeName, String newRecipeName, String ending) async {
+    String imageLocalPath = await localPath;
+    return '$imageLocalPath/$newRecipeName/preview/p-$oldRecipeName' + ending;
+  }
+
   Future<String> getRecipePathFull(String recipeName, String ending) async {
     String imageLocalPath = await localPath;
-    await Directory('$imageLocalPath/.$recipeName').create(recursive: true);
-    return '$imageLocalPath/.$recipeName/recipeName' + ending;
+    // await Directory('$imageLocalPath/.$recipeName').create(recursive: true);
+    await Directory('$imageLocalPath/$recipeName').create(recursive: true);
+    // return '$imageLocalPath/.$recipeName/recipeName' + ending;
+    return '$imageLocalPath/$recipeName/$recipeName' + ending;
   }
 
   String getRecipePath(String recipeName, String ending) {
-    return '/.$recipeName/recipeName' + ending;
+    // return '/.$recipeName/recipeName' + ending;
+    return '/$recipeName/$recipeName' + ending;
   }
 
   //////////// Paths to the PREVIEW quality pictures ////////////
@@ -308,13 +328,16 @@ class PathProvider {
   Future<String> getRecipePreviewPathFull(
       String recipeName, String ending) async {
     String imageLocalPath = await localPath;
-    await Directory('$imageLocalPath/.$recipeName/preview')
+    // await Directory('$imageLocalPath/.$recipeName/preview')
+    await Directory('$imageLocalPath/$recipeName/preview')
         .create(recursive: true);
-    return '$imageLocalPath/.$recipeName/preview/p-$recipeName' + ending;
+    // return '$imageLocalPath/.$recipeName/preview/p-$recipeName' + ending;
+    return '$imageLocalPath/$recipeName/preview/p-$recipeName' + ending;
   }
 
   String getRecipePreviewPath(String recipeName, String ending) {
-    return '/.$recipeName/preview/p-recipe-$recipeName' + ending;
+    // return '/.$recipeName/preview/p-recipe-$recipeName' + ending;
+    return '/$recipeName/preview/p-recipe-$recipeName' + ending;
   }
 
   // returns a list of the paths to the preview stepimages of the recipe
@@ -323,7 +346,7 @@ class PathProvider {
       List<List<String>> stepImages, String recipeName) async {
     List<List<String>> output = [];
     for (int i = 0; i < stepImages.length; i++) {
-      String dir = await getRecipeStepPreviewNumberDirFull(recipeName, i + 1);
+      String dir = await getRecipeStepPreviewNumberDirFull(recipeName, i);
       output.add([]);
       for (int j = 0; j < stepImages[i].length; j++) {
         String currentImage = stepImages[i][j];
@@ -335,5 +358,24 @@ class PathProvider {
     }
 
     return output;
+  }
+
+  //////////// Paths to importDir ////////////
+  Future<String> getImportDir() async {
+    var tmpDir = await getTemporaryDirectory();
+    await Directory('${tmpDir.path}/import').create(recursive: true);
+    return '${tmpDir.path}/import/';
+  }
+
+  Future<String> getRecipeImportDir(String recipeName) async {
+    var tmpDir = await getTemporaryDirectory();
+    await Directory('${tmpDir.path}/import/$recipeName/$recipeName').create(recursive: true);
+    return '${tmpDir.path}/import/$recipeName/$recipeName';
+  }
+
+  Future<String> getRecipeImportDirFolder(String recipeName) async {
+    var tmpDir = await getTemporaryDirectory();
+    await Directory('${tmpDir.path}/import/$recipeName').create(recursive: true);
+    return '${tmpDir.path}/import/$recipeName';
   }
 }

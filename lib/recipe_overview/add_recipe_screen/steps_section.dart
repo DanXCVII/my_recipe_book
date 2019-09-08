@@ -1,10 +1,8 @@
 import "package:flutter/material.dart";
-import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/recipe.dart';
 import "package:image_picker/image_picker.dart";
 import 'package:path_provider/path_provider.dart';
-import 'dart:math';
 
 import "dart:io";
 import "./add_recipe.dart";
@@ -182,12 +180,9 @@ class _StepState extends State<Step> {
           );
 
           if (newImage != null) {
-            widget.recipeName != null
-                ? widget.stepImages[widget.stepNumber].add(
-                    await IO.saveStepImage(newImage, widget.stepNumber,
-                        recipeName: widget.recipeName))
-                : widget.stepImages[widget.stepNumber]
-                    .add(await IO.saveStepImage(newImage, widget.stepNumber));
+            widget.stepImages[widget.stepNumber].add(await IO.saveStepImage(
+                newImage, widget.stepNumber,
+                recipeName: widget.recipeName));
           }
           setState(() {
             selectedImageFiles.add(newImage);
@@ -272,6 +267,7 @@ class _StepState extends State<Step> {
                   icon: Icon(Icons.remove_circle_outline),
                   color: Colors.white,
                   onPressed: () {
+                    print(i+1);
                     removeImage(widget.recipeName, widget.stepNumber, i);
                   },
                 ),
@@ -285,8 +281,15 @@ class _StepState extends State<Step> {
   /// TODO: Doesn't really work, because the naming of the pictures is related to the position of them
   /// but the position is not fixed so..
   void removeImage(String recipeName, int stepNumber, int number) {
-    IO.deleteStepImage(
-        recipeName, stepNumber, widget.stepImages[stepNumber][number]);
+    print('stepnumber $stepNumber');
+    print('number $number');
+    print(widget.stepImages);
+    String stepImageName = widget.stepImages[stepNumber][number]
+        .substring(widget.stepImages[stepNumber][number].lastIndexOf('/')+1);
+    print(stepImageName);
+    
+
+    IO.deleteStepImage(recipeName, stepNumber, stepImageName);
 
     setState(() {
       widget.stepImages[stepNumber].removeAt(number);

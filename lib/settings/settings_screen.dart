@@ -1,5 +1,8 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:scoped_model/scoped_model.dart';
 import '../intro_screen.dart';
 import '../theming.dart';
 import './import_recipe.dart';
@@ -19,13 +22,17 @@ class _SettingsState extends State<Settings> {
     return Container(
       child: ListView(
         children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              importRecipe().then((_) {});
+          ScopedModelDescendant<RecipeKeeper>(
+            builder: (context, child, model) {
+              return GestureDetector(
+                onTap: () {
+                  _importSingleRecipe(model).then((_) {});
+                },
+                child: ListTile(
+                  title: Text('import Recipe'),
+                ),
+              );
             },
-            child: ListTile(
-              title: Text('import Recipe'),
-            ),
           ),
           Divider(),
           ListTile(
@@ -118,5 +125,13 @@ class _SettingsState extends State<Settings> {
   void _changeTheme(BuildContext buildContext, MyThemeKeys key) {
     print(key.toString());
     CustomTheme.instanceOf(buildContext).changeTheme(key);
+  }
+
+  Future<void> _importSingleRecipe(RecipeKeeper rKeeper) async {
+    // Let the user select the .zip file
+    String _path = await FilePicker.getFilePath(
+        type: FileType.CUSTOM, fileExtension: 'zip');
+    if (_path == null) return;
+    importRecipe(rKeeper, _path);
   }
 }

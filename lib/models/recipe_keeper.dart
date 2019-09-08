@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/helper.dart';
 import 'package:my_recipe_book/recipe.dart';
@@ -29,7 +31,21 @@ class RecipeKeeper extends Model {
     notifyListeners();
   }
 
-  void deleteRecipeWithName(String name) {
+  void addCategory(String categoryName) {
+    this.categories.insert(categories.length - 1, categoryName);
+    recipes.addAll({categoryName: []});
+
+    notifyListeners();
+  }
+
+  void removeCategory(String categoryName) {
+    categories.remove(categoryName);
+    recipes.remove(categoryName);
+
+    notifyListeners();
+  }
+
+  Future<void> deleteRecipeWithName(String name, bool deleteFiles) async {
     for (String category in recipes.keys) {
       for (int i = 0; i < recipes[category].length; i++) {
         if (recipes[category][i].name == name) {
@@ -37,27 +53,61 @@ class RecipeKeeper extends Model {
         }
       }
     }
+    DBProvider.db.deleteRecipe(name);
+    if (deleteFiles)
+      Directory(await PathProvider.pP.getRecipeDir(name))
+          .deleteSync(recursive: true);
     notifyListeners();
   }
 
-  void addRecipe(Recipe recipe) {
-    RecipePreview rPreview = convertRecipeToPreview(recipe);
+  /// deletes oldRecipe from database and rKeeper and saves newRecipe to
+  /// database and rKeeper
+  Future<Recipe> modifyRecipe(Recipe oldRecipe, Recipe newRecipe) async {
+    await DBProvider.db.deleteRecipe(oldRecipe.name);
+
+    for (String category in recipes.keys) {
+      for (int i = 0; i < recipes[category].length; i++) {
+        if (recipes[category][i].name == oldRecipe.name) {
+          recipes[category].removeAt(i);
+        }
+      }
+    }
+
+    Recipe r = await addRecipe(
+        newRecipe); // addRecipe() already calls notifyListeners()
+    return r;
+  }
+
+  /// Adds recipe to the database and previewRecipe to the rKeeper
+  /// given recipe doesn't contain the full image paths
+  Future<Recipe> addRecipe(Recipe recipe) async {
+    await DBProvider.db.newRecipe(recipe);
+
+    Recipe fullImagePathRecipe =
+        await DBProvider.db.getRecipeByName(recipe.name, true);
+
+    RecipePreview rPreview = convertRecipeToPreview(fullImagePathRecipe);
 
     for (String category in recipe.categories) {
+      if (!categories.contains(category)) {
+        addCategory(category);
+      }
       recipes[category].add(rPreview);
     }
 
     if (recipe.categories.isEmpty) recipes['no category'].add(rPreview);
+
     notifyListeners();
+    return fullImagePathRecipe;
   }
 
   void addFavorite(Recipe recipe) {
     favorites.add(convertRecipeToPreview(recipe));
 
     for (String category in recipes.keys) {
-      for (int i = 0; i < recipes[category].length; i++) {
-        if (recipes[category][i].name == recipe.name) {
-          recipes[category][i].isFavorite = true;
+      for (RecipePreview r in recipes[category]) {
+        if (r.name == recipe.name) {
+          r.isFavorite = true;
         }
       }
     }
@@ -73,9 +123,9 @@ class RecipeKeeper extends Model {
     }
 
     for (String category in recipes.keys) {
-      for (int i = 0; i < recipes[category].length; i++) {
-        if (recipes[category][i].name == name) {
-          recipes[category][i].isFavorite = false;
+      for (RecipePreview r in recipes[category]) {
+        if (r.name == name) {
+          r.isFavorite = false;
         }
       }
     }
@@ -87,6 +137,12 @@ class RecipeKeeper extends Model {
     for (String category in recipes.keys) {
       recipes[category].remove(recipePreview);
     }
+    notifyListeners();
+  }
+
+  void updateCategoryOrder(List<String> categories) {
+    this.categories = categories;
+
     notifyListeners();
   }
 
