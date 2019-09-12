@@ -328,7 +328,7 @@ class RecipeScreen extends StatelessWidget {
   Future<bool> exportRecipe(Recipe recipe) async {
     saveRecipeZipToCache(await PathProvider.pP.getShareDir());
 
-    ShareExtend.share(await PathProvider.pP.getShareZipFile(recipe), "file");
+    ShareExtend.share(await PathProvider.pP.getShareZipFile(recipe.name), "file");
 
     return true;
   }
@@ -339,13 +339,13 @@ class RecipeScreen extends StatelessWidget {
     Directory recipeDir =
         Directory(await PathProvider.pP.getRecipeDir(recipe.name));
 
-    File file = File(await PathProvider.pP.getShareJsonPath(recipe));
+    File file = File(await PathProvider.pP.getShareJsonPath(recipe.name));
     Map<String, dynamic> jsonMap = exportRecipe.toMap();
     String json = jsonEncode(jsonMap);
     await file.writeAsString(json);
 
     var encoder = ZipFileEncoder();
-    encoder.create(await PathProvider.pP.getShareJsonPath(recipe));
+    encoder.create(await PathProvider.pP.getShareJsonPath(recipe.name));
     encoder.addFile(file);
     if (recipeDir.existsSync()) {
       encoder.addDirectory(recipeDir);
