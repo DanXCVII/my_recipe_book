@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
@@ -112,8 +113,8 @@ class RecipeGridView extends StatelessWidget {
                 background: Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: ExactAssetImage(
-                          '${recipePreviews[randomCategoryImage].imagePreviewPath}'),
+                      image: FileImage(
+                          File('${recipePreviews[randomCategoryImage].imagePreviewPath}')),
                       fit: BoxFit.cover,
                     ),
                   ),

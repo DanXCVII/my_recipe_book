@@ -211,6 +211,19 @@ class ShoppingCart {
   }
 }
 
+class CheckableIngredient {
+  String name;
+  double amount;
+  String unit;
+  bool checked = false;
+
+  CheckableIngredient(Ingredient i) {
+    name = i.name;
+    amount = i.amount;
+    unit = i.unit;
+  }
+}
+
 class RecipeCategory {
   String name;
   String imagePath;

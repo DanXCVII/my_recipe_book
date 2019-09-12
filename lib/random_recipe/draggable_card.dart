@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/random_recipe/anchored_widget.dart';
 import 'package:my_recipe_book/random_recipe/recipe_card_big.dart';
 import 'package:my_recipe_book/random_recipe/recipe_engine.dart';
@@ -9,6 +11,7 @@ import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 
+import '../database.dart';
 import '../recipe.dart';
 
 class CardStack extends StatefulWidget {
@@ -296,7 +299,7 @@ class _DraggableCardState extends State<DraggableCard>
   Widget build(BuildContext context) {
     return ScopedModelDescendant<MainPageNavigator>(
       builder: (context, child, model) => AnchoredOverlay(
-          showOverlay: model.index == 3 ? true : false,
+          showOverlay: model.showOverlay,
           child: Center(),
           overlayBuilder: (context, anchorBounds, anchor) {
             return CenterAbout(
@@ -314,18 +317,26 @@ class _DraggableCardState extends State<DraggableCard>
                   child: widget.isDraggable
                       ? GestureDetector(
                           onTap: () {
+
                             model.changeOverlayStatus(false);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (BuildContext context) => RecipeScreen(
-                                  recipe: widget.recipe,
-                                  primaryColor:
-                                      getRecipePrimaryColor(widget.recipe.vegetable),
-                                  heroImageTag:
-                                      '${widget.recipe.name}',
-                                  heroTitle:
-                                      'title-${widget.recipe.name}',
+                                builder: (BuildContext context) => WillPopScope(
+                                  onWillPop: () async {
+                                    model.changeOverlayStatus(true);
+                                    var completer = new Completer();
+                                    completer.complete(false);
+                                    await DBProvider.db.database;
+                                    return true;
+                                  },
+                                  child: RecipeScreen(
+                                    recipe: widget.recipe,
+                                    primaryColor: getRecipePrimaryColor(
+                                        widget.recipe.vegetable),
+                                    heroImageTag: '${widget.recipe.name}',
+                                    heroTitle: 'title-${widget.recipe.name}',
+                                  ),
                                 ),
                               ),
                             );

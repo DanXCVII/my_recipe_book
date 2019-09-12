@@ -106,26 +106,27 @@ class RecipeScreen extends StatelessWidget {
               delegate: SliverChildListDelegate(<Widget>[
             // recipe.imagePath == 'images/randomFood.jpg'
             //     ? Container()
-            //     : 
-                GestureDetector(
-                    onTap: () {
-                      _showPictureFullView(
-                          recipe.imagePath, heroImageTag, context);
-                    },
-                    child: Hero(
-                      tag: heroImageTag,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: ClipPath(
-                          clipper: MyClipper(),
-                          child: Container(
-                              height: 270,
-                              child: Image.asset(recipe.imagePath,
-                                  fit: BoxFit.cover)),
-                        ),
-                      ),
-                    ),
+            //     :
+            GestureDetector(
+              onTap: () {
+                _showPictureFullView(recipe.imagePath, heroImageTag, context);
+              },
+              child: Hero(
+                tag: heroImageTag,
+                child: Material(
+                  color: Colors.transparent,
+                  child: ClipPath(
+                    clipper: MyClipper(),
+                    child: Container(
+                        height: 270,
+                        child: Image.file(
+                          File(recipe.imagePath),
+                          fit: BoxFit.cover,
+                        )),
                   ),
+                ),
+              ),
+            ),
             Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
@@ -585,7 +586,7 @@ class _CategoryCircleState extends State<CategoryCircle> {
                 height: 100,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(widget.imageName),
+                    image: FileImage(File(widget.imageName)),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -686,8 +687,8 @@ class StepsScreen extends StatelessWidget {
                   child: FadeInImage(
                     fadeInDuration: Duration(milliseconds: 100),
                     placeholder: MemoryImage(kTransparentImage),
-                    image: AssetImage(
-                      stepPreviewImages[i][j],
+                    image: FileImage(
+                      File(stepPreviewImages[i][j]),
                     ),
                     fit: BoxFit.cover,
                   ),

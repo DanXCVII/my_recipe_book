@@ -60,6 +60,17 @@ class RecipeKeeper extends Model {
     notifyListeners();
   }
 
+  void changeCategoryName(String oldCatName, String newCatName) async {
+    await DBProvider.db.changeCategoryName(oldCatName, newCatName);
+    for (String c in categories) {
+      if (c == oldCatName) c = newCatName;
+    }
+    recipes.addAll({newCatName: recipes[oldCatName]});
+    recipes.remove(oldCatName);
+
+    notifyListeners();
+  }
+
   /// deletes oldRecipe from database and rKeeper and saves newRecipe to
   /// database and rKeeper
   Future<Recipe> modifyRecipe(Recipe oldRecipe, Recipe newRecipe) async {

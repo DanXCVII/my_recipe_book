@@ -550,6 +550,14 @@ class DBProvider {
     await batch.commit();
   }
 
+// TODO: Validate if working
+  Future<void> changeCategoryName(String oldCatName, String newCatName) async {
+    var db = await database;
+
+    await db.update('Categories', {'name': newCatName},
+        where: 'name = ?', whereArgs: [oldCatName]);
+  }
+
   Future<void> checkIngredient(Ingredient ingredient, bool checked) async {
     final db = await database;
     int checkedInt = 0;

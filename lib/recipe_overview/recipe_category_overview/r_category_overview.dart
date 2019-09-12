@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
@@ -179,22 +181,21 @@ class RecipeHozizontalList extends StatelessWidget {
                       Hero(
                         tag: heroTag,
                         child: ClipRRect(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(35),
-                              topRight: Radius.circular(15),
-                              bottomLeft: Radius.circular(15),
-                              bottomRight: Radius.circular(35)),
-                          child: FadeInImage(
-                            // image: AssetImage(recipes[index].imagePath),
-                            image: AssetImage(
-                                recipePreviews[index].imagePreviewPath),
-                            fadeInDuration: const Duration(milliseconds: 250),
-                            placeholder: MemoryImage(kTransparentImage),
-                            height: 90,
-                            width: 90,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(35),
+                                topRight: Radius.circular(15),
+                                bottomLeft: Radius.circular(15),
+                                bottomRight: Radius.circular(35)),
+                            child: FadeInImage(
+                              // image: AssetImage(recipes[index].imagePath),
+                              image: FileImage(
+                                  File(recipePreviews[index].imagePreviewPath)),
+                              fadeInDuration: const Duration(milliseconds: 250),
+                              placeholder: MemoryImage(kTransparentImage),
+                              height: 90,
+                              width: 90,
+                              fit: BoxFit.cover,
+                            )),
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 4, left: 10, right: 10),

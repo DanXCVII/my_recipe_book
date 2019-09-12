@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/recipe.dart';
@@ -90,7 +92,8 @@ class RecipeCard extends StatelessWidget {
                             topRight: Radius.circular(gridTileWidth / 10),
                           ),
                           child: FadeInImage(
-                            image: AssetImage(recipePreview.imagePreviewPath),
+                            image:
+                                FileImage(File(recipePreview.imagePreviewPath)),
                             placeholder: MemoryImage(kTransparentImage),
                             fadeInDuration: Duration(milliseconds: 250),
                             fit: BoxFit.cover,
@@ -175,8 +178,9 @@ class RecipeCard extends StatelessWidget {
               alignment: Alignment.bottomRight,
               child: Container(
                 child: Center(
-                  child: Image.asset(
-                    "images/${getRecipeTypeImage(recipePreview.vegetable)}.png",
+                  child: Image.file(
+                    File(
+                        "images/${getRecipeTypeImage(recipePreview.vegetable)}.png"),
                     height: 35,
                     width: 35,
                     fit: BoxFit.scaleDown,

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ class CategoryGridTile extends StatelessWidget {
                       )));
         },
         child: GridTile(
-          child: Image.asset(imageAsset, fit: BoxFit.cover),
+          child: Image.file(File(imageAsset), fit: BoxFit.cover),
           footer: GridTileBar(
             title: Text(
               category,

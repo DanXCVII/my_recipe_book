@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../helper.dart';
@@ -47,8 +49,8 @@ class RecipeCardBig extends StatelessWidget {
                   children: <Widget>[
                     Hero(
                       tag: '${recipe.name}',
-                      child:Image.asset(
-                      recipe.imagePath,
+                      child:Image.file(
+                      File(recipe.imagePath),
                       fit: BoxFit.cover,
                     ),),
                     Align(
