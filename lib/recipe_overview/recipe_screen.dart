@@ -104,9 +104,10 @@ class RecipeScreen extends StatelessWidget {
           ),
           SliverList(
               delegate: SliverChildListDelegate(<Widget>[
-            recipe.imagePath == 'images/randomFood.jpg'
-                ? Container()
-                : GestureDetector(
+            // recipe.imagePath == 'images/randomFood.jpg'
+            //     ? Container()
+            //     : 
+                GestureDetector(
                     onTap: () {
                       _showPictureFullView(
                           recipe.imagePath, heroImageTag, context);

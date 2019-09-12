@@ -11,20 +11,23 @@ class FavoriteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Container(
-            // height: MediaQuery.of(context).size.height,
-            // width: MediaQuery.of(context).size.width,
-            child: Image.asset('heartsBackground.jpg')),
-        Container(
-          // height: MediaQuery.of(context).size.height,
-          // width: MediaQuery.of(context).size.width,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-            child: Container(
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
-            ),
-          ),
-        ),
+        // Container(
+        //     height: MediaQuery.of(context).size.height,
+        //     // width: MediaQuery.of(context).size.width,
+        //     child: Image.asset(
+        //       'images/heartsBackground.jpg',
+        //       fit: BoxFit.cover,
+        //     )),
+        // Container(
+        //   // height: MediaQuery.of(context).size.height,
+        //   // width: MediaQuery.of(context).size.width,
+        //   child: BackdropFilter(
+        //     filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+        //     child: Container(
+        //       decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
+        //     ),
+        //   ),
+        // ),
         ScopedModelDescendant<RecipeKeeper>(
           builder: (context, child, model) {
             if (model.favorites.length == 0) {
@@ -42,7 +45,10 @@ class FavoriteScreen extends StatelessWidget {
                       child: Text('You have no recipes under this category.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontSize: 26, fontFamily: 'RibeyeMarrow')),
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontFamily: 'RibeyeMarrow',
+                          )),
                     ),
                   ]);
             } else {
