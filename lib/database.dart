@@ -283,14 +283,14 @@ class DBProvider {
     }
     String name = resRecipe.first['recipe_name'];
     String image;
-    if (resRecipe.first['image'] != 'images/randomFood.png') {
+    if (resRecipe.first['image'] != 'images/randomFood.jpg') {
       image = preString + resRecipe.first['image'];
     } else {
       image = resRecipe.first['image'];
     }
     String previewPath;
-    image == "images/randomFood.png"
-        ? previewPath = 'images/randomFood.png'
+    image == "images/randomFood.jpg"
+        ? previewPath = 'images/randomFood.jpg'
         : previewPath = await PathProvider.pP.getRecipePreviewPathFull(
             name, image.substring(image.length - 4, image.length));
 
@@ -388,14 +388,14 @@ class DBProvider {
     }
     String name = resRecipe.first['recipe_name'];
     String image;
-    if (resRecipe.first['image'] != 'images/randomFood.png') {
+    if (resRecipe.first['image'] != 'images/randomFood.jpg') {
       image = preString + resRecipe.first['image'];
     } else {
       image = resRecipe.first['image'];
     }
     String previewPath;
-    image == "images/randomFood.png"
-        ? previewPath = 'images/randomFood.png'
+    image == "images/randomFood.jpg"
+        ? previewPath = 'images/randomFood.jpg'
         : previewPath = await PathProvider.pP.getRecipePreviewPathFull(
             name, image.substring(image.length - 4, image.length));
 
@@ -510,14 +510,14 @@ class DBProvider {
     int randomRecipe =
         resRecipes.length == 1 ? 0 : r.nextInt(resRecipes.length);
 
-    return resRecipes[randomRecipe]['image'] != 'images/randomFood.png'
+    return resRecipes[randomRecipe]['image'] != 'images/randomFood.jpg'
         ? await PathProvider.pP.getRecipePreviewPathFull(
             resRecipes[randomRecipe]['id'],
             // dataType
             resRecipes[randomRecipe]['image'].substring(
                 resRecipes[randomRecipe]['image'].length - 4,
                 resRecipes[randomRecipe]['image'].length))
-        : 'images/randomFood.png';
+        : 'images/randomFood.jpg';
   }
 
   Future<void> addToShoppingList(List<Ingredient> ingredients) async {
@@ -747,8 +747,8 @@ class DBProvider {
           id: resRecipes[i]['id'],
           name: resRecipes[i]['recipeName'],
           imagePath: resRecipes[i]['image'],
-          imagePreviewPath: imagePath == "images/randomFood.png"
-              ? 'images/randomFood.png'
+          imagePreviewPath: imagePath == "images/randomFood.jpg"
+              ? 'images/randomFood.jpg'
               : await PathProvider.pP.getRecipePreviewPath(resRecipes[i]['id']),
           preperationTime: resRecipes[i]['preperationTime'],
           cookingTime: resRecipes[i]['cookingTime'],

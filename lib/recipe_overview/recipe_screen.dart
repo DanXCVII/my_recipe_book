@@ -104,7 +104,7 @@ class RecipeScreen extends StatelessWidget {
           ),
           SliverList(
               delegate: SliverChildListDelegate(<Widget>[
-            recipe.imagePath == 'images/randomFood.png'
+            recipe.imagePath == 'images/randomFood.jpg'
                 ? Container()
                 : GestureDetector(
                     onTap: () {
@@ -324,10 +324,9 @@ class RecipeScreen extends StatelessWidget {
   }
 
   Future<bool> exportRecipe(Recipe recipe) async {
-    Directory tmpDir = await pP.getTemporaryDirectory();
-    saveRecipeZipToCache('${tmpDir.path}/share');
+    saveRecipeZipToCache(await PathProvider.pP.getShareDir());
 
-    ShareExtend.share('${tmpDir.path}/share/${recipe.name}.zip', "file");
+    ShareExtend.share(await PathProvider.pP.getShareZipFile(recipe), "file");
 
     return true;
   }
@@ -337,15 +336,14 @@ class RecipeScreen extends StatelessWidget {
         await DBProvider.db.getRecipeByName(recipe.name, false);
     Directory recipeDir =
         Directory(await PathProvider.pP.getRecipeDir(recipe.name));
-    await Directory('$exportPath').create(recursive: true);
 
-    File file = File('$exportPath/${recipe.name}.json');
+    File file = File(await PathProvider.pP.getShareJsonPath(recipe));
     Map<String, dynamic> jsonMap = exportRecipe.toMap();
     String json = jsonEncode(jsonMap);
     await file.writeAsString(json);
 
     var encoder = ZipFileEncoder();
-    encoder.create('$exportPath/${recipe.name}.zip');
+    encoder.create(await PathProvider.pP.getShareJsonPath(recipe));
     encoder.addFile(file);
     if (recipeDir.existsSync()) {
       encoder.addDirectory(recipeDir);
@@ -630,7 +628,7 @@ class StepsScreen extends StatelessWidget {
     Color(0xff8600C5),
   ];
 
-  StepsScreen(this.steps, this.stepPreviewImages, @required this.stepImages);
+  StepsScreen(this.steps, this.stepPreviewImages, this.stepImages);
 
   List<Widget> getSteps(BuildContext context) {
     List<Widget> output = new List<Widget>();

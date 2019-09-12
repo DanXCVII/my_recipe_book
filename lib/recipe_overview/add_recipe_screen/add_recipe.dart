@@ -22,6 +22,14 @@ import './complexity_section.dart';
 import '../recipe_screen.dart' show RecipeScreen;
 import './image_selector.dart' as IS;
 
+enum Validator {
+  INGREDIENTS_NOT_VALID,
+  REQUIRED_FIELDS,
+  NAME_TAKEN,
+  GLOSSARY_NOT_VALID,
+  VALID
+}
+
 const double categories = 14;
 const double topPadding = 8;
 
@@ -89,7 +97,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     // If a recipe will be edited and not a new one created
     if (widget.editRecipe != null) {
       nameController.text = widget.editRecipe.name;
-      if (widget.editRecipe.imagePath != "images/randomFood.png")
+      if (widget.editRecipe.imagePath != "images/randomFood.jpg")
         selectedRecipeImage.selectedImage = widget.editRecipe.imagePath;
       if (widget.editRecipe.preperationTime != 0.0)
         preperationTimeController.text =
@@ -170,55 +178,20 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               color: Colors.white,
               onPressed: () {
                 if (!_formKey.currentState.validate()) {
-                  showDialog(
-                      context: context,
-                      builder: (_) => RoundEdgeDialog(
-                            title: Text(
-                              'Check filled in information',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700, fontSize: 21),
-                            ),
-                            bottomSection: Text(
-                              'it seems, that you haven’t filled in the required fields. '
-                              'Please check for any red marked text fields.',
-                            ),
-                          ));
+                  showRequiredFieldsDialog(context);
                 } else if (!isIngredientListValid(
                   ingredientNameController,
                   ingredientAmountController,
                   ingredientUnitController,
                 )) {
-                  showDialog(
-                      context: context,
-                      builder: (_) => RoundEdgeDialog(
-                            title: Text(
-                              'Check your ingredients input',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700, fontSize: 21),
-                            ),
-                            bottomSection: Text(
-                              'it seems to be that you have only partially filled out the '
-                              'data for the ingredients. Please correct that :)',
-                            ),
-                          ));
+                  showIngredientsIncompleteDialog(context);
                 } else if (!isGlossaryValid(
                   ingredientNameController,
                   ingredientAmountController,
                   ingredientUnitController,
                   ingredientGlossaryController,
                 )) {
-                  showDialog(
-                      context: context,
-                      builder: (_) => RoundEdgeDialog(
-                            title: Text(
-                              'Check your ingredients section fields',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700, fontSize: 21),
-                            ),
-                            bottomSection: Text(
-                                'if you have multiple sections, you need to provide a title '
-                                'for each section.'),
-                          ));
+                  showIngredientsGlossaryIncomplete(context);
                 } else {
                   /////////// Only do if all data is VALID! ///////////
                   FocusScope.of(context).requestFocus(new FocusNode());
@@ -509,7 +482,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   Future<Recipe> deleteOldSaveNewRecipe(
       Recipe editRecipe, RecipeKeeper rKeeper) async {
     bool deleteFiles = false;
-    if (editRecipe.name != nameController.text) deleteFiles = true;
     rKeeper.deleteRecipeWithName(editRecipe.name, deleteFiles);
     await DBProvider.db.deleteRecipeFromDatabase(editRecipe);
     Recipe newRecipe = await saveRecipe(rKeeper);
@@ -625,6 +597,35 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     return random.nextInt(10000).toString() + ending;
   }
 
+  Future<Validator> validateForm(
+    GlobalKey<FormState> formKey,
+    List<List<TextEditingController>> ingredientNameController,
+    List<List<TextEditingController>> ingredientAmountController,
+    List<List<TextEditingController>> ingredientUnitController,
+    List<TextEditingController> ingredientGlossaryController,
+    String recipeName,
+  ) async {
+    if (!formKey.currentState.validate())
+      return Validator.REQUIRED_FIELDS;
+    else if (!isIngredientListValid(
+      ingredientNameController,
+      ingredientAmountController,
+      ingredientUnitController,
+    ))
+      return Validator.INGREDIENTS_NOT_VALID;
+    else if (!isGlossaryValid(
+      ingredientNameController,
+      ingredientAmountController,
+      ingredientUnitController,
+      ingredientGlossaryController,
+    ))
+      return Validator.GLOSSARY_NOT_VALID;
+    else if (await DBProvider.db.doesRecipeExist(recipeName))
+      return Validator.NAME_TAKEN;
+    else
+      return Validator.VALID;
+  }
+
   Future<Recipe> saveRecipe(RecipeKeeper rKeeper) async {
     // get the lists for the data of the ingredients
     List<List<Ingredient>> ingredients = getCleanIngredientData(
@@ -635,7 +636,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     // Saving the Recipe image and RecipePreviewImage (Recipe Image with lower quality)
     // TODO: Remove unnessesary code - Code for saving here
     /*
-    if (selectedRecipeImage.selectedImage != 'images/randomFood.png' &&
+    if (selectedRecipeImage.selectedImage != 'images/randomFood.jpg' &&
         selectedRecipeImage.selectedImage != null) {
       String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
       await saveImage(
@@ -682,11 +683,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       name: recipeName,
       imagePath: recipeImage != null
           ? PathProvider.pP.getRecipePath(nameController.text, imageDatatype)
-          : "images/randomFood.png",
+          : "images/randomFood.jpg",
 
       /// imagePreviewPath: recipeImage != null
       ///     ? await PathProvider.pP.getRecipePreviewPathFull(recipeId)
-      ///     : "images/randomFood.png",
+      ///     : "images/randomFood.jpg",
       preperationTime: preperationTimeController.text.isEmpty
           ? 0
           : double.parse(
@@ -726,6 +727,50 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     }
 
     return fullImagePathRecipe;
+  }
+
+  void showIngredientsIncompleteDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (_) => RoundEdgeDialog(
+              title: Text(
+                'Check your ingredients input',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+              ),
+              bottomSection: Text(
+                'it seems to be that you have only partially filled out the '
+                'data for the ingredients. Please correct that :)',
+              ),
+            ));
+  }
+
+  void showIngredientsGlossaryIncomplete(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (_) => RoundEdgeDialog(
+              title: Text(
+                'Check your ingredients section fields',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+              ),
+              bottomSection: Text(
+                  'if you have multiple sections, you need to provide a title '
+                  'for each section.'),
+            ));
+  }
+
+  void showRequiredFieldsDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (_) => RoundEdgeDialog(
+              title: Text(
+                'Check filled in information',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+              ),
+              bottomSection: Text(
+                'it seems, that you haven’t filled in the required fields. '
+                'Please check for any red marked text fields.',
+              ),
+            ));
   }
 
   List<String> removeEmptyStrings(List<TextEditingController> list) {

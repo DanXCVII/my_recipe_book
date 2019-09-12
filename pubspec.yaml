@@ -93,8 +93,9 @@ flutter:
    - images/circles.png
    - images/default.png
    - images/cookingPen.png
-   - images/randomFood.png
+   - images/randomFood.jpg
    - images/heart.png
+   - images/heartsBackground.jpg
    - images/rightArrow.png
    - images/cookingHat.png
    - images/hatWithSpoonFork.png

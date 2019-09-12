@@ -293,6 +293,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             Settings(),
           ],
         ),
+        
         backgroundColor: getBackgroundColor(model.title),
         bottomNavigationBar: Theme(
             data: Theme.of(context).copyWith(canvasColor: Colors.black87),

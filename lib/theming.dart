@@ -49,7 +49,7 @@ class MyThemes {
     backgroundColor: Colors.white,
     scaffoldBackgroundColor: Color(0xffFEF3E1),
     canvasColor: Colors.white,
-    cardColor: Color(0xffFEF3E1),
+    cardColor: Color(0xffFFE8C2),
     /* textSelectionColor: Colors.white,
          hintColor: Colors.white,
          textSelectionHandleColor: Colors.white, */

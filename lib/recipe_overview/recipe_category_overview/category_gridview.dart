@@ -54,7 +54,7 @@ class CategoryGridTile extends StatelessWidget {
       rand = r.nextInt(recipes.length);
       imageAsset = recipes[rand].rImagePreviewPath;
     } else {
-      imageAsset = "images/randomFood.png";
+      imageAsset = "images/randomFood.jpg";
     }
     return GestureDetector(
         onTap: () {

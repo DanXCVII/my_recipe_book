@@ -102,6 +102,7 @@ class RecipeKeeper extends Model {
   }
 
   void addFavorite(Recipe recipe) {
+    recipe.isFavorite = true;
     favorites.add(convertRecipeToPreview(recipe));
 
     for (String category in recipes.keys) {

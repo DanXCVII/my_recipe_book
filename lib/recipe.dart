@@ -341,7 +341,6 @@ class PathProvider {
   }
 
   // returns a list of the paths to the preview stepimages of the recipe
-  // TODO: use this method to get the paths instead of the list to the paths from the sql database
   Future<List<List<String>>> getRecipeStepPreviewPathList(
       List<List<String>> stepImages, String recipeName) async {
     List<List<String>> output = [];
@@ -369,13 +368,30 @@ class PathProvider {
 
   Future<String> getRecipeImportDir(String recipeName) async {
     var tmpDir = await getTemporaryDirectory();
-    await Directory('${tmpDir.path}/import/$recipeName/$recipeName').create(recursive: true);
+    await Directory('${tmpDir.path}/import/$recipeName/$recipeName')
+        .create(recursive: true);
     return '${tmpDir.path}/import/$recipeName/$recipeName';
   }
 
   Future<String> getRecipeImportDirFolder(String recipeName) async {
     var tmpDir = await getTemporaryDirectory();
-    await Directory('${tmpDir.path}/import/$recipeName').create(recursive: true);
+    await Directory('${tmpDir.path}/import/$recipeName')
+        .create(recursive: true);
     return '${tmpDir.path}/import/$recipeName';
+  }
+
+  //////////// Paths to shareDir ////////////
+  Future<String> getShareDir() async {
+    Directory tmpDir = await getTemporaryDirectory();
+    await Directory('${tmpDir.path}/share').create(recursive: true);
+    return '${tmpDir.path}/share';
+  }
+
+  Future<String> getShareZipFile(Recipe recipe) async {
+    return '${await getShareDir()}/${recipe.name}.zip';
+  }
+
+  Future<String> getShareJsonPath(Recipe recipe) async {
+    return '${await getShareDir()}/${recipe.name}.json';
   }
 }
