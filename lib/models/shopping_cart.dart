@@ -1,42 +1,68 @@
+import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class RecipeKeeper extends Model {
+class ShoppingCartKeeper extends Model {
   Map<String, List<CheckableIngredient>> shoppingCart = {'summary': []};
-  List<String> recipes; // keeps track of the order of the recipes
+  List<String> recipes = []; // keeps track of the order of the recipes
 
-  void addToCart(String recipeName, Ingredient ingredient) {
-    List<String> shoppingCartRecipes = shoppingCart.keys.toList();
+  Future<void> initCart() async {
+    shoppingCart = await DBProvider.db.getShoppingCartIngredients();
 
-    for (int i = 0; i < shoppingCartRecipes.length; i++) {
-      String iterateRecipeName = shoppingCartRecipes[i];
-      if (shoppingCartRecipes[i] == recipeName ||
-          iterateRecipeName == 'summary') {
-        for (int j = 0; j < shoppingCart[iterateRecipeName].length; j++) {
-          // If the ingredient to be added is already in the shoppingCart
-          if (shoppingCart[iterateRecipeName][j].name == ingredient.name &&
-              shoppingCart[iterateRecipeName][j].unit == ingredient.unit) {
-            shoppingCart[iterateRecipeName][j].amount += ingredient.amount;
-          }
-          // If the ingredient is not yet added to the list of ingredients of the recipe
-          else if (j == shoppingCart[iterateRecipeName].length - 1) {
-            shoppingCart[recipeName].add(CheckableIngredient(ingredient));
-          }
-        }
-      }
+    List<String> recipeNames = shoppingCart.keys.toList();
 
-      /// If the ingredient to be added and the recipe where it's from both aren't
-      /// in the shoppingCart
-      if (i == shoppingCartRecipes.length - 1 &&
-          iterateRecipeName != recipeName) {
-        shoppingCart.addAll({
-          recipeName: [CheckableIngredient(ingredient)]
-        });
-        shoppingCart['summary'].add(CheckableIngredient(ingredient));
+    recipes.add('summary');
+    shoppingCart.addAll({'summary': []});
+    for (int i = 0; i < recipeNames.length; i++) {
+      if (recipeNames[i] != 'summary') {
+        recipes.add(recipeNames[i]);
+        shoppingCart.addAll({recipeNames[i]: []});
       }
     }
+  }
+
+  void addMulitpleIngredientsToCart(
+      String recipeName, List<Ingredient> ingredients) {
+    for (Ingredient i in ingredients) {
+      addSingleIngredientToCart(recipeName, i);
+    }
+  }
+
+  Future<void> addSingleIngredientToCart(
+      String recipeName, Ingredient ingredient) async {
+    _addToCartIngredient(recipeName, ingredient);
+    _addToCartIngredient('summary', ingredient);
+    await DBProvider.db.addToShoppingList(recipeName, [ingredient]);
+    print(shoppingCart.toString());
+    print('9999999999999999999');
+    Map<String, List<CheckableIngredient>> s =
+        await DBProvider.db.getShoppingCartIngredients();
+    print('1111111111');
+    print(s);
+    for (String i in s.keys.toList()) {
+      for (CheckableIngredient i in s[i])
+        print('${i.name}${i.amount}${i.unit}');
+    }
+    print('11111111111');
 
     notifyListeners();
+  }
+
+  void _addToCartIngredient(String recipeName, Ingredient ingredient) {
+    if (!recipes.contains(recipeName)) {
+      recipes.add(recipeName);
+      shoppingCart.addAll({
+        recipeName: [CheckableIngredient(ingredient)]
+      });
+    } else {
+      for (CheckableIngredient i in shoppingCart[recipeName]) {
+        if (i.name == ingredient.name && i.unit == ingredient.unit) {
+          i.amount += ingredient.amount;
+          return;
+        }
+      }
+      shoppingCart[recipeName].add(CheckableIngredient(ingredient));
+    }
   }
 
   void removeFromCart(String recipeName, Ingredient ingredient) {
@@ -63,7 +89,18 @@ class RecipeKeeper extends Model {
       break;
     }
 
+    _cleanUpEmptyRecipes();
+
     notifyListeners();
+  }
+
+  void _cleanUpEmptyRecipes() {
+    for (int i = 0; i < recipes.length; i++) {
+      if (shoppingCart[recipes[i]].isEmpty) {
+        shoppingCart.remove(recipes[i]);
+        recipes.removeAt(i);
+      }
+    }
   }
 
   void checkIngredient(

@@ -27,6 +27,7 @@ class RecipeValidator {
     List<List<TextEditingController>> ingredientUnitController,
     List<TextEditingController> ingredientGlossaryController,
     String recipeName,
+    bool editingRecipe,
   ) async {
     if (!formKey.currentState.validate())
       return Validator.REQUIRED_FIELDS;
@@ -43,7 +44,7 @@ class RecipeValidator {
       ingredientGlossaryController,
     ))
       return Validator.GLOSSARY_NOT_VALID;
-    else if (await DBProvider.db.doesRecipeExist(recipeName))
+    else if (!editingRecipe && await DBProvider.db.doesRecipeExist(recipeName))
       return Validator.NAME_TAKEN;
     else
       return Validator.VALID;

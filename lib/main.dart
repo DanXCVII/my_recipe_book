@@ -1,6 +1,8 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
+import 'package:my_recipe_book/recipe.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'package:flutter/material.dart';
@@ -32,6 +34,7 @@ void main() {
       child: MyApp(
         MainPageNavigator(),
         RecipeKeeper(),
+        ShoppingCartKeeper(),
       ),
     ),
   );
@@ -40,9 +43,10 @@ void main() {
 class MyApp extends StatelessWidget {
   final MainPageNavigator bottomNavIndex;
   final RecipeKeeper recipeKeeper;
+  final ShoppingCartKeeper scKeeper;
   final appTitle = 'Drawer Demo';
 
-  MyApp(this.bottomNavIndex, this.recipeKeeper);
+  MyApp(this.bottomNavIndex, this.recipeKeeper, this.scKeeper);
 
   @override
   Widget build(BuildContext context) {
@@ -50,21 +54,24 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    return ScopedModel<MainPageNavigator>(
-      model: bottomNavIndex,
-      child: ScopedModel<RecipeKeeper>(
-        model: recipeKeeper,
-        child: MaterialApp(
-          theme: CustomTheme.of(context),
-          initialRoute: '/',
-          routes: {
-            '/': (context) => SplashScreen(
-                  recipeKeeper: recipeKeeper,
-                  mainPageNavigator: bottomNavIndex,
-                ),
-            '/add-recipe': (context) => AddRecipeForm(),
-            '/manage-categories': (context) => CategoryManager(),
-          },
+    return ScopedModel<ShoppingCartKeeper>(
+      model: scKeeper,
+      child: ScopedModel<MainPageNavigator>(
+        model: bottomNavIndex,
+        child: ScopedModel<RecipeKeeper>(
+          model: recipeKeeper,
+          child: MaterialApp(
+            theme: CustomTheme.of(context),
+            initialRoute: '/',
+            routes: {
+              '/': (context) => SplashScreen(
+                    recipeKeeper: recipeKeeper,
+                    mainPageNavigator: bottomNavIndex,
+                  ),
+              '/add-recipe': (context) => AddRecipeForm(),
+              '/manage-categories': (context) => CategoryManager(),
+            },
+          ),
         ),
       ),
     );
@@ -145,50 +152,56 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             });
           },
         ),
-        IconButton(
-          icon: Icon(Icons.adb),
-          onPressed: () {
-            // var r = Recipe(
-            //   id: 1,
-            //   name: 'Steack mit Bratsauce',
-            //   imagePath: 'imagePath',
-            //   imagePreviewPath: 'imagePreviewPath',
-            //   servings: 3,
-            //   ingredientsGlossary: ['Steacksauce', 'Steack'],
-            //   ingredients: [
-            //     [
-            //       Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
-            //       Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
-            //       Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
-            //       Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
-            //     ],
-            //     [
-            //       Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
-            //       Ingredient(name: 'Steak', amount: 700, unit: 'g')
-            //     ],
-            //   ],
-            //   complexity: 4,
-            //   vegetable: Vegetable.NON_VEGETARIAN,
-            //   steps: [
-            //     'step1',
-            //     'step2 kek',
-            //   ],
-            //   stepImages: [
-            //     [], [],
-            //     // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
-            //     // [
-            //     //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
-            //     // ],
-            //   ],
-            //   notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
-            //   isFavorite: false,
-            //   categories: ['Hauptspeisen'],
-            // ); // TODO: Continue
-            // var json = r.toMap();
-            // Recipe rrr = Recipe.fromMap(json);
-            // print(rrr.toString());
-          },
-        )
+        ScopedModelDescendant<ShoppingCartKeeper>(
+            builder: (context, child, model) => IconButton(
+                  icon: Icon(Icons.adb),
+                  onPressed: () {
+                    model.addSingleIngredientToCart('Rezept1',
+                        Ingredient(name: 'Zutat', amount: 1, unit: 'g'));
+                        model.addSingleIngredientToCart('r5',
+                        Ingredient(name: 'Zutat2', amount: 2, unit: 'h'));
+                        
+                    // var r = Recipe(
+                    //   id: 1,
+                    //   name: 'Steack mit Bratsauce',
+                    //   imagePath: 'imagePath',
+                    //   imagePreviewPath: 'imagePreviewPath',
+                    //   servings: 3,
+                    //   ingredientsGlossary: ['Steacksauce', 'Steack'],
+                    //   ingredients: [
+                    //     [
+                    //       Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
+                    //       Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
+                    //       Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
+                    //       Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
+                    //     ],
+                    //     [
+                    //       Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
+                    //       Ingredient(name: 'Steak', amount: 700, unit: 'g')
+                    //     ],
+                    //   ],
+                    //   complexity: 4,
+                    //   vegetable: Vegetable.NON_VEGETARIAN,
+                    //   steps: [
+                    //     'step1',
+                    //     'step2 kek',
+                    //   ],
+                    //   stepImages: [
+                    //     [], [],
+                    //     // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
+                    //     // [
+                    //     //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
+                    //     // ],
+                    //   ],
+                    //   notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
+                    //   isFavorite: false,
+                    //   categories: ['Hauptspeisen'],
+                    // ); // TODO: Continue
+                    // var json = r.toMap();
+                    // Recipe rrr = Recipe.fromMap(json);
+                    // print(rrr.toString());
+                  },
+                ))
       ].where((child) => child != null).toList(),
     );
   }
@@ -293,7 +306,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             Settings(),
           ],
         ),
-        
         backgroundColor: getBackgroundColor(model.title),
         bottomNavigationBar: Theme(
             data: Theme.of(context).copyWith(canvasColor: Colors.black87),

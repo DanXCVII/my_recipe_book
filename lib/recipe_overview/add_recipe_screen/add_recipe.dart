@@ -420,8 +420,10 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             ingredientAmountController,
             ingredientUnitController,
             ingredientGlossaryController,
-            nameController.text)
+            nameController.text,
+            widget.editRecipe == null ? false : true)
         .then((v) {
+      print(v.toString());
       switch (v) {
         case Validator.REQUIRED_FIELDS:
           _showRequiredFieldsDialog(context);

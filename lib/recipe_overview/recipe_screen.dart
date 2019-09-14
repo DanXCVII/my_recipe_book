@@ -4,6 +4,7 @@ import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:path_provider/path_provider.dart' as pP;
 import 'package:scoped_model/scoped_model.dart';
 import 'package:share_extend/share_extend.dart';
@@ -772,33 +773,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                       ? Icon(Icons.check_circle)
                       : Icon(Icons.add_circle_outline),
                   tooltip: 'Add to shopping Cart',
-                  onPressed: () {
-                    /// if the saved List doesn't contain the ingredientName ->
-                    /// add the not yet added ingredients to shoppingCart and
-                    /// update saved
-                    if (!saved.contains(currentIngredient)) {
-                      DBProvider.db
-                          .addToShoppingList([currentIngredient]).then((_) {
-                        setState(() {
-                          saved = this.saved;
-                          saved.add(currentIngredient);
-                        });
-                      });
-                    }
-
-                    /// else, remove the ingrdient from the shoppingCart and
-                    /// update saved list
-                    else {
-                      DBProvider.db.removeFromShoppingCart(
-                          [currentIngredient]).then((_) {
-                        setState(() {
-                          saved = this.saved;
-                          saved.remove(widget
-                              .currentRecipe.ingredients[sectionNumber][i]);
-                        });
-                      });
-                    }
-                  },
+                  onPressed: () {},
                   color: saved.contains(currentIngredient)
                       ? Colors.green
                       : Colors.white),
@@ -826,49 +801,31 @@ class IngredientsScreenState extends State<IngredientsScreen> {
       List<Ingredient> sectionIngredients = widget.currentRecipe.ingredients[i];
       if (widget.currentRecipe.ingredientsGlossary[i] != "") {
         output.add(
-          Padding(
-            padding: EdgeInsets.only(top: 30, left: 45, right: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text("${widget.currentRecipe.ingredientsGlossary[i]}",
-                    style: TextStyle(color: textColor, fontSize: 24)),
-                IconButton(
-                  icon: containsList(saved, sectionIngredients)
-                      ? Icon(Icons.shopping_cart)
-                      : Icon(Icons.add_shopping_cart),
-                  tooltip: 'add to shopping cart',
-                  onPressed: () {
-                    /// if shopping cart contains all the ingredients in the section
-                    /// -> remove them from the database and saved List
-                    if (containsList(saved, sectionIngredients)) {
-                      checkAndRemoveFromCart(sectionIngredients, saved)
-                          .then((_) {
-                        setState(() {
-                          saved = this.saved;
-                          for (final i in sectionIngredients) {
-                            saved.remove(i);
-                          }
-                        });
-                      });
-                      // else: add them to the database and saved list
-                    } else {
-                      checkAndAddToCart(sectionIngredients, saved).then((_) {
-                        setState(() {
-                          saved = this.saved;
-                          for (final i in sectionIngredients) {
-                            if (!saved.contains(i)) saved.add(i);
-                          }
-                        });
-                      });
-                    }
-                  },
-                  color:
-                      containsList(saved, widget.currentRecipe.ingredients[i])
-                          ? Colors.green
-                          : textColor,
-                )
-              ],
+          ScopedModelDescendant<ShoppingCartKeeper>(
+            builder: (context, child, model) => Padding(
+              padding: EdgeInsets.only(top: 30, left: 45, right: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text("${widget.currentRecipe.ingredientsGlossary[i]}",
+                      style: TextStyle(color: textColor, fontSize: 24)),
+                  IconButton(
+                    icon: containsList(saved, sectionIngredients)
+                        ? Icon(Icons.shopping_cart)
+                        : Icon(Icons.add_shopping_cart),
+                    tooltip: 'add to shopping cart',
+                    onPressed: () {
+                      model.addMulitpleIngredientsToCart(
+                          widget.currentRecipe.name,
+                          widget.currentRecipe.ingredients[i]);
+                    },
+                    color:
+                        containsList(saved, widget.currentRecipe.ingredients[i])
+                            ? Colors.green
+                            : textColor,
+                  )
+                ],
+              ),
             ),
           ),
         );
@@ -877,26 +834,6 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     }
 
     return output;
-  }
-
-  Future<void> checkAndAddToCart(
-      List<Ingredient> ingredients, List<Ingredient> saved) async {
-    List<Ingredient> addToCart = [];
-
-    for (int i = 0; i < ingredients.length; i++) {
-      if (!saved.contains(ingredients[i])) addToCart.add(ingredients[i]);
-    }
-    await DBProvider.db.addToShoppingList(addToCart);
-  }
-
-  Future<void> checkAndRemoveFromCart(
-      List<Ingredient> ingredients, List<Ingredient> saved) async {
-    List<Ingredient> removeFromCart = [];
-
-    for (int i = 0; i < ingredients.length; i++) {
-      if (saved.contains(ingredients[i])) removeFromCart.add(ingredients[i]);
-    }
-    DBProvider.db.removeFromShoppingCart(removeFromCart);
   }
 
   @override
@@ -930,19 +867,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                             color: Colors.white),
                         tooltip: 'decrease servings',
                         onPressed: () {
-                          if (servings <= 1) return;
-                          List<List<Ingredient>> ingredients =
-                              widget.currentRecipe.ingredients;
-                          for (int i = 0; i < ingredients.length; i++) {
-                            for (int j = 0; j < ingredients[i].length; j++) {
-                              ingredients[i][j].amount =
-                                  ((servings - 1) / servings) *
-                                      ingredients[i][j].amount;
-                            }
-                          }
-                          setState(() {
-                            servings = servings - 1;
-                          });
+                          _decreaseServings();
                         },
                       ),
                       Text(
@@ -953,24 +878,12 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                           fontFamily: "Questrial-Regular",
                         ),
                       ),
-
                       IconButton(
                         icon:
                             Icon(Icons.add_circle_outline, color: Colors.white),
                         tooltip: 'increase servings',
                         onPressed: () {
-                          List<List<Ingredient>> ingredients =
-                              widget.currentRecipe.ingredients;
-                          for (int i = 0; i < ingredients.length; i++) {
-                            for (int j = 0; j < ingredients[i].length; j++) {
-                              ingredients[i][j].amount =
-                                  ((servings + 1) / servings) *
-                                      ingredients[i][j].amount;
-                            }
-                          }
-                          setState(() {
-                            servings = servings + 1;
-                          });
+                          _increaseServings();
                         },
                       ),
                       Text(
@@ -982,38 +895,6 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                         ),
                       ),
                       Spacer(),
-                      // TODO: Maybe remove "add all ingredients" button or replace
-                      /*
-                      IconButton(
-                        icon: containsList(saved, allIngredients)
-                            ? Icon(Icons.shopping_cart)
-                            : Icon(Icons.add_shopping_cart),
-                        color: containsList(saved, allIngredients)
-                            ? Colors.green
-                            : textColor,
-                        onPressed: () {
-                          /// if the saved list contains all ingredients
-                          /// -> remove them from the database and saved list
-                          if (containsList(saved, allIngredients)) {
-                            checkAndRemoveFromCart(saved, allIngredients)
-                                .then((_) {
-                              setState(() {
-                                saved = this.saved;
-                                for (final i in allIngredients) saved.remove(i);
-                              });
-                            });
-
-                            /// else, add the not yet added ingredients to the
-                            /// database and saved list
-                          } else {
-                            checkAndAddToCart(allIngredients, saved).then((_) {
-                              setState(() {
-                                saved = allIngredients;
-                              });
-                            });
-                          }
-                        },
-                      )*/
                     ],
                   ),
                 ),
@@ -1023,6 +904,33 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     );
     output.children.addAll(getIngredientsData());
     return output;
+  }
+
+  void _decreaseServings() {
+    if (servings <= 1) return;
+    List<List<Ingredient>> ingredients = widget.currentRecipe.ingredients;
+    for (int i = 0; i < ingredients.length; i++) {
+      for (int j = 0; j < ingredients[i].length; j++) {
+        ingredients[i][j].amount =
+            ((servings - 1) / servings) * ingredients[i][j].amount;
+      }
+    }
+    setState(() {
+      servings = servings - 1;
+    });
+  }
+
+  void _increaseServings() {
+    List<List<Ingredient>> ingredients = widget.currentRecipe.ingredients;
+    for (int i = 0; i < ingredients.length; i++) {
+      for (int j = 0; j < ingredients[i].length; j++) {
+        ingredients[i][j].amount =
+            ((servings + 1) / servings) * ingredients[i][j].amount;
+      }
+    }
+    setState(() {
+      servings = servings + 1;
+    });
   }
 }
 

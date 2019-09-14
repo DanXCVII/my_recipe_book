@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/models/shopping_cart.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../database.dart';
 import '../recipe.dart';
@@ -66,78 +68,73 @@ class ShoppingCartScreen extends StatelessWidget {
               'images/circles.png',
               height: 10,
             ),
-            FutureBuilder<ShoppingCart>(
-              future: DBProvider.db.getShoppingCartIngredients(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data.ingredients.isNotEmpty)
-                    return Padding(
-                      padding:
-                          const EdgeInsets.only(left: 25, right: 25, top: 15.0),
-                      child: Column(
+            ScopedModelDescendant<ShoppingCartKeeper>(
+                builder: (context, child, model) {
+              if (model.fullShoppingCart['summary'].isEmpty) {
+                return Padding(
+                  padding:
+                      const EdgeInsets.only(left: 25, right: 25, top: 15.0),
+                  child: Column(
+                    children: <Widget>[
+                      Row(
                         children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Text('check',
-                                  style: TextStyle(
-                                    fontFamily: 'Ribeye',
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  )),
-                              Text('     ware',
-                                  style: TextStyle(
-                                    fontFamily: 'Ribeye',
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  )),
-                              Spacer(),
-                              Text('amount   ',
-                                  style: TextStyle(
-                                    fontFamily: 'Ribeye',
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ))
-                            ],
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.height - 335,
-                            child: IngredientsList(
-                                ingredients: snapshot.data.ingredients,
-                                checked: snapshot.data.checked),
-                          )
+                          Text('check',
+                              style: TextStyle(
+                                fontFamily: 'Ribeye',
+                                fontSize: 16,
+                                color: Colors.black,
+                              )),
+                          Text('     ware',
+                              style: TextStyle(
+                                fontFamily: 'Ribeye',
+                                fontSize: 16,
+                                color: Colors.black,
+                              )),
+                          Spacer(),
+                          Text('amount   ',
+                              style: TextStyle(
+                                fontFamily: 'Ribeye',
+                                fontSize: 16,
+                                color: Colors.black,
+                              ))
                         ],
                       ),
-                    );
-                  else
-                    return Stack(
-                      children: <Widget>[
-                        Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height - 400,
-                            child: Center(
-                                child: Text(
-                              "Nothing added yet",
-                              style: TextStyle(
-                                fontSize: 26,
-                                fontFamily: 'RibeyeMarrow',
-                                color: Colors.black,
-                              ),
-                            ))),
-                        Container(
-                            height:
-                                (MediaQuery.of(context).size.height - 415) / 2,
-                            child: Align(
-                                alignment: Alignment(1, 1),
-                                child: Image.asset(
-                                  'images/cookingPen.png',
-                                  height: 75,
-                                )))
-                      ],
-                    );
-                }
-                return Center(child: CircularProgressIndicator());
-              },
-            ),
+                      Container(
+                        height: MediaQuery.of(context).size.height - 335,
+                        child: IngredientsList(
+                          shoppingCart: model.shoppingCart,
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              } else {
+                return Stack(
+                  children: <Widget>[
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height - 400,
+                        child: Center(
+                            child: Text(
+                          "Nothing added yet",
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontFamily: 'RibeyeMarrow',
+                            color: Colors.black,
+                          ),
+                        ))),
+                    Container(
+                        height: (MediaQuery.of(context).size.height - 415) / 2,
+                        child: Align(
+                            alignment: Alignment(1, 1),
+                            child: Image.asset(
+                              'images/cookingPen.png',
+                              height: 75,
+                            )))
+                  ],
+                );
+              }
+            }),
           ],
         ),
       ),
@@ -146,10 +143,10 @@ class ShoppingCartScreen extends StatelessWidget {
 }
 
 class IngredientsList extends StatefulWidget {
-  final List<Ingredient> ingredients;
-  final List<bool> checked;
+  final Map<String, List<CheckableIngredient>> shoppingCart;
+  final List<String> recipes;
 
-  IngredientsList({this.ingredients, this.checked, Key key}) : super(key: key);
+  IngredientsList({this.shoppingCart, this.recipes, Key key}) : super(key: key);
 
   _IngredientsListState createState() => _IngredientsListState();
 }
@@ -158,76 +155,90 @@ class _IngredientsListState extends State<IngredientsList> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: widget.ingredients.length,
+      itemCount: widget.shoppingCart.keys.length,
       itemBuilder: (context, index) {
-        String ingredientName = widget.ingredients[index].name;
-        double ingredientAmount = widget.ingredients[index].amount;
-        String ingredientUnit = widget.ingredients[index].unit;
+        String recipeName = widget.shoppingCart.keys.toList()[index];
+
+        String currentRecipe = widget.shoppingCart.keys.toList()[index];
         return Dismissible(
-          key: Key('$ingredientName$ingredientAmount$ingredientUnit'),
+          key: Key('$recipeName'),
           onDismissed: (_) {
-            DBProvider.db
-                .deleteFromShoppingCart(widget.ingredients[index])
-                .then((_) {
-              setState(() {
-                widget.ingredients.removeAt(index);
-                widget.checked.removeAt(index);
-              });
-            });
+            // TODO: Delete recipe from shoppingCart
           },
-          background: Container(
-              color: Colors.red,
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: Icon(
-                        GroovinMaterialIcons.delete_sweep,
-                        color: Colors.white,
-                      ),
-                    )
-                  ])),
-          secondaryBackground: Container(
-            color: Colors.red,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: Icon(
-                    GroovinMaterialIcons.delete_sweep,
-                    color: Colors.white,
+          background: _getPrimaryBackgroundDismissable(),
+          secondaryBackground: _getSecondaryBackgroundDismissable(),
+          child: ExpansionTile(
+            title: Text(currentRecipe),
+            children: widget.shoppingCart[currentRecipe].map((ingredient) {
+              return Dismissible(
+                key: Key('$recipeName${ingredient.name}${ingredient.unit}'),
+                onDismissed: (_) {
+                  // TODO: Delete recipe from shoppingCart
+                },
+                background: _getPrimaryBackgroundDismissable(),
+                secondaryBackground: _getSecondaryBackgroundDismissable(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xffFEF3E1),
+                    border: Border(
+                      top: BorderSide(width: 2),
+                      left: BorderSide(width: 2),
+                      right: BorderSide(width: 2),
+                      bottom: BorderSide(
+                          width: widget.shoppingCart[currentRecipe].last ==
+                                  ingredient
+                              ? 2
+                              : 0),
+                    ),
                   ),
-                )
-              ],
-            ),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-                color: Color(0xffFEF3E1),
-                border: Border(
-                    top: BorderSide(width: 2),
-                    left: BorderSide(width: 2),
-                    right: BorderSide(width: 2),
-                    bottom: BorderSide(
-                        width:
-                            index == widget.ingredients.length - 1 ? 2 : 0))),
-            child: IngredientRow(
-                ingredient: widget.ingredients[index],
-                checked: widget.checked,
-                checkedIndex: index),
+                  child: IngredientRow(
+                    ingredient: ingredient,
+                  ),
+                ),
+              );
+            }).toList(),
           ),
         );
       },
     );
   }
+
+  Widget _getPrimaryBackgroundDismissable() {
+    return Container(
+        color: Colors.red,
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Icon(
+              GroovinMaterialIcons.delete_sweep,
+              color: Colors.white,
+            ),
+          )
+        ]));
+  }
+
+  Widget _getSecondaryBackgroundDismissable() {
+    Container(
+      color: Colors.red,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Icon(
+              GroovinMaterialIcons.delete_sweep,
+              color: Colors.white,
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }
 
 class IngredientRow extends StatefulWidget {
-  final Ingredient ingredient;
-  final List<bool> checked;
-  final int checkedIndex;
+  final CheckableIngredient ingredient;
 
   /// checked and checkedIndex because the Row needs to tell
   /// the overlaying List that an item is checked.
@@ -237,8 +248,6 @@ class IngredientRow extends StatefulWidget {
   IngredientRow({
     Key key,
     this.ingredient,
-    this.checked,
-    this.checkedIndex,
   }) : super(key: key);
 
   _IngredientRowState createState() => _IngredientRowState();
@@ -258,32 +267,12 @@ class _IngredientRowState extends State<IngredientRow> {
             child: IconButton(
               iconSize: 30,
               icon: Icon(
-                widget.checked[widget.checkedIndex] == true
+                widget.ingredient.checked
                     ? GroovinMaterialIcons.check_circle_outline
                     : GroovinMaterialIcons.circle_outline,
               ),
-              color: widget.checked[widget.checkedIndex] == true
-                  ? Colors.green
-                  : Colors.grey,
-              onPressed: () {
-                if (!widget.checked[widget.checkedIndex])
-                  DBProvider.db
-                      .checkIngredient(widget.ingredient, true)
-                      .then((_) {
-                    setState(() {
-                      widget.checked[widget.checkedIndex] = true;
-                    });
-                  });
-                else {
-                  DBProvider.db
-                      .checkIngredient(widget.ingredient, false)
-                      .then((_) {
-                    setState(() {
-                      widget.checked[widget.checkedIndex] = false;
-                    });
-                  });
-                }
-              },
+              color: widget.ingredient.checked ? Colors.green : Colors.grey,
+              onPressed: () {},
             ),
           ),
         ),
@@ -292,7 +281,7 @@ class _IngredientRowState extends State<IngredientRow> {
           child: Text(
             //'SpaghettiSauce von der Kuh mit ganz viel ',
             '${widget.ingredient.name}',
-            style: widget.checked[widget.checkedIndex]
+            style: widget.ingredient.checked
                 ? TextStyle(
                     fontSize: 18,
                     decoration: TextDecoration.lineThrough,
@@ -313,7 +302,7 @@ class _IngredientRowState extends State<IngredientRow> {
             child: Center(
               child: Text(
                 '${cutDouble(widget.ingredient.amount)} ${widget.ingredient.unit}',
-                style: widget.checked[widget.checkedIndex]
+                style: widget.ingredient.checked
                     ? TextStyle(
                         fontSize: 18,
                         decoration: TextDecoration.lineThrough,

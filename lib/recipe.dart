@@ -199,30 +199,20 @@ Color getRecipePrimaryColor(Vegetable vegetable) {
   return null;
 }
 
-class ShoppingCart {
-  List<Ingredient> ingredients;
-  List<bool> checked;
-
-  ShoppingCart({this.ingredients, this.checked}) {
-    if (checked == null) checked = [];
-    for (int i = 0; i < ingredients.length; i++) {
-      checked.add(false);
-    }
-  }
-}
-
 class CheckableIngredient {
   String name;
   double amount;
   String unit;
   bool checked = false;
 
-  CheckableIngredient(Ingredient i) {
+  CheckableIngredient(Ingredient i, {this.checked}) {
     name = i.name;
     amount = i.amount;
     unit = i.unit;
+    if (checked != null) {
+      this.checked = checked;
+    }
   }
-
 }
 
 class RecipeCategory {

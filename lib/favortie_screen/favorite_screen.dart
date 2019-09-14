@@ -45,7 +45,6 @@ class FavoriteScreen extends StatelessWidget {
                       child: Text('You have no recipes under this category.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: Colors.white,
                             fontSize: 26,
                             fontFamily: 'RibeyeMarrow',
                           )),
