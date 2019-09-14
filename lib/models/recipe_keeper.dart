@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/helper.dart';
@@ -31,11 +32,31 @@ class RecipeKeeper extends Model {
     notifyListeners();
   }
 
-  void addCategory(String categoryName) {
+  Future<void> addCategory(String categoryName) async {
     this.categories.insert(categories.length - 1, categoryName);
     recipes.addAll({categoryName: []});
+    await DBProvider.db.newCategory(categoryName);
 
     notifyListeners();
+  }
+
+  bool doesCategoryExist(String categoryName) {
+    if (categories.contains(categoryName)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  String getRandomRecipeImageFromCategory(String categoryName) {
+    Random r = Random();
+    if (recipes[categoryName].length == 0) {
+      throw ArgumentError('no recipes in this category');
+    }
+    int randomRecipe = recipes[categoryName].length == 1
+        ? 0
+        : r.nextInt(recipes[categoryName].length);
+    return recipes[categoryName][randomRecipe].imagePreviewPath;
   }
 
   void removeCategory(String categoryName) {
@@ -53,7 +74,7 @@ class RecipeKeeper extends Model {
         }
       }
     }
-    DBProvider.db.deleteRecipe(name);
+    await DBProvider.db.deleteRecipe(name);
     if (deleteFiles)
       Directory(await PathProvider.pP.getRecipeDir(name))
           .deleteSync(recursive: true);
@@ -62,9 +83,10 @@ class RecipeKeeper extends Model {
 
   void changeCategoryName(String oldCatName, String newCatName) async {
     await DBProvider.db.changeCategoryName(oldCatName, newCatName);
-    for (String c in categories) {
-      if (c == oldCatName) c = newCatName;
+    for (int i = 0; i < categories.length; i++) {
+      if (categories[i] == oldCatName) categories[i] = newCatName;
     }
+
     recipes.addAll({newCatName: recipes[oldCatName]});
     recipes.remove(oldCatName);
 
@@ -152,7 +174,8 @@ class RecipeKeeper extends Model {
     notifyListeners();
   }
 
-  void updateCategoryOrder(List<String> categories) {
+  Future<void> updateCategoryOrder(List<String> categories) async {
+    await DBProvider.db.updateCategoryOrder(categories);
     this.categories = categories;
 
     notifyListeners();

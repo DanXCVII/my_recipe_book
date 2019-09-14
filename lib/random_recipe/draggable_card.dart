@@ -295,6 +295,30 @@ class _DraggableCardState extends State<DraggableCard>
     }
   }
 
+  void _showRecipeScreen(MainPageNavigator mpn) {
+    mpn.changeOverlayStatus(false);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => WillPopScope(
+          onWillPop: () async {
+            mpn.changeOverlayStatus(true);
+            var completer = new Completer();
+            completer.complete(false);
+            await DBProvider.db.database;
+            return true;
+          },
+          child: RecipeScreen(
+            recipe: widget.recipe,
+            primaryColor: getRecipePrimaryColor(widget.recipe.vegetable),
+            heroImageTag: '${widget.recipe.name}',
+            heroTitle: 'title-${widget.recipe.name}',
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<MainPageNavigator>(
@@ -317,29 +341,7 @@ class _DraggableCardState extends State<DraggableCard>
                   child: widget.isDraggable
                       ? GestureDetector(
                           onTap: () {
-
-                            model.changeOverlayStatus(false);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) => WillPopScope(
-                                  onWillPop: () async {
-                                    model.changeOverlayStatus(true);
-                                    var completer = new Completer();
-                                    completer.complete(false);
-                                    await DBProvider.db.database;
-                                    return true;
-                                  },
-                                  child: RecipeScreen(
-                                    recipe: widget.recipe,
-                                    primaryColor: getRecipePrimaryColor(
-                                        widget.recipe.vegetable),
-                                    heroImageTag: '${widget.recipe.name}',
-                                    heroTitle: 'title-${widget.recipe.name}',
-                                  ),
-                                ),
-                              ),
-                            );
+                            _showRecipeScreen(model);
                           },
                           onPanStart: _onPanStart,
                           onPanUpdate: _onPanUpdate,

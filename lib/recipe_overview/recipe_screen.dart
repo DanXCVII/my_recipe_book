@@ -315,7 +315,7 @@ class RecipeScreen extends StatelessWidget {
         ]));
   }
 
-  _choiceAction(PopupOptions value, context, RecipeKeeper rKeeper) {
+  void _choiceAction(PopupOptions value, context, RecipeKeeper rKeeper) {
     if (value == PopupOptions.DELETE) {
       rKeeper.deleteRecipeWithName(recipe.name, true).then((_) {
         Navigator.pop(context);
@@ -328,7 +328,8 @@ class RecipeScreen extends StatelessWidget {
   Future<bool> exportRecipe(Recipe recipe) async {
     saveRecipeZipToCache(await PathProvider.pP.getShareDir());
 
-    ShareExtend.share(await PathProvider.pP.getShareZipFile(recipe.name), "file");
+    ShareExtend.share(
+        await PathProvider.pP.getShareZipFile(recipe.name), "file");
 
     return true;
   }
@@ -505,40 +506,25 @@ class CategoriesSection extends StatelessWidget {
                 fontFamily: "Questrial-Regular",
               ),
             ),
-            FutureBuilder<Wrap>(
-                future: getCategories(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: snapshot.data,
-                    );
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                })
+            ScopedModelDescendant<RecipeKeeper>(
+              builder: (context, child, model) => Wrap(
+                children: categories
+                    .map(
+                      (categoryName) => CategoryCircle(
+                        categoryName: categoryName,
+                        imageName: model
+                            .getRandomRecipeImageFromCategory(categoryName),
+                      ),
+                    )
+                    .toList(),
+                runSpacing: 10.0,
+                spacing: 10.0,
+              ),
+            )
           ],
         ),
       ),
     );
-  }
-
-  Future<Wrap> getCategories() async {
-    Wrap output = new Wrap(
-      children: <Widget>[],
-      runSpacing: 10.0,
-      spacing: 10.0,
-    );
-    for (int i = 0; i < categories.length; i++) {
-      output.children.add(CategoryCircle(
-        categoryName: categories[i],
-        imageName:
-            await DBProvider.db.getRandomRecipeImageFromCategory(categories[i]),
-      ));
-    }
-    return output;
   }
 }
 

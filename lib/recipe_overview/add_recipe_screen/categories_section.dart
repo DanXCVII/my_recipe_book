@@ -138,8 +138,11 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
   }
 }
 
+// TODO: Check if it also works as StatelessWidget
 class CategoryAddDialog extends StatefulWidget {
-  CategoryAddDialog();
+  final String modifiedCategory;
+
+  CategoryAddDialog({this.modifiedCategory});
 
   @override
   State<StatefulWidget> createState() {
@@ -155,6 +158,9 @@ class CategoryAddDialogState extends State<CategoryAddDialog> {
   initState() {
     super.initState();
     categoryNameController = new TextEditingController();
+    if (widget.modifiedCategory == null) {
+      categoryNameController.text = widget.modifiedCategory;
+    }
   }
 
   @override
@@ -165,88 +171,85 @@ class CategoryAddDialogState extends State<CategoryAddDialog> {
       ),
       elevation: 0.0,
       backgroundColor: Colors.transparent,
-      child: dialogContent(context),
-    );
-  }
-
-  Widget dialogContent(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.all(
-            Consts.padding,
-          ),
-          margin: EdgeInsets.only(top: Consts.padding),
-          decoration: new BoxDecoration(
-            color: Theme.of(context).dialogBackgroundColor,
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(Consts.padding),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10.0,
-                offset: const Offset(0.0, 10.0),
-              ),
-            ],
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min, // To make the card compact
-              children: <Widget>[
-                SizedBox(height: 16.0),
-                TextFormField(
-                  controller: categoryNameController,
-                  validator: (value) {
-                    DBProvider.db.getCategories().then((categoryList) {
-                      if (categoryList.contains(value)) {
-                        return 'category already exists';
-                      }
-                      return null;
-                    });
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    filled: true,
-                    hintText: "category name",
-                  ),
+      child: Stack(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(
+              Consts.padding,
+            ),
+            margin: EdgeInsets.only(top: Consts.padding),
+            decoration: new BoxDecoration(
+              color: Theme.of(context).dialogBackgroundColor,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(Consts.padding),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10.0,
+                  offset: const Offset(0.0, 10.0),
                 ),
-                SizedBox(height: 24.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    FlatButton(
-                        child: Text("Cancel"),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }),
-                    ScopedModelDescendant<RecipeKeeper>(
-                        builder: (context, child, model) {
-                      return FlatButton(
-                          child: Text("Save"),
-                          onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                              // TODO Prio1: Not validating the category!
-                              _saveCategory(model).then((_) {
-                                Navigator.pop(context);
-                                setState(() {});
-                              });
-                            }
-                          });
-                    })
-                  ],
-                )
               ],
             ),
+            child: Form(
+              key: _formKey,
+              child: ScopedModelDescendant<RecipeKeeper>(
+                  builder: (context, child, model) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min, // To make the card compact
+                  children: <Widget>[
+                    SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: categoryNameController,
+                      validator: (value) {
+                        if (model
+                            .doesCategoryExist(categoryNameController.text)) {
+                          return 'category already exists';
+                        } else {
+                          return null;
+                        }
+                      },
+                      decoration: InputDecoration(
+                        filled: true,
+                        hintText: "category name",
+                      ),
+                    ),
+                    SizedBox(height: 24.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        FlatButton(
+                            child: Text("Cancel"),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            }),
+                        FlatButton(
+                          child: Text("Save"),
+                          onPressed: () {
+                            validateAddModifyCategory(model);
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                );
+              }),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Future<void> _saveCategory(RecipeKeeper rKeeper) async {
-    String categoryName = categoryNameController.text;
-    rKeeper.addCategory(categoryNameController.text);
-    await DBProvider.db.newCategory(categoryName);
+  void validateAddModifyCategory(RecipeKeeper rKeeper) {
+    if (_formKey.currentState.validate()) {
+      if (widget.modifiedCategory == null) {
+        rKeeper.addCategory(categoryNameController.text).then((_) {
+          Navigator.pop(context);
+        });
+      } else {
+        rKeeper.changeCategoryName(
+            widget.modifiedCategory, categoryNameController.text);
+      }
+    }
   }
 }

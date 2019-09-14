@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:my_recipe_book/helper.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'dart:math';
 import 'package:path_provider/path_provider.dart';
 import './recipe.dart';
 import 'dart:async';
@@ -494,30 +493,6 @@ class DBProvider {
     String imageLocalPathRecipe = '${appDir.path}/.$recipeName/';
     var dir = new Directory(imageLocalPathRecipe);
     if (await dir.exists()) dir.deleteSync(recursive: true);
-  }
-
-  Future<String> getRandomRecipeImageFromCategory(String categoryName) async {
-    var db = await database;
-
-    var resRecipes = await db.rawQuery(
-        'SELECT Recipe.id, Recipe.image FROM RecipeCategories '
-        'INNER JOIN Categories ON RecipeCategories.categories_name=Categories.categoryName '
-        'INNER JOIN Recipe ON RecipeCategories.recipe_name=Recipe.recipe_name '
-        "WHERE categoryName = '$categoryName'");
-
-    Random r = Random();
-    if (resRecipes.length == 0) return '';
-    int randomRecipe =
-        resRecipes.length == 1 ? 0 : r.nextInt(resRecipes.length);
-
-    return resRecipes[randomRecipe]['image'] != 'images/randomFood.jpg'
-        ? await PathProvider.pP.getRecipePreviewPathFull(
-            resRecipes[randomRecipe]['id'],
-            // dataType
-            resRecipes[randomRecipe]['image'].substring(
-                resRecipes[randomRecipe]['image'].length - 4,
-                resRecipes[randomRecipe]['image'].length))
-        : 'images/randomFood.jpg';
   }
 
   Future<void> addToShoppingList(List<Ingredient> ingredients) async {

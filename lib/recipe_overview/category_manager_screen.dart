@@ -5,6 +5,9 @@ import 'package:scoped_model/scoped_model.dart';
 
 import 'add_recipe_screen/categories_section.dart';
 
+/// TODO: Maybe change to StatelessWidget by calling changeOrderMethods in 
+/// RecipeKeeper which notifies this widget for changes so that no internal
+/// list is needed
 class CategoryManager extends StatefulWidget {
   CategoryManager({Key key}) : super(key: key);
 
@@ -51,36 +54,37 @@ class _CategoryManagerState extends State<CategoryManager> {
             onReorder: (oldIndex, newIndex) {
               _updateItems(oldIndex, newIndex);
             },
-            children: buildCategories(this.categories, model),
+            children: this.categories.map((categoryName) {
+              return ListTile(
+                key: Key(categoryName),
+                title: GestureDetector(
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (_) => CategoryAddDialog(
+                              modifiedCategory: categoryName,
+                            ));
+                  },
+                  child: Text(categoryName),
+                ),
+                leading: Icon(Icons.reorder),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    DBProvider.db.removeCategory(categoryName).then((_) {
+                      setState(() {
+                        model.removeCategory(categoryName);
+                        categories.remove(categoryName);
+                      });
+                    });
+                  },
+                ),
+              );
+            }).toList(),
           );
         }
       }),
     );
-  }
-
-  List<Widget> buildCategories(List<String> categories, RecipeKeeper rKeeper) {
-    List<Widget> categoryTiles = [];
-    for (int i = 0; i < categories.length-1; i++) {
-      categoryTiles.add(
-        ListTile(
-          key: Key(categories[i]),
-          title: Text(categories[i]),
-          leading: Icon(Icons.reorder),
-          trailing: IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () {
-              DBProvider.db.removeCategory(categories[i]).then((_) {
-                setState(() {
-                  rKeeper.removeCategory(categories[i]);
-                  categories.remove(categories[i]);
-                });
-              });
-            },
-          ),
-        ),
-      );
-    }
-    return categoryTiles;
   }
 
   void _updateItems(int oldIndex, newIndex) {
