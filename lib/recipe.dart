@@ -222,6 +222,7 @@ class CheckableIngredient {
     amount = i.amount;
     unit = i.unit;
   }
+
 }
 
 class RecipeCategory {

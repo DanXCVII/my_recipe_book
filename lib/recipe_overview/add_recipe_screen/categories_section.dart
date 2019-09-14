@@ -78,14 +78,15 @@ class _CategorySectionState extends State<CategorySection> {
         // category chips
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Container(child: ScopedModelDescendant<RecipeKeeper>(
-              builder: (context, child, model) {
-            return Wrap(
-              spacing: 5.0,
-              runSpacing: 3.0,
-              children: _getCategoryChips(model.rCategories),
-            );
-          })),
+          child: Container(
+            child: ScopedModelDescendant<RecipeKeeper>(
+              builder: (context, child, model) => Wrap(
+                spacing: 5.0,
+                runSpacing: 3.0,
+                children: _getCategoryChips(model.rCategories),
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -193,8 +194,7 @@ class CategoryAddDialogState extends State<CategoryAddDialog> {
             child: Form(
               key: _formKey,
               child: ScopedModelDescendant<RecipeKeeper>(
-                  builder: (context, child, model) {
-                return Column(
+                builder: (context, child, model) => Column(
                   mainAxisSize: MainAxisSize.min, // To make the card compact
                   children: <Widget>[
                     SizedBox(height: 16.0),
@@ -231,8 +231,8 @@ class CategoryAddDialogState extends State<CategoryAddDialog> {
                       ],
                     )
                   ],
-                );
-              }),
+                ),
+              ),
             ),
           ),
         ],

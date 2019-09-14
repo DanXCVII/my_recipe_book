@@ -1,6 +1,87 @@
 import 'package:flutter/material.dart';
 
+import '../../database.dart';
 import '../../recipe.dart';
+
+enum Validator {
+  INGREDIENTS_NOT_VALID,
+  REQUIRED_FIELDS,
+  NAME_TAKEN,
+  GLOSSARY_NOT_VALID,
+  VALID
+}
+
+class RecipeValidator {
+  static final RecipeValidator _rValidator = new RecipeValidator._internal();
+
+  factory RecipeValidator() {
+    return _rValidator;
+  }
+
+  RecipeValidator._internal();
+
+  Future<Validator> validateForm(
+    GlobalKey<FormState> formKey,
+    List<List<TextEditingController>> ingredientNameController,
+    List<List<TextEditingController>> ingredientAmountController,
+    List<List<TextEditingController>> ingredientUnitController,
+    List<TextEditingController> ingredientGlossaryController,
+    String recipeName,
+  ) async {
+    if (!formKey.currentState.validate())
+      return Validator.REQUIRED_FIELDS;
+    else if (!_isIngredientListValid(
+      ingredientNameController,
+      ingredientAmountController,
+      ingredientUnitController,
+    ))
+      return Validator.INGREDIENTS_NOT_VALID;
+    else if (!_isGlossaryValid(
+      ingredientNameController,
+      ingredientAmountController,
+      ingredientUnitController,
+      ingredientGlossaryController,
+    ))
+      return Validator.GLOSSARY_NOT_VALID;
+    else if (await DBProvider.db.doesRecipeExist(recipeName))
+      return Validator.NAME_TAKEN;
+    else
+      return Validator.VALID;
+  }
+
+  bool _isIngredientListValid(
+    List<List<TextEditingController>> ingredients,
+    List<List<TextEditingController>> amount,
+    List<List<TextEditingController>> unit,
+  ) {
+    int validator = 0;
+    for (int i = 0; i < ingredients.length; i++) {
+      for (int j = 0; j < ingredients[i].length; j++) {
+        validator = 0;
+        if (ingredients[i][j].text == "") validator++;
+        if (amount[i][j].text == "") validator++;
+        if (unit[i][j].text == "") validator++;
+        if (validator == 1 || validator == 2) return false;
+      }
+    }
+    return true;
+  }
+
+  bool _isGlossaryValid(
+      List<List<TextEditingController>> ingredients,
+      List<List<TextEditingController>> amount,
+      List<List<TextEditingController>> unit,
+      List<TextEditingController> ingredientsGlossary) {
+    List<List<Ingredient>> ingredientList =
+        getCleanIngredientData(ingredients, amount, unit);
+    List<String> ingredientGlossary =
+        getCleanGlossary(ingredientsGlossary, ingredientList);
+    if (ingredientList.length > 1 &&
+        ingredientGlossary.length < ingredientList.length) return false;
+
+    return true;
+  }
+}
 
 /// sets the length of the glossary for the ingredients section equal to
 /// the length list<list<ingredients>> (removes unnessesary sections)
@@ -88,37 +169,4 @@ List<List<Ingredient>> getCleanIngredientData(
   cleanIngredientsData.removeWhere((item) => item.isEmpty);
 
   return cleanIngredientsData;
-}
-
-bool isGlossaryValid(
-    List<List<TextEditingController>> ingredients,
-    List<List<TextEditingController>> amount,
-    List<List<TextEditingController>> unit,
-    List<TextEditingController> ingredientsGlossary) {
-  List<List<Ingredient>> ingredientList =
-      getCleanIngredientData(ingredients, amount, unit);
-  List<String> ingredientGlossary =
-      getCleanGlossary(ingredientsGlossary, ingredientList);
-  if (ingredientList.length > 1 &&
-      ingredientGlossary.length < ingredientList.length) return false;
-
-  return true;
-}
-
-bool isIngredientListValid(
-  List<List<TextEditingController>> ingredients,
-  List<List<TextEditingController>> amount,
-  List<List<TextEditingController>> unit,
-) {
-  int validator = 0;
-  for (int i = 0; i < ingredients.length; i++) {
-    for (int j = 0; j < ingredients[i].length; j++) {
-      validator = 0;
-      if (ingredients[i][j].text == "") validator++;
-      if (amount[i][j].text == "") validator++;
-      if (unit[i][j].text == "") validator++;
-      if (validator == 1 || validator == 2) return false;
-    }
-  }
-  return true;
 }

@@ -5,7 +5,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 import 'add_recipe_screen/categories_section.dart';
 
-/// TODO: Maybe change to StatelessWidget by calling changeOrderMethods in 
+/// TODO: Maybe change to StatelessWidget by calling changeOrderMethods in
 /// RecipeKeeper which notifies this widget for changes so that no internal
 /// list is needed
 class CategoryManager extends StatefulWidget {
@@ -23,8 +23,8 @@ class _CategoryManagerState extends State<CategoryManager> {
       appBar: AppBar(
         title: Text('manage categories'),
         actions: <Widget>[
-          ScopedModelDescendant<RecipeKeeper>(builder: (context, child, model) {
-            return IconButton(
+          ScopedModelDescendant<RecipeKeeper>(
+            builder: (context, child, model) => IconButton(
               icon: Icon(Icons.check),
               onPressed: () {
                 model.updateCategoryOrder(categories);
@@ -32,8 +32,8 @@ class _CategoryManagerState extends State<CategoryManager> {
                   Navigator.pop(context);
                 });
               },
-            );
-          }),
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

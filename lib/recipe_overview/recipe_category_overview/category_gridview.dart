@@ -12,16 +12,13 @@ class CategoryGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<RecipeKeeper>(
-        builder: (context, child, model) {
-      if (model.isInitialised) {
-        return GridView.extent(
-            maxCrossAxisExtent: 300,
-            padding: const EdgeInsets.all(4),
-            mainAxisSpacing: 4,
-            crossAxisSpacing: 4,
-            children: getCategories(model.rCategories, model));
-      }
-    });
+      builder: (context, child, model) => GridView.extent(
+          maxCrossAxisExtent: 300,
+          padding: const EdgeInsets.all(4),
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          children: getCategories(model.rCategories, model)),
+    );
   }
 
   List<Widget> getCategories(List<String> categoryNames, RecipeKeeper rKeeper) {

@@ -15,24 +15,20 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  bool _brightTheme;
-
   @override
   Widget build(BuildContext context) {
     return Container(
       child: ListView(
         children: <Widget>[
           ScopedModelDescendant<RecipeKeeper>(
-            builder: (context, child, model) {
-              return GestureDetector(
-                onTap: () {
-                  _importSingleRecipe(model).then((_) {});
-                },
-                child: ListTile(
-                  title: Text('import Recipe'),
-                ),
-              );
-            },
+            builder: (context, child, model) => GestureDetector(
+              onTap: () {
+                _importSingleRecipe(model).then((_) {});
+              },
+              child: ListTile(
+                title: Text('import Recipe'),
+              ),
+            ),
           ),
           Divider(),
           ListTile(

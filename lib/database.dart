@@ -86,12 +86,17 @@ class DBProvider {
             'FOREIGN KEY(recipe_name) REFERENCES Recipe(recipe_name) ON DELETE CASCADE,'
             'FOREIGN KEY(categories_name) REFERENCES Categories(categoryName) ON DELETE CASCADE'
             ')');
-        await db.execute('CREATE TABLE ShoppingCart ('
+        await db.execute('CREATE TABLE ShoppingCartRecipe ('
+            'recipe_name TEXT PRIMARY KEY,'
+            ')');
+        await db.execute('CREATE TABLE ShoppingCartIngredient ('
             'item_id INTEGER PRIMARY KEY,'
             'name TEXT,'
             'amount REAL,'
             'unit,'
             'checked INTEGER'
+            'recipe_name TEXT'
+            'FOREIGN KEY(recipe_name) REFERENCES Recipe(recipe_name) ON DELETE CASCADE'
             ')');
       },
     );

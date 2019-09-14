@@ -22,14 +22,6 @@ import './complexity_section.dart';
 import '../recipe_screen.dart' show RecipeScreen;
 import './image_selector.dart' as IS;
 
-enum Validator {
-  INGREDIENTS_NOT_VALID,
-  REQUIRED_FIELDS,
-  NAME_TAKEN,
-  GLOSSARY_NOT_VALID,
-  VALID
-}
-
 const double categories = 14;
 const double topPadding = 8;
 
@@ -61,23 +53,22 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   final List<String> newRecipeCategories = [];
 
   //////////// for Complexity ////////////
-  final MyDoubleWrapper complexity = new MyDoubleWrapper(myDouble: 5.0);
+  final MyDoubleWrapper complexity = MyDoubleWrapper(myDouble: 5.0);
 
   //////////// this Widget ////////////
-  final TextEditingController nameController = new TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController preperationTimeController =
-      new TextEditingController();
-  final TextEditingController cookingTimeController =
-      new TextEditingController();
-  final TextEditingController totalTimeController = new TextEditingController();
-  final TextEditingController servingsController = new TextEditingController();
-  final TextEditingController notesController = new TextEditingController();
-  final MyImageWrapper selectedRecipeImage = new MyImageWrapper();
-  final MyVegetableWrapper selectedRecipeVegetable = new MyVegetableWrapper();
+      TextEditingController();
+  final TextEditingController cookingTimeController = TextEditingController();
+  final TextEditingController totalTimeController = TextEditingController();
+  final TextEditingController servingsController = TextEditingController();
+  final TextEditingController notesController = TextEditingController();
+  final MyImageWrapper selectedRecipeImage = MyImageWrapper();
+  final MyVegetableWrapper selectedRecipeVegetable = MyVegetableWrapper();
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // TODO: Delete old not saved data when opening addRecipe
+  // TODO: Delete old/not saved data when opening addRecipe
   @override
   void initState() {
     super.initState();
@@ -86,13 +77,13 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     stepImages.add([]);
     // initialize list of controllers for the dynamic textFields with one element
     ingredientNameController.add([]);
-    ingredientNameController[0].add(new TextEditingController());
+    ingredientNameController[0].add(TextEditingController());
     ingredientAmountController.add([]);
-    ingredientAmountController[0].add(new TextEditingController());
+    ingredientAmountController[0].add(TextEditingController());
     ingredientUnitController.add([]);
-    ingredientUnitController[0].add(new TextEditingController());
-    ingredientGlossaryController.add(new TextEditingController());
-    stepsDescController.add(new TextEditingController());
+    ingredientUnitController[0].add(TextEditingController());
+    ingredientGlossaryController.add(TextEditingController());
+    stepsDescController.add(TextEditingController());
 
     // If a recipe will be edited and not a new one created
     if (widget.editRecipe != null) {
@@ -110,7 +101,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       notesController.text = widget.editRecipe.notes;
       for (int i = 0; i < widget.editRecipe.ingredientsGlossary.length; i++) {
         if (i > 0) {
-          ingredientGlossaryController.add(new TextEditingController());
+          ingredientGlossaryController.add(TextEditingController());
         }
         ingredientGlossaryController[i].text =
             widget.editRecipe.ingredientsGlossary[i];
@@ -120,9 +111,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ingredientUnitController.add([]);
         for (int j = 0; j < widget.editRecipe.ingredients[i].length; j++) {
           if (i != 0 || j > 0) {
-            ingredientNameController[i].add(new TextEditingController());
-            ingredientAmountController[i].add(new TextEditingController());
-            ingredientUnitController[i].add(new TextEditingController());
+            ingredientNameController[i].add(TextEditingController());
+            ingredientAmountController[i].add(TextEditingController());
+            ingredientUnitController[i].add(TextEditingController());
           }
           ingredientNameController[i][j].text =
               widget.editRecipe.ingredients[i][j].name;
@@ -134,7 +125,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       }
       for (int i = 0; i < widget.editRecipe.steps.length; i++) {
         if (i > 0) {
-          stepsDescController.add(new TextEditingController());
+          stepsDescController.add(TextEditingController());
           stepImages.add([]);
         }
         stepsDescController[i].text = widget.editRecipe.steps[i];
@@ -172,76 +163,18 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ),
         title: Text("add recipe"),
         actions: <Widget>[
-          ScopedModelDescendant<RecipeKeeper>(builder: (context, child, model) {
-            return IconButton(
-              icon: Icon(Icons.check),
-              color: Colors.white,
-              onPressed: () {
-                if (!_formKey.currentState.validate()) {
-                  showRequiredFieldsDialog(context);
-                } else if (!isIngredientListValid(
-                  ingredientNameController,
-                  ingredientAmountController,
-                  ingredientUnitController,
-                )) {
-                  showIngredientsIncompleteDialog(context);
-                } else if (!isGlossaryValid(
-                  ingredientNameController,
-                  ingredientAmountController,
-                  ingredientUnitController,
-                  ingredientGlossaryController,
-                )) {
-                  showIngredientsGlossaryIncomplete(context);
-                } else {
-                  /////////// Only do if all data is VALID! ///////////
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (_) => WillPopScope(
-                        // It disables the back button
-                        onWillPop: () async => false,
-                        child: RoundDialog(
-                            FlareActor(
-                              'animations/writing_pen.flr',
-                              alignment: Alignment.center,
-                              fit: BoxFit.fitWidth,
-                              animation: "Go",
-                            ),
-                            150)),
-                  );
-                  if (widget.editRecipe == null) {
-                    saveRecipe(model).then((_) {
-                      Navigator.pop(context);
-                    });
-                  } else {
-                    deleteOldSaveNewRecipe(widget.editRecipe, model)
-                        .then((newRecipe) {
-                      newRecipe.isFavorite = widget.editRecipe.isFavorite;
-                      Navigator.pop(context); // loading screen
-                      Navigator.pop(context); // edit recipe screen
-                      Navigator.pop(context); // old recipe screen
-                      imageCache.clear();
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => RecipeScreen(
-                                    recipe: newRecipe,
-                                    primaryColor: getRecipePrimaryColor(
-                                        newRecipe.vegetable),
-                                    heroImageTag: 'heroImageTag',
-                                    heroTitle: 'heroTitel',
-                                  )));
-                    });
-                  }
-                }
-              },
-            );
-          }),
+          ScopedModelDescendant<RecipeKeeper>(
+              builder: (context, child, model) => IconButton(
+                    icon: Icon(Icons.check),
+                    color: Colors.white,
+                    onPressed: () {
+                      _finishedEditingRecipe(model);
+                    },
+                  )),
           IconButton(
             icon: Icon(Icons.art_track),
             onPressed: () {
-              FocusScope.of(context).requestFocus(new FocusNode());
+              FocusScope.of(context).requestFocus(FocusNode());
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -479,6 +412,77 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     });
   }
 
+  void _finishedEditingRecipe(RecipeKeeper rKeeper) {
+    RecipeValidator()
+        .validateForm(
+            _formKey,
+            ingredientNameController,
+            ingredientAmountController,
+            ingredientUnitController,
+            ingredientGlossaryController,
+            nameController.text)
+        .then((v) {
+      switch (v) {
+        case Validator.REQUIRED_FIELDS:
+          _showRequiredFieldsDialog(context);
+          break;
+        case Validator.NAME_TAKEN:
+          //TODO: Implement Dialog for when recipeName is taken
+          break;
+        case Validator.INGREDIENTS_NOT_VALID:
+          _showIngredientsIncompleteDialog(context);
+          break;
+        case Validator.GLOSSARY_NOT_VALID:
+          _showIngredientsGlossaryIncomplete(context);
+          break;
+        default:
+          saveValidRecipeData(rKeeper);
+          break;
+      }
+    });
+  }
+
+  void saveValidRecipeData(RecipeKeeper rKeeper) {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => WillPopScope(
+          // It disables the back button
+          onWillPop: () async => false,
+          child: RoundDialog(
+              FlareActor(
+                'animations/writing_pen.flr',
+                alignment: Alignment.center,
+                fit: BoxFit.fitWidth,
+                animation: "Go",
+              ),
+              150)),
+    );
+    if (widget.editRecipe == null) {
+      saveRecipe(rKeeper).then((_) {
+        Navigator.pop(context);
+      });
+    } else {
+      deleteOldSaveNewRecipe(widget.editRecipe, rKeeper).then((newRecipe) {
+        newRecipe.isFavorite = widget.editRecipe.isFavorite;
+        Navigator.pop(context); // loading screen
+        Navigator.pop(context); // edit recipe screen
+        Navigator.pop(context); // old recipe screen
+        imageCache.clear();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => RecipeScreen(
+                      recipe: newRecipe,
+                      primaryColor: getRecipePrimaryColor(newRecipe.vegetable),
+                      heroImageTag: 'heroImageTag',
+                      heroTitle: 'heroTitel',
+                    )));
+      });
+    }
+  }
+
   Future<Recipe> deleteOldSaveNewRecipe(
       Recipe editRecipe, RecipeKeeper rKeeper) async {
     bool deleteFiles = false;
@@ -504,7 +508,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         imagePath, 2000);
     //await saveImage(File('/storage/emulated/0/Download/recipeDate/meat.jpg'),
     //    imagePreviewPath, 300);
-    Recipe r1 = new Recipe(
+    Recipe r1 = Recipe(
       name: 'Steack mit Bratsauce',
       imagePath: imagePath,
       imagePreviewPath: imagePreviewPath,
@@ -591,39 +595,10 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   // TODO: Remove later / Only for dummyRecipes
   String getStepImageName(String selectedImagePath) {
-    Random random = new Random();
+    Random random = Random();
     int dotIndex = selectedImagePath.indexOf('.');
     String ending = selectedImagePath.substring(dotIndex);
     return random.nextInt(10000).toString() + ending;
-  }
-
-  Future<Validator> validateForm(
-    GlobalKey<FormState> formKey,
-    List<List<TextEditingController>> ingredientNameController,
-    List<List<TextEditingController>> ingredientAmountController,
-    List<List<TextEditingController>> ingredientUnitController,
-    List<TextEditingController> ingredientGlossaryController,
-    String recipeName,
-  ) async {
-    if (!formKey.currentState.validate())
-      return Validator.REQUIRED_FIELDS;
-    else if (!isIngredientListValid(
-      ingredientNameController,
-      ingredientAmountController,
-      ingredientUnitController,
-    ))
-      return Validator.INGREDIENTS_NOT_VALID;
-    else if (!isGlossaryValid(
-      ingredientNameController,
-      ingredientAmountController,
-      ingredientUnitController,
-      ingredientGlossaryController,
-    ))
-      return Validator.GLOSSARY_NOT_VALID;
-    else if (await DBProvider.db.doesRecipeExist(recipeName))
-      return Validator.NAME_TAKEN;
-    else
-      return Validator.VALID;
   }
 
   Future<Recipe> saveRecipe(RecipeKeeper rKeeper) async {
@@ -679,7 +654,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       }
     }
 
-    Recipe newRecipe = new Recipe(
+    Recipe newRecipe = Recipe(
       name: recipeName,
       imagePath: recipeImage != null
           ? PathProvider.pP.getRecipePath(nameController.text, imageDatatype)
@@ -691,17 +666,17 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       preperationTime: preperationTimeController.text.isEmpty
           ? 0
           : double.parse(
-              preperationTimeController.text.replaceAll(new RegExp(r','), 'e')),
+              preperationTimeController.text.replaceAll(RegExp(r','), 'e')),
       cookingTime: cookingTimeController.text.isEmpty
           ? 0
           : double.parse(
-              cookingTimeController.text.replaceAll(new RegExp(r','), 'e')),
+              cookingTimeController.text.replaceAll(RegExp(r','), 'e')),
       totalTime: totalTimeController.text.isEmpty
           ? 0
           : double.parse(
-              totalTimeController.text.replaceAll(new RegExp(r','), 'e')),
-      servings: double.parse(
-          servingsController.text.replaceAll(new RegExp(r','), 'e')),
+              totalTimeController.text.replaceAll(RegExp(r','), 'e')),
+      servings:
+          double.parse(servingsController.text.replaceAll(RegExp(r','), 'e')),
       steps: removeEmptyStrings(stepsDescController),
       stepImages: stepImages,
       notes: notesController.text,
@@ -729,7 +704,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     return fullImagePathRecipe;
   }
 
-  void showIngredientsIncompleteDialog(BuildContext context) {
+  void _showIngredientsIncompleteDialog(BuildContext context) {
     showDialog(
         context: context,
         builder: (_) => RoundEdgeDialog(
@@ -744,7 +719,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             ));
   }
 
-  void showIngredientsGlossaryIncomplete(BuildContext context) {
+  void _showIngredientsGlossaryIncomplete(BuildContext context) {
     showDialog(
         context: context,
         builder: (_) => RoundEdgeDialog(
@@ -758,7 +733,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             ));
   }
 
-  void showRequiredFieldsDialog(BuildContext context) {
+  void _showRequiredFieldsDialog(BuildContext context) {
     showDialog(
         context: context,
         builder: (_) => RoundEdgeDialog(
@@ -774,7 +749,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 
   List<String> removeEmptyStrings(List<TextEditingController> list) {
-    List<String> output = new List<String>();
+    List<String> output = [];
 
     for (int i = 0; i < list.length; i++) {
       if (list[i].text != "") {
@@ -785,23 +760,13 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   }
 }
 
-void showSavingDialog(BuildContext context) {
-  showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => WillPopScope(
-          // It disables the back button
-          onWillPop: () async => false,
-          child: RoundDialog(CircularProgressIndicator(), 50)));
-}
-
 bool validateNumber(String text) {
   if (text.isEmpty) {
     return true;
   }
   String pattern = r"^(?!0*[.,]?0+$)\d*[.,]?\d+$";
 
-  RegExp regex = new RegExp(pattern);
+  RegExp regex = RegExp(pattern);
   if (regex.hasMatch(text)) {
     return true;
   } else {
