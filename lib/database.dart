@@ -507,9 +507,6 @@ class DBProvider {
 
     await db.execute(
         'INSERT OR IGNORE INTO ShoppingCartRecipe (recipe) VALUES (?)',
-        ['summary']);
-    await db.execute(
-        'INSERT OR IGNORE INTO ShoppingCartRecipe (recipe) VALUES (?)',
         [recipeName]);
 
     for (Ingredient i in ingredients) {
@@ -519,78 +516,167 @@ class DBProvider {
       var resultIngredient = await db.query('ShoppingCartIngredient',
           where: 'recipe = ? AND name = ? AND unit = ?',
           whereArgs: [recipeName, i.name, i.unit]);
-      if (resultSummary.isEmpty) {
-        await db.insert('ShoppingCartIngredient', {
-          'recipe': recipeName,
-          'name': i.name,
-          'amount': i.amount,
-          'unit': i.unit,
-          'checked': 0,
-        });
-        await db.insert('ShoppingCartIngredient', {
-          'recipe': 'summary',
-          'name': i.name,
-          'amount': i.amount,
-          'unit': i.unit,
-          'checked': 0,
-        });
-      } else if (resultIngredient.isEmpty) {
-        await db.insert('ShoppingCartIngredient', {
-          'recipe': recipeName,
-          'name': i.name,
-          'amount': i.amount,
-          'unit': i.unit,
-          'checked': 0,
-        });
-        await db.update('ShoppingCartIngredient',
-            {'amount': resultSummary[0]['amount'] + i.amount, 'checked': 0},
-            where: 'recipe = ? AND name = ? AND unit = ?',
-            whereArgs: ['summary', i.name, i.unit]);
+      if (i.name.compareTo('summary') != 0) {
+        if (resultSummary.isEmpty) {
+          await db.insert('ShoppingCartIngredient', {
+            'recipe': recipeName,
+            'name': i.name,
+            'amount': i.amount,
+            'unit': i.unit,
+            'checked': 0,
+          });
+
+          await db.insert('ShoppingCartIngredient', {
+            'recipe': 'summary',
+            'name': i.name,
+            'amount': i.amount,
+            'unit': i.unit,
+            'checked': 0,
+          });
+        } else if (resultIngredient.isEmpty &&
+            recipeName.compareTo('summary') != 0) {
+          await db.insert('ShoppingCartIngredient', {
+            'recipe': recipeName,
+            'name': i.name,
+            'amount': i.amount,
+            'unit': i.unit,
+            'checked': 0,
+          });
+          await db.update(
+              'ShoppingCartIngredient',
+              {
+                'amount': resultSummary[0]['amount'] + i.amount,
+                'checked': 0,
+              },
+              where: 'recipe = ? AND name = ? AND unit = ?',
+              whereArgs: ['summary', i.name, i.unit]);
+        } else {
+          await db.update(
+              'ShoppingCartIngredient',
+              {
+                'amount': resultIngredient[0]['amount'] + i.amount,
+                'checked': 0,
+              },
+              where: 'recipe = ? AND name = ? AND unit = ?',
+              whereArgs: [recipeName, i.name, i.unit]);
+          await db.update(
+              'ShoppingCartIngredient',
+              {
+                'amount': resultSummary[0]['amount'] + i.amount,
+                'checked': 0,
+              },
+              where: 'recipe = ? AND name = ? AND unit = ?',
+              whereArgs: ['summary', i.name, i.unit]);
+        }
       } else {
-        await db.update('ShoppingCartIngredient',
-            {'amount': resultIngredient[0]['amount'] + i.amount, 'checked': 0},
-            where: 'recipe = ? AND name = ? AND unit = ?',
-            whereArgs: [recipeName, i.name, i.unit]);
-        await db.update('ShoppingCartIngredient',
-            {'amount': resultSummary[0]['amount'] + i.amount, 'checked': 0},
-            where: 'recipe = ? AND name = ? AND unit = ?',
-            whereArgs: ['summary', i.name, i.unit]);
+        if (resultSummary.isEmpty) {
+          await db.insert('ShoppingCartIngredient', {
+            'recipe': recipeName,
+            'name': i.name,
+            'amount': i.amount,
+            'unit': i.unit,
+            'checked': 0,
+          });
+        } else {
+          await db.update(
+              'ShoppingCartIngredient',
+              {
+                'amount': resultSummary[0]['amount'] + i.amount,
+                'checked': 0,
+              },
+              where: 'recipe = ? AND name = ? AND unit = ?',
+              whereArgs: ['summary', i.name, i.unit]);
+        }
       }
     }
   }
 
-  Future<void> checkIngredient(Ingredient ingredient, bool checked) async {
+  Future<void> checkIngredient(String recipe, CheckableIngredient i) async {
     final db = await database;
+    var batch = db.batch();
+
     int checkedInt = 0;
-    if (checked) checkedInt = 1;
-    await db.rawUpdate('UPDATE ShoppingCart SET checked = $checkedInt '
-        'WHERE name = \'${ingredient.name}\' AND amount = ${ingredient.amount} AND unit = \'${ingredient.unit}\'');
+    if (i.checked) checkedInt = 1;
+    batch.update('ShoppingCartIngredient', {'checked': checkedInt},
+        where: 'recipe = ? AND name = ? AND unit = ?',
+        whereArgs: [recipe, i.name, i.unit]);
+    if (recipe.compareTo('summary') != 0) {
+      if (checkedInt == 0) {
+        batch.update('ShoppingCartIngredient', {'checked': 0},
+            where: 'recipe = ? AND name = ? AND unit = ?',
+            whereArgs: ['summary', i.name, i.unit]);
+      } else {
+        var resSummaryNotChecked = await db.query('ShoppingCartIngredient',
+            where: 'name = ? AND unit = ? AND checked = ?',
+            whereArgs: [i.name, i.unit, 0]);
+        if (resSummaryNotChecked.isEmpty) {
+          batch.update('ShoppingCartIngredient', {'checked': 1},
+              where: 'recipe = ? AND name = ? AND unit = ?',
+              whereArgs: ['summary', i.name, i.unit]);
+        }
+      }
+    } else {
+      batch.update('ShoppingCartIngredient', {'checked': checkedInt},
+          where: 'name = ? AND unit = ?', whereArgs: [i.name, i.unit]);
+    }
+
+    await batch.commit();
   }
 
   Future<void> deleteFromShoppingCart(
       String recipeName, CheckableIngredient ingredient) async {
     final db = await database;
-    await db.delete('ShoppingCart',
-        where: 'name = ?, recipe = ?, unit = ?, amount = ?, checked = ?',
+    var batch = db.batch();
+
+    var resSummary = await db.query('ShoppingCartIngredient',
+        where: 'recipe = ? AND name = ? AND unit = ?',
+        whereArgs: [
+          'summary',
+          ingredient.name,
+          ingredient.unit,
+        ]);
+
+    batch.delete('ShoppingCartIngredient',
+        where: 'name = ? AND recipe = ? AND unit = ?',
         whereArgs: [
           ingredient.name,
           recipeName,
           ingredient.unit,
-          ingredient.amount,
-          ingredient.checked
         ]);
-  }
+    if (recipeName.compareTo('summary') != 0) {
+      if (resSummary[0]['amount'] - ingredient.amount <= 0) {
+        /// if we don't want to delete at the summary and summary - deletedAmount
+        /// is less equal 0 we delete at the summary
+        batch.delete('ShoppingCartIngredient',
+            where: 'name = ? AND recipe = ? AND unit = ?',
+            whereArgs: [
+              'summary',
+              recipeName,
+              ingredient.unit,
+            ]);
+      } else {
+        /// if we don't want to delete at the summary and summary - deletedAmount
+        /// is greater than 0 we update the summary
+        batch.update('ShoppingCartIngredient',
+            {'amount': resSummary[0]['amount'] - ingredient.amount},
+            where: 'recipe = ? AND name = ? AND unit = ?',
+            whereArgs: [
+              'summary',
+              ingredient.name,
+              ingredient.unit,
+            ]);
+      }
+    } else {
+      
+      batch.delete('ShoppingCartIngredient',
+          where: 'name = ? AND unit = ?',
+          whereArgs: [
+            ingredient.name,
+            ingredient.unit,
+          ]);
+    }
 
-  Future<void> setNewAmountShoppingCart(
-      String recipeName, CheckableIngredient ingredient, double amount) async {
-    final db = await database;
-    Batch batch = db.batch();
-
-    batch.update('ShoppingCartIngredient',
-        {'amount': amount, 'checked': ingredient.checked ? 1 : 0},
-        where: 'recipe = ? AND name = ? AND unit = ?',
-        whereArgs: [recipeName, ingredient.name, ingredient.unit]);
-    batch.commit();
+    await batch.commit();
   }
 
   Future<Map<String, List<CheckableIngredient>>>
@@ -606,6 +692,7 @@ class DBProvider {
       double ingredientAmount = resShoppingCart[i]['amount'];
       String ingredientUnit = resShoppingCart[i]['unit'];
       String recipeName = resShoppingCart[i]['recipe_name'];
+      int checked = resShoppingCart[i]['checked'];
 
       if (!shoppingCartIngredients.keys.contains(recipeName)) {
         shoppingCartIngredients.addAll({recipeName: []});
@@ -616,6 +703,7 @@ class DBProvider {
           amount: ingredientAmount,
           unit: ingredientUnit,
         ),
+        checked: checked == 1 ? true : false,
       ));
     }
     return shoppingCartIngredients;

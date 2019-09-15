@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:my_recipe_book/intro_screen.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
+import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
@@ -11,10 +12,12 @@ class SplashScreen extends StatefulWidget {
   final RecipeKeeper recipeKeeper;
   final MainPageNavigator
       mainPageNavigator; // TODO: change currentMainView to bool and not Widget..
+  final ShoppingCartKeeper sCKeeper;
 
   SplashScreen({
     this.recipeKeeper,
     this.mainPageNavigator,
+    this.sCKeeper,
   });
 
   @override
@@ -58,7 +61,9 @@ class SplashScreenState extends State<SplashScreen> {
       recipeCatOverview = true;
     }
 
+    await widget.sCKeeper.initCart();
     await widget.recipeKeeper.initData();
+    
     if (prefs.containsKey('showIntro')) {
       onDoneLoading();
     } else {
