@@ -7,41 +7,45 @@ import 'package:my_recipe_book/recipe.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class RecipeKeeper extends Model {
-  Map<String, List<RecipePreview>> recipes = {};
-  List<RecipePreview> favorites = [];
-  List<String> categories =
+  Map<String, List<RecipePreview>> _recipes = {};
+  List<RecipePreview> _favorites = [];
+  List<String> _categories =
       []; // they keep track of the order of the categories
-  bool isInitialised = false;
+  bool _isInitialised = false;
 
-  get rCategories => categories;
+  get favorites => _favorites;
+
+  get rCategories => _categories;
+
+  get isInitialised => _isInitialised;
 
   List<RecipePreview> getRecipesOfCategory(String category) =>
-      recipes[category];
+      _recipes[category];
 
   Future<void> initData() async {
-    categories = await DBProvider.db.getCategories();
-    categories.add('no category');
-    for (String category in categories) {
-      recipes.addAll(
+    _categories = await DBProvider.db.getCategories();
+    _categories.add('no category');
+    for (String category in _categories) {
+      _recipes.addAll(
           {category: await DBProvider.db.getRecipePreviewOfCategory(category)});
     }
-    recipes.addAll(
+    _recipes.addAll(
         {'no category': await DBProvider.db.getRecipePreviewOfNoCategory()});
-    favorites.addAll(await DBProvider.db.getFavoriteRecipePreviews());
-    isInitialised = true;
+    _favorites.addAll(await DBProvider.db.getFavoriteRecipePreviews());
+    _isInitialised = true;
     notifyListeners();
   }
 
   Future<void> addCategory(String categoryName) async {
-    this.categories.insert(categories.length - 1, categoryName);
-    recipes.addAll({categoryName: []});
+    this._categories.insert(_categories.length - 1, categoryName);
+    _recipes.addAll({categoryName: []});
     await DBProvider.db.newCategory(categoryName);
 
     notifyListeners();
   }
 
   bool doesCategoryExist(String categoryName) {
-    if (categories.contains(categoryName)) {
+    if (_categories.contains(categoryName)) {
       return true;
     } else {
       return false;
@@ -50,27 +54,27 @@ class RecipeKeeper extends Model {
 
   String getRandomRecipeImageFromCategory(String categoryName) {
     Random r = Random();
-    if (recipes[categoryName].length == 0) {
+    if (_recipes[categoryName].length == 0) {
       throw ArgumentError('no recipes in this category');
     }
-    int randomRecipe = recipes[categoryName].length == 1
+    int randomRecipe = _recipes[categoryName].length == 1
         ? 0
-        : r.nextInt(recipes[categoryName].length);
-    return recipes[categoryName][randomRecipe].imagePreviewPath;
+        : r.nextInt(_recipes[categoryName].length);
+    return _recipes[categoryName][randomRecipe].imagePreviewPath;
   }
 
   void removeCategory(String categoryName) {
-    categories.remove(categoryName);
-    recipes.remove(categoryName);
+    _categories.remove(categoryName);
+    _recipes.remove(categoryName);
 
     notifyListeners();
   }
 
   Future<void> deleteRecipeWithName(String name, bool deleteFiles) async {
-    for (String category in recipes.keys) {
-      for (int i = 0; i < recipes[category].length; i++) {
-        if (recipes[category][i].name == name) {
-          recipes[category].removeAt(i);
+    for (String category in _recipes.keys) {
+      for (int i = 0; i < _recipes[category].length; i++) {
+        if (_recipes[category][i].name == name) {
+          _recipes[category].removeAt(i);
         }
       }
     }
@@ -83,12 +87,12 @@ class RecipeKeeper extends Model {
 
   void changeCategoryName(String oldCatName, String newCatName) async {
     await DBProvider.db.changeCategoryName(oldCatName, newCatName);
-    for (int i = 0; i < categories.length; i++) {
-      if (categories[i] == oldCatName) categories[i] = newCatName;
+    for (int i = 0; i < _categories.length; i++) {
+      if (_categories[i] == oldCatName) _categories[i] = newCatName;
     }
 
-    recipes.addAll({newCatName: recipes[oldCatName]});
-    recipes.remove(oldCatName);
+    _recipes.addAll({newCatName: _recipes[oldCatName]});
+    _recipes.remove(oldCatName);
 
     notifyListeners();
   }
@@ -98,10 +102,10 @@ class RecipeKeeper extends Model {
   Future<Recipe> modifyRecipe(Recipe oldRecipe, Recipe newRecipe) async {
     await DBProvider.db.deleteRecipe(oldRecipe.name);
 
-    for (String category in recipes.keys) {
-      for (int i = 0; i < recipes[category].length; i++) {
-        if (recipes[category][i].name == oldRecipe.name) {
-          recipes[category].removeAt(i);
+    for (String category in _recipes.keys) {
+      for (int i = 0; i < _recipes[category].length; i++) {
+        if (_recipes[category][i].name == oldRecipe.name) {
+          _recipes[category].removeAt(i);
         }
       }
     }
@@ -122,13 +126,13 @@ class RecipeKeeper extends Model {
     RecipePreview rPreview = convertRecipeToPreview(fullImagePathRecipe);
 
     for (String category in recipe.categories) {
-      if (!categories.contains(category)) {
+      if (!_categories.contains(category)) {
         addCategory(category);
       }
-      recipes[category].add(rPreview);
+      _recipes[category].add(rPreview);
     }
 
-    if (recipe.categories.isEmpty) recipes['no category'].add(rPreview);
+    if (recipe.categories.isEmpty) _recipes['no category'].add(rPreview);
 
     notifyListeners();
     return fullImagePathRecipe;
@@ -136,10 +140,10 @@ class RecipeKeeper extends Model {
 
   void addFavorite(Recipe recipe) {
     recipe.isFavorite = true;
-    favorites.add(convertRecipeToPreview(recipe));
+    _favorites.add(convertRecipeToPreview(recipe));
 
-    for (String category in recipes.keys) {
-      for (RecipePreview r in recipes[category]) {
+    for (String category in _recipes.keys) {
+      for (RecipePreview r in _recipes[category]) {
         if (r.name == recipe.name) {
           r.isFavorite = true;
         }
@@ -150,14 +154,14 @@ class RecipeKeeper extends Model {
   }
 
   void removeFromFavorites(String name) {
-    for (int i = 0; i < favorites.length; i++) {
-      if (favorites[i].name == name) {
-        favorites.removeAt(i);
+    for (int i = 0; i < _favorites.length; i++) {
+      if (_favorites[i].name == name) {
+        _favorites.removeAt(i);
       }
     }
 
-    for (String category in recipes.keys) {
-      for (RecipePreview r in recipes[category]) {
+    for (String category in _recipes.keys) {
+      for (RecipePreview r in _recipes[category]) {
         if (r.name == name) {
           r.isFavorite = false;
         }
@@ -168,15 +172,15 @@ class RecipeKeeper extends Model {
   }
 
   void deleteRecipe(RecipePreview recipePreview) {
-    for (String category in recipes.keys) {
-      recipes[category].remove(recipePreview);
+    for (String category in _recipes.keys) {
+      _recipes[category].remove(recipePreview);
     }
     notifyListeners();
   }
 
   Future<void> updateCategoryOrder(List<String> categories) async {
     await DBProvider.db.updateCategoryOrder(categories);
-    this.categories = categories;
+    this._categories = categories;
 
     notifyListeners();
   }

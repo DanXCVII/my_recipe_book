@@ -8,8 +8,14 @@ import 'main.dart';
 class IntroScreen extends StatelessWidget {
   final bool recipeCatOverview;
   final bool onDonePop;
+  final bool showFancyShoppingList;
 
-  IntroScreen(this.recipeCatOverview, this.onDonePop);
+  // recipeCatOverview and showFancyShoppingList needed, when onDonePop is false!
+  IntroScreen({
+    this.recipeCatOverview,
+    this.showFancyShoppingList,
+    this.onDonePop,
+  });
 
   //making list of pages needed to pass in IntroViewsFlutter constructor.
 
@@ -63,8 +69,8 @@ class IntroScreen extends StatelessWidget {
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
         onDonePop
             ? Navigator.pop(context)
-            : Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => MyHomePage(recipeCatOverview)));
+            : Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => MyHomePage()));
       },
     );
   }

@@ -81,20 +81,19 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  final bool initialRecipeCatOverview;
-
-  MyHomePage(this.initialRecipeCatOverview);
+  MyHomePage();
 
   @override
-  MyHomePageState createState() =>
-      MyHomePageState(recipeCatOverview: initialRecipeCatOverview);
+  MyHomePageState createState() => MyHomePageState();
 }
 
 class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Future<SharedPreferences> prefs;
-  bool recipeCatOverview;
 
-  MyHomePageState({Key key, String title, @required this.recipeCatOverview});
+  MyHomePageState({
+    Key key,
+    String title,
+  });
   AnimationController _controller;
   static const List<IconData> icons = const [
     Icons.grid_on,
@@ -117,9 +116,107 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  AppBar buildAppBar(String title, MainPageNavigator mpNavigator) {
+  @override
+  Widget build(BuildContext context) {
+    return ScopedModelDescendant<MainPageNavigator>(
+        builder: (context, child, model) {
+      return Scaffold(
+        appBar: _buildAppBar(model.title, model),
+        floatingActionButton: _getFloatingB(model.title),
+        body: IndexedStack(
+          index: model.index,
+          children: [
+            AnimatedSwitcher(
+              duration: Duration(milliseconds: 200),
+              child: model.recipeCatOverview == true
+                  ? RecipeCategoryOverview()
+                  : CategoryGridView(),
+            ),
+            FavoriteScreen(),
+            model.showFancyShoppingList
+                ? FancyShoppingCartScreen()
+                : ShoppingCartScreen(),
+            RandomRecipe(),
+            Settings(),
+          ],
+        ),
+        backgroundColor: _getBackgroundColor(model.title),
+        bottomNavigationBar: Theme(
+            data: Theme.of(context).copyWith(canvasColor: Colors.black87),
+            child: BottomNavyBar(
+                backgroundColor: Color(0xff232323),
+                animationDuration: Duration(milliseconds: 150),
+                selectedIndex: model.index,
+                showElevation: true,
+                onItemSelected: (index) => _onItemTapped(model, index),
+                items: [
+                  BottomNavyBarItem(
+                      icon: Icon(GroovinMaterialIcons.notebook),
+                      title: Text('recipes'),
+                      activeColor: Colors.orange,
+                      inactiveColor: Colors.white),
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.favorite),
+                    title: Text('favorites'),
+                    activeColor: Colors.pink,
+                    inactiveColor: Colors.white,
+                  ),
+                  BottomNavyBarItem(
+                      icon: Icon(Icons.shopping_basket),
+                      title: Text('basket'),
+                      activeColor: Colors.brown[300],
+                      inactiveColor: Colors.white),
+                  BottomNavyBarItem(
+                    icon: Icon(GroovinMaterialIcons.dice_multiple),
+                    title: Text('roll the dice'),
+                    activeColor: Colors.green,
+                    inactiveColor: Colors.white,
+                  ),
+                  BottomNavyBarItem(
+                      icon: Icon(Icons.settings),
+                      title: Text('settings'),
+                      activeColor: Colors.grey[100],
+                      inactiveColor: Colors.white)
+                ])
+
+            // BottomNavigationBar(
+            //   fixedColor: Colors.white,
+            //   items: <BottomNavigationBarItem>[
+            //     BottomNavigationBarItem(
+            //         icon: Icon(
+            //           GroovinMaterialIcons.notebook,
+            //           color: _selectedIndex == 0 ? Colors.brown[400] : Colors.white,
+            //         ),
+            //         title: Text("recipes")),
+            //     BottomNavigationBarItem(
+            //         icon: _selectedIndex == 1
+            //             ? Icon(Icons.favorite, color: Colors.pink)
+            //             : Icon(Icons.favorite_border),
+            //         title: Text("favorites")),
+            //     BottomNavigationBarItem(
+            //         icon: Icon(Icons.shopping_cart,
+            //             color: _selectedIndex == 2 ? Colors.grey : Colors.white),
+            //         title: Text("shopping cart")),
+            //     BottomNavigationBarItem(
+            //         icon: Icon(GroovinMaterialIcons.dice_multiple,
+            //             color: _selectedIndex == 3 ? Colors.green : Colors.white),
+            //         title: Text("feelin' lucky?!")),
+            //     BottomNavigationBarItem(
+            //         icon: Icon(Icons.settings,
+            //             color: _selectedIndex == 4 ? Colors.grey : Colors.white),
+            //         title: Text("settings"))
+            //   ],
+            //   currentIndex: _selectedIndex,
+            //   onTap: _onItemTapped,
+            // ),
+            ),
+      );
+    });
+  }
+
+  AppBar _buildAppBar(String title, MainPageNavigator mpNavigator) {
     // if shoppingCartPage with sliverAppBar
-    if (mpNavigator.index == 2) {
+    if (mpNavigator.index == 2 && mpNavigator.showFancyShoppingList) {
       return null;
     }
     return AppBar(
@@ -201,7 +298,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   void _changeMainPageOverview(MainPageNavigator mpNavigator) {
     prefs.then((prefs) {
-      if (mpNavigator.currentMainView is RecipeCategoryOverview) {
+      if (mpNavigator.recipeCatOverview == true) {
         prefs.setBool('recipeCatOverview', false).then((_) {
           mpNavigator.changeCurrentMainView(false);
         });
@@ -211,6 +308,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         });
       }
     });
+    
   }
 
   Widget _getFloatingB(String page) {
@@ -297,103 +395,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       return Theme.of(context).backgroundColor;
     }
     return Theme.of(context).scaffoldBackgroundColor;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ScopedModelDescendant<MainPageNavigator>(
-        builder: (context, child, model) {
-      model.initCurrentMainView(recipeCatOverview);
-      return Scaffold(
-        appBar: buildAppBar(model.title, model),
-        floatingActionButton: _getFloatingB(model.title),
-        body: IndexedStack(
-          index: model.index,
-          children: [
-            AnimatedSwitcher(
-              duration: Duration(milliseconds: 200),
-              child: model.currentMainView == true
-                  ? RecipeCategoryOverview()
-                  : CategoryGridView(),
-            ),
-            FavoriteScreen(),
-            FancyShoppingCartScreen(),
-            RandomRecipe(),
-            Settings(),
-          ],
-        ),
-        backgroundColor: _getBackgroundColor(model.title),
-        bottomNavigationBar: Theme(
-            data: Theme.of(context).copyWith(canvasColor: Colors.black87),
-            child: BottomNavyBar(
-                backgroundColor: Color(0xff232323),
-                animationDuration: Duration(milliseconds: 150),
-                selectedIndex: model.index,
-                showElevation: true,
-                onItemSelected: (index) => _onItemTapped(model, index),
-                items: [
-                  BottomNavyBarItem(
-                      icon: Icon(GroovinMaterialIcons.notebook),
-                      title: Text('recipes'),
-                      activeColor: Colors.orange,
-                      inactiveColor: Colors.white),
-                  BottomNavyBarItem(
-                    icon: Icon(Icons.favorite),
-                    title: Text('favorites'),
-                    activeColor: Colors.pink,
-                    inactiveColor: Colors.white,
-                  ),
-                  BottomNavyBarItem(
-                      icon: Icon(Icons.shopping_basket),
-                      title: Text('basket'),
-                      activeColor: Colors.brown[300],
-                      inactiveColor: Colors.white),
-                  BottomNavyBarItem(
-                    icon: Icon(GroovinMaterialIcons.dice_multiple),
-                    title: Text('roll the dice'),
-                    activeColor: Colors.green,
-                    inactiveColor: Colors.white,
-                  ),
-                  BottomNavyBarItem(
-                      icon: Icon(Icons.settings),
-                      title: Text('settings'),
-                      activeColor: Colors.grey[100],
-                      inactiveColor: Colors.white)
-                ])
-
-            // BottomNavigationBar(
-            //   fixedColor: Colors.white,
-            //   items: <BottomNavigationBarItem>[
-            //     BottomNavigationBarItem(
-            //         icon: Icon(
-            //           GroovinMaterialIcons.notebook,
-            //           color: _selectedIndex == 0 ? Colors.brown[400] : Colors.white,
-            //         ),
-            //         title: Text("recipes")),
-            //     BottomNavigationBarItem(
-            //         icon: _selectedIndex == 1
-            //             ? Icon(Icons.favorite, color: Colors.pink)
-            //             : Icon(Icons.favorite_border),
-            //         title: Text("favorites")),
-            //     BottomNavigationBarItem(
-            //         icon: Icon(Icons.shopping_cart,
-            //             color: _selectedIndex == 2 ? Colors.grey : Colors.white),
-            //         title: Text("shopping cart")),
-            //     BottomNavigationBarItem(
-            //         icon: Icon(GroovinMaterialIcons.dice_multiple,
-            //             color: _selectedIndex == 3 ? Colors.green : Colors.white),
-            //         title: Text("feelin' lucky?!")),
-            //     BottomNavigationBarItem(
-            //         icon: Icon(Icons.settings,
-            //             color: _selectedIndex == 4 ? Colors.grey : Colors.white),
-            //         title: Text("settings"))
-            //   ],
-            //   currentIndex: _selectedIndex,
-            //   onTap: _onItemTapped,
-            // ),
-            ),
-      );
-    });
   }
 
   void _onItemTapped(MainPageNavigator mainPageNavigator, int index) {

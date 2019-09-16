@@ -10,6 +10,27 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
   RecipeSearch(this.recipeNames);
 
   @override
+  ThemeData appBarTheme(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    if (theme.brightness != Brightness.dark) {
+      return theme.copyWith(
+        primaryColor: Colors.white,
+        primaryIconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
+        primaryColorBrightness: Brightness.light,
+        primaryTextTheme: theme.textTheme,
+      );
+    } else {
+      return theme.copyWith(
+        primaryColor: Colors.grey[800],
+        primaryIconTheme:
+            theme.primaryIconTheme.copyWith(color: Colors.grey[200]),
+        primaryColorBrightness: Brightness.dark,
+        primaryTextTheme: theme.textTheme,
+      );
+    }
+  }
+
+  @override
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
@@ -33,24 +54,27 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
 
   @override
   Widget buildResults(BuildContext context) {
+    print('keke');
     if (recipeNames.isEmpty) {
       return Container(
           height: 70,
           child: Center(child: Text('You have no recipes to search through')));
     }
-    recipeNames.where(
-        (recipeName) => recipeName.toLowerCase().contains(query.toLowerCase()));
+    List<String> resultRecipeNames = recipeNames
+        .where((recipeName) =>
+            recipeName.toLowerCase().contains(query.toLowerCase()))
+        .toList();
     return ListView.builder(
-        itemCount: recipeNames.length * 2,
+        itemCount: resultRecipeNames.length * 2,
         itemBuilder: (context, index) {
           if ((index - 1) % 2 == 0 && index != 0) {
             return Divider();
           }
           return ListTile(
-            title: Text(recipeNames[index ~/ 2]),
+            title: Text(resultRecipeNames[index ~/ 2]),
             onTap: () {
               DBProvider.db
-                  .getRecipeByName(recipeNames[index ~/ 2], true)
+                  .getRecipeByName(resultRecipeNames[index ~/ 2], true)
                   .then((recipe) {
                 close(context, null);
                 Navigator.push(

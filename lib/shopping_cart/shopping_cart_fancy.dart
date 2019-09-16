@@ -42,18 +42,58 @@ class FancyShoppingCartScreen extends StatelessWidget {
         padding: EdgeInsets.all(12),
         sliver: ScopedModelDescendant<ShoppingCartKeeper>(
             builder: (context, child, model) => SliverList(
-                  delegate:
-                      SliverChildListDelegate(getRecipeShoppingList(model)),
+                  delegate: SliverChildListDelegate(
+                      getRecipeShoppingList(model, context)),
                 )),
       ),
     ]);
   }
 
-  List<Widget> getRecipeShoppingList(ShoppingCartKeeper scKeeper) {
-    List<String> recipes = scKeeper.recipesOrder;
+  List<Widget> getRecipeShoppingList(
+      ShoppingCartKeeper scKeeper, BuildContext context) {
+    List<String> recipes = scKeeper.recipes;
+    var shoppingCart = scKeeper.shoppingCart;
+    if (shoppingCart['summary'].isEmpty) {
+      return [
+        Container(
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: <Widget>[
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height - 400,
+                  child: Center(
+                      child: Text(
+                    "Nothing added yet",
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontFamily: 'RibeyeMarrow',
+                    ),
+                  ))),
+              Container(
+                  height: (MediaQuery.of(context).size.height - 415) / 2,
+                  child: Align(
+                      alignment: Alignment(1, 1),
+                      child: Image.asset(
+                        'images/cookingPen.png',
+                        height: 75,
+                      )))
+            ],
+          ),
+        )
+      ];
+    }
     return recipes.map((recipeName) {
+      Color ingredBackgroundColor =
+          Theme.of(context).brightness == Brightness.dark
+              ? Color(0xff40392F)
+              : Color(0xffFEF3E1);
       if (recipeName.compareTo('summery') == 0) {
-        return getRecipeTile(recipeName, scKeeper);
+        return getRecipeTile(
+          recipeName,
+          scKeeper,
+          ingredBackgroundColor,
+        );
       } else {
         return Dismissible(
           key: Key('$recipeName'),
@@ -62,15 +102,19 @@ class FancyShoppingCartScreen extends StatelessWidget {
           },
           background: _getPrimaryBackgroundDismissable(),
           secondaryBackground: _getSecondaryBackgroundDismissable(),
-          child: getRecipeTile(recipeName, scKeeper),
+          child: getRecipeTile(
+            recipeName,
+            scKeeper,
+            ingredBackgroundColor,
+          ),
         );
       }
     }).toList();
   }
 
-  Widget getRecipeTile(String recipeName, ShoppingCartKeeper scKeeper) {
-    Map<String, List<CheckableIngredient>> shoppingCart =
-        scKeeper.fullShoppingCart;
+  Widget getRecipeTile(
+      String recipeName, ShoppingCartKeeper scKeeper, Color backgroundcolor) {
+    Map<String, List<CheckableIngredient>> shoppingCart = scKeeper.shoppingCart;
     return Card(
       child: ExpansionTile(
         title: Text(
@@ -92,7 +136,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
             secondaryBackground: _getSecondaryBackgroundDismissable(),
             child: Container(
               decoration: BoxDecoration(
-                color: Color(0xffFEF3E1),
+                color: backgroundcolor,
                 border: Border(
                   bottom: BorderSide(
                       width:

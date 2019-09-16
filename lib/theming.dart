@@ -50,29 +50,33 @@ class MyThemes {
     scaffoldBackgroundColor: Color(0xffFEF3E1),
     canvasColor: Colors.white,
     cardColor: Color(0xffFFE8C2),
-    /* textSelectionColor: Colors.white,
-         hintColor: Colors.white,
-         textSelectionHandleColor: Colors.white, */
+    //  textSelectionColor: Colors.white,
+    //      hintColor: Colors.white,
+    //      textSelectionHandleColor: Colors.white,
     iconTheme: IconThemeData(color: Colors.grey[700]),
   );
 
   static final ThemeData darkTheme = ThemeData(
     primaryColor: Color(0xFF790604),
+    unselectedWidgetColor: Colors.grey[100],
+    textTheme: TextTheme(subhead: TextStyle(color: Colors.grey[100])),
     brightness: Brightness.dark,
     cardColor: Color(0xff34363D),
     focusColor: Colors.white,
     backgroundColor: Color(0xff212225),
     scaffoldBackgroundColor: Color(0xff212225),
-    accentColor: Colors.grey[800],
+    accentColor: Colors.amber,
   );
 
   static final ThemeData oledblackTheme = ThemeData(
     primaryColor: Color(0xff363636),
     brightness: Brightness.dark,
+    textTheme: TextTheme(subhead: TextStyle(color: Colors.grey[100])),
+    unselectedWidgetColor: Colors.grey[100],
     cardColor: Color(0xff34363D),
     backgroundColor: Colors.black,
     scaffoldBackgroundColor: Colors.black,
-    accentColor: Colors.grey[800],
+    accentColor: Colors.amber,
   );
 
   static ThemeData getThemeFromKey(MyThemeKeys themeKey) {

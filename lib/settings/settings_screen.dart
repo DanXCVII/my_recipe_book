@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../intro_screen.dart';
@@ -143,13 +144,23 @@ class _SettingsState extends State<Settings> {
             ),
           ),
           Divider(),
+          ScopedModelDescendant<MainPageNavigator>(
+            builder: (context, child, model) => SwitchListTile(
+              title: Text('switch shopping cart look'),
+              value: model.showFancyShoppingList,
+              onChanged: (value) {
+                SharedPreferences.getInstance().then((prefs) {
+                  prefs.setBool('showFancyShoppingList', value);
+                  model.changeFancyShoppingList(value);
+                });
+              },
+            ),
+          ),
+          Divider(),
           ListTile(
             title: Text('view intro'),
             onTap: () {
-              SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => IntroScreen(true,
-                      true))); // TODO: recipeCategoryOverview not always true!
+              _pushViewIntroScreen();
             },
           ),
           Divider(),
@@ -160,6 +171,12 @@ class _SettingsState extends State<Settings> {
         ],
       ),
     );
+  }
+
+  void _pushViewIntroScreen() {
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => IntroScreen(onDonePop: true)));
   }
 
   void _changeTheme(BuildContext buildContext, MyThemeKeys key) {

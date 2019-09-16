@@ -27,7 +27,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  bool recipeCatOverview;
+  bool recipeCatOverview = true;
+  bool showFancyShoppingList = true;
 
   @override
   void initState() {
@@ -55,13 +56,10 @@ class SplashScreenState extends State<SplashScreen> {
 
   Future<void> loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool recipeCatOverview = true;
-    if (prefs.containsKey('recipeCatOverview')) {
-      recipeCatOverview = prefs.getBool('recipeCatOverview');
-    }
 
+    _initShoppingListScreen(prefs);
+    _initRecipeOverviewScreen(prefs);
     _initTheme(prefs);
-    widget.mainPageNavigator.initCurrentMainView(recipeCatOverview);
     await widget.sCKeeper.initCart();
     await widget.recipeKeeper.initData();
 
@@ -71,8 +69,26 @@ class SplashScreenState extends State<SplashScreen> {
       prefs.setBool('showIntro', true);
       SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => IntroScreen(recipeCatOverview, false)));
+          builder: (context) => IntroScreen(
+                recipeCatOverview: recipeCatOverview,
+                showFancyShoppingList: showFancyShoppingList,
+                onDonePop: false,
+              )));
     }
+  }
+
+  void _initShoppingListScreen(SharedPreferences prefs) {
+    if (prefs.containsKey('showFancyShoppingList')) {
+      showFancyShoppingList = prefs.getBool('showFancyShoppingList');
+    }
+    widget.mainPageNavigator.changeFancyShoppingList(showFancyShoppingList);
+  }
+
+  void _initRecipeOverviewScreen(SharedPreferences prefs) {
+    if (prefs.containsKey('recipeCatOverview')) {
+      recipeCatOverview = prefs.getBool('recipeCatOverview');
+    }
+    widget.mainPageNavigator.initCurrentMainView(recipeCatOverview);
   }
 
   void _initTheme(SharedPreferences prefs) {
@@ -102,7 +118,7 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   onDoneLoading() async {
-    Navigator.of(context).pushReplacement(PageTransition(
-        type: PageTransitionType.fade, child: MyHomePage(recipeCatOverview)));
+    Navigator.of(context).pushReplacement(
+        PageTransition(type: PageTransitionType.fade, child: MyHomePage()));
   }
 }

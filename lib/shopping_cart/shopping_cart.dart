@@ -69,7 +69,7 @@ class ShoppingCartScreen extends StatelessWidget {
             ),
             ScopedModelDescendant<ShoppingCartKeeper>(
                 builder: (context, child, model) {
-              if (model.fullShoppingCart['summary'].isNotEmpty) {
+              if (model.shoppingCart['summary'].isNotEmpty) {
                 return Padding(
                   padding:
                       const EdgeInsets.only(left: 25, right: 25, top: 15.0),
@@ -79,8 +79,8 @@ class ShoppingCartScreen extends StatelessWidget {
                         height: MediaQuery.of(context).size.height - 335,
                         child: IngredientsList(
                           scKeeper: model,
-                          shoppingCart: model.fullShoppingCart,
-                          recipes: model.recipesOrder,
+                          shoppingCart: model.shoppingCart,
+                          recipes: model.recipes,
                         ),
                       )
                     ],
@@ -198,6 +198,7 @@ class IngredientsList extends StatelessWidget {
                 showBorder: true,
                 ingredient: ingredient,
                 scKeeper: scKeeper,
+                textColor: Colors.black,
                 recipeName: recipeName,
               ),
             ),
@@ -248,10 +249,12 @@ class IngredientRow extends StatelessWidget {
   final CheckableIngredient ingredient;
   final ShoppingCartKeeper scKeeper;
   final String recipeName;
+  final Color textColor;
   final bool showBorder;
 
   IngredientRow({
     Key key,
+    this.textColor,
     this.showBorder = false,
     @required this.recipeName,
     @required this.ingredient,
@@ -260,6 +263,9 @@ class IngredientRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color ingredientTextColor = textColor;
+    if (textColor == null)
+      ingredientTextColor = Theme.of(context).textTheme.body1.color;
     return Row(
       children: <Widget>[
         Container(
@@ -287,16 +293,12 @@ class IngredientRow extends StatelessWidget {
           child: Text(
             //'SpaghettiSauce von der Kuh mit ganz viel ',
             '${ingredient.name}',
-            style: ingredient.checked
-                ? TextStyle(
-                    fontSize: 18,
-                    decoration: TextDecoration.lineThrough,
-                    color: Colors.black,
-                  )
-                : TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                  ),
+            style: TextStyle(
+              fontSize: 18,
+              decoration:
+                  ingredient.checked ? TextDecoration.lineThrough : null,
+              color: ingredientTextColor,
+            ),
           ),
         ),
         Spacer(),
@@ -308,15 +310,11 @@ class IngredientRow extends StatelessWidget {
             child: Center(
               child: Text(
                 '${cutDouble(ingredient.amount)} ${ingredient.unit}',
-                style: ingredient.checked
-                    ? TextStyle(
-                        fontSize: 18,
-                        decoration: TextDecoration.lineThrough,
-                        color: Colors.black)
-                    : TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
+                style: TextStyle(
+                    fontSize: 18,
+                    decoration:
+                        ingredient.checked ? TextDecoration.lineThrough : null,
+                    color: ingredientTextColor),
                 overflow: TextOverflow.clip,
                 maxLines: 1,
               ),
