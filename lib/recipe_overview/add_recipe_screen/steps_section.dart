@@ -267,7 +267,6 @@ class _StepState extends State<Step> {
                   icon: Icon(Icons.remove_circle_outline),
                   color: Colors.white,
                   onPressed: () {
-                    print(i+1);
                     removeImage(widget.recipeName, widget.stepNumber, i);
                   },
                 ),
@@ -281,12 +280,8 @@ class _StepState extends State<Step> {
   /// TODO: Doesn't really work, because the naming of the pictures is related to the position of them
   /// but the position is not fixed so..
   void removeImage(String recipeName, int stepNumber, int number) {
-    print('stepnumber $stepNumber');
-    print('number $number');
-    print(widget.stepImages);
     String stepImageName = widget.stepImages[stepNumber][number]
         .substring(widget.stepImages[stepNumber][number].lastIndexOf('/')+1);
-    print(stepImageName);
     
 
     IO.deleteStepImage(recipeName, stepNumber, stepImageName);

@@ -3,6 +3,7 @@ import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:my_recipe_book/recipe.dart';
+import 'package:my_recipe_book/shopping_cart/shopping_cart_fancy.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'package:flutter/material.dart';
@@ -67,6 +68,7 @@ class MyApp extends StatelessWidget {
               '/': (context) => SplashScreen(
                     recipeKeeper: recipeKeeper,
                     mainPageNavigator: bottomNavIndex,
+                    sCKeeper: scKeeper,
                   ),
               '/add-recipe': (context) => AddRecipeForm(),
               '/manage-categories': (context) => CategoryManager(),
@@ -79,13 +81,13 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  final bool recipeCatOverview;
+  final bool initialRecipeCatOverview;
 
-  MyHomePage(this.recipeCatOverview);
+  MyHomePage(this.initialRecipeCatOverview);
 
   @override
   MyHomePageState createState() =>
-      MyHomePageState(recipeCatOverview: recipeCatOverview);
+      MyHomePageState(recipeCatOverview: initialRecipeCatOverview);
 }
 
 class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
@@ -98,7 +100,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     Icons.grid_on,
     Icons.description,
   ];
-  Widget _initialAnimatedWidget;
 
   @override
   void initState() {
@@ -108,9 +109,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-    recipeCatOverview == true
-        ? _initialAnimatedWidget = RecipeCategoryOverview()
-        : _initialAnimatedWidget = CategoryGridView();
   }
 
   @override
@@ -119,48 +117,43 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  AppBar buildAppBar(String title, MainPageNavigator bottomNavIndex) {
+  AppBar buildAppBar(String title, MainPageNavigator mpNavigator) {
+    // if shoppingCartPage with sliverAppBar
+    if (mpNavigator.index == 2) {
+      return null;
+    }
     return AppBar(
       title: Text(title),
       actions: <Widget>[
-        bottomNavIndex.index == 0
+        mpNavigator.index == 0
             ? IconButton(
                 icon: Icon(GroovinMaterialIcons.grid_large),
                 onPressed: () {
-                  prefs.then((prefs) {
-                    if (bottomNavIndex.currentMainView
-                        is RecipeCategoryOverview) {
-                      prefs.setBool('recipeCatOverview', false).then((_) {
-                        bottomNavIndex
-                            .changeCurrentMainView(CategoryGridView());
-                      });
-                    } else {
-                      prefs.setBool('recipeCatOverview', true).then((_) {
-                        bottomNavIndex
-                            .changeCurrentMainView(RecipeCategoryOverview());
-                      });
-                    }
+                  _changeMainPageOverview(mpNavigator);
+                },
+              )
+            : null,
+        mpNavigator.index != 3
+            ? IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  DBProvider.db.getRecipeNames().then((recipeNames) {
+                    showSearch(
+                        context: context, delegate: RecipeSearch(recipeNames));
                   });
                 },
               )
             : null,
-        IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () {
-            DBProvider.db.getRecipeNames().then((recipeNames) {
-              showSearch(context: context, delegate: RecipeSearch(recipeNames));
-            });
-          },
-        ),
         ScopedModelDescendant<ShoppingCartKeeper>(
             builder: (context, child, model) => IconButton(
                   icon: Icon(Icons.adb),
                   onPressed: () {
-                    model.addSingleIngredientToCart('Rezept1',
-                        Ingredient(name: 'Zutat', amount: 1, unit: 'g'));
-                        model.addSingleIngredientToCart('r5',
-                        Ingredient(name: 'Zutat2', amount: 2, unit: 'h'));
-                        
+                    print('****************************');
+                    model.addMulitpleIngredientsToCart('Zutat', [
+                      Ingredient(name: 'Zutat', amount: 1, unit: 'g'),
+                      Ingredient(name: 'Zutat2', amount: 2, unit: 'h')
+                    ]);
+
                     // var r = Recipe(
                     //   id: 1,
                     //   name: 'Steack mit Bratsauce',
@@ -206,7 +199,21 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget getFloatingB(String page) {
+  void _changeMainPageOverview(MainPageNavigator mpNavigator) {
+    prefs.then((prefs) {
+      if (mpNavigator.currentMainView is RecipeCategoryOverview) {
+        prefs.setBool('recipeCatOverview', false).then((_) {
+          mpNavigator.changeCurrentMainView(false);
+        });
+      } else {
+        prefs.setBool('recipeCatOverview', true).then((_) {
+          mpNavigator.changeCurrentMainView(true);
+        });
+      }
+    });
+  }
+
+  Widget _getFloatingB(String page) {
     Color backgroundColor = Theme.of(context).primaryColor;
     //  Color foregroundColor = Theme.of(context).accentColor;
     if (page == 'recipes') {
@@ -270,13 +277,20 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return null;
   }
 
-  Color getBackgroundColor(String page) {
+  Color _getBackgroundColor(String page) {
     if (page == 'recipes') {
       return Theme.of(context).scaffoldBackgroundColor;
     } else if (page == 'favorites') {
-      return Theme.of(context).backgroundColor == Colors.white
-          ? Color(0xffFFE3FC)
-          : Color(0xff572944);
+      // if bright theme
+      if (Theme.of(context).backgroundColor == Colors.white) {
+        return Color(0xffFFCDEB);
+      } // if dark theme
+      else if (Theme.of(context).backgroundColor == Color(0xff212225)) {
+        return Color(0xff58153D);
+      } // if oledBlack theme
+      else {
+        return Color(0xff43112F);
+      }
     } else if (page == 'shopping cart') {
       return Theme.of(context).backgroundColor;
     } else if (page == 'roll the dice') {
@@ -289,24 +303,26 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<MainPageNavigator>(
         builder: (context, child, model) {
-      model.initCurrentMainView(_initialAnimatedWidget);
+      model.initCurrentMainView(recipeCatOverview);
       return Scaffold(
         appBar: buildAppBar(model.title, model),
-        floatingActionButton: getFloatingB(model.title),
+        floatingActionButton: _getFloatingB(model.title),
         body: IndexedStack(
           index: model.index,
           children: [
             AnimatedSwitcher(
               duration: Duration(milliseconds: 200),
-              child: model.currentMainView,
+              child: model.currentMainView == true
+                  ? RecipeCategoryOverview()
+                  : CategoryGridView(),
             ),
             FavoriteScreen(),
-            ShoppingCartScreen(),
+            FancyShoppingCartScreen(),
             RandomRecipe(),
             Settings(),
           ],
         ),
-        backgroundColor: getBackgroundColor(model.title),
+        backgroundColor: _getBackgroundColor(model.title),
         bottomNavigationBar: Theme(
             data: Theme.of(context).copyWith(canvasColor: Colors.black87),
             child: BottomNavyBar(

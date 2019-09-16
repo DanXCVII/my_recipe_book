@@ -21,9 +21,6 @@ class RecipeCategoryOverview extends StatelessWidget {
         builder: (context, child, model) {
       List<String> categoryNames = model.rCategories;
       if (model.isInitialised) {
-        print(model.isInitialised);
-        print(model.rCategories);
-        print(model.recipes.toString());
         return ListView.builder(
             itemCount: categoryNames.length,
             itemBuilder: (context, index) {
@@ -63,19 +60,7 @@ class RecipeRow extends StatelessWidget {
           padding: EdgeInsets.only(left: 20),
           child: GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RecipeGridView(
-                    category: category == null ? 'no category' : category,
-                    randomCategoryImage: recipePreviews.length != 1
-                        ? r.nextInt(recipePreviews.length > 0
-                            ? recipePreviews.length
-                            : 1)
-                        : 0,
-                  ),
-                ),
-              );
+              _pushCategoryRoute(context, category, recipePreviews.length);
             },
             child: Padding(
               padding: const EdgeInsets.only(top: 12.0, bottom: 10.0, right: 8),
@@ -118,7 +103,6 @@ class RecipeHozizontalList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Random randomRecipe = new Random();
     if (recipePreviews.isEmpty) {
       return Container();
     }
@@ -134,35 +118,15 @@ class RecipeHozizontalList extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: recipeCount + 1,
         itemBuilder: (context, index) {
-          double leftPadding;
-          if (index == 0) {
-            leftPadding = 5;
-          } else {
-            leftPadding = 0;
-          }
+          double leftPadding = index == 0 ? 5 : 0;
+
           if (index < recipeCount) {
             final String heroTag =
                 '${recipePreviews[index].name}$categoryName--${recipePreviews[index].imagePreviewPath}';
 
             return GestureDetector(
               onTap: () {
-                DBProvider.db
-                    .getRecipeByName(recipePreviews[index].name, true)
-                    .then((recipe) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => new RecipeScreen(
-                        recipe: recipe,
-                        primaryColor: getRecipePrimaryColor(
-                            recipePreviews[index].vegetable),
-                        heroImageTag: heroTag,
-                        heroTitle:
-                            '${recipePreviews[index].name}-${recipePreviews[index].name}',
-                      ),
-                    ),
-                  );
-                });
+                _pushRecipeRoute(context, index, heroTag);
               },
               child: Padding(
                 padding: EdgeInsets.only(left: leftPadding),
@@ -180,12 +144,12 @@ class RecipeHozizontalList extends StatelessWidget {
                       //     child:
                       Hero(
                         tag: heroTag,
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(35),
-                                topRight: Radius.circular(15),
-                                bottomLeft: Radius.circular(15),
-                                bottomRight: Radius.circular(35)),
+                        child: ClipOval(
+                            // borderRadius: BorderRadius.only(
+                            //     topLeft: Radius.circular(35),
+                            //     topRight: Radius.circular(15),
+                            //     bottomLeft: Radius.circular(15),
+                            //     bottomRight: Radius.circular(35)),
                             child: FadeInImage(
                               // image: AssetImage(recipes[index].imagePath),
                               image: FileImage(
@@ -199,16 +163,18 @@ class RecipeHozizontalList extends StatelessWidget {
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 4, left: 10, right: 10),
-                        child: Text(recipePreviews[index].name,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).backgroundColor ==
-                                        Colors.white
-                                    ? Colors.grey[800]
-                                    : Colors.grey[300])),
+                        child: Text(
+                          recipePreviews[index].name,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).backgroundColor ==
+                                      Colors.white
+                                  ? Colors.grey[800]
+                                  : Colors.grey[300]),
+                        ),
                       ),
                     ],
                   ),
@@ -220,30 +186,21 @@ class RecipeHozizontalList extends StatelessWidget {
               padding: EdgeInsets.only(left: 10, bottom: 40, right: 20),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (BuildContext context) => new RecipeGridView(
-                        category:
-                            categoryName == null ? 'no category' : categoryName,
-                        randomCategoryImage: recipePreviews.length != 1
-                            ? randomRecipe.nextInt(recipePreviews.length)
-                            : 0,
-                      ),
-                    ),
-                  );
+                  _pushCategoryRoute(
+                      context, categoryName, recipePreviews.length);
                 },
                 child: Container(
                   height: 90,
                   width: 90,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey, width: 2),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(35),
-                      topRight: Radius.circular(15),
-                      bottomLeft: Radius.circular(15),
-                      bottomRight: Radius.circular(35),
-                    ),
+                    shape: BoxShape.circle
+                    // borderRadius: BorderRadius.only(
+                    //   topLeft: Radius.circular(35),
+                    //   topRight: Radius.circular(15),
+                    //   bottomLeft: Radius.circular(15),
+                    //   bottomRight: Radius.circular(35),
+                    // ),
                   ),
                   child: Center(
                     child: Image.asset(
@@ -261,4 +218,41 @@ class RecipeHozizontalList extends StatelessWidget {
       ),
     );
   }
+
+  void _pushRecipeRoute(BuildContext context, int index, String heroImageTag) {
+    DBProvider.db
+        .getRecipeByName(recipePreviews[index].name, true)
+        .then((recipe) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => new RecipeScreen(
+            recipe: recipe,
+            primaryColor:
+                getRecipePrimaryColor(recipePreviews[index].vegetable),
+            heroImageTag: heroImageTag,
+            heroTitle:
+                '${recipePreviews[index].name}-${recipePreviews[index].name}',
+          ),
+        ),
+      );
+    });
+  }
+}
+
+void _pushCategoryRoute(
+    BuildContext context, String categoryName, int recipePreviewAmount) {
+  Random randomRecipe = new Random();
+
+  Navigator.push(
+    context,
+    CupertinoPageRoute(
+      builder: (BuildContext context) => new RecipeGridView(
+        category: categoryName == null ? 'no category' : categoryName,
+        randomCategoryImage: recipePreviewAmount != 1
+            ? randomRecipe.nextInt(recipePreviewAmount)
+            : 0,
+      ),
+    ),
+  );
 }

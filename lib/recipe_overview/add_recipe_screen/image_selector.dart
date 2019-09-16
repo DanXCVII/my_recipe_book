@@ -123,7 +123,6 @@ class _ImageSelectorState extends State<ImageSelector> {
           );
 
           if (pictureFile != null) {
-            print(pictureFile.path);
 
             await IO.saveRecipeImage(pictureFile, widget.recipeName);
 

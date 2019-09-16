@@ -34,7 +34,6 @@ Future<void> importRecipe(RecipeKeeper rKeeper, String recipeZipPath) async {
       .rename(await PathProvider.pP.getRecipeDir(importRecipe.name));
 
   rKeeper.addRecipe(importRecipe);
-  print(await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name));
   await Directory(
           await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
       .delete(recursive: true);

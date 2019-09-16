@@ -4,20 +4,20 @@ import 'package:my_recipe_book/intro_screen.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
+import 'package:my_recipe_book/theming.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 
 class SplashScreen extends StatefulWidget {
   final RecipeKeeper recipeKeeper;
-  final MainPageNavigator
-      mainPageNavigator; // TODO: change currentMainView to bool and not Widget..
+  final MainPageNavigator mainPageNavigator;
   final ShoppingCartKeeper sCKeeper;
 
   SplashScreen({
-    this.recipeKeeper,
-    this.mainPageNavigator,
-    this.sCKeeper,
+    @required this.recipeKeeper,
+    @required this.mainPageNavigator,
+    @required this.sCKeeper,
   });
 
   @override
@@ -55,22 +55,49 @@ class SplashScreenState extends State<SplashScreen> {
 
   Future<void> loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool recipeCatOverview = true;
     if (prefs.containsKey('recipeCatOverview')) {
       recipeCatOverview = prefs.getBool('recipeCatOverview');
-    } else {
-      recipeCatOverview = true;
     }
 
+    _initTheme(prefs);
+    widget.mainPageNavigator.initCurrentMainView(recipeCatOverview);
     await widget.sCKeeper.initCart();
     await widget.recipeKeeper.initData();
-    
+
     if (prefs.containsKey('showIntro')) {
       onDoneLoading();
     } else {
       prefs.setBool('showIntro', true);
       SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => IntroScreen(recipeCatOverview)));
+          builder: (context) => IntroScreen(recipeCatOverview, false)));
+    }
+  }
+
+  void _initTheme(SharedPreferences prefs) {
+    int theme = 0;
+    if (prefs.containsKey('theme')) {
+      theme = prefs.getInt('theme');
+    }
+    switch (theme) {
+      case 0:
+        var brightness = MediaQuery.of(context).platformBrightness;
+        if (brightness == Brightness.dark)
+          CustomTheme.instanceOf(context).changeTheme(MyThemeKeys.DARK);
+        else
+          CustomTheme.instanceOf(context).changeTheme(MyThemeKeys.LIGHT);
+        return;
+      case 1:
+        CustomTheme.instanceOf(context).changeTheme(MyThemeKeys.LIGHT);
+        return;
+      case 2:
+        CustomTheme.instanceOf(context).changeTheme(MyThemeKeys.DARK);
+        return;
+      case 3:
+        CustomTheme.instanceOf(context).changeTheme(MyThemeKeys.OLEDBLACK);
+        return;
+      default:
     }
   }
 

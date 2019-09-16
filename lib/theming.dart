@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum MyThemeKeys { LIGHT, DARK, OLEDBLACK }
+enum MyThemeKeys { AUTOMATIC, LIGHT, DARK, OLEDBLACK }
 
 class _CustomTheme extends InheritedWidget {
   final CustomThemeState data;
@@ -60,6 +60,7 @@ class MyThemes {
     primaryColor: Color(0xFF790604),
     brightness: Brightness.dark,
     cardColor: Color(0xff34363D),
+    focusColor: Colors.white,
     backgroundColor: Color(0xff212225),
     scaffoldBackgroundColor: Color(0xff212225),
     accentColor: Colors.grey[800],

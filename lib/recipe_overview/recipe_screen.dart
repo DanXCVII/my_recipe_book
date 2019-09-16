@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
-import 'package:path_provider/path_provider.dart' as pP;
 import 'package:scoped_model/scoped_model.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -28,6 +27,19 @@ const double paddingBottomTime = 5;
 const double headingSize = 20;
 const Color textColor = Colors.white;
 
+const imageComplexity = [
+  "termoOne",
+  "termoTwo",
+  "termoThree",
+  "termoFour",
+  "termoFive",
+  "termoSix",
+  "termoSeven",
+  "termoEight",
+  "termoNine",
+  "termoTen",
+];
+
 enum PopupOptions { EXPORT, DELETE }
 
 class RecipeScreen extends StatelessWidget {
@@ -46,8 +58,6 @@ class RecipeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(recipe.imagePath);
-    print(recipe.imagePreviewPath);
     double remainingTime =
         recipe.totalTime - recipe.preperationTime - recipe.cookingTime;
     double otherTime;
@@ -278,7 +288,7 @@ class RecipeScreen extends StatelessWidget {
                         child: Container(
                             height: 120,
                             child: Image.asset(
-                                "images/${_getImageComplexity(recipe.effort.round())}.png")),
+                                "images/${imageComplexity[recipe.effort.round()]}.png")),
                       )
                     ],
                   ),
@@ -327,7 +337,7 @@ class RecipeScreen extends StatelessWidget {
   }
 
   Future<bool> exportRecipe(Recipe recipe) async {
-    saveRecipeZipToCache(await PathProvider.pP.getShareDir());
+    await saveRecipeZipToCache(await PathProvider.pP.getShareDir());
 
     ShareExtend.share(
         await PathProvider.pP.getShareZipFile(recipe.name), "file");
@@ -347,7 +357,7 @@ class RecipeScreen extends StatelessWidget {
     await file.writeAsString(json);
 
     var encoder = ZipFileEncoder();
-    encoder.create(await PathProvider.pP.getShareJsonPath(recipe.name));
+    encoder.create(await PathProvider.pP.getShareZipFile(recipe.name));
     encoder.addFile(file);
     if (recipeDir.existsSync()) {
       encoder.addDirectory(recipeDir);
@@ -416,32 +426,6 @@ class NotesSection extends StatelessWidget {
   }
 }
 
-String _getImageComplexity(int complexity) {
-  switch (complexity) {
-    case 1:
-      return "termoOne";
-    case 2:
-      return "termoTwo";
-    case 3:
-      return "termoThree";
-    case 4:
-      return "termoFour";
-    case 5:
-      return "termoFive";
-    case 6:
-      return "termoSix";
-    case 7:
-      return "termoSeven";
-    case 8:
-      return "termoEight";
-    case 9:
-      return "termoNine";
-    case 10:
-      return "termoTen";
-  }
-  return "";
-}
-
 void _showStepFullView(
   List<List<String>> stepImages,
   List<String> description,
@@ -481,7 +465,7 @@ void _showPictureFullView(String image, String tag, BuildContext context) {
           appBar: AppBar(),
           backgroundColor: Colors.black54,
           body: Center(
-            child: Hero(tag: tag, child: Image.asset(image)),
+            child: Hero(tag: tag, child: Image.file(File(image))),
           ))));
 }
 
@@ -768,15 +752,20 @@ class IngredientsScreenState extends State<IngredientsScreen> {
           padding: const EdgeInsets.only(right: 20),
           child: Row(
             children: <Widget>[
-              IconButton(
-                  icon: saved.contains(currentIngredient)
-                      ? Icon(Icons.check_circle)
-                      : Icon(Icons.add_circle_outline),
-                  tooltip: 'Add to shopping Cart',
-                  onPressed: () {},
-                  color: saved.contains(currentIngredient)
-                      ? Colors.green
-                      : Colors.white),
+              ScopedModelDescendant<ShoppingCartKeeper>(
+                  builder: (context, child, scKeeper) {
+                bool isChecked = scKeeper.checkForRecipeIngredient(
+                    currentIngredient.name, currentIngredient);
+                return IconButton(
+                    icon: isChecked
+                        ? Icon(Icons.check_circle)
+                        : Icon(Icons.add_circle_outline),
+                    tooltip: 'Add to shopping Cart',
+                    onPressed: () {
+                      _pressIngredient(scKeeper, currentIngredient, isChecked);
+                    },
+                    color: isChecked ? Colors.green : Colors.white);
+              }),
               Text(
                 currentIngredient.name,
                 style: TextStyle(fontSize: 18, color: Colors.white),
@@ -794,38 +783,45 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     return output;
   }
 
+  void _pressIngredient(
+      ShoppingCartKeeper scKeeper, Ingredient ingredient, bool isChecked) {
+    if (isChecked) {
+      scKeeper.removeIngredientFromCart(widget.currentRecipe.name, ingredient);
+    } else {
+      scKeeper.removeAndAddIngredient(widget.currentRecipe.name, ingredient);
+    }
+  }
+
   List<Widget> getIngredientsData() {
-    List<Widget> output = new List<Widget>();
+    List<Widget> output = [];
 
     for (int i = 0; i < widget.currentRecipe.ingredientsGlossary.length; i++) {
       List<Ingredient> sectionIngredients = widget.currentRecipe.ingredients[i];
       if (widget.currentRecipe.ingredientsGlossary[i] != "") {
         output.add(
-          ScopedModelDescendant<ShoppingCartKeeper>(
-            builder: (context, child, model) => Padding(
-              padding: EdgeInsets.only(top: 30, left: 45, right: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text("${widget.currentRecipe.ingredientsGlossary[i]}",
-                      style: TextStyle(color: textColor, fontSize: 24)),
-                  IconButton(
-                    icon: containsList(saved, sectionIngredients)
+          Padding(
+            padding: EdgeInsets.only(top: 30, left: 45, right: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text("${widget.currentRecipe.ingredientsGlossary[i]}",
+                    style: TextStyle(color: textColor, fontSize: 24)),
+                ScopedModelDescendant<ShoppingCartKeeper>(
+                    builder: (context, child, scKeeper) {
+                  bool isChecked = scKeeper.checkForRecipeIngredients(
+                      widget.currentRecipe.name, sectionIngredients);
+                  return IconButton(
+                    icon: isChecked
                         ? Icon(Icons.shopping_cart)
                         : Icon(Icons.add_shopping_cart),
                     tooltip: 'add to shopping cart',
                     onPressed: () {
-                      model.addMulitpleIngredientsToCart(
-                          widget.currentRecipe.name,
-                          widget.currentRecipe.ingredients[i]);
+                      _pressAddSection(scKeeper, sectionIngredients, isChecked);
                     },
-                    color:
-                        containsList(saved, widget.currentRecipe.ingredients[i])
-                            ? Colors.green
-                            : textColor,
-                  )
-                ],
-              ),
+                    color: isChecked ? Colors.green : textColor,
+                  );
+                }),
+              ],
             ),
           ),
         );
@@ -834,6 +830,16 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     }
 
     return output;
+  }
+
+  void _pressAddSection(ShoppingCartKeeper scKeeper,
+      List<Ingredient> ingredients, bool isChecked) {
+    if (isChecked) {
+      scKeeper.removeIngredientsFromCart(
+          widget.currentRecipe.name, ingredients);
+    } else {
+      scKeeper.removeAndAddIngredients(widget.currentRecipe.name, ingredients);
+    }
   }
 
   @override

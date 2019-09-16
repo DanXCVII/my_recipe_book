@@ -3,7 +3,6 @@ import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import '../database.dart';
 import '../recipe.dart';
 import '../helper.dart';
 
@@ -70,39 +69,18 @@ class ShoppingCartScreen extends StatelessWidget {
             ),
             ScopedModelDescendant<ShoppingCartKeeper>(
                 builder: (context, child, model) {
-              if (model.fullShoppingCart['summary'].isEmpty) {
+              if (model.fullShoppingCart['summary'].isNotEmpty) {
                 return Padding(
                   padding:
                       const EdgeInsets.only(left: 25, right: 25, top: 15.0),
                   child: Column(
                     children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Text('check',
-                              style: TextStyle(
-                                fontFamily: 'Ribeye',
-                                fontSize: 16,
-                                color: Colors.black,
-                              )),
-                          Text('     ware',
-                              style: TextStyle(
-                                fontFamily: 'Ribeye',
-                                fontSize: 16,
-                                color: Colors.black,
-                              )),
-                          Spacer(),
-                          Text('amount   ',
-                              style: TextStyle(
-                                fontFamily: 'Ribeye',
-                                fontSize: 16,
-                                color: Colors.black,
-                              ))
-                        ],
-                      ),
                       Container(
                         height: MediaQuery.of(context).size.height - 335,
                         child: IngredientsList(
-                          shoppingCart: model.shoppingCart,
+                          scKeeper: model,
+                          shoppingCart: model.fullShoppingCart,
+                          recipes: model.recipesOrder,
                         ),
                       )
                     ],
@@ -142,72 +120,99 @@ class ShoppingCartScreen extends StatelessWidget {
   }
 }
 
-class IngredientsList extends StatefulWidget {
+class IngredientsList extends StatelessWidget {
   final Map<String, List<CheckableIngredient>> shoppingCart;
+  final ShoppingCartKeeper scKeeper;
   final List<String> recipes;
 
-  IngredientsList({this.shoppingCart, this.recipes, Key key}) : super(key: key);
+  IngredientsList({
+    this.shoppingCart,
+    this.scKeeper,
+    this.recipes,
+    Key key,
+  });
 
-  _IngredientsListState createState() => _IngredientsListState();
-}
-
-class _IngredientsListState extends State<IngredientsList> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: widget.shoppingCart.keys.length,
+      itemCount: shoppingCart.keys.length,
       itemBuilder: (context, index) {
-        String recipeName = widget.shoppingCart.keys.toList()[index];
+        String recipeName = shoppingCart.keys.toList()[index];
 
-        String currentRecipe = widget.shoppingCart.keys.toList()[index];
-        return Dismissible(
-          key: Key('$recipeName'),
-          onDismissed: (_) {
-            // TODO: Delete recipe from shoppingCart
-          },
-          background: _getPrimaryBackgroundDismissable(),
-          secondaryBackground: _getSecondaryBackgroundDismissable(),
-          child: ExpansionTile(
-            title: Text(currentRecipe),
-            children: widget.shoppingCart[currentRecipe].map((ingredient) {
-              return Dismissible(
-                key: Key('$recipeName${ingredient.name}${ingredient.unit}'),
-                onDismissed: (_) {
-                  // TODO: Delete recipe from shoppingCart
-                },
-                background: _getPrimaryBackgroundDismissable(),
-                secondaryBackground: _getSecondaryBackgroundDismissable(),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color(0xffFEF3E1),
-                    border: Border(
-                      top: BorderSide(width: 2),
-                      left: BorderSide(width: 2),
-                      right: BorderSide(width: 2),
-                      bottom: BorderSide(
-                          width: widget.shoppingCart[currentRecipe].last ==
-                                  ingredient
-                              ? 2
-                              : 0),
-                    ),
-                  ),
-                  child: IngredientRow(
-                    ingredient: ingredient,
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        );
+        if (recipeName.compareTo('summary') == 0) {
+          return getRecipeTile(recipeName, false);
+        } else {
+          return Dismissible(
+            key: Key('$recipeName'),
+            onDismissed: (_) {
+              scKeeper.removeRecipeFromCart(recipeName);
+            },
+            background: _getPrimaryBackgroundDismissable(),
+            secondaryBackground: _getSecondaryBackgroundDismissable(),
+            child: getRecipeTile(recipeName,
+                shoppingCart.keys.toList().length - 1 == index ? true : false),
+          );
+        }
       },
+    );
+  }
+
+  Widget getRecipeTile(String recipeName, bool isLast) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xffFEF3E1),
+        border: Border(
+          top: BorderSide(width: 2),
+          left: BorderSide(width: 2),
+          right: BorderSide(width: 2),
+          bottom: BorderSide(width: isLast ? 2 : 0),
+        ),
+      ),
+      child: ExpansionTile(
+        title: Text(recipeName),
+        children: shoppingCart[recipeName].map((ingredient) {
+          return Dismissible(
+            key: Key('$recipeName${ingredient.name}${ingredient.unit}'),
+            onDismissed: (_) {
+              scKeeper.removeIngredientFromCart(
+                recipeName,
+                Ingredient(
+                    name: ingredient.name,
+                    amount: ingredient.amount,
+                    unit: ingredient.unit),
+              );
+            },
+            background: _getPrimaryBackgroundDismissable(),
+            secondaryBackground: _getSecondaryBackgroundDismissable(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color(0xffFEF3E1),
+                border: Border(
+                  top: BorderSide(width: 2),
+                  bottom: BorderSide(
+                      width:
+                          ingredient == shoppingCart[recipeName].last ? 0 : 0),
+                ),
+              ),
+              child: IngredientRow(
+                showBorder: true,
+                ingredient: ingredient,
+                scKeeper: scKeeper,
+                recipeName: recipeName,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 
   Widget _getPrimaryBackgroundDismissable() {
     return Container(
-        color: Colors.red,
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+      color: Colors.red,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
             child: Icon(
@@ -215,11 +220,13 @@ class _IngredientsListState extends State<IngredientsList> {
               color: Colors.white,
             ),
           )
-        ]));
+        ],
+      ),
+    );
   }
 
   Widget _getSecondaryBackgroundDismissable() {
-    Container(
+    return Container(
       color: Colors.red,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -237,23 +244,20 @@ class _IngredientsListState extends State<IngredientsList> {
   }
 }
 
-class IngredientRow extends StatefulWidget {
+class IngredientRow extends StatelessWidget {
   final CheckableIngredient ingredient;
-
-  /// checked and checkedIndex because the Row needs to tell
-  /// the overlaying List that an item is checked.
-  /// One way: Using Wrapper and passing the wrapper
-  /// Other way like here: Passing the list and the index
+  final ShoppingCartKeeper scKeeper;
+  final String recipeName;
+  final bool showBorder;
 
   IngredientRow({
     Key key,
-    this.ingredient,
+    this.showBorder = false,
+    @required this.recipeName,
+    @required this.ingredient,
+    @required this.scKeeper,
   }) : super(key: key);
 
-  _IngredientRowState createState() => _IngredientRowState();
-}
-
-class _IngredientRowState extends State<IngredientRow> {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -261,18 +265,20 @@ class _IngredientRowState extends State<IngredientRow> {
         Container(
           height: 50,
           width: 50,
-          decoration:
-              BoxDecoration(border: Border(right: BorderSide(width: 2))),
+          decoration: BoxDecoration(
+              border: Border(right: BorderSide(width: showBorder ? 2 : 0))),
           child: Center(
             child: IconButton(
               iconSize: 30,
               icon: Icon(
-                widget.ingredient.checked
+                ingredient.checked
                     ? GroovinMaterialIcons.check_circle_outline
                     : GroovinMaterialIcons.circle_outline,
               ),
-              color: widget.ingredient.checked ? Colors.green : Colors.grey,
-              onPressed: () {},
+              color: ingredient.checked ? Colors.green : Colors.grey,
+              onPressed: () {
+                _checkIngredient();
+              },
             ),
           ),
         ),
@@ -280,8 +286,8 @@ class _IngredientRowState extends State<IngredientRow> {
           padding: EdgeInsets.only(left: 10),
           child: Text(
             //'SpaghettiSauce von der Kuh mit ganz viel ',
-            '${widget.ingredient.name}',
-            style: widget.ingredient.checked
+            '${ingredient.name}',
+            style: ingredient.checked
                 ? TextStyle(
                     fontSize: 18,
                     decoration: TextDecoration.lineThrough,
@@ -297,12 +303,12 @@ class _IngredientRowState extends State<IngredientRow> {
         Container(
             height: 50,
             width: 99,
-            decoration:
-                BoxDecoration(border: Border(left: BorderSide(width: 2))),
+            decoration: BoxDecoration(
+                border: Border(left: BorderSide(width: showBorder ? 2 : 0))),
             child: Center(
               child: Text(
-                '${cutDouble(widget.ingredient.amount)} ${widget.ingredient.unit}',
-                style: widget.ingredient.checked
+                '${cutDouble(ingredient.amount)} ${ingredient.unit}',
+                style: ingredient.checked
                     ? TextStyle(
                         fontSize: 18,
                         decoration: TextDecoration.lineThrough,
@@ -317,6 +323,15 @@ class _IngredientRowState extends State<IngredientRow> {
             ))
       ],
     );
+  }
+
+  void _checkIngredient() {
+    if (ingredient.checked) {
+      ingredient.checked = false;
+    } else {
+      ingredient.checked = true;
+    }
+    scKeeper.checkIngredient(recipeName, ingredient);
   }
 }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../intro_screen.dart';
 import '../theming.dart';
 import './import_recipe.dart';
@@ -32,12 +33,54 @@ class _SettingsState extends State<Settings> {
           ),
           Divider(),
           ListTile(
-            title: Text('switch to dark theme'),
+            title: Text('switch theme'),
             trailing: Container(
-              width: 100,
+              width: 130,
               height: 25,
               child: Row(
                 children: <Widget>[
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _changeTheme(context, MyThemeKeys.AUTOMATIC);
+                      });
+                    },
+                    child: Stack(
+                      children: <Widget>[
+                        ClipPath(
+                          clipper: CustomLeftHalfClipper(),
+                          child: Container(
+                            width: 25,
+                            height: 25,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  width: 1,
+                                  color:
+                                      Theme.of(context).textTheme.body1.color),
+                              color: Color(0xffFEF3E1),
+                            ),
+                          ),
+                        ),
+                        ClipPath(
+                          clipper: CustomRightHalfClipper(),
+                          child: Container(
+                            width: 25,
+                            height: 25,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  width: 1,
+                                  color:
+                                      Theme.of(context).textTheme.body1.color),
+                              color: Color(0xff454545),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(width: 10),
                   GestureDetector(
                     onTap: () {
                       setState(() {
@@ -79,6 +122,7 @@ class _SettingsState extends State<Settings> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
+                        // TODO: Maybe not nessesary to setState but probably it is. Check
                         _changeTheme(context, MyThemeKeys.OLEDBLACK);
                       });
                     },
@@ -104,7 +148,7 @@ class _SettingsState extends State<Settings> {
             onTap: () {
               SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => IntroScreen(
+                  builder: (context) => IntroScreen(true,
                       true))); // TODO: recipeCategoryOverview not always true!
             },
           ),
@@ -119,8 +163,24 @@ class _SettingsState extends State<Settings> {
   }
 
   void _changeTheme(BuildContext buildContext, MyThemeKeys key) {
-    print(key.toString());
     CustomTheme.instanceOf(buildContext).changeTheme(key);
+    SharedPreferences.getInstance().then((prefs) {
+      switch (key) {
+        case MyThemeKeys.AUTOMATIC:
+          prefs.setInt('theme', 0);
+          return;
+        case MyThemeKeys.LIGHT:
+          prefs.setInt('theme', 1);
+          return;
+        case MyThemeKeys.DARK:
+          prefs.setInt('theme', 2);
+          return;
+        case MyThemeKeys.OLEDBLACK:
+          prefs.setInt('theme', 3);
+          return;
+        default:
+      }
+    });
   }
 
   Future<void> _importSingleRecipe(RecipeKeeper rKeeper) async {
@@ -129,5 +189,38 @@ class _SettingsState extends State<Settings> {
         type: FileType.CUSTOM, fileExtension: 'zip');
     if (_path == null) return;
     importRecipe(rKeeper, _path);
+  }
+}
+
+class CustomRightHalfClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final Path path = new Path()
+      ..lineTo(size.width / 2, 0)
+      ..lineTo(size.width / 2, size.height)
+      ..lineTo(size.width, size.height)
+      ..lineTo(size.width, 0);
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) {
+    return true;
+  }
+}
+
+class CustomLeftHalfClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final Path path = new Path()
+      ..lineTo(0.0, size.height)
+      ..lineTo(size.width / 2, size.height)
+      ..lineTo(size.width / 2, 0);
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) {
+    return true;
   }
 }

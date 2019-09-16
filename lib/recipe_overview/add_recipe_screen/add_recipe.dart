@@ -412,6 +412,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     });
   }
 
+  // TODO: INGREDIENTS ONLY SAVED WITH HEADING!
   void _finishedEditingRecipe(RecipeKeeper rKeeper) {
     RecipeValidator()
         .validateForm(
@@ -423,7 +424,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             nameController.text,
             widget.editRecipe == null ? false : true)
         .then((v) {
-      print(v.toString());
       switch (v) {
         case Validator.REQUIRED_FIELDS:
           _showRequiredFieldsDialog(context);
@@ -648,7 +648,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         widget.editRecipe == null ? 'tmp' : widget.editRecipe.name;
     String recipeName = nameController.text;
 
-    print(stepImages);
     for (int i = 0; i < stepImages.length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
         stepImages[i][j] =

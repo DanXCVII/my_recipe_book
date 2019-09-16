@@ -89,7 +89,6 @@ class DBProvider {
         await db.execute('CREATE TABLE ShoppingCartRecipe ('
             'recipe TEXT PRIMARY KEY'
             ')');
-        await db.execute('INSERT INTO ShoppingCartRecipe VALUES (\'summary\')');
         await db.execute('CREATE TABLE ShoppingCartIngredient ('
             'item_id INTEGER PRIMARY KEY,'
             'name TEXT,'
@@ -485,14 +484,7 @@ class DBProvider {
 
   Future<void> deleteRecipe(String recipeName) async {
     final db = await database;
-    /*
-    MainScreenRecipes singleton = MainScreenRecipes();
-    for (int i = 0; i < recipe.categories.length; i++) {
-      if (singleton.getRecipesOfCategory(recipe.categories[i]) != null) {
-        singleton.removeRecipeFromCategory(recipe.categories[i], recipe);
-      }
-    }
-*/
+
     await db.rawDelete('DELETE FROM Recipe WHERE recipe_name= ?', [recipeName]);
 
     Directory appDir = await getApplicationDocumentsDirectory();
@@ -502,93 +494,44 @@ class DBProvider {
   }
 
   Future<void> addToShoppingList(
-      String recipeName, List<Ingredient> ingredients) async {
+      String recipeName, Ingredient ingredient) async {
+    await _addIngredientToRecipe('summary', ingredient);
+    await _addIngredientToRecipe(recipeName, ingredient);
+  }
+
+  Future<void> _addIngredientToRecipe(
+      String recipeName, Ingredient ingredient) async {
     final db = await database;
+    var batch = db.batch();
 
     await db.execute(
         'INSERT OR IGNORE INTO ShoppingCartRecipe (recipe) VALUES (?)',
         [recipeName]);
 
-    for (Ingredient i in ingredients) {
-      var resultSummary = await db.query('ShoppingCartIngredient',
-          where: 'recipe = ? AND name = ? AND unit = ?',
-          whereArgs: ['summary', i.name, i.unit]);
-      var resultIngredient = await db.query('ShoppingCartIngredient',
-          where: 'recipe = ? AND name = ? AND unit = ?',
-          whereArgs: [recipeName, i.name, i.unit]);
-      if (i.name.compareTo('summary') != 0) {
-        if (resultSummary.isEmpty) {
-          await db.insert('ShoppingCartIngredient', {
-            'recipe': recipeName,
-            'name': i.name,
-            'amount': i.amount,
-            'unit': i.unit,
-            'checked': 0,
-          });
+    var resultIngredient = await db.query('ShoppingCartIngredient',
+        where: 'recipe = ? AND name = ? AND unit = ?',
+        whereArgs: [recipeName, ingredient.name, ingredient.unit]);
 
-          await db.insert('ShoppingCartIngredient', {
-            'recipe': 'summary',
-            'name': i.name,
-            'amount': i.amount,
-            'unit': i.unit,
+    if (resultIngredient.isEmpty) {
+      batch.insert('ShoppingCartIngredient', {
+        'recipe': recipeName,
+        'name': ingredient.name,
+        'amount': ingredient.amount,
+        'unit': ingredient.unit,
+        'checked': 0,
+      });
+    } else {
+      batch.update(
+          'ShoppingCartIngredient',
+          {
+            'amount': resultIngredient[0]['amount'] + ingredient.amount,
             'checked': 0,
-          });
-        } else if (resultIngredient.isEmpty &&
-            recipeName.compareTo('summary') != 0) {
-          await db.insert('ShoppingCartIngredient', {
-            'recipe': recipeName,
-            'name': i.name,
-            'amount': i.amount,
-            'unit': i.unit,
-            'checked': 0,
-          });
-          await db.update(
-              'ShoppingCartIngredient',
-              {
-                'amount': resultSummary[0]['amount'] + i.amount,
-                'checked': 0,
-              },
-              where: 'recipe = ? AND name = ? AND unit = ?',
-              whereArgs: ['summary', i.name, i.unit]);
-        } else {
-          await db.update(
-              'ShoppingCartIngredient',
-              {
-                'amount': resultIngredient[0]['amount'] + i.amount,
-                'checked': 0,
-              },
-              where: 'recipe = ? AND name = ? AND unit = ?',
-              whereArgs: [recipeName, i.name, i.unit]);
-          await db.update(
-              'ShoppingCartIngredient',
-              {
-                'amount': resultSummary[0]['amount'] + i.amount,
-                'checked': 0,
-              },
-              where: 'recipe = ? AND name = ? AND unit = ?',
-              whereArgs: ['summary', i.name, i.unit]);
-        }
-      } else {
-        if (resultSummary.isEmpty) {
-          await db.insert('ShoppingCartIngredient', {
-            'recipe': recipeName,
-            'name': i.name,
-            'amount': i.amount,
-            'unit': i.unit,
-            'checked': 0,
-          });
-        } else {
-          await db.update(
-              'ShoppingCartIngredient',
-              {
-                'amount': resultSummary[0]['amount'] + i.amount,
-                'checked': 0,
-              },
-              where: 'recipe = ? AND name = ? AND unit = ?',
-              whereArgs: ['summary', i.name, i.unit]);
-        }
-      }
+          },
+          where: 'recipe = ? AND name = ? AND unit = ?',
+          whereArgs: [recipeName, ingredient.name, ingredient.unit]);
     }
+
+    await batch.commit();
   }
 
   Future<void> checkIngredient(String recipe, CheckableIngredient i) async {
@@ -609,7 +552,11 @@ class DBProvider {
         var resSummaryNotChecked = await db.query('ShoppingCartIngredient',
             where: 'name = ? AND unit = ? AND checked = ?',
             whereArgs: [i.name, i.unit, 0]);
-        if (resSummaryNotChecked.isEmpty) {
+
+        /// Check for length to be 2 because the ingredient is still unchecked because batch
+        /// commit is not yet called and at the summary it is also not checked
+        if (resSummaryNotChecked.length == 2 ||
+            resSummaryNotChecked.length == 1) {
           batch.update('ShoppingCartIngredient', {'checked': 1},
               where: 'recipe = ? AND name = ? AND unit = ?',
               whereArgs: ['summary', i.name, i.unit]);
@@ -623,10 +570,26 @@ class DBProvider {
     await batch.commit();
   }
 
+  Future<void> deleteRecipeFromeShoppingCart(String recipeName) async {
+    final db = await database;
+
+    await db.delete('ShoppingCartRecipe',
+        where: 'recipe = ?', whereArgs: [recipeName]);
+  }
+
   Future<void> deleteFromShoppingCart(
-      String recipeName, CheckableIngredient ingredient) async {
+      String recipeName, Ingredient ingredient) async {
     final db = await database;
     var batch = db.batch();
+
+    var resToBeRemoved = await db.query('ShoppingCartIngredient',
+        where: 'recipe = ? AND name = ? AND unit = ?',
+        whereArgs: [
+          recipeName,
+          ingredient.name,
+          ingredient.unit,
+        ]);
+    double removeAmount = resToBeRemoved.first['amount'];
 
     var resSummary = await db.query('ShoppingCartIngredient',
         where: 'recipe = ? AND name = ? AND unit = ?',
@@ -644,21 +607,21 @@ class DBProvider {
           ingredient.unit,
         ]);
     if (recipeName.compareTo('summary') != 0) {
-      if (resSummary[0]['amount'] - ingredient.amount <= 0) {
+      if (resSummary[0]['amount'] - removeAmount <= 0) {
         /// if we don't want to delete at the summary and summary - deletedAmount
         /// is less equal 0 we delete at the summary
         batch.delete('ShoppingCartIngredient',
-            where: 'name = ? AND recipe = ? AND unit = ?',
+            where: 'recipe = ? AND name = ? AND unit = ?',
             whereArgs: [
               'summary',
-              recipeName,
+              ingredient.name,
               ingredient.unit,
             ]);
       } else {
         /// if we don't want to delete at the summary and summary - deletedAmount
         /// is greater than 0 we update the summary
         batch.update('ShoppingCartIngredient',
-            {'amount': resSummary[0]['amount'] - ingredient.amount},
+            {'amount': resSummary[0]['amount'] - removeAmount},
             where: 'recipe = ? AND name = ? AND unit = ?',
             whereArgs: [
               'summary',
@@ -667,7 +630,8 @@ class DBProvider {
             ]);
       }
     } else {
-      
+      /// if we deleted at the summary we want to delete every ingredient
+      /// which fits the pattern of the deleted one
       batch.delete('ShoppingCartIngredient',
           where: 'name = ? AND unit = ?',
           whereArgs: [
@@ -691,10 +655,17 @@ class DBProvider {
       String ingredientName = resShoppingCart[i]['name'];
       double ingredientAmount = resShoppingCart[i]['amount'];
       String ingredientUnit = resShoppingCart[i]['unit'];
-      String recipeName = resShoppingCart[i]['recipe_name'];
+      String recipeName = resShoppingCart[i]['recipe'];
       int checked = resShoppingCart[i]['checked'];
 
-      if (!shoppingCartIngredients.keys.contains(recipeName)) {
+      bool alreadyAdded = false;
+      for (String r in shoppingCartIngredients.keys) {
+        if (r.compareTo(recipeName) == 0) {
+          alreadyAdded = true;
+          break;
+        }
+      }
+      if (!alreadyAdded) {
         shoppingCartIngredients.addAll({recipeName: []});
       }
       shoppingCartIngredients[recipeName].add(CheckableIngredient(
@@ -706,6 +677,9 @@ class DBProvider {
         checked: checked == 1 ? true : false,
       ));
     }
+    if (shoppingCartIngredients.keys.isEmpty) {
+      shoppingCartIngredients.addAll({'summary': []});
+    }
     return shoppingCartIngredients;
   }
 
@@ -713,8 +687,8 @@ class DBProvider {
   Future<void> changeCategoryName(String oldCatName, String newCatName) async {
     var db = await database;
 
-    await db.update('Categories', {'name': newCatName},
-        where: 'name = ?', whereArgs: [oldCatName]);
+    await db.update('Categories', {'categoryName': newCatName},
+        where: 'categoryName = ?', whereArgs: [oldCatName]);
   }
 
 /*

@@ -203,16 +203,17 @@ class CheckableIngredient {
   String name;
   double amount;
   String unit;
-  bool checked = false;
+  bool checked;
 
-  CheckableIngredient(Ingredient i, {this.checked}) {
+  CheckableIngredient(Ingredient i, {this.checked = false}) {
     name = i.name;
     amount = i.amount;
     unit = i.unit;
-    if (checked != null) {
-      this.checked = checked;
-    }
   }
+  @override
+  String toString() {
+  return '$name $amount $unit $checked';
+   }
 }
 
 class RecipeCategory {

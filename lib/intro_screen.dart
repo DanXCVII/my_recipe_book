@@ -7,8 +7,9 @@ import 'main.dart';
 
 class IntroScreen extends StatelessWidget {
   final bool recipeCatOverview;
+  final bool onDonePop;
 
-  IntroScreen(this.recipeCatOverview);
+  IntroScreen(this.recipeCatOverview, this.onDonePop);
 
   //making list of pages needed to pass in IntroViewsFlutter constructor.
 
@@ -27,9 +28,7 @@ class IntroScreen extends StatelessWidget {
           description:
               "Your data is securely saved on your device and will NEVER leave it!",
           styleDescription: TextStyle(
-              color: Colors.white,
-              fontSize: 20.0,
-              fontFamily: 'Raleway'),
+              color: Colors.white, fontSize: 20.0, fontFamily: 'Raleway'),
           pathImage: "images/lock.png",
         ),
         Slide(
@@ -43,9 +42,7 @@ class IntroScreen extends StatelessWidget {
           description:
               "With the random recipe explorer, you can tinder swype you recipes.",
           styleDescription: TextStyle(
-              color: Colors.white,
-              fontSize: 20.0,
-              fontFamily: 'Raleway'),
+              color: Colors.white, fontSize: 20.0, fontFamily: 'Raleway'),
           pathImage: "images/dices.png",
         ),
         Slide(
@@ -56,19 +53,18 @@ class IntroScreen extends StatelessWidget {
               fontSize: 30.0,
               fontWeight: FontWeight.bold,
               fontFamily: 'RobotoMono'),
-          description:
-              "Easily share and export your recipes as .zip file.",
+          description: "Easily share and export your recipes as .zip file.",
           styleDescription: TextStyle(
-              color: Colors.white,
-              fontSize: 20.0,
-              fontFamily: 'Raleway'),
+              color: Colors.white, fontSize: 20.0, fontFamily: 'Raleway'),
           pathImage: "images/letter.png",
         ),
       ],
       onDonePress: () {
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => MyHomePage(recipeCatOverview)));
+        onDonePop
+            ? Navigator.pop(context)
+            : Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => MyHomePage(recipeCatOverview)));
       },
     );
   }

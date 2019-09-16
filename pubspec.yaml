@@ -105,6 +105,7 @@ flutter:
    - images/dices.png
    - images/spielfigur.png
    - images/letter.png
+   - images/shopping_basket.jpg
    - images/postbox.png
 
    - animations/writing_pen.flr

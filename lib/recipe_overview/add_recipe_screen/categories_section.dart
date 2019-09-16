@@ -159,7 +159,7 @@ class CategoryAddDialogState extends State<CategoryAddDialog> {
   initState() {
     super.initState();
     categoryNameController = new TextEditingController();
-    if (widget.modifiedCategory == null) {
+    if (widget.modifiedCategory != null) {
       categoryNameController.text = widget.modifiedCategory;
     }
   }
@@ -243,13 +243,12 @@ class CategoryAddDialogState extends State<CategoryAddDialog> {
   void validateAddModifyCategory(RecipeKeeper rKeeper) {
     if (_formKey.currentState.validate()) {
       if (widget.modifiedCategory == null) {
-        rKeeper.addCategory(categoryNameController.text).then((_) {
-          Navigator.pop(context);
-        });
+        rKeeper.addCategory(categoryNameController.text).then((_) {});
       } else {
         rKeeper.changeCategoryName(
             widget.modifiedCategory, categoryNameController.text);
       }
     }
+    Navigator.pop(context);
   }
 }

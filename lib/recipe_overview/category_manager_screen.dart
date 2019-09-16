@@ -80,7 +80,8 @@ class _CategoryManagerState extends State<CategoryManager> {
                   },
                 ),
               );
-            }).toList(),
+            }).toList()
+              ..removeLast(),
           );
         }
       }),

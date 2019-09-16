@@ -3,7 +3,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 class MainPageNavigator extends Model {
   int _index = 0;
-  Widget _currentMainView;
+  bool _currentMainView;
   String _title = 'recipes';
   bool showOverlay = false;
 
@@ -11,7 +11,7 @@ class MainPageNavigator extends Model {
 
   String get title => _title;
 
-  Widget get currentMainView => _currentMainView;
+  bool get currentMainView => _currentMainView;
 
   void changeOverlayStatus(bool status) {
     showOverlay = status;
@@ -49,12 +49,12 @@ class MainPageNavigator extends Model {
     notifyListeners();
   }
 
-  void changeCurrentMainView(Widget mainView) {
+  void changeCurrentMainView(bool mainView) {
     this._currentMainView = mainView;
     notifyListeners();
   }
 
-  void initCurrentMainView(Widget mainView) {
+  void initCurrentMainView(bool mainView) {
     if (this._currentMainView == null) _currentMainView = mainView;
     return;
   }
