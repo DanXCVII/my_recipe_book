@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/models/random_recipe.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/random_recipe/recipe_engine.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../recipe.dart';
 import 'draggable_card.dart';
@@ -206,21 +208,68 @@ class RandomRecipe extends StatefulWidget {
 }
 
 class _RandomRecipeState extends State<RandomRecipe> {
+  String _selectedCategory = 'all categories';
+
+  ListView _getCategorySelector(List<String> categoryNames) {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: (categoryNames.length + 1) * 2 + 1,
+      itemBuilder: (context, index) {
+        if (index == 0) return VerticalDivider();
+        index--;
+        if (index % 2 == 0) {
+          String currentCategory = (index / 2).floor() == 0
+              ? 'all categories'
+              : categoryNames[(index / 2).floor() - 1];
+          return ScopedModelDescendant<RandomRecipeKeeper>(
+            builder: (context, child, rrKeeper) => FlatButton(
+                color:
+                    currentCategory == _selectedCategory ? Colors.brown : null,
+                textColor:
+                    currentCategory == _selectedCategory ? Colors.amber : null,
+                onPressed: () {
+                  _selectedCategory = currentCategory;
+                  rrKeeper.changeCategory(currentCategory);
+                },
+                child: Text(currentCategory)),
+          );
+        } else {
+          return VerticalDivider();
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<dynamic>(
-      future: DBProvider.db.getRecipeByName('', true),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return CardStack(
-            // TODO: Pass in the recipes here
-            recipeEngine: recipeEngine,
-          );
-        }
-        return (Center(
-          child: CircularProgressIndicator(),
-        ));
-      },
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Container(
+            height: 40,
+            width: MediaQuery.of(context).size.width,
+            child: ScopedModelDescendant<RecipeKeeper>(
+              builder: (context, child, rrKeeper) =>
+                  _getCategorySelector(rrKeeper.categories),
+            ),
+          ),
+        ),
+        Divider(),
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height - 200,
+          child: ScopedModelDescendant<RecipeKeeper>(
+            builder: (context, child, rKeeper) =>
+                ScopedModelDescendant<RandomRecipeKeeper>(
+              builder: (context, child, rrKeeper) => CardStack(
+                    recipeEngine: RecipeEngine(
+                  recipeDecisions: rrKeeper.currentlyVisibleRecipes,
+                )),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

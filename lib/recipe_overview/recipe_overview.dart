@@ -113,8 +113,8 @@ class RecipeGridView extends StatelessWidget {
                 background: Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: FileImage(
-                          File('${recipePreviews[randomCategoryImage].imagePreviewPath}')),
+                      image: AssetImage(
+                          '${recipePreviews[randomCategoryImage].imagePreviewPath}'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -141,42 +141,9 @@ class RecipeGridView extends StatelessWidget {
           ]),
         );
       } else {
-        return noRecipeScreen(context);
+        return Scaffold(appBar: AppBar(), body: NoRecipeCategory());
       }
     });
-  }
-
-  Widget noRecipeScreen(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Stack(
-        children: <Widget>[
-          Align(
-            alignment: Alignment(0, -0.5),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(
-                "No recipes under this category",
-                style: TextStyle(
-                    fontSize: 30,
-                    fontFamily: 'RibeyeMarrow',
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).backgroundColor == Colors.white
-                        ? Colors.black
-                        : Colors.white),
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Image.asset(
-              'images/hatWithSpoonFork.png',
-              height: 280,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   List<Widget> getRecipeCards(
@@ -189,12 +156,47 @@ class RecipeGridView extends StatelessWidget {
           shadow: Theme.of(context).backgroundColor == Colors.white
               ? Colors.grey[400]
               : Colors.black,
-          heroImageTag: "${recipes[i].imagePreviewPath}",
+          heroImageTag: "${recipes[i].imagePreviewPath}-${recipes[i].name}",
           heroTitle: "recipe-${recipes[i].name}",
         ),
       );
     }
     return recipeCards;
+  }
+}
+
+class NoRecipeCategory extends StatelessWidget {
+  const NoRecipeCategory({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Align(
+          alignment: Alignment(0, -0.5),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Text(
+              "No recipes under this category",
+              style: TextStyle(
+                  fontSize: 30,
+                  fontFamily: 'RibeyeMarrow',
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).backgroundColor == Colors.white
+                      ? Colors.black
+                      : Colors.white),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Image.asset(
+            'images/hatWithSpoonFork.png',
+            height: 280,
+          ),
+        ),
+      ],
+    );
   }
 }
 

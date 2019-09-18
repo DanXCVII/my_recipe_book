@@ -17,6 +17,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(slivers: <Widget>[
       SliverAppBar(
+        centerTitle: false,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),

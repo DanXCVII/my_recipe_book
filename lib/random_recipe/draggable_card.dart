@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/random_recipe/anchored_widget.dart';
 import 'package:my_recipe_book/random_recipe/recipe_card_big.dart';
 import 'package:my_recipe_book/random_recipe/recipe_engine.dart';
+import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
@@ -36,9 +36,11 @@ class _CardStackState extends State<CardStack> {
     widget.recipeEngine.addListener(_onRecipeEngineChange);
 
     _currentRecipeD = widget.recipeEngine.currentRecipeD;
-    _currentRecipeD.addListener(_onRecipeChange);
+    if (_currentRecipeD != null) {
+      _currentRecipeD.addListener(_onRecipeChange);
 
-    _frontCard = Key(_currentRecipeD.recipe.name);
+      _frontCard = Key(_currentRecipeD.recipe.name);
+    }
   }
 
   @override
@@ -121,6 +123,9 @@ class _CardStackState extends State<CardStack> {
 
   @override
   Widget build(BuildContext context) {
+    if (_currentRecipeD == null) {
+      return NoRecipeCategory();
+    }
     return Stack(
       children: <Widget>[
         DraggableCard(

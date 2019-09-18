@@ -7,6 +7,17 @@ import 'package:my_recipe_book/models/recipe_keeper.dart';
 import '../database.dart';
 import '../recipe.dart';
 
+Future<void> importRecipes(RecipeKeeper rKeeper, String recipeZipPath) async {
+  Directory importDir = Directory(await PathProvider.pP.getImportDir());
+  // extract selected zip and save it to the importDir
+  await exstractZip(File(recipeZipPath), importDir.path);
+  List importZips = importDir.listSync(recursive: true);
+
+  for (File f in importZips) {
+    importRecipe(rKeeper, f.path);
+  }
+}
+
 Future<void> importRecipe(RecipeKeeper rKeeper, String recipeZipPath) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir

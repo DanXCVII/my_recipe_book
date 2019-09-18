@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/painting.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/helper.dart';
 import 'package:my_recipe_book/recipe.dart';
@@ -15,7 +16,11 @@ class RecipeKeeper extends Model {
 
   get favorites => _favorites;
 
-  get rCategories => _categories;
+  get categories {
+    List<String> cats = [];
+    cats.addAll(_categories);
+    return cats;
+  }
 
   get isInitialised => _isInitialised;
 
@@ -70,18 +75,21 @@ class RecipeKeeper extends Model {
     notifyListeners();
   }
 
-  Future<void> deleteRecipeWithName(String name, bool deleteFiles) async {
+  Future<void> deleteRecipeWithName(String recipeName, bool deleteFiles) async {
+    imageCache.clear();
+    removeFromFavorites(recipeName);
     for (String category in _recipes.keys) {
       for (int i = 0; i < _recipes[category].length; i++) {
-        if (_recipes[category][i].name == name) {
+        if (_recipes[category][i].name == recipeName) {
           _recipes[category].removeAt(i);
         }
       }
     }
-    await DBProvider.db.deleteRecipe(name);
-    if (deleteFiles)
-      Directory(await PathProvider.pP.getRecipeDir(name))
-          .deleteSync(recursive: true);
+    await DBProvider.db.deleteRecipe(recipeName);
+    Directory recipeDir =
+        Directory(await PathProvider.pP.getRecipeDir(recipeName));
+    if (deleteFiles) if (recipeDir.existsSync())
+      recipeDir.deleteSync(recursive: true);
     notifyListeners();
   }
 

@@ -79,7 +79,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     return PhotoViewGalleryPageOptions(
-      imageProvider: FileImage(File(widget.galleryItems[index])),
+      imageProvider: AssetImage(widget.galleryItems[index]),
       initialScale: PhotoViewComputedScale.contained,
       minScale: PhotoViewComputedScale.contained * (1.0),
       maxScale: PhotoViewComputedScale.covered * 1.5,

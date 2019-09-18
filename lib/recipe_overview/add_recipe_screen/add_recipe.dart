@@ -149,6 +149,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
           break;
       }
     }
+
+    PathProvider.pP.getTmpRecipeDir().then((path) {
+      Directory(path..substring(0, path.length - 1))
+          .deleteSync(recursive: true);
+    });
   }
 
   @override
@@ -463,7 +468,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     );
     if (widget.editRecipe == null) {
       saveRecipe(rKeeper).then((_) {
-        Navigator.pop(context);
+        Navigator.pop(context); // loading screen
+        Navigator.pop(context); // edit recipe screen
       });
     } else {
       deleteOldSaveNewRecipe(widget.editRecipe, rKeeper).then((newRecipe) {
@@ -577,9 +583,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     String output;
     String newStepImageName = getStepImageName(newImage.path);
 
-    String stepImagePath = await PathProvider.pP
-            .getRecipeStepNumberDir(recipeName, stepNumber + 1) +
-        newStepImageName;
+    String stepImagePath =
+        PathProvider.pP.getRecipeStepNumberDir(recipeName, stepNumber + 1) +
+            newStepImageName;
     output = stepImagePath;
 
     IO.saveImage(
@@ -692,7 +698,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     );
 
     if (recipeImage != null)
-      await IO.renameRecipeData(oldRecipeImageName, '.jpg', recipeName);
+      await IO.renameRecipeData(oldRecipeImageName,
+          recipeImage.substring(recipeImage.lastIndexOf('.')), recipeName);
 
     Recipe fullImagePathRecipe;
     if (widget.editRecipe != null) {

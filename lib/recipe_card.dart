@@ -90,8 +90,11 @@ class RecipeCard extends StatelessWidget {
                             topRight: Radius.circular(gridTileWidth / 10),
                           ),
                           child: FadeInImage(
-                            image:
-                                FileImage(File(recipePreview.imagePreviewPath)),
+                            image: recipePreview.imagePreviewPath ==
+                                    'images/randomFood.jpg'
+                                ? AssetImage(recipePreview.imagePreviewPath)
+                                : FileImage(
+                                    File(recipePreview.imagePreviewPath)),
                             placeholder: MemoryImage(kTransparentImage),
                             fadeInDuration: Duration(milliseconds: 250),
                             fit: BoxFit.cover,
@@ -218,13 +221,6 @@ class RecipeCard extends StatelessWidget {
     );
   }
 
-  int getIngredientCount(List<List<Ingredient>> ingredients) {
-    int ingredientCount = 0;
-    for (final List<Ingredient> i in ingredients) {
-      if (i != null) ingredientCount += i.length;
-    }
-    return ingredientCount;
-  }
 
   Color getRecipeTypeColor(Vegetable vegetable) {
     switch (vegetable) {

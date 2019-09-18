@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
+import '../database.dart';
 import '../recipe.dart';
 
 Future<void> renameRecipeData(
@@ -53,9 +56,34 @@ Future<void> deleteStepImage(
 /// e.g.: 3242.jpg
 String getStepImageName(String selectedImagePath) {
   Random random = new Random();
-  String ending = selectedImagePath.substring(
-      selectedImagePath.length - 4, selectedImagePath.length);
-  return random.nextInt(10000).toString() + ending;
+  String dataType =
+      selectedImagePath.substring(selectedImagePath.lastIndexOf('.'));
+  return random.nextInt(10000).toString() + dataType;
+}
+
+
+Future<String> saveRecipeZip(String targetDir, String recipeName) async {
+  Recipe exportRecipe =
+      await DBProvider.db.getRecipeByName(recipeName, false);
+  Directory recipeDir =
+      Directory(await PathProvider.pP.getRecipeDir(recipeName));
+
+  File jsonFile = File(PathProvider.pP.getShareJsonPath(recipeName, targetDir));
+  Map<String, dynamic> jsonMap = exportRecipe.toMap();
+  String json = jsonEncode(jsonMap);
+  await jsonFile.writeAsString(json);
+
+  var encoder = ZipFileEncoder();
+  String zipFilePath = PathProvider.pP.getShareZipFile(recipeName, targetDir);
+  encoder.create(zipFilePath);
+  encoder.addFile(jsonFile);
+  if (recipeDir.existsSync()) {
+    encoder.addDirectory(recipeDir);
+  }
+  encoder.close();
+
+  jsonFile.deleteSync();
+  return zipFilePath;
 }
 
 Future<String> saveStepImage(File newImage, int stepNumber,

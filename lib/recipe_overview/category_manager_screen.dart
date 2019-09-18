@@ -44,8 +44,8 @@ class _CategoryManagerState extends State<CategoryManager> {
           }),
       body:
           ScopedModelDescendant<RecipeKeeper>(builder: (context, child, model) {
-        this.categories = model.rCategories;
-        if (model.rCategories.length == 1) {
+        this.categories = model.categories;
+        if (model.categories.length == 1) {
           return Center(
             child: Text('You have no categories'),
           );

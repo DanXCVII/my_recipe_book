@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -212,8 +214,8 @@ class CheckableIngredient {
   }
   @override
   String toString() {
-  return '$name $amount $unit $checked';
-   }
+    return '$name $amount $unit $checked';
+  }
 }
 
 class RecipeCategory {
@@ -291,6 +293,14 @@ class PathProvider {
 
     // return '/.$cRecipeName/stepImages/$stepNumber/';
     return '/$cRecipeName/stepImages/$stepNumber/';
+  }
+
+  Future<String> getTmpRecipeDir() async {
+    String imageLocalPath = await localPath;
+    await Directory(
+        // '$imageLocalPath/.tmp/')
+        '$imageLocalPath/tmp/').create(recursive: true);
+    return '$imageLocalPath/tmp/';
   }
 
   Future<String> getRecipeStepPreviewNumberDirFull(
@@ -424,16 +434,23 @@ class PathProvider {
     return '${tmpDir.path}/share';
   }
 
-  Future<String> getShareZipFile(String recipeName) async {
-    String cRecipeName = _getUnderscoreName(recipeName);
-
-    return '${await getShareDir()}/$cRecipeName.zip';
+  /// Path to Directory for sharing multiple recipes
+  Future<String> getShareMultiDir() async {
+    Directory tmpDir = await getTemporaryDirectory();
+    await Directory('${tmpDir.path}/share/multi').create(recursive: true);
+    return '${tmpDir.path}/share/multi';
   }
 
-  Future<String> getShareJsonPath(String recipeName) async {
+  String getShareZipFile(String recipeName, String fullTargetDir) {
     String cRecipeName = _getUnderscoreName(recipeName);
 
-    return '${await getShareDir()}/$cRecipeName.json';
+    return '$fullTargetDir/$cRecipeName.zip';
+  }
+
+  String getShareJsonPath(String recipeName, String fullTargetDir) {
+    String cRecipeName = _getUnderscoreName(recipeName);
+
+    return '$fullTargetDir/$cRecipeName.json';
   }
 
   String _getUnderscoreName(String name) {

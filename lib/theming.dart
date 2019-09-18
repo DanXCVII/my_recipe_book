@@ -59,6 +59,9 @@ class MyThemes {
   static final ThemeData darkTheme = ThemeData(
     primaryColor: Color(0xFF790604),
     unselectedWidgetColor: Colors.grey[100],
+    toggleableActiveColor: Colors.orange,
+    cursorColor: Colors.orange[600],
+    textSelectionHandleColor: Colors.orange[600],
     textTheme: TextTheme(subhead: TextStyle(color: Colors.grey[100])),
     brightness: Brightness.dark,
     cardColor: Color(0xff34363D),
@@ -71,6 +74,9 @@ class MyThemes {
   static final ThemeData oledblackTheme = ThemeData(
     primaryColor: Color(0xff363636),
     brightness: Brightness.dark,
+    toggleableActiveColor: Colors.orange,
+    cursorColor: Colors.orange[600],
+    textSelectionHandleColor: Colors.orange[600],
     textTheme: TextTheme(subhead: TextStyle(color: Colors.grey[100])),
     unselectedWidgetColor: Colors.grey[100],
     cardColor: Color(0xff34363D),

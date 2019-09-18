@@ -4,6 +4,7 @@ import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/my_wrapper.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:my_recipe_book/recipe.dart';
 
 class ImageSelector extends StatefulWidget {
   final MyImageWrapper imageWrapper;
@@ -97,58 +98,17 @@ class _ImageSelectorState extends State<ImageSelector> {
   }
 
   Future _askUser() async {
-    switch (await showDialog(
-        context: context,
-        builder: (_) => SimpleDialog(
-              title: Text("Change Picture"),
-              children: <Widget>[
-                SimpleDialogOption(
-                  child: Text("Select an image from your gallery"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.GALLERY);
-                  },
-                ),
-                SimpleDialogOption(
-                  child: Text("Take a new photo with camera"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.PHOTO);
-                  },
-                ),
-              ],
-            ))) {
-      case Answers.GALLERY:
-        {
-          File pictureFile = await ImagePicker.pickImage(
-            source: ImageSource.gallery,
-          );
+    File pictureFile = await ImagePicker.pickImage(
+      source: ImageSource.gallery,
+    );
 
-          if (pictureFile != null) {
+    if (pictureFile != null) {
+      await IO.saveRecipeImage(pictureFile, widget.recipeName);
 
-            await IO.saveRecipeImage(pictureFile, widget.recipeName);
-
-            widget.imageWrapper.selectedImage = pictureFile.path;
-            setState(() {
-              selectedImageFile = pictureFile;
-            });
-          }
-          break;
-        }
-      case Answers.PHOTO:
-        {
-          /*
-          File pictureFile = await ImagePicker.pickImage(
-            source: ImageSource.camera,
-          );
-
-          if (pictureFile != null) {
-            widget.imageWrapper.selectedImage = pictureFile.path;
-            setState(() {
-              selectedImageFile = pictureFile;
-            });
-          }
-          break;
-          */
-        }
+      widget.imageWrapper.selectedImage = pictureFile.path;
+      setState(() {
+        selectedImageFile = pictureFile;
+      });
     }
   }
 }

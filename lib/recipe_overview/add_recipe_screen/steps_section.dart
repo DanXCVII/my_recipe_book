@@ -151,65 +151,22 @@ class _StepState extends State<Step> {
   }
 
   Future _askUser() async {
-    switch (await showDialog(
-        context: context,
-        builder: (_) => SimpleDialog(
-              title: Text("Change Picture"),
-              children: <Widget>[
-                SimpleDialogOption(
-                  child: Text("Select an image from your gallery"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.GALLERY);
-                  },
-                ),
-                SimpleDialogOption(
-                  child: Text("Take a new photo with camera"),
-                  onPressed: () {
-                    Navigator.pop(context, Answers.PHOTO);
-                  },
-                ),
-              ],
-            ))) {
-      case Answers.GALLERY:
-        {
-          // showSavingDialog(context);
-          File newImage = await ImagePicker.pickImage(
-            source: ImageSource.gallery,
-            // maxHeight: 50.0,
-            // maxWidth: 50.0,
-          );
+    // showSavingDialog(context);
+    File newImage = await ImagePicker.pickImage(
+      source: ImageSource.gallery,
+      // maxHeight: 50.0,
+      // maxWidth: 50.0,
+    );
 
-          if (newImage != null) {
-            widget.stepImages[widget.stepNumber].add(await IO.saveStepImage(
-                newImage, widget.stepNumber,
-                recipeName: widget.recipeName));
-          }
-          setState(() {
-            selectedImageFiles.add(newImage);
-            selectedImageFiles = this.selectedImageFiles;
-          });
-          break;
-        }
-      case Answers.PHOTO:
-        {
-          /*
-          File newImage = await ImagePicker.pickImage(
-            source: ImageSource.camera,
-            //maxHeight: 50.0,
-            //maxWidth: 50.0,
-          );
-
-          if (newImage != null) {
-            widget.stepImages[widget.stepNumber].add(newImage.path);
-          }
-          setState(() {
-            selectedImageFiles.add(newImage);
-            selectedImageFiles = this.selectedImageFiles;
-          });
-          */
-        }
-        break;
+    if (newImage != null) {
+      widget.stepImages[widget.stepNumber].add(await IO.saveStepImage(
+          newImage, widget.stepNumber,
+          recipeName: widget.recipeName));
     }
+    setState(() {
+      selectedImageFiles.add(newImage);
+      selectedImageFiles = this.selectedImageFiles;
+    });
   }
 
   // returns a list of the Rows with the TextFields for the ingredients
@@ -281,8 +238,7 @@ class _StepState extends State<Step> {
   /// but the position is not fixed so..
   void removeImage(String recipeName, int stepNumber, int number) {
     String stepImageName = widget.stepImages[stepNumber][number]
-        .substring(widget.stepImages[stepNumber][number].lastIndexOf('/')+1);
-    
+        .substring(widget.stepImages[stepNumber][number].lastIndexOf('/') + 1);
 
     IO.deleteStepImage(recipeName, stepNumber, stepImageName);
 

@@ -48,11 +48,12 @@ class RecipeCardBig extends StatelessWidget {
                   fit: StackFit.expand,
                   children: <Widget>[
                     Hero(
-                      tag: '${recipe.name}',
-                      child:Image.file(
-                      File(recipe.imagePath),
-                      fit: BoxFit.cover,
-                    ),),
+                        tag: '${recipe.name}',
+                        child: recipe.imagePath == 'images/randomFood.jpg'
+                            ? Image.asset('images/randomFood.jpg',
+                                fit: BoxFit.cover)
+                            : Image.file(File(recipe.imagePath),
+                                fit: BoxFit.cover)),
                     Align(
                         alignment: Alignment.bottomCenter,
                         child: Container(
@@ -102,37 +103,49 @@ class RecipeCardBig extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text('prep. time', style: smallHeading),
-                              SizedBox(height: 5),
-                              Text('1h 50min', style: timeStyle),
-                            ],
-                          ),
+                          recipe.preperationTime != null
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text('prep. time', style: smallHeading),
+                                    SizedBox(height: 5),
+                                    Text(
+                                        getTimeHoursMinutes(
+                                            recipe.preperationTime),
+                                        style: timeStyle),
+                                  ],
+                                )
+                              : Container(),
                           VerticalDivider(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text('cook. time', style: smallHeading),
-                              SizedBox(height: 5),
-                              Text('1h 20min', style: timeStyle),
-                            ],
-                          ),
+                          recipe.cookingTime != null
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text('cook. time', style: smallHeading),
+                                    SizedBox(height: 5),
+                                    Text(
+                                        getTimeHoursMinutes(recipe.cookingTime),
+                                        style: timeStyle),
+                                  ],
+                                )
+                              : Container(),
                           VerticalDivider(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text('total time', style: smallHeading),
-                              SizedBox(height: 5),
-                              Text('3h 40min', style: timeStyle),
-                            ],
-                          ),
+                          recipe.totalTime != null
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text('total time', style: smallHeading),
+                                    SizedBox(height: 5),
+                                    Text(getTimeHoursMinutes(recipe.totalTime),
+                                        style: timeStyle),
+                                  ],
+                                )
+                              : Container(),
                         ],
                       ),
                       Spacer(),
                       Text(
-                        '10 ingredients:',
+                        '${getIngredientCount(recipe.ingredients)} ingredients:',
                         style: smallHeading,
                       ),
                       SizedBox(

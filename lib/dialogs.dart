@@ -44,19 +44,16 @@ class RoundDialogState extends State<RoundDialog>
         color: Colors.transparent,
         child: ScaleTransition(
           scale: scaleAnimation,
-          child: Stack(children: <Widget>[
-            Center(
-              child: Container(
+          child: Center(
+            child: Container(
                 decoration: BoxDecoration(
                   color: Color(0xFF790604),
                   shape: BoxShape.circle,
                 ),
                 width: widget.size,
                 height: widget.size,
-              ),
-            ),
-            Center(child: widget.childWidget),
-          ]),
+                child: widget.childWidget),
+          ),
         ),
       ),
     );

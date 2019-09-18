@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -10,7 +10,6 @@ import 'package:share_extend/share_extend.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:ui';
 import 'dart:math';
-import 'dart:convert';
 import 'package:share/share.dart';
 
 import '../recipe.dart';
@@ -130,10 +129,11 @@ class RecipeScreen extends StatelessWidget {
                     clipper: MyClipper(),
                     child: Container(
                         height: 270,
-                        child: Image.file(
-                          File(recipe.imagePath),
-                          fit: BoxFit.cover,
-                        )),
+                        child: recipe.imagePath == 'images/randomFood.jpg'
+                            ? Image.asset('images/randomFood.jpg',
+                                fit: BoxFit.cover)
+                            : Image.file(File(recipe.imagePath),
+                                fit: BoxFit.cover)),
                   ),
                 ),
               ),
@@ -337,32 +337,12 @@ class RecipeScreen extends StatelessWidget {
   }
 
   Future<bool> exportRecipe(Recipe recipe) async {
-    await saveRecipeZipToCache(await PathProvider.pP.getShareDir());
+    String zipFilePath = await IO.saveRecipeZip(
+        await PathProvider.pP.getShareDir(), recipe.name);
 
-    ShareExtend.share(
-        await PathProvider.pP.getShareZipFile(recipe.name), "file");
+    ShareExtend.share(zipFilePath, "file");
 
     return true;
-  }
-
-  Future<void> saveRecipeZipToCache(String exportPath) async {
-    Recipe exportRecipe =
-        await DBProvider.db.getRecipeByName(recipe.name, false);
-    Directory recipeDir =
-        Directory(await PathProvider.pP.getRecipeDir(recipe.name));
-
-    File file = File(await PathProvider.pP.getShareJsonPath(recipe.name));
-    Map<String, dynamic> jsonMap = exportRecipe.toMap();
-    String json = jsonEncode(jsonMap);
-    await file.writeAsString(json);
-
-    var encoder = ZipFileEncoder();
-    encoder.create(await PathProvider.pP.getShareZipFile(recipe.name));
-    encoder.addFile(file);
-    if (recipeDir.existsSync()) {
-      encoder.addDirectory(recipeDir);
-    }
-    encoder.close();
   }
 
   String getRecipeAsString(Recipe recipe) {
@@ -465,7 +445,11 @@ void _showPictureFullView(String image, String tag, BuildContext context) {
           appBar: AppBar(),
           backgroundColor: Colors.black54,
           body: Center(
-            child: Hero(tag: tag, child: Image.file(File(image))),
+            child: Hero(
+                tag: tag,
+                child: image == 'images/randomFood.jpg'
+                    ? Image.asset('images/randomFood.jpg', fit: BoxFit.cover)
+                    : Image.file(File(image), fit: BoxFit.cover)),
           ))));
 }
 
@@ -557,7 +541,7 @@ class _CategoryCircleState extends State<CategoryCircle> {
                 height: 100,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: FileImage(File(widget.imageName)),
+                    image: AssetImage(widget.imageName),
                     fit: BoxFit.cover,
                   ),
                 ),

@@ -17,7 +17,7 @@ class CategoryGridView extends StatelessWidget {
           padding: const EdgeInsets.all(4),
           mainAxisSpacing: 4,
           crossAxisSpacing: 4,
-          children: getCategories(model.rCategories, model)),
+          children: getCategories(model.categories, model)),
     );
   }
 

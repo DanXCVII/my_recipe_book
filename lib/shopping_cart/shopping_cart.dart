@@ -168,42 +168,48 @@ class IngredientsList extends StatelessWidget {
           bottom: BorderSide(width: isLast ? 2 : 0),
         ),
       ),
-      child: ExpansionTile(
-        title: Text(recipeName),
-        children: shoppingCart[recipeName].map((ingredient) {
-          return Dismissible(
-            key: Key('$recipeName${ingredient.name}${ingredient.unit}'),
-            onDismissed: (_) {
-              scKeeper.removeIngredientFromCart(
-                recipeName,
-                Ingredient(
-                    name: ingredient.name,
-                    amount: ingredient.amount,
-                    unit: ingredient.unit),
-              );
-            },
-            background: _getPrimaryBackgroundDismissable(),
-            secondaryBackground: _getSecondaryBackgroundDismissable(),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xffFEF3E1),
-                border: Border(
-                  top: BorderSide(width: 2),
-                  bottom: BorderSide(
-                      width:
-                          ingredient == shoppingCart[recipeName].last ? 0 : 0),
+      child: Theme(
+        data: ThemeData(
+          textTheme: TextTheme(subhead: TextStyle(color: Colors.black)),
+        ),
+        child: ExpansionTile(
+          title: Text(recipeName),
+          children: shoppingCart[recipeName].map((ingredient) {
+            return Dismissible(
+              key: Key('$recipeName${ingredient.name}${ingredient.unit}'),
+              onDismissed: (_) {
+                scKeeper.removeIngredientFromCart(
+                  recipeName,
+                  Ingredient(
+                      name: ingredient.name,
+                      amount: ingredient.amount,
+                      unit: ingredient.unit),
+                );
+              },
+              background: _getPrimaryBackgroundDismissable(),
+              secondaryBackground: _getSecondaryBackgroundDismissable(),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xffFEF3E1),
+                  border: Border(
+                    top: BorderSide(width: 2),
+                    bottom: BorderSide(
+                        width: ingredient == shoppingCart[recipeName].last
+                            ? 0
+                            : 0),
+                  ),
+                ),
+                child: IngredientRow(
+                  showBorder: true,
+                  ingredient: ingredient,
+                  scKeeper: scKeeper,
+                  textColor: Colors.black,
+                  recipeName: recipeName,
                 ),
               ),
-              child: IngredientRow(
-                showBorder: true,
-                ingredient: ingredient,
-                scKeeper: scKeeper,
-                textColor: Colors.black,
-                recipeName: recipeName,
-              ),
-            ),
-          );
-        }).toList(),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

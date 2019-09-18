@@ -19,7 +19,7 @@ class RecipeCategoryOverview extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<RecipeKeeper>(
         builder: (context, child, model) {
-      List<String> categoryNames = model.rCategories;
+      List<String> categoryNames = model.categories;
       if (model.isInitialised) {
         return ListView.builder(
             itemCount: categoryNames.length,
@@ -123,7 +123,6 @@ class RecipeHozizontalList extends StatelessWidget {
           if (index < recipeCount) {
             final String heroTag =
                 '${recipePreviews[index].name}$categoryName--${recipePreviews[index].imagePreviewPath}';
-
             return GestureDetector(
               onTap: () {
                 _pushRecipeRoute(context, index, heroTag);
@@ -144,16 +143,19 @@ class RecipeHozizontalList extends StatelessWidget {
                       //     child:
                       Hero(
                         tag: heroTag,
-                        child: ClipOval(
-                            // borderRadius: BorderRadius.only(
-                            //     topLeft: Radius.circular(35),
-                            //     topRight: Radius.circular(15),
-                            //     bottomLeft: Radius.circular(15),
-                            //     bottomRight: Radius.circular(35)),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(35),
+                                topRight: Radius.circular(15),
+                                bottomLeft: Radius.circular(15),
+                                bottomRight: Radius.circular(35)),
                             child: FadeInImage(
                               // image: AssetImage(recipes[index].imagePath),
-                              image: FileImage(
-                                  File(recipePreviews[index].imagePreviewPath)),
+                              image: recipePreviews[index].imagePreviewPath ==
+                                      'images/randomFood.jpg'
+                                  ? AssetImage('images/randomFood.jpg')
+                                  : FileImage(File(
+                                      recipePreviews[index].imagePreviewPath)),
                               fadeInDuration: const Duration(milliseconds: 250),
                               placeholder: MemoryImage(kTransparentImage),
                               height: 90,
@@ -194,13 +196,12 @@ class RecipeHozizontalList extends StatelessWidget {
                   width: 90,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey, width: 2),
-                    shape: BoxShape.circle
-                    // borderRadius: BorderRadius.only(
-                    //   topLeft: Radius.circular(35),
-                    //   topRight: Radius.circular(15),
-                    //   bottomLeft: Radius.circular(15),
-                    //   bottomRight: Radius.circular(35),
-                    // ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(35),
+                      topRight: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                      bottomRight: Radius.circular(35),
+                    ),
                   ),
                   child: Center(
                     child: Image.asset(
@@ -232,7 +233,7 @@ class RecipeHozizontalList extends StatelessWidget {
                 getRecipePrimaryColor(recipePreviews[index].vegetable),
             heroImageTag: heroImageTag,
             heroTitle:
-                '${recipePreviews[index].name}-${recipePreviews[index].name}',
+                '${recipePreviews[index].name}-${recipePreviews[index].imagePreviewPath}',
           ),
         ),
       );

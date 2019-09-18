@@ -24,3 +24,11 @@ String getTimeHoursMinutes(double min) {
   }
   return "$min min";
 }
+
+int getIngredientCount(List<List<Ingredient>> ingredients) {
+  int ingredientCount = 0;
+  for (final List<Ingredient> i in ingredients) {
+    if (i != null) ingredientCount += i.length;
+  }
+  return ingredientCount;
+}

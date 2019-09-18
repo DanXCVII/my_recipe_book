@@ -1,4 +1,5 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:my_recipe_book/models/random_recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
@@ -36,6 +37,7 @@ void main() {
         MainPageNavigator(),
         RecipeKeeper(),
         ShoppingCartKeeper(),
+        RandomRecipeKeeper(),
       ),
     ),
   );
@@ -45,9 +47,15 @@ class MyApp extends StatelessWidget {
   final MainPageNavigator bottomNavIndex;
   final RecipeKeeper recipeKeeper;
   final ShoppingCartKeeper scKeeper;
+  final RandomRecipeKeeper rrKeeper;
   final appTitle = 'Drawer Demo';
 
-  MyApp(this.bottomNavIndex, this.recipeKeeper, this.scKeeper);
+  MyApp(
+    this.bottomNavIndex,
+    this.recipeKeeper,
+    this.scKeeper,
+    this.rrKeeper,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -57,22 +65,26 @@ class MyApp extends StatelessWidget {
     ]);
     return ScopedModel<ShoppingCartKeeper>(
       model: scKeeper,
-      child: ScopedModel<MainPageNavigator>(
-        model: bottomNavIndex,
-        child: ScopedModel<RecipeKeeper>(
-          model: recipeKeeper,
-          child: MaterialApp(
-            theme: CustomTheme.of(context),
-            initialRoute: '/',
-            routes: {
-              '/': (context) => SplashScreen(
-                    recipeKeeper: recipeKeeper,
-                    mainPageNavigator: bottomNavIndex,
-                    sCKeeper: scKeeper,
-                  ),
-              '/add-recipe': (context) => AddRecipeForm(),
-              '/manage-categories': (context) => CategoryManager(),
-            },
+      child: ScopedModel<RandomRecipeKeeper>(
+        model: rrKeeper,
+        child: ScopedModel<MainPageNavigator>(
+          model: bottomNavIndex,
+          child: ScopedModel<RecipeKeeper>(
+            model: recipeKeeper,
+            child: MaterialApp(
+              theme: CustomTheme.of(context),
+              initialRoute: '/',
+              routes: {
+                '/': (context) => SplashScreen(
+                      recipeKeeper: recipeKeeper,
+                      mainPageNavigator: bottomNavIndex,
+                      sCKeeper: scKeeper,
+                      rrKeeper: rrKeeper,
+                    ),
+                '/add-recipe': (context) => AddRecipeForm(),
+                '/manage-categories': (context) => CategoryManager(),
+              },
+            ),
           ),
         ),
       ),
@@ -168,7 +180,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       inactiveColor: Colors.white),
                   BottomNavyBarItem(
                     icon: Icon(GroovinMaterialIcons.dice_multiple),
-                    title: Text('roll the dice'),
+                    title: Text('explore'),
                     activeColor: Colors.green,
                     inactiveColor: Colors.white,
                   ),
@@ -308,7 +320,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         });
       }
     });
-    
   }
 
   Widget _getFloatingB(String page) {

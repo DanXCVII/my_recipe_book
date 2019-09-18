@@ -3,20 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
+import 'package:my_recipe_book/settings/export_recipes_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../intro_screen.dart';
 import '../theming.dart';
 import './import_recipe.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({Key key}) : super(key: key);
-
-  @override
-  _SettingsState createState() => _SettingsState();
-}
-
-class _SettingsState extends State<Settings> {
+class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,9 +22,17 @@ class _SettingsState extends State<Settings> {
                 _importSingleRecipe(model).then((_) {});
               },
               child: ListTile(
-                title: Text('import Recipe'),
+                title: Text('import recipe'),
               ),
             ),
+          ),
+          Divider(),
+          ListTile(
+            title: Text('export recipe/s'),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ExportRecipes()));
+            },
           ),
           Divider(),
           ListTile(
@@ -42,9 +44,7 @@ class _SettingsState extends State<Settings> {
                 children: <Widget>[
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _changeTheme(context, MyThemeKeys.AUTOMATIC);
-                      });
+                      _changeTheme(context, MyThemeKeys.AUTOMATIC);
                     },
                     child: Stack(
                       children: <Widget>[
@@ -84,9 +84,7 @@ class _SettingsState extends State<Settings> {
                   Container(width: 10),
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _changeTheme(context, MyThemeKeys.LIGHT);
-                      });
+                      _changeTheme(context, MyThemeKeys.LIGHT);
                     },
                     child: Container(
                       width: 25,
@@ -103,9 +101,7 @@ class _SettingsState extends State<Settings> {
                   Container(width: 10),
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _changeTheme(context, MyThemeKeys.DARK);
-                      });
+                      _changeTheme(context, MyThemeKeys.DARK);
                     },
                     child: Container(
                       width: 25,
@@ -122,10 +118,7 @@ class _SettingsState extends State<Settings> {
                   Container(width: 10),
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        // TODO: Maybe not nessesary to setState but probably it is. Check
-                        _changeTheme(context, MyThemeKeys.OLEDBLACK);
-                      });
+                      _changeTheme(context, MyThemeKeys.OLEDBLACK);
                     },
                     child: Container(
                       width: 25,
@@ -160,7 +153,7 @@ class _SettingsState extends State<Settings> {
           ListTile(
             title: Text('view intro'),
             onTap: () {
-              _pushViewIntroScreen();
+              _pushViewIntroScreen(context);
             },
           ),
           Divider(),
@@ -173,9 +166,9 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  void _pushViewIntroScreen() {
+  void _pushViewIntroScreen(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => IntroScreen(onDonePop: true)));
   }
 
