@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
-import 'package:my_recipe_book/dialogs.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/recipe.dart';
 import 'package:share_extend/share_extend.dart';

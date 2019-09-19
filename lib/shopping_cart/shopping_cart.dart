@@ -102,13 +102,17 @@ class ShoppingCartScreen extends StatelessWidget {
                           ),
                         ))),
                     Container(
-                        height: (MediaQuery.of(context).size.height - 415) / 2,
-                        child: Align(
-                            alignment: Alignment(1, 1),
-                            child: Image.asset(
-                              'images/cookingPen.png',
-                              height: 75,
-                            )))
+                      height: (MediaQuery.of(context).size.height - 415) / 2,
+                      child: Align(
+                        alignment: Alignment(1, 1),
+                        child: Image.asset(
+                          Theme.of(context).brightness != Brightness.dark
+                              ? 'images/cookingPen.png'
+                              : 'images/darkCookingPen.png',
+                          height: 75,
+                        ),
+                      ),
+                    )
                   ],
                 );
               }

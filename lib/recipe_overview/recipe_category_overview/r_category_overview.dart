@@ -53,7 +53,6 @@ class RecipeRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (recipePreviews.isEmpty) return Container();
-    Random r = new Random();
     return Column(
       children: <Widget>[
         Padding(

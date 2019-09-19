@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -41,12 +40,12 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBar( // TODO: Make AppBar somehow transparent
         backgroundColor: Colors.black,
         elevation: 0,
       ),
       body: Container(
-        decoration: BoxDecoration(color: Colors.black), // TODO: Maybe change
+        decoration: BoxDecoration(color: Colors.black), 
         constraints: BoxConstraints.expand(
           height: MediaQuery.of(context).size.height,
         ),

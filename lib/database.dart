@@ -726,7 +726,6 @@ class DBProvider {
     return shoppingCartIngredients;
   }
 
-// TODO: Validate if working
   Future<void> changeCategoryName(String oldCatName, String newCatName) async {
     var db = await database;
 

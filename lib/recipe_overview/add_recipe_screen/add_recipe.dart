@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -68,7 +69,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // TODO: Delete old/not saved data when opening addRecipe
+  // TODO: Delete (old/not saved) data when opening addRecipe
   @override
   void initState() {
     super.initState();
@@ -232,7 +233,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   decoration: InputDecoration(
                     filled: true,
                     labelText: "name",
-                    icon: Icon(Icons.android),
+                    icon: Icon(GroovinMaterialIcons.notebook),
                   ),
                 ),
               ),
@@ -434,7 +435,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
           _showRequiredFieldsDialog(context);
           break;
         case Validator.NAME_TAKEN:
-          //TODO: Implement Dialog for when recipeName is taken
+          _showRecipeNameTakenDialog(context);
           break;
         case Validator.INGREDIENTS_NOT_VALID:
           _showIngredientsIncompleteDialog(context);
@@ -712,48 +713,67 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     return fullImagePathRecipe;
   }
 
+  void _showRecipeNameTakenDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => RoundEdgeDialog(
+        title: Text(
+          'Recipename taken',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+        ),
+        bottomSection: Text(
+          'change the recipename to something more detailed or maybe '
+          'you just forgot, that you already saved this recipe :)',
+        ),
+      ),
+    );
+  }
+
   void _showIngredientsIncompleteDialog(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (_) => RoundEdgeDialog(
-              title: Text(
-                'Check your ingredients input',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
-              ),
-              bottomSection: Text(
-                'it seems to be that you have only partially filled out the '
-                'data for the ingredients. Please correct that :)',
-              ),
-            ));
+      context: context,
+      builder: (_) => RoundEdgeDialog(
+        title: Text(
+          'Check your ingredients input',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+        ),
+        bottomSection: Text(
+          'it seems to be that you have only partially filled out the '
+          'data for the ingredients. Please correct that :)',
+        ),
+      ),
+    );
   }
 
   void _showIngredientsGlossaryIncomplete(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (_) => RoundEdgeDialog(
-              title: Text(
-                'Check your ingredients section fields',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
-              ),
-              bottomSection: Text(
-                  'if you have multiple sections, you need to provide a title '
-                  'for each section.'),
-            ));
+      context: context,
+      builder: (_) => RoundEdgeDialog(
+        title: Text(
+          'Check your ingredients section fields',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+        ),
+        bottomSection:
+            Text('if you have multiple sections, you need to provide a title '
+                'for each section.'),
+      ),
+    );
   }
 
   void _showRequiredFieldsDialog(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (_) => RoundEdgeDialog(
-              title: Text(
-                'Check filled in information',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
-              ),
-              bottomSection: Text(
-                'it seems, that you haven’t filled in the required fields. '
-                'Please check for any red marked text fields.',
-              ),
-            ));
+      context: context,
+      builder: (_) => RoundEdgeDialog(
+        title: Text(
+          'Check filled in information',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+        ),
+        bottomSection: Text(
+          'it seems, that you haven’t filled in the required fields. '
+          'Please check for any red marked text fields.',
+        ),
+      ),
+    );
   }
 
   List<String> removeEmptyStrings(List<TextEditingController> list) {

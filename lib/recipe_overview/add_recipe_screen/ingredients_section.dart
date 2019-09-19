@@ -152,7 +152,7 @@ class _IngredientSectionState extends State<IngredientSection> {
           child: TextField(
             controller: widget.ingredientGlossary[widget.sectionNumber],
             decoration: InputDecoration(
-              icon: Icon(Icons.fastfood),
+              icon: Icon(Icons.receipt),
               helperText: "not required (e.g. ingredients of sauce)",
               labelText: "section name",
               filled: true,

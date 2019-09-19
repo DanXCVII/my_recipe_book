@@ -234,8 +234,6 @@ class _StepState extends State<Step> {
     return output;
   }
 
-  /// TODO: Doesn't really work, because the naming of the pictures is related to the position of them
-  /// but the position is not fixed so..
   void removeImage(String recipeName, int stepNumber, int number) {
     String stepImageName = widget.stepImages[stepNumber][number]
         .substring(widget.stepImages[stepNumber][number].lastIndexOf('/') + 1);

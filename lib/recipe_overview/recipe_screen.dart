@@ -353,22 +353,26 @@ class RecipeScreen extends StatelessWidget {
         'total Time: ${recipe.totalTime} min\n'
         '====================\n'
         'recipe for ${recipe.servings} servings:\n';
-    for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
-      recipeText += 'ingredients for ${recipe.ingredientsGlossary[i]}:\n';
-      for (int j = 0; j < recipe.ingredients[i].length; j++) {
-        recipeText += '${recipe.ingredients[i][j].name} '
-            '${recipe.ingredients[i][j].amount} '
-            '${recipe.ingredients[i][j].unit}\n';
+    if (recipe.ingredientsGlossary.isNotEmpty) {
+      for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
+        recipeText += 'ingredients for ${recipe.ingredientsGlossary[i]}:\n';
+        for (int j = 0; j < recipe.ingredients[i].length; j++) {
+          recipeText += '${recipe.ingredients[i][j].name} '
+              '${recipe.ingredients[i][j].amount} '
+              '${recipe.ingredients[i][j].unit}\n';
+        }
+        recipeText += '====================\n';
       }
-      recipeText += '====================\n';
     }
     int i = 1;
     for (final String step in recipe.steps) {
       recipeText += '$i. $step\n';
       i++;
     }
-    recipeText += '====================\n';
-    recipeText += 'notes: ' + recipe.notes;
+    if (recipe.notes != null) {
+      recipeText += '====================\n';
+      recipeText += 'notes: ' + recipe.notes;
+    }
     // TODO: Continue
     return recipeText;
   }

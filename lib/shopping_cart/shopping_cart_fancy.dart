@@ -58,29 +58,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
       return [
         Container(
           height: MediaQuery.of(context).size.height,
-          child: Stack(
-            children: <Widget>[
-              Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height - 400,
-                  child: Center(
-                      child: Text(
-                    "Nothing added yet",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontFamily: 'RibeyeMarrow',
-                    ),
-                  ))),
-              Container(
-                  height: (MediaQuery.of(context).size.height - 415) / 2,
-                  child: Align(
-                      alignment: Alignment(1, 1),
-                      child: Image.asset(
-                        'images/cookingPen.png',
-                        height: 75,
-                      )))
-            ],
-          ),
+          child: displayNothingAdded(context),
         )
       ];
     }
@@ -89,7 +67,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
           Theme.of(context).brightness == Brightness.dark
               ? Color(0xff40392F)
               : Color(0xffFEF3E1);
-      if (recipeName.compareTo('summery') == 0) {
+      if (recipeName.compareTo('summary') == 0) {
         return getRecipeTile(
           recipeName,
           scKeeper,
@@ -111,6 +89,33 @@ class FancyShoppingCartScreen extends StatelessWidget {
         );
       }
     }).toList();
+  }
+
+  Widget displayNothingAdded(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+            height: 200,
+            child: Center(
+                child: Text(
+              "Nothing added yet",
+              style: TextStyle(
+                fontSize: 26,
+                fontFamily: 'RibeyeMarrow',
+              ),
+            ))),
+        Container(
+            height: 185 / 2,
+            child: Align(
+                alignment: Alignment(1, 1),
+                child: Image.asset(
+                  Theme.of(context).brightness != Brightness.dark
+                      ? 'images/cookingPen.png'
+                      : 'images/darkCookingPen.png',
+                  height: 75,
+                )))
+      ],
+    );
   }
 
   Widget getRecipeTile(

@@ -3,8 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import '../../database.dart';
-
 class Consts {
   Consts._();
 
@@ -29,18 +27,6 @@ class _CategorySectionState extends State<CategorySection> {
   initState() {
     categoryNameController = new TextEditingController();
     super.initState();
-  }
-
-  List<Widget> _getCategoryChips(List<String> categoryNames) {
-    List<Widget> output = new List<Widget>();
-
-    for (int i = 0; i < categoryNames.length; i++) {
-      output.add(MyCategoryFilterChip(
-        chipName: "${categoryNames[i]}",
-        recipeCategories: widget.recipeCategories,
-      ));
-    }
-    return output;
   }
 
   @override
