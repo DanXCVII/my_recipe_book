@@ -114,10 +114,6 @@ class _CardStackState extends State<CardStack> {
   }
 
   void _onSlideOutComplete() {
-    RecipeDecision currentRecipeD = widget.recipeEngine.currentRecipeD;
-
-    currentRecipeD.makeDecision();
-
     widget.recipeEngine.cycleRecipeD();
   }
 

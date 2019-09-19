@@ -5,8 +5,10 @@ import 'package:my_recipe_book/models/random_recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
+import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/theming.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 
@@ -67,6 +69,10 @@ class SplashScreenState extends State<SplashScreen> {
     await widget.recipeKeeper.initData();
     await widget.rrKeeper.initRecipes();
 
+    // delete cache
+    await getTemporaryDirectory()
+      ..delete(recursive: true);
+
     if (prefs.containsKey('showIntro')) {
       onDoneLoading();
     } else {
@@ -80,6 +86,8 @@ class SplashScreenState extends State<SplashScreen> {
               )));
     }
   }
+
+  Future<void> clearCache() async {}
 
   void _initShoppingListScreen(SharedPreferences prefs) {
     if (prefs.containsKey('showFancyShoppingList')) {

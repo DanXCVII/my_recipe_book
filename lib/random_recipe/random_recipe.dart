@@ -4,6 +4,7 @@ import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/random_recipe/recipe_engine.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import '../database.dart';
 import '../recipe.dart';
 import 'draggable_card.dart';
 
@@ -208,7 +209,25 @@ class RandomRecipe extends StatefulWidget {
 }
 
 class _RandomRecipeState extends State<RandomRecipe> {
+  Future<List<RecipeDecision>> initialRecipeDecisions;
   String _selectedCategory = 'all categories';
+
+  Future<List<RecipeDecision>> changeCategory(String categoryName) async {
+    List<RecipeDecision> _currentlyVisibleRecipes = [];
+    for (int i = 0; i < 5; i++) {
+      Recipe randomRecipe = await DBProvider.db.getNewRandomRecipe(
+        i == 0 ? '' : _currentlyVisibleRecipes.last.recipe.name,
+        categoryName: categoryName == 'all categories' ? null : categoryName,
+      );
+
+      if (randomRecipe != null) {
+        _currentlyVisibleRecipes.add(RecipeDecision(recipe: randomRecipe));
+      } else {
+        break;
+      }
+    }
+    return _currentlyVisibleRecipes;
+  }
 
   ListView _getCategorySelector(List<String> categoryNames) {
     return ListView.builder(
@@ -221,17 +240,17 @@ class _RandomRecipeState extends State<RandomRecipe> {
           String currentCategory = (index / 2).floor() == 0
               ? 'all categories'
               : categoryNames[(index / 2).floor() - 1];
-          return ScopedModelDescendant<RandomRecipeKeeper>(
-            builder: (context, child, rrKeeper) => FlatButton(
-                color:
-                    currentCategory == _selectedCategory ? Colors.brown : null,
-                textColor:
-                    currentCategory == _selectedCategory ? Colors.amber : null,
-                onPressed: () {
-                  _selectedCategory = currentCategory;
-                  rrKeeper.changeCategory(currentCategory);
-                },
-                child: Text(currentCategory)),
+          return FlatButton(
+            color: currentCategory == _selectedCategory ? Colors.brown : null,
+            textColor:
+                currentCategory == _selectedCategory ? Colors.amber : null,
+            onPressed: () {
+              _selectedCategory = currentCategory;
+              setState(() {
+                initialRecipeDecisions = changeCategory(currentCategory);
+              });
+            },
+            child: Text(currentCategory),
           );
         } else {
           return VerticalDivider();
@@ -260,14 +279,23 @@ class _RandomRecipeState extends State<RandomRecipe> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height - 200,
           child: ScopedModelDescendant<RecipeKeeper>(
-            builder: (context, child, rKeeper) =>
-                ScopedModelDescendant<RandomRecipeKeeper>(
-              builder: (context, child, rrKeeper) => CardStack(
-                    recipeEngine: RecipeEngine(
-                  recipeDecisions: rrKeeper.currentlyVisibleRecipes,
-                )),
-            ),
-          ),
+              builder: (context, child, rKeeper) =>
+                  FutureBuilder<List<RecipeDecision>>(
+                    future: initialRecipeDecisions,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return CardStack(
+                            recipeEngine:
+                                RecipeEngine(recipeDecisions: snapshot.data)
+                            // recipeEngine: recipeEngine,
+                            );
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    },
+                  )),
         ),
       ],
     );

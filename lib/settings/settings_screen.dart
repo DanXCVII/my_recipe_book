@@ -198,7 +198,7 @@ class Settings extends StatelessWidget {
     String _path = await FilePicker.getFilePath(
         type: FileType.CUSTOM, fileExtension: 'zip');
     if (_path == null) return;
-    importRecipe(rKeeper, _path);
+    importSingleMultipleRecipes(rKeeper, _path);
   }
 }
 

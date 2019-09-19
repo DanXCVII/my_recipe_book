@@ -216,7 +216,9 @@ class RecipeCardBig extends StatelessWidget {
       children: <Widget>[],
     );
 
-    for (int i = 0; i < flatIngredients.length; i += 2) {
+    // TODO: Doesn't show all ingredients when 3 or less
+    int displayAmount = flatIngredients.length > 6 ? 6 : flatIngredients.length;
+    for (int i = 0; i < displayAmount / 2.floor(); i++) {
       leftIngredientColumn.children
           .add(Text(flatIngredients[i].name, style: ingredientsStyle));
       leftIngredAmountColumn.children.add(Text(
@@ -224,7 +226,7 @@ class RecipeCardBig extends StatelessWidget {
         style: ingredientsStyle,
       ));
     }
-    for (int i = 1; i < flatIngredients.length; i += 2) {
+    for (int i = displayAmount.floor() + 1; i < displayAmount; i++) {
       rightIngredientColumn.children
           .add(Text(flatIngredients[i].name, style: ingredientsStyle));
       rightIngredAmountColumn.children.add(Text(
@@ -232,7 +234,7 @@ class RecipeCardBig extends StatelessWidget {
         style: ingredientsStyle,
       ));
     }
-    if (flatIngredients.length > 1)
+    if (flatIngredients.length > 3)
       return Row(
         children: <Widget>[
           leftIngredientColumn,

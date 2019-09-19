@@ -263,7 +263,6 @@ class PathProvider {
   String getRecipeStepDir(String recipeName) {
     String cRecipeName = _getUnderscoreName(recipeName);
 
-    // return '.$cRecipeName/stepImages/';
     return '$cRecipeName/stepImages/';
   }
 
@@ -271,7 +270,6 @@ class PathProvider {
     String cRecipeName = _getUnderscoreName(recipeName);
 
     String imageLocalPath = await localPath;
-    // return '$imageLocalPath/.$cRecipeName';
     return '$imageLocalPath/$cRecipeName';
   }
 
@@ -280,7 +278,6 @@ class PathProvider {
     String cRecipeName = _getUnderscoreName(recipeName);
 
     String imageLocalPath = await localPath;
-    // await Directory('$imageLocalPath/.$cRecipeName/stepImages/$stepNumber/')
     await Directory('$imageLocalPath/$cRecipeName/stepImages/$stepNumber/')
         .create(recursive: true);
     return '$imageLocalPath/$cRecipeName/stepImages/$stepNumber/';
@@ -289,14 +286,12 @@ class PathProvider {
   String getRecipeStepNumberDir(String recipeName, int stepNumber) {
     String cRecipeName = _getUnderscoreName(recipeName);
 
-    // return '/.$cRecipeName/stepImages/$stepNumber/';
     return '/$cRecipeName/stepImages/$stepNumber/';
   }
 
   Future<String> getTmpRecipeDir() async {
     String imageLocalPath = await localPath;
     await Directory(
-        // '$imageLocalPath/.tmp/')
         '$imageLocalPath/tmp/').create(recursive: true);
     return '$imageLocalPath/tmp/';
   }
@@ -307,17 +302,14 @@ class PathProvider {
 
     String imageLocalPath = await localPath;
     await Directory(
-            // '$imageLocalPath/.$cRecipeName/preview/stepImages/p-$stepNumber')
             '$imageLocalPath/$cRecipeName/preview/stepImages/p-$stepNumber')
         .create(recursive: true);
-    // return '$imageLocalPath/.$cRecipeName/preview/stepImages/p-$stepNumber/';
     return '$imageLocalPath/$cRecipeName/preview/stepImages/p-$stepNumber/';
   }
 
   String getRecipeStepPreviewNumberDir(String recipeName, int stepNumber) {
     String cRecipeName = _getUnderscoreName(recipeName);
 
-    // return '/.$cRecipeName/preview/stepImages/p-$stepNumber/';
     return '/$cRecipeName/preview/stepImages/p-$stepNumber/';
   }
 
@@ -345,16 +337,13 @@ class PathProvider {
     String cRecipeName = _getUnderscoreName(recipeName);
 
     String imageLocalPath = await localPath;
-    // await Directory('$imageLocalPath/.$cRecipeName').create(recursive: true);
     await Directory('$imageLocalPath/$cRecipeName').create(recursive: true);
-    // return '$imageLocalPath/.$cRecipeName/$cRecipeName' + ending;
     return '$imageLocalPath/$cRecipeName/$cRecipeName' + ending;
   }
 
   String getRecipePath(String recipeName, String ending) {
     String cRecipeName = _getUnderscoreName(recipeName);
 
-    // return '/.$recipeName/$cRecipeName' + ending;
     return '/$cRecipeName/$cRecipeName' + ending;
   }
 
@@ -365,17 +354,14 @@ class PathProvider {
     String cRecipeName = _getUnderscoreName(recipeName);
 
     String imageLocalPath = await localPath;
-    // await Directory('$imageLocalPath/.$cRecipeName/preview')
     await Directory('$imageLocalPath/$cRecipeName/preview')
         .create(recursive: true);
-    // return '$imageLocalPath/.$cRecipeName/preview/p-$recipeName' + ending;
     return '$imageLocalPath/$cRecipeName/preview/p-$cRecipeName' + ending;
   }
 
   String getRecipePreviewPath(String recipeName, String ending) {
     String cRecipeName = _getUnderscoreName(recipeName);
 
-    // return '/.$cRecipeName/preview/p-recipe-$cRecipeName' + ending;
     return '/$cRecipeName/preview/p-recipe-$cRecipeName' + ending;
   }
 

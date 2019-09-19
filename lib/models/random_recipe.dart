@@ -9,7 +9,7 @@ class RandomRecipeKeeper extends Model {
 
   get currentlyVisibleRecipes => _currentlyVisibleRecipes;
 
-  Future<void> changeCategory(String categoryName) async {
+  Future<List<RecipeDecision>> changeCategory(String categoryName) async {
     _currentlyVisibleRecipes = [];
     for (int i = 0; i < 5; i++) {
       Recipe randomRecipe = await DBProvider.db.getNewRandomRecipe(
@@ -25,9 +25,10 @@ class RandomRecipeKeeper extends Model {
     }
 
     notifyListeners();
+    return _currentlyVisibleRecipes;
   }
 
   Future<void> initRecipes() async {
-    changeCategory('all categories');
+    await changeCategory('all categories');
   }
 }

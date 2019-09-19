@@ -197,3 +197,20 @@ class FancyShoppingCartScreen extends StatelessWidget {
     );
   }
 }
+
+class RoundEdgeShoppingCartClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    return Path()
+      ..lineTo(0.0, 240)
+      ..quadraticBezierTo(10, 200, 50, 200)
+      ..lineTo(size.width - 50, 200)
+      ..quadraticBezierTo(size.width - 10, 200, size.width, 240)
+      ..lineTo(size.width, 0)
+      ..lineTo(0, 0)
+      ..close();
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}

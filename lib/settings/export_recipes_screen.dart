@@ -117,6 +117,10 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   ShareExtend.share(snapshot.data, "file");
+                  myCallback(() {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  });
                 }
                 return Icon(Icons.receipt);
               },
@@ -130,6 +134,12 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
         ),
       ),
     );
+  }
+
+  void myCallback(Function callback) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      callback();
+    });
   }
 
   Future<String> exportRecipes() async {

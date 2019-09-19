@@ -28,32 +28,28 @@ class RecipeEngine extends ChangeNotifier {
       _recipeDecisions.isEmpty ? null : _recipeDecisions[_nextRecipeIndex];
 
   void cycleRecipeD() {
-    if (currentRecipeD.decisionMade) {
-      currentRecipeD.reset();
+    currentRecipeD.reset();
 
-      print(_secondLastRecipeIndex);
-      print(_lastRecipeIndex);
-      print(_currentRecipeIndex);
-      print(_nextRecipeIndex);
-
-      _secondLastRecipeIndex = _lastRecipeIndex;
-      _lastRecipeIndex = _currentRecipeIndex;
-      _currentRecipeIndex = _nextRecipeIndex;
-      _nextRecipeIndex = _nextRecipeIndex < _recipeDecisions.length - 1
-          ? _nextRecipeIndex + 1
-          : 0;
+    _secondLastRecipeIndex = _lastRecipeIndex;
+    _lastRecipeIndex = _currentRecipeIndex;
+    _currentRecipeIndex = _nextRecipeIndex;
+    _nextRecipeIndex = _nextRecipeIndex < _recipeDecisions.length - 1
+        ? _nextRecipeIndex + 1
+        : 0;
+    print(_currentRecipeIndex);
+    print(
+        'Current match $_currentRecipeIndex: ${_recipeDecisions[_currentRecipeIndex].recipe.name}, Next match $_nextRecipeIndex: ${_recipeDecisions[_nextRecipeIndex].recipe.name}');
+    notifyListeners();
+    DBProvider.db
+        .getNewRandomRecipe(
+      _recipeDecisions[_secondLastRecipeIndex].recipe.name,
+      categoryName: _categoryName == 'all categories' ? null : _categoryName,
+    )
+        .then((recipe) {
       print(
-          'Current match: ${_recipeDecisions[_currentRecipeIndex].recipe.name}, Next match: ${_recipeDecisions[_nextRecipeIndex].recipe.name}');
-      notifyListeners();
-      DBProvider.db
-          .getNewRandomRecipe(
-        _recipeDecisions[_secondLastRecipeIndex].recipe.name,
-        categoryName: _categoryName == 'all categories' ? null : _categoryName,
-      )
-          .then((recipe) {
-        _recipeDecisions[_lastRecipeIndex] = RecipeDecision(recipe: recipe);
-      });
-    }
+          'saving new for index $_lastRecipeIndex with name ${_recipeDecisions[_lastRecipeIndex]}');
+      _recipeDecisions[_lastRecipeIndex] = RecipeDecision(recipe: recipe);
+    });
   }
 }
 
