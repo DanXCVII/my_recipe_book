@@ -22,7 +22,7 @@ class Settings extends StatelessWidget {
                 _importSingleRecipe(model).then((_) {});
               },
               child: ListTile(
-                title: Text('import recipe'),
+                title: Text('import recipe/s'),
               ),
             ),
           ),

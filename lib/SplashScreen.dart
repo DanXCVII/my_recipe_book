@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_recipe_book/intro_screen.dart';
-import 'package:my_recipe_book/models/random_recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
@@ -10,19 +9,18 @@ import 'package:my_recipe_book/theming.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'database.dart';
 import 'main.dart';
 
 class SplashScreen extends StatefulWidget {
   final RecipeKeeper recipeKeeper;
   final MainPageNavigator mainPageNavigator;
   final ShoppingCartKeeper sCKeeper;
-  final RandomRecipeKeeper rrKeeper;
 
   SplashScreen({
     @required this.recipeKeeper,
     @required this.mainPageNavigator,
     @required this.sCKeeper,
-    @required this.rrKeeper,
   });
 
   @override
@@ -67,7 +65,6 @@ class SplashScreenState extends State<SplashScreen> {
     _initTheme(prefs);
     await widget.sCKeeper.initCart();
     await widget.recipeKeeper.initData();
-    await widget.rrKeeper.initRecipes();
 
     // delete cache
     await getTemporaryDirectory()
@@ -80,8 +77,6 @@ class SplashScreenState extends State<SplashScreen> {
       SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => IntroScreen(
-                recipeCatOverview: recipeCatOverview,
-                showFancyShoppingList: showFancyShoppingList,
                 onDonePop: false,
               )));
     }

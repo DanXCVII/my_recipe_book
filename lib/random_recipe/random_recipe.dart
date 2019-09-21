@@ -1,232 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/models/random_recipe.dart';
+import './tinder_card.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
-import 'package:my_recipe_book/random_recipe/recipe_engine.dart';
+import 'package:my_recipe_book/random_recipe/recipe_card_big.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../database.dart';
 import '../recipe.dart';
-import 'draggable_card.dart';
 
-final RecipeEngine recipeEngine = RecipeEngine(
-    recipeDecisions: [
-  Recipe(
-    name: '1. Steack mit Bratsauce',
-    imagePath: 'images/breakfast.jpg',
-    totalTime: 20,
-    preperationTime: 5,
-    cookingTime: 10,
-    imagePreviewPath: 'images/breakfast.jpg',
-    servings: 3,
-    ingredientsGlossary: ['Steacksauce', 'Steack'],
-    ingredients: [
-      [
-        Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
-        Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
-        Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
-        Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
-      ],
-      [
-        Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
-        Ingredient(name: 'Steak', amount: 700, unit: 'g')
-      ],
-    ],
-    effort: 4,
-    vegetable: Vegetable.NON_VEGETARIAN,
-    steps: [
-      'step1',
-      'step2 kek',
-    ],
-    stepImages: [
-      [], [],
-      // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
-      // [
-      //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
-      // ],
-    ],
-    notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
-    isFavorite: false,
-    categories: ['Hauptspeisen'],
-  ),
-  Recipe(
-    name: '2. LAAAST',
-    imagePath: 'images/meat.jpg',
-    imagePreviewPath: 'images/meat.jpg',
-    servings: 3,
-    totalTime: 20,
-    preperationTime: 5,
-    cookingTime: 10,
-    ingredientsGlossary: ['Steacksauce', 'Steack'],
-    ingredients: [
-      [
-        Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
-        Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
-        Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
-        Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
-      ],
-      [
-        Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
-        Ingredient(name: 'Steak', amount: 700, unit: 'g')
-      ],
-    ],
-    effort: 4,
-    vegetable: Vegetable.NON_VEGETARIAN,
-    steps: [
-      'step1',
-      'step2 kek',
-    ],
-    stepImages: [
-      [], [],
-      // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
-      // [
-      //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
-      // ],
-    ],
-    notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
-    isFavorite: false,
-    categories: ['Hauptspeisen'],
-  ),
-  Recipe(
-    name: '3. Spaghetti',
-    imagePath: 'images/meat.jpg',
-    imagePreviewPath: 'images/meat.jpg',
-    servings: 3,
-    totalTime: 20,
-    preperationTime: 5,
-    cookingTime: 10,
-    ingredientsGlossary: ['Steacksauce', 'Steack'],
-    ingredients: [
-      [
-        Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
-        Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
-        Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
-        Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
-      ],
-      [
-        Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
-        Ingredient(name: 'Steak', amount: 700, unit: 'g')
-      ],
-    ],
-    effort: 4,
-    vegetable: Vegetable.NON_VEGETARIAN,
-    steps: [
-      'step1',
-      'step2 kek',
-    ],
-    stepImages: [
-      [], [],
-      // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
-      // [
-      //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
-      // ],
-    ],
-    notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
-    isFavorite: false,
-    categories: ['Hauptspeisen'],
-  ),
-  Recipe(
-    name: '4. Spaghetti',
-    imagePath: 'images/meat.jpg',
-    imagePreviewPath: 'images/meat.jpg',
-    servings: 3,
-    totalTime: 20,
-    preperationTime: 5,
-    cookingTime: 10,
-    ingredientsGlossary: ['Steacksauce', 'Steack'],
-    ingredients: [
-      [
-        Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
-        Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
-        Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
-        Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
-      ],
-      [
-        Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
-        Ingredient(name: 'Steak', amount: 700, unit: 'g')
-      ],
-    ],
-    effort: 4,
-    vegetable: Vegetable.NON_VEGETARIAN,
-    steps: [
-      'step1',
-      'step2 kek',
-    ],
-    stepImages: [
-      [], [],
-      // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
-      // [
-      //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
-      // ],
-    ],
-    notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
-    isFavorite: false,
-    categories: ['Hauptspeisen'],
-  ),
-  Recipe(
-    name: '5. Spaghetti',
-    imagePath: 'images/meat.jpg',
-    imagePreviewPath: 'images/meat.jpg',
-    servings: 3,
-    totalTime: 20,
-    preperationTime: 5,
-    cookingTime: 10,
-    ingredientsGlossary: ['Steacksauce', 'Steack'],
-    ingredients: [
-      [
-        Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
-        Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
-        Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
-        Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
-      ],
-      [
-        Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
-        Ingredient(name: 'Steak', amount: 700, unit: 'g')
-      ],
-    ],
-    effort: 4,
-    vegetable: Vegetable.NON_VEGETARIAN,
-    steps: [
-      'step1',
-      'step2 kek',
-    ],
-    stepImages: [
-      [], [],
-      // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
-      // [
-      //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
-      // ],
-    ],
-    notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
-    isFavorite: false,
-    categories: ['Hauptspeisen'],
-  ),
-].map((recipe) => RecipeDecision(recipe: recipe)).toList());
+class SwypingCardsScreen extends StatefulWidget {
+  SwypingCardsScreen();
 
-class RandomRecipe extends StatefulWidget {
-  RandomRecipe({Key key}) : super(key: key);
-
-  _RandomRecipeState createState() => _RandomRecipeState();
+  @override
+  _SwypingCardsScreenState createState() => _SwypingCardsScreenState();
 }
 
-class _RandomRecipeState extends State<RandomRecipe> {
-  Future<List<RecipeDecision>> initialRecipeDecisions;
+class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
   String _selectedCategory = 'all categories';
+  Future<List<Recipe>> recipes;
 
-  Future<List<RecipeDecision>> changeCategory(String categoryName) async {
-    List<RecipeDecision> _currentlyVisibleRecipes = [];
-    for (int i = 0; i < 5; i++) {
-      Recipe randomRecipe = await DBProvider.db.getNewRandomRecipe(
-        i == 0 ? '' : _currentlyVisibleRecipes.last.recipe.name,
-        categoryName: categoryName == 'all categories' ? null : categoryName,
-      );
-
-      if (randomRecipe != null) {
-        _currentlyVisibleRecipes.add(RecipeDecision(recipe: randomRecipe));
-      } else {
-        break;
-      }
-    }
-    return _currentlyVisibleRecipes;
+  @override
+  void initState() {
+    super.initState();
+    recipes = changeCategory('all categories');
   }
 
   ListView _getCategorySelector(List<String> categoryNames) {
@@ -245,9 +40,9 @@ class _RandomRecipeState extends State<RandomRecipe> {
             textColor:
                 currentCategory == _selectedCategory ? Colors.amber : null,
             onPressed: () {
-              _selectedCategory = currentCategory;
               setState(() {
-                initialRecipeDecisions = changeCategory(currentCategory);
+                _selectedCategory = currentCategory;
+                recipes = changeCategory(currentCategory);
               });
             },
             child: Text(currentCategory),
@@ -257,6 +52,24 @@ class _RandomRecipeState extends State<RandomRecipe> {
         }
       },
     );
+  }
+
+  Future<List<Recipe>> changeCategory(String categoryName) async {
+    List<Recipe> _currentlyVisibleRecipes = [];
+    for (int i = 0; i < 5; i++) {
+      Recipe randomRecipe = await DBProvider.db.getNewRandomRecipe(
+        i == 0 ? '' : _currentlyVisibleRecipes.last.name,
+        categoryName: categoryName == 'all categories' ? null : categoryName,
+      );
+
+      if (randomRecipe != null) {
+        _currentlyVisibleRecipes.add(randomRecipe);
+      } else {
+        break;
+      }
+    }
+
+    return _currentlyVisibleRecipes;
   }
 
   @override
@@ -275,29 +88,100 @@ class _RandomRecipeState extends State<RandomRecipe> {
           ),
         ),
         Divider(),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height - 200,
-          child: ScopedModelDescendant<RecipeKeeper>(
-              builder: (context, child, rKeeper) =>
-                  FutureBuilder<List<RecipeDecision>>(
-                    future: initialRecipeDecisions,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return CardStack(
-                            recipeEngine:
-                                RecipeEngine(recipeDecisions: snapshot.data)
-                            // recipeEngine: recipeEngine,
-                            );
-                      } else {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    },
-                  )),
-        ),
+        FutureBuilder<List<Recipe>>(
+          future: recipes,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data.isEmpty) {
+                return Center(child: Text('no recipes under this category'));
+              }
+              return Container(
+                height: MediaQuery.of(context).size.height - 200,
+                child: SwypingCards(
+                  key: Key(_selectedCategory),
+                  currentCategory: _selectedCategory,
+                  recipes: snapshot.data,
+                ),
+              );
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        )
       ],
     );
+  }
+}
+
+class SwypingCards extends StatefulWidget {
+  final List<Recipe> recipes;
+  final String currentCategory;
+
+  SwypingCards({
+    @required this.currentCategory,
+    @required this.recipes,
+    Key key,
+  }) : super(key: key);
+
+  _SwypingCardsState createState() => _SwypingCardsState(recipes);
+}
+
+class _SwypingCardsState extends State<SwypingCards>
+    with TickerProviderStateMixin {
+  CardController controller; //Use this to trigger swap.
+  List<Recipe> recipes = [];
+
+  _SwypingCardsState(List<Recipe> recipesr) {
+    recipes.addAll(recipesr);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: MediaQuery.of(context).size.height,
+        child: new TinderSwapCard(
+            orientation: AmassOrientation.TOP,
+            totalNum: 100,
+            stackNum: 3,
+            animDuration: 200,
+            swipeEdge: 4.0,
+            maxWidth: MediaQuery.of(context).size.width * 0.9,
+            maxHeight: MediaQuery.of(context).size.height - 200,
+            minWidth: MediaQuery.of(context).size.width * 0.8,
+            minHeight: MediaQuery.of(context).size.height - 300,
+            cardBuilder: (context, index) => RecipeCardBig(
+                  recipe: recipes[index],
+                  index: index,
+                ),
+            cardController: controller = CardController(),
+            swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
+              /// Get swiping card's alignment
+              if (align.x < 0) {
+                //Card is LEFT swiping
+              } else if (align.x > 0) {
+                //Card is RIGHT swiping
+              }
+            },
+            swipeCompleteCallback:
+                (CardSwipeOrientation orientation, int index) {
+              String getCategoryName =
+                  widget.currentCategory == 'all categories'
+                      ? null
+                      : widget.currentCategory;
+              DBProvider.db
+                  .getNewRandomRecipe(recipes.last.name,
+                      categoryName: getCategoryName)
+                  .then((recipe) {
+                recipes.add(recipe);
+
+                if (index - 2 >= 0) {
+                  recipes[index - 2] = null;
+                }
+              });
+
+              /// Get orientation & index of swiped card!
+            }));
   }
 }

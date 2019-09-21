@@ -6,14 +6,10 @@ import 'package:intro_slider/intro_slider.dart';
 import 'main.dart';
 
 class IntroScreen extends StatelessWidget {
-  final bool recipeCatOverview;
   final bool onDonePop;
-  final bool showFancyShoppingList;
 
   // recipeCatOverview and showFancyShoppingList needed, when onDonePop is false!
   IntroScreen({
-    this.recipeCatOverview,
-    this.showFancyShoppingList,
     this.onDonePop,
   });
 

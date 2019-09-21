@@ -388,7 +388,8 @@ class DBProvider {
         isFavorite: isFavorite);
   }
 
-  getNewRandomRecipe(String excludedRecipe, {String categoryName}) async {
+  Future<dynamic> getNewRandomRecipe(String excludedRecipe,
+      {String categoryName}) async {
     final db = await database;
     var resCat;
     if (categoryName != null) {
@@ -685,6 +686,17 @@ class DBProvider {
     }
 
     await batch.commit();
+  }
+
+  // Just a test method for time consuming code
+  Future<List<Recipe>> getAllRecipes() async {
+    var db = await database;
+
+    var recipes = await db.query('Recipe');
+    for (int i = 0; i < recipes.length; i++) {
+      await getRecipeByName(recipes[i]['recipe_name'], false);
+    }
+    return [];
   }
 
   Future<Map<String, List<CheckableIngredient>>>
