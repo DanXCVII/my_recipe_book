@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/painting.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/helper.dart';
+import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/recipe.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -13,6 +14,8 @@ class RecipeKeeper extends Model {
   List<String> _categories =
       []; // they keep track of the order of the categories
   bool _isInitialised = false;
+  List<Recipe> _swypingCardRecipes = [];
+  bool _isLoadingSwypeCards;
 
   get favorites => _favorites;
 
@@ -21,6 +24,10 @@ class RecipeKeeper extends Model {
     cats.addAll(_categories);
     return cats;
   }
+
+  get swypingCardRecipes => _swypingCardRecipes;
+
+  get isLoadingSwypeCards => _isLoadingSwypeCards;
 
   get isInitialised => _isInitialised;
 
@@ -38,6 +45,8 @@ class RecipeKeeper extends Model {
         {'no category': await DBProvider.db.getRecipePreviewOfNoCategory()});
     _favorites.addAll(await DBProvider.db.getFavoriteRecipePreviews());
     _isInitialised = true;
+
+    await changeSwypeCardCategory('all categories');
     notifyListeners();
   }
 
@@ -70,6 +79,11 @@ class RecipeKeeper extends Model {
 
   void removeCategory(String categoryName) {
     _categories.remove(categoryName);
+    for (RecipePreview r in _recipes[categoryName]) {
+      if (r.categories.isEmpty) {
+        _recipes['no category'].add(r);
+      }
+    }
     _recipes.remove(categoryName);
 
     notifyListeners();
@@ -82,6 +96,7 @@ class RecipeKeeper extends Model {
       for (int i = 0; i < _recipes[category].length; i++) {
         if (_recipes[category][i].name == recipeName) {
           _recipes[category].removeAt(i);
+          break;
         }
       }
     }
@@ -105,32 +120,62 @@ class RecipeKeeper extends Model {
     notifyListeners();
   }
 
+  // TODO: Update categories when modifying recipe
   /// deletes oldRecipe from database and rKeeper and saves newRecipe to
   /// database and rKeeper
-  Future<Recipe> modifyRecipe(Recipe oldRecipe, Recipe newRecipe) async {
+  Future<Recipe> modifyRecipe(
+      Recipe oldRecipe, Recipe newRecipe, String recipeImage) async {
+    // modify (delete old save new) recipe in database
     await DBProvider.db.deleteRecipe(oldRecipe.name);
+    await DBProvider.db.newRecipe(newRecipe);
 
-    for (String category in _recipes.keys) {
-      for (int i = 0; i < _recipes[category].length; i++) {
-        if (_recipes[category][i].name == oldRecipe.name) {
-          _recipes[category].removeAt(i);
+    if (oldRecipe.name != newRecipe.name) {
+      await IO.copyRecipeDataToNewPath(oldRecipe.name, newRecipe.name);
+    }
+
+    Recipe fullImagePathRecipe =
+        await DBProvider.db.getRecipeByName(newRecipe.name, true);
+    RecipePreview rPreview = convertRecipeToPreview(fullImagePathRecipe);
+
+    // modify recipe object
+    for (String c in _recipes.keys) {
+      for (int i = 0; i < _recipes[c].length; i++) {
+        if (_recipes[c][i].name == oldRecipe.name) {
+          _recipes[c][i] = rPreview;
+          break;
         }
       }
     }
+    for (int i = 0; i < _recipes['no category'].length; i++) {
+      if (_recipes['no category'][i].name == oldRecipe.name) {
+        _recipes['no category'][i] = rPreview;
+        break;
+      }
+    }
 
-    Recipe r = await addRecipe(
-        newRecipe); // addRecipe() already calls notifyListeners()
-    return r;
+    // check if modified recipe is in swyping cards and if so modify it..
+    for (int i = 0; i < _swypingCardRecipes.length; i++) {
+      if (_swypingCardRecipes[i] != null &&
+          _swypingCardRecipes[i].name == oldRecipe.name) {
+        _swypingCardRecipes[i] = fullImagePathRecipe;
+      }
+    }
+    notifyListeners();
+
+    // delete old files
+    if (oldRecipe.name != newRecipe.name) {
+      await Directory(await PathProvider.pP.getRecipeDir(oldRecipe.name))
+          .delete(recursive: true);
+    }
+    return fullImagePathRecipe;
   }
 
   /// Adds recipe to the database and previewRecipe to the rKeeper
   /// given recipe doesn't contain the full image paths
   Future<Recipe> addRecipe(Recipe recipe) async {
     await DBProvider.db.newRecipe(recipe);
-
     Recipe fullImagePathRecipe =
         await DBProvider.db.getRecipeByName(recipe.name, true);
-
     RecipePreview rPreview = convertRecipeToPreview(fullImagePathRecipe);
 
     for (String category in recipe.categories) {
@@ -179,10 +224,24 @@ class RecipeKeeper extends Model {
     notifyListeners();
   }
 
-  void deleteRecipe(RecipePreview recipePreview) {
-    for (String category in _recipes.keys) {
-      _recipes[category].remove(recipePreview);
+  Future<void> changeSwypeCardCategory(String categoryName) async {
+    _isLoadingSwypeCards = true;
+    notifyListeners();
+    _swypingCardRecipes = [];
+    for (int i = 0; i < 5; i++) {
+      Recipe randomRecipe = await DBProvider.db.getNewRandomRecipe(
+        i == 0 ? '' : _swypingCardRecipes.last.name,
+        categoryName: categoryName == 'all categories' ? null : categoryName,
+      );
+
+      if (randomRecipe != null) {
+        _swypingCardRecipes.add(randomRecipe);
+      } else {
+        break;
+      }
     }
+
+    _isLoadingSwypeCards = false;
     notifyListeners();
   }
 

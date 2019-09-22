@@ -16,15 +16,9 @@ class SwypingCardsScreen extends StatefulWidget {
 
 class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
   String _selectedCategory = 'all categories';
-  Future<List<Recipe>> recipes;
 
-  @override
-  void initState() {
-    super.initState();
-    recipes = changeCategory('all categories');
-  }
-
-  ListView _getCategorySelector(List<String> categoryNames) {
+  ListView _getCategorySelector(
+      List<String> categoryNames, RecipeKeeper rKeeper) {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: (categoryNames.length + 1) * 2 + 1,
@@ -42,7 +36,7 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
             onPressed: () {
               setState(() {
                 _selectedCategory = currentCategory;
-                recipes = changeCategory(currentCategory);
+                rKeeper.changeSwypeCardCategory(currentCategory);
               });
             },
             child: Text(currentCategory),
@@ -52,24 +46,6 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
         }
       },
     );
-  }
-
-  Future<List<Recipe>> changeCategory(String categoryName) async {
-    List<Recipe> _currentlyVisibleRecipes = [];
-    for (int i = 0; i < 5; i++) {
-      Recipe randomRecipe = await DBProvider.db.getNewRandomRecipe(
-        i == 0 ? '' : _currentlyVisibleRecipes.last.name,
-        categoryName: categoryName == 'all categories' ? null : categoryName,
-      );
-
-      if (randomRecipe != null) {
-        _currentlyVisibleRecipes.add(randomRecipe);
-      } else {
-        break;
-      }
-    }
-
-    return _currentlyVisibleRecipes;
   }
 
   @override
@@ -82,33 +58,28 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
             height: 40,
             width: MediaQuery.of(context).size.width,
             child: ScopedModelDescendant<RecipeKeeper>(
-              builder: (context, child, rrKeeper) =>
-                  _getCategorySelector(rrKeeper.categories),
+              builder: (context, child, rKeeper) =>
+                  _getCategorySelector(rKeeper.categories, rKeeper),
             ),
           ),
         ),
         Divider(),
-        FutureBuilder<List<Recipe>>(
-          future: recipes,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.data.isEmpty) {
-                return Center(child: Text('no recipes under this category'));
-              }
-              return Container(
-                height: MediaQuery.of(context).size.height - 200,
-                child: SwypingCards(
-                  key: Key(_selectedCategory),
-                  currentCategory: _selectedCategory,
-                  recipes: snapshot.data,
-                ),
-              );
+        Container(
+          height: MediaQuery.of(context).size.height - 200,
+          child: ScopedModelDescendant<RecipeKeeper>(
+              builder: (context, child, rKeeper) {
+            if (rKeeper.isLoadingSwypeCards) {
+              return Center(child: CircularProgressIndicator());
+            } else if (rKeeper.swypingCardRecipes.isEmpty) {
+              return Text('noting added yet');
             } else {
-              return Center(
-                child: CircularProgressIndicator(),
+              return SwypingCards(
+                key: Key(_selectedCategory),
+                currentCategory: _selectedCategory,
+                recipes: rKeeper.swypingCardRecipes,
               );
             }
-          },
+          }),
         )
       ],
     );
@@ -125,17 +96,13 @@ class SwypingCards extends StatefulWidget {
     Key key,
   }) : super(key: key);
 
-  _SwypingCardsState createState() => _SwypingCardsState(recipes);
+  _SwypingCardsState createState() => _SwypingCardsState();
 }
 
 class _SwypingCardsState extends State<SwypingCards>
     with TickerProviderStateMixin {
   CardController controller; //Use this to trigger swap.
-  List<Recipe> recipes = [];
 
-  _SwypingCardsState(List<Recipe> recipesr) {
-    recipes.addAll(recipesr);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +119,7 @@ class _SwypingCardsState extends State<SwypingCards>
             minWidth: MediaQuery.of(context).size.width * 0.8,
             minHeight: MediaQuery.of(context).size.height - 300,
             cardBuilder: (context, index) => RecipeCardBig(
-                  recipe: recipes[index],
+                  recipe: widget.recipes[index],
                   index: index,
                 ),
             cardController: controller = CardController(),
@@ -166,18 +133,19 @@ class _SwypingCardsState extends State<SwypingCards>
             },
             swipeCompleteCallback:
                 (CardSwipeOrientation orientation, int index) {
+              print(index);
               String getCategoryName =
                   widget.currentCategory == 'all categories'
                       ? null
                       : widget.currentCategory;
               DBProvider.db
-                  .getNewRandomRecipe(recipes.last.name,
+                  .getNewRandomRecipe(widget.recipes.last.name,
                       categoryName: getCategoryName)
                   .then((recipe) {
-                recipes.add(recipe);
+                widget.recipes.add(recipe);
 
                 if (index - 2 >= 0) {
-                  recipes[index - 2] = null;
+                  widget.recipes[index - 2] = null;
                 }
               });
 

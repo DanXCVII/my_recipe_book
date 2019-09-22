@@ -274,7 +274,7 @@ class DBProvider {
     return categories;
   }
 
-  getRecipeByName(String recipeName, bool fullImagePath) async {
+  Future<Recipe> getRecipeByName(String recipeName, bool fullImagePath) async {
     final db = await database;
     final appDir = await getApplicationDocumentsDirectory();
     String preString;
@@ -283,7 +283,7 @@ class DBProvider {
     var resRecipe = await db
         .query('Recipe', where: 'recipe_name = ?', whereArgs: [recipeName]);
     if (resRecipe.isEmpty) {
-      return Null;
+      return null;
     }
     String name = resRecipe.first['recipe_name'];
     String image;
@@ -392,7 +392,10 @@ class DBProvider {
       {String categoryName}) async {
     final db = await database;
     var resCat;
-    if (categoryName != null) {
+    if (categoryName == 'no category') {
+      resCat = await db.rawQuery('SELECT recipe_name FROM Recipe '
+          'WHERE recipe_name NOT IN (SELECT recipe_name FROM RecipeCategories)');
+    } else if (categoryName != null) {
       resCat = await db.rawQuery(
           'SELECT * FROM RecipeCategories '
           'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '

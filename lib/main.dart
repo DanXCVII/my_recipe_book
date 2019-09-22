@@ -394,8 +394,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       }
     } else if (page == 'shopping cart') {
       return Theme.of(context).backgroundColor;
-    } else if (page == 'roll the dice') {
-      return Theme.of(context).backgroundColor;
     }
     return Theme.of(context).scaffoldBackgroundColor;
   }

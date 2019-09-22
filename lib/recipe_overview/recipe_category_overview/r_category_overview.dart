@@ -230,9 +230,8 @@ class RecipeHozizontalList extends StatelessWidget {
             recipe: recipe,
             primaryColor:
                 getRecipePrimaryColor(recipePreviews[index].vegetable),
-            heroImageTag: heroImageTag,
-            heroTitle:
-                '${recipePreviews[index].name}-${recipePreviews[index].imagePreviewPath}',
+            heroImageTag: '$categoryName$index-image',
+            heroTitle: '$categoryName$index-title',
           ),
         ),
       );

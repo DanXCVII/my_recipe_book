@@ -49,7 +49,7 @@ class RecipeCardBig extends StatelessWidget {
         },
         child: Container(
           decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: getRecipePrimaryColor(recipe.vegetable),
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(
@@ -266,25 +266,24 @@ class RecipeCardBig extends StatelessWidget {
       children: <Widget>[],
     );
 
-    // TODO: Doesn't show all ingredients when 3 or less
     int displayAmount = flatIngredients.length > 6 ? 6 : flatIngredients.length;
-    for (int i = 0; i < displayAmount / 2.floor(); i++) {
-      leftIngredientColumn.children
-          .add(Text(flatIngredients[i].name, style: ingredientsStyle));
-      leftIngredAmountColumn.children.add(Text(
-        flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
-        style: ingredientsStyle,
-      ));
-    }
-    for (int i = displayAmount.floor() + 1; i < displayAmount; i++) {
-      rightIngredientColumn.children
-          .add(Text(flatIngredients[i].name, style: ingredientsStyle));
-      rightIngredAmountColumn.children.add(Text(
-        flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
-        style: ingredientsStyle,
-      ));
-    }
-    if (flatIngredients.length > 3)
+    if (flatIngredients.length > 3) {
+      for (int i = 0; i < displayAmount / 2.floor(); i++) {
+        leftIngredientColumn.children
+            .add(Text(flatIngredients[i].name, style: ingredientsStyle));
+        leftIngredAmountColumn.children.add(Text(
+          flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
+          style: ingredientsStyle,
+        ));
+      }
+      for (int i = displayAmount.floor() + 1; i < displayAmount; i++) {
+        rightIngredientColumn.children
+            .add(Text(flatIngredients[i].name, style: ingredientsStyle));
+        rightIngredAmountColumn.children.add(Text(
+          flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
+          style: ingredientsStyle,
+        ));
+      }
       return Row(
         children: <Widget>[
           leftIngredientColumn,
@@ -296,7 +295,15 @@ class RecipeCardBig extends StatelessWidget {
           rightIngredAmountColumn,
         ],
       );
-    else {
+    } else {
+      for (int i = 0; i < displayAmount; i++) {
+        leftIngredientColumn.children
+            .add(Text(flatIngredients[i].name, style: ingredientsStyle));
+        leftIngredAmountColumn.children.add(Text(
+          flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
+          style: ingredientsStyle,
+        ));
+      }
       return Row(children: <Widget>[
         leftIngredientColumn,
         Spacer(),

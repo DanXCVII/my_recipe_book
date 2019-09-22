@@ -4,12 +4,10 @@ import 'package:my_recipe_book/intro_screen.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
-import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/theming.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'database.dart';
 import 'main.dart';
 
 class SplashScreen extends StatefulWidget {

@@ -8,6 +8,40 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import '../database.dart';
 import '../recipe.dart';
 
+Future<void> copyRecipeDataToNewPath(
+    String oldRecipeName, String newRecipeName) async {
+  String _underscoreOldRecipeName = _getUnderscoreName(oldRecipeName);
+  String _underscoreNewRecipeName = _getUnderscoreName(newRecipeName);
+
+  Directory recipeDir =
+      Directory(await PathProvider.pP.getRecipeDir(_underscoreOldRecipeName));
+
+  if (recipeDir.existsSync()) {
+    var recipeFiles = recipeDir.listSync();
+
+    for (FileSystemEntity f in recipeFiles) {
+      if (f is File && f.path.contains('/stepImages/')) {
+        f.copy(f.path.replaceAll(
+            '/$_underscoreOldRecipeName/', '/$_underscoreNewRecipeName/'));
+      } else if (f is File) {
+        print('Should be a preview image path or image path');
+        print(f.path);
+        String dataType = f.path.substring(f.path.lastIndexOf('.'));
+
+        File oldRecipeImageFile = File(
+            await PathProvider.pP.getRecipePathFull(oldRecipeName, dataType));
+        await oldRecipeImageFile.copy(
+            await PathProvider.pP.getRecipePathFull(newRecipeName, dataType));
+
+        File oldRecipePreviewImageFile = File(await PathProvider.pP
+            .getRecipePreviewPathFull(oldRecipeName, dataType));
+        await oldRecipePreviewImageFile.copy(await PathProvider.pP
+            .getRecipePreviewPathFull(newRecipeName, dataType));
+      }
+    }
+  }
+}
+
 Future<void> renameRecipeData(
     String oldRecipeName, String fileExtension, String newRecipeName) async {
   Directory oldRecipeDir =
@@ -61,10 +95,8 @@ String getStepImageName(String selectedImagePath) {
   return random.nextInt(10000).toString() + dataType;
 }
 
-
 Future<String> saveRecipeZip(String targetDir, String recipeName) async {
-  Recipe exportRecipe =
-      await DBProvider.db.getRecipeByName(recipeName, false);
+  Recipe exportRecipe = await DBProvider.db.getRecipeByName(recipeName, false);
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDir(recipeName));
 
@@ -149,4 +181,9 @@ Future<void> saveImage(File image, String name, int resolution) async {
     new File('${values[1]}')..writeAsBytesSync(ImageIO.encodeJpg(resizedImage));
     */
   }
+}
+
+String _getUnderscoreName(String name) {
+  name.replaceAll(' ', '_');
+  return name;
 }

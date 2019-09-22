@@ -156,8 +156,8 @@ class RecipeGridView extends StatelessWidget {
           shadow: Theme.of(context).backgroundColor == Colors.white
               ? Colors.grey[400]
               : Colors.black,
-          heroImageTag: "${recipes[i].imagePreviewPath}-${recipes[i].name}",
-          heroTitle: "recipe-${recipes[i].name}",
+          heroImageTag: "$i",
+          heroTitle: "titel$i",
         ),
       );
     }

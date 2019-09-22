@@ -69,7 +69,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // TODO: Delete (old/not saved) data when opening addRecipe
   @override
   void initState() {
     super.initState();
@@ -473,33 +472,25 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         Navigator.pop(context); // edit recipe screen
       });
     } else {
-      deleteOldSaveNewRecipe(widget.editRecipe, rKeeper).then((newRecipe) {
+      saveRecipe(rKeeper).then((newRecipe) {
         newRecipe.isFavorite = widget.editRecipe.isFavorite;
         Navigator.pop(context); // loading screen
         Navigator.pop(context); // edit recipe screen
         Navigator.pop(context); // old recipe screen
         imageCache.clear();
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => RecipeScreen(
-                      recipe: newRecipe,
-                      primaryColor: getRecipePrimaryColor(newRecipe.vegetable),
-                      heroImageTag: 'heroImageTag',
-                      heroTitle: 'heroTitel',
-                    )));
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => RecipeScreen(
+              recipe: newRecipe,
+              primaryColor: getRecipePrimaryColor(newRecipe.vegetable),
+              heroImageTag: 'heroImageTag',
+              heroTitle: 'heroTitel',
+            ),
+          ),
+        );
       });
     }
-  }
-
-  Future<Recipe> deleteOldSaveNewRecipe(
-      Recipe editRecipe, RecipeKeeper rKeeper) async {
-    bool deleteFiles = false;
-    rKeeper.deleteRecipeWithName(editRecipe.name, deleteFiles);
-    await DBProvider.db.deleteRecipeFromDatabase(editRecipe);
-    Recipe newRecipe = await saveRecipe(rKeeper);
-
-    return newRecipe;
   }
 
   Future<void> saveDummyData() async {
@@ -617,33 +608,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ingredientAmountController,
         ingredientUnitController);
 
-    // Saving the Recipe image and RecipePreviewImage (Recipe Image with lower quality)
-    // TODO: Remove unnessesary code - Code for saving here
-    /*
-    if (selectedRecipeImage.selectedImage != 'images/randomFood.jpg' &&
-        selectedRecipeImage.selectedImage != null) {
-      String recipeImagePath = await PathProvider.pP.getRecipePath(recipeId);
-      await saveImage(
-          File(selectedRecipeImage.selectedImage), recipeImagePath, 2000);
-      selectedRecipeImage.selectedImage = recipeImagePath;
-      String recipeImagePreviewPath =
-          await PathProvider.pP.getRecipePreviewPath(recipeId);
-      await saveImage(
-          File(selectedRecipeImage.selectedImage), recipeImagePreviewPath, 400);
-    }*/
-    /*
-    for (int i = 0; i < removeEmptyStrings(stepsDescController).length; i++) {
-      for (int j = 0; j < stepImages[i].length; j++) {
-        String stepImageLocation =
-            await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
-        String stepImagePreviewLocation =
-            await PathProvider.pP.getRecipeStepPreviewPath(recipeId, i, j);
-        await saveImage(File(stepImages[i][j]), stepImageLocation, 2000);
-        await saveImage(File(stepImages[i][j]), stepImagePreviewLocation, 500);
-        stepImages[i][j] =
-            await PathProvider.pP.getRecipeStepPath(recipeId, i, j);
-      }
-    }*/
+    String oldRecipeImageName =
+        widget.editRecipe == null ? 'tmp' : widget.editRecipe.name;
+    String recipeName = nameController.text;
 
     String imageDatatype;
     String recipeImage = selectedRecipeImage.selectedImage;
@@ -651,14 +618,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       imageDatatype = recipeImage.substring(recipeImage.lastIndexOf('.'));
     }
 
-    String oldRecipeImageName =
-        widget.editRecipe == null ? 'tmp' : widget.editRecipe.name;
-    String recipeName = nameController.text;
-
+    // modifying the stepImages paths for the database
     for (int i = 0; i < stepImages.length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
-        stepImages[i][j] =
-            stepImages[i][j].replaceFirst(oldRecipeImageName, '/$recipeName/');
+        stepImages[i][j] = stepImages[i][j]
+            .replaceFirst('/$oldRecipeImageName/', '/$recipeName/');
       }
     }
 
@@ -698,15 +662,18 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
           widget.editRecipe == null ? false : widget.editRecipe.isFavorite,
     );
 
-    if (recipeImage != null)
-      await IO.renameRecipeData(oldRecipeImageName,
-          recipeImage.substring(recipeImage.lastIndexOf('.')), recipeName);
-
     Recipe fullImagePathRecipe;
     if (widget.editRecipe != null) {
       fullImagePathRecipe =
-          await rKeeper.modifyRecipe(widget.editRecipe, newRecipe);
+          await rKeeper.modifyRecipe(widget.editRecipe, newRecipe, recipeImage);
     } else {
+      if (widget.editRecipe.name != newRecipe.name) {
+        await IO.renameRecipeData(
+          oldRecipeImageName,
+          recipeImage.substring(recipeImage.lastIndexOf('.')),
+          recipeName,
+        );
+      }
       fullImagePathRecipe = await rKeeper.addRecipe(newRecipe);
     }
 
