@@ -433,7 +433,7 @@ List<Widget> createDummyCategoryCards() {
   return [
     GridTile(
       child: Image.asset(
-        'images/noodle.jpg',
+        'images/lasagne.jpg',
         fit: BoxFit.cover,
       ),
       footer: GridTileBar(

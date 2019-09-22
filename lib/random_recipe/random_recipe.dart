@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
 import './tinder_card.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/random_recipe/recipe_card_big.dart';
@@ -71,7 +72,7 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
             if (rKeeper.isLoadingSwypeCards) {
               return Center(child: CircularProgressIndicator());
             } else if (rKeeper.swypingCardRecipes.isEmpty) {
-              return Text('noting added yet');
+              return NoRecipeCategory();
             } else {
               return SwypingCards(
                 key: Key(_selectedCategory),
@@ -102,7 +103,6 @@ class SwypingCards extends StatefulWidget {
 class _SwypingCardsState extends State<SwypingCards>
     with TickerProviderStateMixin {
   CardController controller; //Use this to trigger swap.
-
 
   @override
   Widget build(BuildContext context) {

@@ -120,11 +120,14 @@ class RecipeHozizontalList extends StatelessWidget {
           double leftPadding = index == 0 ? 5 : 0;
 
           if (index < recipeCount) {
-            final String heroTag =
-                '${recipePreviews[index].name}$categoryName--${recipePreviews[index].imagePreviewPath}';
             return GestureDetector(
               onTap: () {
-                _pushRecipeRoute(context, index, heroTag);
+                _pushRecipeRoute(
+                  context,
+                  index,
+                  '$categoryName$index-image',
+                  '$categoryName$index-title',
+                );
               },
               child: Padding(
                 padding: EdgeInsets.only(left: leftPadding),
@@ -141,7 +144,7 @@ class RecipeHozizontalList extends StatelessWidget {
                       //     color: Colors.transparent,
                       //     child:
                       Hero(
-                        tag: heroTag,
+                        tag: '$categoryName$index-image',
                         child: ClipRRect(
                             borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(35),
@@ -219,7 +222,8 @@ class RecipeHozizontalList extends StatelessWidget {
     );
   }
 
-  void _pushRecipeRoute(BuildContext context, int index, String heroImageTag) {
+  void _pushRecipeRoute(BuildContext context, int index, String heroImageTag,
+      String heroTitleTag) {
     DBProvider.db
         .getRecipeByName(recipePreviews[index].name, true)
         .then((recipe) {
@@ -230,8 +234,8 @@ class RecipeHozizontalList extends StatelessWidget {
             recipe: recipe,
             primaryColor:
                 getRecipePrimaryColor(recipePreviews[index].vegetable),
-            heroImageTag: '$categoryName$index-image',
-            heroTitle: '$categoryName$index-title',
+            heroImageTag: heroImageTag,
+            heroTitle: heroTitleTag,
           ),
         ),
       );

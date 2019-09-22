@@ -33,10 +33,10 @@ class FancyShoppingCartScreen extends StatelessWidget {
         floating: false,
         pinned: true,
         flexibleSpace: FlexibleSpaceBar(
-          centerTitle: true,
+          centerTitle: false,
           title: Text('ShoppingCart'),
           background:
-              Image.asset('images/shopping_basket.jpg', fit: BoxFit.cover),
+              Image.asset('images/cuisine.jpg', fit: BoxFit.cover),
         ),
       ),
       SliverPadding(
@@ -56,10 +56,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
     var shoppingCart = scKeeper.shoppingCart;
     if (shoppingCart['summary'].isEmpty) {
       return [
-        Container(
-          height: MediaQuery.of(context).size.height,
-          child: displayNothingAdded(context),
-        )
+        displayNothingAdded(context),
       ];
     }
     return recipes.map((recipeName) {
@@ -92,29 +89,34 @@ class FancyShoppingCartScreen extends StatelessWidget {
   }
 
   Widget displayNothingAdded(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Container(
-            height: 200,
-            child: Center(
-                child: Text(
-              "Nothing added yet",
-              style: TextStyle(
-                fontSize: 26,
-                fontFamily: 'RibeyeMarrow',
-              ),
-            ))),
-        Container(
+    return Container(
+      height: 400,
+      child: Stack(
+        children: <Widget>[
+          Container(
+              height: 200,
+              child: Center(
+                  child: Text(
+                "Nothing added yet",
+                style: TextStyle(
+                  fontSize: 26,
+                  fontFamily: 'RibeyeMarrow',
+                ),
+              ))),
+          Container(
             height: 185 / 2,
             child: Align(
-                alignment: Alignment(1, 1),
-                child: Image.asset(
-                  Theme.of(context).brightness != Brightness.dark
-                      ? 'images/cookingPen.png'
-                      : 'images/darkCookingPen.png',
-                  height: 75,
-                )))
-      ],
+              alignment: Alignment(1, 1),
+              child: Image.asset(
+                Theme.of(context).brightness != Brightness.dark
+                    ? 'images/cookingPen.png'
+                    : 'images/darkCookingPen.png',
+                height: 75,
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 

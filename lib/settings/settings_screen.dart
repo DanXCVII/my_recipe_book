@@ -48,19 +48,15 @@ class Settings extends StatelessWidget {
                     },
                     child: Stack(
                       children: <Widget>[
-                        ClipPath(
-                          clipper: CustomLeftHalfClipper(),
-                          child: Container(
-                            width: 25,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  width: 1,
-                                  color:
-                                      Theme.of(context).textTheme.body1.color),
-                              color: Color(0xffFEF3E1),
-                            ),
+                        Container(
+                          width: 25,
+                          height: 25,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                                width: 1,
+                                color: Theme.of(context).textTheme.body1.color),
+                            color: Color(0xffFEF3E1),
                           ),
                         ),
                         ClipPath(
@@ -210,22 +206,6 @@ class CustomRightHalfClipper extends CustomClipper<Path> {
       ..lineTo(size.width / 2, size.height)
       ..lineTo(size.width, size.height)
       ..lineTo(size.width, 0);
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return true;
-  }
-}
-
-class CustomLeftHalfClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final Path path = new Path()
-      ..lineTo(0.0, size.height)
-      ..lineTo(size.width / 2, size.height)
-      ..lineTo(size.width / 2, 0);
     return path;
   }
 

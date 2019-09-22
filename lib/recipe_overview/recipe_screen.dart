@@ -346,7 +346,7 @@ class RecipeScreen extends StatelessWidget {
   }
 
   String getRecipeAsString(Recipe recipe) {
-    String recipeText = 'Recipename: ${recipe.name}\n'
+    String recipeText = 'recipename: ${recipe.name}\n'
         '====================\n'
         'preperation Time: ${recipe.preperationTime} min\n'
         'cooking Time: ${recipe.cookingTime} min\n'
@@ -369,7 +369,8 @@ class RecipeScreen extends StatelessWidget {
       recipeText += '$i. $step\n';
       i++;
     }
-    if (recipe.notes != null) {
+    print('-'+recipe.notes+'-');
+    if (recipe.notes != null && recipe.notes != '') {
       recipeText += '====================\n';
       recipeText += 'notes: ' + recipe.notes;
     }

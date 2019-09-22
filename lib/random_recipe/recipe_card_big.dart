@@ -49,7 +49,7 @@ class RecipeCardBig extends StatelessWidget {
         },
         child: Container(
           decoration: BoxDecoration(
-              color: getRecipePrimaryColor(recipe.vegetable),
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(
@@ -276,7 +276,7 @@ class RecipeCardBig extends StatelessWidget {
           style: ingredientsStyle,
         ));
       }
-      for (int i = displayAmount.floor() + 1; i < displayAmount; i++) {
+      for (int i = (displayAmount/2).floor(); i < displayAmount; i++) {
         rightIngredientColumn.children
             .add(Text(flatIngredients[i].name, style: ingredientsStyle));
         rightIngredAmountColumn.children.add(Text(
