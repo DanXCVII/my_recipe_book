@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../helper.dart';
@@ -30,220 +32,258 @@ class RecipeCardBig extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String heroImageTag = '${recipe.name}${recipe.imagePath}$index';
-    final String heroTitle = '${recipe.name}$index';
-    return Material(
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) => new RecipeScreen(
-                recipe: recipe,
-                primaryColor: getRecipePrimaryColor(recipe.vegetable),
-                heroImageTag: heroImageTag,
-                heroTitle: heroTitle,
+    final String heroImageTag = '${recipe.name}$index';
+    final String heroTitle = '$index-title';
+    return ScopedModelDescendant<RecipeKeeper>(
+      builder: (context, child, model) => Material(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => new RecipeScreen(
+                  recipe: recipe,
+                  primaryColor: getRecipePrimaryColor(recipe.vegetable),
+                  heroImageTag: heroImageTag,
+                  heroTitle: heroTitle,
+                ),
               ),
-            ),
-          );
-        },
-        child: Container(
-          decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 5,
-                  spreadRadius: 2,
-                  color: Theme.of(context).backgroundColor == Colors.white
-                      ? Colors.grey[400]
-                      : Colors.black,
-                )
-              ]),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 1,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: <Widget>[
-                      Hero(
-                        tag: heroImageTag,
-                        child: FadeInImage(
-                          image: recipe.imagePath == 'images/randomFood.jpg'
-                              ? AssetImage(recipe.imagePath)
-                              : FileImage(File(recipe.imagePath)),
-                          placeholder: MemoryImage(kTransparentImage),
-                          fadeInDuration: Duration(milliseconds: 250),
-                          fit: BoxFit.cover,
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 5,
+                    spreadRadius: 2,
+                    color: Theme.of(context).backgroundColor == Colors.white
+                        ? Colors.grey[400]
+                        : Colors.black,
+                  )
+                ]),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: <Widget>[
+                        Hero(
+                          tag: heroImageTag,
+                          child: FadeInImage(
+                            image: recipe.imagePath == 'images/randomFood.jpg'
+                                ? AssetImage(recipe.imagePath)
+                                : FileImage(File(recipe.imagePath)),
+                            placeholder: MemoryImage(kTransparentImage),
+                            fadeInDuration: Duration(milliseconds: 250),
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            color: Theme.of(context).cardColor.withOpacity(0.6),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width /
-                                            1.8 -
-                                        20,
-                                    child: Hero(
-                                      tag: heroTitle,
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: Text(
-                                          recipe.name,
-                                          style: TextStyle(
-                                            fontSize: 28,
-                                            fontWeight: FontWeight.w700,
+                        Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              color:
+                                  Theme.of(context).cardColor.withOpacity(0.6),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width /
+                                              1.8 -
+                                          20,
+                                      child: Hero(
+                                        tag: heroTitle,
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: Text(
+                                            recipe.name,
+                                            style: TextStyle(
+                                              fontSize: 28,
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Image.asset(
-                                    "images/${getRecipeTypeImage(recipe.vegetable)}.png",
-                                    height: 35,
-                                    width: 35,
-                                    fit: BoxFit.scaleDown,
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Image.asset(
+                                      "images/${getRecipeTypeImage(recipe.vegetable)}.png",
+                                      height: 35,
+                                      width: 35,
+                                      fit: BoxFit.scaleDown,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ))
-                    ],
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            recipe.preperationTime != null
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text('prep. time', style: smallHeading),
-                                      SizedBox(height: 5),
-                                      Text(
-                                          getTimeHoursMinutes(
-                                              recipe.preperationTime),
-                                          style: timeStyle),
-                                    ],
-                                  )
-                                : Container(),
-                            VerticalDivider(),
-                            recipe.cookingTime != null
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text('cook. time', style: smallHeading),
-                                      SizedBox(height: 5),
-                                      Text(
-                                          getTimeHoursMinutes(
-                                              recipe.cookingTime),
-                                          style: timeStyle),
-                                    ],
-                                  )
-                                : Container(),
-                            VerticalDivider(),
-                            recipe.totalTime != null
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text('total time', style: smallHeading),
-                                      SizedBox(height: 5),
-                                      Text(
-                                          getTimeHoursMinutes(recipe.totalTime),
-                                          style: timeStyle),
-                                    ],
-                                  )
-                                : Container(),
-                          ],
-                        ),
-                        Spacer(),
-                        Text(
-                          '${getIngredientCount(recipe.ingredients)} ingredients:',
-                          style: smallHeading,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        buildIngredients(recipe.ingredients),
-                        Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text('steps', style: smallHeading),
-                                Text(
-                                  recipe.steps.length.toString(),
-                                  style: stepNumberStyle,
-                                ),
-                              ],
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text('categories', style: smallHeading),
-                                    Text(
-                                      'Teiggerichte, EssenWarm, Kartoffeln, Tomaten, aklsjdfölaksjdflöa ksjdkjölasjölk fsajmdsaj jö sklkjl fadskjl fdskjl öfölaskjfk',
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    )
-                                  ],
-                                ),
+                                ],
                               ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Text('complexity', style: smallHeading),
-                                Text(
-                                  recipe.effort.toString(),
-                                  style: complexityNumberStyle,
-                                ),
-                              ],
-                            ),
-                          ],
-                        )
+                            ))
                       ],
                     ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                recipe.preperationTime != null
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text('prep. time',
+                                              style: smallHeading),
+                                          SizedBox(height: 5),
+                                          Text(
+                                              getTimeHoursMinutes(
+                                                  recipe.preperationTime),
+                                              style: timeStyle),
+                                        ],
+                                      )
+                                    : Container(),
+                                recipe.cookingTime != null
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text('cook. time',
+                                              style: smallHeading),
+                                          SizedBox(height: 5),
+                                          Text(
+                                              getTimeHoursMinutes(
+                                                  recipe.cookingTime),
+                                              style: timeStyle),
+                                        ],
+                                      )
+                                    : Container(),
+                                recipe.totalTime != null
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text('total time',
+                                              style: smallHeading),
+                                          SizedBox(height: 5),
+                                          Text(
+                                              getTimeHoursMinutes(
+                                                  recipe.totalTime),
+                                              style: timeStyle),
+                                        ],
+                                      )
+                                    : Container(),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  '${getIngredientCount(recipe.ingredients)} ingredients:',
+                                  style: smallHeading,
+                                ),
+                                buildIngredients(recipe.ingredients),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: new Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text('steps', style: smallHeading),
+                                      Text(
+                                        recipe.steps.length.toString(),
+                                        style: stepNumberStyle,
+                                      ),
+                                    ],
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text('categories',
+                                              style: smallHeading),
+                                          Text(
+                                            _getRecipeCategoriesString(
+                                                recipe.categories),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: <Widget>[
+                                      Text('complexity', style: smallHeading),
+                                      Text(
+                                        recipe.effort.toString(),
+                                        style: complexityNumberStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  String _getRecipeCategoriesString(List<String> categories) {
+    String categoryString = '';
+    if (categories.isEmpty) {
+      return 'none';
+    }
+    for (String c in categories) {
+      if (categories.last != c) {
+        categoryString += '$c, ';
+      } else {
+        categoryString += c;
+      }
+    }
+    return categoryString;
   }
 
   Widget buildIngredients(List<List<Ingredient>> ingredients) {
@@ -276,7 +316,7 @@ class RecipeCardBig extends StatelessWidget {
           style: ingredientsStyle,
         ));
       }
-      for (int i = (displayAmount/2).floor(); i < displayAmount; i++) {
+      for (int i = (displayAmount / 2).floor(); i < displayAmount; i++) {
         rightIngredientColumn.children
             .add(Text(flatIngredients[i].name, style: ingredientsStyle));
         rightIngredAmountColumn.children.add(Text(

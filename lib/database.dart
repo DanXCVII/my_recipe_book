@@ -126,7 +126,7 @@ class DBProvider {
     final db = await database;
     try {
       await db.rawInsert(
-          'INSERT Into Categories (categoryName,number)'
+          'INSERT OR IGNORE Into Categories (categoryName,number)'
           ' VALUES (?,?)',
           [
             name,
@@ -170,11 +170,13 @@ class DBProvider {
     int uniqueIdSections = await getNewIDforTable('Sections', 'id');
     int uniqueIdIngredients = await getNewIDforTable('Ingredients', 'id');
 
-    for (int i = 0; i < newRecipe.ingredientsGlossary.length; i++) {
+    for (int i = 0; i < newRecipe.ingredients.length; i++) {
       batch.insert('Sections', {
         'id': uniqueIdSections + i,
         'number': i,
-        'sectionName': newRecipe.ingredientsGlossary[i],
+        'sectionName': newRecipe.ingredientsGlossary.isEmpty
+            ? ''
+            : newRecipe.ingredientsGlossary[i],
         'recipe_name': newRecipe.name
       });
 
@@ -388,7 +390,7 @@ class DBProvider {
         isFavorite: isFavorite);
   }
 
-  Future<dynamic> getNewRandomRecipe(String excludedRecipe,
+  Future<Recipe> getNewRandomRecipe(String excludedRecipe,
       {String categoryName}) async {
     final db = await database;
     var resCat;
@@ -402,7 +404,10 @@ class DBProvider {
           'WHERE categoryName= ?',
           [categoryName]);
     } else {
-      resCat = await db.query('Recipe', columns: ['recipe_name']);
+      resCat = await db.query('Recipe',
+          where: 'recipe_name != ?',
+          whereArgs: [excludedRecipe],
+          columns: ['recipe_name']);
     }
 
     if (resCat.isEmpty) {
@@ -412,10 +417,6 @@ class DBProvider {
     Random r = new Random();
     int randomRecipe;
     randomRecipe = resCat.length > 1 ? r.nextInt(resCat.length) : 0;
-    while (resCat[randomRecipe]['recipe_name'].compareTo(excludedRecipe) == 0 &&
-        resCat.length > 1) {
-      randomRecipe = r.nextInt(resCat.length);
-    }
 
     return await getRecipeByName(resCat[randomRecipe]['recipe_name'], true);
   }

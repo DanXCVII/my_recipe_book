@@ -18,11 +18,22 @@ List<Ingredient> flattenIngredients(List<List<Ingredient>> listList) {
   return singleList;
 }
 
+/// returns the given time in minutes in hours and minutes without trailing 0's
+/// eg: 80.0 => 1 h 20 min
+/// 60.0 => 1 h
+/// 30.0 => 30 min
 String getTimeHoursMinutes(double min) {
   if (min ~/ 60 > 0) {
-    return "${min ~/ 60}h ${min - (min ~/ 60 * 60)}min";
+    String returnString =
+        '${(min ~/ 60).toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')}h ';
+    if (min - (min ~/ 60 * 60) != 0) {
+      return returnString +=
+          '${(min - (min ~/ 60 * 60)).toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min';
+    } else {
+      return returnString;
+    }
   }
-  return "$min min";
+  return "${min.toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min";
 }
 
 int getIngredientCount(List<List<Ingredient>> ingredients) {
@@ -31,4 +42,8 @@ int getIngredientCount(List<List<Ingredient>> ingredients) {
     if (i != null) ingredientCount += i.length;
   }
   return ingredientCount;
+}
+
+String getUnderscoreName(String name) {
+  return name.replaceAll(' ', '_');
 }

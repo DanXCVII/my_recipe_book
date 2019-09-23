@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -40,12 +41,13 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar( // TODO: Make AppBar somehow transparent
+      appBar: AppBar(
+        // TODO: Make AppBar somehow transparent
         backgroundColor: Colors.black,
         elevation: 0,
       ),
       body: Container(
-        decoration: BoxDecoration(color: Colors.black), 
+        decoration: BoxDecoration(color: Colors.black),
         constraints: BoxConstraints.expand(
           height: MediaQuery.of(context).size.height,
         ),
@@ -78,7 +80,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     return PhotoViewGalleryPageOptions(
-      imageProvider: AssetImage(widget.galleryItems[index]),
+      imageProvider: FileImage(File(widget.galleryItems[index])),
       initialScale: PhotoViewComputedScale.contained,
       minScale: PhotoViewComputedScale.contained * (1.0),
       maxScale: PhotoViewComputedScale.covered * 1.5,

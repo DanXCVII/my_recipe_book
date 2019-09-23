@@ -6,23 +6,27 @@ import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../database.dart';
+import '../helper.dart';
 import '../recipe.dart';
 
 Future<void> copyRecipeDataToNewPath(
     String oldRecipeName, String newRecipeName) async {
-  String _underscoreOldRecipeName = _getUnderscoreName(oldRecipeName);
-  String _underscoreNewRecipeName = _getUnderscoreName(newRecipeName);
+  String _underscoreOldRecipeName = getUnderscoreName(oldRecipeName);
+  String _underscoreNewRecipeName = getUnderscoreName(newRecipeName);
 
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDir(_underscoreOldRecipeName));
 
   if (recipeDir.existsSync()) {
-    var recipeFiles = recipeDir.listSync();
+    var recipeFiles = recipeDir.listSync(recursive: true);
 
     for (FileSystemEntity f in recipeFiles) {
       if (f is File && f.path.contains('/stepImages/')) {
-        f.copy(f.path.replaceAll(
-            '/$_underscoreOldRecipeName/', '/$_underscoreNewRecipeName/'));
+        String newFilePath = f.path.replaceAll(
+            '/$_underscoreOldRecipeName/', '/$_underscoreNewRecipeName/');
+        await Directory(newFilePath.substring(0, newFilePath.lastIndexOf('/')))
+            .create(recursive: true);
+        await f.copy(newFilePath);
       } else if (f is File) {
         print('Should be a preview image path or image path');
         print(f.path);
@@ -42,22 +46,24 @@ Future<void> copyRecipeDataToNewPath(
   }
 }
 
-Future<void> renameRecipeData(
-    String oldRecipeName, String fileExtension, String newRecipeName) async {
+Future<void> renameRecipeData(String oldRecipeName, String newRecipeName,
+    {String fileExtension}) async {
   Directory oldRecipeDir =
       Directory(await PathProvider.pP.getRecipeDir(oldRecipeName));
   await oldRecipeDir.rename(await PathProvider.pP.getRecipeDir(newRecipeName));
 
-  File oldRecipeImageFile = File(await PathProvider.pP
-      .getRecipeOldPathFull(oldRecipeName, newRecipeName, fileExtension));
-  await oldRecipeImageFile.rename(
-      await PathProvider.pP.getRecipePathFull(newRecipeName, fileExtension));
+  if (fileExtension != null) {
+    File oldRecipeImageFile = File(await PathProvider.pP
+        .getRecipeOldPathFull(oldRecipeName, newRecipeName, fileExtension));
+    await oldRecipeImageFile.rename(
+        await PathProvider.pP.getRecipePathFull(newRecipeName, fileExtension));
 
-  File oldRecipePreviewImageFile = File(await PathProvider.pP
-      .getRecipePreviewOldPathFull(
-          oldRecipeName, newRecipeName, fileExtension));
-  await oldRecipePreviewImageFile.rename(await PathProvider.pP
-      .getRecipePreviewPathFull(newRecipeName, fileExtension));
+    File oldRecipePreviewImageFile = File(await PathProvider.pP
+        .getRecipePreviewOldPathFull(
+            oldRecipeName, newRecipeName, fileExtension));
+    await oldRecipePreviewImageFile.rename(await PathProvider.pP
+        .getRecipePreviewPathFull(newRecipeName, fileExtension));
+  }
 }
 
 Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
@@ -181,9 +187,4 @@ Future<void> saveImage(File image, String name, int resolution) async {
     new File('${values[1]}')..writeAsBytesSync(ImageIO.encodeJpg(resizedImage));
     */
   }
-}
-
-String _getUnderscoreName(String name) {
-  name.replaceAll(' ', '_');
-  return name;
 }

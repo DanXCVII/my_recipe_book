@@ -133,7 +133,6 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
   }
 }
 
-// TODO: Check if it also works as StatelessWidget
 class CategoryAddDialog extends StatefulWidget {
   final String modifiedCategory;
 
@@ -156,6 +155,12 @@ class CategoryAddDialogState extends State<CategoryAddDialog> {
     if (widget.modifiedCategory != null) {
       categoryNameController.text = widget.modifiedCategory;
     }
+  }
+
+  @override
+  void dispose() {
+    categoryNameController.dispose();
+    super.dispose();
   }
 
   @override

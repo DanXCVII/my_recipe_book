@@ -14,8 +14,13 @@ class RecipeKeeper extends Model {
   List<String> _categories =
       []; // they keep track of the order of the categories
   bool _isInitialised = false;
+  String _swypingRecipeCategory = 'all categories';
   List<Recipe> _swypingCardRecipes = [];
   bool _isLoadingSwypeCards;
+
+  set swypingCardCategory(String categoryName) {
+    _swypingRecipeCategory = categoryName;
+  }
 
   get favorites => _favorites;
 
@@ -100,12 +105,16 @@ class RecipeKeeper extends Model {
         }
       }
     }
+
     await DBProvider.db.deleteRecipe(recipeName);
+    await changeSwypeCardCategory(_swypingRecipeCategory);
+
+    notifyListeners();
+
     Directory recipeDir =
         Directory(await PathProvider.pP.getRecipeDir(recipeName));
     if (deleteFiles) if (recipeDir.existsSync())
       recipeDir.deleteSync(recursive: true);
-    notifyListeners();
   }
 
   void changeCategoryName(String oldCatName, String newCatName) async {
@@ -120,16 +129,16 @@ class RecipeKeeper extends Model {
     notifyListeners();
   }
 
-  // TODO: Update categories when modifying recipe
   /// deletes oldRecipe from database and rKeeper and saves newRecipe to
   /// database and rKeeper
-  Future<Recipe> modifyRecipe(
-      Recipe oldRecipe, Recipe newRecipe, String recipeImage) async {
+  Future<Recipe> modifyRecipe(Recipe oldRecipe, Recipe newRecipe,
+      String recipeImage, bool hasFiles) async {
+    print(hasFiles);
     // modify (delete old save new) recipe in database
     await DBProvider.db.deleteRecipe(oldRecipe.name);
     await DBProvider.db.newRecipe(newRecipe);
 
-    if (oldRecipe.name != newRecipe.name) {
+    if (hasFiles && oldRecipe.name != newRecipe.name) {
       await IO.copyRecipeDataToNewPath(oldRecipe.name, newRecipe.name);
     }
 
@@ -137,22 +146,24 @@ class RecipeKeeper extends Model {
         await DBProvider.db.getRecipeByName(newRecipe.name, true);
     RecipePreview rPreview = convertRecipeToPreview(fullImagePathRecipe);
 
-    // modify recipe object
+    // modify recipe object (delete from every category and then add it to right ones)
     for (String c in _recipes.keys) {
       for (int i = 0; i < _recipes[c].length; i++) {
         if (_recipes[c][i].name == oldRecipe.name) {
-          _recipes[c][i] = rPreview;
+          _recipes[c].removeAt(i);
           break;
         }
       }
     }
-    for (int i = 0; i < _recipes['no category'].length; i++) {
-      if (_recipes['no category'][i].name == oldRecipe.name) {
-        _recipes['no category'][i] = rPreview;
-        break;
+    for (String category in newRecipe.categories) {
+      if (!_categories.contains(category)) {
+        await addCategory(category);
       }
+      _recipes[category].add(rPreview);
     }
-
+    if (newRecipe.categories.isEmpty) {
+      _recipes['no category'].add(rPreview);
+    }
     // check if modified recipe is in swyping cards and if so modify it..
     for (int i = 0; i < _swypingCardRecipes.length; i++) {
       if (_swypingCardRecipes[i] != null &&
@@ -163,7 +174,7 @@ class RecipeKeeper extends Model {
     notifyListeners();
 
     // delete old files
-    if (oldRecipe.name != newRecipe.name) {
+    if (hasFiles && oldRecipe.name != newRecipe.name) {
       await Directory(await PathProvider.pP.getRecipeDir(oldRecipe.name))
           .delete(recursive: true);
     }
@@ -171,21 +182,35 @@ class RecipeKeeper extends Model {
   }
 
   /// Adds recipe to the database and previewRecipe to the rKeeper
-  /// given recipe doesn't contain the full image paths
+  /// given recipe doesn't contain the full image paths. Also updates
+  /// the swyping cards, if the new recipe is in the currently selected
+  /// category
   Future<Recipe> addRecipe(Recipe recipe) async {
+    for (String category in recipe.categories) {
+      if (!_categories.contains(category)) {
+        await addCategory(category);
+      }
+    }
+
     await DBProvider.db.newRecipe(recipe);
     Recipe fullImagePathRecipe =
         await DBProvider.db.getRecipeByName(recipe.name, true);
     RecipePreview rPreview = convertRecipeToPreview(fullImagePathRecipe);
 
     for (String category in recipe.categories) {
-      if (!_categories.contains(category)) {
-        addCategory(category);
-      }
       _recipes[category].add(rPreview);
+      if (category.compareTo(_swypingRecipeCategory) == 0) {
+        await changeSwypeCardCategory(category);
+      }
     }
 
-    if (recipe.categories.isEmpty) _recipes['no category'].add(rPreview);
+    if (recipe.categories.isEmpty) {
+      await changeSwypeCardCategory('no category');
+      _recipes['no category'].add(rPreview);
+    }
+    if (_swypingRecipeCategory == 'all categories') {
+      await changeSwypeCardCategory('all categories');
+    }
 
     notifyListeners();
     return fullImagePathRecipe;
@@ -237,7 +262,12 @@ class RecipeKeeper extends Model {
       if (randomRecipe != null) {
         _swypingCardRecipes.add(randomRecipe);
       } else {
-        break;
+        if (i == 0) {
+          _isLoadingSwypeCards = false;
+          notifyListeners();
+          return [];
+        }
+        _swypingCardRecipes.add(_swypingCardRecipes[i - 1]);
       }
     }
 

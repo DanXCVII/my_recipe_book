@@ -7,10 +7,10 @@ import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'dart:math';
+import '../../helper.dart';
+import './dummy_data.dart';
 
 import '../../recipe.dart';
-import '../../database.dart';
 import './steps_section.dart';
 import './ingredients_section.dart';
 import '../../dialogs.dart';
@@ -169,21 +169,22 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         title: Text("add recipe"),
         actions: <Widget>[
           ScopedModelDescendant<RecipeKeeper>(
-              builder: (context, child, model) => IconButton(
+              builder: (context, child, rKeeper) => IconButton(
                     icon: Icon(Icons.check),
                     color: Colors.white,
                     onPressed: () {
-                      _finishedEditingRecipe(model);
+                      _finishedEditingRecipe(rKeeper);
                     },
                   )),
-          IconButton(
-            icon: Icon(Icons.art_track),
-            onPressed: () {
-              FocusScope.of(context).requestFocus(FocusNode());
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (_) => WillPopScope(
+          ScopedModelDescendant<RecipeKeeper>(
+            builder: (context, child, rKeeper) => IconButton(
+              icon: Icon(Icons.art_track),
+              onPressed: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => WillPopScope(
                     // It disables the back button
                     onWillPop: () async => false,
                     child: RoundDialog(
@@ -193,13 +194,15 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                           fit: BoxFit.fitWidth,
                           animation: "Go",
                         ),
-                        150)),
-              );
-              saveDummyData().then((_) {
-                Navigator.pop(context);
-              });
-            },
-          )
+                        150),
+                  ),
+                );
+                DummyData().saveDummyData(rKeeper).then((_) {
+                  Navigator.pop(context);
+                });
+              },
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -278,8 +281,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           filled: true,
-                          labelText:
-                              "cooking time", // TODO: Maybe change name to something which isn"t so much related to cooking with heat
+                          labelText: "cooking time",
                         ),
                       ),
                     ),
@@ -417,7 +419,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     });
   }
 
-  // TODO: INGREDIENTS ONLY SAVED WITH HEADING!
   void _finishedEditingRecipe(RecipeKeeper rKeeper) {
     RecipeValidator()
         .validateForm(
@@ -476,7 +477,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         newRecipe.isFavorite = widget.editRecipe.isFavorite;
         Navigator.pop(context); // loading screen
         Navigator.pop(context); // edit recipe screen
-        Navigator.pop(context); // old recipe screen
         imageCache.clear();
         Navigator.push(
           context,
@@ -493,114 +493,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     }
   }
 
-  Future<void> saveDummyData() async {
-    await DBProvider.db.newCategory('Hauptseisen');
-    await DBProvider.db.newCategory('Vorspeisen');
-    await DBProvider.db.newCategory('Nachtisch');
-    await DBProvider.db.newCategory('Gemüselastig');
-
-    String imagePath =
-        PathProvider.pP.getRecipePath('Steack mit Bratsauce', '.jpg');
-    String imagePreviewPath =
-        PathProvider.pP.getRecipePreviewPath('Steack mit Bratsauce', '.jpg');
-
-    await IO.saveImage(File('/storage/emulated/0/Download/recipeData/meat.jpg'),
-        imagePath, 2000);
-    //await saveImage(File('/storage/emulated/0/Download/recipeDate/meat.jpg'),
-    //    imagePreviewPath, 300);
-    Recipe r1 = Recipe(
-      name: 'Steack mit Bratsauce',
-      imagePath: imagePath,
-      imagePreviewPath: imagePreviewPath,
-      preperationTime: 15,
-      cookingTime: 60,
-      totalTime: 90,
-      servings: 3,
-      ingredientsGlossary: ['Steacksauce', 'Steack'],
-      ingredients: [
-        [
-          Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
-          Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
-          Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
-          Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
-        ],
-        [
-          Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
-          Ingredient(name: 'Steak', amount: 700, unit: 'g')
-        ],
-      ],
-      effort: 4,
-      vegetable: Vegetable.NON_VEGETARIAN,
-      steps: [
-        'Flank Steak mit Rohrzucker und Salz bestreuen, anschließend mit Teriyakisauce marinieren '
-            'und sanft einmassieren. Im Kühlschrank für 2 bis 3 Stunden ziehen lassen und danach 30 '
-            'Minuten bei Zimmertemperatur ruhen lassen.',
-        'Flank Steak etwa 2 Minuten bei geschlossenem Deckel grillen, für ein Rautenmuster um 45 Grad '
-            'drehen und bei geschlossenem Deckel etwa 2 Minuten weitergrillen. Die Rückseite des Steaks '
-            'auf die gleiche Weise grillen.',
-        'Das gegrillte Steak wieder in die Teriyakisauce zurücklegen und auf dem Grill eine indirekte '
-            'Zone einrichten. Einen Bratenkorb mittig auf den Grill legen, Steak hineinlegen und Deckel '
-            'schließen. Nach 10 bis 15 Minuten Steak herausnehmen und kurz ruhen lassen.'
-      ],
-      stepImages: [
-        [
-          await saveStepImage(
-              File('/storage/emulated/0/Download/recipeData/meat1.jpg'),
-              'Steack mit Bratsauce',
-              1)
-        ],
-        [
-          await saveStepImage(
-              File('/storage/emulated/0/Download/recipeData/meat2.jpg'),
-              'Steack mit Bratsauce',
-              2),
-          await saveStepImage(
-              File('/storage/emulated/0/Download/recipeData/meat3.jpg'),
-              'Steack mit Bratsauce',
-              2)
-        ],
-        []
-      ],
-      notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
-      isFavorite: false,
-      categories: ['Hauptspeisen'],
-    );
-    await DBProvider.db.newRecipe(r1);
-  }
-
-  /// ONLY FOR DUMMY RECIPES, VERY TEMPORARY AND NOT NICE CODED
-  /// TODO: Remove later
-  Future<String> saveStepImage(
-      File newImage, String recipeName, int stepNumber) async {
-    String output;
-    String newStepImageName = getStepImageName(newImage.path);
-
-    String stepImagePath =
-        PathProvider.pP.getRecipeStepNumberDir(recipeName, stepNumber + 1) +
-            newStepImageName;
-    output = stepImagePath;
-
-    IO.saveImage(
-      newImage,
-      stepImagePath,
-      2000,
-    );
-    IO.saveImage(
-      newImage,
-      recipeName,
-      250,
-    );
-    return output;
-  }
-
-  // TODO: Remove later / Only for dummyRecipes
-  String getStepImageName(String selectedImagePath) {
-    Random random = Random();
-    int dotIndex = selectedImagePath.indexOf('.');
-    String ending = selectedImagePath.substring(dotIndex);
-    return random.nextInt(10000).toString() + ending;
-  }
-
   Future<Recipe> saveRecipe(RecipeKeeper rKeeper) async {
     // get the lists for the data of the ingredients
     List<List<Ingredient>> ingredients = getCleanIngredientData(
@@ -608,8 +500,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ingredientAmountController,
         ingredientUnitController);
 
-    String oldRecipeImageName =
-        widget.editRecipe == null ? 'tmp' : widget.editRecipe.name;
+    String oldRecipeImageName = widget.editRecipe == null
+        ? 'tmp'
+        : getUnderscoreName(widget.editRecipe.name);
     String recipeName = nameController.text;
 
     String imageDatatype;
@@ -621,8 +514,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     // modifying the stepImages paths for the database
     for (int i = 0; i < stepImages.length; i++) {
       for (int j = 0; j < stepImages[i].length; j++) {
-        stepImages[i][j] = stepImages[i][j]
-            .replaceFirst('/$oldRecipeImageName/', '/$recipeName/');
+        stepImages[i][j] = stepImages[i][j].replaceFirst(
+            '/$oldRecipeImageName/', '/${getUnderscoreName(recipeName)}/');
       }
     }
 
@@ -664,16 +557,23 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
     Recipe fullImagePathRecipe;
     if (widget.editRecipe != null) {
-      fullImagePathRecipe =
-          await rKeeper.modifyRecipe(widget.editRecipe, newRecipe, recipeImage);
+      fullImagePathRecipe = await rKeeper.modifyRecipe(
+        widget.editRecipe,
+        newRecipe,
+        recipeImage,
+        _hasRecipeImage(newRecipe),
+      );
     } else {
-      if (widget.editRecipe.name != newRecipe.name) {
+      if (_hasRecipeImage(newRecipe)) {
         await IO.renameRecipeData(
           oldRecipeImageName,
-          recipeImage.substring(recipeImage.lastIndexOf('.')),
           recipeName,
+          fileExtension: recipeImage != null
+              ? recipeImage.substring(recipeImage.lastIndexOf('.'))
+              : null,
         );
       }
+
       fullImagePathRecipe = await rKeeper.addRecipe(newRecipe);
     }
 
@@ -694,6 +594,18 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         ),
       ),
     );
+  }
+
+  bool _hasRecipeImage(Recipe recipe) {
+    if (recipe.imagePath != "images/randomFood.jpg") {
+      return true;
+    }
+    for (List<String> l in recipe.stepImages) {
+      if (l.isNotEmpty) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void _showIngredientsIncompleteDialog(BuildContext context) {

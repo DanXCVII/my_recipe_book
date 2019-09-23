@@ -110,8 +110,10 @@ class ShoppingCartKeeper extends Model {
   Future<void> removeIngredientFromCart(
       String recipeName, Ingredient ingredient) async {
     if (_shoppingCart[recipeName] == null) return;
+    
     if (recipeName.compareTo('summary') != 0) {
       var removeIngred = _getSuitingIngredientRecipe(ingredient, recipeName);
+      if (removeIngred == null) return;
       double removeAmount = removeIngred.amount;
       _shoppingCart[recipeName].remove(removeIngred);
 

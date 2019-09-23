@@ -234,17 +234,14 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 },
               )
             : null,
-        mpNavigator.index != 3
-            ? IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () {
-                  DBProvider.db.getRecipeNames().then((recipeNames) {
-                    showSearch(
-                        context: context, delegate: RecipeSearch(recipeNames));
-                  });
-                },
-              )
-            : null,
+        IconButton(
+          icon: Icon(Icons.search),
+          onPressed: () {
+            DBProvider.db.getRecipeNames().then((recipeNames) {
+              showSearch(context: context, delegate: RecipeSearch(recipeNames));
+            });
+          },
+        ),
         ScopedModelDescendant<ShoppingCartKeeper>(
             builder: (context, child, model) => IconButton(
                   icon: Icon(Icons.adb),

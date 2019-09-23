@@ -73,6 +73,7 @@ class RecipeScreen extends StatelessWidget {
                   icon: Icon(Icons.edit),
                   tooltip: 'edit',
                   onPressed: () {
+                    Navigator.pop(context);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -258,17 +259,17 @@ class RecipeScreen extends StatelessWidget {
                           ),
                           Column(
                             children: <Widget>[
-                              Text("${recipe.preperationTime} min",
+                              Text(getTimeHoursMinutes(recipe.preperationTime),
                                   style: TextStyle(color: Colors.white)),
                               Text(
-                                "${recipe.cookingTime} min",
+                                getTimeHoursMinutes(recipe.cookingTime),
                                 style: TextStyle(color: Colors.white),
                               ),
                               recipe.cookingTime + recipe.preperationTime ==
                                       recipe.totalTime
                                   ? Container()
                                   : Text(
-                                      "$otherTime min",
+                                      getTimeHoursMinutes(otherTime),
                                       style: TextStyle(color: Colors.white),
                                     ),
                             ],
@@ -369,12 +370,12 @@ class RecipeScreen extends StatelessWidget {
       recipeText += '$i. $step\n';
       i++;
     }
-    print('-'+recipe.notes+'-');
+    print('-' + recipe.notes + '-');
     if (recipe.notes != null && recipe.notes != '') {
       recipeText += '====================\n';
       recipeText += 'notes: ' + recipe.notes;
     }
-    // TODO: Continue
+    // TODO: Make nicer
     return recipeText;
   }
 }
@@ -546,7 +547,7 @@ class _CategoryCircleState extends State<CategoryCircle> {
                 height: 100,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(widget.imageName),
+                    image: FileImage(File(widget.imageName)),
                     fit: BoxFit.cover,
                   ),
                 ),

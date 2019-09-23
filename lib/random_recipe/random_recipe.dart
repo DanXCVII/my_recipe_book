@@ -36,6 +36,7 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                 currentCategory == _selectedCategory ? Colors.amber : null,
             onPressed: () {
               setState(() {
+                rKeeper.swypingCardCategory = currentCategory;
                 _selectedCategory = currentCategory;
                 rKeeper.changeSwypeCardCategory(currentCategory);
               });
@@ -72,6 +73,7 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
             if (rKeeper.isLoadingSwypeCards) {
               return Center(child: CircularProgressIndicator());
             } else if (rKeeper.swypingCardRecipes.isEmpty) {
+              print(rKeeper.swypingCardRecipes);
               return NoRecipeCategory();
             } else {
               return SwypingCards(
@@ -142,7 +144,8 @@ class _SwypingCardsState extends State<SwypingCards>
                   .getNewRandomRecipe(widget.recipes.last.name,
                       categoryName: getCategoryName)
                   .then((recipe) {
-                widget.recipes.add(recipe);
+                widget.recipes
+                    .add(recipe == null ? widget.recipes.last : recipe);
 
                 if (index - 2 >= 0) {
                   widget.recipes[index - 2] = null;
