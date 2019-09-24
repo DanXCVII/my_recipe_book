@@ -371,7 +371,6 @@ class RecipeScreen extends StatelessWidget {
       recipeText += '$i. $step\n';
       i++;
     }
-    print('-' + recipe.notes + '-');
     if (recipe.notes != null && recipe.notes != '') {
       recipeText += '====================\n';
       recipeText += 'notes: ${recipe.notes}\n';

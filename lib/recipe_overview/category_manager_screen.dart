@@ -25,7 +25,10 @@ class CategoryManager extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
           backgroundColor: Color(0xFF790604),
-          child: Icon(Icons.add),
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
           onPressed: () {
             showDialog(context: context, builder: (_) => CategoryAddDialog());
           }),

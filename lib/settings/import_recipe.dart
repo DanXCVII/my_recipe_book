@@ -21,7 +21,6 @@ Future<void> importSingleMultipleRecipes(
       importMulitiple = true;
     }
   }
-  print(importMulitiple);
   if (importMulitiple) {
     importRecipes(rKeeper, importDir);
   } else {

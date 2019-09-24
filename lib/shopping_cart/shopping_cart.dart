@@ -353,7 +353,7 @@ class NotePainter extends CustomPainter {
       ..strokeWidth = 4;
 
     final paintFill = Paint()
-      ..color = darkTheme ? Color(0xff917A54) : Color(0xffFEF3E1)
+      ..color = darkTheme ? Color(0xffC0A97B) : Color(0xffFEF3E1)
       ..strokeWidth = 2;
 
     var leftTop = Offset(4, 25);

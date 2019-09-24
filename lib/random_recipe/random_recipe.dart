@@ -73,7 +73,6 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
             if (rKeeper.isLoadingSwypeCards) {
               return Center(child: CircularProgressIndicator());
             } else if (rKeeper.swypingCardRecipes.isEmpty) {
-              print(rKeeper.swypingCardRecipes);
               return NoRecipeCategory();
             } else {
               return SwypingCards(
@@ -135,7 +134,6 @@ class _SwypingCardsState extends State<SwypingCards>
             },
             swipeCompleteCallback:
                 (CardSwipeOrientation orientation, int index) {
-              print(index);
               String getCategoryName =
                   widget.currentCategory == 'all categories'
                       ? null

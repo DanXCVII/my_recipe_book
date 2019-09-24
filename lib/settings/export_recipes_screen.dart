@@ -147,9 +147,7 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
 
     await Directory(exportMultiDir).delete(recursive: true);
     exportMultiDir = await PathProvider.pP.getShareMultiDir();
-    print(widget.exportRecipes);
     for (String r in widget.exportRecipes) {
-      print(r);
       await IO.saveRecipeZip(exportMultiDir, r);
       if (widget.exportRecipes.last != r) {
         setState(() {
