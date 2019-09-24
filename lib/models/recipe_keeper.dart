@@ -22,19 +22,15 @@ class RecipeKeeper extends Model {
     _swypingRecipeCategory = categoryName;
   }
 
-  get favorites => _favorites;
+  List<RecipePreview> get favorites => _favorites;
 
-  get categories {
-    List<String> cats = [];
-    cats.addAll(_categories);
-    return cats;
-  }
+  List<String> get categories => _categories;
 
-  get swypingCardRecipes => _swypingCardRecipes;
+  List<Recipe> get swypingCardRecipes => _swypingCardRecipes;
 
-  get isLoadingSwypeCards => _isLoadingSwypeCards;
+  bool get isLoadingSwypeCards => _isLoadingSwypeCards;
 
-  get isInitialised => _isInitialised;
+  bool get isInitialised => _isInitialised;
 
   List<RecipePreview> getRecipesOfCategory(String category) =>
       _recipes[category];
@@ -82,7 +78,7 @@ class RecipeKeeper extends Model {
     return _recipes[categoryName][randomRecipe].imagePreviewPath;
   }
 
-  void removeCategory(String categoryName) {
+  Future<void> removeCategory(String categoryName) async {
     _categories.remove(categoryName);
     for (RecipePreview r in _recipes[categoryName]) {
       if (r.categories.isEmpty) {
@@ -92,6 +88,7 @@ class RecipeKeeper extends Model {
     _recipes.remove(categoryName);
 
     notifyListeners();
+    await DBProvider.db.removeCategory(categoryName);
   }
 
   Future<void> deleteRecipeWithName(String recipeName, bool deleteFiles) async {
@@ -272,6 +269,14 @@ class RecipeKeeper extends Model {
     }
 
     _isLoadingSwypeCards = false;
+    notifyListeners();
+  }
+
+  void updateItems(int oldIndex, newIndex) {
+    if (newIndex > oldIndex) newIndex -= 1;
+    String tmp = _categories[oldIndex];
+    _categories[oldIndex] = _categories[newIndex];
+    _categories[newIndex] = tmp;
     notifyListeners();
   }
 

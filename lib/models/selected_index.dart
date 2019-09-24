@@ -2,7 +2,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 class MainPageNavigator extends Model {
   int _index = 0;
-  bool _currentMainView;
+  bool _showRecipesCatOverview;
   String _title = 'recipes';
   bool _showOverlay = false;
   bool _showFancyShoppingList = true;
@@ -15,7 +15,7 @@ class MainPageNavigator extends Model {
 
   String get title => _title;
 
-  bool get recipeCatOverview => _currentMainView;
+  bool get recipeCatOverview => _showRecipesCatOverview;
 
   void changeOverlayStatus(bool status) {
     _showOverlay = status;
@@ -54,12 +54,12 @@ class MainPageNavigator extends Model {
   }
 
   void changeCurrentMainView(bool mainView) {
-    this._currentMainView = mainView;
+    this._showRecipesCatOverview = mainView;
     notifyListeners();
   }
 
   void initCurrentMainView(bool mainView) {
-    if (this._currentMainView == null) _currentMainView = mainView;
+    if (this._showRecipesCatOverview == null) _showRecipesCatOverview = mainView;
     return;
   }
 

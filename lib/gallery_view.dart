@@ -41,19 +41,12 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // TODO: Make AppBar somehow transparent
-        backgroundColor: Colors.black,
-        elevation: 0,
-      ),
       body: Container(
-        decoration: BoxDecoration(color: Colors.black),
-        constraints: BoxConstraints.expand(
-          height: MediaQuery.of(context).size.height,
-        ),
-        child: Stack(
-          alignment: Alignment.bottomLeft,
-          children: <Widget>[
+          decoration: BoxDecoration(color: Colors.black),
+          constraints: BoxConstraints.expand(
+            height: MediaQuery.of(context).size.height,
+          ),
+          child: Stack(alignment: Alignment.bottomLeft, children: <Widget>[
             PhotoViewGallery.builder(
               scrollPhysics: const BouncingScrollPhysics(),
               builder: _buildItem,
@@ -63,18 +56,32 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
               pageController: widget.pageController,
               onPageChanged: onPageChanged,
             ),
-            Container(
-                width: MediaQuery.of(context).size.width,
-                color: Color.fromRGBO(0, 0, 0, 0.3),
-                padding: const EdgeInsets.all(20.0),
-                child: Text(
-                  widget.descriptions[currentIndex],
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: 17.0, decoration: null),
-                ))
-          ],
-        ),
-      ),
+            widget.descriptions[currentIndex] == null ||
+                    widget.descriptions[currentIndex] == ''
+                ? Container()
+                : Container(
+                    width: MediaQuery.of(context).size.width,
+                    color: Color.fromRGBO(0, 0, 0, 0.3),
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text(
+                      widget.descriptions[currentIndex],
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 17.0,
+                          decoration: null),
+                    )),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Opacity(
+                opacity: 0.5,
+                child: AppBar(
+                  backgroundColor: Colors.black..withOpacity(0.3),
+                ),
+              ),
+            )
+          ])),
     );
   }
 

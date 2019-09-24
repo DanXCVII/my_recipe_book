@@ -103,13 +103,10 @@ flutter:
    - images/cookingHat.png
    - images/hatWithSpoonFork.png
    - images/bigHeart.png
-   - images/key.png
    - images/lock.png
    - images/dices.png
-   - images/spielfigur.png
    - images/letter.png
    - images/cuisine.jpg
-   - images/postbox.png
 
    - animations/writing_pen.flr
 

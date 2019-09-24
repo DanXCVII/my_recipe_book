@@ -347,7 +347,8 @@ class RecipeScreen extends StatelessWidget {
   }
 
   String getRecipeAsString(Recipe recipe) {
-    String recipeText = 'recipename: ${recipe.name}\n'
+    String recipeText = '꧁꧂꧁꧂꧁꧂\n'
+        'recipename: ${recipe.name}\n'
         '====================\n'
         'preperation Time: ${recipe.preperationTime} min\n'
         'cooking Time: ${recipe.cookingTime} min\n'
@@ -373,9 +374,9 @@ class RecipeScreen extends StatelessWidget {
     print('-' + recipe.notes + '-');
     if (recipe.notes != null && recipe.notes != '') {
       recipeText += '====================\n';
-      recipeText += 'notes: ' + recipe.notes;
+      recipeText += 'notes: ${recipe.notes}\n';
     }
-    // TODO: Make nicer
+    recipeText += '꧁꧂꧁꧂꧁꧂';
     return recipeText;
   }
 }
@@ -446,17 +447,16 @@ void _showStepFullView(
 }
 
 void _showPictureFullView(String image, String tag, BuildContext context) {
-  Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => Scaffold(
-          appBar: AppBar(),
-          backgroundColor: Colors.black54,
-          body: Center(
-            child: Hero(
-                tag: tag,
-                child: image == 'images/randomFood.jpg'
-                    ? Image.asset('images/randomFood.jpg', fit: BoxFit.cover)
-                    : Image.file(File(image), fit: BoxFit.cover)),
-          ))));
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GalleryPhotoView(
+          initialIndex: 0,
+          galleryItems: [image],
+          descriptions: [''],
+          heroTags: ['recipeImage'],
+        ),
+      ));
 }
 
 class CategoriesSection extends StatelessWidget {

@@ -54,7 +54,6 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
 
   @override
   Widget buildResults(BuildContext context) {
-    print('keke');
     if (recipeNames.isEmpty) {
       return Container(
           height: 70,

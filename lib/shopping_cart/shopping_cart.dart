@@ -17,7 +17,8 @@ class ShoppingCartScreen extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(5),
       child: CustomPaint(
-        painter: NotePainter(),
+        painter: NotePainter(
+            Theme.of(context).brightness == Brightness.dark ? true : false),
         child: Column(
           children: <Widget>[
             Stack(
@@ -144,7 +145,8 @@ class IngredientsList extends StatelessWidget {
         String recipeName = shoppingCart.keys.toList()[index];
 
         if (recipeName.compareTo('summary') == 0) {
-          return getRecipeTile(recipeName, false);
+          return getRecipeTile(recipeName, false,
+              Theme.of(context).brightness == Brightness.dark);
         } else {
           return Dismissible(
             key: Key('$recipeName'),
@@ -153,18 +155,20 @@ class IngredientsList extends StatelessWidget {
             },
             background: _getPrimaryBackgroundDismissable(),
             secondaryBackground: _getSecondaryBackgroundDismissable(),
-            child: getRecipeTile(recipeName,
-                shoppingCart.keys.toList().length - 1 == index ? true : false),
+            child: getRecipeTile(
+                recipeName,
+                shoppingCart.keys.toList().length - 1 == index ? true : false,
+                Theme.of(context).brightness == Brightness.dark),
           );
         }
       },
     );
   }
 
-  Widget getRecipeTile(String recipeName, bool isLast) {
+  Widget getRecipeTile(String recipeName, bool isLast, bool darkTheme) {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xffFEF3E1),
+        color: darkTheme ? Color(0xff69562F) : Color(0xffFEF3E1),
         border: Border(
           top: BorderSide(width: 2),
           left: BorderSide(width: 2),
@@ -172,48 +176,41 @@ class IngredientsList extends StatelessWidget {
           bottom: BorderSide(width: isLast ? 2 : 0),
         ),
       ),
-      child: Theme(
-        data: ThemeData(
-          textTheme: TextTheme(subhead: TextStyle(color: Colors.black)),
-        ),
-        child: ExpansionTile(
-          title: Text(recipeName),
-          children: shoppingCart[recipeName].map((ingredient) {
-            return Dismissible(
-              key: Key('$recipeName${ingredient.name}${ingredient.unit}'),
-              onDismissed: (_) {
-                scKeeper.removeIngredientFromCart(
-                  recipeName,
-                  Ingredient(
-                      name: ingredient.name,
-                      amount: ingredient.amount,
-                      unit: ingredient.unit),
-                );
-              },
-              background: _getPrimaryBackgroundDismissable(),
-              secondaryBackground: _getSecondaryBackgroundDismissable(),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color(0xffFEF3E1),
-                  border: Border(
-                    top: BorderSide(width: 2),
-                    bottom: BorderSide(
-                        width: ingredient == shoppingCart[recipeName].last
-                            ? 0
-                            : 0),
-                  ),
-                ),
-                child: IngredientRow(
-                  showBorder: true,
-                  ingredient: ingredient,
-                  scKeeper: scKeeper,
-                  textColor: Colors.black,
-                  recipeName: recipeName,
+      child: ExpansionTile(
+        title: Text(recipeName),
+        children: shoppingCart[recipeName].map((ingredient) {
+          return Dismissible(
+            key: Key('$recipeName${ingredient.name}${ingredient.unit}'),
+            onDismissed: (_) {
+              scKeeper.removeIngredientFromCart(
+                recipeName,
+                Ingredient(
+                    name: ingredient.name,
+                    amount: ingredient.amount,
+                    unit: ingredient.unit),
+              );
+            },
+            background: _getPrimaryBackgroundDismissable(),
+            secondaryBackground: _getSecondaryBackgroundDismissable(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: darkTheme ? Color(0xff88682A) : Color(0xffFEF3E1),
+                border: Border(
+                  top: BorderSide(width: 2),
+                  bottom: BorderSide(
+                      width:
+                          ingredient == shoppingCart[recipeName].last ? 0 : 0),
                 ),
               ),
-            );
-          }).toList(),
-        ),
+              child: IngredientRow(
+                showBorder: true,
+                ingredient: ingredient,
+                scKeeper: scKeeper,
+                recipeName: recipeName,
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -344,6 +341,10 @@ class IngredientRow extends StatelessWidget {
 }
 
 class NotePainter extends CustomPainter {
+  final bool darkTheme;
+
+  NotePainter(this.darkTheme);
+
   @override
   void paint(Canvas canvas, Size size) {
     final paintStroke = Paint()
@@ -352,7 +353,7 @@ class NotePainter extends CustomPainter {
       ..strokeWidth = 4;
 
     final paintFill = Paint()
-      ..color = Color(0xffFEF3E1)
+      ..color = darkTheme ? Color(0xff917A54) : Color(0xffFEF3E1)
       ..strokeWidth = 2;
 
     var leftTop = Offset(4, 25);

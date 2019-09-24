@@ -336,8 +336,6 @@ class PathProvider {
 
   Future<String> getRecipePathFull(String recipeName, String ending) async {
     String cRecipeName = getUnderscoreName(recipeName);
-    print('looooooooool');
-    print(cRecipeName);
 
     String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/$cRecipeName').create(recursive: true);

@@ -100,7 +100,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   });
   AnimationController _controller;
   static const List<IconData> icons = const [
-    Icons.grid_on,
+    GroovinMaterialIcons.grid_large,
     Icons.description,
   ];
 
@@ -123,36 +123,36 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<MainPageNavigator>(
-        builder: (context, child, model) {
+        builder: (context, child, mpNavigator) {
       return Scaffold(
-        appBar: _buildAppBar(model.title, model),
-        floatingActionButton: _getFloatingB(model.title),
+        appBar: _buildAppBar(mpNavigator.title, mpNavigator),
+        floatingActionButton: _getFloatingB(mpNavigator.title),
         body: IndexedStack(
-          index: model.index,
+          index: mpNavigator.index,
           children: [
             AnimatedSwitcher(
               duration: Duration(milliseconds: 200),
-              child: model.recipeCatOverview == true
+              child: mpNavigator.recipeCatOverview == true
                   ? RecipeCategoryOverview()
                   : CategoryGridView(),
             ),
             FavoriteScreen(),
-            model.showFancyShoppingList
+            mpNavigator.showFancyShoppingList
                 ? FancyShoppingCartScreen()
                 : ShoppingCartScreen(),
             SwypingCardsScreen(),
             Settings(),
           ],
         ),
-        backgroundColor: _getBackgroundColor(model.title),
+        backgroundColor: _getBackgroundColor(mpNavigator.title),
         bottomNavigationBar: Theme(
             data: Theme.of(context).copyWith(canvasColor: Colors.black87),
             child: BottomNavyBar(
                 backgroundColor: Color(0xff232323),
                 animationDuration: Duration(milliseconds: 150),
-                selectedIndex: model.index,
+                selectedIndex: mpNavigator.index,
                 showElevation: true,
-                onItemSelected: (index) => _onItemTapped(model, index),
+                onItemSelected: (index) => _onItemTapped(mpNavigator, index),
                 items: [
                   BottomNavyBarItem(
                       icon: Icon(GroovinMaterialIcons.notebook),
@@ -183,35 +183,42 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       inactiveColor: Colors.white)
                 ])
 
-            // BottomNavigationBar(
+            // child: BottomNavigationBar(
             //   fixedColor: Colors.white,
             //   items: <BottomNavigationBarItem>[
             //     BottomNavigationBarItem(
             //         icon: Icon(
             //           GroovinMaterialIcons.notebook,
-            //           color: _selectedIndex == 0 ? Colors.brown[400] : Colors.white,
+            //           color: mpNavigator.index == 0
+            //               ? Colors.brown[400]
+            //               : Colors.white,
             //         ),
             //         title: Text("recipes")),
             //     BottomNavigationBarItem(
-            //         icon: _selectedIndex == 1
+            //         icon: mpNavigator.index == 1
             //             ? Icon(Icons.favorite, color: Colors.pink)
             //             : Icon(Icons.favorite_border),
             //         title: Text("favorites")),
             //     BottomNavigationBarItem(
             //         icon: Icon(Icons.shopping_cart,
-            //             color: _selectedIndex == 2 ? Colors.grey : Colors.white),
+            //             color:
+            //                 mpNavigator.index == 2 ? Colors.grey : Colors.white),
             //         title: Text("shopping cart")),
             //     BottomNavigationBarItem(
             //         icon: Icon(GroovinMaterialIcons.dice_multiple,
-            //             color: _selectedIndex == 3 ? Colors.green : Colors.white),
+            //             color:
+            //                 mpNavigator.index == 3 ? Colors.green : Colors.white),
             //         title: Text("feelin' lucky?!")),
             //     BottomNavigationBarItem(
             //         icon: Icon(Icons.settings,
-            //             color: _selectedIndex == 4 ? Colors.grey : Colors.white),
+            //             color:
+            //                 mpNavigator.index == 4 ? Colors.grey : Colors.white),
             //         title: Text("settings"))
             //   ],
-            //   currentIndex: _selectedIndex,
-            //   onTap: _onItemTapped,
+            //   currentIndex: mpNavigator.index,
+            //   onTap: (index) {
+            //     _onItemTapped(mpNavigator, index);
+            //   },
             // ),
             ),
       );
@@ -228,7 +235,9 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       actions: <Widget>[
         mpNavigator.index == 0
             ? IconButton(
-                icon: Icon(GroovinMaterialIcons.grid_large),
+                icon: Icon(mpNavigator.recipeCatOverview
+                    ? Icons.grid_off
+                    : Icons.grid_on),
                 onPressed: () {
                   _changeMainPageOverview(mpNavigator);
                 },
@@ -251,46 +260,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       Ingredient(name: 'Zutat', amount: 1, unit: 'g'),
                       Ingredient(name: 'Zutat2', amount: 2, unit: 'h')
                     ]);
-
-                    // var r = Recipe(
-                    //   id: 1,
-                    //   name: 'Steack mit Bratsauce',
-                    //   imagePath: 'imagePath',
-                    //   imagePreviewPath: 'imagePreviewPath',
-                    //   servings: 3,
-                    //   ingredientsGlossary: ['Steacksauce', 'Steack'],
-                    //   ingredients: [
-                    //     [
-                    //       Ingredient(name: 'Rosmarin', amount: 5, unit: 'Zweige'),
-                    //       Ingredient(name: 'Mehl', amount: 300, unit: 'g'),
-                    //       Ingredient(name: 'Curry', amount: 1, unit: 'EL'),
-                    //       Ingredient(name: 'Gewürze', amount: 3, unit: 'Priesen')
-                    //     ],
-                    //     [
-                    //       Ingredient(name: 'Rohrzucker', amount: 50, unit: 'g'),
-                    //       Ingredient(name: 'Steak', amount: 700, unit: 'g')
-                    //     ],
-                    //   ],
-                    //   complexity: 4,
-                    //   vegetable: Vegetable.NON_VEGETARIAN,
-                    //   steps: [
-                    //     'step1',
-                    //     'step2 kek',
-                    //   ],
-                    //   stepImages: [
-                    //     [], [],
-                    //     // ['/storage/emulated/0/Download/recipeData/meat1.jpg'],
-                    //     // [
-                    //     //   '/storage/emulated/0/Download/recipeData/meat2.jpg',
-                    //     // ],
-                    //   ],
-                    //   notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
-                    //   isFavorite: false,
-                    //   categories: ['Hauptspeisen'],
-                    // );
-                    // var json = r.toMap();
-                    // Recipe rrr = Recipe.fromMap(json);
-                    // print(rrr.toString());
                   },
                 ))
       ].where((child) => child != null).toList(),

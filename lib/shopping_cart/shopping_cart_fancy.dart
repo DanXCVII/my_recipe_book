@@ -76,8 +76,8 @@ class FancyShoppingCartScreen extends StatelessWidget {
           onDismissed: (_) {
             scKeeper.removeRecipeFromCart(recipeName);
           },
-          background: _getPrimaryBackgroundDismissable(),
-          secondaryBackground: _getSecondaryBackgroundDismissable(),
+          background: _getPrimaryBackgroundDismissible(),
+          secondaryBackground: _getSecondaryBackgroundDismissible(),
           child: getRecipeTile(
             recipeName,
             scKeeper,
@@ -140,8 +140,8 @@ class FancyShoppingCartScreen extends StatelessWidget {
                     unit: ingredient.unit),
               );
             },
-            background: _getPrimaryBackgroundDismissable(),
-            secondaryBackground: _getSecondaryBackgroundDismissable(),
+            background: _getPrimaryBackgroundDismissible(),
+            secondaryBackground: _getSecondaryBackgroundDismissible(),
             child: Container(
               decoration: BoxDecoration(
                 color: backgroundcolor,
@@ -163,7 +163,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
     );
   }
 
-  Widget _getPrimaryBackgroundDismissable() {
+  Widget _getPrimaryBackgroundDismissible() {
     return Container(
       color: Colors.red,
       child: Row(
@@ -181,7 +181,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
     );
   }
 
-  Widget _getSecondaryBackgroundDismissable() {
+  Widget _getSecondaryBackgroundDismissible() {
     return Container(
       color: Colors.red,
       child: Row(
