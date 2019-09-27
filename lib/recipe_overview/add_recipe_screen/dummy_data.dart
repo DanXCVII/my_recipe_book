@@ -79,6 +79,7 @@ class DummyData {
         notes: 'Steak gegen die Faser in feine Tranchen schneiden.',
         isFavorite: false,
         categories: ['Hauptspeisen'],
+        nutritions: [],
       );
       await rKeeper.addRecipe(r1);
     }

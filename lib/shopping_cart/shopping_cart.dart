@@ -107,9 +107,7 @@ class ShoppingCartScreen extends StatelessWidget {
                       child: Align(
                         alignment: Alignment(1, 1),
                         child: Image.asset(
-                          Theme.of(context).brightness != Brightness.dark
-                              ? 'images/cookingPen.png'
-                              : 'images/darkCookingPen.png',
+                          'images/cookingPen.png',
                           height: 75,
                         ),
                       ),
@@ -353,7 +351,7 @@ class NotePainter extends CustomPainter {
       ..strokeWidth = 4;
 
     final paintFill = Paint()
-      ..color = darkTheme ? Color(0xffC0A97B) : Color(0xffFEF3E1)
+      ..color = darkTheme ? Color(0xffCFAC53) : Color(0xffFEF3E1)
       ..strokeWidth = 2;
 
     var leftTop = Offset(4, 25);

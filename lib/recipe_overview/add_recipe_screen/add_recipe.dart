@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
@@ -6,6 +7,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:my_recipe_book/settings/nutrition_manager.dart';
 import 'package:scoped_model/scoped_model.dart';
 import '../../helper.dart';
 import './dummy_data.dart';
@@ -452,30 +454,34 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   void saveValidRecipeData(RecipeKeeper rKeeper) {
     FocusScope.of(context).requestFocus(FocusNode());
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => WillPopScope(
-          // It disables the back button
-          onWillPop: () async => false,
-          child: RoundDialog(
-              FlareActor(
-                'animations/writing_pen.flr',
-                alignment: Alignment.center,
-                fit: BoxFit.fitWidth,
-                animation: "Go",
-              ),
-              150)),
-    );
+    // showDialog(
+    //   context: context,
+    //   barrierDismissible: false,
+    //   builder: (_) => WillPopScope(
+    //       // It disables the back button
+    //       onWillPop: () async => false,
+    //       child: RoundDialog(
+    //           FlareActor(
+    //             'animations/writing_pen.flr',
+    //             alignment: Alignment.center,
+    //             fit: BoxFit.fitWidth,
+    //             animation: "Go",
+    //           ),
+    //           150)),
+    // );
     if (widget.editRecipe == null) {
       saveRecipe(rKeeper).then((_) {
-        Navigator.pop(context); // loading screen
-        Navigator.pop(context); // edit recipe screen
+        Navigator.pushReplacement(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => NutritionManager(
+                      nutritions: rKeeper.nutritions,
+                      recipeName: nameController.text,
+                    ))); // edit recipe screen
       });
     } else {
       saveRecipe(rKeeper).then((newRecipe) {
         newRecipe.isFavorite = widget.editRecipe.isFavorite;
-        Navigator.pop(context); // loading screen
         Navigator.pop(context); // edit recipe screen
         imageCache.clear();
         Navigator.push(
@@ -553,6 +559,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       categories: newRecipeCategories,
       isFavorite:
           widget.editRecipe == null ? false : widget.editRecipe.isFavorite,
+      nutritions: [],
     );
 
     Recipe fullImagePathRecipe;

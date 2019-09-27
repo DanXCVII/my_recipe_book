@@ -65,7 +65,9 @@ class CategoryGridTile extends StatelessWidget {
                       )));
         },
         child: GridTile(
-          child: Image.file(File(imageAsset), fit: BoxFit.cover),
+          child: imageAsset == 'images/randomFood.jpg'
+              ? Image.asset(imageAsset, fit: BoxFit.cover)
+              : Image.file(File(imageAsset), fit: BoxFit.cover),
           footer: GridTileBar(
             title: Text(
               category,

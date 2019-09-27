@@ -72,12 +72,20 @@ class SplashScreenState extends State<SplashScreen> {
       onDoneLoading();
     } else {
       prefs.setBool('showIntro', true);
+      await initializeFirstStartData();
       SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
           builder: (context) => IntroScreen(
-                onDonePop: false,
-              )));
+            onDonePop: false,
+          ),
+        ),
+      );
     }
+  }
+
+  Future<void> initializeFirstStartData() async {
+    widget.recipeKeeper.firstStartInitialize();
   }
 
   Future<void> clearCache() async {}

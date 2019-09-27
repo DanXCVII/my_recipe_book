@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'add_recipe_screen/categories_section.dart';
+import '../add_nut_cat_dialog.dart';
 
 class CategoryManager extends StatelessWidget {
   @override
@@ -30,7 +30,7 @@ class CategoryManager extends StatelessWidget {
             color: Colors.white,
           ),
           onPressed: () {
-            showDialog(context: context, builder: (_) => CategoryAddDialog());
+            showDialog(context: context, builder: (_) => AddDialog(false));
           }),
       body: ScopedModelDescendant<RecipeKeeper>(
           builder: (context, child, rKeeper) {
@@ -41,7 +41,7 @@ class CategoryManager extends StatelessWidget {
         } else {
           return ReorderableListView(
             onReorder: (oldIndex, newIndex) {
-              rKeeper.updateItems(oldIndex, newIndex);
+              rKeeper.moveCategory(oldIndex, newIndex);
             },
             children: rKeeper.categories.map((categoryName) {
               return ListTile(
@@ -50,8 +50,9 @@ class CategoryManager extends StatelessWidget {
                   onTap: () {
                     showDialog(
                         context: context,
-                        builder: (_) => CategoryAddDialog(
-                              modifiedCategory: categoryName,
+                        builder: (_) => AddDialog(
+                              false,
+                              modifiedItem: categoryName,
                             ));
                   },
                   child: Text(categoryName),

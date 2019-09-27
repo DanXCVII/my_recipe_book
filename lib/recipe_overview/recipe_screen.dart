@@ -7,6 +7,7 @@ import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:share_extend/share_extend.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:ui';
 import 'dart:math';
@@ -48,6 +49,7 @@ class RecipeScreen extends StatelessWidget {
   final Color primaryColor;
   final String heroImageTag;
   final String heroTitle;
+  PanelController _pc = new PanelController();
 
   RecipeScreen(
       {@required this.recipe,
@@ -62,269 +64,315 @@ class RecipeScreen extends StatelessWidget {
     double otherTime;
     remainingTime > 0 ? otherTime = remainingTime : otherTime = 0;
     return Scaffold(
-        backgroundColor: primaryColor,
-        body: CustomScrollView(slivers: <Widget>[
-          ScopedModelDescendant<RecipeKeeper>(
-            builder: (context, child, model) => SliverAppBar(
-              backgroundColor: primaryColor,
-              actions: <Widget>[
-                Favorite(recipe, model),
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  tooltip: 'edit',
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                new AddRecipeForm(
-                                  editRecipe: recipe,
-                                )));
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.share),
-                  tooltip: 'share recipe',
-                  onPressed: () {
-                    Share.plainText(
-                            text: getRecipeAsString(recipe), title: 'Rezept')
-                        .share();
-                  },
-                ),
-                PopupMenuButton<PopupOptions>(
-                  onSelected: (value) => _choiceAction(value, context, model),
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      PopupMenuItem(
-                        value: PopupOptions.EXPORT,
-                        child: Text('export as zip'),
-                      ),
-                      PopupMenuItem(
-                        value: PopupOptions.DELETE,
-                        child: Text('delete'),
-                      )
-                    ];
-                  },
-                ),
-              ],
-              floating: false,
-              pinned: false,
-              flexibleSpace: FlexibleSpaceBar(),
+      backgroundColor: primaryColor,
+      body: SlidingUpPanel(
+        controller: _pc,
+        backdropColor: Colors.black,
+        backdropEnabled: true,
+        margin: EdgeInsets.only(left: 20, right: 20),
+        parallaxEnabled: true,
+        minHeight: 80,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        panel: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+            color: Color(0xff7E4400),
+          ),
+          child: Center(
+            child: Text("This is the sliding Widget"),
+          ),
+        ),
+        collapsed: GestureDetector(
+          onTap: () {
+            _pc.animatePanelToPosition(1);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Color(0xff7E4400),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
+              ),
+            ),
+            child: Center(
+              child: Text(
+                'Nutritions',
+                style: TextStyle(color: Colors.white, fontSize: 22),
+              ),
             ),
           ),
-          SliverList(
-              delegate: SliverChildListDelegate(<Widget>[
-            // recipe.imagePath == 'images/randomFood.jpg'
-            //     ? Container()
-            //     :
-            GestureDetector(
-              onTap: () {
-                _showPictureFullView(recipe.imagePath, heroImageTag, context);
-              },
-              child: Hero(
-                tag: heroImageTag,
-                child: Material(
-                  color: Colors.transparent,
-                  child: ClipPath(
-                    clipper: MyClipper(),
-                    child: Container(
-                        height: 270,
-                        child: recipe.imagePath == 'images/randomFood.jpg'
-                            ? Image.asset('images/randomFood.jpg',
-                                fit: BoxFit.cover)
-                            : Image.file(File(recipe.imagePath),
-                                fit: BoxFit.cover)),
+        ),
+        body: CustomScrollView(
+          slivers: <Widget>[
+            ScopedModelDescendant<RecipeKeeper>(
+              builder: (context, child, model) => SliverAppBar(
+                backgroundColor: primaryColor,
+                actions: <Widget>[
+                  Favorite(recipe, model),
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    tooltip: 'edit',
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  new AddRecipeForm(
+                                    editRecipe: recipe,
+                                  )));
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.share),
+                    tooltip: 'share recipe',
+                    onPressed: () {
+                      Share.plainText(
+                              text: getRecipeAsString(recipe), title: 'Rezept')
+                          .share();
+                    },
+                  ),
+                  PopupMenuButton<PopupOptions>(
+                    onSelected: (value) => _choiceAction(value, context, model),
+                    itemBuilder: (BuildContext context) {
+                      return [
+                        PopupMenuItem(
+                          value: PopupOptions.EXPORT,
+                          child: Text('export as zip'),
+                        ),
+                        PopupMenuItem(
+                          value: PopupOptions.DELETE,
+                          child: Text('delete'),
+                        )
+                      ];
+                    },
+                  ),
+                ],
+                floating: false,
+                pinned: false,
+                flexibleSpace: FlexibleSpaceBar(),
+              ),
+            ),
+            SliverList(
+                delegate: SliverChildListDelegate(<Widget>[
+              GestureDetector(
+                onTap: () {
+                  _showPictureFullView(recipe.imagePath, heroImageTag, context);
+                },
+                child: Hero(
+                  tag: heroImageTag,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ClipPath(
+                      clipper: MyClipper(),
+                      child: Container(
+                          height: 270,
+                          child: recipe.imagePath == 'images/randomFood.jpg'
+                              ? Image.asset('images/randomFood.jpg',
+                                  fit: BoxFit.cover)
+                              : Image.file(File(recipe.imagePath),
+                                  fit: BoxFit.cover)),
+                    ),
                   ),
                 ),
               ),
-            ),
-            Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                        MediaQuery.of(context).size.width * 0.15,
-                        0,
-                        MediaQuery.of(context).size.width * 0.15,
-                        0),
-                    child: Hero(
-                        tag: heroTitle,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Text(
-                            "${recipe.name}",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: textColor, fontSize: 26),
-                          ),
-                        )))),
-            SizedBox(height: 30),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    children: <Widget>[
-                      AnimatedCircularChart(
-                        key: _chartKey,
-                        size: Size(120, 120),
-                        initialChartData: <CircularStackEntry>[
-                          new CircularStackEntry(
-                            <CircularSegmentEntry>[
-                              new CircularSegmentEntry(
-                                recipe.cookingTime / recipe.totalTime,
-                                Colors.blue[700],
-                                rankKey: 'completed',
-                              ),
-                              new CircularSegmentEntry(
-                                recipe.preperationTime / recipe.totalTime,
-                                Colors.green[500],
-                                rankKey: 'remaining',
-                              ),
-                              recipe.cookingTime + recipe.preperationTime ==
-                                      recipe.totalTime
-                                  ? new CircularSegmentEntry(0, Colors.black)
-                                  : new CircularSegmentEntry(
-                                      (recipe.totalTime -
-                                              recipe.preperationTime -
-                                              recipe.cookingTime) /
-                                          recipe.totalTime,
-                                      Colors.pink)
-                            ],
-                            rankKey: 'progress',
-                          ),
-                        ],
-                        edgeStyle: SegmentEdgeStyle.round,
-                        chartType: CircularChartType.Radial,
-                        percentageValues: false,
-                        /*holeLabel: '1/3',
+              Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                          MediaQuery.of(context).size.width * 0.15,
+                          0,
+                          MediaQuery.of(context).size.width * 0.15,
+                          0),
+                      child: Hero(
+                          tag: heroTitle,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              "${recipe.name}",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: textColor, fontSize: 26),
+                            ),
+                          )))),
+              SizedBox(height: 30),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      children: <Widget>[
+                        AnimatedCircularChart(
+                          key: _chartKey,
+                          size: Size(120, 120),
+                          initialChartData: <CircularStackEntry>[
+                            new CircularStackEntry(
+                              <CircularSegmentEntry>[
+                                new CircularSegmentEntry(
+                                  recipe.cookingTime / recipe.totalTime,
+                                  Colors.blue[700],
+                                  rankKey: 'completed',
+                                ),
+                                new CircularSegmentEntry(
+                                  recipe.preperationTime / recipe.totalTime,
+                                  Colors.green[500],
+                                  rankKey: 'remaining',
+                                ),
+                                recipe.cookingTime + recipe.preperationTime ==
+                                        recipe.totalTime
+                                    ? new CircularSegmentEntry(0, Colors.black)
+                                    : new CircularSegmentEntry(
+                                        (recipe.totalTime -
+                                                recipe.preperationTime -
+                                                recipe.cookingTime) /
+                                            recipe.totalTime,
+                                        Colors.pink)
+                              ],
+                              rankKey: 'progress',
+                            ),
+                          ],
+                          edgeStyle: SegmentEdgeStyle.round,
+                          chartType: CircularChartType.Radial,
+                          percentageValues: false,
+                          /*holeLabel: '1/3',
                         edgeStyle: SegmentEdgeStyle.round,
                         labelStyle: new TextStyle(
                           color: Colors.blueGrey[600],
                           fontWeight: FontWeight.bold,
                           fontSize: 24.0,
                         ),*/
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                      width: 5,
-                                      height: 5,
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.green[500])),
-                                  Text(
-                                    " prep. time: ",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                      width: 5,
-                                      height: 5,
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.blue[700])),
-                                  Text(
-                                    " cooking time: ",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                              recipe.cookingTime + recipe.preperationTime ==
-                                      recipe.totalTime
-                                  ? Container()
-                                  : Row(
-                                      children: <Widget>[
-                                        Container(
-                                            width: 5,
-                                            height: 5,
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: Colors.pink)),
-                                        Text(
-                                          " rest: ",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                            ],
-                          ),
-                          Column(
-                            children: <Widget>[
-                              Text(getTimeHoursMinutes(recipe.preperationTime),
-                                  style: TextStyle(color: Colors.white)),
-                              Text(
-                                getTimeHoursMinutes(recipe.cookingTime),
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              recipe.cookingTime + recipe.preperationTime ==
-                                      recipe.totalTime
-                                  ? Container()
-                                  : Text(
-                                      getTimeHoursMinutes(otherTime),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Container(
+                                        width: 5,
+                                        height: 5,
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.green[500])),
+                                    Text(
+                                      " prep. time: ",
                                       style: TextStyle(color: Colors.white),
                                     ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ],
+                                  ],
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Container(
+                                        width: 5,
+                                        height: 5,
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.blue[700])),
+                                    Text(
+                                      " cooking time: ",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                                recipe.cookingTime + recipe.preperationTime ==
+                                        recipe.totalTime
+                                    ? Container()
+                                    : Row(
+                                        children: <Widget>[
+                                          Container(
+                                              width: 5,
+                                              height: 5,
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.pink)),
+                                          Text(
+                                            " rest: ",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ],
+                                      ),
+                              ],
+                            ),
+                            Column(
+                              children: <Widget>[
+                                Text(
+                                    getTimeHoursMinutes(recipe.preperationTime),
+                                    style: TextStyle(color: Colors.white)),
+                                Text(
+                                  getTimeHoursMinutes(recipe.cookingTime),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                recipe.cookingTime + recipe.preperationTime ==
+                                        recipe.totalTime
+                                    ? Container()
+                                    : Text(
+                                        getTimeHoursMinutes(otherTime),
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: <Widget>[
-                      Text("complexity:",
-                          style: TextStyle(fontSize: 15, color: textColor)),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
-                        child: Container(
-                            height: 120,
-                            child: Image.asset(
-                                "images/${imageComplexity[recipe.effort.round()]}.png")),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-            SizedBox(height: 30),
-            IngredientsScreen(recipe),
-            SizedBox(height: 30),
-            FutureBuilder<List<List<String>>>(
-              future: PathProvider.pP
-                  .getRecipeStepPreviewPathList(recipe.stepImages, recipe.name),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return StepsScreen(
-                      recipe.steps, snapshot.data, recipe.stepImages);
-                }
-                return Container(
-                  height: 70,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              },
-            ),
-            Container(
-              height: 20,
-              decoration: BoxDecoration(color: Colors.black87),
-            ),
-            recipe.notes != ""
-                ? NotesSection(notes: recipe.notes)
-                : Container(),
-            recipe.categories.length > 0
-                ? CategoriesSection(categories: recipe.categories)
-                : Container(),
-          ]))
-        ]));
+                  Expanded(
+                    child: Column(
+                      children: <Widget>[
+                        Text("complexity:",
+                            style: TextStyle(fontSize: 15, color: textColor)),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 15.0),
+                          child: Container(
+                              height: 120,
+                              child: Image.asset(
+                                  "images/${imageComplexity[recipe.effort.round()]}.png")),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(height: 30),
+              IngredientsScreen(recipe),
+              SizedBox(height: 30),
+              FutureBuilder<List<List<String>>>(
+                future: PathProvider.pP.getRecipeStepPreviewPathList(
+                    recipe.stepImages, recipe.name),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return StepsScreen(
+                        recipe.steps, snapshot.data, recipe.stepImages);
+                  }
+                  return Container(
+                    height: 70,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                },
+              ),
+              Container(
+                height: 20,
+                decoration: BoxDecoration(color: Colors.black87),
+              ),
+              recipe.notes != ""
+                  ? NotesSection(notes: recipe.notes)
+                  : Container(),
+              recipe.categories.length > 0
+                  ? CategoriesSection(categories: recipe.categories)
+                  : Container(),
+            ]))
+          ],
+        ),
+      ),
+    );
   }
 
   void _choiceAction(PopupOptions value, context, RecipeKeeper rKeeper) {
@@ -453,7 +501,7 @@ void _showPictureFullView(String image, String tag, BuildContext context) {
           initialIndex: 0,
           galleryItems: [image],
           descriptions: [''],
-          heroTags: ['recipeImage'],
+          heroTags: [tag],
         ),
       ));
 }

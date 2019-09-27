@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:my_recipe_book/settings/export_recipes_screen.dart';
+import 'package:my_recipe_book/settings/nutrition_manager.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../intro_screen.dart';
@@ -152,6 +153,23 @@ class Settings extends StatelessWidget {
               _pushViewIntroScreen(context);
             },
           ),
+          Divider(),
+          ListTile(
+              title: Text('manage nutritions'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ScopedModelDescendant<RecipeKeeper>(
+                      builder: (context, child, rKeeper) => NutritionManager(
+                        nutritions: rKeeper.nutritions,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+          Divider(),
+          ListTile(title: Text('change language')),
           Divider(),
           ListTile(title: Text('about me')),
           Divider(),

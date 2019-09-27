@@ -88,6 +88,8 @@ class RecipeGridView extends StatelessWidget {
     return ScopedModelDescendant<RecipeKeeper>(
         builder: (context, child, model) {
       List<RecipePreview> recipePreviews = model.getRecipesOfCategory(category);
+      String sliverAppBarImagePath =
+          recipePreviews[randomCategoryImage].imagePreviewPath;
       if (recipePreviews.isNotEmpty) {
         return Scaffold(
           body: CustomScrollView(slivers: <Widget>[
@@ -113,8 +115,9 @@ class RecipeGridView extends StatelessWidget {
                 background: Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: FileImage(File(
-                          '${recipePreviews[randomCategoryImage].imagePreviewPath}')),
+                      image: sliverAppBarImagePath == 'images/randomFood.jpg'
+                          ? AssetImage(sliverAppBarImagePath)
+                          : FileImage(File(sliverAppBarImagePath)),
                       fit: BoxFit.cover,
                     ),
                   ),

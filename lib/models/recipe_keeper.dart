@@ -11,8 +11,9 @@ import 'package:scoped_model/scoped_model.dart';
 class RecipeKeeper extends Model {
   Map<String, List<RecipePreview>> _recipes = {};
   List<RecipePreview> _favorites = [];
-  List<String> _categories =
-      []; // they keep track of the order of the categories
+  // they keep track of the order of the categories
+  List<String> _categories = [];
+  List<String> _nutritions = [];
   bool _isInitialised = false;
   String _swypingRecipeCategory = 'all categories';
   List<Recipe> _swypingCardRecipes = [];
@@ -25,6 +26,8 @@ class RecipeKeeper extends Model {
   List<RecipePreview> get favorites => _favorites;
 
   List<String> get categories => _categories;
+
+  List<String> get nutritions => _nutritions;
 
   List<Recipe> get swypingCardRecipes => _swypingCardRecipes;
 
@@ -42,12 +45,67 @@ class RecipeKeeper extends Model {
       _recipes.addAll(
           {category: await DBProvider.db.getRecipePreviewOfCategory(category)});
     }
+
     _recipes.addAll(
         {'no category': await DBProvider.db.getRecipePreviewOfNoCategory()});
     _favorites.addAll(await DBProvider.db.getFavoriteRecipePreviews());
     _isInitialised = true;
 
+    _nutritions = await DBProvider.db.getAllNutritions();
+
     await changeSwypeCardCategory('all categories');
+    notifyListeners();
+  }
+
+  Future<void> firstStartInitialize() async {
+    await addNutrition('fat');
+    await addNutrition('sugar');
+    await addNutrition('carbohydrates');
+  }
+
+  Future<void> addNutrition(String name) async {
+    // TODO: Check if list<String> contains string works or if you have to do it with compareTo()
+    if (!_nutritions.contains(name)) {
+      _nutritions.add(name);
+      notifyListeners();
+
+      await DBProvider.db.newNutrition(name, _nutritions.length);
+    }
+  }
+
+  Future<void> removeNutrition(String name) async {
+    _nutritions.remove(name);
+    notifyListeners();
+
+    await DBProvider.db.removeNutrition(name);
+  }
+
+  Future<void> renameNutrition(String oldName, String newName) async {
+    for (int i = 0; i < _nutritions.length; i++) {
+      if (_nutritions[i] == oldName) {
+        _nutritions[i] = newName;
+      }
+    }
+    notifyListeners();
+
+    await DBProvider.db.renameNutrition(oldName, newName);
+  }
+
+  Future<void> updateNutritionOrder(List<String> names) async {
+    _nutritions = names;
+    notifyListeners();
+    print(names);
+    await DBProvider.db.updateNutritionOrder(names);
+  }
+
+  /// Only when saving the nutritions with the onPress check, the
+  /// database takes the changes
+  void moveNutrition(int oldIndex, newIndex) {
+    String moveNutrition = _nutritions[oldIndex];
+    _nutritions.removeAt(oldIndex);
+    if (newIndex > oldIndex) newIndex -= 1;
+    _nutritions.insert(newIndex, moveNutrition);
+
     notifyListeners();
   }
 
@@ -114,7 +172,7 @@ class RecipeKeeper extends Model {
       recipeDir.deleteSync(recursive: true);
   }
 
-  void changeCategoryName(String oldCatName, String newCatName) async {
+  void renameCategory(String oldCatName, String newCatName) async {
     await DBProvider.db.changeCategoryName(oldCatName, newCatName);
     for (int i = 0; i < _categories.length; i++) {
       if (_categories[i] == oldCatName) _categories[i] = newCatName;
@@ -213,6 +271,12 @@ class RecipeKeeper extends Model {
     return fullImagePathRecipe;
   }
 
+  Future<Recipe> addRecipeNutritions(
+      String recipeName, List<Nutrition> nutritions) async {
+    await changeSwypeCardCategory(_swypingRecipeCategory);
+    return await DBProvider.db.addNutritionsToRecipe(recipeName, nutritions);
+  }
+
   void addFavorite(Recipe recipe) {
     recipe.isFavorite = true;
     _favorites.add(convertRecipeToPreview(recipe));
@@ -272,11 +336,17 @@ class RecipeKeeper extends Model {
     notifyListeners();
   }
 
-  void updateItems(int oldIndex, newIndex) {
+  bool doesNutritionExist(String name) {
+    if (_nutritions.contains(name)) return true;
+    return false;
+  }
+
+  void moveCategory(int oldIndex, newIndex) {
+    String moveCategory = _categories[oldIndex];
+    _categories.removeAt(oldIndex);
     if (newIndex > oldIndex) newIndex -= 1;
-    String tmp = _categories[oldIndex];
-    _categories[oldIndex] = _categories[newIndex];
-    _categories[newIndex] = tmp;
+    _categories.insert(newIndex, moveCategory);
+
     notifyListeners();
   }
 

@@ -79,7 +79,7 @@ class DBProvider {
             ')');
         await db.execute('CREATE TABLE Categories ('
             'categoryName TEXT PRIMARY KEY,'
-            'number TEXT'
+            'number INTEGER'
             ')');
         await db.execute('CREATE TABLE RecipeCategories ('
             'recipe_name INTEGER,'
@@ -98,6 +98,18 @@ class DBProvider {
             'checked INTEGER,'
             'recipe TEXT,'
             'FOREIGN KEY(recipe) REFERENCES ShoppingCartRecipe(recipe) ON DELETE CASCADE'
+            ')');
+        await db.execute('CREATE TABLE Nutrition ('
+            'nutrition_name TEXT PRIMARY KEY,'
+            'number INTEGER'
+            ')');
+        await db.execute('CREATE TABLE RecipeNutritions ('
+            'recipe_name TEXT,'
+            'nutrition_name TEXT,'
+            'nutrition_amount_unit,'
+            'FOREIGN KEY(recipe_name) REFERENCES Recipe(recipe_name) ON DELETE CASCADE,'
+            'FOREIGN KEY(nutrition_name) REFERENCES Nutrition(nutrition_name) ON DELETE CASCADE,'
+            'PRIMARY KEY(recipe_name, nutrition_name)'
             ')');
       },
     );
@@ -143,8 +155,75 @@ class DBProvider {
   removeCategory(String name) async {
     final db = await database;
 
-    await db.rawDelete('DELETE FROM Categories WHERE categoryName= ?', [name]);
+    await db.rawDelete('DELETE FROM Categories WHERE categoryName = ?', [name]);
     return;
+  }
+
+  newNutrition(String name, int number) async {
+    final db = await database;
+
+    await db.insert('Nutrition', {'nutrition_name': name, 'number': number});
+  }
+
+  removeNutrition(String name) async {
+    final db = await database;
+
+    await db
+        .delete('Nutrition', where: 'nutrition_name = ?', whereArgs: [name]);
+  }
+
+  renameNutrition(String oldName, String newName) async {
+    final db = await database;
+
+    await db.update('Nutrition', {'nutrition_name': newName},
+        where: 'nutrition_name = ?', whereArgs: [oldName]);
+  }
+
+  updateNutritionOrder(List<String> names) async {
+    final db = await database;
+    var batch = db.batch();
+
+    for (int i = 0; i < names.length; i++) {
+      batch.update(
+        'Nutrition',
+        {'number': i},
+        where: 'nutrition_name = ?',
+        whereArgs: [names[i]],
+      );
+    }
+    await batch.commit();
+  }
+
+  getAllNutritions() async {
+    final db = await database;
+
+    var res = await db.query('Nutrition',
+        columns: ['nutrition_name'], orderBy: 'number ASC');
+
+    List<String> _nutritions = [];
+    for (Map<String, dynamic> n in res) {
+      _nutritions.add(n['nutrition_name']);
+    }
+    return _nutritions;
+  }
+
+  addNutritionsToRecipe(String recipeName, List<Nutrition> nutritions) async {
+    final db = await database;
+    var batch = db.batch();
+
+    for (int i = 0; i < nutritions.length; i++) {
+      batch.insert(
+        'RecipeNutritions',
+        {
+          'recipe_name': recipeName,
+          'nutrition_name': nutritions[i].name,
+          'nutrition_amount_unit': nutritions[i].amountUnit
+        },
+      );
+    }
+
+    await batch.commit();
+    await getRecipeByName(recipeName, true);
   }
 
   /// the path to the imageFiles must be specified like the the following:
@@ -223,16 +302,22 @@ class DBProvider {
         'recipe_name': newRecipe.name,
         'categories_name': resCategories[0]['categoryName'],
       });
+    }
 
-/*
-    MainScreenRecipes singleton = MainScreenRecipes();
-    for (int i = 0; i < newRecipe.categories.length; i++) {
-      if (singleton.getRecipesOfCategory(newRecipe.categories[i]) != null) {
-        singleton.addRecipeToCategory(newRecipe.categories[i], newRecipe);
-      }
+    for (int i = 0; i < newRecipe.nutritions.length; i++) {
+      batch.rawInsert(
+          'INSERT OR IGNORE INTO Nutrition (nutrition_name) VALUES (?)',
+          [newRecipe.nutritions[i]]);
+      batch.insert(
+        'RecipeNutritions',
+        {
+          'recipe_name': newRecipe.name,
+          'nutrition_name': newRecipe.nutritions[i],
+          'nutrition_amount_unit': newRecipe.nutritions[i].amountUnit
+        },
+      );
     }
-*/
-    }
+
     await batch.commit();
   }
 
@@ -347,7 +432,7 @@ class DBProvider {
         where: 'recipe_name = ?',
         whereArgs: [recipeName],
         orderBy: 'number ASC');
-    List<String> ingredientsGlossary = new List<String>();
+    List<String> ingredientsGlossary = [];
     List<List<Ingredient>> ingredients = [[]];
     for (int i = 0; i < resSections.length; i++) {
       ingredientsGlossary.add(resSections[i]['sectionName']);
@@ -363,12 +448,25 @@ class DBProvider {
       }
     }
 
-    List<String> categories = new List<String>();
+    List<String> categories = [];
     var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
         'WHERE recipe_name=\'$recipeName\'');
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
+    }
+
+    List<Nutrition> nutritions = [];
+    var resNutritions = await db.rawQuery('SELECT * FROM RecipeNutritions '
+        'NATURAL INNER JOIN Nutrition '
+        'WHERE recipe_name = \'$recipeName\' '
+        'ORDER BY number ASC');
+    for (int i = 0; i < resNutritions.length; i++) {
+      nutritions.add(
+        Nutrition(
+            name: resNutritions[i]['nutrition_name'],
+            amountUnit: resNutritions[i]['nutrition_amount_unit']),
+      );
     }
 
     return Recipe(
@@ -385,6 +483,7 @@ class DBProvider {
         stepImages: stepImages,
         steps: steps,
         notes: notes,
+        nutritions: nutritions,
         categories: categories,
         effort: complexity,
         isFavorite: isFavorite);

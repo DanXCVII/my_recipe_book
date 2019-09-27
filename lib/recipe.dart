@@ -21,6 +21,7 @@ class Recipe {
   List<String> steps = new List<String>();
   List<List<String>> stepImages = new List<List<String>>();
   String notes;
+  List<Nutrition> nutritions;
   bool isFavorite;
   int effort;
 
@@ -38,6 +39,7 @@ class Recipe {
       this.steps,
       this.stepImages,
       this.notes,
+      this.nutritions,
       this.categories,
       this.effort,
       this.isFavorite});
@@ -57,6 +59,7 @@ class Recipe {
         'steps : ${steps.toString()}\n'
         'stepImages : ${stepImages.toString()}\n'
         'notes : $notes\n'
+        'nutritions : ${nutritions.toString()}\n'
         'categories : ${categories.toString()}\n'
         'complexity : $effort\n'
         'isFavorite : $isFavorite');
@@ -95,6 +98,9 @@ class Recipe {
       vegetable: vegetable,
       steps: List<String>.from(json['steps']),
       notes: json['notes'],
+      nutritions: List<dynamic>.from(json['nutritions'])
+          .map((n) => Nutrition.fromMap(n))
+          .toList(),
     );
   }
 
@@ -115,7 +121,8 @@ class Recipe {
         'vegetable': vegetable.toString(),
         'steps': steps,
         'stepImages': stepImages,
-        'notes': notes
+        'notes': notes,
+        'nutritions': nutritions.map((n) => n.toMap()).toList()
       };
 
   void setEqual(Recipe r) {
@@ -135,6 +142,7 @@ class Recipe {
     this.categories = r.categories;
     this.effort = r.effort;
     this.isFavorite = r.isFavorite;
+    this.nutritions = r.nutritions;
   }
 }
 
@@ -186,6 +194,28 @@ class Ingredient {
         'name': name,
         'amount': amount,
         'unit': unit,
+      };
+}
+
+class Nutrition {
+  String name;
+  String amountUnit;
+
+  Nutrition({this.name, this.amountUnit});
+
+  @override
+  String toString() {
+    return '$name: $amountUnit';
+  }
+
+  factory Nutrition.fromMap(Map<String, dynamic> json) => new Nutrition(
+        name: json['name'],
+        amountUnit: json['amountUnit'],
+      );
+
+  Map<String, dynamic> toMap() => {
+        'name': name,
+        'amountUnit': amountUnit,
       };
 }
 
@@ -437,6 +467,4 @@ class PathProvider {
 
     return '$fullTargetDir/$cRecipeName.json';
   }
-
-  
 }
