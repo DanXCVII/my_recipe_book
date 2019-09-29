@@ -65,16 +65,19 @@ class DBProvider {
         await db.execute('CREATE TABLE Sections ('
             'id INTEGER PRIMARY KEY,'
             'number INTEGER,'
-            'sectionName TEXT,'
+            'section_name TEXT,'
             'recipe_name INTEGER,'
             'FOREIGN KEY(recipe_name) REFERENCES Recipe(recipe_name) ON DELETE CASCADE'
             ')');
-        await db.execute('CREATE TABLE Ingredients ('
-            'id INTEGER PRIMARY KEY,'
-            'ingredientName TEXT,'
-            'amount REAL,'
-            'unit TEXT,'
+        await db.execute('CREATE TABLE Ingredient ('
+            'ingredient_name TEXT PRIMARY KEY'
+            ')');
+        await db.execute('CREATE TABLE Section_Ingredients ('
+            'ingredient_name TEXT,'
+            'ingredient_amount REAL,'
+            'ingredient_unit TEXT,'
             'section_id INTEGER,'
+            'FOREIGN KEY(ingredient_name) REFERENCES Ingredient(ingredient_name) ON DELETE CASCADE,'
             'FOREIGN KEY(section_id) REFERENCES Sections(id) ON DELETE CASCADE'
             ')');
         await db.execute('CREATE TABLE Categories ('
@@ -223,13 +226,13 @@ class DBProvider {
     }
 
     await batch.commit();
-    await getRecipeByName(recipeName, true);
+    return await getRecipeByName(recipeName, true);
   }
 
   /// the path to the imageFiles must be specified like the the following:
   /// path from appDir to imageFile:
   /// example: /4/recipe-4.jpg
-  newRecipe(Recipe newRecipe) async {
+  newRecipe(Recipe newRecipe, bool addNutritions) async {
     final db = await database;
     Batch batch = db.batch();
 
@@ -247,28 +250,27 @@ class DBProvider {
     });
 
     int uniqueIdSections = await getNewIDforTable('Sections', 'id');
-    int uniqueIdIngredients = await getNewIDforTable('Ingredients', 'id');
 
     for (int i = 0; i < newRecipe.ingredients.length; i++) {
       batch.insert('Sections', {
         'id': uniqueIdSections + i,
         'number': i,
-        'sectionName': newRecipe.ingredientsGlossary.isEmpty
+        'section_name': newRecipe.ingredientsGlossary.isEmpty
             ? ''
             : newRecipe.ingredientsGlossary[i],
         'recipe_name': newRecipe.name
       });
 
-      for (int j = 0; j < newRecipe.ingredients[i].length; j++) {
-        batch.insert('Ingredients', {
-          'id': uniqueIdIngredients + j,
-          'ingredientName': newRecipe.ingredients[i][j].name,
-          'amount': newRecipe.ingredients[i][j].amount,
-          'unit': newRecipe.ingredients[i][j].unit,
+      for (Ingredient ingred in newRecipe.ingredients[i]) {
+        batch.rawInsert(
+            'INSERT OR IGNORE INTO Ingredient VALUES (?)', [ingred.name]);
+        batch.insert('Section_Ingredients', {
+          'ingredient_name': ingred.name,
+          'ingredient_amount': ingred.amount,
+          'ingredient_unit': ingred.unit,
           'section_id': uniqueIdSections + i
         });
       }
-      uniqueIdIngredients += newRecipe.ingredients[i].length;
     }
 
     int uniqueIdSteps = await getNewIDforTable('Steps', 'id');
@@ -304,18 +306,20 @@ class DBProvider {
       });
     }
 
-    for (int i = 0; i < newRecipe.nutritions.length; i++) {
-      batch.rawInsert(
-          'INSERT OR IGNORE INTO Nutrition (nutrition_name) VALUES (?)',
-          [newRecipe.nutritions[i]]);
-      batch.insert(
-        'RecipeNutritions',
-        {
-          'recipe_name': newRecipe.name,
-          'nutrition_name': newRecipe.nutritions[i],
-          'nutrition_amount_unit': newRecipe.nutritions[i].amountUnit
-        },
-      );
+    if (addNutritions) {
+      for (int i = 0; i < newRecipe.nutritions.length; i++) {
+        batch.rawInsert(
+            'INSERT OR IGNORE INTO Nutrition (nutrition_name) VALUES (?)',
+            [newRecipe.nutritions[i]]);
+        batch.insert(
+          'RecipeNutritions',
+          {
+            'recipe_name': newRecipe.name,
+            'nutrition_name': newRecipe.nutritions[i],
+            'nutrition_amount_unit': newRecipe.nutritions[i].amountUnit
+          },
+        );
+      }
     }
 
     await batch.commit();
@@ -435,15 +439,15 @@ class DBProvider {
     List<String> ingredientsGlossary = [];
     List<List<Ingredient>> ingredients = [[]];
     for (int i = 0; i < resSections.length; i++) {
-      ingredientsGlossary.add(resSections[i]['sectionName']);
-      var resIngredients = await db.query('Ingredients',
+      ingredientsGlossary.add(resSections[i]['section_name']);
+      var resIngredients = await db.query('Section_Ingredients',
           where: 'section_id = ?', whereArgs: [resSections[i]['id']]);
       ingredients.add([]);
       for (int j = 0; j < resIngredients.length; j++) {
         ingredients[i].add(Ingredient(
-          name: resIngredients[j]['ingredientName'],
-          amount: resIngredients[j]['amount'],
-          unit: resIngredients[j]['unit'],
+          name: resIngredients[j]['ingredient_name'],
+          amount: resIngredients[j]['ingredient_amount'],
+          unit: resIngredients[j]['ingredient_unit'],
         ));
       }
     }
@@ -573,7 +577,7 @@ class DBProvider {
         orderBy: 'number ASC');
     int ingredientAmount = 0;
     for (int i = 0; i < resSections.length; i++) {
-      var resIngredients = await db.query('Ingredients',
+      var resIngredients = await db.query('Section_Ingredients',
           where: 'section_id = ?', whereArgs: [resSections[i]['id']]);
       ingredientAmount += resIngredients.length;
     }

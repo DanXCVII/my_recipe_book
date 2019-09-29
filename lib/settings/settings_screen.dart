@@ -162,6 +162,7 @@ class Settings extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => ScopedModelDescendant<RecipeKeeper>(
                       builder: (context, child, rKeeper) => NutritionManager(
+                        false,
                         nutritions: rKeeper.nutritions,
                       ),
                     ),

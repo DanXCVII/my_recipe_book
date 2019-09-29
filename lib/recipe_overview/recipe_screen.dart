@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe_keeper.dart';
@@ -44,14 +45,168 @@ enum PopupOptions { EXPORT, DELETE }
 
 class RecipeScreen extends StatelessWidget {
   final GlobalKey<AnimatedCircularChartState> _chartKey =
-      new GlobalKey<AnimatedCircularChartState>();
+      GlobalKey<AnimatedCircularChartState>();
   final Recipe recipe;
   final Color primaryColor;
   final String heroImageTag;
   final String heroTitle;
-  PanelController _pc = new PanelController();
+  final PanelController _pc = PanelController();
 
   RecipeScreen(
+      {@required this.recipe,
+      @required this.primaryColor,
+      this.heroImageTag,
+      this.heroTitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return recipe.nutritions.isEmpty
+        ? RecipePage(
+            recipe: recipe,
+            primaryColor: primaryColor,
+            heroImageTag: heroImageTag,
+            heroTitle: heroTitle,
+          )
+        : Scaffold(
+            backgroundColor: primaryColor,
+            body: SlidingUpPanel(
+              controller: _pc,
+              backdropColor: Colors.black,
+              backdropEnabled: true,
+              margin: EdgeInsets.only(left: 20, right: 20),
+              parallaxEnabled: true,
+              parallaxOffset: 0.5,
+              minHeight: 70,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(25),
+                topRight: Radius.circular(25),
+              ),
+              panel: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xff7E4400),
+                      Color(0xffCFAC53),
+                    ],
+                    begin: FractionalOffset.topLeft,
+                    end: FractionalOffset.bottomRight,
+                    stops: [0.0, 1.0],
+                  ),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                ),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          _pc.animatePanelToPosition(1);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: Container(
+                            width: 30,
+                            height: 5,
+                            decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12.0))),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          _pc.animatePanelToPosition(1);
+                        },
+                        child: Text(
+                          'Nutritions',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                      Container(height: 10),
+                      Container(
+                        height: 435,
+                        child: ListView.builder(
+                          itemCount: recipe.nutritions.length * 2,
+                          itemBuilder: (context, index) {
+                            if ((index - 1) % 2 == 0) {
+                              return Divider();
+                            } else {
+                              return ListTile(
+                                leading: Icon(
+                                  GroovinMaterialIcons.gate_or,
+                                ),
+                                title: Text(
+                                  recipe.nutritions[index].name,
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                trailing: Text(
+                                  recipe.nutritions[index].amountUnit,
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      )
+                    ]),
+              ),
+              body: RecipePage(
+                recipe: recipe,
+                primaryColor: primaryColor,
+                heroImageTag: heroImageTag,
+                heroTitle: heroTitle,
+              ),
+            ),
+          );
+  }
+}
+
+class NotesSection extends StatelessWidget {
+  final String notes;
+
+  const NotesSection({this.notes, Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
+        color: Color(0xff51473b),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              "Notes",
+              style: TextStyle(
+                color: textColor,
+                fontSize: 24,
+                fontFamily: "Questrial-Regular",
+              ),
+            ),
+            Padding(
+                padding: EdgeInsets.only(top: 20, bottom: 20),
+                child: Text(
+                  notes,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ))
+          ],
+        ));
+  }
+}
+
+class RecipePage extends StatelessWidget {
+  final GlobalKey<AnimatedCircularChartState> _chartKey =
+      GlobalKey<AnimatedCircularChartState>();
+  final Recipe recipe;
+  final Color primaryColor;
+  final String heroImageTag;
+  final String heroTitle;
+  final PanelController _pc = PanelController();
+
+  RecipePage(
       {@required this.recipe,
       @required this.primaryColor,
       this.heroImageTag,
@@ -64,50 +219,7 @@ class RecipeScreen extends StatelessWidget {
     double otherTime;
     remainingTime > 0 ? otherTime = remainingTime : otherTime = 0;
     return Scaffold(
-      backgroundColor: primaryColor,
-      body: SlidingUpPanel(
-        controller: _pc,
-        backdropColor: Colors.black,
-        backdropEnabled: true,
-        margin: EdgeInsets.only(left: 20, right: 20),
-        parallaxEnabled: true,
-        minHeight: 80,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-        panel: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-            color: Color(0xff7E4400),
-          ),
-          child: Center(
-            child: Text("This is the sliding Widget"),
-          ),
-        ),
-        collapsed: GestureDetector(
-          onTap: () {
-            _pc.animatePanelToPosition(1);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color(0xff7E4400),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
-              ),
-            ),
-            child: Center(
-              child: Text(
-                'Nutritions',
-                style: TextStyle(color: Colors.white, fontSize: 22),
-              ),
-            ),
-          ),
-        ),
+        backgroundColor: primaryColor,
         body: CustomScrollView(
           slivers: <Widget>[
             ScopedModelDescendant<RecipeKeeper>(
@@ -119,12 +231,10 @@ class RecipeScreen extends StatelessWidget {
                     icon: Icon(Icons.edit),
                     tooltip: 'edit',
                     onPressed: () {
-                      Navigator.pop(context);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  new AddRecipeForm(
+                              builder: (BuildContext context) => AddRecipeForm(
                                     editRecipe: recipe,
                                   )));
                     },
@@ -134,7 +244,7 @@ class RecipeScreen extends StatelessWidget {
                     tooltip: 'share recipe',
                     onPressed: () {
                       Share.plainText(
-                              text: getRecipeAsString(recipe), title: 'Rezept')
+                              text: _getRecipeAsString(recipe), title: 'Rezept')
                           .share();
                     },
                   ),
@@ -154,8 +264,7 @@ class RecipeScreen extends StatelessWidget {
                     },
                   ),
                 ],
-                floating: false,
-                pinned: false,
+                floating: true,
                 flexibleSpace: FlexibleSpaceBar(),
               ),
             ),
@@ -167,6 +276,16 @@ class RecipeScreen extends StatelessWidget {
                 },
                 child: Hero(
                   tag: heroImageTag,
+                  placeholderBuilder: (context, size, widget) => ClipPath(
+                    clipper: MyClipper(),
+                    child: Container(
+                        height: 270,
+                        child: recipe.imagePath == 'images/randomFood.jpg'
+                            ? Image.asset('images/randomFood.jpg',
+                                fit: BoxFit.cover)
+                            : Image.file(File(recipe.imagePath),
+                                fit: BoxFit.cover)),
+                  ),
                   child: Material(
                     color: Colors.transparent,
                     child: ClipPath(
@@ -192,6 +311,12 @@ class RecipeScreen extends StatelessWidget {
                           0),
                       child: Hero(
                           tag: heroTitle,
+                          placeholderBuilder: (context, size, widget) => Text(
+                                "${recipe.name}",
+                                textAlign: TextAlign.center,
+                                style:
+                                    TextStyle(color: textColor, fontSize: 26),
+                              ),
                           child: Material(
                             color: Colors.transparent,
                             child: Text(
@@ -368,11 +493,10 @@ class RecipeScreen extends StatelessWidget {
               recipe.categories.length > 0
                   ? CategoriesSection(categories: recipe.categories)
                   : Container(),
+              recipe.nutritions.isEmpty ? Container() : Container(height: 75),
             ]))
           ],
-        ),
-      ),
-    );
+        ));
   }
 
   void _choiceAction(PopupOptions value, context, RecipeKeeper rKeeper) {
@@ -394,7 +518,7 @@ class RecipeScreen extends StatelessWidget {
     return true;
   }
 
-  String getRecipeAsString(Recipe recipe) {
+  String _getRecipeAsString(Recipe recipe) {
     String recipeText = '꧁꧂꧁꧂꧁꧂\n'
         'recipename: ${recipe.name}\n'
         '====================\n'
@@ -425,38 +549,6 @@ class RecipeScreen extends StatelessWidget {
     }
     recipeText += '꧁꧂꧁꧂꧁꧂';
     return recipeText;
-  }
-}
-
-class NotesSection extends StatelessWidget {
-  final String notes;
-
-  const NotesSection({this.notes, Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
-        color: Color(0xff51473b),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              "Notes",
-              style: TextStyle(
-                color: textColor,
-                fontSize: 24,
-                fontFamily: "Questrial-Regular",
-              ),
-            ),
-            Padding(
-                padding: EdgeInsets.only(top: 20, bottom: 20),
-                child: Text(
-                  notes,
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ))
-          ],
-        ));
   }
 }
 
@@ -687,6 +779,20 @@ class StepsScreen extends StatelessWidget {
           },
           child: Hero(
             tag: "Schritt$i:$j",
+            placeholderBuilder: (context, size, widget) => ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                child: Container(
+                  width: 100,
+                  height: 80,
+                  child: FadeInImage(
+                    fadeInDuration: Duration(milliseconds: 100),
+                    placeholder: MemoryImage(kTransparentImage),
+                    image: FileImage(
+                      File(stepPreviewImages[i][j]),
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                )),
             child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 child: Container(

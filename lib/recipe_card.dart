@@ -82,6 +82,24 @@ class RecipeCard extends StatelessWidget {
                 children: <Widget>[
                   Hero(
                       tag: heroImageTag,
+                      placeholderBuilder: (context, size, widget) => ClipRRect(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(gridTileWidth / 10),
+                              topRight: Radius.circular(gridTileWidth / 10),
+                            ),
+                            child: FadeInImage(
+                              image: recipePreview.imagePreviewPath ==
+                                      'images/randomFood.jpg'
+                                  ? AssetImage(recipePreview.imagePreviewPath)
+                                  : FileImage(
+                                      File(recipePreview.imagePreviewPath)),
+                              placeholder: MemoryImage(kTransparentImage),
+                              fadeInDuration: Duration(milliseconds: 250),
+                              fit: BoxFit.cover,
+                              height: gridTileWidth / 1.25,
+                              width: gridTileWidth + 40,
+                            ),
+                          ),
                       child: Material(
                         color: Colors.transparent,
                         child: ClipRRect(
@@ -108,6 +126,16 @@ class RecipeCard extends StatelessWidget {
                     padding: EdgeInsets.only(left: 15, right: 12),
                     child: Hero(
                       tag: heroTitle,
+                      placeholderBuilder: (context, size, widget) => Text(
+                        "${recipePreview.name}",
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14 + gridTileWidth / 35,
+                        ),
+                      ),
                       child: Material(
                         color: Colors.transparent,
                         child: Text(
@@ -220,7 +248,6 @@ class RecipeCard extends StatelessWidget {
       ),
     );
   }
-
 
   Color getRecipeTypeColor(Vegetable vegetable) {
     switch (vegetable) {

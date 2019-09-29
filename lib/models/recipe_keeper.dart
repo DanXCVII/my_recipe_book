@@ -187,11 +187,11 @@ class RecipeKeeper extends Model {
   /// deletes oldRecipe from database and rKeeper and saves newRecipe to
   /// database and rKeeper
   Future<Recipe> modifyRecipe(Recipe oldRecipe, Recipe newRecipe,
-      String recipeImage, bool hasFiles) async {
+      String recipeImage, bool hasFiles, bool addNutritions) async {
     print(hasFiles);
     // modify (delete old save new) recipe in database
     await DBProvider.db.deleteRecipe(oldRecipe.name);
-    await DBProvider.db.newRecipe(newRecipe);
+    await DBProvider.db.newRecipe(newRecipe, addNutritions);
 
     if (hasFiles && oldRecipe.name != newRecipe.name) {
       await IO.copyRecipeDataToNewPath(oldRecipe.name, newRecipe.name);
@@ -240,14 +240,14 @@ class RecipeKeeper extends Model {
   /// given recipe doesn't contain the full image paths. Also updates
   /// the swyping cards, if the new recipe is in the currently selected
   /// category
-  Future<Recipe> addRecipe(Recipe recipe) async {
+  Future<Recipe> addRecipe(Recipe recipe, bool addNutritions) async {
     for (String category in recipe.categories) {
       if (!_categories.contains(category)) {
         await addCategory(category);
       }
     }
 
-    await DBProvider.db.newRecipe(recipe);
+    await DBProvider.db.newRecipe(recipe, addNutritions);
     Recipe fullImagePathRecipe =
         await DBProvider.db.getRecipeByName(recipe.name, true);
     RecipePreview rPreview = convertRecipeToPreview(fullImagePathRecipe);

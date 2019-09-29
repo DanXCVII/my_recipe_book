@@ -172,7 +172,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         actions: <Widget>[
           ScopedModelDescendant<RecipeKeeper>(
               builder: (context, child, rKeeper) => IconButton(
-                    icon: Icon(Icons.check),
+                    icon: Icon(Icons.arrow_forward),
                     color: Colors.white,
                     onPressed: () {
                       _finishedEditingRecipe(rKeeper);
@@ -469,34 +469,37 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     //           ),
     //           150)),
     // );
-    if (widget.editRecipe == null) {
-      saveRecipe(rKeeper).then((_) {
-        Navigator.pushReplacement(
-            context,
-            CupertinoPageRoute(
-                builder: (context) => NutritionManager(
-                      nutritions: rKeeper.nutritions,
-                      recipeName: nameController.text,
-                    ))); // edit recipe screen
-      });
-    } else {
-      saveRecipe(rKeeper).then((newRecipe) {
-        newRecipe.isFavorite = widget.editRecipe.isFavorite;
-        Navigator.pop(context); // edit recipe screen
-        imageCache.clear();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => RecipeScreen(
-              recipe: newRecipe,
-              primaryColor: getRecipePrimaryColor(newRecipe.vegetable),
-              heroImageTag: 'heroImageTag',
-              heroTitle: 'heroTitel',
+
+    saveRecipe(rKeeper).then((newRecipe) {
+      imageCache.clear();
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+          builder: (context) => WillPopScope(
+            child: NutritionManager(
+              widget.editRecipe == null ? false : true,
+              editRecipeNutritions: widget.editRecipe == null
+                  ? null
+                  : widget.editRecipe.nutritions,
+              nutritions: rKeeper.nutritions,
+              recipeName: nameController.text,
             ),
+            onWillPop: () async {
+              Navigator.pop(context);
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => RecipeScreen(
+                        recipe: newRecipe,
+                        primaryColor:
+                            getRecipePrimaryColor(newRecipe.vegetable),
+                        heroImageTag: 'heroImage',
+                        heroTitle: 'heroTitle',
+                      )));
+              return false;
+            },
           ),
-        );
-      });
-    }
+        ),
+      );
+    });
   }
 
   Future<Recipe> saveRecipe(RecipeKeeper rKeeper) async {
@@ -559,7 +562,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       categories: newRecipeCategories,
       isFavorite:
           widget.editRecipe == null ? false : widget.editRecipe.isFavorite,
-      nutritions: [],
+      nutritions: widget.editRecipe == null ? [] : widget.editRecipe.nutritions,
     );
 
     Recipe fullImagePathRecipe;
@@ -569,6 +572,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         newRecipe,
         recipeImage,
         _hasRecipeImage(newRecipe),
+        false,
       );
     } else {
       if (_hasRecipeImage(newRecipe)) {
@@ -581,7 +585,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         );
       }
 
-      fullImagePathRecipe = await rKeeper.addRecipe(newRecipe);
+      fullImagePathRecipe = await rKeeper.addRecipe(newRecipe, false);
     }
 
     return fullImagePathRecipe;

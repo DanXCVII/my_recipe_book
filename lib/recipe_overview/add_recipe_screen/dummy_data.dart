@@ -81,7 +81,7 @@ class DummyData {
         categories: ['Hauptspeisen'],
         nutritions: [],
       );
-      await rKeeper.addRecipe(r1);
+      await rKeeper.addRecipe(r1, true);
     }
   }
 }

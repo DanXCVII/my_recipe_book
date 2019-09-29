@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/add_nut_cat_dialog.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../recipe.dart';
 
 class NutritionManager extends StatefulWidget {
   final List<String> nutritions;
+  final bool editRecipe;
+  final List<Nutrition> editRecipeNutritions;
   final String recipeName;
 
-  NutritionManager({this.nutritions, this.recipeName});
+  NutritionManager(
+    this.editRecipe, {
+    this.nutritions,
+    this.editRecipeNutritions,
+    this.recipeName,
+  });
 
   @override
   _NutritionManagerState createState() => _NutritionManagerState();
@@ -28,6 +36,13 @@ class _NutritionManagerState extends State<NutritionManager> {
     if (widget.nutritions != null) {
       for (String n in widget.nutritions) {
         nutritionsController.addAll({n: TextEditingController()});
+        if (widget.editRecipe) {
+          for (Nutrition en in widget.editRecipeNutritions) {
+            if (en.name.compareTo(n) == 0) {
+              nutritionsController[n].text = en.amountUnit;
+            }
+          }
+        }
         dismissibleKeys.add(Key('D-$n'));
         listTileKeys.add(Key(n));
       }
@@ -129,8 +144,23 @@ class _NutritionManagerState extends State<NutritionManager> {
       }
       rKeeper
           .addRecipeNutritions(widget.recipeName, recipeNutritions)
-          .then((_) {
-        Navigator.pop(context);
+          .then((newRecipe) {
+        if (widget.editRecipe) {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => RecipeScreen(
+                recipe: newRecipe,
+                primaryColor: getRecipePrimaryColor(newRecipe.vegetable),
+                heroImageTag: 'heroImageTag',
+                heroTitle: 'heroTitel',
+              ),
+            ),
+          );
+        } else {
+          Navigator.pop(context);
+        }
       });
     }
   }

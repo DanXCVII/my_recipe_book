@@ -65,7 +65,7 @@ Future<void> importRecipe(RecipeKeeper rKeeper, String recipeZipPath) async {
   await importRecipeDir
       .rename(await PathProvider.pP.getRecipeDir(importRecipe.name));
 
-  rKeeper.addRecipe(importRecipe);
+  rKeeper.addRecipe(importRecipe, true);
   await Directory(
           await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
       .delete(recursive: true);
