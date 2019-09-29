@@ -6,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import './recipe.dart';
 import 'dart:async';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 // singleton DBProvider to ensure, that we only use one object
 class DBProvider {
@@ -227,6 +228,18 @@ class DBProvider {
 
     await batch.commit();
     return await getRecipeByName(recipeName, true);
+  }
+
+  Future<List<String>> getAllIngredientNames() async {
+    final db = await database;
+
+    List<String> ingredients = [];
+
+    var ingreds = await db.query('Ingredient');
+    for (Map<String, dynamic> m in ingreds) {
+      ingredients.add(m['ingredient_name']);
+    }
+    return ingredients;
   }
 
   /// the path to the imageFiles must be specified like the the following:

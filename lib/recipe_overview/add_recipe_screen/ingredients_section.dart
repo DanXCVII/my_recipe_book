@@ -1,4 +1,6 @@
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import "package:flutter/material.dart";
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import "./add_recipe.dart";
 
@@ -7,13 +9,14 @@ class Ingredients extends StatefulWidget {
   final List<List<TextEditingController>> ingredientAmountController;
   final List<List<TextEditingController>> ingredientUnitController;
   final List<TextEditingController> ingredientGlossary;
+  final List<String> ingredientNames;
 
   Ingredients(
-    this.ingredientNameController,
-    this.ingredientAmountController,
-    this.ingredientUnitController,
-    this.ingredientGlossary,
-  );
+      this.ingredientNameController,
+      this.ingredientAmountController,
+      this.ingredientUnitController,
+      this.ingredientGlossary,
+      this.ingredientNames);
 
   @override
   State<StatefulWidget> createState() {
@@ -33,8 +36,9 @@ class _IngredientsState extends State<Ingredients> {
           child: Text(
             "ingredients:",
             style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,),
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
           ),
         )
       ],
@@ -42,15 +46,15 @@ class _IngredientsState extends State<Ingredients> {
     // add all the sections to the column
     for (int i = 0; i < widget.ingredientGlossary.length; i++) {
       sections.children.add(IngredientSection(
-        // i number of the section in the column
-        i,
-        // callback for when section add is tapped
-        i == widget.ingredientGlossary.length - 1 ? true : false,
-        widget.ingredientNameController,
-        widget.ingredientAmountController,
-        widget.ingredientUnitController,
-        widget.ingredientGlossary,
-      ));
+          // i number of the section in the column
+          i,
+          // callback for when section add is tapped
+          i == widget.ingredientGlossary.length - 1 ? true : false,
+          widget.ingredientNameController,
+          widget.ingredientAmountController,
+          widget.ingredientUnitController,
+          widget.ingredientGlossary,
+          widget.ingredientNames));
     }
     // Add remove and add section button
     sections.children.add(
@@ -121,18 +125,19 @@ class IngredientSection extends StatefulWidget {
   final List<List<TextEditingController>> ingredientAmountController;
   final List<List<TextEditingController>> ingredientUnitController;
   final List<TextEditingController> ingredientGlossary;
+  final List<String> ingredientNames;
 
   final int sectionNumber;
   final bool lastRow;
 
   IngredientSection(
-    this.sectionNumber,
-    this.lastRow,
-    this.ingredientNameController,
-    this.ingredientAmountController,
-    this.ingredientUnitController,
-    this.ingredientGlossary,
-  );
+      this.sectionNumber,
+      this.lastRow,
+      this.ingredientNameController,
+      this.ingredientAmountController,
+      this.ingredientUnitController,
+      this.ingredientGlossary,
+      this.ingredientNames);
 
   @override
   State<StatefulWidget> createState() {
@@ -141,6 +146,20 @@ class IngredientSection extends StatefulWidget {
 }
 
 class _IngredientSectionState extends State<IngredientSection> {
+  List<List<GlobalKey<AutoCompleteTextFieldState<String>>>> keys = [];
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.ingredientNameController);
+    for (int i = 0; i < widget.ingredientNameController.length; i++) {
+      keys.add([]);
+      for (int j = 0; j < widget.ingredientNameController[i].length; j++) {
+        keys[i].add(GlobalKey());
+      }
+    }
+  }
+
   // returns a list of the Rows with the TextFields for the ingredients
   List<Widget> getIngredientFields() {
     List<Widget> output = [];
@@ -174,9 +193,11 @@ class _IngredientSectionState extends State<IngredientSection> {
             children: <Widget>[
               Expanded(
                 flex: 9,
-                child: TextFormField(
+                child: SimpleAutoCompleteTextField(
+                  key: keys[widget.sectionNumber][i],
                   controller:
                       widget.ingredientNameController[widget.sectionNumber][i],
+                  suggestions: widget.ingredientNames,
                   decoration: InputDecoration(
                     hintText: "name",
                     filled: true,
@@ -243,6 +264,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                               .removeLast();
                           widget.ingredientUnitController[widget.sectionNumber]
                               .removeLast();
+                          keys[widget.sectionNumber].removeLast();
                         });
                       },
                       shape: RoundedRectangleBorder(
@@ -260,6 +282,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                       .add(new TextEditingController());
                   widget.ingredientUnitController[widget.sectionNumber]
                       .add(new TextEditingController());
+                  keys[widget.sectionNumber].add(GlobalKey());
                 });
               },
               shape: RoundedRectangleBorder(

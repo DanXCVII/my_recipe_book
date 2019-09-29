@@ -4,6 +4,7 @@ import 'package:my_recipe_book/add_nut_cat_dialog.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../recipe.dart';
 
@@ -154,7 +155,6 @@ class _NutritionManagerState extends State<NutritionManager> {
                 recipe: newRecipe,
                 primaryColor: getRecipePrimaryColor(newRecipe.vegetable),
                 heroImageTag: 'heroImageTag',
-                heroTitle: 'heroTitel',
               ),
             ),
           );

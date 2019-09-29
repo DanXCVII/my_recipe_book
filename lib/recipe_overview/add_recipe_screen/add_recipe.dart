@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/settings/nutrition_manager.dart';
@@ -24,6 +25,7 @@ import '../../my_wrapper.dart';
 import './complexity_section.dart';
 import '../recipe_screen.dart' show RecipeScreen;
 import './image_selector.dart' as IS;
+import 'package:my_recipe_book/generated/i18n.dart';
 
 const double categories = 14;
 const double topPadding = 8;
@@ -78,11 +80,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
     stepImages.add([]);
     // initialize list of controllers for the dynamic textFields with one element
-    ingredientNameController.add([]);
     ingredientNameController[0].add(TextEditingController());
-    ingredientAmountController.add([]);
     ingredientAmountController[0].add(TextEditingController());
-    ingredientUnitController.add([]);
     ingredientUnitController[0].add(TextEditingController());
     ingredientGlossaryController.add(TextEditingController());
     stepsDescController.add(TextEditingController());
@@ -335,12 +334,21 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               ),
 
               // ingredients section with it"s heading and text fields and buttons
-              Ingredients(
-                ingredientNameController,
-                ingredientAmountController,
-                ingredientUnitController,
-                ingredientGlossaryController,
-              ),
+              FutureBuilder<List<String>>(
+                  future: DBProvider.db.getAllIngredientNames(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Ingredients(
+                        ingredientNameController,
+                        ingredientAmountController,
+                        ingredientUnitController,
+                        ingredientGlossaryController,
+                        snapshot.data,
+                      );
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  }),
               // category for vegetarian heading
               Padding(
                 padding: const EdgeInsets.only(left: 56, top: 12),
@@ -486,14 +494,15 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             ),
             onWillPop: () async {
               Navigator.pop(context);
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => RecipeScreen(
-                        recipe: newRecipe,
-                        primaryColor:
-                            getRecipePrimaryColor(newRecipe.vegetable),
-                        heroImageTag: 'heroImage',
-                        heroTitle: 'heroTitle',
-                      )));
+              if (widget.editRecipe != null) {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => RecipeScreen(
+                          recipe: newRecipe,
+                          primaryColor:
+                              getRecipePrimaryColor(newRecipe.vegetable),
+                          heroImageTag: 'heroImage',
+                        )));
+              }
               return false;
             },
           ),

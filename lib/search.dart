@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import 'database.dart';
 
@@ -83,7 +84,6 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                       recipe: recipe,
                       primaryColor: getRecipePrimaryColor(recipe.vegetable),
                       heroImageTag: 'heroTag',
-                      heroTitle: 'heroTitle',
                     ),
                   ),
                 );

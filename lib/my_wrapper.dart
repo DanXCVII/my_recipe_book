@@ -1,4 +1,5 @@
 import './recipe.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 class MyImageWrapper {
   String selectedImage;

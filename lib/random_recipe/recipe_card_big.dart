@@ -5,6 +5,7 @@ import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../helper.dart';
 import '../recipe.dart';
@@ -33,7 +34,6 @@ class RecipeCardBig extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String heroImageTag = '${recipe.name}$index';
-    final String heroTitle = '$index-title';
     return ScopedModelDescendant<RecipeKeeper>(
       builder: (context, child, model) => Material(
         child: GestureDetector(
@@ -45,7 +45,6 @@ class RecipeCardBig extends StatelessWidget {
                   recipe: recipe,
                   primaryColor: getRecipePrimaryColor(recipe.vegetable),
                   heroImageTag: heroImageTag,
-                  heroTitle: heroTitle,
                 ),
               ),
             );
@@ -107,25 +106,11 @@ class RecipeCardBig extends StatelessWidget {
                                       width: MediaQuery.of(context).size.width /
                                               1.8 -
                                           20,
-                                      child: Hero(
-                                        tag: heroTitle,
-                                        placeholderBuilder:
-                                            (context, size, widget) => Text(
-                                          recipe.name,
-                                          style: TextStyle(
-                                            fontSize: 28,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: Text(
-                                            recipe.name,
-                                            style: TextStyle(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
+                                      child: Text(
+                                        recipe.name,
+                                        style: TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
                                     ),

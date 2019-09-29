@@ -1,0 +1,60 @@
+{
+  "recipes": "recipes",
+  "delete_recipe": "delete recipe",
+  "export_zip": "export as zip",
+  "edit": "edit",
+
+  "add_recipe": "add recipe",
+  "add_favorites": "add favorites",
+  "add_section": "add section",
+  "add_ingredient": "add ingredient",
+  "add_to_cart": "add to shopping cart",
+  "add_step": "add step",
+  "add_nutritions": "add nutritions",
+
+
+  "increase_servings": "increase servings",
+  "decrease_servings": "decrease servings",
+
+  "directions": "Directions",
+  "notes": "Notes",
+  "categories": "Categories",
+  "ingredients_for": "Ingredients for",
+  "servings": "servings",
+
+  "name": "name",
+  "prep_time": "preperation time",
+  "cook_time": "cooking time",
+  "total_time": "total time",
+
+  "section_name": "section name",
+  "amnt": "amnt",
+  "unit": "unit",
+
+  "non_vegetarian": "non vegetarian",
+  "vegetarian": "vegetarian",
+  "vegan": "vegan",
+
+  "steps": "steps",
+  "description": "description",
+
+  "complexity_effort": "complexity/effort",
+  "select_subcategories": "select subcategories",
+
+  "basket": "basket",
+  "nothing_added_yet": "Nothing added yet",
+  "explore": "explore",
+  "roll_the_dice": "roll the dice",
+  "settings": "settings",
+  "import_recipe_s": "import recipe's",
+  "export_recipe_s": "export recipe's",
+  "switch_theme": "switch theme",
+  "switch_shopping_cart_look": "switch shopping cart look",
+  "view_intro": "view intro",
+  "manage_nutritions": "manage nutritions",
+  "about_me": "about me",
+  "rate_app": "rate this app",
+
+  "cancel": "cancel"
+
+}

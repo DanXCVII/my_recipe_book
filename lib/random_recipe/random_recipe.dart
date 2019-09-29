@@ -7,6 +7,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 import '../database.dart';
 import '../recipe.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 class SwypingCardsScreen extends StatefulWidget {
   SwypingCardsScreen();

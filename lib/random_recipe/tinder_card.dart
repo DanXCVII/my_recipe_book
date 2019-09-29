@@ -2,6 +2,7 @@ library flutter_tindercard;
 
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 List<Size> _cardSizes = new List();
 List<Alignment> _cardAligns = new List();

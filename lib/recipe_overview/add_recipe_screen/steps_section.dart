@@ -3,6 +3,7 @@ import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/recipe.dart';
 import "package:image_picker/image_picker.dart";
 import 'package:path_provider/path_provider.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import "dart:io";
 import "./add_recipe.dart";

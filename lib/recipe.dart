@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import 'helper.dart';
 
@@ -93,8 +94,7 @@ class Recipe {
           .map((l) => List<Map<String, dynamic>>.from(l)
               .map((i) => Ingredient.fromMap(i))
               .toList())
-          .toList()
-            ..removeLast(),
+          .toList(),
       vegetable: vegetable,
       steps: List<String>.from(json['steps']),
       notes: json['notes'],

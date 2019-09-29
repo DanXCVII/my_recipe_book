@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
@@ -8,6 +11,8 @@ import 'package:scoped_model/scoped_model.dart';
 
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:flutter/rendering.dart';
+
 import 'package:my_recipe_book/SplashScreen.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/random_recipe/random_recipe.dart';
@@ -17,6 +22,7 @@ import 'package:my_recipe_book/settings/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 
+import 'generated/i18n.dart';
 import 'recipe_overview/recipe_category_overview/r_category_overview.dart';
 import 'shopping_cart/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';
@@ -24,7 +30,6 @@ import './favortie_screen/favorite_screen.dart';
 import './search.dart';
 import './theming.dart';
 
-import 'package:flutter/rendering.dart';
 import 'dart:math';
 
 void main() {
@@ -46,6 +51,8 @@ class MyApp extends StatelessWidget {
   final RecipeKeeper recipeKeeper;
   final ShoppingCartKeeper scKeeper;
   final appTitle = 'Drawer Demo';
+  static StreamController _locale = StreamController<Locale>();
+  static bool initialized = false;
 
   MyApp(
     this.bottomNavIndex,
@@ -65,19 +72,47 @@ class MyApp extends StatelessWidget {
         model: bottomNavIndex,
         child: ScopedModel<RecipeKeeper>(
           model: recipeKeeper,
-          child: MaterialApp(
-            theme: CustomTheme.of(context),
-            initialRoute: '/',
-            routes: {
-              '/': (context) => SplashScreen(
-                    recipeKeeper: recipeKeeper,
-                    mainPageNavigator: bottomNavIndex,
-                    sCKeeper: scKeeper,
-                  ),
-              '/add-recipe': (context) => AddRecipeForm(),
-              '/manage-categories': (context) => CategoryManager(),
-            },
-          ),
+          child: StreamBuilder(
+              stream: _locale.stream,
+              initialData: Locale("en", ""),
+              builder: (context, snapshot) {
+                return MaterialApp(
+                  locale: snapshot.data,
+                  localizationsDelegates: [
+                    S.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate
+                  ],
+                  supportedLocales: S.delegate.supportedLocales,
+                  localeResolutionCallback: (deviceLocale, supportedLocals) {
+                    Locale myLocale = deviceLocale;
+                    print(myLocale.languageCode + " " + myLocale.countryCode);
+                    S.delegate.resolution(fallback: new Locale("en", ""));
+                    if (initialized) {
+                      _locale.close();
+                      return myLocale;
+                    } else {
+                      print("initialized " + deviceLocale.languageCode);
+                      _locale.add(Locale(deviceLocale.languageCode, ""));
+                      initialized = true;
+                    }
+                    //setLocale(deviceLocale);
+                    return myLocale;
+                  },
+                  showPerformanceOverlay: false,
+                  theme: CustomTheme.of(context),
+                  initialRoute: '/',
+                  routes: {
+                    '/': (context) => SplashScreen(
+                          recipeKeeper: recipeKeeper,
+                          mainPageNavigator: bottomNavIndex,
+                          sCKeeper: scKeeper,
+                        ),
+                    '/add-recipe': (context) => AddRecipeForm(),
+                    '/manage-categories': (context) => CategoryManager(),
+                  },
+                );
+              }),
         ),
       ),
     );
@@ -98,6 +133,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     Key key,
     String title,
   });
+
   AnimationController _controller;
   static const List<IconData> icons = const [
     GroovinMaterialIcons.grid_large,

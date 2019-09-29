@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 class Consts {
   Consts._();
@@ -87,7 +88,7 @@ class AddDialogState extends State<AddDialog> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     FlatButton(
-                        child: Text("Cancel"),
+                        child: Text(S.of(context).cancel),
                         onPressed: () {
                           Navigator.pop(context);
                         }),

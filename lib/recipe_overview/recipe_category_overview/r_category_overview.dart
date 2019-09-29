@@ -6,6 +6,7 @@ import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:math';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../../database.dart';
 import '../../recipe.dart';
@@ -108,8 +109,9 @@ class RecipeHozizontalList extends StatelessWidget {
     int recipeCount;
     if (recipePreviews.length >= 8) {
       recipeCount = 8;
+    } else {
+      recipeCount = recipePreviews.length;
     }
-    recipeCount = recipePreviews.length;
 
     return Container(
       height: 130,
@@ -126,7 +128,6 @@ class RecipeHozizontalList extends StatelessWidget {
                   context,
                   index,
                   '$categoryName$index-image',
-                  '$categoryName$index-title',
                 );
               },
               child: Padding(
@@ -250,8 +251,7 @@ class RecipeHozizontalList extends StatelessWidget {
     );
   }
 
-  void _pushRecipeRoute(BuildContext context, int index, String heroImageTag,
-      String heroTitleTag) {
+  void _pushRecipeRoute(BuildContext context, int index, String heroImageTag) {
     DBProvider.db
         .getRecipeByName(recipePreviews[index].name, true)
         .then((recipe) {
@@ -263,7 +263,6 @@ class RecipeHozizontalList extends StatelessWidget {
             primaryColor:
                 getRecipePrimaryColor(recipePreviews[index].vegetable),
             heroImageTag: heroImageTag,
-            heroTitle: heroTitleTag,
           ),
         ),
       );

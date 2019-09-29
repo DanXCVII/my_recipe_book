@@ -5,6 +5,7 @@ import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 const Map<int, Color> complexityColors = {
   1: Color(0xff28E424),
@@ -25,13 +26,11 @@ class RecipeCard extends StatelessWidget {
   final RecipePreview recipePreview;
   final Color shadow;
   final String heroImageTag;
-  final String heroTitle;
 
   const RecipeCard({
     this.recipePreview,
     @required this.shadow,
     @required this.heroImageTag,
-    @required this.heroTitle,
     Key key,
   }) : super(key: key);
 
@@ -49,7 +48,6 @@ class RecipeCard extends StatelessWidget {
                 recipe: recipe,
                 primaryColor: getRecipePrimaryColor(recipePreview.vegetable),
                 heroImageTag: heroImageTag,
-                heroTitle: heroTitle,
               ),
             ),
           );
@@ -124,30 +122,14 @@ class RecipeCard extends StatelessWidget {
                   SizedBox(height: 7),
                   Padding(
                     padding: EdgeInsets.only(left: 15, right: 12),
-                    child: Hero(
-                      tag: heroTitle,
-                      placeholderBuilder: (context, size, widget) => Text(
-                        "${recipePreview.name}",
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14 + gridTileWidth / 35,
-                        ),
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Text(
-                          "${recipePreview.name}",
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14 + gridTileWidth / 35,
-                          ),
-                        ),
+                    child: Text(
+                      "${recipePreview.name}",
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14 + gridTileWidth / 35,
                       ),
                     ),
                   ),

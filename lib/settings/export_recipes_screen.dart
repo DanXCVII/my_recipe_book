@@ -7,6 +7,7 @@ import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/recipe.dart';
 import 'package:share_extend/share_extend.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 class ExportRecipes extends StatefulWidget {
   ExportRecipes({Key key}) : super(key: key);

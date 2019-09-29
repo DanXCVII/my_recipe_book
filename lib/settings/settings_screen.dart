@@ -7,6 +7,8 @@ import 'package:my_recipe_book/settings/export_recipes_screen.dart';
 import 'package:my_recipe_book/settings/nutrition_manager.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
+
 import '../intro_screen.dart';
 import '../theming.dart';
 import './import_recipe.dart';
@@ -183,8 +185,13 @@ class Settings extends StatelessWidget {
 
   void _pushViewIntroScreen(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-    Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => IntroScreen(onDonePop: true)));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => WillPopScope(
+            onWillPop: () async {
+              SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+              return true;
+            },
+            child: IntroScreen(onDonePop: true))));
   }
 
   void _changeTheme(BuildContext buildContext, MyThemeKeys key) {

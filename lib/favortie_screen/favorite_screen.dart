@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import '../recipe_card.dart';
@@ -91,7 +92,6 @@ class FavoriteRecipeCards extends StatelessWidget {
               ? Colors.grey[400]
               : Colors.grey[900],
           heroImageTag: "${recipes[i].imagePreviewPath}--${recipes[i].name}",
-          heroTitle: "recipe--${recipes[i].name}",
         ),
       );
     }

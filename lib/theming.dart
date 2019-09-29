@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 enum MyThemeKeys { AUTOMATIC, LIGHT, DARK, OLEDBLACK }
 

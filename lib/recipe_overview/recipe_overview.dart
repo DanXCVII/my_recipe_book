@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../database.dart';
 import '../recipe.dart';
@@ -160,7 +161,6 @@ class RecipeGridView extends StatelessWidget {
               ? Colors.grey[400]
               : Colors.black,
           heroImageTag: "$i",
-          heroTitle: "titel$i",
         ),
       );
     }

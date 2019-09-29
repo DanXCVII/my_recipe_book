@@ -13,6 +13,7 @@ import 'package:transparent_image/transparent_image.dart';
 import 'dart:ui';
 import 'dart:math';
 import 'package:share/share.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../recipe.dart';
 import './recipe_overview.dart';
@@ -49,14 +50,13 @@ class RecipeScreen extends StatelessWidget {
   final Recipe recipe;
   final Color primaryColor;
   final String heroImageTag;
-  final String heroTitle;
   final PanelController _pc = PanelController();
 
-  RecipeScreen(
-      {@required this.recipe,
-      @required this.primaryColor,
-      this.heroImageTag,
-      this.heroTitle});
+  RecipeScreen({
+    @required this.recipe,
+    @required this.primaryColor,
+    this.heroImageTag,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +65,6 @@ class RecipeScreen extends StatelessWidget {
             recipe: recipe,
             primaryColor: primaryColor,
             heroImageTag: heroImageTag,
-            heroTitle: heroTitle,
           )
         : Scaffold(
             backgroundColor: primaryColor,
@@ -158,7 +157,6 @@ class RecipeScreen extends StatelessWidget {
                 recipe: recipe,
                 primaryColor: primaryColor,
                 heroImageTag: heroImageTag,
-                heroTitle: heroTitle,
               ),
             ),
           );
@@ -203,14 +201,13 @@ class RecipePage extends StatelessWidget {
   final Recipe recipe;
   final Color primaryColor;
   final String heroImageTag;
-  final String heroTitle;
   final PanelController _pc = PanelController();
 
-  RecipePage(
-      {@required this.recipe,
-      @required this.primaryColor,
-      this.heroImageTag,
-      this.heroTitle});
+  RecipePage({
+    @required this.recipe,
+    @required this.primaryColor,
+    this.heroImageTag,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -304,27 +301,17 @@ class RecipePage extends StatelessWidget {
               Align(
                   alignment: Alignment.topCenter,
                   child: Padding(
-                      padding: EdgeInsets.fromLTRB(
-                          MediaQuery.of(context).size.width * 0.15,
-                          0,
-                          MediaQuery.of(context).size.width * 0.15,
-                          0),
-                      child: Hero(
-                          tag: heroTitle,
-                          placeholderBuilder: (context, size, widget) => Text(
-                                "${recipe.name}",
-                                textAlign: TextAlign.center,
-                                style:
-                                    TextStyle(color: textColor, fontSize: 26),
-                              ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Text(
-                              "${recipe.name}",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: textColor, fontSize: 26),
-                            ),
-                          )))),
+                    padding: EdgeInsets.fromLTRB(
+                        MediaQuery.of(context).size.width * 0.15,
+                        0,
+                        MediaQuery.of(context).size.width * 0.15,
+                        0),
+                    child: Text(
+                      "${recipe.name}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: textColor, fontSize: 26),
+                    ),
+                  )),
               SizedBox(height: 30),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,

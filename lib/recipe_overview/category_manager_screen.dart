@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../add_nut_cat_dialog.dart';
 

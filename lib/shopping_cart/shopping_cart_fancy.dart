@@ -3,6 +3,7 @@ import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/shopping_cart/shopping_cart.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../database.dart';
 import '../recipe.dart';
@@ -35,8 +36,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
         flexibleSpace: FlexibleSpaceBar(
           centerTitle: false,
           title: Text('ShoppingCart'),
-          background:
-              Image.asset('images/cuisine.jpg', fit: BoxFit.cover),
+          background: Image.asset('images/cuisine.jpg', fit: BoxFit.cover),
         ),
       ),
       SliverPadding(

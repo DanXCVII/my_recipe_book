@@ -1,3 +1,4 @@
+import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class MainPageNavigator extends Model {
@@ -59,7 +60,8 @@ class MainPageNavigator extends Model {
   }
 
   void initCurrentMainView(bool mainView) {
-    if (this._showRecipesCatOverview == null) _showRecipesCatOverview = mainView;
+    if (this._showRecipesCatOverview == null)
+      _showRecipesCatOverview = mainView;
     return;
   }
 
