@@ -25,13 +25,13 @@ class Settings extends StatelessWidget {
                 _importSingleRecipe(model).then((_) {});
               },
               child: ListTile(
-                title: Text('import recipe/s'),
+                title: Text(S.of(context).import_recipe_s),
               ),
             ),
           ),
           Divider(),
           ListTile(
-            title: Text('export recipe/s'),
+            title: Text(S.of(context).export_recipe_s),
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ExportRecipes()));
@@ -39,7 +39,7 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            title: Text('switch theme'),
+            title: Text(S.of(context).switch_theme),
             trailing: Container(
               width: 130,
               height: 25,
@@ -138,7 +138,7 @@ class Settings extends StatelessWidget {
           Divider(),
           ScopedModelDescendant<MainPageNavigator>(
             builder: (context, child, model) => SwitchListTile(
-              title: Text('switch shopping cart look'),
+              title: Text(S.of(context).switch_shopping_cart_look),
               value: model.showFancyShoppingList,
               onChanged: (value) {
                 SharedPreferences.getInstance().then((prefs) {
@@ -150,14 +150,14 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            title: Text('view intro'),
+            title: Text(S.of(context).view_intro),
             onTap: () {
               _pushViewIntroScreen(context);
             },
           ),
           Divider(),
           ListTile(
-              title: Text('manage nutritions'),
+              title: Text(S.of(context).manage_nutritions),
               onTap: () {
                 Navigator.push(
                   context,
@@ -172,11 +172,9 @@ class Settings extends StatelessWidget {
                 );
               }),
           Divider(),
-          ListTile(title: Text('change language')),
+          ListTile(title: Text(S.of(context).about_me)),
           Divider(),
-          ListTile(title: Text('about me')),
-          Divider(),
-          ListTile(title: Text('rate this app')),
+          ListTile(title: Text(S.of(context).rate_app)),
           Divider(),
         ],
       ),

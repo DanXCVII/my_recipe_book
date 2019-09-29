@@ -48,9 +48,7 @@ dependencies:
   flutter_tindercard: ^0.1.8
   sliding_up_panel: ^0.3.6
   autocomplete_textfield: ^1.7.3
-
-
-
+  
   share:
     git:
      url: https://github.com/d-silveira/flutter-share.git
@@ -61,6 +59,15 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  flutter_launcher_icons: "^0.7.3"
+  
+flutter_icons:
+  ios: true
+  android: true
+  image_path_ios: "assets/launcher/iconIos.png"
+  image_path_android: "assets/launcher/adaptiveForeground.png"
+  adaptive_icon_background: "assets/launcher/adaptiveBackground.png"
+  adaptive_icon_foreground: "assets/launcher/adaptiveForeground.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

@@ -28,7 +28,7 @@ class ShoppingCartScreen extends StatelessWidget {
                     child: Padding(
                   padding: EdgeInsets.all(15),
                   child: Text(
-                    'Your\nShopping List',
+                    '${S.of(context).your}\n${S.of(context).shopping_list}',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 35,
@@ -96,7 +96,7 @@ class ShoppingCartScreen extends StatelessWidget {
                         height: MediaQuery.of(context).size.height - 400,
                         child: Center(
                             child: Text(
-                          "Nothing added yet",
+                          S.of(context).nothing_added_yet,
                           style: TextStyle(
                             fontSize: 26,
                             fontFamily: 'RibeyeMarrow',

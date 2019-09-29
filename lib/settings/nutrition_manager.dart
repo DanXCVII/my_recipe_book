@@ -63,7 +63,7 @@ class _NutritionManagerState extends State<NutritionManager> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            widget.recipeName == null ? 'manage nutritions' : 'add nutritions'),
+            widget.recipeName == null ? S.of(context).manage_nutritions : S.of(context).add_nutritions),
         actions: <Widget>[
           ScopedModelDescendant<RecipeKeeper>(
             builder: (context, child, rKeeper) => IconButton(
@@ -93,7 +93,7 @@ class _NutritionManagerState extends State<NutritionManager> {
         }
         if (rKeeper.nutritions.isEmpty) {
           return Center(
-            child: Text('You have no nutritions'),
+            child: Text(S.of(context).you_have_no_nutritions),
           );
         } else {
           int i = -1;

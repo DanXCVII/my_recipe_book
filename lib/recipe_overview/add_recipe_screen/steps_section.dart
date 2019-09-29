@@ -34,7 +34,7 @@ class _StepsState extends State<Steps> {
     steps.children.add(Padding(
       padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
       child: Text(
-        "steps:",
+        S.of(context).steps + ':',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       ),
     ));
@@ -58,7 +58,7 @@ class _StepsState extends State<Steps> {
                     padding: const EdgeInsets.only(right: 12),
                     child: OutlineButton.icon(
                       icon: Icon(Icons.remove_circle),
-                      label: Text("Remove step"),
+                      label: Text(S.of(context).remove_step),
                       onPressed: () {
                         removeStep(widget.stepsDecriptionController.length,
                             widget.recipeName);
@@ -71,7 +71,7 @@ class _StepsState extends State<Steps> {
                 : null,
             OutlineButton.icon(
               icon: Icon(Icons.add_circle),
-              label: Text("Add step"),
+              label: Text(S.of(context).add_step),
               onPressed: () {
                 setState(() {
                   widget.stepImages.add(new List<String>());

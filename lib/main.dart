@@ -161,8 +161,8 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return ScopedModelDescendant<MainPageNavigator>(
         builder: (context, child, mpNavigator) {
       return Scaffold(
-        appBar: _buildAppBar(mpNavigator.title, mpNavigator),
-        floatingActionButton: _getFloatingB(mpNavigator.title),
+        appBar: _buildAppBar(mpNavigator.index, mpNavigator),
+        floatingActionButton: _getFloatingB(mpNavigator.index),
         body: IndexedStack(
           index: mpNavigator.index,
           children: [
@@ -180,7 +180,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             Settings(),
           ],
         ),
-        backgroundColor: _getBackgroundColor(mpNavigator.title),
+        backgroundColor: _getBackgroundColor(mpNavigator.index),
         bottomNavigationBar: Theme(
             data: Theme.of(context).copyWith(canvasColor: Colors.black87),
             child: BottomNavyBar(
@@ -192,29 +192,29 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 items: [
                   BottomNavyBarItem(
                       icon: Icon(GroovinMaterialIcons.notebook),
-                      title: Text('recipes'),
+                      title: Text(S.of(context).recipes),
                       activeColor: Colors.orange,
                       inactiveColor: Colors.white),
                   BottomNavyBarItem(
                     icon: Icon(Icons.favorite),
-                    title: Text('favorites'),
+                    title: Text(S.of(context).favorites),
                     activeColor: Colors.pink,
                     inactiveColor: Colors.white,
                   ),
                   BottomNavyBarItem(
                       icon: Icon(Icons.shopping_basket),
-                      title: Text('basket'),
+                      title: Text(S.of(context).basket),
                       activeColor: Colors.brown[300],
                       inactiveColor: Colors.white),
                   BottomNavyBarItem(
                     icon: Icon(GroovinMaterialIcons.dice_multiple),
-                    title: Text('explore'),
+                    title: Text(S.of(context).explore),
                     activeColor: Colors.green,
                     inactiveColor: Colors.white,
                   ),
                   BottomNavyBarItem(
                       icon: Icon(Icons.settings),
-                      title: Text('settings'),
+                      title: Text(S.of(context).settings),
                       activeColor: Colors.grey[100],
                       inactiveColor: Colors.white)
                 ])
@@ -261,8 +261,28 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     });
   }
 
-  AppBar _buildAppBar(String title, MainPageNavigator mpNavigator) {
+  AppBar _buildAppBar(int selectedIndex, MainPageNavigator mpNavigator) {
     // if shoppingCartPage with sliverAppBar
+    String title;
+    switch (selectedIndex) {
+      case 0:
+        title = S.of(context).recipes;
+        break;
+      case 1:
+        title = S.of(context).favorites;
+        break;
+      case 2:
+        title = S.of(context).shoppingcart;
+        break;
+      case 3:
+        title = S.of(context).roll_the_dice;
+        break;
+      case 4:
+        title = S.of(context).settings;
+        break;
+      default:
+        break;
+    }
     if (mpNavigator.index == 2 && mpNavigator.showFancyShoppingList) {
       return null;
     }
@@ -316,10 +336,10 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     });
   }
 
-  Widget _getFloatingB(String page) {
+  Widget _getFloatingB(int selectedIndex) {
     Color backgroundColor = Theme.of(context).primaryColor;
     //  Color foregroundColor = Theme.of(context).accentColor;
-    if (page == 'recipes') {
+    if (selectedIndex == 0) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: List.generate(icons.length, (int index) {
@@ -380,10 +400,10 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return null;
   }
 
-  Color _getBackgroundColor(String page) {
-    if (page == 'recipes') {
+  Color _getBackgroundColor(int selectedIndex) {
+    if (selectedIndex == 0) {
       return Theme.of(context).scaffoldBackgroundColor;
-    } else if (page == 'favorites') {
+    } else if (selectedIndex == 1) {
       // if bright theme
       if (Theme.of(context).backgroundColor == Colors.white) {
         return Color(0xffFFCDEB);
@@ -394,7 +414,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       else {
         return Color(0xff43112F);
       }
-    } else if (page == 'shopping cart') {
+    } else if (selectedIndex == 2) {
       return Theme.of(context).backgroundColor;
     }
     return Theme.of(context).scaffoldBackgroundColor;

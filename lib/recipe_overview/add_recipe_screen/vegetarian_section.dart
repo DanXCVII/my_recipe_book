@@ -68,7 +68,7 @@ class _VegetarianState extends State<Vegetarian> {
                 ),
               ),
               Text(
-                "non vegetarian",
+                S.of(context).non_vegetarian,
                 style: TextStyle(fontSize: 16),
               ),
             ]),
@@ -83,7 +83,7 @@ class _VegetarianState extends State<Vegetarian> {
                   ),
                 ),
                 Text(
-                  "vegetarian",
+                  S.of(context).vegetarian,
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -99,7 +99,7 @@ class _VegetarianState extends State<Vegetarian> {
                   ),
                 ),
                 Text(
-                  "vegan",
+                  S.of(context).vegan,
                   style: TextStyle(fontSize: 16),
                 ),
               ],

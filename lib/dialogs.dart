@@ -118,7 +118,7 @@ class RoundEdgeDialogState extends State<RoundEdgeDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   FlatButton(
-                      child: Text("Alright"),
+                      child: Text(S.of(context).alright),
                       onPressed: () {
                         Navigator.pop(context);
                       })

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../../recipe.dart';
 

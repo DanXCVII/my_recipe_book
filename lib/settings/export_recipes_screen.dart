@@ -29,7 +29,7 @@ class _ExportRecipesState extends State<ExportRecipes> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('select recipes'),
+          title: Text(S.of(context).select_recipes),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.check),
@@ -128,8 +128,8 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
             ),
             Container(width: 20),
             Text(finished
-                ? 'Almost done ☺'
-                : 'exporting recipe $_exportRecipe out of ${widget.exportRecipes.length}'),
+                ? S.of(context).almost_done
+                : '${S.of(context).exporting_recipe} $_exportRecipe ${S.of(context).out_of} ${widget.exportRecipes.length}'),
             Container(width: 20),
           ],
         ),

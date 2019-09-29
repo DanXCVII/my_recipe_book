@@ -51,7 +51,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   final List<TextEditingController> ingredientGlossaryController = [];
 
   //////////// for Steps ////////////
-  final List<List<String>> stepImages = [[]];
+  final List<List<String>> stepImages = [];
   final List<TextEditingController> stepsDescController = [];
 
   //////////// for Category ////////////
@@ -167,7 +167,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
             Navigator.pop(context);
           },
         ),
-        title: Text("add recipe"),
+        title: Text(S.of(context).add_recipe),
         actions: <Widget>[
           ScopedModelDescendant<RecipeKeeper>(
               builder: (context, child, rKeeper) => IconButton(
@@ -353,7 +353,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
               Padding(
                 padding: const EdgeInsets.only(left: 56, top: 12),
                 child: Text(
-                  "select a category:",
+                  S.of(context).select_a_category,
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -605,12 +605,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       context: context,
       builder: (_) => RoundEdgeDialog(
         title: Text(
-          'Recipename taken',
+          S.of(context).recipename_taken,
           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
         ),
         bottomSection: Text(
-          'change the recipename to something more detailed or maybe '
-          'you just forgot, that you already saved this recipe :)',
+          S.of(context).recipename_taken_description,
         ),
       ),
     );
@@ -633,12 +632,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       context: context,
       builder: (_) => RoundEdgeDialog(
         title: Text(
-          'Check your ingredients input',
+          S.of(context).check_ingredients_input,
           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
         ),
         bottomSection: Text(
-          'it seems to be that you have only partially filled out the '
-          'data for the ingredients. Please correct that :)',
+          S.of(context).check_ingredients_input_description,
         ),
       ),
     );
@@ -649,12 +647,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       context: context,
       builder: (_) => RoundEdgeDialog(
         title: Text(
-          'Check your ingredients section fields',
+          S.of(context).check_ingredient_section_fields,
           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
         ),
         bottomSection:
-            Text('if you have multiple sections, you need to provide a title '
-                'for each section.'),
+            Text(S.of(context).check_ingredient_section_fields_description),
       ),
     );
   }
@@ -664,12 +661,11 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       context: context,
       builder: (_) => RoundEdgeDialog(
         title: Text(
-          'Check filled in information',
+          S.of(context).check_filled_in_information,
           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
         ),
         bottomSection: Text(
-          'it seems, that you haven’t filled in the required fields. '
-          'Please check for any red marked text fields.',
+          S.of(context).check_filled_in_information_description,
         ),
       ),
     );

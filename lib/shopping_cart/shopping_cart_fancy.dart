@@ -35,7 +35,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
         pinned: true,
         flexibleSpace: FlexibleSpaceBar(
           centerTitle: false,
-          title: Text('ShoppingCart'),
+          title: Text(S.of(context).shoppingcart),
           background: Image.asset('images/cuisine.jpg', fit: BoxFit.cover),
         ),
       ),
@@ -97,7 +97,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
               height: 200,
               child: Center(
                   child: Text(
-                "Nothing added yet",
+                S.of(context).nothing_added_yet,
                 style: TextStyle(
                   fontSize: 26,
                   fontFamily: 'RibeyeMarrow',

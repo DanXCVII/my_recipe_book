@@ -1,14 +1,27 @@
 {
   "recipes": "recipes",
+  "nutritions": "Nutritions",
   "delete_recipe": "delete recipe",
+  "share_recipe": "share recipe",
+  "select_recipes": "select recipes",
+  "import_recipe_s": "import recipe's",
+  "export_recipe_s": "export recipe's",
+  "remove_section": "remove section",
+  "remove_ingredient": "remove ingredient",
+  "remove_step": "remove step",
   "export_zip": "export as zip",
   "edit": "edit",
+
+  "shoppingcart": "shoppingcart",
+  "shopping_list": "shopping list",
+  "add_to_cart": "add to shopping cart",
+
 
   "add_recipe": "add recipe",
   "add_favorites": "add favorites",
   "add_section": "add section",
   "add_ingredient": "add ingredient",
-  "add_to_cart": "add to shopping cart",
+  "your": "your",
   "add_step": "add step",
   "add_nutritions": "add nutritions",
 
@@ -20,6 +33,7 @@
   "notes": "Notes",
   "categories": "Categories",
   "ingredients_for": "Ingredients for",
+  "ingredients": "ingredients",
   "servings": "servings",
 
   "name": "name",
@@ -39,22 +53,46 @@
   "description": "description",
 
   "complexity_effort": "complexity/effort",
-  "select_subcategories": "select subcategories",
+  "complexity": "complexity",
+  "effort": "effort",
+  "select_subcategories": "select subcategories:",
+  "select_a_category": "select a category",
 
   "basket": "basket",
   "nothing_added_yet": "Nothing added yet",
   "explore": "explore",
   "roll_the_dice": "roll the dice",
-  "settings": "settings",
-  "import_recipe_s": "import recipe's",
-  "export_recipe_s": "export recipe's",
+
   "switch_theme": "switch theme",
   "switch_shopping_cart_look": "switch shopping cart look",
   "view_intro": "view intro",
   "manage_nutritions": "manage nutritions",
+  "manage_categories": "manage categories",
+  "no_category": "no category",
+  "you_have_no_categories": "you have no categories",
+  "you_have_no_nutritions": "you have no nutritions",
   "about_me": "about me",
   "rate_app": "rate this app",
 
-  "cancel": "cancel"
+  "settings": "settings",
+  "cancel": "cancel",
+  "save": "save",
+  "alright": "alright",
+  "favorites": "favorites",
 
+  "no_recipes_under_this_category": "You have no recipes under this category",
+
+  "recipename_taken" : "recipename taken",
+  "recipename_taken_description": "change the recipename to something more detailed or maybe you just forgot, that you already saved this recipe :)",
+  "check_ingredients_input": "check your ingredients input",
+  "check_ingredients_input_description": "it seems to be that you have only partially filled out the data for the ingredients. Please correct that :)",
+  "check_ingredient_section_fields": "check your ingredients section fields.",
+  "check_ingredient_section_fields_description": "if you have multiple sections, you need to provide a title for each section.",
+  "check_filled_in_information": "Check filled in information",
+  "check_filled_in_information_description": "it seems, that you haven’t filled in the required fields. Please check for any red marked text fields.",
+
+  "no_recipes_to_search_through": "you have no recipes to search through",
+  "almost_done": "almost done😊",
+  "exporting_recipe": "exporting recipe",
+  "out_of": "out of"
 }

@@ -68,7 +68,7 @@ class RecipeRow extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    category != null ? category : 'no category',
+                    category != null ? category : S.of(context).no_category,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontWeight: FontWeight.w700,

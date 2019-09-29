@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:flutter/painting.dart';
 import 'package:my_recipe_book/database.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:my_recipe_book/helper.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/recipe.dart';

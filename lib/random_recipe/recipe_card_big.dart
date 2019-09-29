@@ -147,7 +147,7 @@ class RecipeCardBig extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          Text('prep. time',
+                                          Text(S.of(context).prep_time,
                                               style: smallHeading),
                                           SizedBox(height: 5),
                                           Text(
@@ -162,7 +162,7 @@ class RecipeCardBig extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          Text('cook. time',
+                                          Text(S.of(context).cook_time,
                                               style: smallHeading),
                                           SizedBox(height: 5),
                                           Text(
@@ -177,7 +177,7 @@ class RecipeCardBig extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          Text('total time',
+                                          Text(S.of(context).total_time,
                                               style: smallHeading),
                                           SizedBox(height: 5),
                                           Text(
@@ -196,7 +196,7 @@ class RecipeCardBig extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  '${getIngredientCount(recipe.ingredients)} ingredients:',
+                                  '${getIngredientCount(recipe.ingredients)} ${S.of(context).ingredients}:',
                                   style: smallHeading,
                                 ),
                                 buildIngredients(recipe.ingredients),
@@ -205,55 +205,62 @@ class RecipeCardBig extends StatelessWidget {
                           ),
                           Expanded(
                             flex: 1,
-                            child: new Align(
+                            child: Align(
                               alignment: Alignment.bottomCenter,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text('steps', style: smallHeading),
-                                      Text(
-                                        recipe.steps.length.toString(),
-                                        style: stepNumberStyle,
-                                      ),
-                                    ],
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text('categories',
-                                              style: smallHeading),
-                                          Text(
-                                            _getRecipeCategoriesString(
-                                                recipe.categories),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          )
-                                        ],
+                              child: Container(
+                                height: 65,
+                                alignment: Alignment.bottomCenter,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(S.of(context).steps,
+                                            style: smallHeading),
+                                        Text(
+                                          recipe.steps.length.toString(),
+                                          style: stepNumberStyle,
+                                        ),
+                                      ],
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(S.of(context).categories,
+                                                style: smallHeading),
+                                            Text(
+                                              _getRecipeCategoriesString(
+                                                  recipe.categories),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      Text('complexity', style: smallHeading),
-                                      Text(
-                                        recipe.effort.toString(),
-                                        style: complexityNumberStyle,
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Text(S.of(context).complexity,
+                                            style: smallHeading),
+                                        Text(
+                                          recipe.effort.toString(),
+                                          style: complexityNumberStyle,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           )

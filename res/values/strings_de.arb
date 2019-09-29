@@ -1,0 +1,98 @@
+{
+  "recipes": "Rezepte",
+  "nutritions": "Nährwerte",
+  "delete_recipe": "Rezept löschen",
+  "share_recipe": "Rezept teilen",
+  "select_recipes": "Rezepte auswählen",
+  "import_recipe_s": "Rezept/e importieren",
+  "export_recipe_s": "Rezept/e exportieren",
+  "remove_section": "Bereich entfernen",
+  "remove_ingredient": "Zutat entfernen",
+  "remove_step": "Schritt entfernen",
+  "export_zip": "als zip exportieren",
+  "edit": "editieren",
+
+  "shoppingcart": "Einkaufswagen",
+  "add_to_cart": "Einkaufsliste hinzufügen",
+
+
+  "add_recipe": "Rezept hinzufügen",
+  "add_favorites": "Favoriten hinzufügen",
+  "add_section": "Bereich hinzufügen",
+  "add_ingredient": "Zutat hinzufügen",
+  "your": "Deine",
+  "shopping_list": "Einkaufsliste",
+  "add_step": "Schritt hinzufügen",
+  "add_nutritions": "Nährwerte hinzufügen",
+
+
+  "increase_servings": "Portionen erhöhen",
+  "decrease_servings": "Portionen verringern",
+
+  "directions": "Schritte",
+  "notes": "Notizen",
+  "categories": "Kategorien",
+  "ingredients_for": "Zutaten für:",
+  "ingredients": "Zutaten",
+  "servings": "Portionen",
+
+  "name": "Name",
+  "prep_time": "Vorb..zeit",
+  "cook_time": "Kochzeit",
+  "total_time": "Gesamtzeit",
+
+  "section_name": "Name",
+  "amnt": "Menge",
+  "unit": "Einheit",
+
+  "non_vegetarian": "nicht vegetarisch",
+  "vegetarian": "vegetarisch",
+  "vegan": "vegan",
+
+  "steps": "Schritte",
+  "description": "Beschreibung",
+
+  "complexity_effort": "Aufwand",
+  "complexity": "Aufwand",
+  "effort": "Aufwand",
+  "select_subcategories": "Unterkategorien auswählen",
+  "select_a_category": "Kategorie auswählen",
+
+  "basket": "einkaufen",
+  "nothing_added_yet": "Noch nichts hinzugefügt",
+  "explore": "wische",
+  "roll_the_dice": "zufällige Rezepte",
+
+  "switch_theme": "theme wechseln",
+  "switch_shopping_cart_look": "Einkaufwagenansicht ändern",
+  "view_intro": "Einführung anschauen",
+  "manage_nutritions": "Nährwerte verwalten",
+  "manage_categories": "Kategorien verwalten",
+  "no_category": "ohne Kategorie",
+  "you_have_no_categories": "du hast noch keine Kategorien hinzugefügt",
+  "you_have_no_nutritions": "du hast noch keine Nährwerte hinzugefügt",
+  "about_me": "über mich",
+  "rate_app": "bewerte diese App",
+
+  "settings": "Einstellungen",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "alright": "Alles klar!",
+  "favorites": "Favoriten",
+
+  "no_recipes_under_this_category": "Du hast keine Rezepte unter dieser Kategorie",
+
+  "recipename_taken" : "Rezeptname vergeben",
+  "recipename_taken_description": "Ändere den Rezeptnamen zu etwas mehr detailliertem oder du haste einfach nur vergessen, dass du dieses Rezept schon hinzugefügt hast :)",
+  "check_ingredients_input": "Überprüfe die Zutatenliste",
+  "check_ingredients_input_description": "Es scheint so, als wenn die Zutatenliste an mindestens einer Stelle nur teilweise ausgefüllt ist. Bitte ändere dies, um das Rezept zu speichern.",
+  "check_ingredient_section_fields": "Prüfe die Zutatenliste",
+  "check_ingredient_section_fields_description": "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift tragen wie zB. (Teig).",
+  "check_filled_in_information": "Prüfe eingegebene Informationen",
+  "check_filled_in_information_description": "Es scheint so, als hättest du nicht alle geforderten Felder ausgefüllt. Bitte prüfe nach rot markierten Feldern.",
+
+  "no_recipes_to_search_through": "Du hast keine Rezepte zum durchsuchen",
+  "almost_done": "Fast fertig😊",
+  "exporting_recipe": "exportiere Rezept",
+  "out_of": "von"
+}

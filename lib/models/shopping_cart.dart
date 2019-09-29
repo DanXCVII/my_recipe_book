@@ -1,7 +1,6 @@
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
 class ShoppingCartKeeper extends Model {
   Map<String, List<CheckableIngredient>> _shoppingCart;

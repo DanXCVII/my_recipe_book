@@ -93,7 +93,7 @@ class AddDialogState extends State<AddDialog> {
                           Navigator.pop(context);
                         }),
                     FlatButton(
-                      child: Text("Save"),
+                      child: Text(S.of(context).save),
                       onPressed: () {
                         validateAddModifyItem(rKeeper);
                       },

@@ -10,7 +10,7 @@ class CategoryManager extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('manage categories'),
+        title: Text(S.of(context).manage_categories),
         actions: <Widget>[
           ScopedModelDescendant<RecipeKeeper>(
             builder: (context, child, rKeeper) => IconButton(
@@ -37,7 +37,7 @@ class CategoryManager extends StatelessWidget {
           builder: (context, child, rKeeper) {
         if (rKeeper.categories.length == 1) {
           return Center(
-            child: Text('You have no categories'),
+            child: Text(S.of(context).you_have_no_categories),
           );
         } else {
           return ReorderableListView(

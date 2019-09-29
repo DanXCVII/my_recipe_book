@@ -72,7 +72,7 @@ class RecipeScreen extends StatelessWidget {
               controller: _pc,
               backdropColor: Colors.black,
               backdropEnabled: true,
-              margin: EdgeInsets.only(left: 20, right: 20),
+              // margin: EdgeInsets.only(left: 20, right: 20),
               parallaxEnabled: true,
               parallaxOffset: 0.5,
               minHeight: 70,
@@ -120,9 +120,11 @@ class RecipeScreen extends StatelessWidget {
                           _pc.animatePanelToPosition(1);
                         },
                         child: Text(
-                          'Nutritions',
+                          S.of(context).nutritions,
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w500),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white),
                         ),
                       ),
                       Container(height: 10),
@@ -135,16 +137,17 @@ class RecipeScreen extends StatelessWidget {
                               return Divider();
                             } else {
                               return ListTile(
-                                leading: Icon(
-                                  GroovinMaterialIcons.gate_or,
-                                ),
+                                leading: Icon(GroovinMaterialIcons.gate_or,
+                                    color: Colors.white),
                                 title: Text(
                                   recipe.nutritions[index].name,
-                                  style: TextStyle(fontSize: 18),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                                 trailing: Text(
                                   recipe.nutritions[index].amountUnit,
-                                  style: TextStyle(fontSize: 18),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                               );
                             }
@@ -177,7 +180,7 @@ class NotesSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              "Notes",
+              S.of(context).notes,
               style: TextStyle(
                 color: textColor,
                 fontSize: 24,
@@ -238,10 +241,10 @@ class RecipePage extends StatelessWidget {
                   ),
                   IconButton(
                     icon: Icon(Icons.share),
-                    tooltip: 'share recipe',
+                    tooltip: S.of(context).share_recipe,
                     onPressed: () {
                       Share.plainText(
-                              text: _getRecipeAsString(recipe), title: 'Rezept')
+                              text: _getRecipeAsString(recipe), title: 'recipe')
                           .share();
                     },
                   ),
@@ -251,11 +254,11 @@ class RecipePage extends StatelessWidget {
                       return [
                         PopupMenuItem(
                           value: PopupOptions.EXPORT,
-                          child: Text('export as zip'),
+                          child: Text(S.of(context).export_zip),
                         ),
                         PopupMenuItem(
                           value: PopupOptions.DELETE,
-                          child: Text('delete'),
+                          child: Text(S.of(context).delete_recipe),
                         )
                       ];
                     },
@@ -374,7 +377,7 @@ class RecipePage extends StatelessWidget {
                                             shape: BoxShape.circle,
                                             color: Colors.green[500])),
                                     Text(
-                                      " prep. time: ",
+                                      " ${S.of(context).prep_time} ",
                                       style: TextStyle(color: Colors.white),
                                     ),
                                   ],
@@ -388,7 +391,7 @@ class RecipePage extends StatelessWidget {
                                             shape: BoxShape.circle,
                                             color: Colors.blue[700])),
                                     Text(
-                                      " cooking time: ",
+                                      " ${S.of(context).cook_time} ",
                                       style: TextStyle(color: Colors.white),
                                     ),
                                   ],
@@ -405,7 +408,7 @@ class RecipePage extends StatelessWidget {
                                                   shape: BoxShape.circle,
                                                   color: Colors.pink)),
                                           Text(
-                                            " rest: ",
+                                            " ${S.of(context).total_time} ",
                                             style:
                                                 TextStyle(color: Colors.white),
                                           ),
@@ -439,7 +442,7 @@ class RecipePage extends StatelessWidget {
                   Expanded(
                     child: Column(
                       children: <Widget>[
-                        Text("complexity:",
+                        Text(S.of(context).complexity + ':',
                             style: TextStyle(fontSize: 15, color: textColor)),
                         Padding(
                           padding: const EdgeInsets.only(top: 15.0),
@@ -480,7 +483,7 @@ class RecipePage extends StatelessWidget {
               recipe.categories.length > 0
                   ? CategoriesSection(categories: recipe.categories)
                   : Container(),
-              recipe.nutritions.isEmpty ? Container() : Container(height: 75),
+              recipe.nutritions.isEmpty ? Container() : Container(height: 50),
             ]))
           ],
         ));
@@ -600,7 +603,7 @@ class CategoriesSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              "Categories",
+              S.of(context).categories,
               style: TextStyle(
                 color: textColor,
                 fontSize: 24,
@@ -827,7 +830,7 @@ class StepsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        "Directions",
+                        S.of(context).directions,
                         style: TextStyle(
                           color: textColor,
                           fontSize: headingSize,
@@ -991,7 +994,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                   child: Row(
                     children: <Widget>[
                       Text(
-                        "Ingredients for",
+                        S.of(context).ingredients_for,
                         style: TextStyle(
                           color: textColor,
                           fontSize: headingSize,
@@ -1001,7 +1004,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                       IconButton(
                         icon: Icon(Icons.remove_circle_outline,
                             color: Colors.white),
-                        tooltip: 'decrease servings',
+                        tooltip: S.of(context).decrease_servings,
                         onPressed: () {
                           _decreaseServings();
                         },
@@ -1017,13 +1020,13 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                       IconButton(
                         icon:
                             Icon(Icons.add_circle_outline, color: Colors.white),
-                        tooltip: 'increase servings',
+                        tooltip: S.of(context).increase_servings,
                         onPressed: () {
                           _increaseServings();
                         },
                       ),
                       Text(
-                        'servings',
+                        S.of(context).servings,
                         style: TextStyle(
                           color: textColor,
                           fontSize: headingSize,

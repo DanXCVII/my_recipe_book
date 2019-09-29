@@ -1,10 +1,8 @@
-import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class MainPageNavigator extends Model {
   int _index = 0;
   bool _showRecipesCatOverview;
-  String _title = 'recipes';
   bool _showOverlay = false;
   bool _showFancyShoppingList = true;
 
@@ -14,7 +12,6 @@ class MainPageNavigator extends Model {
 
   bool get showOverlay => _showOverlay;
 
-  String get title => _title;
 
   bool get recipeCatOverview => _showRecipesCatOverview;
 
@@ -27,25 +24,20 @@ class MainPageNavigator extends Model {
     this._index = index;
     switch (index) {
       case 0:
-        _title = "recipes";
         _showOverlay = false;
 
         break;
       case 1:
-        _title = "favorites";
         _showOverlay = false;
 
         break;
       case 2:
-        _title = "basket";
         _showOverlay = false;
         break;
       case 3:
-        _title = "roll the dice";
         _showOverlay = true;
         break;
       case 4:
-        _title = "settings";
         _showOverlay = false;
         break;
       default:

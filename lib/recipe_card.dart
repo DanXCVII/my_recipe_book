@@ -149,7 +149,7 @@ class RecipeCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "${recipePreview.ingredientsAmount} ingredients",
+                          "${recipePreview.ingredientsAmount} ${S.of(context).ingredients}",
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(
@@ -168,7 +168,7 @@ class RecipeCard extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              " effort",
+                              S.of(context).effort,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: TextStyle(

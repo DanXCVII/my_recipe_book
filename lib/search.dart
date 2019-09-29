@@ -58,7 +58,8 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
     if (recipeNames.isEmpty) {
       return Container(
           height: 70,
-          child: Center(child: Text('You have no recipes to search through')));
+          child:
+              Center(child: Text(S.of(context).no_recipes_to_search_through)));
     }
     List<String> resultRecipeNames = recipeNames
         .where((recipeName) =>

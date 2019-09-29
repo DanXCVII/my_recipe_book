@@ -43,7 +43,7 @@ class FavoriteScreen extends StatelessWidget {
                     SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('You have no recipes under this category.',
+                      child: Text(S.of(context).no_recipes_under_this_category,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 26,

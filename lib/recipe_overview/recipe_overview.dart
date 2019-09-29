@@ -89,9 +89,10 @@ class RecipeGridView extends StatelessWidget {
     return ScopedModelDescendant<RecipeKeeper>(
         builder: (context, child, model) {
       List<RecipePreview> recipePreviews = model.getRecipesOfCategory(category);
-      String sliverAppBarImagePath =
-          recipePreviews[randomCategoryImage].imagePreviewPath;
+
       if (recipePreviews.isNotEmpty) {
+        String sliverAppBarImagePath =
+            recipePreviews[randomCategoryImage].imagePreviewPath;
         return Scaffold(
           body: CustomScrollView(slivers: <Widget>[
             SliverAppBar(
@@ -180,7 +181,7 @@ class NoRecipeCategory extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(
-              "No recipes under this category",
+              S.of(context).no_recipes_under_this_category,
               style: TextStyle(
                   fontSize: 30,
                   fontFamily: 'RibeyeMarrow',

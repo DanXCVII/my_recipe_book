@@ -49,7 +49,7 @@ class _CategorySectionState extends State<CategorySection> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  "select subcategories:",
+                  S.of(context).select_subcategories,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
