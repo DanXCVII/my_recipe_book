@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 
-import "../../recipe.dart";
 import "../../my_wrapper.dart";
 
 // Widget for the radio buttons (vegetarian, vegan, etc.)

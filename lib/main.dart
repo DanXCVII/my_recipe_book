@@ -5,7 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
-import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/shopping_cart/shopping_cart_fancy.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -23,6 +22,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 
 import 'generated/i18n.dart';
+import 'models/recipe.dart';
 import 'recipe_overview/recipe_category_overview/r_category_overview.dart';
 import 'shopping_cart/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/add_recipe.dart';

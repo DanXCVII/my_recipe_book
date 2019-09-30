@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
 class GalleryPhotoView extends StatefulWidget {
   final List<String> heroTags;

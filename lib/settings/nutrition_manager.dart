@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/add_nut_cat_dialog.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
-
-import '../recipe.dart';
 
 class NutritionManager extends StatefulWidget {
   final List<String> nutritions;
@@ -62,8 +61,9 @@ class _NutritionManagerState extends State<NutritionManager> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            widget.recipeName == null ? S.of(context).manage_nutritions : S.of(context).add_nutritions),
+        title: Text(widget.recipeName == null
+            ? S.of(context).manage_nutritions
+            : S.of(context).add_nutritions),
         actions: <Widget>[
           ScopedModelDescendant<RecipeKeeper>(
             builder: (context, child, rKeeper) => IconButton(
@@ -82,6 +82,8 @@ class _NutritionManagerState extends State<NutritionManager> {
             color: Colors.white,
           ),
           onPressed: () {
+            listTileKeys.add(Key('${listTileKeys.length}'));
+            dismissibleKeys.add(Key('D-${dismissibleKeys.length}'));
             showDialog(context: context, builder: (_) => AddDialog(true));
           }),
       body: ScopedModelDescendant<RecipeKeeper>(

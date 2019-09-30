@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
 import './tinder_card.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
@@ -6,7 +7,6 @@ import 'package:my_recipe_book/random_recipe/recipe_card_big.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../database.dart';
-import '../recipe.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
 class SwypingCardsScreen extends StatefulWidget {
@@ -29,8 +29,11 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
         index--;
         if (index % 2 == 0) {
           String currentCategory = (index / 2).floor() == 0
-              ? 'all categories'
+              ? S.of(context).all_categories
               : categoryNames[(index / 2).floor() - 1];
+          if (currentCategory == 'no category') {
+            currentCategory = S.of(context).no_category;
+          }
           return FlatButton(
             color: currentCategory == _selectedCategory ? Colors.brown : null,
             textColor:

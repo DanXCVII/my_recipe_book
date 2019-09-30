@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/shopping_cart/shopping_cart.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../database.dart';
-import '../recipe.dart';
 import '../search.dart';
 
 class FancyShoppingCartScreen extends StatelessWidget {
@@ -91,31 +91,18 @@ class FancyShoppingCartScreen extends StatelessWidget {
   Widget displayNothingAdded(BuildContext context) {
     return Container(
       height: 400,
-      child: Stack(
-        children: <Widget>[
-          Container(
-              height: 200,
-              child: Center(
-                  child: Text(
-                S.of(context).nothing_added_yet,
-                style: TextStyle(
-                  fontSize: 26,
-                  fontFamily: 'RibeyeMarrow',
-                ),
-              ))),
-          Container(
-            height: 185 / 2,
-            child: Align(
-              alignment: Alignment(1, 1),
-              child: Image.asset(
-                Theme.of(context).brightness != Brightness.dark
-                    ? 'images/cookingPen.png'
-                    : 'images/darkCookingPen.png',
-                height: 75,
-              ),
+      child: Container(
+        height: 200,
+        child: Center(
+          child: Text(
+            S.of(context).shopping_cart_is_empty,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 26,
+              fontFamily: 'RibeyeMarrow',
             ),
-          )
-        ],
+          ),
+        ),
       ),
     );
   }

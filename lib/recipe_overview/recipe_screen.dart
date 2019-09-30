@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -28,6 +29,7 @@ const double timeText = 17;
 const double paddingBottomTime = 5;
 const double headingSize = 20;
 const Color textColor = Colors.white;
+const String recipeScreenFontFamily = 'Questrial';
 
 const imageComplexity = [
   "termoOne",
@@ -133,19 +135,23 @@ class RecipeScreen extends StatelessWidget {
                         child: ListView.builder(
                           itemCount: recipe.nutritions.length * 2,
                           itemBuilder: (context, index) {
+                            print(recipe.nutritions.toString());
                             if ((index - 1) % 2 == 0) {
                               return Divider();
                             } else {
+                              print(index);
+                              int nutritionIndex = (index / 2).round();
+                              print(nutritionIndex);
                               return ListTile(
                                 leading: Icon(GroovinMaterialIcons.gate_or,
                                     color: Colors.white),
                                 title: Text(
-                                  recipe.nutritions[index].name,
+                                  recipe.nutritions[nutritionIndex].name,
                                   style: TextStyle(
                                       fontSize: 18, color: Colors.white),
                                 ),
                                 trailing: Text(
-                                  recipe.nutritions[index].amountUnit,
+                                  recipe.nutritions[nutritionIndex].amountUnit,
                                   style: TextStyle(
                                       fontSize: 18, color: Colors.white),
                                 ),
@@ -184,14 +190,18 @@ class NotesSection extends StatelessWidget {
               style: TextStyle(
                 color: textColor,
                 fontSize: 24,
-                fontFamily: "Questrial-Regular",
+                fontFamily: recipeScreenFontFamily,
               ),
             ),
             Padding(
                 padding: EdgeInsets.only(top: 20, bottom: 20),
                 child: Text(
                   notes,
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: recipeScreenFontFamily,
+                  ),
                 ))
           ],
         ));
@@ -312,7 +322,11 @@ class RecipePage extends StatelessWidget {
                     child: Text(
                       "${recipe.name}",
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: textColor, fontSize: 26),
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 30,
+                        fontFamily: recipeScreenFontFamily,
+                      ),
                     ),
                   )),
               SizedBox(height: 30),
@@ -378,7 +392,10 @@ class RecipePage extends StatelessWidget {
                                             color: Colors.green[500])),
                                     Text(
                                       " ${S.of(context).prep_time} ",
-                                      style: TextStyle(color: Colors.white),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: recipeScreenFontFamily,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -392,7 +409,10 @@ class RecipePage extends StatelessWidget {
                                             color: Colors.blue[700])),
                                     Text(
                                       " ${S.of(context).cook_time} ",
-                                      style: TextStyle(color: Colors.white),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: recipeScreenFontFamily,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -409,8 +429,11 @@ class RecipePage extends StatelessWidget {
                                                   color: Colors.pink)),
                                           Text(
                                             " ${S.of(context).total_time} ",
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily:
+                                                  recipeScreenFontFamily,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -419,18 +442,28 @@ class RecipePage extends StatelessWidget {
                             Column(
                               children: <Widget>[
                                 Text(
-                                    getTimeHoursMinutes(recipe.preperationTime),
-                                    style: TextStyle(color: Colors.white)),
+                                  getTimeHoursMinutes(recipe.preperationTime),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: recipeScreenFontFamily,
+                                  ),
+                                ),
                                 Text(
                                   getTimeHoursMinutes(recipe.cookingTime),
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: recipeScreenFontFamily,
+                                  ),
                                 ),
                                 recipe.cookingTime + recipe.preperationTime ==
                                         recipe.totalTime
                                     ? Container()
                                     : Text(
                                         getTimeHoursMinutes(otherTime),
-                                        style: TextStyle(color: Colors.white),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontFamily: recipeScreenFontFamily,
+                                        ),
                                       ),
                               ],
                             )
@@ -443,7 +476,11 @@ class RecipePage extends StatelessWidget {
                     child: Column(
                       children: <Widget>[
                         Text(S.of(context).complexity + ':',
-                            style: TextStyle(fontSize: 15, color: textColor)),
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: textColor,
+                              fontFamily: recipeScreenFontFamily,
+                            )),
                         Padding(
                           padding: const EdgeInsets.only(top: 15.0),
                           child: Container(
@@ -607,7 +644,7 @@ class CategoriesSection extends StatelessWidget {
               style: TextStyle(
                 color: textColor,
                 fontSize: 24,
-                fontFamily: "Questrial-Regular",
+                fontFamily: recipeScreenFontFamily,
               ),
             ),
             ScopedModelDescendant<RecipeKeeper>(
@@ -697,7 +734,10 @@ class _CategoryCircleState extends State<CategoryCircle> {
                   child: Center(
                     child: Text(
                       widget.categoryName,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: recipeScreenFontFamily,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -751,7 +791,11 @@ class StepsScreen extends StatelessWidget {
               width: MediaQuery.of(context).size.width - 100,
               child: Text(
                 steps[i],
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: recipeScreenFontFamily,
+                ),
               ),
             )
           ],
@@ -834,7 +878,7 @@ class StepsScreen extends StatelessWidget {
                         style: TextStyle(
                           color: textColor,
                           fontSize: headingSize,
-                          fontFamily: "Questrial-Regular",
+                          fontFamily: recipeScreenFontFamily,
                         ),
                       ),
                     ],
@@ -901,12 +945,20 @@ class IngredientsScreenState extends State<IngredientsScreen> {
               }),
               Text(
                 currentIngredient.name,
-                style: TextStyle(fontSize: 18, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontFamily: recipeScreenFontFamily,
+                ),
               ),
               Spacer(),
               Text(
                 "${cutDouble(currentIngredient.amount)} ${currentIngredient.unit}",
-                style: TextStyle(fontSize: 18, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontFamily: recipeScreenFontFamily,
+                ),
               ),
             ],
           ),
@@ -938,7 +990,11 @@ class IngredientsScreenState extends State<IngredientsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text("${widget.currentRecipe.ingredientsGlossary[i]}",
-                    style: TextStyle(color: textColor, fontSize: 24)),
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 24,
+                      fontFamily: recipeScreenFontFamily,
+                    )),
                 ScopedModelDescendant<ShoppingCartKeeper>(
                     builder: (context, child, scKeeper) {
                   bool isChecked = scKeeper.checkForRecipeIngredients(
@@ -998,7 +1054,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                         style: TextStyle(
                           color: textColor,
                           fontSize: headingSize,
-                          fontFamily: "Questrial-Regular",
+                          fontFamily: recipeScreenFontFamily,
                         ),
                       ),
                       IconButton(
@@ -1014,7 +1070,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                         style: TextStyle(
                           color: textColor,
                           fontSize: headingSize,
-                          fontFamily: "Questrial-Regular",
+                          fontFamily: recipeScreenFontFamily,
                         ),
                       ),
                       IconButton(
@@ -1030,7 +1086,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                         style: TextStyle(
                           color: textColor,
                           fontSize: headingSize,
-                          fontFamily: "Questrial-Regular",
+                          fontFamily: recipeScreenFontFamily,
                         ),
                       ),
                       Spacer(),

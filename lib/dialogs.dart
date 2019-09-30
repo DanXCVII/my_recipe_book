@@ -87,47 +87,40 @@ class RoundEdgeDialogState extends State<RoundEdgeDialog> {
   }
 
   Widget dialogContent(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.all(
-            16,
+    return Container(
+      padding: EdgeInsets.fromLTRB(22, 22, 22, 16),
+      margin: EdgeInsets.only(top: 0),
+      decoration: new BoxDecoration(
+        color: Theme.of(context).dialogBackgroundColor,
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10.0,
+            offset: const Offset(0.0, 10.0),
           ),
-          margin: EdgeInsets.only(top: 16),
-          decoration: new BoxDecoration(
-            color: Theme.of(context).dialogBackgroundColor,
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10.0,
-                offset: const Offset(0.0, 10.0),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min, // To make the card compact
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // To make the card compact
+        children: <Widget>[
+          widget.title,
+          SizedBox(height: 16),
+          widget.bottomSection,
+          SizedBox(height: 8.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              SizedBox(height: 16.0),
-              widget.title,
-              SizedBox(height: 16),
-              widget.bottomSection,
-              SizedBox(height: 8.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  FlatButton(
-                      child: Text(S.of(context).alright),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      })
-                ],
-              )
+              FlatButton(
+                  child: Text(S.of(context).alright),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  })
             ],
-          ),
-        ),
-      ],
+          )
+        ],
+      ),
     );
   }
 }

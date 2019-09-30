@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -9,7 +10,6 @@ import 'dart:math';
 import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../../database.dart';
-import '../../recipe.dart';
 import './../recipe_screen.dart';
 import './../recipe_overview.dart';
 

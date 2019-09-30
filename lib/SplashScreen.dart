@@ -9,7 +9,6 @@ import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
 class SplashScreen extends StatefulWidget {
   final RecipeKeeper recipeKeeper;

@@ -29,6 +29,7 @@ class S implements WidgetsLocalizations {
   String get add_section => "add section";
   String get add_step => "add step";
   String get add_to_cart => "add to shopping cart";
+  String get all_categories => "all categories";
   String get almost_done => "almost done😊";
   String get alright => "alright";
   String get amnt => "amnt";
@@ -62,12 +63,12 @@ class S implements WidgetsLocalizations {
   String get manage_categories => "manage categories";
   String get manage_nutritions => "manage nutritions";
   String get name => "name";
+  String get no_added_favorites_yet => "You haven't added any favorites yet";
   String get no_category => "no category";
   String get no_recipes_to_search_through => "you have no recipes to search through";
   String get no_recipes_under_this_category => "You have no recipes under this category";
   String get non_vegetarian => "non vegetarian";
   String get notes => "Notes";
-  String get nothing_added_yet => "Nothing added yet";
   String get nutritions => "Nutritions";
   String get out_of => "out of";
   String get prep_time => "preperation time";
@@ -87,6 +88,7 @@ class S implements WidgetsLocalizations {
   String get servings => "servings";
   String get settings => "settings";
   String get share_recipe => "share recipe";
+  String get shopping_cart_is_empty => "Your shoppingcart is empty";
   String get shopping_list => "shopping list";
   String get shoppingcart => "shoppingcart";
   String get steps => "steps";
@@ -141,9 +143,13 @@ class $de extends S {
   @override
   String get cook_time => "Kochzeit";
   @override
+  String get no_added_favorites_yet => "Du hast noch keine Favoriten hinzugefügt";
+  @override
   String get check_ingredients_input => "Überprüfe die Zutatenliste";
   @override
   String get total_time => "Gesamtzeit";
+  @override
+  String get all_categories => "alle Kategorien";
   @override
   String get select_recipes => "Rezepte auswählen";
   @override
@@ -199,8 +205,6 @@ class $de extends S {
   @override
   String get almost_done => "Fast fertig😊";
   @override
-  String get nothing_added_yet => "Noch nichts hinzugefügt";
-  @override
   String get non_vegetarian => "nicht vegetarisch";
   @override
   String get save => "Speichern";
@@ -254,6 +258,8 @@ class $de extends S {
   String get rate_app => "bewerte diese App";
   @override
   String get switch_theme => "theme wechseln";
+  @override
+  String get shopping_cart_is_empty => "Dein Einkaufswagen ist leer";
   @override
   String get shoppingcart => "Einkaufswagen";
   @override

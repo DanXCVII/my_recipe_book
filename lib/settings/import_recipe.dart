@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../database.dart';
 import '../recipe.dart';
@@ -63,6 +63,8 @@ Future<void> importRecipe(RecipeKeeper rKeeper, String recipeZipPath) async {
 
   Directory importRecipeDir = Directory(
       await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name));
+  await Directory(await PathProvider.pP.getRecipeDir(importRecipe.name))
+      .delete(recursive: true);
   await importRecipeDir
       .rename(await PathProvider.pP.getRecipeDir(importRecipe.name));
 

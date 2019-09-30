@@ -4,7 +4,7 @@ import 'dart:math';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 
 import '../database.dart';
 import '../helper.dart';

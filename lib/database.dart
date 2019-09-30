@@ -6,7 +6,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import './recipe.dart';
 import 'dart:async';
-import 'package:my_recipe_book/generated/i18n.dart';
+
+import 'models/recipe.dart';
 
 // singleton DBProvider to ensure, that we only use one object
 class DBProvider {

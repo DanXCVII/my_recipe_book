@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
-import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
+
+import 'models/recipe.dart';
 
 const Map<int, Color> complexityColors = {
   1: Color(0xff28E424),
@@ -20,7 +21,7 @@ const Map<int, Color> complexityColors = {
   10: Color(0xffFD0000)
 };
 
-FontWeight itemsFW = FontWeight.w500;
+FontWeight itemsFW = FontWeight.w400;
 
 class RecipeCard extends StatelessWidget {
   final RecipePreview recipePreview;
@@ -78,9 +79,32 @@ class RecipeCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Hero(
-                      tag: heroImageTag,
-                      placeholderBuilder: (context, size, widget) => ClipRRect(
+                  Expanded(
+                    flex: 1,
+                    child: Hero(
+                        tag: heroImageTag,
+                        placeholderBuilder: (context, size, widget) =>
+                            ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(gridTileWidth / 10),
+                                topRight: Radius.circular(gridTileWidth / 10),
+                              ),
+                              child: FadeInImage(
+                                image: recipePreview.imagePreviewPath ==
+                                        'images/randomFood.jpg'
+                                    ? AssetImage(recipePreview.imagePreviewPath)
+                                    : FileImage(
+                                        File(recipePreview.imagePreviewPath)),
+                                placeholder: MemoryImage(kTransparentImage),
+                                fadeInDuration: Duration(milliseconds: 250),
+                                fit: BoxFit.cover,
+                                height: gridTileWidth / 1.25,
+                                width: gridTileWidth + 40,
+                              ),
+                            ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: ClipRRect(
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(gridTileWidth / 10),
                               topRight: Radius.circular(gridTileWidth / 10),
@@ -98,87 +122,77 @@ class RecipeCard extends StatelessWidget {
                               width: gridTileWidth + 40,
                             ),
                           ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(gridTileWidth / 10),
-                            topRight: Radius.circular(gridTileWidth / 10),
-                          ),
-                          child: FadeInImage(
-                            image: recipePreview.imagePreviewPath ==
-                                    'images/randomFood.jpg'
-                                ? AssetImage(recipePreview.imagePreviewPath)
-                                : FileImage(
-                                    File(recipePreview.imagePreviewPath)),
-                            placeholder: MemoryImage(kTransparentImage),
-                            fadeInDuration: Duration(milliseconds: 250),
-                            fit: BoxFit.cover,
-                            height: gridTileWidth / 1.25,
-                            width: gridTileWidth + 40,
-                          ),
-                        ),
-                      )),
-                  SizedBox(height: 7),
-                  Padding(
-                    padding: EdgeInsets.only(left: 15, right: 12),
-                    child: Text(
-                      "${recipePreview.name}",
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14 + gridTileWidth / 35,
-                      ),
-                    ),
+                        )),
                   ),
-                  SizedBox(height: 13),
-                  Padding(
-                    padding: EdgeInsets.only(left: 15, right: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          recipePreview.totalTime,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontWeight: itemsFW,
-                            fontSize: 10 + gridTileWidth / 40,
+                  SizedBox(height: 7),
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12,left: 15, right: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "${recipePreview.name}",
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14 + gridTileWidth / 35,
+                                fontFamily: 'Righteous'),
                           ),
-                        ),
-                        Text(
-                          "${recipePreview.ingredientsAmount} ${S.of(context).ingredients}",
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontWeight: itemsFW,
-                            fontSize: 10 + gridTileWidth / 40,
+                          Spacer(),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                recipePreview.totalTime,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontWeight: itemsFW,
+                                  fontSize: 10 + gridTileWidth / 40,
+                                  fontFamily: 'Questrial',
+                                ),
+                              ),
+                              Text(
+                                "${recipePreview.ingredientsAmount} ${S.of(context).ingredients}",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontWeight: itemsFW,
+                                  fontSize: 10 + gridTileWidth / 40,
+                                  fontFamily: 'Questrial',
+                                ),
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Container(
+                                    height: 14,
+                                    width: 14,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: complexityColors[
+                                          recipePreview.effort],
+                                    ),
+                                  ),
+                                  Text(
+                                    ' ' + S.of(context).effort,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontWeight: itemsFW,
+                                      fontSize: 10 + gridTileWidth / 40,
+                                      fontFamily: 'Questrial',
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              height: 14,
-                              width: 14,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: complexityColors[recipePreview.effort],
-                              ),
-                            ),
-                            Text(
-                              S.of(context).effort,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: TextStyle(
-                                fontWeight: itemsFW,
-                                fontSize: 10 + gridTileWidth / 40,
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

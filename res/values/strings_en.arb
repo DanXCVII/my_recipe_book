@@ -59,7 +59,7 @@
   "select_a_category": "select a category",
 
   "basket": "basket",
-  "nothing_added_yet": "Nothing added yet",
+  "shopping_cart_is_empty": "Your shoppingcart is empty",
   "explore": "explore",
   "roll_the_dice": "roll the dice",
 
@@ -69,6 +69,7 @@
   "manage_nutritions": "manage nutritions",
   "manage_categories": "manage categories",
   "no_category": "no category",
+  "all_categories": "all categories",
   "you_have_no_categories": "you have no categories",
   "you_have_no_nutritions": "you have no nutritions",
   "about_me": "about me",
@@ -81,6 +82,7 @@
   "favorites": "favorites",
 
   "no_recipes_under_this_category": "You have no recipes under this category",
+  "no_added_favorites_yet": "You haven't added any favorites yet",
 
   "recipename_taken" : "recipename taken",
   "recipename_taken_description": "change the recipename to something more detailed or maybe you just forgot, that you already saved this recipe :)",

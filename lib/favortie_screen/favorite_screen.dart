@@ -2,10 +2,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import '../recipe_card.dart';
-import '../recipe.dart';
 
 class FavoriteScreen extends StatelessWidget {
   @override
@@ -43,7 +43,7 @@ class FavoriteScreen extends StatelessWidget {
                     SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(S.of(context).no_recipes_under_this_category,
+                      child: Text(S.of(context).no_added_favorites_yet,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 26,

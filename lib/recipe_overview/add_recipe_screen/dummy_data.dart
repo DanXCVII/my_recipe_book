@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../../recipe.dart';
 

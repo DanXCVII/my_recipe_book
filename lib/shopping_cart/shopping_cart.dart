@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
-import '../recipe.dart';
 import '../helper.dart';
 
 class ShoppingCartScreen extends StatelessWidget {
@@ -96,7 +96,7 @@ class ShoppingCartScreen extends StatelessWidget {
                         height: MediaQuery.of(context).size.height - 400,
                         child: Center(
                             child: Text(
-                          S.of(context).nothing_added_yet,
+                          S.of(context).shopping_cart_is_empty,
                           style: TextStyle(
                             fontSize: 26,
                             fontFamily: 'RibeyeMarrow',

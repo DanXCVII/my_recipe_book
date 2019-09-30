@@ -5,6 +5,7 @@ import 'package:flutter/painting.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/helper.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -64,7 +65,6 @@ class RecipeKeeper extends Model {
   }
 
   Future<void> addNutrition(String name) async {
-    // TODO: Check if list<String> contains string works or if you have to do it with compareTo()
     if (!_nutritions.contains(name)) {
       _nutritions.add(name);
       notifyListeners();

@@ -59,7 +59,7 @@
   "select_a_category": "Kategorie auswählen",
 
   "basket": "einkaufen",
-  "nothing_added_yet": "Noch nichts hinzugefügt",
+  "shopping_cart_is_empty": "Dein Einkaufswagen ist leer",
   "explore": "wische",
   "roll_the_dice": "zufällige Rezepte",
 
@@ -69,6 +69,7 @@
   "manage_nutritions": "Nährwerte verwalten",
   "manage_categories": "Kategorien verwalten",
   "no_category": "ohne Kategorie",
+  "all_categories": "alle Kategorien",
   "you_have_no_categories": "du hast noch keine Kategorien hinzugefügt",
   "you_have_no_nutritions": "du hast noch keine Nährwerte hinzugefügt",
   "about_me": "über mich",
@@ -81,6 +82,8 @@
   "favorites": "Favoriten",
 
   "no_recipes_under_this_category": "Du hast keine Rezepte unter dieser Kategorie",
+  "no_added_favorites_yet": "Du hast noch keine Favoriten hinzugefügt",
+
 
   "recipename_taken" : "Rezeptname vergeben",
   "recipename_taken_description": "Ändere den Rezeptnamen zu etwas mehr detailliertem oder du haste einfach nur vergessen, dass du dieses Rezept schon hinzugefügt hast :)",

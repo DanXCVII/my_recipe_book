@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 
 import '../../database.dart';
-import '../../recipe.dart';
 
 enum Validator {
   INGREDIENTS_NOT_VALID,
