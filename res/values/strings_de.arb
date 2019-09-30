@@ -15,7 +15,8 @@
   "shoppingcart": "Einkaufswagen",
   "add_to_cart": "Einkaufsliste hinzufügen",
 
-
+  "add": "hinzufügen",
+  "recipe_name": "Rezeptname",
   "add_recipe": "Rezept hinzufügen",
   "add_favorites": "Favoriten hinzufügen",
   "add_section": "Bereich hinzufügen",
@@ -34,7 +35,9 @@
   "categories": "Kategorien",
   "ingredients_for": "Zutaten für:",
   "ingredients": "Zutaten",
+  "ingredient": "Zutat",
   "servings": "Portionen",
+  "in_minutes": "in Minuten",
 
   "name": "Name",
   "prep_time": "Vorb..zeit",
@@ -97,5 +100,10 @@
   "no_recipes_to_search_through": "Du hast keine Rezepte zum durchsuchen",
   "almost_done": "Fast fertig😊",
   "exporting_recipe": "exportiere Rezept",
-  "out_of": "von"
+  "out_of": "von",
+
+
+  "no_valid_number": "keine valide Nummber",
+  "data_required": "darf nicht leer sein",
+  "not_required_eg_ingredients_of_sauce": "nicht verpflichtend (zB. Zutaten Sauce)"
 }

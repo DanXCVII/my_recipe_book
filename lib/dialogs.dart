@@ -62,10 +62,11 @@ class RoundDialogState extends State<RoundDialog>
 }
 
 class RoundEdgeDialog extends StatefulWidget {
-  final Widget title;
+  final String title;
   final Widget bottomSection;
+  final Widget body;
 
-  RoundEdgeDialog({this.title, this.bottomSection});
+  RoundEdgeDialog({this.title, this.bottomSection, this.body});
 
   @override
   State<StatefulWidget> createState() {
@@ -102,25 +103,30 @@ class RoundEdgeDialogState extends State<RoundEdgeDialog> {
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min, // To make the card compact
-        children: <Widget>[
-          widget.title,
-          SizedBox(height: 16),
-          widget.bottomSection,
-          SizedBox(height: 8.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              FlatButton(
-                  child: Text(S.of(context).alright),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  })
-            ],
-          )
-        ],
-      ),
+      child: widget.body != null
+          ? widget.body
+          : Column(
+              mainAxisSize: MainAxisSize.min, // To make the card compact
+              children: <Widget>[
+                Text(
+                  widget.title,
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
+                ),
+                SizedBox(height: 16),
+                widget.bottomSection,
+                SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    FlatButton(
+                        child: Text(S.of(context).alright),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        })
+                  ],
+                )
+              ],
+            ),
     );
   }
 }

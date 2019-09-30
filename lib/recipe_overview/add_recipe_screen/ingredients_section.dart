@@ -2,7 +2,7 @@ import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import "package:flutter/material.dart";
 import 'package:my_recipe_book/generated/i18n.dart';
 
-import "./add_recipe.dart";
+import '../../helper.dart';
 
 class Ingredients extends StatefulWidget {
   final List<List<TextEditingController>> ingredientNameController;
@@ -172,8 +172,8 @@ class _IngredientSectionState extends State<IngredientSection> {
             controller: widget.ingredientGlossary[widget.sectionNumber],
             decoration: InputDecoration(
               icon: Icon(Icons.receipt),
-              helperText: "not required (e.g. ingredients of sauce)",
-              labelText: "section name",
+              helperText: S.of(context).not_required_eg_ingredients_of_sauce,
+              labelText: S.of(context).section_name,
               filled: true,
             ),
           ),
@@ -199,7 +199,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                       widget.ingredientNameController[widget.sectionNumber][i],
                   suggestions: widget.ingredientNames,
                   decoration: InputDecoration(
-                    hintText: "name",
+                    hintText: S.of(context).name,
                     filled: true,
                   ),
                 ),
@@ -211,7 +211,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                   child: TextFormField(
                     validator: (value) {
                       if (validateNumber(value) == false && value != "")
-                        return "no valid number";
+                        return S.of(context).no_valid_number;
                       return null;
                     },
                     autovalidate: false,
@@ -220,7 +220,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       filled: true,
-                      hintText: "amnt",
+                      hintText: S.of(context).amnt,
                     ),
                   ),
                 ),
@@ -234,7 +234,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                         .ingredientUnitController[widget.sectionNumber][i],
                     decoration: InputDecoration(
                       filled: true,
-                      hintText: "unit",
+                      hintText: S.of(context).unit,
                     ),
                   ),
                 ),

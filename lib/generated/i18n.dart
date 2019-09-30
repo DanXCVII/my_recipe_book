@@ -22,6 +22,7 @@ class S implements WidgetsLocalizations {
   TextDirection get textDirection => TextDirection.ltr;
 
   String get about_me => "about me";
+  String get add => "add";
   String get add_favorites => "add favorites";
   String get add_ingredient => "add ingredient";
   String get add_nutritions => "add nutritions";
@@ -45,6 +46,7 @@ class S implements WidgetsLocalizations {
   String get complexity => "complexity";
   String get complexity_effort => "complexity/effort";
   String get cook_time => "cooking time";
+  String get data_required => "data_required";
   String get decrease_servings => "decrease servings";
   String get delete_recipe => "delete recipe";
   String get description => "description";
@@ -57,7 +59,9 @@ class S implements WidgetsLocalizations {
   String get exporting_recipe => "exporting recipe";
   String get favorites => "favorites";
   String get import_recipe_s => "import recipe's";
+  String get in_minutes => "in minutes";
   String get increase_servings => "increase servings";
+  String get ingredient => "ingredient";
   String get ingredients => "ingredients";
   String get ingredients_for => "Ingredients for";
   String get manage_categories => "manage categories";
@@ -67,12 +71,15 @@ class S implements WidgetsLocalizations {
   String get no_category => "no category";
   String get no_recipes_to_search_through => "you have no recipes to search through";
   String get no_recipes_under_this_category => "You have no recipes under this category";
+  String get no_valid_number => "no valid number";
   String get non_vegetarian => "non vegetarian";
+  String get not_required_eg_ingredients_of_sauce => "not required (e.g. ingredients of sauce)";
   String get notes => "Notes";
   String get nutritions => "Nutritions";
   String get out_of => "out of";
   String get prep_time => "preperation time";
   String get rate_app => "rate this app";
+  String get recipe_name => "recipe name";
   String get recipename_taken => "recipename taken";
   String get recipename_taken_description => "change the recipename to something more detailed or maybe you just forgot, that you already saved this recipe :)";
   String get recipes => "recipes";
@@ -155,6 +162,8 @@ class $de extends S {
   @override
   String get ingredients_for => "Zutaten für:";
   @override
+  String get add => "hinzufügen";
+  @override
   String get check_filled_in_information_description => "Es scheint so, als hättest du nicht alle geforderten Felder ausgefüllt. Bitte prüfe nach rot markierten Feldern.";
   @override
   String get recipes => "Rezepte";
@@ -189,6 +198,10 @@ class $de extends S {
   @override
   String get no_category => "ohne Kategorie";
   @override
+  String get recipe_name => "Rezeptname";
+  @override
+  String get not_required_eg_ingredients_of_sauce => "nicht verpflichtend (zB. Zutaten Sauce)";
+  @override
   String get check_ingredient_section_fields => "Prüfe die Zutatenliste";
   @override
   String get decrease_servings => "Portionen verringern";
@@ -211,7 +224,11 @@ class $de extends S {
   @override
   String get description => "Beschreibung";
   @override
+  String get in_minutes => "in Minuten";
+  @override
   String get effort => "Aufwand";
+  @override
+  String get no_valid_number => "keine valide Nummber";
   @override
   String get manage_nutritions => "Nährwerte verwalten";
   @override
@@ -238,6 +255,8 @@ class $de extends S {
   String get switch_shopping_cart_look => "Einkaufwagenansicht ändern";
   @override
   String get recipename_taken_description => "Ändere den Rezeptnamen zu etwas mehr detailliertem oder du haste einfach nur vergessen, dass du dieses Rezept schon hinzugefügt hast :)";
+  @override
+  String get ingredient => "Zutat";
   @override
   String get explore => "wische";
   @override
@@ -268,6 +287,8 @@ class $de extends S {
   String get recipename_taken => "Rezeptname vergeben";
   @override
   String get add_step => "Schritt hinzufügen";
+  @override
+  String get data_required => "darf nicht leer sein";
   @override
   String get share_recipe => "Rezept teilen";
   @override

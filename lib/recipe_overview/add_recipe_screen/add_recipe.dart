@@ -252,7 +252,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                       child: TextFormField(
                         validator: (value) {
                           if (validateNumber(value) == false && value != "") {
-                            return "no valid number";
+                            return S.of(context).no_valid_number;
                           }
                           return null;
                         },
@@ -261,7 +261,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           filled: true,
-                          labelText: "preperation time",
+                          labelText: S.of(context).prep_time,
                           icon: Icon(Icons.access_time),
                         ),
                       ),
@@ -274,7 +274,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                       child: TextFormField(
                         validator: (value) {
                           if (validateNumber(value) == false && value != "") {
-                            return "no valid number";
+                            return S.of(context).no_valid_number;
                           }
                           return null;
                         },
@@ -283,7 +283,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           filled: true,
-                          labelText: "cooking time",
+                          labelText: S.of(context).cook_time,
                         ),
                       ),
                     ),
@@ -296,7 +296,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 child: TextFormField(
                   validator: (value) {
                     if (validateNumber(value) == false && value != "") {
-                      return "no valid number";
+                      return S.of(context).no_valid_number;
                     }
                     return null;
                   },
@@ -304,9 +304,9 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   controller: totalTimeController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    helperText: "in minutes",
+                    helperText: S.of(context).in_minutes,
                     filled: true,
-                    labelText: "total time",
+                    labelText: S.of(context).total_time,
                   ),
                 ),
               ),
@@ -317,10 +317,10 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 child: TextFormField(
                   validator: (value) {
                     if (validateNumber(value) == false) {
-                      return "no valid number";
+                      return S.of(context).no_valid_number;
                     }
                     if (value.isEmpty) {
-                      return "data required";
+                      return S.of(context).data_required;
                     }
                     return null;
                   },
@@ -328,7 +328,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     filled: true,
-                    labelText: "servings",
+                    labelText: S.of(context).servings,
                     icon: Icon(Icons.local_dining),
                   ),
                 ),
@@ -385,7 +385,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                 child: TextField(
                   controller: notesController,
                   decoration: InputDecoration(
-                    labelText: "notes",
+                    labelText: S.of(context).notes,
                     filled: true,
                     icon: Icon(Icons.assignment),
                   ),
@@ -605,10 +605,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     showDialog(
       context: context,
       builder: (_) => RoundEdgeDialog(
-        title: Text(
-          S.of(context).recipename_taken,
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
-        ),
+        title: S.of(context).recipename_taken,
         bottomSection: Text(
           S.of(context).recipename_taken_description,
         ),
@@ -632,10 +629,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     showDialog(
       context: context,
       builder: (_) => RoundEdgeDialog(
-        title: Text(
-          S.of(context).check_ingredients_input,
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
-        ),
+        title: S.of(context).check_ingredients_input,
         bottomSection: Text(
           S.of(context).check_ingredients_input_description,
         ),
@@ -647,10 +641,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     showDialog(
       context: context,
       builder: (_) => RoundEdgeDialog(
-        title: Text(
-          S.of(context).check_ingredient_section_fields,
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
-        ),
+        title: S.of(context).check_ingredient_section_fields,
         bottomSection:
             Text(S.of(context).check_ingredient_section_fields_description),
       ),
@@ -661,10 +652,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     showDialog(
       context: context,
       builder: (_) => RoundEdgeDialog(
-        title: Text(
-          S.of(context).check_filled_in_information,
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 21),
-        ),
+        title: S.of(context).check_filled_in_information,
         bottomSection: Text(
           S.of(context).check_filled_in_information_description,
         ),
@@ -681,20 +669,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       }
     }
     return output;
-  }
-}
-
-bool validateNumber(String text) {
-  if (text.isEmpty) {
-    return true;
-  }
-  String pattern = r"^(?!0*[.,]?0+$)\d*[.,]?\d+$";
-
-  RegExp regex = RegExp(pattern);
-  if (regex.hasMatch(text)) {
-    return true;
-  } else {
-    return false;
   }
 }
 

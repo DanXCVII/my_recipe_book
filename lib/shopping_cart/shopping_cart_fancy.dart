@@ -3,10 +3,12 @@ import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/shopping_cart/shopping_cart.dart';
+import 'package:my_recipe_book/shopping_cart/shopping_cart_add_dialog.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../database.dart';
+import '../dialogs.dart';
 import '../search.dart';
 
 class FancyShoppingCartScreen extends StatelessWidget {
@@ -28,7 +30,15 @@ class FancyShoppingCartScreen extends StatelessWidget {
                     context: context, delegate: RecipeSearch(recipeNames));
               });
             },
-          )
+          ),IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (_) =>
+                          RoundEdgeDialog(body: AddShoppingCartDialog()));
+                },
+              ),
         ],
         expandedHeight: 200.0,
         floating: false,

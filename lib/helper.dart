@@ -47,3 +47,17 @@ int getIngredientCount(List<List<Ingredient>> ingredients) {
 String getUnderscoreName(String name) {
   return name.replaceAll(' ', '_');
 }
+
+bool validateNumber(String text) {
+  if (text.isEmpty) {
+    return true;
+  }
+  String pattern = r"^(?!0*[.,]?0+$)\d*[.,]?\d+$";
+
+  RegExp regex = RegExp(pattern);
+  if (regex.hasMatch(text)) {
+    return true;
+  } else {
+    return false;
+  }
+}

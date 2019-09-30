@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/dialogs.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
+import 'package:my_recipe_book/shopping_cart/shopping_cart_add_dialog.dart';
 import 'package:my_recipe_book/shopping_cart/shopping_cart_fancy.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -286,6 +288,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     if (mpNavigator.index == 2 && mpNavigator.showFancyShoppingList) {
       return null;
     }
+    print(mpNavigator.index);
     return AppBar(
       title: Text(title),
       actions: <Widget>[
@@ -307,6 +310,17 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             });
           },
         ),
+        mpNavigator.index == 2
+            ? IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (_) =>
+                          RoundEdgeDialog(body: AddShoppingCartDialog()));
+                },
+              )
+            : null,
         ScopedModelDescendant<ShoppingCartKeeper>(
             builder: (context, child, model) => IconButton(
                   icon: Icon(Icons.adb),

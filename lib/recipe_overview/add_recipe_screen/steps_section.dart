@@ -283,7 +283,7 @@ class _StepState extends State<Step> {
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: "description",
+                    hintText: S.of(context).description,
                   ),
                   maxLines: null,
                 ),

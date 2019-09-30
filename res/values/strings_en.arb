@@ -17,6 +17,8 @@
   "add_to_cart": "add to shopping cart",
 
 
+  "add": "add",
+  "recipe_name": "recipe name",
   "add_recipe": "add recipe",
   "add_favorites": "add favorites",
   "add_section": "add section",
@@ -34,7 +36,9 @@
   "categories": "Categories",
   "ingredients_for": "Ingredients for",
   "ingredients": "ingredients",
+  "ingredient": "ingredient",
   "servings": "servings",
+  "in_minutes": "in minutes",
 
   "name": "name",
   "prep_time": "preperation time",
@@ -96,5 +100,11 @@
   "no_recipes_to_search_through": "you have no recipes to search through",
   "almost_done": "almost done😊",
   "exporting_recipe": "exporting recipe",
-  "out_of": "out of"
+  "out_of": "out of",
+
+  "no_valid_number": "no valid number",
+  "data_required": "data_required",
+  "not_required_eg_ingredients_of_sauce": "not required (e.g. ingredients of sauce)"
+
+
 }
