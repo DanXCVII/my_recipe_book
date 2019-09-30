@@ -55,6 +55,7 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                   children: <Widget>[
                     Expanded(
                       flex: 3,
+                      // TODO: Make autoCompletionTextField
                       child: TextFormField(
                         controller: ingredientNameController,
                         decoration: InputDecoration(
