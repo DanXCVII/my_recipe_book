@@ -48,7 +48,6 @@ dependencies:
   flutter_tindercard: ^0.1.8
   sliding_up_panel: ^0.3.6
   autocomplete_textfield: ^1.7.3
-  firebase_admob: ^0.9.0+7
   
   share:
     git:
