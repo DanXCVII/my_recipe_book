@@ -67,8 +67,8 @@ class ShoppingCartKeeper extends Model {
   /// Checks if the given ingredient is in the list of the given
   /// recipe with a greater or equal amount
   bool checkForRecipeIngredient(String recipeName, Ingredient ingredient) {
-    for (String r in _recipes) {
-      for (CheckableIngredient i in _shoppingCart[r]) {
+    if (shoppingCart[recipeName] != null) {
+      for (CheckableIngredient i in _shoppingCart[recipeName]) {
         if (i.name.compareTo(ingredient.name) == 0 &&
             i.unit.compareTo(ingredient.unit) == 0 &&
             i.amount >= ingredient.amount) {
@@ -76,6 +76,8 @@ class ShoppingCartKeeper extends Model {
         }
       }
     }
+    print('recipename' +recipeName);
+    print(shoppingCart[recipeName]);
     return false;
   }
 

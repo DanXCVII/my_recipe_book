@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -189,7 +191,7 @@ class Settings extends StatelessWidget {
               SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
               return true;
             },
-            child: IntroScreen(onDonePop: true))));
+            child: IntroScreen())));
   }
 
   void _changeTheme(BuildContext buildContext, MyThemeKeys key) {
@@ -218,7 +220,7 @@ class Settings extends StatelessWidget {
     String _path = await FilePicker.getFilePath(
         type: FileType.CUSTOM, fileExtension: 'zip');
     if (_path == null) return;
-    importSingleMultipleRecipes(rKeeper, _path);
+    importSingleMultipleRecipes(rKeeper, File(_path));
   }
 }
 

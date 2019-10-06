@@ -11,28 +11,35 @@ import 'package:my_recipe_book/generated/i18n.dart';
 import '../helper.dart';
 import '../recipe_card.dart';
 
-TextStyle smallHeading = TextStyle(
-    fontSize: 16, color: Color(0xffC75F00), fontWeight: FontWeight.w600);
-TextStyle timeStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.w900);
-TextStyle ingredientsStyle =
-    TextStyle(fontSize: 14, fontWeight: FontWeight.w600);
-TextStyle stepNumberStyle =
-    TextStyle(fontSize: 32, fontWeight: FontWeight.w700);
-TextStyle complexityNumberStyle =
-    TextStyle(fontSize: 32, fontWeight: FontWeight.w900);
-
 class RecipeCardBig extends StatelessWidget {
   final Recipe recipe;
   final int index;
+  final double cardWidth;
+  final double cardHeight;
 
   const RecipeCardBig({
     this.index,
+    this.cardWidth,
+    this.cardHeight,
     this.recipe,
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    double deviceHeight = MediaQuery.of(context).size.height;
+    double scaleFactor = deviceHeight / 800;
+
+    TextStyle smallHeading = TextStyle(
+        fontSize: 16, color: Color(0xffC75F00), fontWeight: FontWeight.w600);
+    TextStyle timeStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.w900);
+    TextStyle ingredientsStyle =
+        TextStyle(fontSize: 14, fontWeight: FontWeight.w600);
+    TextStyle stepNumberStyle =
+        TextStyle(fontSize: 32, fontWeight: FontWeight.w700);
+    TextStyle complexityNumberStyle =
+        TextStyle(fontSize: 32, fontWeight: FontWeight.w900);
+
     final String heroImageTag = '${recipe.name}$index';
     return ScopedModelDescendant<RecipeKeeper>(
       builder: (context, child, model) => Material(
@@ -63,12 +70,12 @@ class RecipeCardBig extends StatelessWidget {
                   )
                 ]),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(scaleFactor * 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                    flex: 1,
+                    flex: 10,
                     child: Stack(
                       fit: StackFit.expand,
                       children: <Widget>[
@@ -101,13 +108,12 @@ class RecipeCardBig extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: <Widget>[
                                   Padding(
-                                    padding: const EdgeInsets.all(12.0),
+                                    padding: EdgeInsets.all(scaleFactor * 12.0),
                                     child: Container(
-                                      width: MediaQuery.of(context).size.width /
-                                              1.8 -
-                                          20,
+                                      width: cardWidth - 130,
                                       child: Text(
                                         recipe.name,
+                                        textScaleFactor: scaleFactor,
                                         style: TextStyle(
                                           fontSize: 28,
                                           fontWeight: FontWeight.w700,
@@ -116,11 +122,11 @@ class RecipeCardBig extends StatelessWidget {
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.all(12.0),
+                                    padding: EdgeInsets.all(scaleFactor * 12.0),
                                     child: Image.asset(
                                       "images/${getRecipeTypeImage(recipe.vegetable)}.png",
-                                      height: 35,
-                                      width: 35,
+                                      height: scaleFactor * 35,
+                                      width: scaleFactor * 35,
                                       fit: BoxFit.scaleDown,
                                     ),
                                   ),
@@ -131,14 +137,14 @@ class RecipeCardBig extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    flex: 1,
+                    flex: 9,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Expanded(
-                            flex: 1,
+                            flex: 8,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
@@ -148,11 +154,13 @@ class RecipeCardBig extends StatelessWidget {
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
                                           Text(S.of(context).prep_time,
+                                              textScaleFactor: scaleFactor,
                                               style: smallHeading),
                                           SizedBox(height: 5),
                                           Text(
                                               getTimeHoursMinutes(
                                                   recipe.preperationTime),
+                                              textScaleFactor: scaleFactor,
                                               style: timeStyle),
                                         ],
                                       )
@@ -163,11 +171,13 @@ class RecipeCardBig extends StatelessWidget {
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
                                           Text(S.of(context).cook_time,
+                                              textScaleFactor: scaleFactor,
                                               style: smallHeading),
                                           SizedBox(height: 5),
                                           Text(
                                               getTimeHoursMinutes(
                                                   recipe.cookingTime),
+                                              textScaleFactor: scaleFactor,
                                               style: timeStyle),
                                         ],
                                       )
@@ -178,11 +188,13 @@ class RecipeCardBig extends StatelessWidget {
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
                                           Text(S.of(context).total_time,
+                                              textScaleFactor: scaleFactor,
                                               style: smallHeading),
                                           SizedBox(height: 5),
                                           Text(
                                               getTimeHoursMinutes(
                                                   recipe.totalTime),
+                                              textScaleFactor: scaleFactor,
                                               style: timeStyle),
                                         ],
                                       )
@@ -191,78 +203,77 @@ class RecipeCardBig extends StatelessWidget {
                             ),
                           ),
                           Expanded(
-                            flex: 1,
+                            flex: 10,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
                                   '${getIngredientCount(recipe.ingredients)} ${S.of(context).ingredients}:',
+                                  textScaleFactor: scaleFactor,
                                   style: smallHeading,
                                 ),
-                                buildIngredients(recipe.ingredients),
+                                buildIngredients(
+                                  recipe.ingredients,
+                                  ingredientsStyle,
+                                  scaleFactor,
+                                ),
                               ],
                             ),
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Container(
-                                height: 65,
-                                alignment: Alignment.bottomCenter,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(S.of(context).steps,
-                                            style: smallHeading),
-                                        Text(
-                                          recipe.steps.length.toString(),
-                                          style: stepNumberStyle,
-                                        ),
-                                      ],
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(S.of(context).categories,
-                                                style: smallHeading),
-                                            Text(
-                                              _getRecipeCategoriesString(
-                                                  recipe.categories),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Text(S.of(context).complexity,
-                                            style: smallHeading),
-                                        Text(
-                                          recipe.effort.toString(),
-                                          style: complexityNumberStyle,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Wrap(
+                                alignment: WrapAlignment.start,
+                                direction: Axis.vertical,
+                                children: <Widget>[
+                                  Text(S.of(context).steps,
+                                      textScaleFactor: scaleFactor,
+                                      style: smallHeading),
+                                  Text(
+                                    recipe.steps.length.toString(),
+                                    textScaleFactor: scaleFactor,
+                                    style: stepNumberStyle,
+                                  ),
+                                ],
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(S.of(context).categories,
+                                          textScaleFactor: scaleFactor,
+                                          style: smallHeading),
+                                      Text(
+                                        _getRecipeCategoriesString(
+                                            recipe.categories),
+                                        textScaleFactor: scaleFactor,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Text(S.of(context).complexity,
+                                      textScaleFactor: scaleFactor,
+                                      style: smallHeading),
+                                  Text(
+                                    recipe.effort.toString(),
+                                    textScaleFactor: scaleFactor,
+                                    style: complexityNumberStyle,
+                                  ),
+                                ],
+                              ),
+                            ],
                           )
                         ],
                       ),
@@ -292,7 +303,8 @@ class RecipeCardBig extends StatelessWidget {
     return categoryString;
   }
 
-  Widget buildIngredients(List<List<Ingredient>> ingredients) {
+  Widget buildIngredients(List<List<Ingredient>> ingredients,
+      TextStyle ingredientsStyle, double scaleFactor) {
     List<Ingredient> flatIngredients = flattenIngredients(ingredients);
 
     Column leftIngredientColumn = Column(
@@ -315,18 +327,26 @@ class RecipeCardBig extends StatelessWidget {
     int displayAmount = flatIngredients.length > 6 ? 6 : flatIngredients.length;
     if (flatIngredients.length > 3) {
       for (int i = 0; i < displayAmount / 2.floor(); i++) {
-        leftIngredientColumn.children
-            .add(Text(flatIngredients[i].name, style: ingredientsStyle));
+        leftIngredientColumn.children.add(Text(
+          flatIngredients[i].name,
+          textScaleFactor: scaleFactor,
+          style: ingredientsStyle,
+        ));
         leftIngredAmountColumn.children.add(Text(
           flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
+          textScaleFactor: scaleFactor,
           style: ingredientsStyle,
         ));
       }
       for (int i = (displayAmount / 2).floor(); i < displayAmount; i++) {
-        rightIngredientColumn.children
-            .add(Text(flatIngredients[i].name, style: ingredientsStyle));
+        rightIngredientColumn.children.add(Text(
+          flatIngredients[i].name,
+          textScaleFactor: scaleFactor,
+          style: ingredientsStyle,
+        ));
         rightIngredAmountColumn.children.add(Text(
           flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
+          textScaleFactor: scaleFactor,
           style: ingredientsStyle,
         ));
       }
@@ -343,10 +363,14 @@ class RecipeCardBig extends StatelessWidget {
       );
     } else {
       for (int i = 0; i < displayAmount; i++) {
-        leftIngredientColumn.children
-            .add(Text(flatIngredients[i].name, style: ingredientsStyle));
+        leftIngredientColumn.children.add(Text(
+          flatIngredients[i].name,
+          textScaleFactor: scaleFactor,
+          style: ingredientsStyle,
+        ));
         leftIngredAmountColumn.children.add(Text(
           flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
+          textScaleFactor: scaleFactor,
           style: ingredientsStyle,
         ));
       }

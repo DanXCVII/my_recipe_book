@@ -10,6 +10,7 @@ import '../recipe_card.dart';
 class FavoriteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double deviceHeight = MediaQuery.of(context).size.height;
     return Stack(
       children: <Widget>[
         // Container(
@@ -37,13 +38,14 @@ class FavoriteScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                      height: 80,
+                      height: deviceHeight / 800 * 80,
                       child: Image.asset('images/bigHeart.png'),
                     ),
                     SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(S.of(context).no_added_favorites_yet,
+                          textScaleFactor: deviceHeight / 800,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 26,

@@ -469,7 +469,7 @@ class DBProvider {
     List<String> categories = [];
     var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
-        'WHERE recipe_name=\'$recipeName\'');
+        'WHERE recipe_name= ?', [recipeName]);
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
     }
@@ -477,8 +477,8 @@ class DBProvider {
     List<Nutrition> nutritions = [];
     var resNutritions = await db.rawQuery('SELECT * FROM RecipeNutritions '
         'NATURAL INNER JOIN Nutrition '
-        'WHERE recipe_name = \'$recipeName\' '
-        'ORDER BY number ASC');
+        'WHERE recipe_name = ? '
+        'ORDER BY number ASC',[recipeName]);
     for (int i = 0; i < resNutritions.length; i++) {
       nutritions.add(
         Nutrition(
@@ -599,7 +599,7 @@ class DBProvider {
     List<String> categories = new List<String>();
     var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
-        'WHERE recipe_name=\'$recipeName\'');
+        'WHERE recipe_name = ?', [recipeName]);
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
     }
@@ -872,7 +872,7 @@ class DBProvider {
 
     var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
-        'WHERE categoryName=\'$categoryName\'');
+        'WHERE categoryName= ?', [categoryName]);
     List<RecipePreview> output = new List<RecipePreview>();
     for (int i = 0; i < resCategories.length; i++) {
       RecipePreview newRecipe =
@@ -967,7 +967,7 @@ class DBProvider {
       newStatus = 0;
     }
     await db.rawUpdate(
-        'UPDATE Recipe SET isFavorite = $newStatus WHERE recipe_name=\'$recipeName\'');
+        'UPDATE Recipe SET isFavorite = ? WHERE recipe_name= ?', [newStatus, recipeName]);
   }
 }
 

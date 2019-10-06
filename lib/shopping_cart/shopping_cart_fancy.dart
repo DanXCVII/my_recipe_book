@@ -18,6 +18,8 @@ class FancyShoppingCartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double scaleFactor = MediaQuery.of(context).size.height / 800;
+
     return CustomScrollView(slivers: <Widget>[
       SliverAppBar(
         centerTitle: false,
@@ -30,43 +32,46 @@ class FancyShoppingCartScreen extends StatelessWidget {
                     context: context, delegate: RecipeSearch(recipeNames));
               });
             },
-          ),IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (_) =>
-                          RoundEdgeDialog(body: AddShoppingCartDialog()));
-                },
-              ),
+          ),
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (_) =>
+                      RoundEdgeDialog(content: AddShoppingCartDialog()));
+            },
+          ),
         ],
-        expandedHeight: 200.0,
+        expandedHeight: scaleFactor * 200.0,
         floating: false,
         pinned: true,
         flexibleSpace: FlexibleSpaceBar(
-          centerTitle: false,
-          title: Text(S.of(context).shoppingcart),
-          background: Image.asset('images/cuisine.jpg', fit: BoxFit.cover),
-        ),
+            centerTitle: false,
+            title: Text(S.of(context).shoppingcart),
+            background: Image(
+              image: AssetImage('images/cuisine.jpg'),
+              fit: BoxFit.cover,
+            )),
       ),
       SliverPadding(
         padding: EdgeInsets.all(12),
         sliver: ScopedModelDescendant<ShoppingCartKeeper>(
             builder: (context, child, model) => SliverList(
                   delegate: SliverChildListDelegate(
-                      getRecipeShoppingList(model, context)),
+                      getRecipeShoppingList(model, context, scaleFactor)),
                 )),
       ),
     ]);
   }
 
   List<Widget> getRecipeShoppingList(
-      ShoppingCartKeeper scKeeper, BuildContext context) {
+      ShoppingCartKeeper scKeeper, BuildContext context, scaleFactor) {
     List<String> recipes = scKeeper.recipes;
     var shoppingCart = scKeeper.shoppingCart;
     if (shoppingCart['summary'].isEmpty) {
       return [
-        displayNothingAdded(context),
+        displayNothingAdded(context, scaleFactor),
       ];
     }
     return recipes.map((recipeName) {
@@ -98,19 +103,18 @@ class FancyShoppingCartScreen extends StatelessWidget {
     }).toList();
   }
 
-  Widget displayNothingAdded(BuildContext context) {
+  Widget displayNothingAdded(BuildContext context, double scaleFactor) {
+    double deviceHeight = MediaQuery.of(context).size.height;
     return Container(
-      height: 400,
-      child: Container(
-        height: 200,
-        child: Center(
-          child: Text(
-            S.of(context).shopping_cart_is_empty,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 26,
-              fontFamily: 'RibeyeMarrow',
-            ),
+      height: deviceHeight / 2,
+      child: Center(
+        child: Text(
+          S.of(context).shopping_cart_is_empty,
+          textScaleFactor: deviceHeight / 800,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 26,
+            fontFamily: 'RibeyeMarrow',
           ),
         ),
       ),

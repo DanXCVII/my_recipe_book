@@ -3,16 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:intro_slider/intro_slider.dart';
 
-import 'main.dart';
-
 class IntroScreen extends StatelessWidget {
-  final bool onDonePop;
-
-  // recipeCatOverview and showFancyShoppingList needed, when onDonePop is false!
-  IntroScreen({
-    this.onDonePop,
-  });
-
   //making list of pages needed to pass in IntroViewsFlutter constructor.
 
   @override
@@ -63,10 +54,7 @@ class IntroScreen extends StatelessWidget {
       ],
       onDonePress: () {
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-        onDonePop
-            ? Navigator.pop(context)
-            : Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => MyHomePage()));
+        Navigator.pop(context);
       },
     );
   }

@@ -86,6 +86,7 @@ class RecipeGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double scaleFactor = MediaQuery.of(context).size.height/800;
     return ScopedModelDescendant<RecipeKeeper>(
         builder: (context, child, model) {
       List<RecipePreview> recipePreviews = model.getRecipesOfCategory(category);
@@ -108,7 +109,7 @@ class RecipeGridView extends StatelessWidget {
                   },
                 )
               ],
-              expandedHeight: 200.0,
+              expandedHeight: scaleFactor*200.0,
               floating: false,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
@@ -174,6 +175,7 @@ class NoRecipeCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double deviceHeight = MediaQuery.of(context).size.height;
     return Stack(
       children: <Widget>[
         Align(
@@ -182,6 +184,7 @@ class NoRecipeCategory extends StatelessWidget {
             padding: const EdgeInsets.all(12.0),
             child: Text(
               S.of(context).no_recipes_under_this_category,
+              textScaleFactor: deviceHeight / 800,
               style: TextStyle(
                   fontSize: 30,
                   fontFamily: 'RibeyeMarrow',
@@ -196,7 +199,7 @@ class NoRecipeCategory extends StatelessWidget {
           alignment: Alignment.bottomCenter,
           child: Image.asset(
             'images/hatWithSpoonFork.png',
-            height: 280,
+            height: deviceHeight / 800 * 280,
           ),
         ),
       ],

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -6,8 +7,10 @@ import 'package:my_recipe_book/dialogs.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
+import 'package:my_recipe_book/settings/import_recipe.dart';
 import 'package:my_recipe_book/shopping_cart/shopping_cart_add_dialog.dart';
 import 'package:my_recipe_book/shopping_cart/shopping_cart_fancy.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'package:flutter/material.dart';
@@ -53,7 +56,6 @@ class MyApp extends StatelessWidget {
   final RecipeKeeper recipeKeeper;
   final ShoppingCartKeeper scKeeper;
   final appTitle = 'Drawer Demo';
-  static StreamController _locale = StreamController<Locale>();
   static bool initialized = false;
 
   MyApp(
@@ -74,47 +76,26 @@ class MyApp extends StatelessWidget {
         model: bottomNavIndex,
         child: ScopedModel<RecipeKeeper>(
           model: recipeKeeper,
-          child: StreamBuilder(
-              stream: _locale.stream,
-              initialData: Locale("en", ""),
-              builder: (context, snapshot) {
-                return MaterialApp(
-                  locale: snapshot.data,
-                  localizationsDelegates: [
-                    S.delegate,
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate
-                  ],
-                  supportedLocales: S.delegate.supportedLocales,
-                  localeResolutionCallback: (deviceLocale, supportedLocals) {
-                    Locale myLocale = deviceLocale;
-                    print(myLocale.languageCode + " " + myLocale.countryCode);
-                    S.delegate.resolution(fallback: new Locale("en", ""));
-                    if (initialized) {
-                      _locale.close();
-                      return myLocale;
-                    } else {
-                      print("initialized " + deviceLocale.languageCode);
-                      _locale.add(Locale(deviceLocale.languageCode, ""));
-                      initialized = true;
-                    }
-                    //setLocale(deviceLocale);
-                    return myLocale;
-                  },
-                  showPerformanceOverlay: false,
-                  theme: CustomTheme.of(context),
-                  initialRoute: '/',
-                  routes: {
-                    '/': (context) => SplashScreen(
-                          recipeKeeper: recipeKeeper,
-                          mainPageNavigator: bottomNavIndex,
-                          sCKeeper: scKeeper,
-                        ),
-                    '/add-recipe': (context) => AddRecipeForm(),
-                    '/manage-categories': (context) => CategoryManager(),
-                  },
-                );
-              }),
+          child: MaterialApp(
+            localizationsDelegates: [
+              S.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: S.delegate.supportedLocales,
+            showPerformanceOverlay: false,
+            theme: CustomTheme.of(context),
+            initialRoute: '/',
+            routes: {
+              '/': (context) => SplashScreen(
+                    rKeeper: recipeKeeper,
+                    mainPageNavigator: bottomNavIndex,
+                    sCKeeper: scKeeper,
+                  ),
+              '/add-recipe': (context) => AddRecipeForm(),
+              '/manage-categories': (context) => CategoryManager(),
+            },
+          ),
         ),
       ),
     );
@@ -122,7 +103,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage();
+  final RecipeKeeper rKeeper;
+
+  MyHomePage(this.rKeeper);
 
   @override
   MyHomePageState createState() => MyHomePageState();
@@ -150,6 +133,18 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
+
+    SystemChannels.lifecycle.setMessageHandler((msg) {
+      if (msg.contains('resumed')) {
+        print('reeeeeeeeeeessssssssssummmmmmmd');
+        initializeIntent();
+      }
+      return;
+    });
+
+    // Case 2: App is started by the intent:
+    // Call Java MethodHandler on application start up to check for shared data
+    initializeIntent();
   }
 
   @override
@@ -263,6 +258,55 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     });
   }
 
+  initializeIntent() async {
+    var importZipPath = await getIntentPath();
+    if (importZipPath != null) {
+      showDialog(
+          context: context,
+          builder: (_) => getImportRecipeDialog(importZipPath, widget.rKeeper));
+    }
+  }
+
+  static const platform = const MethodChannel('app.channel.shared.data');
+
+  getIntentPath() async {
+    var sharedData = await platform.invokeMethod("getSharedText");
+    return sharedData == null ? null : sharedData;
+  }
+
+  Widget getImportRecipeDialog(String importPath, RecipeKeeper rKeeper) {
+    return RoundEdgeDialog(
+      title: "import recipe",
+      bottomSection: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            'Do you want to import the recipe/s?',
+          ),
+          SizedBox(height: 24.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              FlatButton(
+                  child: Text("no"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              FlatButton(
+                child: Text("yes"),
+                onPressed: () {
+                  importSingleMultipleRecipes(rKeeper, File(importPath));
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
   AppBar _buildAppBar(int selectedIndex, MainPageNavigator mpNavigator) {
     // if shoppingCartPage with sliverAppBar
     String title;
@@ -317,7 +361,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   showDialog(
                       context: context,
                       builder: (_) =>
-                          RoundEdgeDialog(body: AddShoppingCartDialog()));
+                          RoundEdgeDialog(content: AddShoppingCartDialog()));
                 },
               )
             : null,

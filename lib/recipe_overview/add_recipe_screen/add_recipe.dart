@@ -190,13 +190,14 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                     // It disables the back button
                     onWillPop: () async => false,
                     child: RoundDialog(
-                        FlareActor(
-                          'animations/writing_pen.flr',
-                          alignment: Alignment.center,
-                          fit: BoxFit.fitWidth,
-                          animation: "Go",
-                        ),
-                        150),
+                        // FlareActor(
+                        //   'animations/writing_pen.flr',
+                        //   alignment: Alignment.center,
+                        //   fit: BoxFit.fitWidth,
+                        //   animation: "Go",
+                        // ),
+                        Center(child: CircularProgressIndicator()),
+                        80),
                   ),
                 );
                 DummyData().saveDummyData(rKeeper).then((_) {
@@ -230,6 +231,19 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   validator: (value) {
                     if (value.isEmpty) {
                       return "Please enter a name";
+                    }
+                    if (value.contains('/') ||
+                        value.contains('.') ||
+                        value.length >= 70) {
+                      return "invalid name";
+                    } else {
+                      try {
+                        PathProvider.pP.getRecipeDir(value).then((path) {
+                          Directory(path).create(recursive: true);
+                        });
+                      } catch (e) {
+                        return "looooool";
+                      }
                     }
                     return null;
                   },
@@ -609,6 +623,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         bottomSection: Text(
           S.of(context).recipename_taken_description,
         ),
+        showButtonOk: true,
       ),
     );
   }
@@ -633,6 +648,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         bottomSection: Text(
           S.of(context).check_ingredients_input_description,
         ),
+        showButtonOk: true,
       ),
     );
   }
@@ -644,6 +660,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         title: S.of(context).check_ingredient_section_fields,
         bottomSection:
             Text(S.of(context).check_ingredient_section_fields_description),
+        showButtonOk: true,
       ),
     );
   }
@@ -656,6 +673,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         bottomSection: Text(
           S.of(context).check_filled_in_information_description,
         ),
+        showButtonOk: true,
       ),
     );
   }

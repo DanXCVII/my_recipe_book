@@ -22,9 +22,7 @@ class _ExportRecipesState extends State<ExportRecipes> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 100), () {
-      recipeNames = DBProvider.db.getRecipeNames();
-    });
+    recipeNames = DBProvider.db.getRecipeNames();
   }
 
   @override
@@ -98,7 +96,9 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
   @override
   void initState() {
     super.initState();
-    exportZipFile = exportRecipes();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      exportZipFile = exportRecipes();
+    });
   }
 
   @override

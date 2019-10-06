@@ -275,7 +275,6 @@ class RecipePage extends StatelessWidget {
                   ),
                 ],
                 floating: true,
-                flexibleSpace: FlexibleSpaceBar(),
               ),
             ),
             SliverList(
@@ -546,8 +545,7 @@ class RecipePage extends StatelessWidget {
   }
 
   String _getRecipeAsString(Recipe recipe) {
-    String recipeText = '꧁꧂꧁꧂꧁꧂\n'
-        'recipename: ${recipe.name}\n'
+    String recipeText = 'recipename: ${recipe.name}\n'
         '====================\n'
         'preperation Time: ${recipe.preperationTime} min\n'
         'cooking Time: ${recipe.cookingTime} min\n'
@@ -574,7 +572,7 @@ class RecipePage extends StatelessWidget {
       recipeText += '====================\n';
       recipeText += 'notes: ${recipe.notes}\n';
     }
-    recipeText += '꧁꧂꧁꧂꧁꧂';
+
     return recipeText;
   }
 }
@@ -713,7 +711,9 @@ class _CategoryCircleState extends State<CategoryCircle> {
                 height: 100,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: FileImage(File(widget.imageName)),
+                    image: widget.imageName != 'images/randomFood.jpg'
+                        ? FileImage(File(widget.imageName))
+                        : AssetImage('images/randomFood.jpg'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -932,7 +932,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
               ScopedModelDescendant<ShoppingCartKeeper>(
                   builder: (context, child, scKeeper) {
                 bool isChecked = scKeeper.checkForRecipeIngredient(
-                    currentIngredient.name, currentIngredient);
+                    widget.currentRecipe.name, currentIngredient);
                 return IconButton(
                     icon: isChecked
                         ? Icon(Icons.check_circle)

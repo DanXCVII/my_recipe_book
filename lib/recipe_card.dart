@@ -37,6 +37,7 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
     double gridTileWidth = deviceWidth / (deviceWidth / 300.floor() + 1);
     return GestureDetector(
@@ -57,6 +58,7 @@ class RecipeCard extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           Container(
+            height: 250,
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               boxShadow: [
@@ -76,15 +78,37 @@ class RecipeCard extends StatelessWidget {
             ),
             child: Material(
               color: Colors.transparent,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: Hero(
-                        tag: heroImageTag,
-                        placeholderBuilder: (context, size, widget) =>
-                            ClipRRect(
+              child: Container(
+                height: 250,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Hero(
+                          tag: heroImageTag,
+                          placeholderBuilder: (context, size, widget) =>
+                              ClipRRect(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(gridTileWidth / 10),
+                                  topRight: Radius.circular(gridTileWidth / 10),
+                                ),
+                                child: FadeInImage(
+                                  image: recipePreview.imagePreviewPath ==
+                                          'images/randomFood.jpg'
+                                      ? AssetImage(
+                                          recipePreview.imagePreviewPath)
+                                      : FileImage(
+                                          File(recipePreview.imagePreviewPath)),
+                                  placeholder: MemoryImage(kTransparentImage),
+                                  fadeInDuration: Duration(milliseconds: 250),
+                                  fit: BoxFit.cover,
+                                  height: gridTileWidth / 1.25,
+                                  width: gridTileWidth + 40,
+                                ),
+                              ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: ClipRRect(
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(gridTileWidth / 10),
                                 topRight: Radius.circular(gridTileWidth / 10),
@@ -102,52 +126,35 @@ class RecipeCard extends StatelessWidget {
                                 width: gridTileWidth + 40,
                               ),
                             ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(gridTileWidth / 10),
-                              topRight: Radius.circular(gridTileWidth / 10),
-                            ),
-                            child: FadeInImage(
-                              image: recipePreview.imagePreviewPath ==
-                                      'images/randomFood.jpg'
-                                  ? AssetImage(recipePreview.imagePreviewPath)
-                                  : FileImage(
-                                      File(recipePreview.imagePreviewPath)),
-                              placeholder: MemoryImage(kTransparentImage),
-                              fadeInDuration: Duration(milliseconds: 250),
-                              fit: BoxFit.cover,
-                              height: gridTileWidth / 1.25,
-                              width: gridTileWidth + 40,
-                            ),
-                          ),
-                        )),
-                  ),
-                  SizedBox(height: 7),
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 12,left: 15, right: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                          )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 7, 12, 12),
+                      child: Wrap(
+                        direction: Axis.vertical,
                         children: <Widget>[
-                          Text(
-                            "${recipePreview.name}",
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14 + gridTileWidth / 35,
-                                fontFamily: 'Righteous'),
+                          Container(
+                            width: gridTileWidth - 12,
+                            child: Text(
+                              "${recipePreview.name}",
+                              textScaleFactor: deviceWidth / 400,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14 + gridTileWidth / 35,
+                                  fontFamily: 'Righteous'),
+                            ),
                           ),
-                          Spacer(),
+                          SizedBox(height: 7),
                           Column(
+                            mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
                                 recipePreview.totalTime,
+                                textScaleFactor: deviceWidth / 400,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 style: TextStyle(
@@ -158,6 +165,7 @@ class RecipeCard extends StatelessWidget {
                               ),
                               Text(
                                 "${recipePreview.ingredientsAmount} ${S.of(context).ingredients}",
+                                textScaleFactor: deviceWidth / 400,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 style: TextStyle(
@@ -179,6 +187,7 @@ class RecipeCard extends StatelessWidget {
                                   ),
                                   Text(
                                     ' ' + S.of(context).effort,
+                                    textScaleFactor: deviceWidth / 400,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                     style: TextStyle(
@@ -194,8 +203,8 @@ class RecipeCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -205,8 +214,8 @@ class RecipeCard extends StatelessWidget {
                 child: Center(
                   child: Image.asset(
                     "images/${getRecipeTypeImage(recipePreview.vegetable)}.png",
-                    height: 35,
-                    width: 35,
+                    height: deviceWidth / 400 * 35,
+                    width: deviceWidth / 400 * 3535,
                     fit: BoxFit.scaleDown,
                   ),
                 ),
@@ -218,8 +227,8 @@ class RecipeCard extends StatelessWidget {
               ? Align(
                   alignment: Alignment(0.95, -0.95),
                   child: Container(
-                      height: 40,
-                      width: 40,
+                      height: deviceWidth / 400 * 40,
+                      width: deviceWidth / 400 * 40,
                       decoration: BoxDecoration(
                           color: Colors.pink[300],
                           borderRadius: BorderRadius.all(
@@ -228,7 +237,7 @@ class RecipeCard extends StatelessWidget {
                       child: Center(
                           child: Image.asset(
                         'images/heart.png',
-                        height: 25,
+                        height: deviceWidth / 400 * 25,
                       ))),
                 )
               : Container(),

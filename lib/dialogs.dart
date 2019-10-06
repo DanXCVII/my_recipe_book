@@ -64,9 +64,18 @@ class RoundDialogState extends State<RoundDialog>
 class RoundEdgeDialog extends StatefulWidget {
   final String title;
   final Widget bottomSection;
-  final Widget body;
 
-  RoundEdgeDialog({this.title, this.bottomSection, this.body});
+  /// if content is specified, the title and bottomSection
+  /// will be ignored and only content is shown
+  final Widget content;
+  final bool showButtonOk;
+
+  RoundEdgeDialog({
+    this.title,
+    this.bottomSection,
+    this.content,
+    this.showButtonOk,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -103,9 +112,10 @@ class RoundEdgeDialogState extends State<RoundEdgeDialog> {
           ),
         ],
       ),
-      child: widget.body != null
-          ? widget.body
+      child: widget.content != null
+          ? widget.content
           : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min, // To make the card compact
               children: <Widget>[
                 Text(
@@ -114,18 +124,24 @@ class RoundEdgeDialogState extends State<RoundEdgeDialog> {
                 ),
                 SizedBox(height: 16),
                 widget.bottomSection,
-                SizedBox(height: 8.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    FlatButton(
-                        child: Text(S.of(context).alright),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        })
-                  ],
-                )
-              ],
+                widget.showButtonOk == null || widget.showButtonOk == false
+                    ? null
+                    : SizedBox(height: 8.0),
+                widget.showButtonOk == null || widget.showButtonOk == false
+                    ? null
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          FlatButton(
+                              child: Text(S.of(context).alright),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              })
+                        ],
+                      )
+              ]..removeWhere((widget) {
+                  return widget == null ? true : false;
+                }),
             ),
     );
   }

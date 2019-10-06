@@ -29,10 +29,15 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
         index--;
         if (index % 2 == 0) {
           String currentCategory = (index / 2).floor() == 0
-              ? S.of(context).all_categories
+              ? 'all categories'
               : categoryNames[(index / 2).floor() - 1];
-          if (currentCategory == 'no category') {
-            currentCategory = S.of(context).no_category;
+          String categoryName;
+          if (currentCategory == 'all categories') {
+            categoryName = S.of(context).all_categories;
+          } else if (currentCategory == 'no category') {
+            categoryName = S.of(context).no_category;
+          } else {
+            categoryName = currentCategory;
           }
           return FlatButton(
             color: currentCategory == _selectedCategory ? Colors.brown : null,
@@ -42,10 +47,11 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
               setState(() {
                 rKeeper.swypingCardCategory = currentCategory;
                 _selectedCategory = currentCategory;
+
                 rKeeper.changeSwypeCardCategory(currentCategory);
               });
             },
-            child: Text(currentCategory),
+            child: Text(categoryName),
           );
         } else {
           return VerticalDivider();
@@ -111,6 +117,14 @@ class _SwypingCardsState extends State<SwypingCards>
 
   @override
   Widget build(BuildContext context) {
+    double maxHeight = MediaQuery.of(context).size.height - 200;
+    double maxWidth = maxHeight / 1.4;
+    if (maxWidth > MediaQuery.of(context).size.width * 0.9) {
+      maxWidth = MediaQuery.of(context).size.width * 0.9;
+    }
+    print('hallöööchen');
+    print(maxWidth);
+    print(MediaQuery.of(context).size.width * 0.9);
     return Container(
         height: MediaQuery.of(context).size.height,
         child: new TinderSwapCard(
@@ -119,13 +133,15 @@ class _SwypingCardsState extends State<SwypingCards>
             stackNum: 3,
             animDuration: 200,
             swipeEdge: 4.0,
-            maxWidth: MediaQuery.of(context).size.width * 0.9,
-            maxHeight: MediaQuery.of(context).size.height - 200,
-            minWidth: MediaQuery.of(context).size.width * 0.8,
-            minHeight: MediaQuery.of(context).size.height - 300,
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+            minWidth: maxWidth * 0.9,
+            minHeight: maxHeight - 100,
             cardBuilder: (context, index) => RecipeCardBig(
                   recipe: widget.recipes[index],
                   index: index,
+                  cardWidth: maxWidth,
+                  cardHeight: maxHeight,
                 ),
             cardController: controller = CardController(),
             swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {

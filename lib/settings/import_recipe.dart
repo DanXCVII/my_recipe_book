@@ -9,10 +9,10 @@ import '../database.dart';
 import '../recipe.dart';
 
 Future<void> importSingleMultipleRecipes(
-    RecipeKeeper rKeeper, String recipeZipPath) async {
+    RecipeKeeper rKeeper, File recipeZipPath) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
-  await exstractZip(File(recipeZipPath), importDir.path);
+  await exstractZip(recipeZipPath, importDir.path);
   List importFiles = importDir.listSync(recursive: true);
 
   bool importMulitiple = false;
@@ -34,16 +34,16 @@ Future<void> importRecipes(RecipeKeeper rKeeper, Directory importDir) async {
 
   for (FileSystemEntity f in importZips) {
     if (f.path.endsWith('.zip')) {
-      await importRecipe(rKeeper, f.path);
+      await importRecipe(rKeeper, File(f.path));
     }
   }
   await importDir.delete(recursive: true);
 }
 
-Future<void> importRecipe(RecipeKeeper rKeeper, String recipeZipPath) async {
+Future<void> importRecipe(RecipeKeeper rKeeper, File recipeZip) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
-  await exstractZip(File(recipeZipPath), importDir.path);
+  await exstractZip(recipeZip, importDir.path);
   List importFiles = importDir.listSync(recursive: true);
 
   Recipe importRecipe;
@@ -63,8 +63,10 @@ Future<void> importRecipe(RecipeKeeper rKeeper, String recipeZipPath) async {
 
   Directory importRecipeDir = Directory(
       await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name));
-  await Directory(await PathProvider.pP.getRecipeDir(importRecipe.name))
-      .delete(recursive: true);
+  String recipeDir = await PathProvider.pP.getRecipeDir(importRecipe.name);
+  if (Directory(recipeDir).existsSync()) {
+    await Directory(recipeDir).delete(recursive: true);
+  }
   await importRecipeDir
       .rename(await PathProvider.pP.getRecipeDir(importRecipe.name));
 
