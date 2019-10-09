@@ -272,16 +272,11 @@ class RecipeHozizontalList extends StatelessWidget {
 
 void _pushCategoryRoute(
     BuildContext context, String categoryName, int recipePreviewAmount) {
-  Random randomRecipe = new Random();
-
   Navigator.push(
     context,
     CupertinoPageRoute(
       builder: (BuildContext context) => new RecipeGridView(
         category: categoryName == null ? 'no category' : categoryName,
-        randomCategoryImage: recipePreviewAmount != 1
-            ? randomRecipe.nextInt(recipePreviewAmount)
-            : 0,
       ),
     ),
   );

@@ -1,4 +1,13 @@
 {
+  "the_data_is_YOURS": "Die Daten gehörten DIR",
+  "data_will_never_leave_your_device": "Deine Daten werden nie dein Gerät verlassen, wenn die es nicht explizit forderst.",
+  "choose_a_theme": "Wähle ein Theme",
+  "swype_your_recipes": "Wische durch deine Rezepte",
+  "if_you_cant_decide_random_recipe_explorer": "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte ;-)",
+  "multiple_devices_use_export_as_zip_etc": "exportiere als zip, zum Benutzen auf mehreren Geräten oder als Text, wenn die andere Person die App nicht besitzt.",
+  "add_to_shoppingcart": "Dem Einkaufswagen hinzufügen",
+  "for_more_relaxed_shopping_add_to_shoppingcart": "Für ein entspannteres Einkaufserlebnis kannst du die Zutaten der Rezepte deiner Einkaufsliste hinzufügen :-)",
+
   "recipes": "Rezepte",
   "nutritions": "Nährwerte",
   "delete_recipe": "Rezept löschen",
@@ -48,7 +57,7 @@
   "amnt": "Menge",
   "unit": "Einheit",
 
-  "non_vegetarian": "nicht vegetarisch",
+  "with_meat": "mit Fleisch",
   "vegetarian": "vegetarisch",
   "vegan": "vegan",
 
@@ -105,5 +114,9 @@
 
   "no_valid_number": "keine valide Nummber",
   "data_required": "darf nicht leer sein",
-  "not_required_eg_ingredients_of_sauce": "nicht verpflichtend (zB. Zutaten Sauce)"
+  "not_required_eg_ingredients_of_sauce": "nicht verpflichtend (zB. Zutaten Sauce)",
+
+  "you_already_have": "es gibt schon einen Eintrag",
+  "imported": "hinzugefügt",
+  "hide": "verbergen"
 }

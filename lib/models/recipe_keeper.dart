@@ -94,7 +94,6 @@ class RecipeKeeper extends Model {
   Future<void> updateNutritionOrder(List<String> names) async {
     _nutritions = names;
     notifyListeners();
-    print(names);
     await DBProvider.db.updateNutritionOrder(names);
   }
 
@@ -188,7 +187,6 @@ class RecipeKeeper extends Model {
   /// database and rKeeper
   Future<Recipe> modifyRecipe(Recipe oldRecipe, Recipe newRecipe,
       String recipeImage, bool hasFiles, bool addNutritions) async {
-    print(hasFiles);
     // modify (delete old save new) recipe in database
     await DBProvider.db.deleteRecipe(oldRecipe.name);
     await DBProvider.db.newRecipe(newRecipe, addNutritions);

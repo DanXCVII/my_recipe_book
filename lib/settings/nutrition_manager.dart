@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/add_nut_cat_dialog.dart';
+import 'package:my_recipe_book/dialogs/add_nut_cat_dialog.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
@@ -117,7 +117,7 @@ class _NutritionManagerState extends State<NutritionManager> {
                     secondaryBackground: _getSecondaryBackgroundDismissible(),
                     onDismissed: (_) {
                       nutritionsController.remove(nutritionName);
-                      rKeeper.removeNutrition(nutritionName);
+                      _showDeleteDialog(context, nutritionName);
                     },
                     child: _getNutritionListTile(
                         nutritionName, context, rKeeper, listTileKeys[i]),
@@ -128,6 +128,33 @@ class _NutritionManagerState extends State<NutritionManager> {
           );
         }
       }),
+    );
+  }
+
+  _showDeleteDialog(BuildContext context, String categoryName) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Text("Are you sure you want to delete this nutrition: $categoryName"),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('no'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          ScopedModelDescendant<RecipeKeeper>(
+            builder: (context, child, rKeeper) => FlatButton(
+              child: Text('yes'),
+              onPressed: () {
+                rKeeper.removeCategory(categoryName);
+                Navigator.pop(context);
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 

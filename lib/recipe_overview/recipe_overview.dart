@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/models/recipe.dart';
@@ -78,22 +79,37 @@ Map<String, List<Color>> colors = {
 
 class RecipeGridView extends StatelessWidget {
   final String category;
-  final int randomCategoryImage;
+  final List<RecipePreview> recipes;
+  final String title;
 
-  const RecipeGridView(
-      {this.category, @required this.randomCategoryImage, Key key})
-      : super(key: key);
+  /// Either specify the list of recipes or a recipecategory
+  /// Either specify the category or a title
+  const RecipeGridView({
+    this.category,
+    this.recipes,
+    this.title,
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double scaleFactor = MediaQuery.of(context).size.height/800;
+    double scaleFactor = MediaQuery.of(context).size.height / 800;
     return ScopedModelDescendant<RecipeKeeper>(
         builder: (context, child, model) {
-      List<RecipePreview> recipePreviews = model.getRecipesOfCategory(category);
+      List<RecipePreview> recipePreviews = [];
+      if (category != null) {
+        recipePreviews = model.getRecipesOfCategory(category);
+      } else {
+        recipePreviews = recipes;
+      }
+      Random r = Random();
+      int randomImage = recipePreviews.length != 1
+                ? r.nextInt(recipePreviews.length)
+                : 0;
 
       if (recipePreviews.isNotEmpty) {
         String sliverAppBarImagePath =
-            recipePreviews[randomCategoryImage].imagePreviewPath;
+            recipePreviews[randomImage].imagePreviewPath;
         return Scaffold(
           body: CustomScrollView(slivers: <Widget>[
             SliverAppBar(
@@ -109,12 +125,12 @@ class RecipeGridView extends StatelessWidget {
                   },
                 )
               ],
-              expandedHeight: scaleFactor*200.0,
+              expandedHeight: scaleFactor * 200.0,
               floating: false,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
                 centerTitle: true,
-                title: Text(category),
+                title: Text(category != null ? category : title),
                 background: Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(

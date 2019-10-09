@@ -118,7 +118,13 @@ flutter:
    - images/lock.png
    - images/dices.png
    - images/letter.png
+   
    - images/cuisine.jpg
+   - images/export.png
+   - images/bag.png
+   - images/shield.png
+   - images/cards.png
+   - images/theme.png
 
    - animations/writing_pen.flr
 

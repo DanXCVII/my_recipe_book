@@ -54,8 +54,7 @@ public class MainActivity extends FlutterActivity {
     }
 
     void handleFile(Intent intent) {
-        if (intent == null) {
-            sharedText = "intent is null";
+        if (intent == null || intent.getData() == null) {
             return;
         }
         Uri _uri = intent.getData();

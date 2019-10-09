@@ -151,7 +151,6 @@ class _IngredientSectionState extends State<IngredientSection> {
   @override
   void initState() {
     super.initState();
-    print(widget.ingredientNameController);
     for (int i = 0; i < widget.ingredientNameController.length; i++) {
       keys.add([]);
       for (int j = 0; j < widget.ingredientNameController[i].length; j++) {

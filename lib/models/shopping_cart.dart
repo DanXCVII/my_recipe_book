@@ -76,8 +76,6 @@ class ShoppingCartKeeper extends Model {
         }
       }
     }
-    print('recipename' +recipeName);
-    print(shoppingCart[recipeName]);
     return false;
   }
 

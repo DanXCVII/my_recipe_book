@@ -102,19 +102,26 @@ class MyThemes {
 
 class CustomThemeState extends State<CustomTheme> {
   ThemeData _theme;
+  MyThemeKeys _currentTheme;
 
   ThemeData get theme => _theme;
 
   @override
   void initState() {
+    _currentTheme = widget.initialThemeKey;
     _theme = MyThemes.getThemeFromKey(widget.initialThemeKey);
     super.initState();
   }
 
   void changeTheme(MyThemeKeys themeKey) {
     setState(() {
+      _currentTheme = themeKey;
       _theme = MyThemes.getThemeFromKey(themeKey);
     });
+  }
+
+  MyThemeKeys getCurrentTheme() {
+    return _currentTheme;
   }
 
   @override

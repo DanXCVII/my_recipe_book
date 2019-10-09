@@ -24,7 +24,7 @@ class Settings extends StatelessWidget {
           ScopedModelDescendant<RecipeKeeper>(
             builder: (context, child, model) => GestureDetector(
               onTap: () {
-                _importSingleRecipe(model).then((_) {});
+                _importSingleRecipe(model, context).then((_) {});
               },
               child: ListTile(
                 title: Text(S.of(context).import_recipe_s),
@@ -215,12 +215,13 @@ class Settings extends StatelessWidget {
     });
   }
 
-  Future<void> _importSingleRecipe(RecipeKeeper rKeeper) async {
+  Future<void> _importSingleRecipe(
+      RecipeKeeper rKeeper, BuildContext context) async {
     // Let the user select the .zip file
     String _path = await FilePicker.getFilePath(
         type: FileType.CUSTOM, fileExtension: 'zip');
     if (_path == null) return;
-    importSingleMultipleRecipes(rKeeper, File(_path));
+    importSingleMultipleRecipes(rKeeper, File(_path), context);
   }
 }
 

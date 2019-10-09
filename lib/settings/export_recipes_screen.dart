@@ -107,8 +107,6 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      elevation: 0.0,
-      backgroundColor: Theme.of(context).cardColor,
       child: Container(
         height: 90,
         child: Row(

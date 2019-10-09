@@ -60,7 +60,6 @@ class CategoryGridTile extends StatelessWidget {
               MaterialPageRoute(
                   builder: (BuildContext context) => RecipeGridView(
                         category: category,
-                        randomCategoryImage: rand,
                       )));
         },
         child: GridTile(

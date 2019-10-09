@@ -1,4 +1,15 @@
 {
+  "the_data_is_YOURS": "The data is YOURS",
+  "data_will_never_leave_your_device": "Your data will NEVER leave your device when you don’t explicitely intent it to.",
+  "choose_a_theme": "Choose a theme",
+  "swype_your_recipes": "Swype your recipes",
+  "if_you_cant_decide_random_recipe_explorer": "If you can’t decide what recipe to cook, use random recipe explorer ;-)",
+  "export_as_text_or_zip": "EXPORT as text or zip",
+  "multiple_devices_use_export_as_zip_etc": "export as zip for using them on multiple devices, OR as text for people who sadly don’t have the app installed.",
+  "add_to_shoppingcart": "Add to Shoppingcart",
+  "for_more_relaxed_shopping_add_to_shoppingcart": "you can add the ingredients of your recipe to your shoppingcart for more relaxed shopping.",
+
+
   "recipes": "recipes",
   "nutritions": "Nutritions",
   "delete_recipe": "delete recipe",
@@ -49,7 +60,7 @@
   "amnt": "amnt",
   "unit": "unit",
 
-  "non_vegetarian": "non vegetarian",
+  "with_meat": "with meat",
   "vegetarian": "vegetarian",
   "vegan": "vegan",
 
@@ -104,7 +115,9 @@
 
   "no_valid_number": "no valid number",
   "data_required": "data_required",
-  "not_required_eg_ingredients_of_sauce": "not required (e.g. ingredients of sauce)"
+  "not_required_eg_ingredients_of_sauce": "not required (e.g. ingredients of sauce)",
 
-
+  "you_already_have": "you already have",
+  "imported": "imported",
+  "hide": "hide"
 }

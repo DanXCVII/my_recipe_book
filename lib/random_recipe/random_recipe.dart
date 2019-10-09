@@ -122,9 +122,6 @@ class _SwypingCardsState extends State<SwypingCards>
     if (maxWidth > MediaQuery.of(context).size.width * 0.9) {
       maxWidth = MediaQuery.of(context).size.width * 0.9;
     }
-    print('hallöööchen');
-    print(maxWidth);
-    print(MediaQuery.of(context).size.width * 0.9);
     return Container(
         height: MediaQuery.of(context).size.height,
         child: new TinderSwapCard(

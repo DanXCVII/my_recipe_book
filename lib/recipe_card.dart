@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
@@ -37,7 +39,6 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
     double gridTileWidth = deviceWidth / (deviceWidth / 300.floor() + 1);
     return GestureDetector(
@@ -210,17 +211,22 @@ class RecipeCard extends StatelessWidget {
           ),
           Align(
               alignment: Alignment.bottomRight,
-              child: Container(
-                child: Center(
-                  child: Image.asset(
-                    "images/${getRecipeTypeImage(recipePreview.vegetable)}.png",
-                    height: deviceWidth / 400 * 35,
-                    width: deviceWidth / 400 * 3535,
-                    fit: BoxFit.scaleDown,
+              child: GestureDetector(
+                onTap: () {
+                  pushVegetableRoute(context);
+                },
+                child: Container(
+                  child: Center(
+                    child: Image.asset(
+                      "images/${getRecipeTypeImage(recipePreview.vegetable)}.png",
+                      height: deviceWidth / 400 * 35,
+                      width: deviceWidth / 400 * 3535,
+                      fit: BoxFit.scaleDown,
+                    ),
                   ),
+                  height: gridTileWidth / 3,
+                  width: gridTileWidth / 3,
                 ),
-                height: gridTileWidth / 3,
-                width: gridTileWidth / 3,
               )),
 
           recipePreview.isFavorite == true
@@ -252,6 +258,37 @@ class RecipeCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void pushVegetableRoute(BuildContext context) {
+    String title;
+    switch (recipePreview.vegetable) {
+      case Vegetable.NON_VEGETARIAN:
+        title = S.of(context).with_meat;
+        break;
+      case Vegetable.VEGETARIAN:
+        title = S.of(context).vegetarian;
+        break;
+      case Vegetable.VEGAN:
+        title = S.of(context).vegan;
+        break;
+      default:
+    }
+
+    DBProvider.db
+        .getRecipePreviewOfVegetable(recipePreview.vegetable)
+        .then((recipePreviews) {
+      Random r = new Random();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RecipeGridView(
+            recipes: recipePreviews,
+            title: title,
+          ),
+        ),
+      );
+    });
   }
 
   Color getRecipeTypeColor(Vegetable vegetable) {

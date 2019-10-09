@@ -135,13 +135,10 @@ class RecipeScreen extends StatelessWidget {
                         child: ListView.builder(
                           itemCount: recipe.nutritions.length * 2,
                           itemBuilder: (context, index) {
-                            print(recipe.nutritions.toString());
                             if ((index - 1) % 2 == 0) {
                               return Divider();
                             } else {
-                              print(index);
                               int nutritionIndex = (index / 2).round();
-                              print(nutritionIndex);
                               return ListTile(
                                 leading: Icon(GroovinMaterialIcons.gate_or,
                                     color: Colors.white),
@@ -685,7 +682,6 @@ class _CategoryCircleState extends State<CategoryCircle> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          Random rand = new Random();
           DBProvider.db
               .getRecipePreviewOfCategory(widget.categoryName)
               .then((r) {
@@ -696,8 +692,6 @@ class _CategoryCircleState extends State<CategoryCircle> {
                   category: widget.categoryName == null
                       ? 'no category'
                       : widget.categoryName,
-                  randomCategoryImage:
-                      r.length != 1 ? rand.nextInt(r.length) : 0,
                 ),
               ),
             );

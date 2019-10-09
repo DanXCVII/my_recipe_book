@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/dialogs/dialog_types.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
@@ -17,7 +17,6 @@ import './dummy_data.dart';
 import '../../recipe.dart';
 import './steps_section.dart';
 import './ingredients_section.dart';
-import '../../dialogs.dart';
 
 import './categories_section.dart';
 import './vegetarian_section.dart';
@@ -618,12 +617,20 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   void _showRecipeNameTakenDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => RoundEdgeDialog(
-        title: S.of(context).recipename_taken,
-        bottomSection: Text(
+      builder: (_) => AlertDialog(
+        title: Text(S.of(context).recipename_taken),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Text(
           S.of(context).recipename_taken_description,
         ),
-        showButtonOk: true,
+        actions: <Widget>[
+          FlatButton(
+            child: Text(S.of(context).alright),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
       ),
     );
   }
@@ -643,12 +650,20 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   void _showIngredientsIncompleteDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => RoundEdgeDialog(
-        title: S.of(context).check_ingredients_input,
-        bottomSection: Text(
+      builder: (_) => AlertDialog(
+        title: Text(S.of(context).check_ingredients_input),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Text(
           S.of(context).check_ingredients_input_description,
         ),
-        showButtonOk: true,
+        actions: <Widget>[
+          FlatButton(
+            child: Text(S.of(context).alright),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
       ),
     );
   }
@@ -656,11 +671,19 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   void _showIngredientsGlossaryIncomplete(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => RoundEdgeDialog(
-        title: S.of(context).check_ingredient_section_fields,
-        bottomSection:
+      builder: (_) => AlertDialog(
+        title: Text(S.of(context).check_ingredient_section_fields),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content:
             Text(S.of(context).check_ingredient_section_fields_description),
-        showButtonOk: true,
+        actions: <Widget>[
+          FlatButton(
+            child: Text(S.of(context).alright),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
       ),
     );
   }
@@ -668,12 +691,20 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
   void _showRequiredFieldsDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => RoundEdgeDialog(
-        title: S.of(context).check_filled_in_information,
-        bottomSection: Text(
+      builder: (_) => AlertDialog(
+        title: Text(S.of(context).check_filled_in_information),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Text(
           S.of(context).check_filled_in_information_description,
         ),
-        showButtonOk: true,
+        actions: <Widget>[
+          FlatButton(
+            child: Text(S.of(context).alright),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
       ),
     );
   }

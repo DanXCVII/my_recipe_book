@@ -47,24 +47,9 @@ class AddDialogState extends State<AddDialog> {
         borderRadius: BorderRadius.circular(Consts.padding),
       ),
       elevation: 0.0,
-      backgroundColor: Colors.transparent,
-      child: Container(
-        padding: EdgeInsets.all(
-          Consts.padding,
-        ),
-        margin: EdgeInsets.only(top: Consts.padding),
-        decoration: new BoxDecoration(
-          color: Theme.of(context).dialogBackgroundColor,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(Consts.padding),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10.0,
-              offset: const Offset(0.0, 10.0),
-            ),
-          ],
-        ),
+      backgroundColor: Theme.of(context).dialogBackgroundColor,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
         child: Form(
           key: _formKey,
           child: ScopedModelDescendant<RecipeKeeper>(

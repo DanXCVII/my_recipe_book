@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 
@@ -9,7 +12,7 @@ import '../database.dart';
 import '../recipe.dart';
 
 Future<void> importSingleMultipleRecipes(
-    RecipeKeeper rKeeper, File recipeZipPath) async {
+    RecipeKeeper rKeeper, File recipeZipPath, BuildContext context) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
   await exstractZip(recipeZipPath, importDir.path);
@@ -23,24 +26,26 @@ Future<void> importSingleMultipleRecipes(
     }
   }
   if (importMulitiple) {
-    importRecipes(rKeeper, importDir);
+    importRecipes(rKeeper, importDir, context);
   } else {
-    importRecipe(rKeeper, recipeZipPath);
+    importRecipe(rKeeper, recipeZipPath, context);
   }
 }
 
-Future<void> importRecipes(RecipeKeeper rKeeper, Directory importDir) async {
+Future<void> importRecipes(
+    RecipeKeeper rKeeper, Directory importDir, BuildContext context) async {
   List importZips = importDir.listSync(recursive: true);
 
   for (FileSystemEntity f in importZips) {
     if (f.path.endsWith('.zip')) {
-      await importRecipe(rKeeper, File(f.path));
+      await importRecipe(rKeeper, File(f.path), context);
     }
   }
   await importDir.delete(recursive: true);
 }
 
-Future<void> importRecipe(RecipeKeeper rKeeper, File recipeZip) async {
+Future<void> importRecipe(
+    RecipeKeeper rKeeper, File recipeZip, BuildContext context) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
   await exstractZip(recipeZip, importDir.path);
@@ -54,10 +59,13 @@ Future<void> importRecipe(RecipeKeeper rKeeper, File recipeZip) async {
       break;
     }
   }
+  /// TODO: add "not a valid import file, if no json file exists" maybe also
+  /// with try: catch block
   if (await DBProvider.db.doesRecipeExist(importRecipe.name)) {
     await Directory(
             await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
         .delete(recursive: true);
+    _showImportedRecipeToast(importRecipe.name, false, context);
     return;
   }
 
@@ -74,6 +82,21 @@ Future<void> importRecipe(RecipeKeeper rKeeper, File recipeZip) async {
   await Directory(
           await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
       .delete(recursive: true);
+  _showImportedRecipeToast(importRecipe.name, true, context);
+}
+
+_showImportedRecipeToast(
+    String recipeName, bool importSuccessfull, BuildContext context) {
+  final scaffold = Scaffold.of(context);
+  scaffold.hideCurrentSnackBar();
+  scaffold.showSnackBar(
+    SnackBar(
+      content: Text(
+          '${importSuccessfull ? S.of(context).imported : S.of(context).you_already_have} $recipeName'),
+      action: SnackBarAction(
+          label: S.of(context).hide, onPressed: scaffold.hideCurrentSnackBar),
+    ),
+  );
 }
 
 Future<Recipe> getRecipeFromJson(File jsonFile) async {

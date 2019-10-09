@@ -467,18 +467,22 @@ class DBProvider {
     }
 
     List<String> categories = [];
-    var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
+    var resCategories = await db.rawQuery(
+        'SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
-        'WHERE recipe_name= ?', [recipeName]);
+        'WHERE recipe_name= ?',
+        [recipeName]);
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
     }
 
     List<Nutrition> nutritions = [];
-    var resNutritions = await db.rawQuery('SELECT * FROM RecipeNutritions '
+    var resNutritions = await db.rawQuery(
+        'SELECT * FROM RecipeNutritions '
         'NATURAL INNER JOIN Nutrition '
         'WHERE recipe_name = ? '
-        'ORDER BY number ASC',[recipeName]);
+        'ORDER BY number ASC',
+        [recipeName]);
     for (int i = 0; i < resNutritions.length; i++) {
       nutritions.add(
         Nutrition(
@@ -597,9 +601,11 @@ class DBProvider {
     }
 
     List<String> categories = new List<String>();
-    var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
+    var resCategories = await db.rawQuery(
+        'SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
-        'WHERE recipe_name = ?', [recipeName]);
+        'WHERE recipe_name = ?',
+        [recipeName]);
     for (int i = 0; i < resCategories.length; i++) {
       categories.add(resCategories[i]['categoryName']);
     }
@@ -866,20 +872,41 @@ class DBProvider {
         where: 'categoryName = ?', whereArgs: [oldCatName]);
   }
 
+  Future<List<RecipePreview>> getRecipePreviewOfVegetable(
+      Vegetable vegetable) async {
+    final db = await database;
+
+    List<RecipePreview> recipes = [];
+
+    var resVegetable = await db.rawQuery(
+        'SELECT * FROM Recipe '
+        'WHERE vegetable = ?',
+        [vegetable.toString()]);
+
+    for (int i = 0; i < resVegetable.length; i++) {
+      recipes.add(
+          await getRecipePreviewByName(resVegetable[i]['recipe_name'], true));
+    }
+
+    return recipes;
+  }
+
   Future<List<RecipePreview>> getRecipePreviewOfCategory(
       String categoryName) async {
     final db = await database;
 
-    var resCategories = await db.rawQuery('SELECT * FROM RecipeCategories '
+    var resCategories = await db.rawQuery(
+        'SELECT * FROM RecipeCategories '
         'INNER JOIN Categories ON Categories.categoryName=RecipeCategories.categories_name '
-        'WHERE categoryName= ?', [categoryName]);
-    List<RecipePreview> output = new List<RecipePreview>();
+        'WHERE categoryName= ?',
+        [categoryName]);
+    List<RecipePreview> recipes = [];
     for (int i = 0; i < resCategories.length; i++) {
       RecipePreview newRecipe =
           await getRecipePreviewByName(resCategories[i]['recipe_name'], true);
-      output.add(newRecipe);
+      recipes.add(newRecipe);
     }
-    return output;
+    return recipes;
   }
 
 /*
@@ -966,8 +993,8 @@ class DBProvider {
     } else {
       newStatus = 0;
     }
-    await db.rawUpdate(
-        'UPDATE Recipe SET isFavorite = ? WHERE recipe_name= ?', [newStatus, recipeName]);
+    await db.rawUpdate('UPDATE Recipe SET isFavorite = ? WHERE recipe_name= ?',
+        [newStatus, recipeName]);
   }
 }
 

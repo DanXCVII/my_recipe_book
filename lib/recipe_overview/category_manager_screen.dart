@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/dialogs/add_nut_cat_dialog.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
-
-import '../add_nut_cat_dialog.dart';
 
 class CategoryManager extends StatelessWidget {
   @override
@@ -62,7 +61,7 @@ class CategoryManager extends StatelessWidget {
                 trailing: IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () {
-                    rKeeper.removeCategory(categoryName);
+                    _showDeleteDialog(context, categoryName);
                   },
                 ),
               );
@@ -71,6 +70,33 @@ class CategoryManager extends StatelessWidget {
           );
         }
       }),
+    );
+  }
+
+  _showDeleteDialog(BuildContext context, String categoryName) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Text("Are you sure you want to delete category: $categoryName"),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('no'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          ScopedModelDescendant<RecipeKeeper>(
+            builder: (context, child, rKeeper) => FlatButton(
+              child: Text('yes'),
+              onPressed: () {
+                rKeeper.removeCategory(categoryName);
+                Navigator.pop(context);
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 }

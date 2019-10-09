@@ -3,14 +3,11 @@ import 'dart:io';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:my_recipe_book/dialogs.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:my_recipe_book/settings/import_recipe.dart';
-import 'package:my_recipe_book/shopping_cart/shopping_cart_add_dialog.dart';
 import 'package:my_recipe_book/shopping_cart/shopping_cart_fancy.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'package:flutter/material.dart';
@@ -26,6 +23,8 @@ import 'package:my_recipe_book/settings/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 
+import 'dialogs/dialog_types.dart';
+import 'dialogs/shopping_cart_add_dialog.dart';
 import 'generated/i18n.dart';
 import 'models/recipe.dart';
 import 'recipe_overview/recipe_category_overview/r_category_overview.dart';
@@ -136,7 +135,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
     SystemChannels.lifecycle.setMessageHandler((msg) {
       if (msg.contains('resumed')) {
-        print('reeeeeeeeeeessssssssssummmmmmmd');
         initializeIntent();
       }
       return;
@@ -275,35 +273,26 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Widget getImportRecipeDialog(String importPath, RecipeKeeper rKeeper) {
-    return RoundEdgeDialog(
-      title: "import recipe",
-      bottomSection: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            'Do you want to import the recipe/s?',
-          ),
-          SizedBox(height: 24.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              FlatButton(
-                  child: Text("no"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              FlatButton(
-                child: Text("yes"),
-                onPressed: () {
-                  importSingleMultipleRecipes(rKeeper, File(importPath));
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          )
-        ],
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: Text("import recipe"),
+      content: Text(
+        'Do you want to import the recipe/s?',
       ),
+      actions: <Widget>[
+        FlatButton(
+            child: Text("no"),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+        FlatButton(
+          child: Text("yes"),
+          onPressed: () {
+            importSingleMultipleRecipes(rKeeper, File(importPath), context);
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 
@@ -332,7 +321,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     if (mpNavigator.index == 2 && mpNavigator.showFancyShoppingList) {
       return null;
     }
-    print(mpNavigator.index);
     return AppBar(
       title: Text(title),
       actions: <Widget>[
@@ -354,22 +342,10 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             });
           },
         ),
-        mpNavigator.index == 2
-            ? IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (_) =>
-                          RoundEdgeDialog(content: AddShoppingCartDialog()));
-                },
-              )
-            : null,
         ScopedModelDescendant<ShoppingCartKeeper>(
             builder: (context, child, model) => IconButton(
                   icon: Icon(Icons.adb),
                   onPressed: () {
-                    print('****************************');
                     model.addMulitpleIngredientsToCart('Zutat', [
                       Ingredient(name: 'Zutat', amount: 1, unit: 'g'),
                       Ingredient(name: 'Zutat2', amount: 2, unit: 'h')
@@ -473,7 +449,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         return Color(0xff43112F);
       }
     } else if (selectedIndex == 2) {
-      return Theme.of(context).backgroundColor;
+      return Theme.of(context).scaffoldBackgroundColor;
     }
     return Theme.of(context).scaffoldBackgroundColor;
   }
