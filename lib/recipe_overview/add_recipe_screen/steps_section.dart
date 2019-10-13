@@ -11,10 +11,10 @@ import "./add_recipe.dart";
 class Steps extends StatefulWidget {
   final List<TextEditingController> stepsDecriptionController;
   final List<List<String>> stepImages;
-  final String recipeName;
+  final String editRecipeName;
 
   Steps(this.stepsDecriptionController, this.stepImages,
-      {this.recipeName = 'tmp'});
+      {this.editRecipeName = 'tmp'});
 
   @override
   State<StatefulWidget> createState() {
@@ -45,7 +45,7 @@ class _StepsState extends State<Steps> {
         // i number of the section in the column
         i,
         i == widget.stepsDecriptionController.length - 1 ? true : false,
-        widget.stepImages, widget.recipeName,
+        widget.stepImages, widget.editRecipeName,
       ));
     }
     // add "add section" and "remove section" button to column
@@ -61,7 +61,7 @@ class _StepsState extends State<Steps> {
                       label: Text(S.of(context).remove_step),
                       onPressed: () {
                         removeStep(widget.stepsDecriptionController.length,
-                            widget.recipeName);
+                            widget.editRecipeName);
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0),
@@ -283,9 +283,10 @@ class _StepState extends State<Step> {
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     filled: true,
-                    hintText: S.of(context).description,
+                    labelText: S.of(context).description,
                   ),
-                  maxLines: null,
+                  minLines: 3,
+                  maxLines: 10,
                 ),
               ),
             ),

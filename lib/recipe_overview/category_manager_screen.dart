@@ -78,17 +78,18 @@ class CategoryManager extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        content: Text("Are you sure you want to delete category: $categoryName"),
+        content: Text(S.of(context).sure_you_want_to_delete_this_category +
+            " $categoryName"),
         actions: <Widget>[
           FlatButton(
-            child: Text('no'),
+            child: Text(S.of(context).no),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           ScopedModelDescendant<RecipeKeeper>(
             builder: (context, child, rKeeper) => FlatButton(
-              child: Text('yes'),
+              child: Text(S.of(context).yes),
               onPressed: () {
                 rKeeper.removeCategory(categoryName);
                 Navigator.pop(context);

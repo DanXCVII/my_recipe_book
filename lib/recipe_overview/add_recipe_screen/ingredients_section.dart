@@ -11,7 +11,10 @@ class Ingredients extends StatefulWidget {
   final List<TextEditingController> ingredientGlossary;
   final List<String> ingredientNames;
 
+  final TextEditingController servingsController;
+
   Ingredients(
+      this.servingsController,
       this.ingredientNameController,
       this.ingredientAmountController,
       this.ingredientUnitController,
@@ -31,6 +34,28 @@ class _IngredientsState extends State<Ingredients> {
     Column sections = new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 12, top: 22, bottom: 12, right: 200),
+          child: TextFormField(
+            validator: (value) {
+              if (validateNumber(value) == false) {
+                return S.of(context).no_valid_number;
+              }
+              if (value.isEmpty) {
+                return S.of(context).data_required;
+              }
+              return null;
+            },
+            controller: widget.servingsController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              filled: true,
+              labelText: S.of(context).servings + "*",
+              icon: Icon(Icons.local_dining),
+            ),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
           child: Text(
@@ -92,6 +117,7 @@ class _IngredientsState extends State<Ingredients> {
   }
 
   void updateAndRemoveController() {
+    print(widget.ingredientGlossary.length);
     setState(() {
       if (widget.ingredientGlossary.length > 1) {
         widget.ingredientGlossary.removeLast();
@@ -272,6 +298,7 @@ class _IngredientSectionState extends State<IngredientSection> {
               : null,
           OutlineButton.icon(
               icon: Icon(Icons.add_circle_outline),
+              
               label: Text(S.of(context).add_ingredient),
               onPressed: () {
                 setState(() {
@@ -294,6 +321,7 @@ class _IngredientSectionState extends State<IngredientSection> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.ingredientAmountController.length);
     Column _ingredients = Column(
       children: <Widget>[],
     );

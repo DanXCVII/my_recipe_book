@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
@@ -29,11 +29,13 @@ class RecipeCard extends StatelessWidget {
   final RecipePreview recipePreview;
   final Color shadow;
   final String heroImageTag;
+  final bool activateVegetableHero;
 
   const RecipeCard({
     this.recipePreview,
     @required this.shadow,
     @required this.heroImageTag,
+    this.activateVegetableHero = true,
     Key key,
   }) : super(key: key);
 
@@ -213,7 +215,8 @@ class RecipeCard extends StatelessWidget {
               alignment: Alignment.bottomRight,
               child: GestureDetector(
                 onTap: () {
-                  pushVegetableRoute(context);
+                  if (activateVegetableHero)
+                    pushVegetableRoute(context, recipePreview.vegetable);
                 },
                 child: Container(
                   child: Center(
@@ -260,37 +263,6 @@ class RecipeCard extends StatelessWidget {
     );
   }
 
-  void pushVegetableRoute(BuildContext context) {
-    String title;
-    switch (recipePreview.vegetable) {
-      case Vegetable.NON_VEGETARIAN:
-        title = S.of(context).with_meat;
-        break;
-      case Vegetable.VEGETARIAN:
-        title = S.of(context).vegetarian;
-        break;
-      case Vegetable.VEGAN:
-        title = S.of(context).vegan;
-        break;
-      default:
-    }
-
-    DBProvider.db
-        .getRecipePreviewOfVegetable(recipePreview.vegetable)
-        .then((recipePreviews) {
-      Random r = new Random();
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RecipeGridView(
-            recipes: recipePreviews,
-            title: title,
-          ),
-        ),
-      );
-    });
-  }
-
   Color getRecipeTypeColor(Vegetable vegetable) {
     switch (vegetable) {
       case Vegetable.NON_VEGETARIAN:
@@ -307,6 +279,35 @@ class RecipeCard extends StatelessWidget {
   /// returns the image for the icon which is displayed at the bottom left corner
   /// of the recipe depending on whether recipe is vegetarian, vegan, etc.
 
+}
+
+void pushVegetableRoute(BuildContext context, Vegetable vegetable) {
+  String title;
+  switch (vegetable) {
+    case Vegetable.NON_VEGETARIAN:
+      title = S.of(context).with_meat;
+      break;
+    case Vegetable.VEGETARIAN:
+      title = S.of(context).vegetarian;
+      break;
+    case Vegetable.VEGAN:
+      title = S.of(context).vegan;
+      break;
+    default:
+  }
+
+  DBProvider.db.getRecipePreviewOfVegetable(vegetable).then((recipePreviews) {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => RecipeGridView(
+          vegetableRoute: vegetable,
+          recipes: recipePreviews,
+          title: title,
+        ),
+      ),
+    );
+  });
 }
 
 String getRecipeTypeImage(Vegetable vegetable) {

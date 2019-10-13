@@ -6,7 +6,6 @@ import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'dart:math';
 import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../../database.dart';
@@ -97,9 +96,11 @@ class RecipeHozizontalList extends StatelessWidget {
   final List<RecipePreview> recipePreviews;
   final String categoryName;
 
-  const RecipeHozizontalList(
-      {@required this.categoryName, this.recipePreviews, Key key})
-      : super(key: key);
+  const RecipeHozizontalList({
+    @required this.categoryName,
+    this.recipePreviews,
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +115,7 @@ class RecipeHozizontalList extends StatelessWidget {
     }
 
     return Container(
-      height: 130,
+      height: 135,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: recipeCount + 1,

@@ -52,15 +52,23 @@ Future<void> importRecipe(
   List importFiles = importDir.listSync(recursive: true);
 
   Recipe importRecipe;
+  bool doesValidJsonFileExist = false;
   for (File file in importFiles) {
     if (file.path.endsWith('.json')) {
-      importRecipe = await getRecipeFromJson(file);
+      doesValidJsonFileExist = true;
+      try {
+        importRecipe = await getRecipeFromJson(file);
+      } catch (e) {
+        doesValidJsonFileExist = false;
+      }
       await file.delete();
       break;
     }
   }
-  /// TODO: add "not a valid import file, if no json file exists" maybe also
-  /// with try: catch block
+  if (!doesValidJsonFileExist) {
+    _showImportedRecipeToast(null, false, context);
+  }
+
   if (await DBProvider.db.doesRecipeExist(importRecipe.name)) {
     await Directory(
             await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
@@ -89,10 +97,18 @@ _showImportedRecipeToast(
     String recipeName, bool importSuccessfull, BuildContext context) {
   final scaffold = Scaffold.of(context);
   scaffold.hideCurrentSnackBar();
+
+  String snackbarMessage;
+  if (recipeName == null) {
+    snackbarMessage = S.of(context).no_valid_import_file;
+  } else if (!importSuccessfull) {
+    snackbarMessage = "${S.of(context).you_already_have}: $recipeName";
+  } else {
+    snackbarMessage = "${S.of(context).imported}: $recipeName";
+  }
   scaffold.showSnackBar(
     SnackBar(
-      content: Text(
-          '${importSuccessfull ? S.of(context).imported : S.of(context).you_already_have} $recipeName'),
+      content: Text(snackbarMessage),
       action: SnackBarAction(
           label: S.of(context).hide, onPressed: scaffold.hideCurrentSnackBar),
     ),

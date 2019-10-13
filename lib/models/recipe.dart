@@ -242,6 +242,10 @@ class CheckableIngredient {
   String toString() {
     return '$name $amount $unit $checked';
   }
+
+  Ingredient getIngredient() {
+    return Ingredient(name: name, amount: amount, unit: unit);
+  }
 }
 
 class RecipeCategory {

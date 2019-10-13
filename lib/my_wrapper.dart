@@ -19,7 +19,7 @@ class MyDoubleWrapper {
 }
 
 class MyVegetableWrapper {
-  Vegetable vegetableStatus;
+  Vegetable vegetableStatus = Vegetable.NON_VEGETARIAN;
 
   Vegetable getVegetableStatus() {
     return vegetableStatus;

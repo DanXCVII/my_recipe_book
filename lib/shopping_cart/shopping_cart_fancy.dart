@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/dialogs/dialog_types.dart';
 import 'package:my_recipe_book/dialogs/shopping_cart_add_dialog.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
@@ -118,10 +117,10 @@ class FancyShoppingCartScreen extends StatelessWidget {
       child: Center(
         child: Text(
           S.of(context).shopping_cart_is_empty,
-          textScaleFactor: deviceHeight / 800,
+        
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 26,
+            fontSize: 22,
             fontFamily: 'RibeyeMarrow',
           ),
         ),

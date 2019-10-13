@@ -28,21 +28,8 @@ class IntroScreen extends StatelessWidget {
       // List slides
       slides: [
         Slide(
-          title: S.of(context).the_data_is_YOURS,
-          colorBegin: Color(0xff7B7B7B),
-          colorEnd: Color(0xff252525),
-          styleTitle: titleStyle,
-          description:
-              S.of(context).data_will_never_leave_your_device,
-          styleDescription: descStyle,
-          pathImage: "images/shield.png",
-          widthImage: MediaQuery.of(context).size.width / 2,
-          heightImage: MediaQuery.of(context).size.height / 2.2,
-        ),
-        Slide(
           title: S.of(context).choose_a_theme,
           styleTitle: titleStyle.copyWith(color: Colors.black),
-          
           widgetDescription: Container(
             child: ThemeSelector(
               initialTheme: _initialTheme,
@@ -57,8 +44,7 @@ class IntroScreen extends StatelessWidget {
         Slide(
           title: S.of(context).swype_your_recipes,
           styleTitle: titleStyle,
-          description:
-              S.of(context).if_you_cant_decide_random_recipe_explorer,
+          description: S.of(context).if_you_cant_decide_random_recipe_explorer,
           styleDescription: descStyle,
           pathImage: "images/cards.png",
           colorBegin: Color(0xffE0CD1C),
@@ -69,8 +55,7 @@ class IntroScreen extends StatelessWidget {
         Slide(
           title: S.of(context).export_as_text_or_zip,
           styleTitle: titleStyle,
-          description:
-              S.of(context).multiple_devices_use_export_as_zip_etc,
+          description: S.of(context).multiple_devices_use_export_as_zip_etc,
           styleDescription: descStyle,
           heightImage: MediaQuery.of(context).size.height / 2.2,
           pathImage: "images/export.png",
@@ -88,6 +73,17 @@ class IntroScreen extends StatelessWidget {
           widthImage: MediaQuery.of(context).size.width / 2,
           heightImage: MediaQuery.of(context).size.height / 3,
           pathImage: "images/bag.png",
+        ),
+        Slide(
+          title: S.of(context).the_data_is_YOURS,
+          colorBegin: Color(0xff7B7B7B),
+          colorEnd: Color(0xff252525),
+          styleTitle: titleStyle,
+          description: S.of(context).data_will_never_leave_your_device,
+          styleDescription: descStyle,
+          pathImage: "images/shield.png",
+          widthImage: MediaQuery.of(context).size.width / 2,
+          heightImage: MediaQuery.of(context).size.height / 2.2,
         ),
       ],
       onDonePress: () {
@@ -180,9 +176,9 @@ class _ThemeSelectorState extends State<ThemeSelector> {
   }
 
   _handleValueChange(MyThemeKeys value, BuildContext context) {
-    MyThemeKeys key;
-    CustomTheme.instanceOf(context).changeTheme(key);
-
+    CustomTheme.instanceOf(context).changeTheme(value);
+    print(value.toString());
+    
     setState(() {
       _selectedTheme = value;
     });

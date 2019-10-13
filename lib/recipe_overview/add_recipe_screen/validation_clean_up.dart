@@ -20,6 +20,43 @@ class RecipeValidator {
 
   RecipeValidator._internal();
 
+  Validator validateIngredientsData(
+    GlobalKey<FormState> formKey,
+    List<List<TextEditingController>> ingredientNameController,
+    List<List<TextEditingController>> ingredientAmountController,
+    List<List<TextEditingController>> ingredientUnitController,
+    List<TextEditingController> ingredientGlossaryController,
+  ) {
+    if (!formKey.currentState.validate())
+      return Validator.REQUIRED_FIELDS;
+    else if (!_isIngredientListValid(
+      ingredientNameController,
+      ingredientAmountController,
+      ingredientUnitController,
+    ))
+      return Validator.INGREDIENTS_NOT_VALID;
+    else if (!_isGlossaryValid(
+      ingredientNameController,
+      ingredientAmountController,
+      ingredientUnitController,
+      ingredientGlossaryController,
+    ))
+      return Validator.GLOSSARY_NOT_VALID;
+    else {
+      return Validator.VALID;
+    }
+  }
+
+  Future<Validator> validateGeneralInfo(GlobalKey<FormState> formKey,
+      bool editingRecipe, String recipeName) async {
+    if (!formKey.currentState.validate())
+      return Validator.REQUIRED_FIELDS;
+    else if (!editingRecipe && await DBProvider.db.doesRecipeExist(recipeName))
+      return Validator.NAME_TAKEN;
+    else
+      return Validator.VALID;
+  }
+
   Future<Validator> validateForm(
     GlobalKey<FormState> formKey,
     List<List<TextEditingController>> ingredientNameController,
@@ -55,14 +92,13 @@ class RecipeValidator {
     List<List<TextEditingController>> amount,
     List<List<TextEditingController>> unit,
   ) {
-    int validator = 0;
     for (int i = 0; i < ingredients.length; i++) {
       for (int j = 0; j < ingredients[i].length; j++) {
-        validator = 0;
-        if (ingredients[i][j].text == "") validator++;
-        if (amount[i][j].text == "") validator++;
-        if (unit[i][j].text == "") validator++;
-        if (validator == 1 || validator == 2) return false;
+        if (ingredients[i][j].text == "") {
+          if (amount[i][j].text != "" || unit[i][j].text != "") return false;
+        } else {
+          if (amount[i][j].text == "" && unit[i][j].text != "") return false;
+        }
       }
     }
     return true;
@@ -120,22 +156,25 @@ List<List<Ingredient>> getCleanIngredientData(
     }
   }
 
-  List<List<double>> ingredientsAmount = new List<List<double>>();
+  List<List<double>> ingredientsAmount = [[]];
   for (int i = 0; i < amount.length; i++) {
     ingredientsAmount.add(new List<double>());
     for (int j = 0; j < amount[i].length; j++) {
-      String addValue = "-1";
-      if (amount[i][j].text != "") addValue = amount[i][j].text;
-      ingredientsAmount[i]
-          .add(double.parse(addValue.replaceAll(new RegExp(r','), 'e')));
+      if (amount[i][j].text != "") {
+        String addValue = amount[i][j].text;
+        ingredientsAmount[i]
+            .add(double.parse(addValue.replaceAll(new RegExp(r','), 'e')));
+      } else {
+        ingredientsAmount[i].add(null);
+      }
     }
   }
 
-  List<List<String>> ingredientsUnit = new List<List<String>>();
+  List<List<String>> ingredientsUnit = [[]];
   for (int i = 0; i < unit.length; i++) {
     ingredientsUnit.add(new List<String>());
     for (int j = 0; j < unit[i].length; j++) {
-      ingredientsUnit[i].add(unit[i][j].text);
+      ingredientsUnit[i].add(unit[i][j].text == "" ? null : unit[i][j].text);
     }
   }
 
@@ -157,11 +196,11 @@ List<List<Ingredient>> getCleanIngredientData(
     for (int j = 0; j < cleanIngredientsData[i].length; j++) {
       // remove leading and trailing white spaces
       cleanIngredientsData[i][j].name = cleanIngredientsData[i][j].name.trim();
-      cleanIngredientsData[i][j].unit = cleanIngredientsData[i][j].unit.trim();
+      if (cleanIngredientsData[i][j].unit != null)
+        cleanIngredientsData[i][j].unit =
+            cleanIngredientsData[i][j].unit.trim();
       // remove all ingredients from the list, when all three fields are empty
-      if (cleanIngredientsData[i][j].name == "" &&
-          cleanIngredientsData[i][j].amount == -1 &&
-          cleanIngredientsData[i][j].unit == "") {
+      if (cleanIngredientsData[i][j].name == "") {
         cleanIngredientsData[i].removeAt(j);
       }
     }

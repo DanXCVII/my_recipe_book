@@ -107,27 +107,32 @@ class RecipeCardBig extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: <Widget>[
-                                  Padding(
+                                  Container(
+                                    width: cardWidth - 130,
                                     padding: EdgeInsets.all(scaleFactor * 12.0),
-                                    child: Container(
-                                      width: cardWidth - 130,
-                                      child: Text(
-                                        recipe.name,
-                                        textScaleFactor: scaleFactor,
-                                        style: TextStyle(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                    child: Text(
+                                      recipe.name,
+                                      maxLines: 3,
+                                      textScaleFactor: scaleFactor,
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(scaleFactor * 12.0),
-                                    child: Image.asset(
-                                      "images/${getRecipeTypeImage(recipe.vegetable)}.png",
-                                      height: scaleFactor * 35,
-                                      width: scaleFactor * 35,
-                                      fit: BoxFit.scaleDown,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        pushVegetableRoute(
+                                            context, recipe.vegetable);
+                                      },
+                                      child: Image.asset(
+                                        "images/${getRecipeTypeImage(recipe.vegetable)}.png",
+                                        height: scaleFactor * 35,
+                                        width: scaleFactor * 35,
+                                        fit: BoxFit.scaleDown,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -329,35 +334,53 @@ class RecipeCardBig extends StatelessWidget {
       for (int i = 0; i < displayAmount / 2.floor(); i++) {
         leftIngredientColumn.children.add(Text(
           flatIngredients[i].name,
+          maxLines: 1,
           textScaleFactor: scaleFactor,
           style: ingredientsStyle,
         ));
-        leftIngredAmountColumn.children.add(Text(
-          flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
-          textScaleFactor: scaleFactor,
-          style: ingredientsStyle,
-        ));
+        if (flatIngredients[i].amount != null) {
+          leftIngredAmountColumn.children.add(Text(
+            cutDouble(flatIngredients[i].amount) +
+                ' ' +
+                (flatIngredients[i].unit != null
+                    ? flatIngredients[i].unit
+                    : ''),
+            maxLines: 1,
+            textScaleFactor: scaleFactor,
+            style: ingredientsStyle,
+          ));
+        } else {
+          leftIngredAmountColumn.children.add(Text(""));
+        }
       }
       for (int i = (displayAmount / 2).floor(); i < displayAmount; i++) {
         rightIngredientColumn.children.add(Text(
           flatIngredients[i].name,
+          maxLines: 1,
           textScaleFactor: scaleFactor,
           style: ingredientsStyle,
         ));
-        rightIngredAmountColumn.children.add(Text(
-          flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
-          textScaleFactor: scaleFactor,
-          style: ingredientsStyle,
-        ));
+        if (flatIngredients[i].amount != null) {
+          rightIngredAmountColumn.children.add(Text(
+            cutDouble(flatIngredients[i].amount) +
+                ' ' +
+                (flatIngredients[i].unit != null
+                    ? flatIngredients[i].unit
+                    : ''),
+            maxLines: 1,
+            textScaleFactor: scaleFactor,
+            style: ingredientsStyle,
+          ));
+        } else {
+          rightIngredAmountColumn.children.add(Text(""));
+        }
       }
       return Row(
         children: <Widget>[
-          leftIngredientColumn,
-          Spacer(),
+          Expanded(child: leftIngredientColumn),
           leftIngredAmountColumn,
           SizedBox(width: 5),
-          rightIngredientColumn,
-          Spacer(),
+          Expanded(child: rightIngredientColumn),
           rightIngredAmountColumn,
         ],
       );
@@ -365,18 +388,27 @@ class RecipeCardBig extends StatelessWidget {
       for (int i = 0; i < displayAmount; i++) {
         leftIngredientColumn.children.add(Text(
           flatIngredients[i].name,
+          maxLines: 1,
           textScaleFactor: scaleFactor,
           style: ingredientsStyle,
         ));
-        leftIngredAmountColumn.children.add(Text(
-          flatIngredients[i].amount.toString() + ' ' + flatIngredients[i].unit,
-          textScaleFactor: scaleFactor,
-          style: ingredientsStyle,
-        ));
+        if (flatIngredients[i].amount != null) {
+          leftIngredAmountColumn.children.add(Text(
+            cutDouble(flatIngredients[i].amount) +
+                ' ' +
+                (flatIngredients[i].unit != null
+                    ? flatIngredients[i].unit
+                    : ''),
+            maxLines: 1,
+            textScaleFactor: scaleFactor,
+            style: ingredientsStyle,
+          ));
+        } else {
+          leftIngredAmountColumn.children.add(Text(""));
+        }
       }
       return Row(children: <Widget>[
-        leftIngredientColumn,
-        Spacer(),
+        Expanded(child: leftIngredientColumn),
         leftIngredAmountColumn
       ]);
     }

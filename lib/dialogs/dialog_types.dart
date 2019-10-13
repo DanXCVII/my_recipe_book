@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
 class RoundDialog extends StatefulWidget {
   final Widget childWidget;

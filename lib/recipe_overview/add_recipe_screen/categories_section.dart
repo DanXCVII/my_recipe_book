@@ -5,7 +5,6 @@ import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
-
 class Consts {
   Consts._();
 
@@ -65,25 +64,23 @@ class _CategorySectionState extends State<CategorySection> {
               ],
             )),
         // category chips
-        Padding(
+        Container(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Container(
-            child: ScopedModelDescendant<RecipeKeeper>(
-                builder: (context, child, model) {
-              List<String> categories = model.categories;
-              return Wrap(
-                spacing: 5.0,
-                runSpacing: 3.0,
-                children: categories.map((category) {
-                  return MyCategoryFilterChip(
-                    chipName: category,
-                    recipeCategories: widget.recipeCategories,
-                  );
-                }).toList()
-                  ..removeLast(),
-              );
-            }),
-          ),
+          child: ScopedModelDescendant<RecipeKeeper>(
+              builder: (context, child, model) {
+            List<String> categories = model.categories;
+            return Wrap(
+              spacing: 5.0,
+              runSpacing: 3.0,
+              children: categories.map((category) {
+                return MyCategoryFilterChip(
+                  chipName: category,
+                  recipeCategories: widget.recipeCategories,
+                );
+              }).toList()
+                ..removeLast(),
+            );
+          }),
         )
       ],
     );

@@ -69,8 +69,16 @@ class ShoppingCartKeeper extends Model {
   bool checkForRecipeIngredient(String recipeName, Ingredient ingredient) {
     if (shoppingCart[recipeName] != null) {
       for (CheckableIngredient i in _shoppingCart[recipeName]) {
+        if (i.amount == null &&
+            ingredient.amount == null &&
+            i.name.compareTo(ingredient.name) == 0) {
+          return true;
+        }
         if (i.name.compareTo(ingredient.name) == 0 &&
-            i.unit.compareTo(ingredient.unit) == 0 &&
+            ((i.unit != null &&
+                    ingredient.unit != null &&
+                    i.unit.compareTo(ingredient.unit) == 0) ||
+                (i.unit == null && ingredient.unit == null)) &&
             i.amount >= ingredient.amount) {
           return true;
         }
@@ -119,10 +127,14 @@ class ShoppingCartKeeper extends Model {
       _shoppingCart[recipeName].remove(removeIngred);
 
       var summaryIngred = _getSuitingIngredientRecipe(ingredient, 'summary');
-      if (summaryIngred.amount - removeAmount <= 0) {
-        _shoppingCart['summary'].remove(summaryIngred);
+      if (summaryIngred.amount != null && removeAmount != null) {
+        if (summaryIngred.amount - removeAmount <= 0) {
+          _shoppingCart['summary'].remove(summaryIngred);
+        } else {
+          summaryIngred.amount -= removeAmount;
+        }
       } else {
-        summaryIngred.amount -= removeAmount;
+        _shoppingCart['summary'].remove(summaryIngred);
       }
     } else {
       for (String r in _shoppingCart.keys) {
@@ -146,10 +158,7 @@ class ShoppingCartKeeper extends Model {
   /// if necessary
   Future<void> checkIngredient(
       String recipeName, CheckableIngredient ingredient) async {
-    Ingredient passedIngredient = Ingredient(
-        name: ingredient.name,
-        amount: ingredient.amount,
-        unit: ingredient.unit);
+    Ingredient passedIngredient = ingredient.getIngredient();
 
     _getSuitingIngredientRecipe(passedIngredient, recipeName).checked =
         ingredient.checked;
@@ -206,10 +215,12 @@ class ShoppingCartKeeper extends Model {
         recipeName: [CheckableIngredient(ingredient)]
       });
     } else {
-      if (_getSuitingIngredientRecipe(ingredient, recipeName) != null) {
-        _getSuitingIngredientRecipe(ingredient, recipeName)
-          ..amount += ingredient.amount
-          ..checked = false;
+      var modifyIngred = _getSuitingIngredientRecipe(ingredient, recipeName);
+      if (modifyIngred != null) {
+        if (modifyIngred.amount != null) {
+          modifyIngred.amount += ingredient.amount;
+        }
+        modifyIngred.checked = false;
       } else {
         _shoppingCart[recipeName].add(CheckableIngredient(ingredient));
       }
@@ -223,8 +234,7 @@ class ShoppingCartKeeper extends Model {
   CheckableIngredient _getSuitingIngredientRecipe(
       Ingredient ingredient, String recipeName) {
     for (CheckableIngredient i in _shoppingCart[recipeName]) {
-      if (i.name.compareTo(ingredient.name) == 0 &&
-          i.unit.compareTo(ingredient.unit) == 0) {
+      if (isSameIngredient(ingredient, i.getIngredient())) {
         return i;
       }
     }
@@ -239,20 +249,28 @@ class ShoppingCartKeeper extends Model {
     for (String r in _recipes) {
       for (CheckableIngredient i in _shoppingCart[r]) {
         if (checked == null) {
-          if (i.name.compareTo(ingredient.name) == 0 &&
-              i.unit.compareTo(ingredient.unit) == 0) {
+          if (isSameIngredient(ingredient, i.getIngredient())) {
             suitedIngredients.add(i);
           }
         } else {
-          if (i.name.compareTo(ingredient.name) == 0 &&
-              i.unit.compareTo(ingredient.unit) == 0 &&
-              i.checked == checked) {
+          if (isSameIngredient(ingredient, i.getIngredient()) &&
+              checked == i.checked) {
             suitedIngredients.add(i);
           }
         }
       }
     }
     return suitedIngredients;
+  }
+
+  bool isSameIngredient(Ingredient ingredientOne, Ingredient ingredientTwo) {
+    return (ingredientOne.name.compareTo(ingredientTwo.name) == 0 &&
+        ((ingredientOne.amount != null && ingredientTwo.amount != null) ||
+            (ingredientOne.amount == null && ingredientTwo.amount == null)) &&
+        ((ingredientOne.unit == null && ingredientTwo.unit == null) ||
+            (ingredientOne.unit != null &&
+                ingredientTwo.unit != null &&
+                ingredientOne.unit.compareTo(ingredientTwo.unit) == 0)));
   }
 
   get recipes => _recipes;

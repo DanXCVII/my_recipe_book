@@ -21,6 +21,23 @@ class Settings extends StatelessWidget {
     return Container(
       child: ListView(
         children: <Widget>[
+          Divider(),
+          ListTile(
+              title: Text(S.of(context).manage_nutritions),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ScopedModelDescendant<RecipeKeeper>(
+                      builder: (context, child, rKeeper) => NutritionManager(
+                        false,
+                        nutritions: rKeeper.nutritions,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+          Divider(),
           ScopedModelDescendant<RecipeKeeper>(
             builder: (context, child, model) => GestureDetector(
               onTap: () {
@@ -158,22 +175,6 @@ class Settings extends StatelessWidget {
             },
           ),
           Divider(),
-          ListTile(
-              title: Text(S.of(context).manage_nutritions),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ScopedModelDescendant<RecipeKeeper>(
-                      builder: (context, child, rKeeper) => NutritionManager(
-                        false,
-                        nutritions: rKeeper.nutritions,
-                      ),
-                    ),
-                  ),
-                );
-              }),
-          Divider(),
           ListTile(title: Text(S.of(context).about_me)),
           Divider(),
           ListTile(title: Text(S.of(context).rate_app)),
@@ -194,21 +195,59 @@ class Settings extends StatelessWidget {
             child: IntroScreen())));
   }
 
-  void _changeTheme(BuildContext buildContext, MyThemeKeys key) {
-    CustomTheme.instanceOf(buildContext).changeTheme(key);
+  void _changeTheme(BuildContext context, MyThemeKeys key) {
+    CustomTheme.instanceOf(context).changeTheme(key);
+    final scaffold = Scaffold.of(context);
+    scaffold.hideCurrentSnackBar();
     SharedPreferences.getInstance().then((prefs) {
       switch (key) {
         case MyThemeKeys.AUTOMATIC:
           prefs.setInt('theme', 0);
+          scaffold.showSnackBar(
+            SnackBar(
+              content: Text(S.of(context).snackbar_automatic_theme_applied),
+              action: SnackBarAction(
+                label: S.of(context).dismiss,
+                onPressed: scaffold.hideCurrentSnackBar,
+              ),
+            ),
+          );
           return;
         case MyThemeKeys.LIGHT:
           prefs.setInt('theme', 1);
+          scaffold.showSnackBar(
+            SnackBar(
+              content: Text(S.of(context).snackbar_bright_theme_applied),
+              action: SnackBarAction(
+                label: S.of(context).dismiss,
+                onPressed: scaffold.hideCurrentSnackBar,
+              ),
+            ),
+          );
           return;
         case MyThemeKeys.DARK:
           prefs.setInt('theme', 2);
+          scaffold.showSnackBar(
+            SnackBar(
+              content: Text(S.of(context).snackbar_dark_theme_applied),
+              action: SnackBarAction(
+                label: S.of(context).dismiss,
+                onPressed: scaffold.hideCurrentSnackBar,
+              ),
+            ),
+          );
           return;
         case MyThemeKeys.OLEDBLACK:
           prefs.setInt('theme', 3);
+          scaffold.showSnackBar(
+            SnackBar(
+              content: Text(S.of(context).snackbar_midnight_theme_applied),
+              action: SnackBarAction(
+                label: S.of(context).dismiss,
+                onPressed: scaffold.hideCurrentSnackBar,
+              ),
+            ),
+          );
           return;
         default:
       }

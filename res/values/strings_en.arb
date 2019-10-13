@@ -21,6 +21,7 @@
   "remove_ingredient": "remove ingredient",
   "remove_step": "remove step",
   "export_zip": "export as zip",
+  "export_text": "export as text",
   "edit": "edit",
 
   "shoppingcart": "shoppingcart",
@@ -102,7 +103,7 @@
   "recipename_taken" : "recipename taken",
   "recipename_taken_description": "change the recipename to something more detailed or maybe you just forgot, that you already saved this recipe :)",
   "check_ingredients_input": "check your ingredients input",
-  "check_ingredients_input_description": "it seems to be that you have only partially filled out the data for the ingredients. Please correct that :)",
+  "check_ingredients_input_description": "it seems like your ingredients information aren't filled out correctly. They must be filled in like the following: \n- every ingredient must have a name\n- every ingredient with a unit must also have an amount",
   "check_ingredient_section_fields": "check your ingredients section fields.",
   "check_ingredient_section_fields_description": "if you have multiple sections, you need to provide a title for each section.",
   "check_filled_in_information": "Check filled in information",
@@ -119,5 +120,18 @@
 
   "you_already_have": "you already have",
   "imported": "imported",
-  "hide": "hide"
+  "no_valid_import_file": "no valid importfile",
+  "hide": "hide",
+
+  "sure_you_want_to_delete_this_nutrition": "Are you sure you want to delete this nutrition:",
+  "sure_you_want_to_delete_this_category": "Are you sure you want to delete this category:",
+
+  "no": "no",
+  "yes": "ja",
+  "dismiss": "verbergen",
+
+  "snackbar_automatic_theme_applied": "if supported, theme will be applied, when restarting the app :)",
+  "snackbar_bright_theme_applied": "bright theme applied",
+  "snackbar_dark_theme_applied": "dark theme applied",
+  "snackbar_midnight_theme_applied": "midnight theme applied"
 }

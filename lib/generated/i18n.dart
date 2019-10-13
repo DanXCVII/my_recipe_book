@@ -43,7 +43,7 @@ class S implements WidgetsLocalizations {
   String get check_ingredient_section_fields => "check your ingredients section fields.";
   String get check_ingredient_section_fields_description => "if you have multiple sections, you need to provide a title for each section.";
   String get check_ingredients_input => "check your ingredients input";
-  String get check_ingredients_input_description => "it seems to be that you have only partially filled out the data for the ingredients. Please correct that :)";
+  String get check_ingredients_input_description => "it seems like your ingredients information aren't filled out correctly. They must be filled in like the following: \n- every ingredient must have a name\n- every ingredient with a unit must also have an amount";
   String get choose_a_theme => "Choose a theme";
   String get complexity => "complexity";
   String get complexity_effort => "complexity/effort";
@@ -54,11 +54,13 @@ class S implements WidgetsLocalizations {
   String get delete_recipe => "delete recipe";
   String get description => "description";
   String get directions => "Directions";
+  String get dismiss => "verbergen";
   String get edit => "edit";
   String get effort => "effort";
   String get explore => "explore";
   String get export_as_text_or_zip => "EXPORT as text or zip";
   String get export_recipe_s => "export recipe's";
+  String get export_text => "export as text";
   String get export_zip => "export as zip";
   String get exporting_recipe => "exporting recipe";
   String get favorites => "favorites";
@@ -76,10 +78,12 @@ class S implements WidgetsLocalizations {
   String get manage_nutritions => "manage nutritions";
   String get multiple_devices_use_export_as_zip_etc => "export as zip for using them on multiple devices, OR as text for people who sadly don’t have the app installed.";
   String get name => "name";
+  String get no => "no";
   String get no_added_favorites_yet => "You haven't added any favorites yet";
   String get no_category => "no category";
   String get no_recipes_to_search_through => "you have no recipes to search through";
   String get no_recipes_under_this_category => "You have no recipes under this category";
+  String get no_valid_import_file => "no valid importfile";
   String get no_valid_number => "no valid number";
   String get not_required_eg_ingredients_of_sauce => "not required (e.g. ingredients of sauce)";
   String get notes => "Notes";
@@ -106,7 +110,13 @@ class S implements WidgetsLocalizations {
   String get shopping_cart_is_empty => "Your shoppingcart is empty";
   String get shopping_list => "shopping list";
   String get shoppingcart => "shoppingcart";
+  String get snackbar_automatic_theme_applied => "if supported, theme will be applied, when restarting the app :)";
+  String get snackbar_bright_theme_applied => "bright theme applied";
+  String get snackbar_dark_theme_applied => "dark theme applied";
+  String get snackbar_midnight_theme_applied => "midnight theme applied";
   String get steps => "steps";
+  String get sure_you_want_to_delete_this_category => "Are you sure you want to delete this category:";
+  String get sure_you_want_to_delete_this_nutrition => "Are you sure you want to delete this nutrition:";
   String get switch_shopping_cart_look => "switch shopping cart look";
   String get switch_theme => "switch theme";
   String get swype_your_recipes => "Swype your recipes";
@@ -117,6 +127,7 @@ class S implements WidgetsLocalizations {
   String get vegetarian => "vegetarian";
   String get view_intro => "view intro";
   String get with_meat => "with meat";
+  String get yes => "ja";
   String get you_already_have => "you already have";
   String get you_have_no_categories => "you have no categories";
   String get you_have_no_nutritions => "you have no nutritions";
@@ -174,6 +185,8 @@ class $de extends S {
   @override
   String get select_subcategories => "Unterkategorien auswählen";
   @override
+  String get dismiss => "verbergen";
+  @override
   String get alright => "Alles klar!";
   @override
   String get remove_section => "Bereich entfernen";
@@ -200,6 +213,8 @@ class $de extends S {
   @override
   String get manage_nutritions => "Nährwerte verwalten";
   @override
+  String get sure_you_want_to_delete_this_category => "Bist du dir sicher, dass du diese Kategorie löschen willst: ";
+  @override
   String get complexity_effort => "Aufwand";
   @override
   String get add_section => "Bereich hinzufügen";
@@ -210,7 +225,9 @@ class $de extends S {
   @override
   String get categories => "Kategorien";
   @override
-  String get check_ingredients_input_description => "Es scheint so, als wenn die Zutatenliste an mindestens einer Stelle nur teilweise ausgefüllt ist. Bitte ändere dies, um das Rezept zu speichern.";
+  String get check_ingredients_input_description => "Die Zutatenliste ist nicht korrekt ausgefüllt. Sie muss foldendermaßen ausgefüllt werden: \n- Jede Zutat muss einen Namen haben \n- Wenn füre eine Zutat die Einheit angegeben ist, muss auch die Menge angegeben sein";
+  @override
+  String get no_valid_import_file => "keine gültige import-Datei";
   @override
   String get switch_shopping_cart_look => "Einkaufwagenansicht ändern";
   @override
@@ -264,6 +281,8 @@ class $de extends S {
   @override
   String get settings => "Einstellungen";
   @override
+  String get snackbar_midnight_theme_applied => "schwarzes Theme angewendet";
+  @override
   String get swype_your_recipes => "Wische durch deine Rezepte";
   @override
   String get add_nutritions => "Nährwerte hinzufügen";
@@ -294,6 +313,8 @@ class $de extends S {
   @override
   String get check_filled_in_information => "Prüfe eingegebene Informationen";
   @override
+  String get no => "nein";
+  @override
   String get almost_done => "Fast fertig😊";
   @override
   String get with_meat => "mit Fleisch";
@@ -304,15 +325,21 @@ class $de extends S {
   @override
   String get no_valid_number => "keine valide Nummber";
   @override
+  String get sure_you_want_to_delete_this_nutrition => "Bist du dir sicher, dass du diesen Nährwert löschen willst: ";
+  @override
   String get check_ingredient_section_fields_description => "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift tragen wie zB. (Teig).";
   @override
   String get servings => "Portionen";
+  @override
+  String get snackbar_bright_theme_applied => "helles Theme angewendet";
   @override
   String get add_recipe => "Rezept hinzufügen";
   @override
   String get imported => "hinzugefügt";
   @override
   String get amnt => "Menge";
+  @override
+  String get yes => "ja";
   @override
   String get choose_a_theme => "Wähle ein Theme";
   @override
@@ -322,7 +349,13 @@ class $de extends S {
   @override
   String get exporting_recipe => "exportiere Rezept";
   @override
+  String get snackbar_automatic_theme_applied => "das Theme wird, wenn unterstützt bei neustart angewendet";
+  @override
   String get recipename_taken => "Rezeptname vergeben";
+  @override
+  String get snackbar_dark_theme_applied => "dunkles Theme angewendet";
+  @override
+  String get export_text => "als text exportieren";
   @override
   String get add_step => "Schritt hinzufügen";
   @override

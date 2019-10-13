@@ -79,6 +79,8 @@ Map<String, List<Color>> colors = {
 
 class RecipeGridView extends StatelessWidget {
   final String category;
+  // set when the screen should show recipes of one vegetabletype
+  final Vegetable vegetableRoute;
   final List<RecipePreview> recipes;
   final String title;
 
@@ -87,6 +89,7 @@ class RecipeGridView extends StatelessWidget {
   const RecipeGridView({
     this.category,
     this.recipes,
+    this.vegetableRoute,
     this.title,
     Key key,
   }) : super(key: key);
@@ -103,9 +106,8 @@ class RecipeGridView extends StatelessWidget {
         recipePreviews = recipes;
       }
       Random r = Random();
-      int randomImage = recipePreviews.length != 1
-                ? r.nextInt(recipePreviews.length)
-                : 0;
+      int randomImage =
+          recipePreviews.length != 1 ? r.nextInt(recipePreviews.length) : 0;
 
       if (recipePreviews.isNotEmpty) {
         String sliverAppBarImagePath =
@@ -178,7 +180,9 @@ class RecipeGridView extends StatelessWidget {
           shadow: Theme.of(context).backgroundColor == Colors.white
               ? Colors.grey[400]
               : Colors.black,
-          heroImageTag: "$i",
+          activateVegetableHero:
+              recipes[i].vegetable == vegetableRoute ? false : true,
+          heroImageTag: "$category$i",
         ),
       );
     }

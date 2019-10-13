@@ -681,8 +681,11 @@ class DBProvider {
         [recipeName]);
 
     var resultIngredient = await db.query('ShoppingCartIngredient',
-        where: 'recipe = ? AND name = ? AND unit = ?',
-        whereArgs: [recipeName, ingredient.name, ingredient.unit]);
+        where: 'recipe = ? AND name = ?' +
+            (ingredient.unit != null ? ' AND unit = ?' : ''),
+        whereArgs: [recipeName, ingredient.name]
+          ..add(ingredient.unit != null ? ingredient.unit : null)
+          ..removeWhere((item) => item == null));
 
     if (resultIngredient.isEmpty) {
       batch.insert('ShoppingCartIngredient', {
@@ -696,7 +699,9 @@ class DBProvider {
       batch.update(
           'ShoppingCartIngredient',
           {
-            'amount': resultIngredient[0]['amount'] + ingredient.amount,
+            'amount': resultIngredient[0]['amount'] == null
+                ? null
+                : resultIngredient[0]['amount'] + ingredient.amount,
             'checked': 0,
           },
           where: 'recipe = ? AND name = ? AND unit = ?',
@@ -722,8 +727,10 @@ class DBProvider {
             whereArgs: ['summary', i.name, i.unit]);
       } else {
         var resSummaryNotChecked = await db.query('ShoppingCartIngredient',
-            where: 'name = ? AND unit = ? AND checked = ?',
-            whereArgs: [i.name, i.unit, 0]);
+            where: 'name = ? AND checked = ? AND unit = ?',
+            whereArgs: [i.name, 0]
+              ..add(i.unit != null ? i.unit : null)
+              ..removeWhere((item) => item == null));
 
         /// Check for length to be 2 because the ingredient is still unchecked because batch
         /// commit is not yet called and at the summary it is also not checked
@@ -755,21 +762,25 @@ class DBProvider {
     var batch = db.batch();
 
     var resToBeRemoved = await db.query('ShoppingCartIngredient',
-        where: 'recipe = ? AND name = ? AND unit = ?',
+        where: 'recipe = ? AND name = ?' +
+            (ingredient.unit != null ? ' AND unit = ?' : ''),
         whereArgs: [
           recipeName,
           ingredient.name,
-          ingredient.unit,
-        ]);
+        ]
+          ..add(ingredient.unit != null ? ingredient.unit : null)
+          ..removeWhere((item) => item == null));
     double removeAmount = resToBeRemoved.first['amount'];
 
     var resSummary = await db.query('ShoppingCartIngredient',
-        where: 'recipe = ? AND name = ? AND unit = ?',
+        where: 'recipe = ? AND name = ?' +
+            (ingredient.unit != null ? ' AND unit = ?' : ''),
         whereArgs: [
           'summary',
           ingredient.name,
-          ingredient.unit,
-        ]);
+        ]
+          ..add(ingredient.unit != null ? ingredient.unit : null)
+          ..removeWhere((item) => item == null));
 
     batch.delete('ShoppingCartIngredient',
         where: 'name = ? AND recipe = ? AND unit = ?',
@@ -779,7 +790,8 @@ class DBProvider {
           ingredient.unit,
         ]);
     if (recipeName.compareTo('summary') != 0) {
-      if (resSummary[0]['amount'] - removeAmount <= 0) {
+      if (resSummary[0]['amount'] == null ||
+          resSummary[0]['amount'] - removeAmount <= 0) {
         /// if we don't want to delete at the summary and summary - deletedAmount
         /// is less equal 0 we delete at the summary
         batch.delete('ShoppingCartIngredient',

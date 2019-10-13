@@ -33,7 +33,6 @@ class ShoppingCartScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 35,
                       fontFamily: 'Ribeye',
-                      color: Colors.black,
                     ),
                   ),
                 )),
@@ -144,8 +143,12 @@ class IngredientsList extends StatelessWidget {
         String recipeName = shoppingCart.keys.toList()[index];
 
         if (recipeName.compareTo('summary') == 0) {
-          return getRecipeTile(recipeName, false,
-              Theme.of(context).brightness == Brightness.dark);
+          return getRecipeTile(
+            recipeName,
+            false,
+            Theme.of(context).brightness == Brightness.dark,
+            context,
+          );
         } else {
           return Dismissible(
             key: Key('$recipeName'),
@@ -155,19 +158,22 @@ class IngredientsList extends StatelessWidget {
             background: _getPrimaryBackgroundDismissable(),
             secondaryBackground: _getSecondaryBackgroundDismissable(),
             child: getRecipeTile(
-                recipeName,
-                shoppingCart.keys.toList().length - 1 == index ? true : false,
-                Theme.of(context).brightness == Brightness.dark),
+              recipeName,
+              shoppingCart.keys.toList().length - 1 == index ? true : false,
+              Theme.of(context).brightness == Brightness.dark,
+              context,
+            ),
           );
         }
       },
     );
   }
 
-  Widget getRecipeTile(String recipeName, bool isLast, bool darkTheme) {
+  Widget getRecipeTile(
+      String recipeName, bool isLast, bool darkTheme, BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: darkTheme ? Color(0xff69562F) : Color(0xffFEF3E1),
+        color: darkTheme ? Theme.of(context).cardColor : Color(0xffFEF3E1),
         border: Border(
           top: BorderSide(width: 2),
           left: BorderSide(width: 2),
@@ -193,7 +199,9 @@ class IngredientsList extends StatelessWidget {
             secondaryBackground: _getSecondaryBackgroundDismissable(),
             child: Container(
               decoration: BoxDecoration(
-                color: darkTheme ? Color(0xff88682A) : Color(0xffFEF3E1),
+                color: darkTheme
+                    ? Theme.of(context).backgroundColor
+                    : Color(0xffFEF3E1),
                 border: Border(
                   top: BorderSide(width: 2),
                   bottom: BorderSide(
@@ -296,36 +304,47 @@ class IngredientRow extends StatelessWidget {
         ),
         Padding(
           padding: EdgeInsets.only(left: 10),
-          child: Text(
-            //'SpaghettiSauce von der Kuh mit ganz viel ',
-            '${ingredient.name}',
-            style: TextStyle(
-              fontSize: 18,
-              decoration:
-                  ingredient.checked ? TextDecoration.lineThrough : null,
-              color: ingredientTextColor,
+          child: Container(
+            width: MediaQuery.of(context).size.width - 200,
+            child: Text(
+              //'SpaghettiSauce von der Kuh mit ganz viel ',
+              '${ingredient.name}',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 18,
+                decoration:
+                    ingredient.checked ? TextDecoration.lineThrough : null,
+                color: ingredientTextColor,
+              ),
             ),
           ),
         ),
         Spacer(),
-        Container(
-            height: 50,
-            width: 99,
-            decoration: BoxDecoration(
-                border: Border(left: BorderSide(width: showBorder ? 2 : 0))),
-            child: Center(
-              child: Text(
-                '${cutDouble(ingredient.amount)} ${ingredient.unit}',
-                style: TextStyle(
-                    fontSize: 18,
-                    decoration:
-                        ingredient.checked ? TextDecoration.lineThrough : null,
-                    color: ingredientTextColor),
-                overflow: TextOverflow.clip,
-                maxLines: 1,
-              ),
-            ))
-      ],
+        ingredient.amount != null
+            ? Container(
+                padding: EdgeInsets.all(3),
+                height: 50,
+                width: 99,
+                decoration: BoxDecoration(
+                    border:
+                        Border(left: BorderSide(width: showBorder ? 2 : 0))),
+                child: Center(
+                  child: Text(
+                    '${cutDouble(ingredient.amount)} ${ingredient.unit == null ? "" : ingredient.unit}',
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 18,
+                        decoration: ingredient.checked
+                            ? TextDecoration.lineThrough
+                            : null,
+                        color: ingredientTextColor),
+                    maxLines: 2,
+                  ),
+                ))
+            : null
+      ]..removeWhere((item) => item == null),
     );
   }
 
@@ -352,7 +371,7 @@ class NotePainter extends CustomPainter {
       ..strokeWidth = 4;
 
     final paintFill = Paint()
-      ..color = darkTheme ? Color(0xffCFAC53) : Color(0xffFEF3E1)
+      ..color = darkTheme ? Color(0xff393939) : Color(0xffFEF3E1)
       ..strokeWidth = 2;
 
     var leftTop = Offset(4, 25);

@@ -19,6 +19,7 @@
   "remove_ingredient": "Zutat entfernen",
   "remove_step": "Schritt entfernen",
   "export_zip": "als zip exportieren",
+  "export_text": "als text exportieren",
   "edit": "editieren",
 
   "shoppingcart": "Einkaufswagen",
@@ -100,7 +101,7 @@
   "recipename_taken" : "Rezeptname vergeben",
   "recipename_taken_description": "Ändere den Rezeptnamen zu etwas mehr detailliertem oder du haste einfach nur vergessen, dass du dieses Rezept schon hinzugefügt hast :)",
   "check_ingredients_input": "Überprüfe die Zutatenliste",
-  "check_ingredients_input_description": "Es scheint so, als wenn die Zutatenliste an mindestens einer Stelle nur teilweise ausgefüllt ist. Bitte ändere dies, um das Rezept zu speichern.",
+  "check_ingredients_input_description": "Die Zutatenliste ist nicht korrekt ausgefüllt. Sie muss foldendermaßen ausgefüllt werden: \n- Jede Zutat muss einen Namen haben \n- Wenn füre eine Zutat die Einheit angegeben ist, muss auch die Menge angegeben sein",
   "check_ingredient_section_fields": "Prüfe die Zutatenliste",
   "check_ingredient_section_fields_description": "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift tragen wie zB. (Teig).",
   "check_filled_in_information": "Prüfe eingegebene Informationen",
@@ -118,5 +119,19 @@
 
   "you_already_have": "es gibt schon einen Eintrag",
   "imported": "hinzugefügt",
-  "hide": "verbergen"
+  "no_valid_import_file": "keine gültige import-Datei",
+  "hide": "verbergen",
+
+  "sure_you_want_to_delete_this_nutrition": "Bist du dir sicher, dass du diesen Nährwert löschen willst: ",
+  "sure_you_want_to_delete_this_category": "Bist du dir sicher, dass du diese Kategorie löschen willst: ",
+
+  "no": "nein",
+  "yes": "ja",
+  "dismiss": "verbergen",
+
+  "snackbar_automatic_theme_applied": "das Theme wird, wenn unterstützt bei neustart angewendet",
+  "snackbar_bright_theme_applied": "helles Theme angewendet",
+  "snackbar_dark_theme_applied": "dunkles Theme angewendet",
+  "snackbar_midnight_theme_applied": "schwarzes Theme angewendet"
+
 }

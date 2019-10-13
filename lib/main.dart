@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
+import 'package:my_recipe_book/recipe_overview/add_recipe_screen/general_info/general_info_screen.dart';
 import 'package:my_recipe_book/settings/import_recipe.dart';
 import 'package:my_recipe_book/shopping_cart/shopping_cart_fancy.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -23,8 +24,6 @@ import 'package:my_recipe_book/settings/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 
-import 'dialogs/dialog_types.dart';
-import 'dialogs/shopping_cart_add_dialog.dart';
 import 'generated/i18n.dart';
 import 'models/recipe.dart';
 import 'recipe_overview/recipe_category_overview/r_category_overview.dart';
@@ -387,17 +386,27 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 curve: Interval(0.0, 1.0 - index / icons.length / 2.0,
                     curve: Curves.easeOut),
               ),
-              child: FloatingActionButton(
-                heroTag: null,
-                backgroundColor: Colors.white,
-                mini: true,
-                child: Icon(icons[index], color: backgroundColor),
-                onPressed: () {
-                  _controller.reverse();
-                  index == 1
-                      ? Navigator.pushNamed(context, '/add-recipe')
-                      : Navigator.pushNamed(context, '/manage-categories');
-                },
+              child: ScopedModelDescendant<RecipeKeeper>(
+                builder: (context, child, rKeeper) => FloatingActionButton(
+                  heroTag: null,
+                  backgroundColor: Colors.white,
+                  mini: true,
+                  child: Icon(icons[index], color: backgroundColor),
+                  onPressed: () {
+                    _controller.reverse();
+                    index == 1
+                        ? Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => GeneralInfoScreen(
+                                newRecipe: rKeeper.currentlyEditedRecipe,
+                                editingRecipe: false,
+                              ),
+                            ),
+                          )
+                        : Navigator.pushNamed(context, '/manage-categories');
+                  },
+                ),
               ),
             ),
           );

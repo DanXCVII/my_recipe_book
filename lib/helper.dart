@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'models/recipe.dart';
 
 String cutDouble(double number) {
@@ -60,4 +62,15 @@ bool validateNumber(String text) {
   } else {
     return false;
   }
+}
+
+List<String> removeEmptyStrings(List<TextEditingController> list) {
+  List<String> output = [];
+
+  for (int i = 0; i < list.length; i++) {
+    if (list[i].text != "") {
+      output.add(list[i].text);
+    }
+  }
+  return output;
 }

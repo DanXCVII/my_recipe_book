@@ -64,15 +64,13 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Padding(
+        Container(
+          height: 40,
           padding: const EdgeInsets.only(top: 8.0),
-          child: Container(
-            height: 40,
-            width: MediaQuery.of(context).size.width,
-            child: ScopedModelDescendant<RecipeKeeper>(
-              builder: (context, child, rKeeper) =>
-                  _getCategorySelector(rKeeper.categories, rKeeper),
-            ),
+          width: MediaQuery.of(context).size.width,
+          child: ScopedModelDescendant<RecipeKeeper>(
+            builder: (context, child, rKeeper) =>
+                _getCategorySelector(rKeeper.categories, rKeeper),
           ),
         ),
         Divider(),

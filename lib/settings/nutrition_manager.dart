@@ -61,6 +61,11 @@ class _NutritionManagerState extends State<NutritionManager> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            icon: Icon(Icons.clear),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
         title: Text(widget.recipeName == null
             ? S.of(context).manage_nutritions
             : S.of(context).add_nutritions),
@@ -115,9 +120,13 @@ class _NutritionManagerState extends State<NutritionManager> {
                     key: dismissibleKeys[i],
                     background: _getPrimaryBackgroundDismissible(),
                     secondaryBackground: _getSecondaryBackgroundDismissible(),
+                    // confirmDismiss: (_) {
+                    //   nutritionsController.remove(nutritionName);
+                    //   rKeeper.removeNutrition(nutritionName);
+                    // },
                     onDismissed: (_) {
                       nutritionsController.remove(nutritionName);
-                      _showDeleteDialog(context, nutritionName);
+                      rKeeper.removeNutrition(nutritionName);
                     },
                     child: _getNutritionListTile(
                         nutritionName, context, rKeeper, listTileKeys[i]),
@@ -131,31 +140,38 @@ class _NutritionManagerState extends State<NutritionManager> {
     );
   }
 
-  _showDeleteDialog(BuildContext context, String categoryName) {
+  _showDeleteDialog(
+      BuildContext context, String nutritionName, bool removeFromList) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        content: Text("Are you sure you want to delete this nutrition: $categoryName"),
+        content: Text(S.of(context).sure_you_want_to_delete_this_nutrition +
+            " $nutritionName"),
         actions: <Widget>[
           FlatButton(
-            child: Text('no'),
+            child: Text(S.of(context).no),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, false);
+              return false;
             },
           ),
           ScopedModelDescendant<RecipeKeeper>(
             builder: (context, child, rKeeper) => FlatButton(
-              child: Text('yes'),
+              child: Text(S.of(context).yes),
               onPressed: () {
-                rKeeper.removeCategory(categoryName);
-                Navigator.pop(context);
+                if (removeFromList) {
+                  nutritionsController.remove(nutritionName);
+                  rKeeper.removeNutrition(nutritionName);
+                }
+                Navigator.pop(context, true);
+                return true;
               },
             ),
           )
         ],
       ),
-    );
+    ).then((boo) => boo);
   }
 
   void editingFinished(RecipeKeeper rKeeper) {
@@ -188,7 +204,9 @@ class _NutritionManagerState extends State<NutritionManager> {
             ),
           );
         } else {
-          Navigator.pop(context);
+          rKeeper.currentlyEditedRecipe =
+              Recipe(servings: null, name: null, vegetable: null);
+          Navigator.of(context).popUntil((route) => route.isFirst);
         }
       });
     }
@@ -258,8 +276,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             : IconButton(
                 icon: Icon(Icons.delete),
                 onPressed: () {
-                  nutritionsController.remove(nutritionName);
-                  rKeeper.removeNutrition(nutritionName);
+                  _showDeleteDialog(context, nutritionName, true);
                 },
               ),
       ),

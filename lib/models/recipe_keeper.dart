@@ -19,6 +19,8 @@ class RecipeKeeper extends Model {
   String _swypingRecipeCategory = 'all categories';
   List<Recipe> _swypingCardRecipes = [];
   bool _isLoadingSwypeCards;
+  Recipe currentlyEditedRecipe =
+      Recipe(name: null, vegetable: null, servings: null);
 
   set swypingCardCategory(String categoryName) {
     _swypingRecipeCategory = categoryName;
@@ -185,14 +187,17 @@ class RecipeKeeper extends Model {
 
   /// deletes oldRecipe from database and rKeeper and saves newRecipe to
   /// database and rKeeper
-  Future<Recipe> modifyRecipe(Recipe oldRecipe, Recipe newRecipe,
-      String recipeImage, bool hasFiles, bool addNutritions) async {
+  Future<Recipe> modifyRecipe(
+      String oldRecipeName, Recipe newRecipe, bool addNutritions) async {
     // modify (delete old save new) recipe in database
-    await DBProvider.db.deleteRecipe(oldRecipe.name);
+    await DBProvider.db.deleteRecipe(oldRecipeName);
     await DBProvider.db.newRecipe(newRecipe, addNutritions);
 
-    if (hasFiles && oldRecipe.name != newRecipe.name) {
-      await IO.copyRecipeDataToNewPath(oldRecipe.name, newRecipe.name);
+    bool hasFiles = Directory(await PathProvider.pP.getRecipeDir(oldRecipeName))
+        .existsSync();
+
+    if (hasFiles && oldRecipeName != newRecipe.name) {
+      await IO.copyRecipeDataToNewPath(oldRecipeName, newRecipe.name);
     }
 
     Recipe fullImagePathRecipe =
@@ -202,7 +207,7 @@ class RecipeKeeper extends Model {
     // modify recipe object (delete from every category and then add it to right ones)
     for (String c in _recipes.keys) {
       for (int i = 0; i < _recipes[c].length; i++) {
-        if (_recipes[c][i].name == oldRecipe.name) {
+        if (_recipes[c][i].name == oldRecipeName) {
           _recipes[c].removeAt(i);
           break;
         }
@@ -220,15 +225,15 @@ class RecipeKeeper extends Model {
     // check if modified recipe is in swyping cards and if so modify it..
     for (int i = 0; i < _swypingCardRecipes.length; i++) {
       if (_swypingCardRecipes[i] != null &&
-          _swypingCardRecipes[i].name == oldRecipe.name) {
+          _swypingCardRecipes[i].name == oldRecipeName) {
         _swypingCardRecipes[i] = fullImagePathRecipe;
       }
     }
     notifyListeners();
 
     // delete old files
-    if (hasFiles && oldRecipe.name != newRecipe.name) {
-      await Directory(await PathProvider.pP.getRecipeDir(oldRecipe.name))
+    if (hasFiles && oldRecipeName != newRecipe.name) {
+      await Directory(await PathProvider.pP.getRecipeDir(oldRecipeName))
           .delete(recursive: true);
     }
     return fullImagePathRecipe;

@@ -45,10 +45,9 @@ class FavoriteScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(S.of(context).no_added_favorites_yet,
-                          textScaleFactor: deviceHeight / 800,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 26,
+                            fontSize: 22,
                             fontFamily: 'RibeyeMarrow',
                           )),
                     ),

@@ -353,6 +353,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return Ingredients(
+                        servingsController,
                         ingredientNameController,
                         ingredientAmountController,
                         ingredientUnitController,
@@ -384,7 +385,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
                   ? Steps(
                       stepsDescController,
                       stepImages,
-                      recipeName: widget.editRecipe.name,
+                      editRecipeName: widget.editRecipe.name,
                     )
                   : Steps(
                       stepsDescController,
@@ -476,21 +477,6 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
 
   void saveValidRecipeData(RecipeKeeper rKeeper) {
     FocusScope.of(context).requestFocus(FocusNode());
-    // showDialog(
-    //   context: context,
-    //   barrierDismissible: false,
-    //   builder: (_) => WillPopScope(
-    //       // It disables the back button
-    //       onWillPop: () async => false,
-    //       child: RoundDialog(
-    //           FlareActor(
-    //             'animations/writing_pen.flr',
-    //             alignment: Alignment.center,
-    //             fit: BoxFit.fitWidth,
-    //             animation: "Go",
-    //           ),
-    //           150)),
-    // );
 
     saveRecipe(rKeeper).then((newRecipe) {
       imageCache.clear();
@@ -591,10 +577,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     Recipe fullImagePathRecipe;
     if (widget.editRecipe != null) {
       fullImagePathRecipe = await rKeeper.modifyRecipe(
-        widget.editRecipe,
+        widget.editRecipe.name,
         newRecipe,
-        recipeImage,
-        _hasRecipeImage(newRecipe),
         false,
       );
     } else {
