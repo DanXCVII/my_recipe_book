@@ -75,7 +75,7 @@
 # images because of copyright
 ./images
 
-/app/src/main/AndroidManifest.xml
+**/android/**/AndroidManifest.xml
 /app/android/key.properties
 **/android/**/key.jks
 **/android/**/key.properties
