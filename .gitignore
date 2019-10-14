@@ -76,6 +76,7 @@
 ./images
 
 **/android/**/AndroidManifest.xml
+/android/app/src/AndroidManifest.xml
 /app/android/key.properties
 **/android/**/key.jks
 **/android/**/key.properties
