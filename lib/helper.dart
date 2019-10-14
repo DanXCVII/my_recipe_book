@@ -9,6 +9,20 @@ String cutDouble(double number) {
   return number.toStringAsFixed(2);
 }
 
+String getImageDatatype(String filename) {
+  String dataType;
+  String partWithDataType = filename.substring(filename.length - 5);
+  if (partWithDataType.contains('.')) {
+    dataType = partWithDataType.substring(partWithDataType.lastIndexOf('.'));
+  } else {
+    if (partWithDataType.endsWith('jpg')) dataType = '.jpg';
+    if (partWithDataType.endsWith('png')) dataType = '.png';
+    if (partWithDataType.endsWith('jpeg')) dataType = '.jpeg';
+    if (partWithDataType.endsWith('jpg')) dataType = '.jpg';
+  }
+  return dataType;
+}
+
 /// Takes a List<List<Ingredient>> and flattens it to a List<Ingredient>
 /// with still all the ingredients inside
 List<Ingredient> flattenIngredients(List<List<Ingredient>> listList) {

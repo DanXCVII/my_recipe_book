@@ -78,6 +78,7 @@ class CategoryManager extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(S.of(context).delete_category),
         content: Text(S.of(context).sure_you_want_to_delete_this_category +
             " $categoryName"),
         actions: <Widget>[

@@ -2,10 +2,12 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:tuple/tuple.dart';
 
 import '../database.dart';
 import '../recipe_card.dart';
@@ -83,12 +85,14 @@ class RecipeGridView extends StatelessWidget {
   final Vegetable vegetableRoute;
   final List<RecipePreview> recipes;
   final String title;
+  final int randomImage;
 
   /// Either specify the list of recipes or a recipecategory
   /// Either specify the category or a title
   const RecipeGridView({
     this.category,
     this.recipes,
+    @required this.randomImage,
     this.vegetableRoute,
     this.title,
     Key key,
@@ -105,9 +109,6 @@ class RecipeGridView extends StatelessWidget {
       } else {
         recipePreviews = recipes;
       }
-      Random r = Random();
-      int randomImage =
-          recipePreviews.length != 1 ? r.nextInt(recipePreviews.length) : 0;
 
       if (recipePreviews.isNotEmpty) {
         String sliverAppBarImagePath =
@@ -125,7 +126,92 @@ class RecipeGridView extends StatelessWidget {
                           delegate: RecipeSearch(recipeNames));
                     });
                   },
-                )
+                ),
+                ScopedModelDescendant<RecipeKeeper>(
+                  builder: (context, child, rKeeper) =>
+                      PopupMenuButton<Tuple2<RecipeSort, bool>>(
+                    icon: Icon(GroovinMaterialIcons.sort),
+                    onSelected: (value) => rKeeper.changeRecipeOrder(
+                      category == null ? vegetableRoute.toString() : category,
+                      recipePreviews,
+                      value,
+                      isVegetable: category == null ? true : false,
+                    ),
+                    itemBuilder: (BuildContext context) {
+                      return [
+                        // TODO: internationalize
+                        /// idea: maybe replace asc. with icon up and desc. with icon down
+                        /// so that no complex logic is needed
+                        PopupMenuItem(
+                          value: Tuple2(RecipeSort.BY_NAME, true),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(GroovinMaterialIcons.arrow_up_bold),
+                              SizedBox(width: 5),
+                              Text(S.of(context).by_name),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: Tuple2(RecipeSort.BY_NAME, false),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(GroovinMaterialIcons.arrow_down_bold),
+                              SizedBox(width: 5),
+                              Text(S.of(context).by_name),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: Tuple2(RecipeSort.BY_EFFORT, true),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(GroovinMaterialIcons.arrow_up_bold),
+                              SizedBox(width: 5),
+                              Text(S.of(context).by_effort),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: Tuple2(RecipeSort.BY_EFFORT, false),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(GroovinMaterialIcons.arrow_down_bold),
+                              SizedBox(width: 5),
+                              Text(S.of(context).by_effort),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: Tuple2(RecipeSort.BY_INGREDIENT_COUNT, true),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(GroovinMaterialIcons.arrow_up_bold),
+                              SizedBox(width: 5),
+                              Text(S.of(context).by_ingredientsamount),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: Tuple2(RecipeSort.BY_INGREDIENT_COUNT, false),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(GroovinMaterialIcons.arrow_down_bold),
+                              SizedBox(width: 5),
+                              Text(S.of(context).by_ingredientsamount),
+                            ],
+                          ),
+                        ),
+                      ];
+                    },
+                  ),
+                ),
               ],
               expandedHeight: scaleFactor * 200.0,
               floating: false,

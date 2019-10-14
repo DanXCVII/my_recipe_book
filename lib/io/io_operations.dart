@@ -31,7 +31,7 @@ Future<void> copyRecipeDataToNewPath(
       } else if (f is File) {
         print('Should be a preview image path or image path');
         print(f.path);
-        String dataType = f.path.substring(f.path.lastIndexOf('.'));
+        String dataType = getImageDatatype(f.path);
 
         File oldRecipeImageFile = File(
             await PathProvider.pP.getRecipePathFull(oldRecipeName, dataType));
@@ -56,8 +56,10 @@ Future<void> renameRecipeData(String oldRecipeName, String newRecipeName,
   if (fileExtension != null) {
     File oldRecipeImageFile = File(await PathProvider.pP
         .getRecipeOldPathFull(oldRecipeName, newRecipeName, fileExtension));
-    await oldRecipeImageFile.rename(
-        await PathProvider.pP.getRecipePathFull(newRecipeName, fileExtension));
+    if (oldRecipeImageFile.existsSync()) {
+      await oldRecipeImageFile.rename(await PathProvider.pP
+          .getRecipePathFull(newRecipeName, fileExtension));
+    }
 
     File oldRecipePreviewImageFile = File(await PathProvider.pP
         .getRecipePreviewOldPathFull(
@@ -68,8 +70,8 @@ Future<void> renameRecipeData(String oldRecipeName, String newRecipeName,
 }
 
 Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
-  String dataType =
-      pictureFile.path.substring(pictureFile.path.lastIndexOf('.'));
+  String dataType = getImageDatatype(pictureFile.path);
+
   String recipeImagePathFull =
       await PathProvider.pP.getRecipePathFull(recipeName, dataType);
 
@@ -97,8 +99,7 @@ Future<void> deleteStepImage(
 /// e.g.: 3242.jpg
 String getStepImageName(String selectedImagePath) {
   Random random = new Random();
-  String dataType =
-      selectedImagePath.substring(selectedImagePath.lastIndexOf('.'));
+  String dataType = getImageDatatype(selectedImagePath);
   return random.nextInt(10000).toString() + dataType;
 }
 

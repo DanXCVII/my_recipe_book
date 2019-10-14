@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
@@ -235,9 +236,7 @@ class RecipePage extends StatelessWidget {
                     icon: Icon(Icons.delete),
                     tooltip: S.of(context).share_recipe,
                     onPressed: () {
-                      rKeeper.deleteRecipeWithName(recipe.name, true).then((_) {
-                        Navigator.pop(context);
-                      });
+                      _showDeleteDialog(context, recipe.name);
                     },
                   ),
                   PopupMenuButton<PopupOptions>(
@@ -276,9 +275,9 @@ class RecipePage extends StatelessWidget {
                         clipper: MyClipper(),
                         child: recipe.imagePath == 'images/randomFood.jpg'
                             ? Image.asset('images/randomFood.jpg',
-                                fit: BoxFit.cover)
+                                width: double.infinity, fit: BoxFit.cover)
                             : Image.file(File(recipe.imagePath),
-                                fit: BoxFit.cover),
+                                width: double.infinity, fit: BoxFit.cover),
                       ),
                       child: Material(
                         color: Colors.transparent,
@@ -288,8 +287,9 @@ class RecipePage extends StatelessWidget {
                               height: 270,
                               child: recipe.imagePath == 'images/randomFood.jpg'
                                   ? Image.asset('images/randomFood.jpg',
-                                      fit: BoxFit.cover)
+                                      width: double.infinity, fit: BoxFit.cover)
                                   : Image.file(File(recipe.imagePath),
+                                      width: double.infinity,
                                       fit: BoxFit.cover)),
                         ),
                       ),
@@ -300,33 +300,35 @@ class RecipePage extends StatelessWidget {
                         onTap: () {
                           pushVegetableRoute(context, recipe.vegetable);
                         },
-                        child: Container(
+                        child: Padding(
                           padding:
                               const EdgeInsets.only(bottom: 8.0, right: 8.0),
-                          height: 65,
-                          width: 65,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(40),
-                                topRight: Radius.circular(40),
-                                bottomLeft: Radius.circular(40),
-                                bottomRight: Radius.circular(15),
+                          child: Container(
+                            height: 65,
+                            width: 65,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(40),
+                                  topRight: Radius.circular(40),
+                                  bottomLeft: Radius.circular(40),
+                                  bottomRight: Radius.circular(15),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                      blurRadius: 3,
+                                      spreadRadius: 2,
+                                      offset: Offset(1, 1),
+                                      color: Colors.grey[800])
+                                ],
+                                color:
+                                    _getVegetableCircleColor(recipe.vegetable)),
+                            child: Center(
+                              child: Image.asset(
+                                "images/${getRecipeTypeImage(recipe.vegetable)}.png",
+                                height: 40,
+                                width: 40,
+                                fit: BoxFit.scaleDown,
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: 3,
-                                    spreadRadius: 2,
-                                    offset: Offset(1, 1),
-                                    color: Colors.grey[800])
-                              ],
-                              color:
-                                  _getVegetableCircleColor(recipe.vegetable)),
-                          child: Center(
-                            child: Image.asset(
-                              "images/${getRecipeTypeImage(recipe.vegetable)}.png",
-                              height: 40,
-                              width: 40,
-                              fit: BoxFit.scaleDown,
                             ),
                           ),
                         ),
@@ -426,6 +428,38 @@ class RecipePage extends StatelessWidget {
     } else if (value == PopupOptions.EXPORT_ZIP) {
       exportRecipe(recipe).then((_) {});
     }
+  }
+
+  _showDeleteDialog(BuildContext context, String recipeName) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        // TODO: internationalize
+        title: Text(S.of(context).delete_recipe),
+        content: Text(
+            S.of(context).sure_you_want_to_delete_this_recipe + " $recipeName"),
+        actions: <Widget>[
+          FlatButton(
+            child: Text(S.of(context).no),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          ScopedModelDescendant<RecipeKeeper>(
+            builder: (context, child, rKeeper) => FlatButton(
+              child: Text(S.of(context).yes),
+              onPressed: () {
+                rKeeper.deleteRecipeWithName(recipeName, true).then((_) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                });
+              },
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Future<bool> exportRecipe(Recipe recipe) async {
@@ -871,10 +905,12 @@ class _CategoryCircleState extends State<CategoryCircle> {
           DBProvider.db
               .getRecipePreviewOfCategory(widget.categoryName)
               .then((r) {
+            Random rand = Random();
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (BuildContext context) => new RecipeGridView(
+                  randomImage: r.length != 1 ? rand.nextInt(r.length) : 0,
                   category: widget.categoryName == null
                       ? 'no category'
                       : widget.categoryName,

@@ -4,6 +4,7 @@ import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
+import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/settings/nutrition_manager.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -188,10 +189,12 @@ class _StepsScreenState extends State<StepsScreen> {
           oldRecipeImageName,
           widget.newRecipe.name,
           fileExtension: widget.newRecipe.imagePath != null
-              ? widget.newRecipe.imagePath
-                  .substring(widget.newRecipe.imagePath.lastIndexOf('.'))
+              ? getImageDatatype(widget.newRecipe.imagePath)
               : null,
         );
+        widget.newRecipe.imagePath = PathProvider.pP.getRecipePath(
+            widget.newRecipe.name,
+            getImageDatatype(widget.newRecipe.imagePath));
       }
 
       fullImagePathRecipe = await rKeeper.addRecipe(widget.newRecipe, false);

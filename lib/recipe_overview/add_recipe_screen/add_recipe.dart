@@ -526,7 +526,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
     String imageDatatype;
     String recipeImage = selectedRecipeImage.selectedImage;
     if (recipeImage != null) {
-      imageDatatype = recipeImage.substring(recipeImage.lastIndexOf('.'));
+      imageDatatype = getImageDatatype(recipeImage);
     }
 
     // modifying the stepImages paths for the database

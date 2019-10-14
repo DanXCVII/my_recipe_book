@@ -55,10 +55,15 @@ class CategoryGridTile extends StatelessWidget {
     }
     return GestureDetector(
         onTap: () {
+          Random randomRecipe = new Random();
+
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (BuildContext context) => RecipeGridView(
+                        randomImage: recipes.length != 1
+                            ? randomRecipe.nextInt(recipes.length)
+                            : 0,
                         category: category,
                       )));
         },

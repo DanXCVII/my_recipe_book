@@ -36,6 +36,9 @@ class S implements WidgetsLocalizations {
   String get alright => "alright";
   String get amnt => "amnt";
   String get basket => "basket";
+  String get by_effort => "by effort";
+  String get by_ingredientsamount => "by ingredientsamount";
+  String get by_name => "by name";
   String get cancel => "cancel";
   String get categories => "Categories";
   String get check_filled_in_information => "Check filled in information";
@@ -51,7 +54,9 @@ class S implements WidgetsLocalizations {
   String get data_required => "data_required";
   String get data_will_never_leave_your_device => "Your data will NEVER leave your device when you don’t explicitely intent it to.";
   String get decrease_servings => "decrease servings";
-  String get delete_recipe => "delete recipe";
+  String get delete_category => "delete category?";
+  String get delete_nutrition => "delete nutrition?";
+  String get delete_recipe => "delete recipe?";
   String get description => "description";
   String get directions => "Directions";
   String get dismiss => "verbergen";
@@ -117,6 +122,7 @@ class S implements WidgetsLocalizations {
   String get steps => "steps";
   String get sure_you_want_to_delete_this_category => "Are you sure you want to delete this category:";
   String get sure_you_want_to_delete_this_nutrition => "Are you sure you want to delete this nutrition:";
+  String get sure_you_want_to_delete_this_recipe => "Are you sure that you want to delete this recipe:";
   String get switch_shopping_cart_look => "switch shopping cart look";
   String get switch_theme => "switch theme";
   String get swype_your_recipes => "Swype your recipes";
@@ -189,6 +195,8 @@ class $de extends S {
   @override
   String get alright => "Alles klar!";
   @override
+  String get sure_you_want_to_delete_this_recipe => "Bist du dir sicher, dass du dieses Rezept endgültig:";
+  @override
   String get remove_section => "Bereich entfernen";
   @override
   String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte ;-)";
@@ -213,7 +221,7 @@ class $de extends S {
   @override
   String get manage_nutritions => "Nährwerte verwalten";
   @override
-  String get sure_you_want_to_delete_this_category => "Bist du dir sicher, dass du diese Kategorie löschen willst: ";
+  String get sure_you_want_to_delete_this_category => "Bist du dir sicher, dass du diese Kategorie endgültig löschen willst: ";
   @override
   String get complexity_effort => "Aufwand";
   @override
@@ -257,11 +265,15 @@ class $de extends S {
   @override
   String get out_of => "von";
   @override
+  String get by_name => "nach Name";
+  @override
   String get data_required => "darf nicht leer sein";
   @override
   String get share_recipe => "Rezept teilen";
   @override
   String get notes => "Notizen";
+  @override
+  String get delete_category => "Kategorie löschen?";
   @override
   String get view_intro => "Einführung anschauen";
   @override
@@ -323,9 +335,11 @@ class $de extends S {
   @override
   String get effort => "Aufwand";
   @override
+  String get by_ingredientsamount => "nach Zutatenmenge";
+  @override
   String get no_valid_number => "keine valide Nummber";
   @override
-  String get sure_you_want_to_delete_this_nutrition => "Bist du dir sicher, dass du diesen Nährwert löschen willst: ";
+  String get sure_you_want_to_delete_this_nutrition => "Bist du dir sicher, dass du diesen Nährwert endgültig löschen willst: ";
   @override
   String get check_ingredient_section_fields_description => "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift tragen wie zB. (Teig).";
   @override
@@ -339,17 +353,21 @@ class $de extends S {
   @override
   String get amnt => "Menge";
   @override
+  String get by_effort => "nach Aufwand";
+  @override
   String get yes => "ja";
   @override
   String get choose_a_theme => "Wähle ein Theme";
   @override
-  String get delete_recipe => "Rezept löschen";
+  String get delete_recipe => "Rezept löschen?";
   @override
   String get manage_categories => "Kategorien verwalten";
   @override
   String get exporting_recipe => "exportiere Rezept";
   @override
   String get snackbar_automatic_theme_applied => "das Theme wird, wenn unterstützt bei neustart angewendet";
+  @override
+  String get delete_nutrition => "Nährwert löschen?";
   @override
   String get recipename_taken => "Rezeptname vergeben";
   @override

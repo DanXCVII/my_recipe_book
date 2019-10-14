@@ -113,6 +113,7 @@ class RecipeCardBig extends StatelessWidget {
                                     child: Text(
                                       recipe.name,
                                       maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
                                       textScaleFactor: scaleFactor,
                                       style: TextStyle(
                                         fontSize: 28,

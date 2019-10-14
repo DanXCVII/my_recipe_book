@@ -270,7 +270,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
     String imageDatatype;
     String recipeImage = selectedRecipeImage.selectedImage;
     if (recipeImage != null) {
-      imageDatatype = recipeImage.substring(recipeImage.lastIndexOf('.'));
+      imageDatatype = getImageDatatype(recipeImage);
     }
 
     newRecipe.name = nameController.text;

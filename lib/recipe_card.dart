@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -297,10 +298,14 @@ void pushVegetableRoute(BuildContext context, Vegetable vegetable) {
   }
 
   DBProvider.db.getRecipePreviewOfVegetable(vegetable).then((recipePreviews) {
+    Random rand = new Random();
     Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) => RecipeGridView(
+          randomImage: recipePreviews.length != 1
+              ? rand.nextInt(recipePreviews.length)
+              : 0,
           vegetableRoute: vegetable,
           recipes: recipePreviews,
           title: title,

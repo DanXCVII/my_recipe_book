@@ -146,6 +146,7 @@ class _NutritionManagerState extends State<NutritionManager> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(S.of(context).delete_nutrition),
         content: Text(S.of(context).sure_you_want_to_delete_this_nutrition +
             " $nutritionName"),
         actions: <Widget>[

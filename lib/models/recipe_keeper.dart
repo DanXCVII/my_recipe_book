@@ -8,17 +8,24 @@ import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:tuple/tuple.dart';
+
+enum RecipeSort { BY_NAME, BY_INGREDIENT_COUNT, BY_EFFORT }
 
 class RecipeKeeper extends Model {
+  bool _isInitialised = false;
+
   Map<String, List<RecipePreview>> _recipes = {};
+  Map<String, Tuple2<RecipeSort, bool>> _recipeSort = {};
   List<RecipePreview> _favorites = [];
-  // they keep track of the order of the categories
+  // they keep track of the order of the categories and nutritions
   List<String> _categories = [];
   List<String> _nutritions = [];
-  bool _isInitialised = false;
+
   String _swypingRecipeCategory = 'all categories';
   List<Recipe> _swypingCardRecipes = [];
   bool _isLoadingSwypeCards;
+
   Recipe currentlyEditedRecipe =
       Recipe(name: null, vegetable: null, servings: null);
 
@@ -38,13 +45,24 @@ class RecipeKeeper extends Model {
 
   bool get isInitialised => _isInitialised;
 
+  Tuple2 getSortStatus(String category) {
+    return _recipeSort[category];
+  }
+
   List<RecipePreview> getRecipesOfCategory(String category) =>
       _recipes[category];
 
   Future<void> initData() async {
     _categories = await DBProvider.db.getCategories();
+
     _categories.add('no category');
+    _recipeSort.addAll({
+      Vegetable.NON_VEGETARIAN.toString(): Tuple2(RecipeSort.BY_NAME, true),
+      Vegetable.VEGAN.toString(): Tuple2(RecipeSort.BY_NAME, true),
+      Vegetable.VEGETARIAN.toString(): Tuple2(RecipeSort.BY_NAME, true),
+    });
     for (String category in _categories) {
+      _recipeSort.addAll({category: Tuple2(RecipeSort.BY_NAME, true)});
       _recipes.addAll(
           {category: await DBProvider.db.getRecipePreviewOfCategory(category)});
     }
@@ -356,6 +374,40 @@ class RecipeKeeper extends Model {
   Future<void> updateCategoryOrder(List<String> categories) async {
     await DBProvider.db.updateCategoryOrder(categories);
     this._categories = categories;
+
+    notifyListeners();
+  }
+
+  /// if the order of a vegetable should be changed, call this mehtod with
+  /// category = wishedVegetable.toString() and set isVegetable to true
+  void changeRecipeOrder(String category, List<RecipePreview> recipes,
+      Tuple2<RecipeSort, bool> sort,
+      {bool isVegetable}) {
+    // if sort hasen't changed
+
+    _recipeSort[category] = sort;
+
+    RecipeSort order = sort.item1;
+    switch (order) {
+      case RecipeSort.BY_NAME:
+        recipes.sort((a, b) =>
+            sort.item2 ? a.name.compareTo(b.name) : b.name.compareTo((a.name)));
+        break;
+      case RecipeSort.BY_EFFORT:
+        recipes.sort((a, b) => sort.item2
+            ? a.effort.compareTo(b.effort)
+            : b.effort.compareTo(a.effort));
+        break;
+      case RecipeSort.BY_INGREDIENT_COUNT:
+        recipes.sort((a, b) => sort.item2
+            ? a.ingredientsAmount.compareTo(b.ingredientsAmount)
+            : b.ingredientsAmount.compareTo(a.ingredientsAmount));
+        break;
+      default:
+    }
+    if (!isVegetable) {
+      _recipes[category] = recipes;
+    }
 
     notifyListeners();
   }

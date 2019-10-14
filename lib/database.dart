@@ -398,7 +398,7 @@ class DBProvider {
       image = resRecipe.first['image'];
     }
     String previewPath;
-    String dataType = image.substring(image.lastIndexOf('.'));
+    String dataType = getImageDatatype(image);
     image == "images/randomFood.jpg"
         ? previewPath = 'images/randomFood.jpg'
         : previewPath =
@@ -563,7 +563,7 @@ class DBProvider {
       image = resRecipe.first['image'];
     }
     String previewPath;
-    String dataType = image.substring(image.lastIndexOf('.'));
+    String dataType = getImageDatatype(image);
     image == "images/randomFood.jpg"
         ? previewPath = 'images/randomFood.jpg'
         : previewPath =
@@ -892,7 +892,8 @@ class DBProvider {
 
     var resVegetable = await db.rawQuery(
         'SELECT * FROM Recipe '
-        'WHERE vegetable = ?',
+        'WHERE vegetable = ? '
+        'ORDER BY recipe_name ASC',
         [vegetable.toString()]);
 
     for (int i = 0; i < resVegetable.length; i++) {

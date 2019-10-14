@@ -122,8 +122,12 @@
   "no_valid_import_file": "keine gültige import-Datei",
   "hide": "verbergen",
 
-  "sure_you_want_to_delete_this_nutrition": "Bist du dir sicher, dass du diesen Nährwert löschen willst: ",
-  "sure_you_want_to_delete_this_category": "Bist du dir sicher, dass du diese Kategorie löschen willst: ",
+  "delete_nutrition": "Nährwert löschen?",
+  "sure_you_want_to_delete_this_nutrition": "Bist du dir sicher, dass du diesen Nährwert endgültig löschen willst: ",
+  "delete_category": "Kategorie löschen?",
+  "sure_you_want_to_delete_this_category": "Bist du dir sicher, dass du diese Kategorie endgültig löschen willst: ",
+  "delete_recipe": "Rezept löschen?",
+  "sure_you_want_to_delete_this_recipe": "Bist du dir sicher, dass du dieses Rezept endgültig:",
 
   "no": "nein",
   "yes": "ja",
@@ -132,6 +136,10 @@
   "snackbar_automatic_theme_applied": "das Theme wird, wenn unterstützt bei neustart angewendet",
   "snackbar_bright_theme_applied": "helles Theme angewendet",
   "snackbar_dark_theme_applied": "dunkles Theme angewendet",
-  "snackbar_midnight_theme_applied": "schwarzes Theme angewendet"
+  "snackbar_midnight_theme_applied": "schwarzes Theme angewendet",
+
+  "by_name": "nach Name",
+  "by_effort": "nach Aufwand",
+  "by_ingredientsamount": "nach Zutatenmenge"
 
 }
