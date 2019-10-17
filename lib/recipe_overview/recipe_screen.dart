@@ -435,20 +435,24 @@ class RecipePage extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        // TODO: internationalize
         title: Text(S.of(context).delete_recipe),
         content: Text(
             S.of(context).sure_you_want_to_delete_this_recipe + " $recipeName"),
         actions: <Widget>[
           FlatButton(
             child: Text(S.of(context).no),
+            textColor: Theme.of(context).textTheme.body1.color,
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           ScopedModelDescendant<RecipeKeeper>(
             builder: (context, child, rKeeper) => FlatButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               child: Text(S.of(context).yes),
+              textColor: Theme.of(context).textTheme.body1.color,
+              color: Colors.red[600],
               onPressed: () {
                 rKeeper.deleteRecipeWithName(recipeName, true).then((_) {
                   Navigator.pop(context);

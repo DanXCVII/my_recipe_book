@@ -152,6 +152,9 @@ class _NutritionManagerState extends State<NutritionManager> {
         actions: <Widget>[
           FlatButton(
             child: Text(S.of(context).no),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            textColor: Theme.of(context).textTheme.body1.color,
             onPressed: () {
               Navigator.pop(context, false);
               return false;
@@ -160,6 +163,10 @@ class _NutritionManagerState extends State<NutritionManager> {
           ScopedModelDescendant<RecipeKeeper>(
             builder: (context, child, rKeeper) => FlatButton(
               child: Text(S.of(context).yes),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              textColor: Theme.of(context).textTheme.body1.color,
+              color: Colors.red[600],
               onPressed: () {
                 if (removeFromList) {
                   nutritionsController.remove(nutritionName);

@@ -42,7 +42,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(22,22,22,12),
+                    padding: const EdgeInsets.fromLTRB(22, 22, 22, 12),
                     child: AddShoppingCartDialog(),
                   ),
                 ),
@@ -117,7 +117,6 @@ class FancyShoppingCartScreen extends StatelessWidget {
       child: Center(
         child: Text(
           S.of(context).shopping_cart_is_empty,
-        
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 22,

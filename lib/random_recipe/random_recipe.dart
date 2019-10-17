@@ -41,6 +41,8 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
           }
           return FlatButton(
             color: currentCategory == _selectedCategory ? Colors.brown : null,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             textColor:
                 currentCategory == _selectedCategory ? Colors.amber : null,
             onPressed: () {

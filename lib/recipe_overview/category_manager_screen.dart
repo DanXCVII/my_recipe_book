@@ -84,6 +84,9 @@ class CategoryManager extends StatelessWidget {
         actions: <Widget>[
           FlatButton(
             child: Text(S.of(context).no),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            textColor: Theme.of(context).textTheme.body1.color,
             onPressed: () {
               Navigator.pop(context);
             },
@@ -91,6 +94,10 @@ class CategoryManager extends StatelessWidget {
           ScopedModelDescendant<RecipeKeeper>(
             builder: (context, child, rKeeper) => FlatButton(
               child: Text(S.of(context).yes),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              color: Colors.red[600],
+              textColor: Theme.of(context).textTheme.body1.color,
               onPressed: () {
                 rKeeper.removeCategory(categoryName);
                 Navigator.pop(context);
