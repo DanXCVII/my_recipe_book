@@ -49,6 +49,8 @@ dependencies:
   sliding_up_panel: ^0.3.6
   autocomplete_textfield: ^1.7.3
   tuple: ^1.0.3
+  hive_flutter: ^0.2.1
+
   
   share:
     git:

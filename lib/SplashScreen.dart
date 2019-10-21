@@ -8,6 +8,9 @@ import 'package:my_recipe_book/theming.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
+import 'package:hive/hive.dart';
+
+import 'models/recipe.dart';
 
 class Consts {
   Consts._();
@@ -87,6 +90,11 @@ class SplashScreenState extends State<SplashScreen> {
         ),
       );
     }
+
+    await Hive.openBox<Recipe>('recipes');
+    await Hive.openBox<String>('categories');
+    await Hive.openBox<List<String>>('ingredientNames');
+    await Hive.openBox<CheckableIngredient>('shoppingCart');
   }
 
   Future<void> initializeFirstStartData() async {

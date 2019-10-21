@@ -1,24 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
 
-class Recipe {
+@HiveType()
+class Recipe extends HiveObject {
+  @HiveField(0)
   String name;
+  @HiveField(1)
   String imagePath;
+  @HiveField(2)
   String imagePreviewPath;
+  @HiveField(3)
   double preperationTime;
+  @HiveField(4)
   double cookingTime;
+  @HiveField(5)
   double totalTime;
+  @HiveField(6)
   double servings;
+  @HiveField(7)
   List<String> categories;
+  @HiveField(8)
   List<String> ingredientsGlossary = new List<String>();
+  @HiveField(9)
   List<List<Ingredient>> ingredients = new List<List<Ingredient>>();
+  @HiveField(10)
   Vegetable vegetable;
+  @HiveField(11)
   List<String> steps = new List<String>();
+  @HiveField(12)
   List<List<String>> stepImages = new List<List<String>>();
+  @HiveField(13)
   String notes;
+  @HiveField(14)
   List<Nutrition> nutritions;
+  @HiveField(15)
   bool isFavorite;
+  @HiveField(16)
   int effort;
 
   Recipe(
@@ -227,10 +246,14 @@ Color getRecipePrimaryColor(Vegetable vegetable) {
   return null;
 }
 
-class CheckableIngredient {
+class CheckableIngredient extends HiveObject {
+  @HiveField(0)
   String name;
+  @HiveField(1)
   double amount;
+  @HiveField(2)
   String unit;
+  @HiveField(3)
   bool checked;
 
   CheckableIngredient(Ingredient i, {this.checked = false}) {

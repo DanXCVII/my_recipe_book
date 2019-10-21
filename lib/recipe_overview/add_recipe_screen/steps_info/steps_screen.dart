@@ -7,6 +7,7 @@ import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/settings/nutrition_manager.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:hive/hive.dart';
 
 import '../../../helper.dart';
 import '../../../my_wrapper.dart';
@@ -196,7 +197,11 @@ class _StepsScreenState extends State<StepsScreen> {
             widget.newRecipe.name,
             getImageDatatype(widget.newRecipe.imagePath));
       }
-
+      var boxRecipes = Hive.box<Recipe>('recipes');
+      boxRecipes.add(widget.newRecipe);
+      if (boxRecipes.containsKey('${widget.newRecipe.name}')) {
+        boxRecipes.delete('${widget.newRecipe.name}');
+      }
       fullImagePathRecipe = await rKeeper.addRecipe(widget.newRecipe, false);
     }
     imageCache.clear();
