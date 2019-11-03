@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/dialogs/dialog_types.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:my_recipe_book/models/enums.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/recipe_overview/add_recipe_screen/ingredients_info/ingredients_screen.dart';
@@ -22,13 +23,11 @@ import '../validation_clean_up.dart';
 
 class GeneralInfoScreen extends StatefulWidget {
   final Recipe newRecipe;
-  final bool editingRecipe;
-  final Recipe editRecipe;
+  final String editRecipeName;
 
   GeneralInfoScreen({
     this.newRecipe,
-    this.editingRecipe,
-    this.editRecipe,
+    this.editRecipeName,
   });
 
   _GeneralInfoScreenState createState() => _GeneralInfoScreenState();
@@ -52,7 +51,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
     super.initState();
     if (widget.newRecipe.name != null)
       nameController.text = widget.newRecipe.name;
-    if (widget.editingRecipe &&
+    if (widget.editRecipeName != null &&
         widget.newRecipe.imagePath != "images/randomFood.jpg")
       selectedRecipeImage.selectedImage = widget.newRecipe.imagePath;
     if (widget.newRecipe.preperationTime != null &&
@@ -115,27 +114,27 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
               _finishedEditingGeneralInfo();
             },
           ),
-          ScopedModelDescendant<RecipeKeeper>(
-            builder: (context, child, rKeeper) => IconButton(
-              icon: Icon(Icons.art_track),
-              onPressed: () {
-                FocusScope.of(context).requestFocus(FocusNode());
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (_) => WillPopScope(
-                    // It disables the back button
-                    onWillPop: () async => false,
-                    child: RoundDialog(
-                        Center(child: CircularProgressIndicator()), 80),
-                  ),
-                );
-                DummyData().saveDummyData(rKeeper).then((_) {
-                  Navigator.pop(context);
-                });
-              },
-            ),
-          ),
+          // ScopedModelDescendant<RecipeKeeper>(
+          //   builder: (context, child, rKeeper) => IconButton(
+          //     icon: Icon(Icons.art_track),
+          //     onPressed: () {
+          //       FocusScope.of(context).requestFocus(FocusNode());
+          //       showDialog(
+          //         context: context,
+          //         barrierDismissible: false,
+          //         builder: (_) => WillPopScope(
+          //           // It disables the back button
+          //           onWillPop: () async => false,
+          //           child: RoundDialog(
+          //               Center(child: CircularProgressIndicator()), 80),
+          //         ),
+          //       );
+          //       DummyData().saveDummyData(rKeeper).then((_) {
+          //         Navigator.pop(context);
+          //       });
+          //     },
+          //   ),
+          // ),
         ],
       ),
       body: SingleChildScrollView(
@@ -146,7 +145,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
             imageWrapper: selectedRecipeImage,
             circleSize: 120,
             color: Color(0xFF790604),
-            recipeName: !widget.editingRecipe ? 'tmp' : widget.newRecipe.name,
+            recipeName:
+                widget.editRecipeName == null ? 'tmp' : widget.newRecipe.name,
           ),
           SizedBox(height: 30),
           Form(
@@ -274,10 +274,10 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
     }
 
     newRecipe.name = nameController.text;
-    newRecipe.imagePath = recipeImage != null
-        ? PathProvider.pP.getRecipePath(nameController.text, imageDatatype)
-        : "images/randomFood.jpg";
     newRecipe.categories = newRecipeCategories;
+    newRecipe.imagePath = selectedRecipeImage.selectedImage == null
+        ? 'images/randomFood.jpg'
+        : selectedRecipeImage.selectedImage;
     newRecipe.preperationTime = preperationTimeController.text.isEmpty
         ? 0
         : double.parse(
@@ -294,9 +294,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
       context,
       CupertinoPageRoute(
           builder: (context) => IngredientsAddScreen(
-                editingRecipe: widget.editingRecipe,
+                editRecipeName: widget.editRecipeName,
                 newRecipe: newRecipe,
-                editRecipe: widget.editRecipe,
               )),
     );
   }

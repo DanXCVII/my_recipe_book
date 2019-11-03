@@ -3,13 +3,14 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:my_recipe_book/blocs/bloc_provider.dart';
+import 'package:my_recipe_book/blocs/recipe_category_overview_bloc.dart';
 import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/models/recipe_keeper.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:hive/hive.dart';
 
-import '../../database.dart';
 import './../recipe_screen.dart';
 import './../recipe_overview.dart';
 
@@ -18,27 +19,27 @@ import './../recipe_overview.dart';
 class RecipeCategoryOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<RecipeKeeper>(
-        builder: (context, child, model) {
-      List<String> categoryNames = model.categories;
-      if (model.isInitialised) {
-        return ListView.builder(
-            itemCount: categoryNames.length,
-            itemBuilder: (context, index) {
-              return RecipeRow(
-                recipePreviews:
-                    model.getRecipesOfCategory(categoryNames[index]),
-                category:
-                    index == categoryNames.length ? null : categoryNames[index],
-              );
-            });
-      } else {
-        return Container(
-          height: 110,
-          child: Center(child: CircularProgressIndicator()),
-        );
-      }
-    });
+    final RecipeCategoryOverviewBloc bloc =
+        BlocProvider.of<RecipeCategoryOverviewBloc>(context);
+
+    return StreamBuilder(
+        stream: bloc.outCategories,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List<String> categoryNames = snapshot.data;
+            return ListView.builder(
+                itemCount: categoryNames.length,
+                itemBuilder: (context, index) {
+                  return RecipeRow(
+                    index,
+                    category: categoryNames[index],
+                  );
+                });
+          } else {
+            // TODO: Handle no data
+            return (Text('kek'));
+          }
+        });
   }
 }
 
@@ -46,21 +47,22 @@ class RecipeCategoryOverview extends StatelessWidget {
 /// scrollable "List" of kinda circles with the recipes of that category
 class RecipeRow extends StatelessWidget {
   final String category;
-  final List<RecipePreview> recipePreviews;
+  final int index;
 
-  const RecipeRow({this.recipePreviews, this.category, Key key})
-      : super(key: key);
+  const RecipeRow(this.index, {this.category, Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (recipePreviews.isEmpty) return Container();
+    final RecipeCategoryOverviewBloc bloc =
+        BlocProvider.of<RecipeCategoryOverviewBloc>(context);
+
     return Column(
       children: <Widget>[
         Padding(
           padding: EdgeInsets.only(left: 20),
           child: GestureDetector(
             onTap: () {
-              _pushCategoryRoute(context, category, recipePreviews.length);
+              _pushCategoryRoute(context, category);
             },
             child: Padding(
               padding: const EdgeInsets.only(top: 12.0, bottom: 10.0, right: 8),
@@ -83,36 +85,60 @@ class RecipeRow extends StatelessWidget {
             ),
           ),
         ),
-        RecipeHozizontalList(
-          recipePreviews: recipePreviews,
-          categoryName: category == null ? 'no category' : category,
-        )
+        StreamBuilder<List<List<Recipe>>>(
+            stream: bloc.outCategoryRecipes,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return RecipeHozizontalList(
+                  categoryName: category,
+                  recipes: snapshot.data[index],
+                );
+              } else {
+                return Text(':/');
+              }
+            }),
       ],
     );
+  }
+
+  List<Recipe> _getRecipesOfCategory(
+      String categoryName, Box<List<String>> categoriesBox) {
+    List<Recipe> recipesOfCategory = [];
+    var recipesBox = Hive.box<Recipe>('recipes');
+
+    for (var t in recipesBox.keys) {
+      Recipe r = recipesBox.get('$t');
+    }
+
+    for (String recipeName in categoriesBox.get(categoryName)) {
+      recipesOfCategory.add(recipesBox.get(recipeName));
+    }
+
+    return recipesOfCategory;
   }
 }
 
 // List of Recipes in a horizontal order with icons as a symbol and unterneath the name
 class RecipeHozizontalList extends StatelessWidget {
-  final List<RecipePreview> recipePreviews;
+  final List<Recipe> recipes;
   final String categoryName;
 
   const RecipeHozizontalList({
     @required this.categoryName,
-    this.recipePreviews,
+    this.recipes,
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (recipePreviews.isEmpty) {
+    if (recipes.isEmpty) {
       return Container();
     }
     int recipeCount;
-    if (recipePreviews.length >= 8) {
+    if (recipes.length >= 8) {
       recipeCount = 8;
     } else {
-      recipeCount = recipePreviews.length;
+      recipeCount = recipes.length;
     }
 
     return Container(
@@ -130,6 +156,7 @@ class RecipeHozizontalList extends StatelessWidget {
                   context,
                   index,
                   '$categoryName$index-image',
+                  recipes[index],
                 );
               },
               child: Padding(
@@ -159,11 +186,11 @@ class RecipeHozizontalList extends StatelessWidget {
                                   bottomRight: Radius.circular(35)),
                               child: FadeInImage(
                                 // image: AssetImage(recipes[index].imagePath),
-                                image: recipePreviews[index].imagePreviewPath ==
+                                image: recipes[index].imagePreviewPath ==
                                         'images/randomFood.jpg'
                                     ? AssetImage('images/randomFood.jpg')
-                                    : FileImage(File(recipePreviews[index]
-                                        .imagePreviewPath)),
+                                    : FileImage(
+                                        File(recipes[index].imagePreviewPath)),
                                 fadeInDuration:
                                     const Duration(milliseconds: 250),
                                 placeholder: MemoryImage(kTransparentImage),
@@ -180,11 +207,11 @@ class RecipeHozizontalList extends StatelessWidget {
                                   bottomRight: Radius.circular(35)),
                               child: FadeInImage(
                                 // image: AssetImage(recipes[index].imagePath),
-                                image: recipePreviews[index].imagePreviewPath ==
+                                image: recipes[index].imagePreviewPath ==
                                         'images/randomFood.jpg'
                                     ? AssetImage('images/randomFood.jpg')
-                                    : FileImage(File(recipePreviews[index]
-                                        .imagePreviewPath)),
+                                    : FileImage(
+                                        File(recipes[index].imagePreviewPath)),
                                 fadeInDuration:
                                     const Duration(milliseconds: 250),
                                 placeholder: MemoryImage(kTransparentImage),
@@ -199,7 +226,7 @@ class RecipeHozizontalList extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(top: 4, left: 10, right: 10),
                         child: Text(
-                          recipePreviews[index].name,
+                          recipes[index].name,
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -221,8 +248,7 @@ class RecipeHozizontalList extends StatelessWidget {
               padding: EdgeInsets.only(left: 10, bottom: 40, right: 20),
               child: GestureDetector(
                 onTap: () {
-                  _pushCategoryRoute(
-                      context, categoryName, recipePreviews.length);
+                  _pushCategoryRoute(context, categoryName);
                 },
                 child: Container(
                   height: 90,
@@ -253,37 +279,27 @@ class RecipeHozizontalList extends StatelessWidget {
     );
   }
 
-  void _pushRecipeRoute(BuildContext context, int index, String heroImageTag) {
-    DBProvider.db
-        .getRecipeByName(recipePreviews[index].name, true)
-        .then((recipe) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => new RecipeScreen(
-            recipe: recipe,
-            primaryColor:
-                getRecipePrimaryColor(recipePreviews[index].vegetable),
-            heroImageTag: heroImageTag,
-          ),
+  void _pushRecipeRoute(
+      BuildContext context, int index, String heroImageTag, Recipe recipe) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => new RecipeScreen(
+          recipe: recipe,
+          primaryColor: getRecipePrimaryColor(recipes[index].vegetable),
+          heroImageTag: heroImageTag,
         ),
-      );
-    });
+      ),
+    );
   }
 }
 
-void _pushCategoryRoute(
-    BuildContext context, String categoryName, int recipePreviewAmount) {
-  Random randomRecipe = new Random();
-
+void _pushCategoryRoute(BuildContext context, String categoryName) {
   Navigator.push(
     context,
     CupertinoPageRoute(
       builder: (BuildContext context) => new RecipeGridView(
         category: categoryName == null ? 'no category' : categoryName,
-        randomImage: recipePreviewAmount != 1
-            ? randomRecipe.nextInt(recipePreviewAmount)
-            : 0,
       ),
     ),
   );

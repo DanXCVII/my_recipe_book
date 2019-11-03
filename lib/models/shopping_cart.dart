@@ -1,5 +1,5 @@
 import 'package:my_recipe_book/database.dart';
-import 'package:my_recipe_book/models/recipe.dart';
+import 'ingredient.dart';
 
 import 'package:scoped_model/scoped_model.dart';
 
@@ -212,7 +212,10 @@ class ShoppingCartKeeper extends Model {
     if (!alreadyExisting) {
       _recipes.add(recipeName);
       _shoppingCart.addAll({
-        recipeName: [CheckableIngredient(ingredient)]
+        recipeName: [
+          CheckableIngredient(
+              ingredient.name, ingredient.amount, ingredient.unit, false)
+        ]
       });
     } else {
       var modifyIngred = _getSuitingIngredientRecipe(ingredient, recipeName);
@@ -222,7 +225,8 @@ class ShoppingCartKeeper extends Model {
         }
         modifyIngred.checked = false;
       } else {
-        _shoppingCart[recipeName].add(CheckableIngredient(ingredient));
+        _shoppingCart[recipeName].add(CheckableIngredient(
+            ingredient.name, ingredient.amount, ingredient.unit, false));
       }
     }
 

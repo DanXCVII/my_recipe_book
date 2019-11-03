@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/models/ingredient.dart';
 
 import '../../database.dart';
 

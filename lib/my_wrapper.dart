@@ -1,4 +1,4 @@
-import 'models/recipe.dart';
+import 'models/enums.dart';
 
 class MyImageWrapper {
   String selectedImage;

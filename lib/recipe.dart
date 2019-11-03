@@ -142,6 +142,8 @@ class PathProvider {
       List<List<String>> stepImages, String recipeName) async {
     String cRecipeName = getUnderscoreName(recipeName);
 
+    if (!Directory(await getRecipeDir(recipeName)).existsSync()) return [[]];
+
     List<List<String>> output = [];
     for (int i = 0; i < stepImages.length; i++) {
       String dir = await getRecipeStepPreviewNumberDirFull(cRecipeName, i);

@@ -7,6 +7,8 @@ import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/dialogs/dialog_types.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
+import 'package:my_recipe_book/models/enums.dart';
+import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/settings/nutrition_manager.dart';
@@ -485,12 +487,8 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
         CupertinoPageRoute(
           builder: (context) => WillPopScope(
             child: NutritionManager(
-              widget.editRecipe == null ? false : true,
-              editRecipeNutritions: widget.editRecipe == null
-                  ? null
-                  : widget.editRecipe.nutritions,
-              nutritions: rKeeper.nutritions,
-              recipeName: nameController.text,
+              editRecipeName: widget.editRecipe.name,
+              newRecipe: newRecipe,
             ),
             onWillPop: () async {
               Navigator.pop(context);
@@ -583,6 +581,7 @@ class _AddRecipeFormState extends State<AddRecipeForm> {
       );
     } else {
       if (_hasRecipeImage(newRecipe)) {
+        // TODO: maybe doesn't work
         await IO.renameRecipeData(
           oldRecipeImageName,
           recipeName,

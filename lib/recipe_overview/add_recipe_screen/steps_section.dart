@@ -143,6 +143,7 @@ class _StepState extends State<Step> {
       selectedImageFiles.add(File(currentImage));
     }
     getApplicationDocumentsDirectory().then((appDir) {
+      // TODO: modyfy when editing recipe
       for (int i = 0; i < widget.stepImages[widget.stepNumber].length; i++) {
         String currentImage = widget.stepImages[widget.stepNumber][i];
         widget.stepImages[widget.stepNumber][i] =

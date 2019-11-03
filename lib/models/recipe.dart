@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'enums.dart';
+import 'ingredient.dart';
+import 'nutrition.dart';
 
-enum Vegetable { NON_VEGETARIAN, VEGETARIAN, VEGAN }
+part './typeAdapter/recipe.g.dart';
 
 @HiveType()
 class Recipe extends HiveObject {
@@ -161,79 +164,6 @@ class Recipe extends HiveObject {
   }
 }
 
-class RecipePreview {
-  String name;
-  String imagePreviewPath;
-  String totalTime;
-  int ingredientsAmount;
-  int effort;
-  bool isFavorite;
-  Vegetable vegetable;
-  List<String> categories;
-
-  RecipePreview({
-    this.name,
-    this.totalTime,
-    this.imagePreviewPath,
-    this.ingredientsAmount,
-    this.effort,
-    this.vegetable,
-    this.isFavorite,
-    this.categories,
-  });
-
-  get rName => name;
-  get rTotalTime => totalTime;
-  get rIngredientsAmount => ingredientsAmount;
-  get rEffort => effort;
-  get rVegetable => vegetable;
-  get rIsFavorite => isFavorite;
-  get rImagePreviewPath => imagePreviewPath;
-  get rCategories => categories;
-}
-
-class Ingredient {
-  String name;
-  double amount;
-  String unit;
-
-  Ingredient({this.name, this.amount, this.unit});
-
-  factory Ingredient.fromMap(Map<String, dynamic> json) => new Ingredient(
-        name: json['name'],
-        amount: json['amount'],
-        unit: json['unit'],
-      );
-
-  Map<String, dynamic> toMap() => {
-        'name': name,
-        'amount': amount,
-        'unit': unit,
-      };
-}
-
-class Nutrition {
-  String name;
-  String amountUnit;
-
-  Nutrition({this.name, this.amountUnit});
-
-  @override
-  String toString() {
-    return '$name: $amountUnit';
-  }
-
-  factory Nutrition.fromMap(Map<String, dynamic> json) => new Nutrition(
-        name: json['name'],
-        amountUnit: json['amountUnit'],
-      );
-
-  Map<String, dynamic> toMap() => {
-        'name': name,
-        'amountUnit': amountUnit,
-      };
-}
-
 Color getRecipePrimaryColor(Vegetable vegetable) {
   switch (vegetable) {
     case Vegetable.NON_VEGETARIAN:
@@ -244,38 +174,6 @@ Color getRecipePrimaryColor(Vegetable vegetable) {
       return Color(0xff074505);
   }
   return null;
-}
-
-class CheckableIngredient extends HiveObject {
-  @HiveField(0)
-  String name;
-  @HiveField(1)
-  double amount;
-  @HiveField(2)
-  String unit;
-  @HiveField(3)
-  bool checked;
-
-  CheckableIngredient(Ingredient i, {this.checked = false}) {
-    name = i.name;
-    amount = i.amount;
-    unit = i.unit;
-  }
-  @override
-  String toString() {
-    return '$name $amount $unit $checked';
-  }
-
-  Ingredient getIngredient() {
-    return Ingredient(name: name, amount: amount, unit: unit);
-  }
-}
-
-class RecipeCategory {
-  String name;
-  String imagePath;
-
-  RecipeCategory({this.name, this.imagePath});
 }
 
 class SearchRecipe {

@@ -12,6 +12,7 @@ import '../recipe.dart';
 
 Future<void> copyRecipeDataToNewPath(
     String oldRecipeName, String newRecipeName) async {
+  print('IO Anfang');
   String _underscoreOldRecipeName = getUnderscoreName(oldRecipeName);
   String _underscoreNewRecipeName = getUnderscoreName(newRecipeName);
 
@@ -45,28 +46,34 @@ Future<void> copyRecipeDataToNewPath(
       }
     }
   }
+  print('IO Ende');
 }
 
 Future<void> renameRecipeData(String oldRecipeName, String newRecipeName,
     {String fileExtension}) async {
-  Directory oldRecipeDir =
-      Directory(await PathProvider.pP.getRecipeDir(oldRecipeName));
-  await oldRecipeDir.rename(await PathProvider.pP.getRecipeDir(newRecipeName));
+  await copyRecipeDataToNewPath(oldRecipeName, newRecipeName);
+  await Directory(await PathProvider.pP.getRecipeDir(oldRecipeName))
+      .delete(recursive: true);
+  //
 
-  if (fileExtension != null) {
-    File oldRecipeImageFile = File(await PathProvider.pP
-        .getRecipeOldPathFull(oldRecipeName, newRecipeName, fileExtension));
-    if (oldRecipeImageFile.existsSync()) {
-      await oldRecipeImageFile.rename(await PathProvider.pP
-          .getRecipePathFull(newRecipeName, fileExtension));
-    }
+  // Directory oldRecipeDir =
+  //     Directory(await PathProvider.pP.getRecipeDir(oldRecipeName));
+  // await oldRecipeDir.rename(await PathProvider.pP.getRecipeDir(newRecipeName));
 
-    File oldRecipePreviewImageFile = File(await PathProvider.pP
-        .getRecipePreviewOldPathFull(
-            oldRecipeName, newRecipeName, fileExtension));
-    await oldRecipePreviewImageFile.rename(await PathProvider.pP
-        .getRecipePreviewPathFull(newRecipeName, fileExtension));
-  }
+  // if (fileExtension != null) {
+  //   File oldRecipeImageFile = File(await PathProvider.pP
+  //       .getRecipeOldPathFull(oldRecipeName, newRecipeName, fileExtension));
+  //   if (oldRecipeImageFile.existsSync()) {
+  //     await oldRecipeImageFile.rename(await PathProvider.pP
+  //         .getRecipePathFull(newRecipeName, fileExtension));
+  //   }
+
+  //   File oldRecipePreviewImageFile = File(await PathProvider.pP
+  //       .getRecipePreviewOldPathFull(
+  //           oldRecipeName, newRecipeName, fileExtension));
+  //   await oldRecipePreviewImageFile.rename(await PathProvider.pP
+  //       .getRecipePreviewPathFull(newRecipeName, fileExtension));
+  // }
 }
 
 Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
@@ -134,8 +141,6 @@ Future<String> saveStepImage(File newImage, int stepNumber,
   String stepImagePathFull =
       await PathProvider.pP.getRecipeStepNumberDirFull(recipeName, stepNumber) +
           newStepImageName;
-  String stepImagePath =
-      PathProvider.pP.getRecipeStepNumberDir(recipeName, stepNumber);
 
   saveImage(
     newImage,
@@ -149,7 +154,7 @@ Future<String> saveStepImage(File newImage, int stepNumber,
         newStepImagePreviewName,
     250,
   );
-  return stepImagePath + newStepImageName;
+  return stepImagePathFull;
 }
 
 Future<void> saveImage(File image, String name, int resolution) async {

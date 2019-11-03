@@ -5,9 +5,14 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import './recipe.dart';
+import 'package:hive/hive.dart';
 import 'dart:async';
 
+import 'models/enums.dart';
+import 'models/ingredient.dart';
+import 'models/nutrition.dart';
 import 'models/recipe.dart';
+import 'models/recipe_preview.dart';
 
 // singleton DBProvider to ensure, that we only use one object
 class DBProvider {
@@ -863,12 +868,10 @@ class DBProvider {
         shoppingCartIngredients.addAll({recipeName: []});
       }
       shoppingCartIngredients[recipeName].add(CheckableIngredient(
-        Ingredient(
-          name: ingredientName,
-          amount: ingredientAmount,
-          unit: ingredientUnit,
-        ),
-        checked: checked == 1 ? true : false,
+        ingredientName,
+        ingredientAmount,
+        ingredientUnit,
+        checked == 1 ? true : false,
       ));
     }
     if (shoppingCartIngredients.keys.isEmpty) {

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/models/enums.dart';
+import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/recipe_overview/add_recipe_screen/steps_info/steps_screen.dart';
 import 'package:my_recipe_book/recipe_overview/add_recipe_screen/validator/dialogs.dart';
@@ -12,13 +14,11 @@ import '../vegetarian_section.dart';
 
 class IngredientsAddScreen extends StatefulWidget {
   final Recipe newRecipe;
-  final bool editingRecipe;
-  final Recipe editRecipe;
+  final String editRecipeName;
 
   IngredientsAddScreen({
     this.newRecipe,
-    this.editingRecipe,
-    this.editRecipe,
+    this.editRecipeName,
     Key key,
   }) : super(key: key);
 
@@ -219,9 +219,8 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
       context,
       CupertinoPageRoute(
         builder: (context) => StepsScreen(
-          editingRecipe: widget.editingRecipe,
+          editRecipeName: widget.editRecipeName,
           newRecipe: widget.newRecipe,
-          editRecipe: widget.editRecipe,
         ),
       ),
     );

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/blocs/favorite_recipes_bloc.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
@@ -24,7 +25,11 @@ import 'package:my_recipe_book/settings/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 
+import 'blocs/bloc_provider.dart';
+import 'blocs/category_gridview_bloc.dart';
+import 'blocs/recipe_category_overview_bloc.dart';
 import 'generated/i18n.dart';
+import 'models/ingredient.dart';
 import 'models/recipe.dart';
 import 'recipe_overview/recipe_category_overview/r_category_overview.dart';
 import 'shopping_cart/shopping_cart.dart';
@@ -163,10 +168,19 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             AnimatedSwitcher(
               duration: Duration(milliseconds: 200),
               child: mpNavigator.recipeCatOverview == true
-                  ? RecipeCategoryOverview()
-                  : CategoryGridView(),
+                  ? BlocProvider<RecipeCategoryOverviewBloc>(
+                      bloc: RecipeCategoryOverviewBloc(),
+                      child: RecipeCategoryOverview(),
+                    )
+                  : BlocProvider<CategoryGridviewBloc>(
+                      bloc: CategoryGridviewBloc(),
+                      child: CategoryGridView(),
+                    ),
             ),
-            FavoriteScreen(),
+            BlocProvider<FavoriteRecipesBloc>(
+              bloc: FavoriteRecipesBloc(),
+              child: FavoriteScreen(),
+            ),
             mpNavigator.showFancyShoppingList
                 ? FancyShoppingCartScreen()
                 : ShoppingCartScreen(),
@@ -399,8 +413,11 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                             context,
                             MaterialPageRoute(
                               builder: (context) => GeneralInfoScreen(
-                                newRecipe: rKeeper.currentlyEditedRecipe,
-                                editingRecipe: false,
+                                newRecipe: Recipe(
+                                    name: null,
+                                    vegetable: null,
+                                    servings: null,
+                                    isFavorite: false),
                               ),
                             ),
                           )

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:my_recipe_book/dialogs/add_nut_cat_dialog.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:hive/hive.dart';
+import '../hive.dart';
 
 class CategoryManager extends StatelessWidget {
   @override
@@ -32,44 +35,46 @@ class CategoryManager extends StatelessWidget {
           onPressed: () {
             showDialog(context: context, builder: (_) => AddDialog(false));
           }),
-      body: ScopedModelDescendant<RecipeKeeper>(
-          builder: (context, child, rKeeper) {
-        if (rKeeper.categories.length == 1) {
-          return Center(
-            child: Text(S.of(context).you_have_no_categories),
-          );
-        } else {
-          return ReorderableListView(
-            onReorder: (oldIndex, newIndex) {
-              rKeeper.moveCategory(oldIndex, newIndex);
-            },
-            children: rKeeper.categories.map((categoryName) {
-              return ListTile(
-                key: Key(categoryName),
-                title: GestureDetector(
-                  onTap: () {
-                    showDialog(
-                        context: context,
-                        builder: (_) => AddDialog(
-                              false,
-                              modifiedItem: categoryName,
-                            ));
-                  },
-                  child: Text(categoryName),
-                ),
-                leading: Icon(Icons.reorder),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    _showDeleteDialog(context, categoryName);
-                  },
-                ),
+      body: WatchBoxBuilder(
+          box: Hive.box<List<String>>('order'),
+          builder: (context, boxCategoryOrder) {
+            List<String> categories = boxCategoryOrder.get('categories');
+
+            if (categories.length == 1) {
+              return Center(
+                child: Text(S.of(context).you_have_no_categories),
               );
-            }).toList()
-              ..removeLast(),
-          );
-        }
-      }),
+            } else {
+              return ReorderableListView(
+                  onReorder: (oldIndex, newIndex) {
+                    moveCategory(oldIndex, newIndex);
+                  },
+                  children: categories.map((categoryName) {
+                    return ListTile(
+                      key: Key(categoryName),
+                      title: GestureDetector(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (_) => AddDialog(
+                                    false,
+                                    modifiedItem: categoryName,
+                                  ));
+                        },
+                        child: Text(categoryName),
+                      ),
+                      leading: Icon(Icons.reorder),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          _showDeleteDialog(context, categoryName);
+                        },
+                      ),
+                    );
+                  }).toList()
+                    ..removeLast());
+            }
+          }),
     );
   }
 
@@ -99,7 +104,7 @@ class CategoryManager extends StatelessWidget {
               color: Colors.red[600],
               textColor: Theme.of(context).textTheme.body1.color,
               onPressed: () {
-                rKeeper.removeCategory(categoryName);
+                deleteCategory(categoryName);
                 Navigator.pop(context);
               },
             ),

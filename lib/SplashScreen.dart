@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_recipe_book/intro_screen.dart';
+import 'package:my_recipe_book/models/nutrition.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/selected_index.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/theming.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 import 'package:hive/hive.dart';
 
+import 'models/enums.dart';
+import 'models/ingredient.dart';
 import 'models/recipe.dart';
+import 'models/shopping_cart_tuple.dart';
 
 class Consts {
   Consts._();
@@ -64,6 +69,8 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> loadData() async {
+    _initHive();
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     _initShoppingListScreen(prefs);
@@ -90,15 +97,55 @@ class SplashScreenState extends State<SplashScreen> {
         ),
       );
     }
-
-    await Hive.openBox<Recipe>('recipes');
-    await Hive.openBox<String>('categories');
-    await Hive.openBox<List<String>>('ingredientNames');
-    await Hive.openBox<CheckableIngredient>('shoppingCart');
   }
 
   Future<void> initializeFirstStartData() async {
     widget.rKeeper.firstStartInitialize();
+  }
+
+  Future<void> _initHive() async {
+    Hive.init((await getApplicationDocumentsDirectory()).path);
+    Hive.registerAdapter(RecipeAdapter(), 0);
+    Hive.registerAdapter(IngredientAdapter(), 1);
+    Hive.registerAdapter(CheckableIngredientAdapter(), 2);
+    Hive.registerAdapter(VegetableAdapter(), 3);
+    Hive.registerAdapter(NutritionAdapter(), 4);
+    Hive.registerAdapter(RecipeAdapter(), 5);
+    Hive.registerAdapter(StringListTupleAdapter(), 6);
+    Hive.registerAdapter(RecipeSortAdapter(), 7);
+
+    await Hive.openBox('recipes', lazy: true);
+    await Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString());
+    await Hive.openBox<String>(Vegetable.VEGETARIAN.toString());
+    await Hive.openBox<String>(Vegetable.VEGAN.toString());
+    await Hive.openBox<String>('categories');
+    await Hive.openBox<String>('recipeName');
+
+    await Hive.openBox<String>('favorites');
+    await Hive.openBox<String>('ingredientNames');
+
+    await Hive.openBox<List<String>>('order');
+    await Hive.openBox<List<CheckableIngredient>>('shoppingCart');
+    await Hive.openBox<List<String>>('recipeCategories');
+
+    // initializing with the must have values
+    if (Hive.box<String>('categories').keys.isEmpty)
+      Hive.box<String>('categories').put('no category', 'no category');
+
+    if (Hive.box<String>('recipeName').keys.isEmpty)
+      Hive.box<String>('recipeName').put('summary', 'summary');
+
+    if (Hive.box<List<CheckableIngredient>>('shoppingCart').keys.isEmpty)
+      Hive.box<List<CheckableIngredient>>('shoppingCart').put('summary', []);
+
+    if (Hive.box<List<String>>('recipeCategories').keys.isEmpty)
+      Hive.box<List<String>>('recipeCategories').put('no category', []);
+
+    if (Hive.box<List<String>>('order').keys.isEmpty) {
+      Box<List<String>> boxOrder = Hive.box<List<String>>('order');
+      boxOrder.put('categories', ['no category']);
+      boxOrder.put('nutritions', []);
+    }
   }
 
   Future<void> clearCache() async {}

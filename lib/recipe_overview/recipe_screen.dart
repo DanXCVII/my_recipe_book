@@ -4,7 +4,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/database.dart';
+import 'package:my_recipe_book/hive.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
+import 'package:my_recipe_book/models/enums.dart';
+import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
@@ -100,6 +103,7 @@ class RecipeScreen extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
+                      SizedBox(height: 10),
                       GestureDetector(
                         onTap: () {
                           _pc.animatePanelToPosition(1);
@@ -114,6 +118,7 @@ class RecipeScreen extends StatelessWidget {
                                   BorderRadius.all(Radius.circular(12.0))),
                         ),
                       ),
+                      SizedBox(height: 10),
                       GestureDetector(
                         onTap: () {
                           _pc.animatePanelToPosition(1);
@@ -224,7 +229,7 @@ class RecipePage extends StatelessWidget {
               builder: (context, child, rKeeper) => SliverAppBar(
                 backgroundColor: primaryColor,
                 actions: <Widget>[
-                  Favorite(recipe, rKeeper),
+                  Favorite(recipe),
                   IconButton(
                     icon: Icon(Icons.edit),
                     tooltip: 'edit',
@@ -410,14 +415,14 @@ class RecipePage extends StatelessWidget {
   }
 
   void pushEditRecipe(BuildContext context) {
+    Recipe modifyRecipe = Recipe(name: null, servings: null, vegetable: null);
+    modifyRecipe.setEqual(recipe);
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (BuildContext context) => GeneralInfoScreen(
-                  editingRecipe: true,
-                  newRecipe: Recipe(name: null, servings: null, vegetable: null)
-                    ..setEqual(recipe),
-                  editRecipe: recipe,
+                  newRecipe: modifyRecipe,
+                  editRecipeName: recipe.name,
                 )));
   }
 
@@ -446,21 +451,18 @@ class RecipePage extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
-          ScopedModelDescendant<RecipeKeeper>(
-            builder: (context, child, rKeeper) => FlatButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              child: Text(S.of(context).yes),
-              textColor: Theme.of(context).textTheme.body1.color,
-              color: Colors.red[600],
-              onPressed: () {
-                rKeeper.deleteRecipeWithName(recipeName, true).then((_) {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                });
-              },
-            ),
-          )
+          FlatButton(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Text(S.of(context).yes),
+            textColor: Theme.of(context).textTheme.body1.color,
+            color: Colors.red[600],
+            onPressed: () {
+              deleteRecipe(recipeName);
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+          ),
         ],
       ),
     );
@@ -914,7 +916,6 @@ class _CategoryCircleState extends State<CategoryCircle> {
               context,
               MaterialPageRoute(
                 builder: (BuildContext context) => new RecipeGridView(
-                  randomImage: r.length != 1 ? rand.nextInt(r.length) : 0,
                   category: widget.categoryName == null
                       ? 'no category'
                       : widget.categoryName,
@@ -1231,9 +1232,10 @@ class IngredientsScreenState extends State<IngredientsScreen> {
 
   List<Widget> getIngredientsData() {
     List<Widget> output = [];
-    bool oneSection = widget.currentRecipe.ingredientsGlossary.length == 1;
+    bool oneSection = widget.currentRecipe.ingredientsGlossary.isEmpty;
+    int loop = oneSection ? 1 : widget.currentRecipe.ingredientsGlossary.length;
 
-    for (int i = 0; i < widget.currentRecipe.ingredientsGlossary.length; i++) {
+    for (int i = 0; i < loop; i++) {
       List<Ingredient> sectionIngredients = widget.currentRecipe.ingredients[i];
       output.add(
         Padding(
@@ -1245,7 +1247,8 @@ class IngredientsScreenState extends State<IngredientsScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text("${widget.currentRecipe.ingredientsGlossary[i]}",
+              Text(
+                  "${widget.currentRecipe.ingredientsGlossary.isNotEmpty ? widget.currentRecipe.ingredientsGlossary[i] : ''}",
                   style: TextStyle(
                     color: textColor,
                     fontSize: 24,

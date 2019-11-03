@@ -2,75 +2,76 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/blocs/bloc_provider.dart';
+import 'package:my_recipe_book/blocs/category_gridview_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_category_overview_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_overview_bloc.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
+import 'package:my_recipe_book/models/recipe_preview.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:tuple/tuple.dart';
 
 class CategoryGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<RecipeKeeper>(
-      builder: (context, child, model) => GridView.extent(
+    final CategoryGridviewBloc bloc =
+        BlocProvider.of<CategoryGridviewBloc>(context);
+
+    return StreamBuilder<List<Tuple2<String, String>>>(
+      stream: bloc.outCategories,
+      builder: (context, snapshot) => GridView.extent(
           maxCrossAxisExtent: 300,
           padding: const EdgeInsets.all(4),
           mainAxisSpacing: 4,
           crossAxisSpacing: 4,
-          children: getCategories(model.categories, model)),
+          children: getCategories(snapshot.data)),
     );
   }
 
-  List<Widget> getCategories(List<String> categoryNames, RecipeKeeper rKeeper) {
+  List<Widget> getCategories(List<Tuple2<String, String>> categoryNames) {
     List<Widget> gridTiles = [];
 
-    for (final String category in categoryNames) {
-      List<RecipePreview> recipes = rKeeper.getRecipesOfCategory(category);
-      if (recipes.isNotEmpty)
-        gridTiles.add(CategoryGridTile(
-          recipes: recipes,
-          category: category,
-        ));
+    for (final Tuple2<String, String> categoryTuple in categoryNames) {
+      gridTiles.add(CategoryGridTile(
+        category: categoryTuple.item1,
+        randomCategoryImage: categoryTuple.item2,
+      ));
     }
     return gridTiles;
   }
 }
 
 class CategoryGridTile extends StatelessWidget {
-  final List<RecipePreview> recipes;
+  final String randomCategoryImage;
   final String category;
 
-  const CategoryGridTile({this.recipes, this.category, Key key})
-      : super(key: key);
+  const CategoryGridTile({
+    this.randomCategoryImage,
+    this.category,
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String imageAsset;
-    Random r = new Random();
-    int rand;
-    if (recipes.isNotEmpty) {
-      rand = r.nextInt(recipes.length);
-      imageAsset = recipes[rand].rImagePreviewPath;
-    } else {
-      imageAsset = "images/randomFood.jpg";
-    }
     return GestureDetector(
         onTap: () {
-          Random randomRecipe = new Random();
-
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => RecipeGridView(
-                        randomImage: recipes.length != 1
-                            ? randomRecipe.nextInt(recipes.length)
-                            : 0,
-                        category: category,
-                      )));
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) =>
+                  BlocProvider<RecipeOverviewBloc>(
+                bloc: RecipeOverviewBloc(category: category),
+                child: RecipeGridView(
+                  category: category,
+                ),
+              ),
+            ),
+          );
         },
         child: GridTile(
-          child: imageAsset == 'images/randomFood.jpg'
-              ? Image.asset(imageAsset, fit: BoxFit.cover)
-              : Image.file(File(imageAsset), fit: BoxFit.cover),
+          child: randomCategoryImage == 'images/randomFood.jpg'
+              ? Image.asset(randomCategoryImage, fit: BoxFit.cover)
+              : Image.file(File(randomCategoryImage), fit: BoxFit.cover),
           footer: GridTileBar(
             title: Text(
               category,

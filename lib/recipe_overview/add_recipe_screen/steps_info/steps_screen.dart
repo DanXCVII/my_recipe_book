@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
@@ -6,6 +8,7 @@ import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/recipe.dart';
 import 'package:my_recipe_book/settings/nutrition_manager.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:hive/hive.dart';
 
@@ -16,13 +19,11 @@ import '../steps_section.dart';
 
 class StepsScreen extends StatefulWidget {
   final Recipe newRecipe;
-  final bool editingRecipe;
-  final Recipe editRecipe;
+  final String editRecipeName;
 
   StepsScreen({
     this.newRecipe,
-    this.editingRecipe,
-    this.editRecipe,
+    this.editRecipeName,
     Key key,
   }) : super(key: key);
 
@@ -57,7 +58,7 @@ class _StepsScreenState extends State<StepsScreen> {
         }
         stepsDescController[i].text = widget.newRecipe.steps[i];
 
-        if (widget.editingRecipe)
+        if (widget.editRecipeName != null)
           for (int j = 0; j < widget.newRecipe.stepImages[i].length; j++) {
             stepImages[i].add(widget.newRecipe.stepImages[i][j]);
           }
@@ -95,11 +96,11 @@ class _StepsScreenState extends State<StepsScreen> {
           children: <Widget>[
             Form(
               key: _formKey,
-              child: widget.editingRecipe
+              child: widget.editRecipeName != null
                   ? Steps(
                       stepsDescController,
                       stepImages,
-                      editRecipeName: widget.editRecipe.name,
+                      editRecipeName: widget.editRecipeName,
                     )
                   : Steps(
                       stepsDescController,
@@ -128,9 +129,9 @@ class _StepsScreenState extends State<StepsScreen> {
   }
 
   void _finishedEditingRecipe(RecipeKeeper rKeeper) {
-    String oldRecipeImageName = !widget.editingRecipe
+    String oldRecipeImageName = widget.editRecipeName == null
         ? 'tmp'
-        : getUnderscoreName(widget.editRecipe.name);
+        : getUnderscoreName(widget.editRecipeName);
 
     // modifying the stepImages paths for the database
     for (int i = 0; i < stepImages.length; i++) {
@@ -146,78 +147,13 @@ class _StepsScreenState extends State<StepsScreen> {
     widget.newRecipe.notes = notesController.text;
     widget.newRecipe.effort = complexity.myDouble.round();
 
-    saveRecipe(rKeeper).then((recipe) {
-      Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.push(
+    Navigator.push(
         context,
         CupertinoPageRoute(
-          builder: (context) => WillPopScope(
-            onWillPop: () async {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              rKeeper.currentlyEditedRecipe =
-                  Recipe(servings: null, name: null, vegetable: null);
-              return false;
-            },
-            child: NutritionManager(
-              widget.editingRecipe,
-              editRecipeNutritions: widget.newRecipe.nutritions,
-              nutritions: rKeeper.nutritions,
-              recipeName: widget.newRecipe.name,
-            ),
+          builder: (context) => NutritionManager(
+            newRecipe: widget.newRecipe,
+            editRecipeName: widget.editRecipeName,
           ),
-        ),
-      );
-    });
+        ));
   }
-
-  Future<Recipe> saveRecipe(RecipeKeeper rKeeper) async {
-    String oldRecipeImageName = !widget.editingRecipe
-        ? 'tmp'
-        : getUnderscoreName(widget.editRecipe.name);
-
-    Recipe fullImagePathRecipe;
-    if (widget.editingRecipe) {
-      fullImagePathRecipe = await rKeeper.modifyRecipe(
-        widget.editRecipe.name,
-        widget.newRecipe,
-        false,
-      );
-    } else {
-      if (_hasRecipeImage(widget.newRecipe)) {
-        await IO.renameRecipeData(
-          oldRecipeImageName,
-          widget.newRecipe.name,
-          fileExtension: widget.newRecipe.imagePath != null
-              ? getImageDatatype(widget.newRecipe.imagePath)
-              : null,
-        );
-        widget.newRecipe.imagePath = PathProvider.pP.getRecipePath(
-            widget.newRecipe.name,
-            getImageDatatype(widget.newRecipe.imagePath));
-      }
-      var boxRecipes = Hive.box<Recipe>('recipes');
-      boxRecipes.add(widget.newRecipe);
-      if (boxRecipes.containsKey('${widget.newRecipe.name}')) {
-        boxRecipes.delete('${widget.newRecipe.name}');
-      }
-      fullImagePathRecipe = await rKeeper.addRecipe(widget.newRecipe, false);
-    }
-    imageCache.clear();
-
-    return fullImagePathRecipe;
-  }
-}
-
-bool _hasRecipeImage(Recipe recipe) {
-  if (recipe.imagePath != "images/randomFood.jpg") {
-    return true;
-  }
-  for (List<String> l in recipe.stepImages) {
-    if (l.isNotEmpty) {
-      return true;
-    }
-  }
-  return false;
 }

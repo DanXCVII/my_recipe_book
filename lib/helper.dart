@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'models/ingredient.dart';
 import 'models/recipe.dart';
 
 String cutDouble(double number) {

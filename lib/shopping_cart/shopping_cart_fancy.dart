@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/dialogs/shopping_cart_add_dialog.dart';
+import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/shopping_cart/shopping_cart.dart';

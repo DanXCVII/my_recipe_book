@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/hive.dart';
 import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
@@ -95,7 +96,7 @@ class AddDialogState extends State<AddDialog> {
 
   String validateNameField(String name, RecipeKeeper rKeeper) {
     if (widget.modifyNutrition
-        ? rKeeper.doesNutritionExist(nameController.text)
+        ? doesNutritionExist(nameController.text)
         : rKeeper.doesCategoryExist(nameController.text)) {
       return widget.modifyNutrition
           ? 'nutrition already exists'
@@ -109,12 +110,12 @@ class AddDialogState extends State<AddDialog> {
     if (_formKey.currentState.validate()) {
       if (widget.modifiedItem == null) {
         widget.modifyNutrition
-            ? rKeeper.addNutrition(nameController.text).then((_) {})
-            : rKeeper.addCategory(nameController.text).then((_) {});
+            ? addNutrition(nameController.text)
+            : addCategory(nameController.text);
       } else {
         widget.modifyNutrition
-            ? rKeeper.renameNutrition(widget.modifiedItem, nameController.text)
-            : rKeeper.renameCategory(widget.modifiedItem, nameController.text);
+            ? renameNutrition(widget.modifiedItem, nameController.text)
+            : renameCategory(widget.modifiedItem, nameController.text);
       }
       Navigator.pop(context);
     }

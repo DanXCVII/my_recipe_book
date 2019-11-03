@@ -1,11 +1,17 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
+import 'package:my_recipe_book/blocs/bloc_provider.dart';
+import 'package:my_recipe_book/blocs/recipe_overview_bloc.dart';
+import 'package:my_recipe_book/models/enums.dart';
+import 'package:my_recipe_book/models/recipe_sort.dart';
+
+import '../hive.dart';
+import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/models/recipe_keeper.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:tuple/tuple.dart';
 
@@ -83,16 +89,12 @@ class RecipeGridView extends StatelessWidget {
   final String category;
   // set when the screen should show recipes of one vegetabletype
   final Vegetable vegetableRoute;
-  final List<RecipePreview> recipes;
   final String title;
-  final int randomImage;
 
   /// Either specify the list of recipes or a recipecategory
   /// Either specify the category or a title
   const RecipeGridView({
     this.category,
-    this.recipes,
-    @required this.randomImage,
     this.vegetableRoute,
     this.title,
     Key key,
@@ -100,179 +102,181 @@ class RecipeGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double scaleFactor = MediaQuery.of(context).size.height / 800;
-    return ScopedModelDescendant<RecipeKeeper>(
-        builder: (context, child, model) {
-      List<RecipePreview> recipePreviews = [];
-      if (category != null) {
-        recipePreviews = model.getRecipesOfCategory(category);
-      } else {
-        recipePreviews = recipes;
-      }
+    final RecipeOverviewBloc bloc =
+        BlocProvider.of<RecipeOverviewBloc>(context);
 
-      if (recipePreviews.isNotEmpty) {
-        String sliverAppBarImagePath =
-            recipePreviews[randomImage].imagePreviewPath;
-        return Scaffold(
-          body: CustomScrollView(slivers: <Widget>[
-            SliverAppBar(
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    DBProvider.db.getRecipeNames().then((recipeNames) {
-                      showSearch(
-                          context: context,
-                          delegate: RecipeSearch(recipeNames));
-                    });
-                  },
-                ),
-                ScopedModelDescendant<RecipeKeeper>(
-                  builder: (context, child, rKeeper) =>
-                      PopupMenuButton<Tuple2<RecipeSort, bool>>(
-                    icon: Icon(GroovinMaterialIcons.sort),
-                    onSelected: (value) => rKeeper.changeRecipeOrder(
-                      category == null ? vegetableRoute.toString() : category,
-                      recipePreviews,
-                      value,
-                      isVegetable: category == null ? true : false,
+    double scaleFactor = MediaQuery.of(context).size.height / 800;
+    return StreamBuilder<List<Recipe>>(
+        stream: bloc.outRecipeList,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List<Recipe> recipes = snapshot.data;
+            if (recipes.isNotEmpty) {
+              return Scaffold(
+                body: CustomScrollView(slivers: <Widget>[
+                  SliverAppBar(
+                    actions: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.search),
+                        onPressed: () {
+                          DBProvider.db.getRecipeNames().then((recipeNames) {
+                            showSearch(
+                                context: context,
+                                delegate: RecipeSearch(recipeNames));
+                          });
+                        },
+                      ),
+                      PopupMenuButton<RSort>(
+                        icon: Icon(GroovinMaterialIcons.sort),
+                        onSelected: (value) => bloc.changeOrder(value),
+                        itemBuilder: (BuildContext context) {
+                          return [
+                            // TODO: internationalize
+                            /// idea: maybe replace asc. with icon up and desc. with icon down
+                            /// so that no complex logic is needed
+                            PopupMenuItem(
+                              value: RSort(RecipeSort.BY_NAME, true),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(GroovinMaterialIcons.arrow_up_bold),
+                                  SizedBox(width: 5),
+                                  Text(S.of(context).by_name),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: RSort(RecipeSort.BY_NAME, false),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(GroovinMaterialIcons.arrow_down_bold),
+                                  SizedBox(width: 5),
+                                  Text(S.of(context).by_name),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: RSort(RecipeSort.BY_EFFORT, true),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(GroovinMaterialIcons.arrow_up_bold),
+                                  SizedBox(width: 5),
+                                  Text(S.of(context).by_effort),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: RSort(RecipeSort.BY_EFFORT, false),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(GroovinMaterialIcons.arrow_down_bold),
+                                  SizedBox(width: 5),
+                                  Text(S.of(context).by_effort),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value:
+                                  RSort(RecipeSort.BY_INGREDIENT_COUNT, true),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(GroovinMaterialIcons.arrow_up_bold),
+                                  SizedBox(width: 5),
+                                  Text(S.of(context).by_ingredientsamount),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value:
+                                  RSort(RecipeSort.BY_INGREDIENT_COUNT, false),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(GroovinMaterialIcons.arrow_down_bold),
+                                  SizedBox(width: 5),
+                                  Text(S.of(context).by_ingredientsamount),
+                                ],
+                              ),
+                            ),
+                          ];
+                        },
+                      ),
+                    ],
+                    expandedHeight: scaleFactor * 200.0,
+                    floating: false,
+                    pinned: true,
+                    flexibleSpace: FlexibleSpaceBar(
+                      centerTitle: true,
+                      title: Text(category != null ? category : title),
+                      background: StreamBuilder<String>(
+                          stream: bloc.outRandomImage,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image:
+                                        snapshot.data == 'images/randomFood.jpg'
+                                            ? AssetImage(snapshot.data)
+                                            : FileImage(File(snapshot.data)),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                      sigmaX: 5.0, sigmaY: 5.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.0)),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              //TODO: when no data is there
+                              return Container();
+                            }
+                          }),
                     ),
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        // TODO: internationalize
-                        /// idea: maybe replace asc. with icon up and desc. with icon down
-                        /// so that no complex logic is needed
-                        PopupMenuItem(
-                          value: Tuple2(RecipeSort.BY_NAME, true),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Icon(GroovinMaterialIcons.arrow_up_bold),
-                              SizedBox(width: 5),
-                              Text(S.of(context).by_name),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: Tuple2(RecipeSort.BY_NAME, false),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Icon(GroovinMaterialIcons.arrow_down_bold),
-                              SizedBox(width: 5),
-                              Text(S.of(context).by_name),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: Tuple2(RecipeSort.BY_EFFORT, true),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Icon(GroovinMaterialIcons.arrow_up_bold),
-                              SizedBox(width: 5),
-                              Text(S.of(context).by_effort),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: Tuple2(RecipeSort.BY_EFFORT, false),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Icon(GroovinMaterialIcons.arrow_down_bold),
-                              SizedBox(width: 5),
-                              Text(S.of(context).by_effort),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: Tuple2(RecipeSort.BY_INGREDIENT_COUNT, true),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Icon(GroovinMaterialIcons.arrow_up_bold),
-                              SizedBox(width: 5),
-                              Text(S.of(context).by_ingredientsamount),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: Tuple2(RecipeSort.BY_INGREDIENT_COUNT, false),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Icon(GroovinMaterialIcons.arrow_down_bold),
-                              SizedBox(width: 5),
-                              Text(S.of(context).by_ingredientsamount),
-                            ],
-                          ),
-                        ),
-                      ];
-                    },
                   ),
-                ),
-              ],
-              expandedHeight: scaleFactor * 200.0,
-              floating: false,
-              pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                centerTitle: true,
-                title: Text(category != null ? category : title),
-                background: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: sliverAppBarImagePath == 'images/randomFood.jpg'
-                          ? AssetImage(sliverAppBarImagePath)
-                          : FileImage(File(sliverAppBarImagePath)),
-                      fit: BoxFit.cover,
+                  SliverPadding(
+                    padding: EdgeInsets.all(12),
+                    sliver: SliverGrid.extent(
+                      childAspectRatio: 0.75,
+                      maxCrossAxisExtent: 300,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      children: getRecipeCards(recipes, context),
                     ),
-                  ),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                    child: Container(
-                      decoration:
-                          BoxDecoration(color: Colors.white.withOpacity(0.0)),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.all(12),
-              sliver: SliverGrid.extent(
-                childAspectRatio: 0.75,
-                maxCrossAxisExtent: 300,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                children: getRecipeCards(recipePreviews, context),
-              ),
-            )
-          ]),
-        );
-      } else {
-        return Scaffold(appBar: AppBar(), body: NoRecipeCategory());
-      }
-    });
+                  )
+                ]),
+              );
+            } else {
+              return Scaffold(appBar: AppBar(), body: NoRecipeCategory());
+            }
+          } else {
+            return Text('NO DAAAAAAAAATAAAAAAAAAAAAA');
+          }
+        });
   }
 
-  List<Widget> getRecipeCards(
-      List<RecipePreview> recipes, BuildContext context) {
-    List<RecipeCard> recipeCards = [];
-    for (int i = 0; i < recipes.length; i++) {
-      recipeCards.add(
-        RecipeCard(
-          recipePreview: recipes[i],
-          shadow: Theme.of(context).backgroundColor == Colors.white
-              ? Colors.grey[400]
-              : Colors.black,
-          activateVegetableHero:
-              recipes[i].vegetable == vegetableRoute ? false : true,
-          heroImageTag: "$category$i",
-        ),
-      );
-    }
-    return recipeCards;
+  List<Widget> getRecipeCards(List<Recipe> recipes, BuildContext context) {
+    return recipes
+        .map(
+          (recipe) => RecipeCard(
+            recipe: recipe,
+            shadow: Theme.of(context).backgroundColor == Colors.white
+                ? Colors.grey[400]
+                : Colors.black,
+            activateVegetableHero:
+                recipe.vegetable == vegetableRoute ? false : true,
+            heroImageTag: "$category${recipe.name}",
+          ),
+        )
+        .toList();
   }
 }
 
@@ -313,51 +317,37 @@ class NoRecipeCategory extends StatelessWidget {
   }
 }
 
-class Favorite extends StatefulWidget {
+class Favorite extends StatelessWidget {
   final Recipe recipe;
   final double iconSize;
-  final RecipeKeeper rKeeper;
 
-  Favorite(this.recipe, this.rKeeper, {this.iconSize});
-
-  @override
-  State<StatefulWidget> createState() => FavoriteState();
-}
-
-class FavoriteState extends State<Favorite> {
-  bool isFavorite;
-
-  @override
-  void initState() {
-    isFavorite = widget.recipe.isFavorite;
-    super.initState();
-  }
+  Favorite(this.recipe, {this.iconSize});
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      iconSize: widget.iconSize == null ? 24 : widget.iconSize,
-      color: isFavorite ? Colors.pink : Colors.white,
-      icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-      onPressed: () {
-        if (isFavorite) {
-          widget.rKeeper.removeFromFavorites(widget.recipe.name);
-          DBProvider.db.updateFavorite(false, widget.recipe.name).then((_) {
-            setState(() {
-              widget.recipe.isFavorite = false;
-              isFavorite = false;
-            });
-          });
-        } else {
-          widget.rKeeper.addFavorite(widget.recipe);
-          DBProvider.db.updateFavorite(true, widget.recipe.name).then((_) {
-            setState(() {
-              widget.recipe.isFavorite = true;
-              isFavorite = true;
-            });
-          });
-        }
-      },
-    );
+    return WatchBoxBuilder(
+        box: Hive.box<Recipe>('recipes') as LazyBox,
+        watchKeys: [getHiveKey(recipe.name)],
+        builder: (context, snapshot) {
+          String hiveRecipeKey = getHiveKey(recipe.name);
+          bool isFavorite = snapshot.get(hiveRecipeKey);
+          return IconButton(
+            iconSize: iconSize == null ? 24 : iconSize,
+            color: isFavorite ? Colors.pink : Colors.white,
+            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+            onPressed: () {
+              snapshot.get(hiveRecipeKey).then((recipe) {
+                if (recipe.isFavorite) {
+                  // widget.rKeeper.removeFromFavorites(widget.recipe.name);
+                  recipe.isFavorite = false;
+                  recipe.save();
+                } else {
+                  recipe.isFavorite = true;
+                  recipe.save();
+                }
+              });
+            },
+          );
+        });
   }
 }

@@ -6,11 +6,16 @@ import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/helper.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/models/recipe_preview.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:tuple/tuple.dart';
 
-enum RecipeSort { BY_NAME, BY_INGREDIENT_COUNT, BY_EFFORT }
+import 'enums.dart';
+import 'ingredient.dart';
+import 'nutrition.dart';
+
+
 
 class RecipeKeeper extends Model {
   bool _isInitialised = false;
@@ -289,6 +294,8 @@ class RecipeKeeper extends Model {
     }
 
     notifyListeners();
+    print('chikolenkochakkkakaaa');
+    print(fullImagePathRecipe);
     return fullImagePathRecipe;
   }
 
