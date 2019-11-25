@@ -2,11 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/database.dart';
 import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
+import 'package:my_recipe_book/screens/recipe_overview.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
+import 'blocs/recipe_manager/recipe_manager_bloc.dart';
+import 'blocs/recipe_overview/recipe_overview_bloc.dart';
+import 'blocs/recipe_overview/recipe_overview_event.dart';
 import 'helper.dart';
 import 'models/enums.dart';
 import 'models/recipe.dart';
@@ -279,20 +284,18 @@ class RecipeCard extends StatelessWidget {
 
 }
 
-void pushVegetableRoute(BuildContext context, Vegetable vegetable) {
-  String title;
-  switch (vegetable) {
-    case Vegetable.NON_VEGETARIAN:
-      title = S.of(context).with_meat;
-      break;
-    case Vegetable.VEGETARIAN:
-      title = S.of(context).vegetarian;
-      break;
-    case Vegetable.VEGAN:
-      title = S.of(context).vegan;
-      break;
-    default:
-  }
+void pushVegetableRoute(BuildContext recipeCardContext, Vegetable vegetable) {
+  Navigator.push(
+      recipeCardContext,
+      CupertinoPageRoute(
+        builder: (BuildContext context) => new BlocProvider<RecipeOverviewBloc>(
+          builder: (context) => RecipeOverviewBloc(
+              recipeManagerBloc:
+                  BlocProvider.of<RecipeManagerBloc>(recipeCardContext))
+            ..add(LoadVegetableRecipeOverview(vegetable)),
+          child: RecipeGridView(),
+        ),
+      ));
 }
 
 String getRecipeTypeImage(Vegetable vegetable) {

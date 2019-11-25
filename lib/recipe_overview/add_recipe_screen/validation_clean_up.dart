@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/models/ingredient.dart';
 
 import '../../database.dart';
+import '../../models/ingredient.dart';
 
 enum Validator {
   INGREDIENTS_NOT_VALID,
@@ -184,27 +184,24 @@ List<List<Ingredient>> getCleanIngredientData(
 
   for (int i = 0; i < ingredientsNames.length; i++) {
     cleanIngredientsData.add([]);
-    for (int j = 0; j < ingredientsNames[i].length; j++)
-      cleanIngredientsData[i].add(Ingredient(
-        name: ingredientsNames[i][j],
-        amount: ingredientsAmount[i][j],
-        unit: ingredientsUnit[i][j],
-      ));
-  }
-
-  for (int i = 0; i < cleanIngredientsData.length; i++) {
-    for (int j = 0; j < cleanIngredientsData[i].length; j++) {
-      // remove leading and trailing white spaces
-      cleanIngredientsData[i][j].name = cleanIngredientsData[i][j].name.trim();
-      if (cleanIngredientsData[i][j].unit != null)
-        cleanIngredientsData[i][j].unit =
-            cleanIngredientsData[i][j].unit.trim();
-      // remove all ingredients from the list, when all three fields are empty
-      if (cleanIngredientsData[i][j].name == "") {
-        cleanIngredientsData[i].removeAt(j);
+    for (int j = 0; j < ingredientsNames[i].length; j++) {
+      // remove leading and trailing spaces
+      String name = ingredientsNames[i][j].trim();
+      // only add ingredient if the name is not empty
+      if (name != "") {
+        String unit;
+        // trim unit if not empty
+        if (ingredientsUnit[i][j] != null) unit = ingredientsUnit[i][j].trim();
+        // add the ingredient with modified data
+        cleanIngredientsData[i].add(Ingredient(
+          name: name,
+          amount: ingredientsAmount[i][j],
+          unit: unit,
+        ));
       }
     }
   }
+
   // create the output list with the clean ingredient lists
   cleanIngredientsData.removeWhere((item) => item.isEmpty);
 

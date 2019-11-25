@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
 import 'database.dart';
+import 'generated/i18n.dart';
 import 'models/recipe.dart';
+import 'recipe_overview/recipe_screen.dart';
 
 class RecipeSearch extends SearchDelegate<SearchRecipe> {
   final List<String> recipeNames;

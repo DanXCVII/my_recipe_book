@@ -131,7 +131,7 @@ class ShoppingCartKeeper extends Model {
         if (summaryIngred.amount - removeAmount <= 0) {
           _shoppingCart['summary'].remove(summaryIngred);
         } else {
-          summaryIngred.amount -= removeAmount;
+          // summaryIngred.amount -= removeAmount;
         }
       } else {
         _shoppingCart['summary'].remove(summaryIngred);
@@ -160,26 +160,26 @@ class ShoppingCartKeeper extends Model {
       String recipeName, CheckableIngredient ingredient) async {
     Ingredient passedIngredient = ingredient.getIngredient();
 
-    _getSuitingIngredientRecipe(passedIngredient, recipeName).checked =
-        ingredient.checked;
+    // _getSuitingIngredientRecipe(passedIngredient, recipeName).checked =
+    //     ingredient.checked;
 
     if (recipeName.compareTo('summary') != 0) {
       if (ingredient.checked == false) {
-        _getSuitingIngredientRecipe(passedIngredient, 'summary').checked =
-            false;
+        // _getSuitingIngredientRecipe(passedIngredient, 'summary').checked =
+        //     false;
       } // checked == true
       else {
         var uncheckedIngredients =
             _getAllSuitingIngredients(passedIngredient, checked: false);
         if (uncheckedIngredients.length == 1) {
-          _getSuitingIngredientRecipe(passedIngredient, 'summary').checked =
-              true;
+          // _getSuitingIngredientRecipe(passedIngredient, 'summary').checked =
+              // true;
         }
       }
     } // recipeName = summary
     else {
       _getAllSuitingIngredients(passedIngredient).forEach((i) {
-        i.checked = ingredient.checked;
+        // i.checked = ingredient.checked;
       });
     }
     await DBProvider.db.checkIngredient(recipeName, ingredient);
@@ -221,9 +221,9 @@ class ShoppingCartKeeper extends Model {
       var modifyIngred = _getSuitingIngredientRecipe(ingredient, recipeName);
       if (modifyIngred != null) {
         if (modifyIngred.amount != null) {
-          modifyIngred.amount += ingredient.amount;
+          // modifyIngred.amount += ingredient.amount;
         }
-        modifyIngred.checked = false;
+        // modifyIngred.checked = false;
       } else {
         _shoppingCart[recipeName].add(CheckableIngredient(
             ingredient.name, ingredient.amount, ingredient.unit, false));

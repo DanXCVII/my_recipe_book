@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/recipe_overview/recipe_overview.dart';
-import './tinder_card.dart';
-import 'package:my_recipe_book/models/recipe_keeper.dart';
-import 'package:my_recipe_book/random_recipe/recipe_card_big.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../database.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import './tinder_card.dart';
+import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
+import '../blocs/random_recipe_explorer/random_recipe_explorer_event.dart';
+import '../blocs/random_recipe_explorer/random_recipe_explorer_state.dart';
+import '../generated/i18n.dart';
+import '../models/recipe.dart';
+import '../screens/recipe_overview.dart';
+import 'recipe_card_big.dart';
 
 class SwypingCardsScreen extends StatefulWidget {
   SwypingCardsScreen();
@@ -17,43 +18,33 @@ class SwypingCardsScreen extends StatefulWidget {
 }
 
 class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
-  String _selectedCategory = 'all categories';
-
   ListView _getCategorySelector(
-      List<String> categoryNames, RecipeKeeper rKeeper) {
+      List<String> categoryNames, String selectedCategory) {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: (categoryNames.length + 1) * 2 + 1,
+      itemCount: categoryNames.length * 2 + 1,
       itemBuilder: (context, index) {
         if (index == 0) return VerticalDivider();
-        index--;
+        index++;
         if (index % 2 == 0) {
-          String currentCategory = (index / 2).floor() == 0
-              ? 'all categories'
-              : categoryNames[(index / 2).floor() - 1];
-          String categoryName;
-          if (currentCategory == 'all categories') {
-            categoryName = S.of(context).all_categories;
-          } else if (currentCategory == 'no category') {
-            categoryName = S.of(context).no_category;
-          } else {
-            categoryName = currentCategory;
-          }
+          String currentCategory = categoryNames[(index / 2).floor() - 1];
+
           return FlatButton(
-            color: currentCategory == _selectedCategory ? Colors.brown : null,
+            color: currentCategory == selectedCategory ? Colors.brown : null,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             textColor:
-                currentCategory == _selectedCategory ? Colors.amber : null,
+                currentCategory == selectedCategory ? Colors.amber : null,
             onPressed: () {
-              setState(() {
-                rKeeper.swypingCardCategory = currentCategory;
-                _selectedCategory = currentCategory;
-
-                rKeeper.changeSwypeCardCategory(currentCategory);
-              });
+              BlocProvider.of<RandomRecipeExplorerBloc>(context)
+                  .add(ChangeCategory(currentCategory));
             },
-            child: Text(categoryName),
+            // TODO: put strings in extra class
+            child: Text(currentCategory == "no category"
+                ? S.of(context).no_category
+                : currentCategory == "all categories"
+                    ? S.of(context).all_categories
+                    : currentCategory),
           );
         } else {
           return VerticalDivider();
@@ -64,46 +55,42 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Container(
-          height: 40,
-          padding: const EdgeInsets.only(top: 8.0),
-          width: MediaQuery.of(context).size.width,
-          child: ScopedModelDescendant<RecipeKeeper>(
-            builder: (context, child, rKeeper) =>
-                _getCategorySelector(rKeeper.categories, rKeeper),
-          ),
-        ),
-        Divider(),
-        Container(
-          height: MediaQuery.of(context).size.height - 200,
-          child: ScopedModelDescendant<RecipeKeeper>(
-              builder: (context, child, rKeeper) {
-            if (rKeeper.isLoadingSwypeCards) {
-              return Center(child: CircularProgressIndicator());
-            } else if (rKeeper.swypingCardRecipes.isEmpty) {
-              return NoRecipeCategory();
-            } else {
-              return SwypingCards(
-                key: Key(_selectedCategory),
-                currentCategory: _selectedCategory,
-                recipes: rKeeper.swypingCardRecipes,
-              );
-            }
-          }),
-        )
-      ],
-    );
+    return BlocBuilder<RandomRecipeExplorerBloc, RandomRecipeExplorerState>(
+        builder: (context, state) {
+      if (state is LoadingRandomRecipeExplorer) {
+        return Center(child: CircularProgressIndicator());
+      } else if (state is LoadedRandomRecipeExplorer) {
+        return Column(
+          children: <Widget>[
+            Container(
+              height: 40,
+              padding: const EdgeInsets.only(top: 8.0),
+              width: MediaQuery.of(context).size.width,
+              child: _getCategorySelector(
+                  state.categories, state.categories[state.selectedCategory]),
+            ),
+            Divider(),
+            Container(
+                height: MediaQuery.of(context).size.height - 200,
+                child: state.randomRecipes.isEmpty
+                    ? NoRecipeCategory()
+                    : SwypingCards(
+                        key: Key(state.categories[state.selectedCategory]),
+                        recipes: state.randomRecipes,
+                      ))
+          ],
+        );
+      } else {
+        return Text("uncatched state $state");
+      }
+    });
   }
 }
 
 class SwypingCards extends StatefulWidget {
   final List<Recipe> recipes;
-  final String currentCategory;
 
   SwypingCards({
-    @required this.currentCategory,
     @required this.recipes,
     Key key,
   }) : super(key: key);
@@ -114,6 +101,7 @@ class SwypingCards extends StatefulWidget {
 class _SwypingCardsState extends State<SwypingCards>
     with TickerProviderStateMixin {
   CardController controller; //Use this to trigger swap.
+  int currentSwipeIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -123,51 +111,38 @@ class _SwypingCardsState extends State<SwypingCards>
       maxWidth = MediaQuery.of(context).size.width * 0.9;
     }
     return Container(
-        height: MediaQuery.of(context).size.height,
-        child: new TinderSwapCard(
-            orientation: AmassOrientation.TOP,
-            totalNum: 100,
-            stackNum: 3,
-            animDuration: 200,
-            swipeEdge: 4.0,
-            maxWidth: maxWidth,
-            maxHeight: maxHeight,
-            minWidth: maxWidth * 0.9,
-            minHeight: maxHeight - 100,
-            cardBuilder: (context, index) => RecipeCardBig(
-                  recipe: widget.recipes[index],
-                  index: index,
-                  cardWidth: maxWidth,
-                  cardHeight: maxHeight,
-                ),
-            cardController: controller = CardController(),
-            swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
-              /// Get swiping card's alignment
-              if (align.x < 0) {
-                //Card is LEFT swiping
-              } else if (align.x > 0) {
-                //Card is RIGHT swiping
-              }
-            },
-            swipeCompleteCallback:
-                (CardSwipeOrientation orientation, int index) {
-              String getCategoryName =
-                  widget.currentCategory == 'all categories'
-                      ? null
-                      : widget.currentCategory;
-              DBProvider.db
-                  .getNewRandomRecipe(widget.recipes.last.name,
-                      categoryName: getCategoryName)
-                  .then((recipe) {
-                widget.recipes
-                    .add(recipe == null ? widget.recipes.last : recipe);
-
-                if (index - 2 >= 0) {
-                  widget.recipes[index - 2] = null;
-                }
-              });
-
-              /// Get orientation & index of swiped card!
-            }));
+      height: MediaQuery.of(context).size.height,
+      child: new TinderSwapCard(
+        orientation: AmassOrientation.TOP,
+        totalNum: 100,
+        stackNum: 3,
+        animDuration: 200,
+        swipeEdge: 4.0,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        minWidth: maxWidth * 0.9,
+        minHeight: maxHeight - 100,
+        cardBuilder: (context, index) => RecipeCardBig(
+          recipe: widget.recipes[index - currentSwipeIndex],
+          index: index,
+          cardWidth: maxWidth,
+          cardHeight: maxHeight,
+        ),
+        cardController: controller = CardController(),
+        swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
+          /// Get swiping card's alignment
+          if (align.x < 0) {
+            //Card is LEFT swiping
+          } else if (align.x > 0) {
+            //Card is RIGHT swiping
+          }
+        },
+        swipeCompleteCallback: (CardSwipeOrientation orientation, int index) {
+          currentSwipeIndex++;
+          BlocProvider.of<RandomRecipeExplorerBloc>(context)
+              .add(RotateRecipe());
+        },
+      ),
+    );
   }
 }

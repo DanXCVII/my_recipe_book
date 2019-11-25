@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:intro_slider/slide_object.dart';
 import 'package:intro_slider/intro_slider.dart';
-import 'package:my_recipe_book/theming.dart';
+import 'package:intro_slider/slide_object.dart';
 
 import 'generated/i18n.dart';
+import 'theming.dart';
 
 class IntroScreen extends StatelessWidget {
   //making list of pages needed to pass in IntroViewsFlutter constructor.
@@ -178,7 +178,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
   _handleValueChange(MyThemeKeys value, BuildContext context) {
     CustomTheme.instanceOf(context).changeTheme(value);
     print(value.toString());
-    
+
     setState(() {
       _selectedTheme = value;
     });

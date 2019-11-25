@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/io/io_operations.dart' as IO;
-import 'package:my_recipe_book/my_wrapper.dart';
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+
+import '../../io/io_operations.dart' as IO;
+import '../../my_wrapper.dart';
 
 class ImageSelector extends StatefulWidget {
   final MyImageWrapper imageWrapper;

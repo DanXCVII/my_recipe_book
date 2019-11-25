@@ -1,66 +1,68 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'enums.dart';
 import 'ingredient.dart';
 import 'nutrition.dart';
 
-part './typeAdapter/recipe.g.dart';
+part 'recipe.g.dart';
 
 @HiveType()
-class Recipe extends HiveObject {
+class Recipe extends Equatable {
   @HiveField(0)
-  String name;
+  final String name;
   @HiveField(1)
-  String imagePath;
+  final String imagePath;
   @HiveField(2)
-  String imagePreviewPath;
+  final String imagePreviewPath;
   @HiveField(3)
-  double preperationTime;
+  final double preperationTime;
   @HiveField(4)
-  double cookingTime;
+  final double cookingTime;
   @HiveField(5)
-  double totalTime;
+  final double totalTime;
   @HiveField(6)
-  double servings;
+  final double servings;
   @HiveField(7)
-  List<String> categories;
+  final List<String> categories;
   @HiveField(8)
-  List<String> ingredientsGlossary = new List<String>();
+  final List<String> ingredientsGlossary;
   @HiveField(9)
-  List<List<Ingredient>> ingredients = new List<List<Ingredient>>();
+  final List<List<Ingredient>> ingredients;
   @HiveField(10)
-  Vegetable vegetable;
+  final Vegetable vegetable;
   @HiveField(11)
-  List<String> steps = new List<String>();
+  final List<String> steps;
   @HiveField(12)
-  List<List<String>> stepImages = new List<List<String>>();
+  final List<List<String>> stepImages;
   @HiveField(13)
-  String notes;
+  final String notes;
   @HiveField(14)
-  List<Nutrition> nutritions;
+  final List<Nutrition> nutritions;
   @HiveField(15)
-  bool isFavorite;
+  final bool isFavorite;
   @HiveField(16)
-  int effort;
+  final int effort;
 
-  Recipe(
-      {@required this.name,
-      this.imagePath,
-      this.imagePreviewPath,
-      this.preperationTime,
-      this.cookingTime,
-      this.totalTime,
-      @required this.servings,
-      this.ingredientsGlossary,
-      this.ingredients,
-      @required this.vegetable,
-      this.steps,
-      this.stepImages,
-      this.notes,
-      this.nutritions,
-      this.categories,
-      this.effort,
-      this.isFavorite});
+  Recipe({
+    @required this.name,
+    this.imagePath,
+    this.imagePreviewPath,
+    this.preperationTime,
+    this.cookingTime,
+    this.totalTime,
+    @required this.servings,
+    this.categories,
+    this.ingredientsGlossary = const [],
+    this.ingredients = const [[]],
+    @required this.vegetable,
+    this.steps = const [],
+    this.stepImages = const [[]],
+    this.notes,
+    this.nutritions,
+    this.isFavorite,
+    this.effort,
+  });
 
   @override
   String toString() {
@@ -143,25 +145,65 @@ class Recipe extends HiveObject {
         'nutritions': nutritions.map((n) => n.toMap()).toList()
       };
 
-  void setEqual(Recipe r) {
-    this.name = r.name;
-    this.imagePath = r.imagePath;
-    this.imagePreviewPath = r.imagePreviewPath;
-    this.preperationTime = r.preperationTime;
-    this.cookingTime = r.cookingTime;
-    this.totalTime = r.totalTime;
-    this.servings = r.servings;
-    this.ingredientsGlossary = r.ingredientsGlossary;
-    this.ingredients = r.ingredients;
-    this.vegetable = r.vegetable;
-    this.steps = r.steps;
-    this.stepImages = r.stepImages;
-    this.notes = r.notes;
-    this.categories = r.categories;
-    this.effort = r.effort;
-    this.isFavorite = r.isFavorite;
-    this.nutritions = r.nutritions;
+  Recipe copyWith(
+      {String name,
+      String imagePath,
+      String imagePreviewPath,
+      double preperationTime,
+      double cookingTime,
+      double totalTime,
+      double servings,
+      List<String> ingredientsGlossary,
+      List<List<Ingredient>> ingredients,
+      Vegetable vegetable,
+      List<String> steps,
+      List<List<String>> stepImages,
+      String notes,
+      List<Nutrition> nutritions,
+      List<String> categories,
+      int effort,
+      bool isFavorite}) {
+    return Recipe(
+      name: name ?? this.name,
+      imagePath: imagePath ?? this.imagePath,
+      imagePreviewPath: imagePreviewPath ?? this.imagePreviewPath,
+      preperationTime: preperationTime ?? this.preperationTime,
+      cookingTime: cookingTime ?? this.cookingTime,
+      totalTime: totalTime ?? this.totalTime,
+      servings: servings ?? this.servings,
+      ingredientsGlossary: ingredientsGlossary ?? this.ingredientsGlossary,
+      ingredients: ingredients ?? this.ingredients,
+      vegetable: vegetable ?? this.vegetable,
+      steps: steps ?? this.steps,
+      stepImages: stepImages ?? this.stepImages,
+      notes: notes ?? this.notes,
+      nutritions: nutritions ?? this.nutritions,
+      categories: categories ?? this.categories,
+      effort: effort ?? this.effort,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
   }
+
+  @override
+  List<Object> get props => [
+        name,
+        imagePath,
+        imagePreviewPath,
+        preperationTime,
+        cookingTime,
+        totalTime,
+        servings,
+        ingredientsGlossary,
+        ingredients,
+        vegetable,
+        steps,
+        stepImages,
+        notes,
+        nutritions,
+        categories,
+        effort,
+        isFavorite
+      ];
 }
 
 Color getRecipePrimaryColor(Vegetable vegetable) {

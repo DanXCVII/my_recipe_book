@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part './typeAdapter/enums.g.dart';
+part 'enums.g.dart';
 
 @HiveType()
 enum Vegetable {

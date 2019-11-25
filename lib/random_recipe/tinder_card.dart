@@ -1,7 +1,8 @@
 library flutter_tindercard;
 
-import 'package:flutter/material.dart';
 import 'dart:math';
+
+import 'package:flutter/material.dart';
 
 List<Size> _cardSizes = new List();
 List<Alignment> _cardAligns = new List();

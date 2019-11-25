@@ -7,9 +7,9 @@ import 'package:my_recipe_book/helper.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_preview.dart';
+import 'package:my_recipe_book/models/tuple.dart';
 import 'package:my_recipe_book/recipe.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:tuple/tuple.dart';
 
 import 'enums.dart';
 import 'ingredient.dart';
@@ -306,13 +306,13 @@ class RecipeKeeper extends Model {
   }
 
   void addFavorite(Recipe recipe) {
-    recipe.isFavorite = true;
+    // recipe.isFavorite = true;
     _favorites.add(convertRecipeToPreview(recipe));
 
     for (String category in _recipes.keys) {
       for (RecipePreview r in _recipes[category]) {
         if (r.name == recipe.name) {
-          r.isFavorite = true;
+          // r.isFavorite = true;
         }
       }
     }
@@ -330,7 +330,7 @@ class RecipeKeeper extends Model {
     for (String category in _recipes.keys) {
       for (RecipePreview r in _recipes[category]) {
         if (r.name == name) {
-          r.isFavorite = false;
+          // r.isFavorite = false;
         }
       }
     }

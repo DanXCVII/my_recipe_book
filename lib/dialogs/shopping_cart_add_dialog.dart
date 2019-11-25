@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:my_recipe_book/helper.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
@@ -106,24 +108,27 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                 },
               ),
               SizedBox(width: 3),
-              ScopedModelDescendant<ShoppingCartKeeper>(
-                builder: (context, child, model) => FlatButton(
-                  child: Text(S.of(context).add),
-                  onPressed: () {
-                    if (formKey.currentState.validate()) {
-                      model.addSingleIngredientToCart(
+              FlatButton(
+                child: Text(S.of(context).add),
+                onPressed: () {
+                  if (formKey.currentState.validate()) {
+                    BlocProvider.of<ShoppingCartBloc>(context).add(
+                      CleanAddIngredients(
+                          [
+                            Ingredient(
+                                name: ingredientNameController.text,
+                                amount: double.parse(
+                                    ingredientAmountController.text),
+                                unit: ingredientUnitController.text)
+                          ],
                           recipeNameController.text == ''
                               ? 'summary'
-                              : recipeNameController.text,
-                          Ingredient(
-                              name: ingredientNameController.text,
-                              amount:
-                                  double.parse(ingredientAmountController.text),
-                              unit: ingredientUnitController.text));
-                      Navigator.of(context).pop();
-                    }
-                  },
-                ),
+                              : recipeNameController.text),
+                    );
+
+                    Navigator.of(context).pop();
+                  }
+                },
               )
             ],
           )

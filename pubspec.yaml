@@ -48,11 +48,13 @@ dependencies:
   flutter_tindercard: ^0.1.8
   sliding_up_panel: ^0.3.6
   autocomplete_textfield: ^1.7.3
-  tuple: ^1.0.3
   hive_flutter: ^0.2.1
   hive_generator: ^0.5.2
   build_runner: ^1.7.1
   rxdart: ^0.22.4
+  flutter_bloc: ^1.0.0
+  equatable: ^0.6.1
+
   
   share:
     git:

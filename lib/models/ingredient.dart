@@ -1,15 +1,16 @@
+import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 
-part './typeAdapter/ingredient.g.dart';
+part 'ingredient.g.dart';
 
 @HiveType()
-class Ingredient  {
+class Ingredient extends Equatable {
   @HiveField(0)
-  String name;
+  final String name;
   @HiveField(1)
-  double amount;
+  final double amount;
   @HiveField(2)
-  String unit;
+  final String unit;
 
   Ingredient({
     this.name,
@@ -28,18 +29,25 @@ class Ingredient  {
         'amount': amount,
         'unit': unit,
       };
+
+  @override
+  List<Object> get props => [
+        name,
+        amount,
+        unit,
+      ];
 }
 
 @HiveType()
-class CheckableIngredient extends HiveObject {
+class CheckableIngredient extends Equatable {
   @HiveField(0)
-  String name;
+  final String name;
   @HiveField(1)
-  double amount;
+  final double amount;
   @HiveField(2)
-  String unit;
+  final String unit;
   @HiveField(3)
-  bool checked;
+  final bool checked;
 
   CheckableIngredient(this.name, this.amount, this.unit, this.checked);
 
@@ -51,4 +59,25 @@ class CheckableIngredient extends HiveObject {
   Ingredient getIngredient() {
     return Ingredient(name: name, amount: amount, unit: unit);
   }
+
+  CheckableIngredient copyWith({
+    String name,
+    double amount,
+    String unit,
+    bool checked,
+  }) =>
+      CheckableIngredient(
+        name ?? this.name,
+        amount ?? this.amount,
+        unit ?? this.unit,
+        checked ?? this.checked,
+      );
+
+  @override
+  List<Object> get props => [
+        name,
+        amount,
+        unit,
+        checked,
+      ];
 }

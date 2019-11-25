@@ -1,12 +1,12 @@
+import "dart:io";
+
 import "package:flutter/material.dart";
-import 'package:my_recipe_book/io/io_operations.dart' as IO;
-import 'package:my_recipe_book/recipe.dart';
 import "package:image_picker/image_picker.dart";
 import 'package:path_provider/path_provider.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
-import "dart:io";
-import "./add_recipe.dart";
+import '../../generated/i18n.dart';
+import '../../io/io_operations.dart' as IO;
+import '../../recipe.dart';
 
 class Steps extends StatefulWidget {
   final List<TextEditingController> stepsDecriptionController;
@@ -303,4 +303,23 @@ class _StepState extends State<Step> {
 
     return _steps;
   }
+}
+
+// clips a shape of an octagon
+class CustomIngredientsClipper extends CustomClipper<Path> {
+  Path getClip(Size size) {
+    final Path path = Path();
+    path.lineTo(size.width / 3 * 2, 0);
+    path.lineTo(size.width, size.height / 3);
+    path.lineTo(size.width, size.height / 3 * 2);
+    path.lineTo(size.width / 3 * 2, size.height);
+    path.lineTo(size.width / 3, size.height);
+    path.lineTo(0, size.height / 3 * 2);
+    path.lineTo(0, size.height / 3);
+    path.lineTo(size.width / 3, 0);
+    path.close();
+    return path;
+  }
+
+  bool shouldReclip(CustomIngredientsClipper oldClipper) => false;
 }

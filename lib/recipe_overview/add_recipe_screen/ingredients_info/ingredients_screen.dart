@@ -1,24 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/models/enums.dart';
-import 'package:my_recipe_book/models/ingredient.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/recipe_overview/add_recipe_screen/steps_info/steps_screen.dart';
-import 'package:my_recipe_book/recipe_overview/add_recipe_screen/validator/dialogs.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../blocs/add_recipe/add_recipe.dart';
 import '../../../database.dart';
+import '../../../models/enums.dart';
+import '../../../models/ingredient.dart';
+import '../../../models/recipe.dart';
 import '../../../my_wrapper.dart';
 import '../ingredients_section.dart';
+import '../steps_info/steps_screen.dart';
 import '../validation_clean_up.dart';
+import '../validator/dialogs.dart';
 import '../vegetarian_section.dart';
 
 class IngredientsAddScreen extends StatefulWidget {
-  final Recipe newRecipe;
-  final String editRecipeName;
+  final Recipe recipe;
+  final Recipe editRecipe;
 
   IngredientsAddScreen({
-    this.newRecipe,
-    this.editRecipeName,
+    this.recipe,
+    this.editRecipe,
     Key key,
   }) : super(key: key);
 
@@ -49,11 +51,11 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
     ingredientGlossaryController.add(TextEditingController());
 
     // If a recipe will be edited and not a new one created
-    if (widget.newRecipe.servings != null)
-      servingsController.text = widget.newRecipe.servings.toString();
+    if (widget.recipe.servings != null)
+      servingsController.text = widget.recipe.servings.toString();
 
-    if (widget.newRecipe.ingredientsGlossary != null)
-      for (int i = 0; i < widget.newRecipe.ingredientsGlossary.length; i++) {
+    if (widget.recipe.ingredientsGlossary != null)
+      for (int i = 0; i < widget.recipe.ingredientsGlossary.length; i++) {
         if (i > 0) {
           ingredientGlossaryController.add(TextEditingController());
           ingredientNameController.add([]);
@@ -61,25 +63,25 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
           ingredientUnitController.add([]);
         }
         ingredientGlossaryController[i].text =
-            widget.newRecipe.ingredientsGlossary[i];
+            widget.recipe.ingredientsGlossary[i];
 
-        if (widget.newRecipe.ingredients != null)
-          for (int j = 0; j < widget.newRecipe.ingredients[i].length; j++) {
+        if (widget.recipe.ingredients != null)
+          for (int j = 0; j < widget.recipe.ingredients[i].length; j++) {
             if (i != 0 || j > 0) {
               ingredientNameController[i].add(TextEditingController());
               ingredientAmountController[i].add(TextEditingController());
               ingredientUnitController[i].add(TextEditingController());
             }
             ingredientNameController[i][j].text =
-                widget.newRecipe.ingredients[i][j].name;
+                widget.recipe.ingredients[i][j].name;
             ingredientAmountController[i][j].text =
-                widget.newRecipe.ingredients[i][j].amount != null
-                    ? widget.newRecipe.ingredients[i][j].amount.toString()
+                widget.recipe.ingredients[i][j].amount != null
+                    ? widget.recipe.ingredients[i][j].amount.toString()
                     : "";
             ingredientUnitController[i][j].text =
-                widget.newRecipe.ingredients[i][j].unit;
+                widget.recipe.ingredients[i][j].unit;
           }
-        switch (widget.newRecipe.vegetable) {
+        switch (widget.recipe.vegetable) {
           case Vegetable.NON_VEGETARIAN:
             selectedRecipeVegetable
                 .setVegetableStatus(Vegetable.NON_VEGETARIAN);
@@ -196,12 +198,13 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
         showIngredientsGlossaryIncomplete(context);
         break;
       default:
-        saveValidIngredientsData(widget.newRecipe);
+        saveValidIngredientsData(widget.recipe, context);
         break;
     }
   }
 
-  void saveValidIngredientsData(Recipe editRecipe) {
+  void saveValidIngredientsData(
+      Recipe editRecipe, BuildContext ingredientsScreenContext) {
     List<List<Ingredient>> ingredients = getCleanIngredientData(
         ingredientNameController,
         ingredientAmountController,
@@ -210,17 +213,28 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
     List<String> ingredientsGlossary =
         getCleanGlossary(ingredientGlossaryController, ingredients);
 
-    editRecipe.ingredientsGlossary = ingredientsGlossary;
-    editRecipe.ingredients = ingredients;
-    editRecipe.vegetable = selectedRecipeVegetable.getVegetableStatus();
-    editRecipe.servings = double.parse(servingsController.text);
+    Recipe newRecipe = editRecipe.copyWith(
+      ingredientsGlossary: ingredientsGlossary,
+      ingredients: ingredients,
+      vegetable: selectedRecipeVegetable.getVegetableStatus(),
+      servings: double.parse(servingsController.text),
+    );
+
+    if (widget.editRecipe != null) {
+      BlocProvider.of<AddRecipeBloc>(context)
+          .add(SaveTemporaryRecipeData(newRecipe));
+    }
 
     Navigator.push(
       context,
       CupertinoPageRoute(
-        builder: (context) => StepsScreen(
-          editRecipeName: widget.editRecipeName,
-          newRecipe: widget.newRecipe,
+        builder: (context) => BlocProvider<AddRecipeBloc>(
+          builder: (context) =>
+              BlocProvider.of<AddRecipeBloc>(ingredientsScreenContext),
+          child: StepsScreen(
+            editRecipe: widget.editRecipe,
+            recipe: newRecipe,
+          ),
         ),
       ),
     );

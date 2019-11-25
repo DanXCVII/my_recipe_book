@@ -1,13 +1,14 @@
+import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 
-part './typeAdapter/nutrition.g.dart';
+part 'nutrition.g.dart';
 
 @HiveType()
-class Nutrition  {
+class Nutrition extends Equatable {
   @HiveField(0)
-  String name;
+  final String name;
   @HiveField(1)
-  String amountUnit;
+  final String amountUnit;
 
   Nutrition({
     this.name,
@@ -28,4 +29,10 @@ class Nutrition  {
         'name': name,
         'amountUnit': amountUnit,
       };
+
+  @override
+  List<Object> get props => [
+        name,
+        amountUnit,
+      ];
 }

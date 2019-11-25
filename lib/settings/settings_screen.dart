@@ -3,17 +3,14 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_recipe_book/models/recipe_keeper.dart';
-import 'package:my_recipe_book/models/selected_index.dart';
-import 'package:my_recipe_book/settings/export_recipes_screen.dart';
-import 'package:my_recipe_book/settings/nutrition_manager.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
-import '../intro_screen.dart';
-import '../theming.dart';
 import './import_recipe.dart';
+import '../generated/i18n.dart';
+import '../intro_screen.dart';
+import '../screens/nutrition_manager.dart';
+import '../theming.dart';
+import 'export_recipes_screen.dart';
 
 class Settings extends StatelessWidget {
   @override
@@ -33,14 +30,12 @@ class Settings extends StatelessWidget {
                 );
               }),
           Divider(),
-          ScopedModelDescendant<RecipeKeeper>(
-            builder: (context, child, model) => GestureDetector(
-              onTap: () {
-                _importSingleRecipe(model, context).then((_) {});
-              },
-              child: ListTile(
-                title: Text(S.of(context).import_recipe_s),
-              ),
+          GestureDetector(
+            onTap: () {
+              _importSingleRecipe(context).then((_) {});
+            },
+            child: ListTile(
+              title: Text(S.of(context).import_recipe_s),
             ),
           ),
           Divider(),
@@ -150,17 +145,10 @@ class Settings extends StatelessWidget {
             ),
           ),
           Divider(),
-          ScopedModelDescendant<MainPageNavigator>(
-            builder: (context, child, model) => SwitchListTile(
-              title: Text(S.of(context).switch_shopping_cart_look),
-              value: model.showFancyShoppingList,
-              onChanged: (value) {
-                SharedPreferences.getInstance().then((prefs) {
-                  prefs.setBool('showFancyShoppingList', value);
-                  model.changeFancyShoppingList(value);
-                });
-              },
-            ),
+          SwitchListTile(
+            title: Text(S.of(context).switch_shopping_cart_look),
+            value: true,
+            onChanged: (value) {},
           ),
           Divider(),
           ListTile(
@@ -249,13 +237,12 @@ class Settings extends StatelessWidget {
     });
   }
 
-  Future<void> _importSingleRecipe(
-      RecipeKeeper rKeeper, BuildContext context) async {
+  Future<void> _importSingleRecipe(BuildContext context) async {
     // Let the user select the .zip file
     String _path = await FilePicker.getFilePath(
         type: FileType.CUSTOM, fileExtension: 'zip');
     if (_path == null) return;
-    importSingleMultipleRecipes(rKeeper, File(_path), context);
+    importSingleMultipleRecipes(File(_path), context);
   }
 }
 

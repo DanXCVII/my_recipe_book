@@ -1,17 +1,16 @@
-
-import 'package:my_recipe_book/models/recipe.dart';
+import 'package:equatable/equatable.dart';
 
 import 'enums.dart';
 
-class RecipePreview {
-  String name;
-  String imagePreviewPath;
-  String totalTime;
-  int ingredientsAmount;
-  int effort;
-  bool isFavorite;
-  Vegetable vegetable;
-  List<String> categories;
+class RecipePreview extends Equatable {
+  final String name;
+  final String imagePreviewPath;
+  final String totalTime;
+  final int ingredientsAmount;
+  final int effort;
+  final bool isFavorite;
+  final Vegetable vegetable;
+  final List<String> categories;
 
   RecipePreview({
     this.name,
@@ -32,4 +31,16 @@ class RecipePreview {
   get rIsFavorite => isFavorite;
   get rImagePreviewPath => imagePreviewPath;
   get rCategories => categories;
+
+  @override
+  List<Object> get props => [
+        name,
+        totalTime,
+        imagePreviewPath,
+        ingredientsAmount,
+        effort,
+        vegetable,
+        isFavorite,
+        categories,
+      ];
 }

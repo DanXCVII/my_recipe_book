@@ -1,9 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:my_recipe_book/dialogs/add_nut_cat_dialog.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import '../../blocs/category_manager/category_manager_bloc.dart';
+import '../../dialogs/add_nut_cat_dialog.dart';
+import '../../generated/i18n.dart';
 
 class Consts {
   Consts._();
@@ -12,9 +15,10 @@ class Consts {
 }
 
 class CategorySection extends StatefulWidget {
-  final List<String> recipeCategories;
+  final List<String> selectedCategories;
+  final List<String> categories;
 
-  CategorySection(this.recipeCategories);
+  CategorySection(this.selectedCategories, this.categories);
 
   @override
   State<StatefulWidget> createState() {
@@ -58,7 +62,16 @@ class _CategorySectionState extends State<CategorySection> {
                   icon: Icon(Icons.add_circle_outline),
                   onPressed: () {
                     showDialog(
-                        context: context, builder: (_) => AddDialog(false));
+                        context: context,
+                        builder: (_) => AddDialog(
+                              false,
+                              widget.categories,
+                              recipeManagerBloc:
+                                  BlocProvider.of<CategoryManagerBloc>(context)
+                                      .recipeManagerBloc,
+                              categoryManagerBloc:
+                                  BlocProvider.of<CategoryManagerBloc>(context),
+                            ));
                   },
                 )
               ],
@@ -76,7 +89,7 @@ class _CategorySectionState extends State<CategorySection> {
                   children: categories.map((category) {
                     return MyCategoryFilterChip(
                       chipName: category,
-                      recipeCategories: widget.recipeCategories,
+                      selectedCategories: widget.selectedCategories,
                     );
                   }).toList()
                     ..removeLast(),
@@ -93,9 +106,9 @@ enum AnswersCategory { SAVE, DISMISS }
 // creates a filterClip with the given name
 class MyCategoryFilterChip extends StatefulWidget {
   final String chipName;
-  final List<String> recipeCategories;
+  final List<String> selectedCategories;
 
-  MyCategoryFilterChip({Key key, this.chipName, this.recipeCategories});
+  MyCategoryFilterChip({Key key, this.chipName, this.selectedCategories});
 
   @override
   State<StatefulWidget> createState() {
@@ -110,7 +123,7 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
   void initState() {
     super.initState();
 
-    widget.recipeCategories.contains(widget.chipName)
+    widget.selectedCategories.contains(widget.chipName)
         ? _isSelected = true
         : _isSelected = false;
   }
@@ -124,9 +137,9 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
         setState(() {
           _isSelected = isSelected;
           if (isSelected == true) {
-            widget.recipeCategories.add(widget.chipName);
+            widget.selectedCategories.add(widget.chipName);
           } else {
-            widget.recipeCategories.remove(widget.chipName);
+            widget.selectedCategories.remove(widget.chipName);
           }
         });
       },

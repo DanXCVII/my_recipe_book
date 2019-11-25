@@ -1,32 +1,34 @@
 import 'dart:io';
-import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/database.dart';
-import 'package:my_recipe_book/hive.dart';
-import 'package:my_recipe_book/io/io_operations.dart' as IO;
-import 'package:my_recipe_book/models/enums.dart';
-import 'package:my_recipe_book/models/ingredient.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/models/recipe_keeper.dart';
-import 'package:my_recipe_book/models/shopping_cart.dart';
-import 'package:my_recipe_book/recipe_overview/add_recipe_screen/general_info/general_info_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'dart:ui';
-import 'package:share/share.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
+import '../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../blocs/recipe_manager/recipe_manager_event.dart';
+import '../blocs/recipe_overview/recipe_overview_bloc.dart';
+import '../blocs/recipe_overview/recipe_overview_event.dart';
+import '../database.dart';
+import '../gallery_view.dart';
+import '../generated/i18n.dart';
+import '../helper.dart';
+import '../hive.dart';
+import '../io/io_operations.dart' as IO;
+import '../models/enums.dart';
+import '../models/ingredient.dart';
+import '../models/recipe.dart';
+import '../models/shopping_cart.dart';
 import '../recipe.dart';
 import '../recipe_card.dart';
-import './recipe_overview.dart';
-import '../gallery_view.dart';
-import './recipe_overview.dart' show Favorite;
-import 'package:flutter_circular_chart/flutter_circular_chart.dart';
-import '../helper.dart';
+import '../screens/recipe_overview.dart';
+import 'add_recipe_screen/general_info/general_info_screen.dart';
 
 const double timeTextsize = 15;
 const double timeText = 17;
@@ -225,45 +227,42 @@ class RecipePage extends StatelessWidget {
         backgroundColor: primaryColor,
         body: CustomScrollView(
           slivers: <Widget>[
-            ScopedModelDescendant<RecipeKeeper>(
-              builder: (context, child, rKeeper) => SliverAppBar(
-                backgroundColor: primaryColor,
-                actions: <Widget>[
-                  Favorite(recipe),
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    tooltip: 'edit',
-                    onPressed: () {
-                      pushEditRecipe(context);
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete),
-                    tooltip: S.of(context).share_recipe,
-                    onPressed: () {
-                      _showDeleteDialog(context, recipe.name);
-                    },
-                  ),
-                  PopupMenuButton<PopupOptions>(
-                    icon: Icon(Icons.share),
-                    onSelected: (value) =>
-                        _choiceAction(value, context, rKeeper),
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        PopupMenuItem(
-                          value: PopupOptions.EXPORT_ZIP,
-                          child: Text(S.of(context).export_zip),
-                        ),
-                        PopupMenuItem(
-                          value: PopupOptions.EXPORT_TEXT,
-                          child: Text(S.of(context).export_text),
-                        )
-                      ];
-                    },
-                  ),
-                ],
-                floating: true,
-              ),
+            SliverAppBar(
+              backgroundColor: primaryColor,
+              actions: <Widget>[
+                Favorite(recipe),
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  tooltip: 'edit',
+                  onPressed: () {
+                    pushEditRecipe(context);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  tooltip: S.of(context).share_recipe,
+                  onPressed: () {
+                    _showDeleteDialog(context, recipe.name);
+                  },
+                ),
+                PopupMenuButton<PopupOptions>(
+                  icon: Icon(Icons.share),
+                  onSelected: (value) => _choiceAction(value, context),
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem(
+                        value: PopupOptions.EXPORT_ZIP,
+                        child: Text(S.of(context).export_zip),
+                      ),
+                      PopupMenuItem(
+                        value: PopupOptions.EXPORT_TEXT,
+                        child: Text(S.of(context).export_text),
+                      )
+                    ];
+                  },
+                ),
+              ],
+              floating: true,
             ),
             SliverList(
                 delegate: SliverChildListDelegate(<Widget>[
@@ -416,17 +415,19 @@ class RecipePage extends StatelessWidget {
 
   void pushEditRecipe(BuildContext context) {
     Recipe modifyRecipe = Recipe(name: null, servings: null, vegetable: null);
-    modifyRecipe.setEqual(recipe);
+    // TODO: fix
+    // modifyRecipe.setEqual(recipe);
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (BuildContext context) => GeneralInfoScreen(
-                  newRecipe: modifyRecipe,
-                  editRecipeName: recipe.name,
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => GeneralInfoScreen(
+          editRecipe: recipe,
+        ),
+      ),
+    );
   }
 
-  void _choiceAction(PopupOptions value, context, RecipeKeeper rKeeper) {
+  void _choiceAction(PopupOptions value, context) {
     if (value == PopupOptions.EXPORT_TEXT) {
       Share.plainText(text: _getRecipeAsString(recipe), title: 'recipe')
           .share();
@@ -458,7 +459,8 @@ class RecipePage extends StatelessWidget {
             textColor: Theme.of(context).textTheme.body1.color,
             color: Colors.red[600],
             onPressed: () {
-              deleteRecipe(recipeName);
+              BlocProvider.of<RecipeManagerBloc>(context)
+                  .add(RMDeleteRecipe(recipe));
               Navigator.pop(context);
               Navigator.pop(context);
             },
@@ -868,21 +870,28 @@ class CategoriesSection extends StatelessWidget {
               ),
             ),
             SizedBox(height: 25),
-            ScopedModelDescendant<RecipeKeeper>(
-              builder: (context, child, model) => Wrap(
-                children: categories
-                    .map(
-                      (categoryName) => CategoryCircle(
-                        categoryName: categoryName,
-                        imageName: model
-                            .getRandomRecipeImageFromCategory(categoryName),
-                      ),
-                    )
-                    .toList(),
-                runSpacing: 10.0,
-                spacing: 10.0,
-              ),
-            )
+            Wrap(
+              children: categories.map((categoryName) {
+                return FutureBuilder<Recipe>(
+                    future: HiveProvider()
+                        .getRandomRecipeOfCategory(category: categoryName),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return CategoryCircle(
+                          categoryName: categoryName,
+                          imageName: snapshot.data == null
+                              ? 'images/randomFood.jpg'
+                              : snapshot.data.imagePath,
+                        );
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    });
+              }).toList(),
+              runSpacing: 10.0,
+              spacing: 10.0,
+            ),
           ],
         ),
       ),
@@ -911,14 +920,18 @@ class _CategoryCircleState extends State<CategoryCircle> {
           DBProvider.db
               .getRecipePreviewOfCategory(widget.categoryName)
               .then((r) {
-            Random rand = Random();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (BuildContext context) => new RecipeGridView(
-                  category: widget.categoryName == null
-                      ? 'no category'
-                      : widget.categoryName,
+                builder: (BuildContext context) =>
+                    BlocProvider<RecipeOverviewBloc>(
+                  builder: (context) => RecipeOverviewBloc(
+                      recipeManagerBloc:
+                          BlocProvider.of<RecipeManagerBloc>(context))
+                    ..add(LoadCategoryRecipeOverview(widget.categoryName == null
+                        ? 'no category'
+                        : widget.categoryName)),
+                  child: RecipeGridView(),
                 ),
               ),
             );
@@ -1384,14 +1397,15 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     return output;
   }
 
+  // TODO: fix method
   void _decreaseServings() {
     if (servings <= 1) return;
     List<List<Ingredient>> ingredients = widget.currentRecipe.ingredients;
     for (int i = 0; i < ingredients.length; i++) {
       for (int j = 0; j < ingredients[i].length; j++) {
-        if (ingredients[i][j].amount != null)
-          ingredients[i][j].amount =
-              ((servings - 1) / servings) * ingredients[i][j].amount;
+        // if (ingredients[i][j].amount != null)
+        //   ingredients[i][j].amount =
+        //       ((servings - 1) / servings) * ingredients[i][j].amount;
       }
     }
     setState(() {
@@ -1399,13 +1413,14 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     });
   }
 
+  // TODO: fix method
   void _increaseServings() {
     List<List<Ingredient>> ingredients = widget.currentRecipe.ingredients;
     for (int i = 0; i < ingredients.length; i++) {
       for (int j = 0; j < ingredients[i].length; j++) {
-        if (ingredients[i][j].amount != null)
-          ingredients[i][j].amount =
-              ((servings + 1) / servings) * ingredients[i][j].amount;
+        // if (ingredients[i][j].amount != null)
+        //   ingredients[i][j].amount =
+        //       ((servings + 1) / servings) * ingredients[i][j].amount;
       }
     }
     setState(() {

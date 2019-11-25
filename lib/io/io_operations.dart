@@ -54,7 +54,6 @@ Future<void> renameRecipeData(String oldRecipeName, String newRecipeName,
   await copyRecipeDataToNewPath(oldRecipeName, newRecipeName);
   await Directory(await PathProvider.pP.getRecipeDir(oldRecipeName))
       .delete(recursive: true);
-  //
 
   // Directory oldRecipeDir =
   //     Directory(await PathProvider.pP.getRecipeDir(oldRecipeName));
