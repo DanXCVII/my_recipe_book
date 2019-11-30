@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../blocs/add_recipe/add_recipe.dart';
@@ -12,6 +13,7 @@ import '../models/nutrition.dart';
 import '../models/recipe.dart';
 import '../recipe.dart';
 import '../recipe_overview/recipe_screen.dart';
+import '../routes.dart';
 
 class AddRecipeNutritions extends StatefulWidget {
   final Recipe editRecipe;
@@ -157,14 +159,15 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context);
-      Navigator.pushReplacement(
+
+      Navigator.popAndPushNamed(
         context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => RecipeScreen(
-            recipe: widget.newRecipe,
-            primaryColor: getRecipePrimaryColor(widget.newRecipe.vegetable),
-            heroImageTag: 'heroImageTag',
-          ),
+        RouteNames.recipeScreen,
+        arguments: RecipeScreenArguments(
+          BlocProvider.of<ShoppingCartBloc>(context),
+          widget.newRecipe,
+          getRecipePrimaryColor(widget.newRecipe.vegetable),
+          'heroImageTag',
         ),
       );
     } else {

@@ -34,6 +34,8 @@ class RandomRecipeExplorerBloc
           add(DeleteRecipe(rmState.recipe));
         } else if (rmState is RMState.UpdateRecipeState) {
           add(UpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
+        } else if (rmState is RMState.AddCategoryState) {
+          add(AddCategory(rmState.category));
         } else if (rmState is RMState.DeleteCategoryState) {
           add(DeleteCategory(rmState.category));
         } else if (rmState is RMState.UpdateCategoryState) {
@@ -56,6 +58,8 @@ class RandomRecipeExplorerBloc
       yield* _mapReloadRandomRecipeExplorerToState(event);
     } else if (event is RotateRecipe) {
       yield* _mapRotateRecipeToState(event);
+    } else if (event is AddCategory) {
+      yield* _mapAddCategoryToState(event);
     } else if (event is DeleteCategory) {
       yield* _mapDeleteCategoryToState(event);
     } else if (event is UpdateCategory) {
@@ -85,6 +89,22 @@ class RandomRecipeExplorerBloc
         randomRecipes[0] == null ? [] : randomRecipes,
         categories,
         categories.indexOf(event.selectedCategory));
+  }
+
+  Stream<RandomRecipeExplorerState> _mapAddCategoryToState(
+      AddCategory event) async* {
+    if (state is LoadedRandomRecipeExplorer) {
+      final List<String> categories = (state as LoadedRandomRecipeExplorer)
+          .categories
+        ..insert((state as LoadedRandomRecipeExplorer).categories.length - 1,
+            event.category);
+
+      yield LoadedRandomRecipeExplorer(
+        (state as LoadedRandomRecipeExplorer).randomRecipes,
+        categories,
+        (state as LoadedRandomRecipeExplorer).selectedCategory,
+      );
+    }
   }
 
   Stream<RandomRecipeExplorerState> _mapDeleteCategoryToState(

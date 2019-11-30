@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/routes.dart';
 
+import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'database.dart';
 import 'generated/i18n.dart';
 import 'models/recipe.dart';
@@ -78,14 +81,14 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                   .getRecipeByName(resultRecipeNames[index ~/ 2], true)
                   .then((recipe) {
                 close(context, null);
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => new RecipeScreen(
-                      recipe: recipe,
-                      primaryColor: getRecipePrimaryColor(recipe.vegetable),
-                      heroImageTag: 'heroTag',
-                    ),
+                  RouteNames.recipeScreen,
+                  arguments: RecipeScreenArguments(
+                    BlocProvider.of<ShoppingCartBloc>(context),
+                    recipe,
+                    getRecipePrimaryColor(recipe.vegetable),
+                    'heroTag',
                   ),
                 );
               });

@@ -25,6 +25,18 @@ class InitializeRandomRecipeExplorer extends RandomRecipeExplorerEvent {
 
 class ReloadRandomRecipeExplorer extends RandomRecipeExplorerEvent {}
 
+class AddCategory extends RandomRecipeExplorerEvent {
+  final String category;
+
+  const AddCategory(this.category);
+
+  @override
+  List<Object> get props => [category];
+
+  @override
+  String toString() => 'Add Category { category: $category }';
+}
+
 class DeleteCategory extends RandomRecipeExplorerEvent {
   final String category;
 

@@ -23,6 +23,8 @@ class RecipeCategoryOverviewBloc
           add(RCODeleteRecipe(rmState.recipe));
         } else if (rmState is RMState.UpdateRecipeState) {
           add(RCOUpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
+        } else if (rmState is RMState.AddCategoryState) {
+          add(RCOAddCategory(rmState.category));
         } else if (rmState is RMState.DeleteCategoryState) {
           add(RCODeleteCategory(rmState.category));
         } else if (rmState is RMState.UpdateCategoryState) {
@@ -48,6 +50,8 @@ class RecipeCategoryOverviewBloc
       yield* _mapAddRecipeToState(event);
     } else if (event is RCOUpdateRecipe) {
       yield* _mapUpdateRecipeToState(event);
+    } else if (event is RCOAddCategory) {
+      yield* _mapAddCategoryToState(event);
     } else if (event is RCODeleteRecipe) {
       yield* _mapDeleteRecipeToState(event);
     } else if (event is RCODeleteCategory) {
@@ -102,6 +106,21 @@ class RecipeCategoryOverviewBloc
           _addRecipeToOverview(event.updatedRecipe, recipeCategoryOverviewVone);
 
       yield LoadedRecipeCategoryOverview(recipeCategoryOverviewVtwo);
+    }
+  }
+
+  Stream<RecipeCategoryOverviewState> _mapAddCategoryToState(
+      RCOAddCategory event) async* {
+    if (state is LoadedRecipeCategoryOverview) {
+      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview = (state
+              as LoadedRecipeCategoryOverview)
+          .rCategoryOverview
+        ..insert(
+            (state as LoadedRecipeCategoryOverview).rCategoryOverview.length -
+                1,
+            Tuple2(event.category, []));
+
+      yield LoadedRecipeCategoryOverview(recipeCategoryOverview);
     }
   }
 

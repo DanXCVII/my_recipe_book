@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/blocs/general_info/general_info.dart';
 
 import '../../../blocs/add_recipe/add_recipe.dart';
 import '../../../blocs/add_recipe/add_recipe_bloc.dart';
@@ -83,13 +84,38 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                 ),
                 title: Text("add general info"),
                 actions: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.arrow_forward),
-                    color: Colors.white,
-                    onPressed: () {
-                      _finishedEditingGeneralInfo(state.recipe);
+                  BlocListener<GeneralInfoBloc, GeneralInfoState>(
+                    listener: (context, state) {
+                      if (state is Saved) {
+                        // TODO: Navigator.pushNamed to next screen
+                      }
                     },
-                  ),
+                    child: BlocBuilder<GeneralInfoBloc, GeneralInfoState>(
+                      builder: (context, state) {
+                        if (state is SavingTmpData) {
+                          return IconButton(
+                            icon: Icon(Icons.arrow_forward),
+                            color: Colors.grey,
+                            onPressed: () {
+                              // TODO: show toast, that user has to wait for tmp data to  be saved
+                            },
+                          );
+                        } else if (state is CanSave) {
+                          return IconButton(
+                            icon: Icon(Icons.arrow_forward),
+                            color: Colors.white,
+                            onPressed: () {
+                              _finishedEditingGeneralInfo(state.recipe);
+                            },
+                          );
+                        } else if (state is EditingFinished) {
+                          return CircularProgressIndicator();
+                        } else {
+                          return Text(state.toString());
+                        }
+                      },
+                    ),
+                  )
                 ],
               ),
               body: SingleChildScrollView(
@@ -113,6 +139,12 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                           child: TextFormField(
                             validator: _validateRecipeName,
                             controller: nameController,
+                            onEditingComplete: () {
+                              BlocProvider.of<GeneralInfoBloc>(context).add(
+                                UpdateRecipeName(nameController.text,
+                                    widget.editRecipe == null ? false : true),
+                              );
+                            },
                             decoration: InputDecoration(
                               filled: true,
                               labelText: S.of(context).name + "*",
@@ -207,6 +239,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
     );
   }
 
+  /// TODO: edit method, so that it only saves the text field info, because
+  /// the rest is already saved
   _finishedEditingGeneralInfo(Recipe editedRecipe) {
     RecipeValidator()
         .validateGeneralInfo(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_recipe_book/hive.dart';
 import 'package:my_recipe_book/intro_screen.dart';
-import 'package:my_recipe_book/models/recipe_keeper.dart';
 import 'package:my_recipe_book/models/shopping_cart.dart';
 import 'package:my_recipe_book/theming.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,11 +13,9 @@ class Consts {
 }
 
 class SplashScreen extends StatefulWidget {
-  final RecipeKeeper rKeeper;
   final ShoppingCartKeeper sCKeeper;
 
   SplashScreen({
-    @required this.rKeeper,
     @required this.sCKeeper,
   });
 
@@ -65,7 +62,6 @@ class SplashScreenState extends State<SplashScreen> {
     _initRecipeOverviewScreen(prefs);
     _initTheme(prefs);
     await widget.sCKeeper.initCart();
-    await widget.rKeeper.initData();
 
     // delete cache
     // await getTemporaryDirectory()
@@ -75,7 +71,6 @@ class SplashScreenState extends State<SplashScreen> {
       onDoneLoading();
     } else {
       prefs.setBool('showIntro', true);
-      await initializeFirstStartData();
       SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
       Navigator.of(context).pushReplacementNamed("/");
       Navigator.of(context).push(
@@ -84,10 +79,6 @@ class SplashScreenState extends State<SplashScreen> {
         ),
       );
     }
-  }
-
-  Future<void> initializeFirstStartData() async {
-    widget.rKeeper.firstStartInitialize();
   }
 
   Future<void> clearCache() async {}

@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:my_recipe_book/blocs/bloc/recipe_screen_ingredients.dart';
+import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -51,6 +52,20 @@ const imageComplexity = [
 ];
 
 enum PopupOptions { EXPORT_ZIP, EXPORT_TEXT }
+
+class RecipeScreenArguments {
+  final ShoppingCartBloc shoppingCartBloc;
+  final Recipe recipe;
+  final Color primaryColor;
+  final String heroImageTag;
+
+  RecipeScreenArguments(
+    this.shoppingCartBloc,
+    this.recipe,
+    this.primaryColor,
+    this.heroImageTag,
+  );
+}
 
 class RecipeScreen extends StatelessWidget {
   final Recipe recipe;
@@ -1139,117 +1154,84 @@ class IngredientsScreen extends StatefulWidget {
   IngredientsScreen(this.currentRecipe);
 
   @override
-  State<StatefulWidget> createState() =>
-      IngredientsScreenState(currentRecipe.servings);
+  State<StatefulWidget> createState() => IngredientsScreenState();
 }
 
 class IngredientsScreenState extends State<IngredientsScreen> {
-  double servings;
-  List<Ingredient> saved = [];
-  Map<List<Ingredient>, bool> sectionCheck = {};
-  Map<Ingredient, bool> ingredCheck = {};
-
-  IngredientsScreenState(this.servings);
-
-  List<Widget> getIngredientsSection(int sectionNumber, bool oneSection) {
+  List<Widget> getIngredientsSection(
+      List<CheckableIngredient> ingredients, bool oneSection) {
     return [
       SizedBox(
         height: oneSection ? 0 : 15,
       )
-    ]..addAll(widget.currentRecipe.ingredients[sectionNumber].map(
-        (currentIngredient) => Padding(
-          padding: const EdgeInsets.only(right: 20),
-          child: Row(
-            children: <Widget>[
-              ScopedModelDescendant<ShoppingCartKeeper>(
-                  builder: (context, child, scKeeper) {
-                if (!ingredCheck.containsKey(currentIngredient))
-                  ingredCheck.addAll({
-                    currentIngredient: scKeeper.checkForRecipeIngredient(
-                        widget.currentRecipe.name, currentIngredient)
-                  });
-
-                return IconButton(
-                    icon: ingredCheck[currentIngredient]
+    ]..addAll(
+        ingredients.map(
+          (currentIngredient) => Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                    icon: currentIngredient.checked
                         ? Icon(Icons.check_circle)
                         : Icon(Icons.add_circle_outline),
                     tooltip: 'Add to shopping Cart',
                     onPressed: () {
-                      _pressIngredient(scKeeper, currentIngredient,
-                          ingredCheck[currentIngredient]);
+                      _pressIngredient(currentIngredient);
                     },
-                    color: ingredCheck[currentIngredient]
+                    color: currentIngredient.checked
                         ? Colors.green
-                        : Colors.white);
-              }),
-              Container(
-                width: MediaQuery.of(context).size.width - 150,
-                child: Text(
-                  currentIngredient.name,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontFamily: recipeScreenFontFamily,
+                        : Colors.white),
+                Container(
+                  width: MediaQuery.of(context).size.width - 150,
+                  child: Text(
+                    currentIngredient.name,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontFamily: recipeScreenFontFamily,
+                    ),
                   ),
                 ),
-              ),
-              Spacer(),
-              Container(
-                width: 80,
-                child: Text(
-                  "${currentIngredient.amount == null ? "" : cutDouble(currentIngredient.amount)} "
-                  "${currentIngredient.unit == null ? "" : currentIngredient.unit}",
-                  textAlign: TextAlign.end,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontFamily: recipeScreenFontFamily,
+                Spacer(),
+                Container(
+                  width: 80,
+                  child: Text(
+                    "${currentIngredient.amount == null ? "" : cutDouble(currentIngredient.amount)} "
+                    "${currentIngredient.unit == null ? "" : currentIngredient.unit}",
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontFamily: recipeScreenFontFamily,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ));
+      );
   }
 
-  void _pressIngredient(
-      ShoppingCartKeeper scKeeper, Ingredient ingredient, bool isChecked) {
-    if (isChecked) {
-      setState(() {
-        ingredCheck[ingredient] = false;
-        scKeeper.removeIngredientFromCart(
-            widget.currentRecipe.name, ingredient);
-        _checkSections(scKeeper);
-      });
+  /// adds or removes the ingredient to/from the shopping cart and changes its
+  /// checked status
+  void _pressIngredient(CheckableIngredient ingredient) {
+    if (ingredient.checked) {
+      BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(RemoveFromCart(
+          widget.currentRecipe.name, [ingredient.getIngredient()]));
     } else {
-      setState(() {
-        ingredCheck[ingredient] = true;
-        scKeeper.removeAndAddIngredient(widget.currentRecipe.name, ingredient);
-        _checkSections(scKeeper);
-      });
+      BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
+          AddToCart(widget.currentRecipe.name, [ingredient.getIngredient()]));
     }
   }
 
-  void _checkSections(ShoppingCartKeeper scKeeper) {
-    for (int i = 0; i < widget.currentRecipe.ingredients.length; i++) {
-      bool isChecked = scKeeper.checkForRecipeIngredients(
-          widget.currentRecipe.name, widget.currentRecipe.ingredients[i]);
-      if (isChecked != sectionCheck[i]) {
-        setState(() {
-          sectionCheck[widget.currentRecipe.ingredients[i]] = isChecked;
-        });
-      }
-    }
-  }
-
-  List<Widget> getIngredientsData() {
+  List<Widget> getIngredientsData(
+      List<List<CheckableIngredient>> ingredients, List<bool> sectionCheck) {
     List<Widget> output = [];
-    bool oneSection = widget.currentRecipe.ingredientsGlossary.isEmpty;
-    int loop = oneSection ? 1 : widget.currentRecipe.ingredientsGlossary.length;
+    bool oneSection = ingredients.isEmpty;
 
-    for (int i = 0; i < loop; i++) {
-      List<Ingredient> sectionIngredients = widget.currentRecipe.ingredients[i];
+    for (int i = 0; i < ingredients.length; i++) {
+      List<CheckableIngredient> sectionIngredients = ingredients[i];
       output.add(
         Padding(
           padding: EdgeInsets.only(
@@ -1267,165 +1249,137 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                     fontSize: 24,
                     fontFamily: recipeScreenFontFamily,
                   )),
-              ScopedModelDescendant<ShoppingCartKeeper>(
-                  builder: (context, child, scKeeper) {
-                if (!sectionCheck.containsKey(sectionIngredients)) {
-                  sectionCheck.addAll({
-                    sectionIngredients: scKeeper.checkForRecipeIngredients(
-                        widget.currentRecipe.name, sectionIngredients)
-                  });
-                }
-                print(sectionCheck.keys);
-
-                return IconButton(
-                  icon: sectionCheck[sectionIngredients]
-                      ? Icon(Icons.shopping_cart)
-                      : Icon(Icons.add_shopping_cart),
-                  tooltip: 'add to shopping cart',
-                  onPressed: () {
-                    _pressAddSection(scKeeper, sectionIngredients,
-                        sectionCheck[sectionIngredients]);
-                  },
-                  color: sectionCheck[sectionIngredients]
-                      ? Colors.green
-                      : textColor,
-                );
-              }),
+              IconButton(
+                icon: sectionCheck[i]
+                    ? Icon(Icons.shopping_cart)
+                    : Icon(Icons.add_shopping_cart),
+                tooltip: 'add to shopping cart',
+                onPressed: () {
+                  _pressAddSection(
+                      sectionIngredients
+                          .map((ingred) => ingred.getIngredient())
+                          .toList(),
+                      sectionCheck[i]);
+                },
+                color: sectionCheck[i] ? Colors.green : textColor,
+              )
             ],
           ),
         ),
       );
 
-      output.addAll(getIngredientsSection(i, oneSection));
+      output.addAll(getIngredientsSection(ingredients[i], oneSection));
     }
 
     return output;
   }
 
-  void _pressAddSection(ShoppingCartKeeper scKeeper,
-      List<Ingredient> ingredients, bool isChecked) {
+  void _pressAddSection(List<Ingredient> ingredients, bool isChecked) {
     if (isChecked) {
-      setState(() {
-        sectionCheck[ingredients] = false;
-        for (Ingredient i in ingredients) {
-          ingredCheck[i] = false;
-        }
-        scKeeper.removeIngredientsFromCart(
-            widget.currentRecipe.name, ingredients);
-      });
+      BlocProvider.of<RecipeScreenIngredientsBloc>(context)
+          .add(RemoveFromCart(widget.currentRecipe.name, ingredients));
     } else {
-      setState(() {
-        sectionCheck[ingredients] = true;
-        for (Ingredient i in ingredients) {
-          ingredCheck[i] = true;
-        }
-        scKeeper.removeAndAddIngredients(
-            widget.currentRecipe.name, ingredients);
-      });
+      BlocProvider.of<RecipeScreenIngredientsBloc>(context)
+          .add(AddToCart(widget.currentRecipe.name, ingredients));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // TODO: check how the list of no ingredients looks like
     List<Ingredient> allIngredients =
         flattenIngredients(widget.currentRecipe.ingredients);
     if (allIngredients.isEmpty) return Container();
-    Column output = Column(
-      children: <Widget>[
-        Container(
-          decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.3)),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 12, right: 12),
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      S.of(context).ingredients_for,
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: headingSize,
-                        fontFamily: recipeScreenFontFamily,
+    return BlocBuilder<RecipeScreenIngredientsBloc,
+        RecipeScreenIngredientsState>(
+      builder: (context, state) {
+        if (state is InitialRecipeScreenIngredientsState) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state is LoadedRecipeIngredients) {
+          return Column(
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.3)),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12, right: 12),
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            S.of(context).ingredients_for,
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: headingSize,
+                              fontFamily: recipeScreenFontFamily,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.remove_circle_outline,
+                                color: Colors.white),
+                            tooltip: S.of(context).decrease_servings,
+                            onPressed: () {
+                              _decreaseServings(state.servings);
+                            },
+                          ),
+                          Text(
+                            '${state.servings}',
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: headingSize,
+                              fontFamily: recipeScreenFontFamily,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add_circle_outline,
+                                color: Colors.white),
+                            tooltip: S.of(context).increase_servings,
+                            onPressed: () {
+                              _increaseServings(state.servings);
+                            },
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              S.of(context).servings,
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: headingSize,
+                                fontFamily: recipeScreenFontFamily,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.remove_circle_outline,
-                          color: Colors.white),
-                      tooltip: S.of(context).decrease_servings,
-                      onPressed: () {
-                        _decreaseServings();
-                      },
-                    ),
-                    Text(
-                      '$servings',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: headingSize,
-                        fontFamily: recipeScreenFontFamily,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.add_circle_outline, color: Colors.white),
-                      tooltip: S.of(context).increase_servings,
-                      onPressed: () {
-                        _increaseServings();
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        S.of(context).servings,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: headingSize,
-                          fontFamily: recipeScreenFontFamily,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
-      ],
+            ]..addAll(
+                getIngredientsData(state.ingredients, state.sectionCheck),
+              ),
+          );
+        } else {
+          return Text(state.toString());
+        }
+      },
     );
-    output.children.addAll(getIngredientsData());
-    return output;
   }
 
-  // TODO: fix method
-  void _decreaseServings() {
-    if (servings <= 1) return;
-    List<List<Ingredient>> ingredients = widget.currentRecipe.ingredients;
-    for (int i = 0; i < ingredients.length; i++) {
-      for (int j = 0; j < ingredients[i].length; j++) {
-        // if (ingredients[i][j].amount != null)
-        //   ingredients[i][j].amount =
-        //       ((servings - 1) / servings) * ingredients[i][j].amount;
-      }
-    }
-    setState(() {
-      servings = servings - 1;
-    });
+  void _decreaseServings(double oldServings) {
+    if (oldServings <= 1) return;
+    BlocProvider.of<RecipeScreenIngredientsBloc>(context)
+        .add(IncreaseServings(oldServings - 1));
   }
 
-  // TODO: fix method
-  void _increaseServings() {
-    List<List<Ingredient>> ingredients = widget.currentRecipe.ingredients;
-    for (int i = 0; i < ingredients.length; i++) {
-      for (int j = 0; j < ingredients[i].length; j++) {
-        // if (ingredients[i][j].amount != null)
-        //   ingredients[i][j].amount =
-        //       ((servings + 1) / servings) * ingredients[i][j].amount;
-      }
-    }
-    setState(() {
-      servings = servings + 1;
-    });
+  void _increaseServings(double oldServings) {
+    BlocProvider.of<RecipeScreenIngredientsBloc>(context)
+        .add(IncreaseServings(oldServings + 1));
   }
 }
 

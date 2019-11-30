@@ -9,9 +9,11 @@ import '../blocs/recipe_category_overview/recipe_category_overview.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/recipe_overview/recipe_overview_event.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
 import '../recipe_overview/recipe_screen.dart';
+import '../routes.dart';
 import 'recipe_overview.dart';
 
 // Builds the Rows of all the categories
@@ -240,14 +242,14 @@ class RecipeHozizontalList extends StatelessWidget {
 
   void _pushRecipeRoute(
       BuildContext context, int index, String heroImageTag, Recipe recipe) {
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => new RecipeScreen(
-          recipe: recipe,
-          primaryColor: getRecipePrimaryColor(recipes[index].vegetable),
-          heroImageTag: heroImageTag,
-        ),
+      RouteNames.recipeScreen,
+      arguments: RecipeScreenArguments(
+        BlocProvider.of<ShoppingCartBloc>(context),
+        recipe,
+        getRecipePrimaryColor(recipes[index].vegetable),
+        heroImageTag,
       ),
     );
   }

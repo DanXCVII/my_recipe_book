@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/blocs/category_overview/category_overview_bloc.dart';
+import '../../hive.dart';
 import './recipe_manager.dart';
 
 class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
@@ -53,7 +54,8 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   }
 
   Stream<AddCategoryState> _mapAddCategoryToState(RMAddCategory event) async* {
-    // TODO: Add category to hive
+    await HiveProvider().addCategory(event.category);
+
     yield AddCategoryState(event.category);
   }
 
@@ -82,7 +84,8 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
 
   Stream<MoveCategoryState> _mapMoveCategoryToState(
       RMMoveCategory event) async* {
-    // TODO: update hive
+    await HiveProvider().moveCategory(event.oldIndex, event.newIndex);
+
     yield MoveCategoryState(event.oldIndex, event.newIndex);
   }
 }

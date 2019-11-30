@@ -22,6 +22,8 @@ class CategoryOverviewBloc
           add(CODeleteRecipe(rmState.recipe));
         } else if (rmState is RMState.UpdateRecipeState) {
           add(COUpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
+        } else if (rmState is RMState.AddCategoryState) {
+          add(COAddCategory(rmState.category));
         } else if (rmState is RMState.DeleteCategoryState) {
           add(CODeleteCategory(rmState.category));
         } else if (rmState is RMState.UpdateCategoryState) {
@@ -48,6 +50,8 @@ class CategoryOverviewBloc
       yield* _mapUpdateRecipeToState(event);
     } else if (event is CODeleteRecipe) {
       yield* _mapDeleteRecipeToState(event);
+    } else if (event is COAddCategory) {
+      yield* _mapAddCategoryToState(event);
     } else if (event is CODeleteCategory) {
       yield* _mapDeleteCategoryToState(event);
     } else if (event is COUpdateCategory) {
@@ -94,6 +98,18 @@ class CategoryOverviewBloc
       final List<Tuple2<String, String>> categoryRandomImageList =
           await _removeRecipeFromOverview(
               (state as LoadedCategoryOverview).categories, event.recipe);
+      yield LoadedCategoryOverview(categoryRandomImageList);
+    }
+  }
+
+  Stream<CategoryOverviewState> _mapAddCategoryToState(
+      COAddCategory event) async* {
+    if (state is LoadedCategoryOverview) {
+      final List<Tuple2<String, String>> categoryRandomImageList =
+          (state as LoadedCategoryOverview).categories
+            ..insert((state as LoadedCategoryOverview).categories.length - 1,
+                Tuple2(event.category, "images/randomFood.jpg"));
+
       yield LoadedCategoryOverview(categoryRandomImageList);
     }
   }
@@ -178,9 +194,10 @@ class CategoryOverviewBloc
     for (String category in categories) {
       Recipe randomRecipe =
           await HiveProvider().getRandomRecipeOfCategory(category: category);
-      String randomImage = randomRecipe == null ? null : randomRecipe.imagePath;
-      categoryRandomImageList.add(Tuple2(category,
-          randomImage == null ? "images/randomFood.jpg" : randomImage));
+      String randomImage = randomRecipe == null
+          ? "images/randomFood.jpg"
+          : randomRecipe.imagePath;
+      categoryRandomImageList.add(Tuple2(category, randomImage));
     }
     return categoryRandomImageList;
   }

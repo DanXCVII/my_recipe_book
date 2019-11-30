@@ -16,7 +16,7 @@ class LoadedShoppingCart extends ShoppingCartState {
   LoadedShoppingCart(this.shoppingCart);
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [shoppingCart];
 
   @override
   String toString() => 'Loaded recipe overview { shoppingCart: $shoppingCart}';

@@ -12,6 +12,7 @@ import 'models/recipe_sort.dart';
 import 'models/shopping_cart_tuple.dart';
 
 const String tmpRecipeKey = '000';
+const String tmpEditingRecipeKey = '001';
 
 class BoxNames {
   static final recipes = "recipes";
@@ -89,6 +90,8 @@ class HiveProvider {
 
     await lazyBoxRecipes.put(hiveRecipeKey, newRecipe);
 
+    await boxRecipeNames.put(hiveRecipeKey, newRecipe.name);
+
     // add recipe to categories
     for (String categoryName in newRecipe.categories) {
       String hiveCategoryKey = getHiveKey(categoryName);
@@ -149,6 +152,10 @@ class HiveProvider {
 
     saveRecipe(newRecipe);
     print(lazyBoxRecipes.get(hiveNewRecipeKey));
+  }
+
+  Future<void> saveTmpEditingRecipe(Recipe recipe) async {
+    await boxTmpRecipe.put(tmpEditingRecipeKey, recipe);
   }
 
   Future<void> saveTmpRecipe(Recipe recipe) async {
@@ -270,11 +277,9 @@ class HiveProvider {
   Future<void> moveCategory(int oldIndex, newIndex) async {
     List<String> categories = boxOrder.get('categories');
 
-    String moveNutrition = categories[oldIndex];
-
-    if (newIndex > oldIndex) newIndex -= 1;
-    categories[oldIndex] = categories[newIndex];
-    categories[newIndex] = moveNutrition;
+    categories
+      ..insert(newIndex, categories[oldIndex])
+      ..removeAt(oldIndex > newIndex ? oldIndex + 1 : oldIndex);
 
     await boxOrder.put('categories', categories);
   }
@@ -291,7 +296,9 @@ class HiveProvider {
 
   ////////////// condition recipe getters //////////////
   Future<Recipe> getRecipeByName(String name) async {
-    return await lazyBoxRecipes.get(getHiveKey(name));
+    Recipe recipe = await lazyBoxRecipes.get(getHiveKey(name));
+
+    return recipe;
   }
 
   Future<List<Recipe>> getFavoriteRecipes() async {
@@ -353,6 +360,12 @@ class HiveProvider {
   }
 
   Recipe getTmpRecipe() {
+    Recipe tmpRecipe = boxTmpRecipe.get(tmpRecipeKey);
+
+    return tmpRecipe;
+  }
+
+  Recipe getTmpEditingRecipe() {
     Recipe tmpRecipe = boxTmpRecipe.get(tmpRecipeKey);
 
     return tmpRecipe;
@@ -463,10 +476,10 @@ class HiveProvider {
     }
   }
 
-  void removeIngredientsFromCart(
-      String recipeName, List<Ingredient> ingredients) {
+  Future<void> removeIngredientsFromCart(
+      String recipeName, List<Ingredient> ingredients) async {
     for (Ingredient i in ingredients) {
-      removeIngredientFromCart(recipeName, i);
+      await removeIngredientFromCart(recipeName, i);
     }
   }
 
@@ -492,7 +505,7 @@ class HiveProvider {
     return false;
   }
 
-// see checkForRecipeIngredient()
+  // see checkForRecipeIngredient()
   bool checkForRecipeIngredients(
       String recipeName, List<Ingredient> ingredients) {
     for (Ingredient i in ingredients) {
@@ -523,7 +536,7 @@ class HiveProvider {
   /// removes the ingrdient of the given recipe (if existing) from the list and
   /// also updates the summary
 // TODO: Verified 80%, not tested
-  void removeIngredientFromCart(
+  Future<void> removeIngredientFromCart(
       String recipeName, Ingredient ingredient) async {
     String hiveRecipeKey = getHiveKey(recipeName);
     // check if the ingredient is saved under this recipe
@@ -560,7 +573,8 @@ class HiveProvider {
           ingredient, boxShoppingCart.get("summary"));
       List<CheckableIngredient> summaryIngredients =
           List<CheckableIngredient>.from(boxShoppingCart.get("summary"));
-      CheckableIngredient summaryIngred = ingredients[summaryIndex];
+      CheckableIngredient summaryIngred =
+          boxShoppingCart.get("summary")[summaryIndex];
 
       // if the ingredient has an amount
       if (summaryIngred.amount != null && removeAmount != null) {
@@ -609,7 +623,7 @@ class HiveProvider {
   /// checks/unchecks the given ingredient with the value of the given
   /// CheckableIngredient.checked and also updates the summary checked
   /// if necessary
-// TODO: Verified, not tested
+  // TODO: Verified, not tested
   Future<void> checkIngredient(
       String recipeName, CheckableIngredient ingredient) async {
     String hiveRecipeKey = getHiveKey(recipeName);
@@ -623,15 +637,15 @@ class HiveProvider {
       await boxShoppingCart.put(hiveRecipeKey, ingredients);
 
       if (_checkSummary(ingredient)) {
-        _updateAll(ingredient);
+        await _updateAll(ingredient);
       }
     } else {
-      _updateAll(ingredient);
+      await _updateAll(ingredient);
     }
   }
 
-  /// checks or unchecks the ingredient in the summary depending on whether the ingredient
-  /// is checked or not
+  /// checks if the suitable ingredient of the summary should also have the
+  /// checked status of the given ingredient or not
   bool _checkSummary(CheckableIngredient ingredient) {
     if (ingredient.checked == true) {
       for (var key in boxShoppingCart.keys) {
@@ -646,7 +660,7 @@ class HiveProvider {
       }
       return true;
     } else {
-      return false;
+      return true;
     }
   }
 
@@ -719,6 +733,7 @@ class HiveProvider {
   /// existing and otherwise null
   int _getSuitingIngredientRecipe(
       Ingredient ingredient, List<CheckableIngredient> ingredients) {
+    if (ingredients == null) return null;
     for (int i = 0; i < ingredients.length; i++) {
       if (ingredient.name == ingredients[i].name &&
           ingredient.unit == ingredients[i].unit) return i;

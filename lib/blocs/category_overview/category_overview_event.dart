@@ -47,8 +47,15 @@ class CODeleteRecipe extends CategoryOverviewEvent {
   String toString() => 'DeleteRecipe { recipe: $recipe }';
 }
 
-/// No need for AddCategory because categories with no recipes
-/// will not be displayed
+class COAddCategory extends CategoryOverviewEvent {
+  final String category;
+
+  const COAddCategory(this.category);
+
+  @override
+  List<Object> get props => [category];
+}
+
 class CODeleteCategory extends CategoryOverviewEvent {
   final String category;
 

@@ -47,8 +47,15 @@ class RCODeleteRecipe extends RecipeCategoryOverviewEvent {
   String toString() => 'DeleteRecipe { recipe: $recipe }';
 }
 
-/// No need for AddCategory because categories with no recipes
-/// will not be displayed
+class RCOAddCategory extends RecipeCategoryOverviewEvent {
+  final String category;
+
+  const RCOAddCategory(this.category);
+
+  @override
+  List<Object> get props => [category];
+}
+
 class RCODeleteCategory extends RecipeCategoryOverviewEvent {
   final String category;
 

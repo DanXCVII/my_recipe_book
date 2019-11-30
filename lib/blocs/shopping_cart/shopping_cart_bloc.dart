@@ -25,7 +25,10 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
 
   Stream<ShoppingCartState> _mapLoadShoppingCartToState(
       ShoppingCartEvent event) async* {
-    yield LoadedShoppingCart(HiveProvider().getShoppingCart());
+    Map<String, List<CheckableIngredient>> shoppingCart =
+        HiveProvider().getShoppingCart();
+
+    yield LoadedShoppingCart(shoppingCart);
   }
 
   Stream<ShoppingCartState> _mapCleanAddIngredientsToState(
@@ -36,7 +39,7 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
 
   Stream<ShoppingCartState> _mapRemoveIngredientsToState(
       RemoveIngredients event) async* {
-    HiveProvider()
+    await HiveProvider()
         .removeIngredientsFromCart(event.recipeName, event.ingredients);
     yield LoadedShoppingCart(HiveProvider().getShoppingCart());
   }
@@ -44,9 +47,13 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
   Stream<ShoppingCartState> _mapCheckIngredientsToState(
       CheckIngredients event) async* {
     for (CheckableIngredient i in event.ingredients) {
-      HiveProvider().checkIngredient(event.recipeName, i);
+      await HiveProvider()
+          .checkIngredient(event.recipeName, i.copyWith(checked: !i.checked));
     }
 
-    yield LoadedShoppingCart(HiveProvider().getShoppingCart());
+    Map<String, List<CheckableIngredient>> shoppingCart =
+        HiveProvider().getShoppingCart();
+
+    yield LoadedShoppingCart(shoppingCart);
   }
 }

@@ -2,11 +2,12 @@ import 'package:equatable/equatable.dart';
 
 abstract class CategoryManagerEvent extends Equatable {
   const CategoryManagerEvent();
+}
+
+class InitializeCategoryManager extends CategoryManagerEvent {
   @override
   List<Object> get props => [];
 }
-
-class InitializeCategoryManager extends CategoryManagerEvent {}
 
 class AddCategory extends CategoryManagerEvent {
   final String category;

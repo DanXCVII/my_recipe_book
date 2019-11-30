@@ -326,11 +326,11 @@ class Favorite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WatchBoxBuilder(
-        box: Hive.box('recipes') as LazyBox,
+        box: Hive.box<String>('favorites'),
         watchKeys: [HiveProvider().getHiveKey(recipe.name)],
         builder: (context, snapshot) {
           String hiveRecipeKey = HiveProvider().getHiveKey(recipe.name);
-          bool isFavorite = snapshot.get(hiveRecipeKey);
+          bool isFavorite = snapshot.get(hiveRecipeKey) == null ? false : true;
           return IconButton(
             iconSize: iconSize == null ? 24 : iconSize,
             color: isFavorite ? Colors.pink : Colors.white,

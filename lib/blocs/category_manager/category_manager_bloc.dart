@@ -14,16 +14,17 @@ class CategoryManagerBloc
   StreamSubscription subscription;
 
   CategoryManagerBloc({@required this.recipeManagerBloc}) {
-    subscription = recipeManagerBloc.listen((state) {
-      print(this.hashCode);
-      if (state is RMState.AddCategoryState) {
-        add(AddCategory(state.category));
-      } else if (state is RMState.DeleteCategoryState) {
-        add(DeleteCategory(state.category));
-      } else if (state is RMState.UpdateCategoryState) {
-        add(UpdateCategory(state.oldCategory, state.updatedCategory));
-      } else if (state is RMState.MoveCategoryState) {
-        add(MoveCategory(state.oldIndex, state.newIndex));
+    subscription = recipeManagerBloc.listen((rmState) {
+      if (state is LoadedCategoryManager) {
+        if (rmState is RMState.AddCategoryState) {
+          add(AddCategory(rmState.category));
+        } else if (rmState is RMState.DeleteCategoryState) {
+          add(DeleteCategory(rmState.category));
+        } else if (rmState is RMState.UpdateCategoryState) {
+          add(UpdateCategory(rmState.oldCategory, rmState.updatedCategory));
+        } else if (rmState is RMState.MoveCategoryState) {
+          add(MoveCategory(rmState.oldIndex, rmState.newIndex));
+        }
       }
     });
   }
@@ -58,7 +59,7 @@ class CategoryManagerBloc
     if (state is LoadedCategoryManager) {
       final List<String> categories =
           List.from((state as LoadedCategoryManager).categories)
-            ..insert((state as LoadedCategoryManager).categories.length,
+            ..insert((state as LoadedCategoryManager).categories.length - 1,
                 event.category);
 
       yield LoadedCategoryManager(categories);
@@ -95,7 +96,14 @@ class CategoryManagerBloc
       MoveCategory event) async* {
     if (state is LoadedCategoryManager) {
       // List in HiveProvider()Provider() is already updated of the recipeManager
-      final List<String> categories = HiveProvider().getCategoryNames();
+
+      final List<String> categories = List.from(
+          (state as LoadedCategoryManager).categories
+            ..insert(event.newIndex,
+                (state as LoadedCategoryManager).categories[event.oldIndex])
+            ..removeAt(event.oldIndex > event.newIndex
+                ? event.oldIndex + 1
+                : event.oldIndex));
 
       yield LoadedCategoryManager(categories);
     }

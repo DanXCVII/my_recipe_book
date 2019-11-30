@@ -3,10 +3,13 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/blocs/bloc/recipe_screen_ingredients_event.dart';
+import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 
 import './theming.dart';
 import 'blocs/app/app_bloc.dart';
 import 'blocs/app/app_event.dart';
+import 'blocs/bloc/recipe_screen_ingredients_bloc.dart';
 import 'blocs/category_overview/category_overview_bloc.dart';
 import 'blocs/category_overview/category_overview_event.dart';
 import 'blocs/favorite_recipes/favorite_recipes_bloc.dart';
@@ -21,7 +24,6 @@ import 'blocs/splash_screen/splash_screen_bloc.dart';
 import 'blocs/splash_screen/splash_screen_event.dart';
 import 'blocs/splash_screen/splash_screen_state.dart';
 import 'generated/i18n.dart';
-import 'models/recipe_keeper.dart';
 import 'models/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/general_info/general_info_screen.dart';
 import 'routes.dart';
@@ -34,7 +36,6 @@ void main() {
     CustomTheme(
       initialThemeKey: MyThemeKeys.LIGHT,
       child: MyApp(
-        RecipeKeeper(),
         ShoppingCartKeeper(),
       ),
     ),
@@ -42,13 +43,11 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  final RecipeKeeper recipeKeeper;
   final ShoppingCartKeeper scKeeper;
   final appTitle = 'Drawer Demo';
   static bool initialized = false;
 
   MyApp(
-    this.recipeKeeper,
     this.scKeeper,
   );
 
@@ -70,57 +69,86 @@ class MyApp extends StatelessWidget {
         showPerformanceOverlay: false,
         theme: CustomTheme.of(context),
         initialRoute: "/",
-        routes: {
-          "/": (context) => BlocProvider<SplashScreenBloc>(
-                builder: (context) =>
-                    SplashScreenBloc()..add(SPInitializeData(context)),
-                child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
-                    builder: (context, state) {
-                  if (state is InitializingData) {
-                    return SplashScreen();
-                  } else if (state is InitializedData) {
-                    return BlocProvider<AppBloc>(
-                      builder: (context) => AppBloc()
-                        ..add(InitializeData(context,
-                            state.recipeCategoryOverview, state.showIntro)),
-                      child: MultiBlocProvider(providers: [
-                        BlocProvider<CategoryOverviewBloc>(
-                          builder: (context) => CategoryOverviewBloc(
-                            recipeManagerBloc:
-                                BlocProvider.of<RecipeManagerBloc>(context),
-                          )..add(COLoadCategoryOverview()),
-                        ),
-                        BlocProvider<RecipeCategoryOverviewBloc>(
-                          builder: (context) => RecipeCategoryOverviewBloc(
-                            recipeManagerBloc:
-                                BlocProvider.of<RecipeManagerBloc>(context),
-                          )..add(RCOLoadRecipeCategoryOverview()),
-                        ),
-                        BlocProvider<FavoriteRecipesBloc>(
-                            builder: (context) => FavoriteRecipesBloc(
-                                  recipeManagerBloc:
-                                      BlocProvider.of<RecipeManagerBloc>(
-                                          context),
-                                )..add(LoadFavorites())),
-                        BlocProvider<RandomRecipeExplorerBloc>(
-                          builder: (context) => RandomRecipeExplorerBloc(
-                            recipeManagerBloc:
-                                BlocProvider.of<RecipeManagerBloc>(context),
-                          )..add(InitializeRandomRecipeExplorer()),
-                        ),
-                        BlocProvider<ShoppingCartBloc>(
-                          builder: (context) =>
-                              ShoppingCartBloc()..add(LoadShoppingCart()),
-                        ),
-                      ], child: MyHomePage()),
-                    );
-                  } else {
-                    return Text(state.toString());
-                  }
-                }),
-              ),
-          addRecipe: (context) => GeneralInfoScreen(),
-          // manageCategories: (context) =>
+        onGenerateRoute: (settings) {
+          switch (settings.name) {
+            case "/":
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider<SplashScreenBloc>(
+                  builder: (context) =>
+                      SplashScreenBloc()..add(SPInitializeData(context)),
+                  child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
+                      builder: (context, state) {
+                    if (state is InitializingData) {
+                      return SplashScreen();
+                    } else if (state is InitializedData) {
+                      return BlocProvider<AppBloc>(
+                        builder: (context) => AppBloc()
+                          ..add(InitializeData(context,
+                              state.recipeCategoryOverview, state.showIntro)),
+                        child: MultiBlocProvider(providers: [
+                          BlocProvider<CategoryOverviewBloc>(
+                            builder: (context) => CategoryOverviewBloc(
+                              recipeManagerBloc:
+                                  BlocProvider.of<RecipeManagerBloc>(context),
+                            )..add(COLoadCategoryOverview()),
+                          ),
+                          BlocProvider<RecipeCategoryOverviewBloc>(
+                            builder: (context) => RecipeCategoryOverviewBloc(
+                              recipeManagerBloc:
+                                  BlocProvider.of<RecipeManagerBloc>(context),
+                            )..add(RCOLoadRecipeCategoryOverview()),
+                          ),
+                          BlocProvider<FavoriteRecipesBloc>(
+                              builder: (context) => FavoriteRecipesBloc(
+                                    recipeManagerBloc:
+                                        BlocProvider.of<RecipeManagerBloc>(
+                                            context),
+                                  )..add(LoadFavorites())),
+                          BlocProvider<RandomRecipeExplorerBloc>(
+                            builder: (context) => RandomRecipeExplorerBloc(
+                              recipeManagerBloc:
+                                  BlocProvider.of<RecipeManagerBloc>(context),
+                            )..add(InitializeRandomRecipeExplorer()),
+                          ),
+                          BlocProvider<ShoppingCartBloc>(
+                            builder: (context) =>
+                                ShoppingCartBloc()..add(LoadShoppingCart()),
+                          ),
+                        ], child: MyHomePage()),
+                      );
+                    } else {
+                      return Text(state.toString());
+                    }
+                  }),
+                ),
+              );
+
+            case "/recipe-screen":
+              final RecipeScreenArguments args = settings.arguments;
+
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider<RecipeScreenIngredientsBloc>(
+                  builder: (context) => RecipeScreenIngredientsBloc(
+                      shoppingCartBloc: args.shoppingCartBloc)
+                    ..add(InitializeIngredients(
+                      args.recipe.name,
+                      args.recipe.servings,
+                      args.recipe.ingredients,
+                    )),
+                  child: RecipeScreen(
+                    recipe: args.recipe,
+                    primaryColor: args.primaryColor,
+                    heroImageTag: args.heroImageTag,
+                  ),
+                ),
+              );
+            case "/add-recipe":
+              return MaterialPageRoute(
+                  builder: (context) => GeneralInfoScreen());
+            default:
+              return MaterialPageRoute(
+                  builder: (context) => Text("failllll kek"));
+          }
         },
       ),
     );
