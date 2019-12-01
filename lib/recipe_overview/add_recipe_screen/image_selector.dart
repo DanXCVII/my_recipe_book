@@ -4,20 +4,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../io/io_operations.dart' as IO;
 import '../../my_wrapper.dart';
 
 class ImageSelector extends StatefulWidget {
-  final MyImageWrapper imageWrapper;
+  final String modifiedRecipeImagePath;
   final double circleSize;
   final Color color;
-  final String recipeName;
 
   ImageSelector({
-    @required this.imageWrapper,
+    @required this.modifiedRecipeImagePath,
     @required this.circleSize,
     @required this.color,
-    this.recipeName = 'tmp',
   });
 
   @override
@@ -32,8 +29,8 @@ class _ImageSelectorState extends State<ImageSelector> {
   @override
   void initState() {
     super.initState();
-    if (widget.imageWrapper.selectedImage != null) {
-      selectedImageFile = File(widget.imageWrapper.selectedImage);
+    if (widget.modifiedRecipeImagePath != null) {
+      selectedImageFile = File(widget.modifiedRecipeImagePath);
     }
   }
 
@@ -104,9 +101,6 @@ class _ImageSelectorState extends State<ImageSelector> {
     );
 
     if (pictureFile != null) {
-      await IO.saveRecipeImage(pictureFile, widget.recipeName);
-
-      widget.imageWrapper.selectedImage = pictureFile.path;
       setState(() {
         selectedImageFile = pictureFile;
       });

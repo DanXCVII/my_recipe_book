@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:my_recipe_book/blocs/category_manager/category_manager_state.dart';
+import 'package:my_recipe_book/blocs/general_info/general_info.dart';
 
 import '../../blocs/category_manager/category_manager_bloc.dart';
 import '../../dialogs/add_nut_cat_dialog.dart';
@@ -16,9 +18,8 @@ class Consts {
 
 class CategorySection extends StatefulWidget {
   final List<String> selectedCategories;
-  final List<String> categories;
 
-  CategorySection(this.selectedCategories, this.categories);
+  CategorySection(this.selectedCategories);
 
   @override
   State<StatefulWidget> createState() {
@@ -43,61 +44,70 @@ class _CategorySectionState extends State<CategorySection> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        // heading for the subcategory selector section
-        Padding(
-            padding: const EdgeInsets.only(left: 56, right: 6, top: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  S.of(context).select_subcategories,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.add_circle_outline),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (_) => AddDialog(
-                              false,
-                              widget.categories,
-                              recipeManagerBloc:
-                                  BlocProvider.of<CategoryManagerBloc>(context)
-                                      .recipeManagerBloc,
-                              categoryManagerBloc:
-                                  BlocProvider.of<CategoryManagerBloc>(context),
-                            ));
-                  },
-                )
-              ],
-            )),
-        // category chips
-        Container(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: WatchBoxBuilder(
-              box: Hive.box<List<String>>('order'),
-              builder: (context, boxCategory) {
-                List<String> categories = boxCategory.get('categories');
-                return Wrap(
-                  spacing: 5.0,
-                  runSpacing: 3.0,
-                  children: categories.map((category) {
-                    return MyCategoryFilterChip(
-                      chipName: category,
-                      selectedCategories: widget.selectedCategories,
+    return BlocBuilder<CategoryManagerBloc, CategoryManagerState>(
+        builder: (context, state) {
+      if (state is LoadingCategoryManager) {
+        return CircularProgressIndicator();
+      } else if (state is LoadedCategoryManager) {
+        return Column(
+          children: <Widget>[
+            // heading for the subcategory selector section
+            Padding(
+                padding: const EdgeInsets.only(left: 56, right: 6, top: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      S.of(context).select_subcategories,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add_circle_outline),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => AddDialog(
+                            false,
+                            state.categories,
+                            recipeManagerBloc:
+                                BlocProvider.of<CategoryManagerBloc>(context)
+                                    .recipeManagerBloc,
+                            categoryManagerBloc:
+                                BlocProvider.of<CategoryManagerBloc>(context),
+                          ),
+                        );
+                      },
+                    )
+                  ],
+                )),
+            // category chips
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: WatchBoxBuilder(
+                  box: Hive.box<List<String>>('order'),
+                  builder: (context, boxCategory) {
+                    List<String> categories = boxCategory.get('categories');
+                    return Wrap(
+                      spacing: 5.0,
+                      runSpacing: 3.0,
+                      children: categories.map((category) {
+                        return MyCategoryFilterChip(
+                          chipName: category,
+                          isSelected:
+                              widget.selectedCategories.contains(category),
+                        );
+                      }).toList()
+                        ..removeLast(),
                     );
-                  }).toList()
-                    ..removeLast(),
-                );
-              }),
-        )
-      ],
-    );
+                  }),
+            )
+          ],
+        );
+      }
+    });
   }
 }
 
@@ -106,9 +116,15 @@ enum AnswersCategory { SAVE, DISMISS }
 // creates a filterClip with the given name
 class MyCategoryFilterChip extends StatefulWidget {
   final String chipName;
-  final List<String> selectedCategories;
+  final isSelected;
+  final bool editingRecipe;
 
-  MyCategoryFilterChip({Key key, this.chipName, this.selectedCategories});
+  MyCategoryFilterChip({
+    Key key,
+    this.chipName,
+    this.isSelected,
+    this.editingRecipe,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -123,9 +139,7 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
   void initState() {
     super.initState();
 
-    widget.selectedCategories.contains(widget.chipName)
-        ? _isSelected = true
-        : _isSelected = false;
+    _isSelected = widget.isSelected;
   }
 
   @override
@@ -135,12 +149,19 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
       selected: _isSelected,
       onSelected: (isSelected) {
         setState(() {
-          _isSelected = isSelected;
-          if (isSelected == true) {
-            widget.selectedCategories.add(widget.chipName);
+          if (_isSelected == true) {
+            BlocProvider.of<GeneralInfoBloc>(context)
+                .add(RemoveCategoryFromRecipe(
+              widget.chipName,
+              widget.editingRecipe,
+            ));
           } else {
-            widget.selectedCategories.remove(widget.chipName);
+            BlocProvider.of<GeneralInfoBloc>(context).add(AddCategoryToRecipe(
+              widget.chipName,
+              widget.editingRecipe,
+            ));
           }
+          _isSelected = isSelected;
         });
       },
     );

@@ -805,8 +805,8 @@ class HiveProvider {
 
 // must(!) be executed before calling the HiveProvider
 Future<void> initHive(bool firstTime) async {
-  Hive.init((await getApplicationDocumentsDirectory()).path);
   if (firstTime) {
+    Hive.init((await getApplicationDocumentsDirectory()).path);
     Hive.registerAdapter(IngredientAdapter(), 1);
     Hive.registerAdapter(CheckableIngredientAdapter(), 2);
     Hive.registerAdapter(VegetableAdapter(), 3);

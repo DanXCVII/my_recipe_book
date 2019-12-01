@@ -20,60 +20,32 @@ class UpdateRecipeName extends GeneralInfoEvent {
       'add recipe name { recipe name: $recipeName , editing recipe: $editingRecipe }';
 }
 
-class UpdatePrepTime extends GeneralInfoEvent {
-  final double prepTime;
+class AddCategoryToRecipe extends GeneralInfoEvent {
+  final String category;
   final bool editingRecipe;
 
-  UpdatePrepTime([this.prepTime, this.editingRecipe]);
+  AddCategoryToRecipe(this.category, this.editingRecipe);
 
   @override
-  List<Object> get props => [prepTime, editingRecipe];
+  List<Object> get props => [category, editingRecipe];
 
   @override
-  String toString() =>
-      'update preperation time { preperation time: $prepTime , editing recipe: $editingRecipe }';
+  String toString() => 'add category { category: $category '
+      ', editingRecipe: $editingRecipe}';
 }
 
-class UpdateCookingTime extends GeneralInfoEvent {
-  final double cookingTime;
+class RemoveCategoryFromRecipe extends GeneralInfoEvent {
+  final String category;
   final bool editingRecipe;
 
-  UpdateCookingTime([this.cookingTime, this.editingRecipe]);
+  RemoveCategoryFromRecipe(this.category, this.editingRecipe);
 
   @override
-  List<Object> get props => [cookingTime, editingRecipe];
+  List<Object> get props => [category, editingRecipe];
 
   @override
-  String toString() =>
-      'update cooking time { cooking time: $cookingTime , editing recipe: $editingRecipe }';
-}
-
-class UpdateTotalTime extends GeneralInfoEvent {
-  final double totalTime;
-  final bool editingRecipe;
-
-  UpdateTotalTime([this.totalTime, this.editingRecipe]);
-
-  @override
-  List<Object> get props => [totalTime, editingRecipe];
-
-  @override
-  String toString() =>
-      'update total time { total time: $totalTime , editing recipe: $editingRecipe }';
-}
-
-class UpdateCategories extends GeneralInfoEvent {
-  final List<String> categories;
-  final bool editingRecipe;
-
-  UpdateCategories([this.categories, this.editingRecipe]);
-
-  @override
-  List<Object> get props => [categories, editingRecipe];
-
-  @override
-  String toString() =>
-      'update categories { categories: $categories , editing recipe: $editingRecipe }';
+  String toString() => 'remove category { category: $category, '
+      'editingRecipe: $editingRecipe }';
 }
 
 class UpdateRecipeImage extends GeneralInfoEvent {
@@ -86,12 +58,13 @@ class UpdateRecipeImage extends GeneralInfoEvent {
   List<Object> get props => [recipeImage, editingRecipe];
 
   @override
-  String toString() =>
-      'recipe image { recipe image: $recipeImage , editing recipe: $editingRecipe }';
+  String toString() => 'recipe image { recipe image: $recipeImage '
+      ', editing recipe: $editingRecipe }';
 }
 
 class FinishedEditing extends GeneralInfoEvent {
   final bool editingRecipe;
+  final bool goBack;
 
   final String recipeName;
   final double preperationTime;
@@ -100,6 +73,7 @@ class FinishedEditing extends GeneralInfoEvent {
 
   FinishedEditing([
     this.editingRecipe,
+    this.goBack,
     this.recipeName,
     this.preperationTime,
     this.cookingTime,
@@ -109,6 +83,7 @@ class FinishedEditing extends GeneralInfoEvent {
   @override
   List<Object> get props => [
         editingRecipe,
+        goBack,
         recipeName,
         preperationTime,
         cookingTime,
@@ -118,6 +93,7 @@ class FinishedEditing extends GeneralInfoEvent {
   @override
   String toString() =>
       'finished general info { editingRecipe: $editingRecipe , '
+      'goBack: $goBack ,'
       'recipeName: $recipeName, '
       'preperationTime: $preperationTime'
       'cookingTime: $cookingTime'

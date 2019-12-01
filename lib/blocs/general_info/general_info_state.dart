@@ -9,8 +9,12 @@ abstract class GeneralInfoState extends Equatable {
 
 class CanSave extends GeneralInfoState {}
 
-class Saved extends GeneralInfoState {}
-
 class SavingTmpData extends GeneralInfoState {}
 
 class EditingFinished extends GeneralInfoState {}
+
+class Saved extends GeneralInfoState {}
+
+class EditingFinishedGoBack extends GeneralInfoState {}
+
+class SavedGoBack extends GeneralInfoState {}

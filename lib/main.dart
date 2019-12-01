@@ -3,21 +3,22 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:my_recipe_book/blocs/bloc/recipe_screen_ingredients_event.dart';
-import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
 
 import './theming.dart';
 import 'blocs/app/app_bloc.dart';
 import 'blocs/app/app_event.dart';
-import 'blocs/bloc/recipe_screen_ingredients_bloc.dart';
+import 'blocs/category_manager/category_manager.dart';
 import 'blocs/category_overview/category_overview_bloc.dart';
 import 'blocs/category_overview/category_overview_event.dart';
 import 'blocs/favorite_recipes/favorite_recipes_bloc.dart';
 import 'blocs/favorite_recipes/favorite_recipes_event.dart';
+import 'blocs/general_info/general_info.dart';
 import 'blocs/random_recipe_explorer/random_recipe_explorer.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview_event.dart';
 import 'blocs/recipe_manager/recipe_manager_bloc.dart';
+import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
+import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients_event.dart';
 import 'blocs/shopping_cart/shopping_cart.dart';
 import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen_bloc.dart';
@@ -26,7 +27,7 @@ import 'blocs/splash_screen/splash_screen_state.dart';
 import 'generated/i18n.dart';
 import 'models/shopping_cart.dart';
 import 'recipe_overview/add_recipe_screen/general_info/general_info_screen.dart';
-import 'routes.dart';
+import 'recipe_overview/recipe_screen.dart';
 import 'screens/SplashScreen.dart';
 import 'screens/homepage_screen.dart';
 
@@ -143,8 +144,24 @@ class MyApp extends StatelessWidget {
                 ),
               );
             case "/add-recipe":
+              final GeneralInfoArguments args = settings.arguments;
+
               return MaterialPageRoute(
-                  builder: (context) => GeneralInfoScreen());
+                  builder: (context) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider(
+                            builder: (context) => GeneralInfoBloc(),
+                          ),
+                          BlocProvider(
+                            builder: (context) => CategoryManagerBloc(
+                                recipeManagerBloc: args.recipeManagerBloc),
+                          ),
+                        ],
+                        child: GeneralInfoScreen(
+                          modifiedRecipe: args.modifiedRecipe,
+                          editingRecipe: args.editingRecipe,
+                        ),
+                      ));
             default:
               return MaterialPageRoute(
                   builder: (context) => Text("failllll kek"));

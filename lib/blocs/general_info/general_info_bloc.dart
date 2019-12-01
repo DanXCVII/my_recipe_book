@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:my_recipe_book/hive.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
+import 'package:my_recipe_book/models/recipe.dart';
 import '../../helper.dart';
 import '../../recipe.dart';
 import './general_info.dart';
@@ -14,37 +15,13 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
   Stream<GeneralInfoState> mapEventToState(
     GeneralInfoEvent event,
   ) async* {
-    if (event is UpdateRecipeName) {
-      yield* _mapUpdateRecipeNameToState(event);
-    } else if (event is UpdatePrepTime) {
-      yield* _mapUpdatePrepTimeToState(event);
-    } else if (event is UpdateCookingTime) {
-      yield* _mapUpdateCookingTimeToState(event);
-    } else if (event is UpdateTotalTime) {
-      yield* _mapUpdateTotalTimeToState(event);
-    } else if (event is UpdateCategories) {
-      yield* _mapUpdateCategoriesToState(event);
+    if (event is AddCategoryToRecipe) {
+      yield* _mapAddCategoryToRecipeToState(event);
     } else if (event is UpdateRecipeImage) {
       yield* _mapUpdateRecipeImageToState(event);
     } else if (event is FinishedEditing) {
       yield* _mapFinishedEditingToState(event);
     }
-  }
-
-  Stream<GeneralInfoState> _mapUpdateRecipeNameToState(
-      UpdateRecipeName event) async* {
-    yield SavingTmpData();
-
-    if (!event.editingRecipe) {
-      await HiveProvider().saveTmpRecipe(
-          HiveProvider().getTmpRecipe().copyWith(name: event.recipeName));
-    } else {
-      await HiveProvider().saveTmpEditingRecipe(HiveProvider()
-          .getTmpEditingRecipe()
-          .copyWith(name: event.recipeName));
-    }
-
-    yield CanSave();
   }
 
   Stream<GeneralInfoState> _mapUpdateRecipeImageToState(
@@ -71,67 +48,18 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     yield CanSave();
   }
 
-  Stream<GeneralInfoState> _mapUpdatePrepTimeToState(
-      UpdatePrepTime event) async* {
+  Stream<GeneralInfoState> _mapAddCategoryToRecipeToState(
+      AddCategoryToRecipe event) async* {
     yield SavingTmpData();
 
     if (!event.editingRecipe) {
-      await HiveProvider().saveTmpRecipe(HiveProvider()
-          .getTmpRecipe()
-          .copyWith(preperationTime: event.prepTime));
+      Recipe oldRecipe = HiveProvider().getTmpRecipe();
+      await HiveProvider().saveTmpRecipe(oldRecipe.copyWith(
+          categories: oldRecipe.categories..add(event.category)));
     } else {
-      await HiveProvider().saveTmpEditingRecipe(HiveProvider()
-          .getTmpEditingRecipe()
-          .copyWith(preperationTime: event.prepTime));
-    }
-
-    yield CanSave();
-  }
-
-  Stream<GeneralInfoState> _mapUpdateCookingTimeToState(
-      UpdateCookingTime event) async* {
-    yield SavingTmpData();
-
-    if (!event.editingRecipe) {
-      await HiveProvider().saveTmpRecipe(HiveProvider()
-          .getTmpRecipe()
-          .copyWith(cookingTime: event.cookingTime));
-    } else {
-      await HiveProvider().saveTmpEditingRecipe(HiveProvider()
-          .getTmpEditingRecipe()
-          .copyWith(cookingTime: event.cookingTime));
-    }
-
-    yield CanSave();
-  }
-
-  Stream<GeneralInfoState> _mapUpdateTotalTimeToState(
-      UpdateTotalTime event) async* {
-    yield SavingTmpData();
-
-    if (!event.editingRecipe) {
-      await HiveProvider().saveTmpRecipe(
-          HiveProvider().getTmpRecipe().copyWith(totalTime: event.totalTime));
-    } else {
-      await HiveProvider().saveTmpEditingRecipe(HiveProvider()
-          .getTmpEditingRecipe()
-          .copyWith(totalTime: event.totalTime));
-    }
-
-    yield CanSave();
-  }
-
-  Stream<GeneralInfoState> _mapUpdateCategoriesToState(
-      UpdateCategories event) async* {
-    yield SavingTmpData();
-
-    if (!event.editingRecipe) {
-      await HiveProvider().saveTmpRecipe(
-          HiveProvider().getTmpRecipe().copyWith(categories: event.categories));
-    } else {
-      await HiveProvider().saveTmpEditingRecipe(HiveProvider()
-          .getTmpEditingRecipe()
-          .copyWith(categories: event.categories));
+      Recipe oldRecipe = HiveProvider().getTmpEditingRecipe();
+      await HiveProvider().saveTmpEditingRecipe(oldRecipe.copyWith(
+          categories: oldRecipe.categories..add(event.category)));
     }
 
     yield CanSave();
@@ -139,7 +67,11 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
 
   Stream<GeneralInfoState> _mapFinishedEditingToState(
       FinishedEditing event) async* {
-    yield EditingFinished();
+    if (event.goBack) {
+      yield EditingFinishedGoBack();
+    } else {
+      yield EditingFinished();
+    }
 
     if (!event.editingRecipe) {
       await HiveProvider().saveTmpRecipe(
@@ -160,6 +92,10 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
               ));
     }
 
-    yield Saved();
+    if (event.goBack) {
+      yield Saved();
+    } else {
+      yield SavedGoBack();
+    }
   }
 }

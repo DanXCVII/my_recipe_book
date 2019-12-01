@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/blocs/bloc/recipe_screen_ingredients.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -16,6 +14,10 @@ import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_event.dart';
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/recipe_overview/recipe_overview_event.dart';
+import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
+import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_event.dart';
+import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_state.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../database.dart';
 import '../gallery_view.dart';
 import '../generated/i18n.dart';
@@ -25,7 +27,6 @@ import '../io/io_operations.dart' as IO;
 import '../models/enums.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
-import '../models/shopping_cart.dart';
 import '../recipe.dart';
 import '../recipe_card.dart';
 import '../screens/recipe_overview.dart';
@@ -436,7 +437,7 @@ class RecipePage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (BuildContext context) => GeneralInfoScreen(
-          editRecipe: recipe,
+          modifiedRecipe: recipe,
         ),
       ),
     );
