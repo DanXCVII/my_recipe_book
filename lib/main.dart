@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/screens/category_manager.dart';
 
 import './theming.dart';
 import 'blocs/app/app_bloc.dart';
@@ -12,7 +13,7 @@ import 'blocs/category_overview/category_overview_bloc.dart';
 import 'blocs/category_overview/category_overview_event.dart';
 import 'blocs/favorite_recipes/favorite_recipes_bloc.dart';
 import 'blocs/favorite_recipes/favorite_recipes_event.dart';
-import 'blocs/general_info/general_info.dart';
+import 'blocs/new_recipe/general_info/general_info_bloc.dart';
 import 'blocs/random_recipe_explorer/random_recipe_explorer.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview_event.dart';
@@ -143,7 +144,7 @@ class MyApp extends StatelessWidget {
                   ),
                 ),
               );
-            case "/add-recipe":
+            case "/add-recipe/general-info":
               final GeneralInfoArguments args = settings.arguments;
 
               return MaterialPageRoute(
@@ -154,14 +155,31 @@ class MyApp extends StatelessWidget {
                           ),
                           BlocProvider(
                             builder: (context) => CategoryManagerBloc(
-                                recipeManagerBloc: args.recipeManagerBloc),
+                                recipeManagerBloc:
+                                    BlocProvider.of<RecipeManagerBloc>(
+                                        context)),
                           ),
                         ],
                         child: GeneralInfoScreen(
                           modifiedRecipe: args.modifiedRecipe,
-                          editingRecipe: args.editingRecipe,
+                          editingRecipeName: args.editingRecipeName,
                         ),
                       ));
+
+            case "/add-recipe/ingredients":
+              final 
+
+            case "/manage-categories":
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  builder: (context) => CategoryManagerBloc(
+                    recipeManagerBloc:
+                        BlocProvider.of<RecipeManagerBloc>(context),
+                  )..add(InitializeCategoryManager()),
+                  child: CategoryManager(),
+                ),
+              );
+
             default:
               return MaterialPageRoute(
                   builder: (context) => Text("failllll kek"));

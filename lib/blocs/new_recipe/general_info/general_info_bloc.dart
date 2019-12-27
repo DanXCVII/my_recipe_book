@@ -3,21 +3,19 @@ import 'package:bloc/bloc.dart';
 import 'package:my_recipe_book/hive.dart';
 import 'package:my_recipe_book/io/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe.dart';
-import '../../helper.dart';
-import '../../recipe.dart';
+import '../../../helper.dart';
+import '../../../recipe.dart';
 import './general_info.dart';
 
 class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
   @override
-  GeneralInfoState get initialState => CanSave();
+  GeneralInfoState get initialState => GCanSave();
 
   @override
   Stream<GeneralInfoState> mapEventToState(
     GeneralInfoEvent event,
   ) async* {
-    if (event is AddCategoryToRecipe) {
-      yield* _mapAddCategoryToRecipeToState(event);
-    } else if (event is UpdateRecipeImage) {
+    if (event is UpdateRecipeImage) {
       yield* _mapUpdateRecipeImageToState(event);
     } else if (event is FinishedEditing) {
       yield* _mapFinishedEditingToState(event);
@@ -26,7 +24,7 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
 
   Stream<GeneralInfoState> _mapUpdateRecipeImageToState(
       UpdateRecipeImage event) async* {
-    yield SavingTmpData();
+    yield GSavingTmpData();
 
     if (!event.editingRecipe) {
       await IO.saveRecipeImage(event.recipeImage, 'tmp');
@@ -45,32 +43,15 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       // TODO: When editing recipe
     }
 
-    yield CanSave();
-  }
-
-  Stream<GeneralInfoState> _mapAddCategoryToRecipeToState(
-      AddCategoryToRecipe event) async* {
-    yield SavingTmpData();
-
-    if (!event.editingRecipe) {
-      Recipe oldRecipe = HiveProvider().getTmpRecipe();
-      await HiveProvider().saveTmpRecipe(oldRecipe.copyWith(
-          categories: oldRecipe.categories..add(event.category)));
-    } else {
-      Recipe oldRecipe = HiveProvider().getTmpEditingRecipe();
-      await HiveProvider().saveTmpEditingRecipe(oldRecipe.copyWith(
-          categories: oldRecipe.categories..add(event.category)));
-    }
-
-    yield CanSave();
+    yield GCanSave();
   }
 
   Stream<GeneralInfoState> _mapFinishedEditingToState(
       FinishedEditing event) async* {
     if (event.goBack) {
-      yield EditingFinishedGoBack();
+      yield GEditingFinishedGoBack();
     } else {
-      yield EditingFinished();
+      yield GEditingFinished();
     }
 
     if (!event.editingRecipe) {
@@ -93,9 +74,9 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     }
 
     if (event.goBack) {
-      yield Saved();
+      yield GSaved();
     } else {
-      yield SavedGoBack();
+      yield GSavedGoBack();
     }
   }
 }

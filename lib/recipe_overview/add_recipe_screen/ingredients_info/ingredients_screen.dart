@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/new_recipe/ingredients/ingredients.dart';
+import 'package:my_recipe_book/blocs/new_recipe/ingredients/ingredients_bloc.dart';
+import 'package:my_recipe_book/blocs/new_recipe/ingredients/ingredients_event.dart';
 
 import '../../../blocs/add_recipe/add_recipe.dart';
 import '../../../database.dart';
@@ -16,11 +19,11 @@ import '../vegetarian_section.dart';
 
 class IngredientsAddScreen extends StatefulWidget {
   final Recipe recipe;
-  final Recipe editRecipe;
+  final String editRecipeName;
 
   IngredientsAddScreen({
     this.recipe,
-    this.editRecipe,
+    this.editRecipeName,
     Key key,
   }) : super(key: key);
 
@@ -50,50 +53,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
     ingredientUnitController[0].add(TextEditingController());
     ingredientGlossaryController.add(TextEditingController());
 
-    // If a recipe will be edited and not a new one created
-    if (widget.recipe.servings != null)
-      servingsController.text = widget.recipe.servings.toString();
-
-    if (widget.recipe.ingredientsGlossary != null)
-      for (int i = 0; i < widget.recipe.ingredientsGlossary.length; i++) {
-        if (i > 0) {
-          ingredientGlossaryController.add(TextEditingController());
-          ingredientNameController.add([]);
-          ingredientAmountController.add([]);
-          ingredientUnitController.add([]);
-        }
-        ingredientGlossaryController[i].text =
-            widget.recipe.ingredientsGlossary[i];
-
-        if (widget.recipe.ingredients != null)
-          for (int j = 0; j < widget.recipe.ingredients[i].length; j++) {
-            if (i != 0 || j > 0) {
-              ingredientNameController[i].add(TextEditingController());
-              ingredientAmountController[i].add(TextEditingController());
-              ingredientUnitController[i].add(TextEditingController());
-            }
-            ingredientNameController[i][j].text =
-                widget.recipe.ingredients[i][j].name;
-            ingredientAmountController[i][j].text =
-                widget.recipe.ingredients[i][j].amount != null
-                    ? widget.recipe.ingredients[i][j].amount.toString()
-                    : "";
-            ingredientUnitController[i][j].text =
-                widget.recipe.ingredients[i][j].unit;
-          }
-        switch (widget.recipe.vegetable) {
-          case Vegetable.NON_VEGETARIAN:
-            selectedRecipeVegetable
-                .setVegetableStatus(Vegetable.NON_VEGETARIAN);
-            break;
-          case Vegetable.VEGETARIAN:
-            selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGETARIAN);
-            break;
-          case Vegetable.VEGAN:
-            selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGAN);
-            break;
-        }
-      }
+    _initializeData(widget.recipe);
   }
 
   @override
@@ -122,62 +82,145 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("add ingredients info"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.arrow_forward),
-            color: Colors.white,
-            onPressed: () {
-              _finishedEditingIngredients();
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Form(
-              key: _formKey,
-              child: FutureBuilder<List<String>>(
-                future: DBProvider.db.getAllIngredientNames(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Ingredients(
-                      servingsController,
-                      ingredientNameController,
-                      ingredientAmountController,
-                      ingredientUnitController,
-                      ingredientGlossaryController,
-                      snapshot.data,
+    return WillPopScope(
+      onWillPop: () async {
+        _saveIngredientsData(context, true);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("add ingredients info"),
+          actions: <Widget>[
+            BlocListener<IngredientsBloc, IngredientsState>(
+              listener: (context, state) {
+                if (state is IEditingFinishedGoBack) {
+                  // TODO: internationalize
+                  Scaffold.of(context).showSnackBar(
+                      SnackBar(content: Text('saving your input...')));
+                } else if (state is ISaved) {
+                  // TODO: Navigator.pushNamed to next screen
+                } else if (state is ISavedGoBack) {
+                  Scaffold.of(context).hideCurrentSnackBar();
+                  Navigator.pop(context);
+                }
+              },
+              child: BlocBuilder<IngredientsBloc, IngredientsState>(
+                builder: (context, state) {
+                  if (state is ISavingTmpData) {
+                    return Icon(
+                      Icons.arrow_forward,
+                      color: Colors.grey,
                     );
+                  } else if (state is ICanSave) {
+                    return IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      color: Colors.white,
+                      onPressed: () {
+                        _finishedEditingIngredients();
+                      },
+                    );
+                  } else if (state is IEditingFinished) {
+                    return CircularProgressIndicator();
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return Icon(Icons.arrow_forward);
                   }
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
-              child: Text(
-                "Kategorie:",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Form(
+                key: _formKey,
+                child: FutureBuilder<List<String>>(
+                  future: DBProvider.db.getAllIngredientNames(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Ingredients(
+                        servingsController,
+                        ingredientNameController,
+                        ingredientAmountController,
+                        ingredientUnitController,
+                        ingredientGlossaryController,
+                        snapshot.data,
+                      );
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  },
                 ),
               ),
-            ),
-            Vegetarian(
-              vegetableStatus: selectedRecipeVegetable,
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
+                child: Text(
+                  "Kategorie:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              Vegetarian(
+                vegetableStatus: selectedRecipeVegetable,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  /// prefills the textfields with the data of the given recipe and the
+  /// radio button with the selected vegetable
+  void _initializeData(Recipe recipe) {
+    if (recipe.servings != null)
+      servingsController.text = recipe.servings.toString();
+
+    if (recipe.ingredientsGlossary != null)
+      for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
+        if (i > 0) {
+          ingredientGlossaryController.add(TextEditingController());
+          ingredientNameController.add([]);
+          ingredientAmountController.add([]);
+          ingredientUnitController.add([]);
+        }
+        ingredientGlossaryController[i].text = recipe.ingredientsGlossary[i];
+
+        if (recipe.ingredients != null)
+          for (int j = 0; j < recipe.ingredients[i].length; j++) {
+            if (i != 0 || j > 0) {
+              ingredientNameController[i].add(TextEditingController());
+              ingredientAmountController[i].add(TextEditingController());
+              ingredientUnitController[i].add(TextEditingController());
+            }
+            ingredientNameController[i][j].text = recipe.ingredients[i][j].name;
+            ingredientAmountController[i][j].text =
+                recipe.ingredients[i][j].amount != null
+                    ? recipe.ingredients[i][j].amount.toString()
+                    : "";
+            ingredientUnitController[i][j].text = recipe.ingredients[i][j].unit;
+          }
+        switch (recipe.vegetable) {
+          case Vegetable.NON_VEGETARIAN:
+            selectedRecipeVegetable
+                .setVegetableStatus(Vegetable.NON_VEGETARIAN);
+            break;
+          case Vegetable.VEGETARIAN:
+            selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGETARIAN);
+            break;
+          case Vegetable.VEGAN:
+            selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGAN);
+            break;
+        }
+      }
+  }
+
+  /// validates the info with the RecipeValidator() class and shows a
+  /// suitable dialog if the info is somehow not valid. If it is, it
+  /// calls _saveIngredientsData(..)
   void _finishedEditingIngredients() {
     Validator v = RecipeValidator().validateIngredientsData(
         _formKey,
@@ -198,45 +241,45 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
         showIngredientsGlossaryIncomplete(context);
         break;
       default:
-        saveValidIngredientsData(widget.recipe, context);
+        _saveIngredientsData(context, false);
         break;
     }
   }
 
-  void saveValidIngredientsData(
-      Recipe editRecipe, BuildContext ingredientsScreenContext) {
-    List<List<Ingredient>> ingredients = getCleanIngredientData(
-        ingredientNameController,
-        ingredientAmountController,
-        ingredientUnitController);
-
-    List<String> ingredientsGlossary =
-        getCleanGlossary(ingredientGlossaryController, ingredients);
-
-    Recipe newRecipe = editRecipe.copyWith(
-      ingredientsGlossary: ingredientsGlossary,
-      ingredients: ingredients,
-      vegetable: selectedRecipeVegetable.getVegetableStatus(),
-      servings: double.parse(servingsController.text),
-    );
-
-    if (widget.editRecipe != null) {
-      BlocProvider.of<AddRecipeBloc>(context)
-          .add(SaveTemporaryRecipeData(newRecipe));
-    }
-
-    Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => BlocProvider<AddRecipeBloc>(
-          builder: (context) =>
-              BlocProvider.of<AddRecipeBloc>(ingredientsScreenContext),
-          child: StepsScreen(
-            editRecipe: widget.editRecipe,
-            recipe: newRecipe,
+  /// notifies the Bloc to save all filled in data on this screen, with
+  /// the info to go back
+  void _saveIngredientsData(
+      BuildContext ingredientsScreenContext, bool goBack) {
+    if (goBack)
+      BlocProvider.of<IngredientsBloc>(context).add(
+        FinishedEditing(
+          widget.editRecipeName == null ? false : true,
+          goBack,
+          getIngredientsList(
+            ingredientNameController,
+            ingredientAmountController,
+            ingredientUnitController,
           ),
+          ingredientGlossaryController.map((item) => item.text).toList(),
         ),
-      ),
-    );
+      );
+    else {
+      List<List<Ingredient>> cleanIngredientsData = getCleanIngredientData(
+          ingredientNameController,
+          ingredientAmountController,
+          ingredientUnitController);
+
+      List<String> glossary =
+          getCleanGlossary(ingredientGlossaryController, cleanIngredientsData);
+
+      BlocProvider.of<IngredientsBloc>(context).add(
+        FinishedEditing(
+          widget.editRecipeName == null ? false : true,
+          goBack,
+          cleanIngredientsData,
+          glossary,
+        ),
+      );
+    }
   }
 }

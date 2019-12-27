@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/helper.dart';
 
 import '../../database.dart';
 import '../../models/ingredient.dart';
@@ -140,6 +141,33 @@ List<String> getCleanGlossary(List<TextEditingController> glossary,
   return output;
 }
 
+/// creating list of list of ingredients with the data of the
+/// textEditingControllers. All lists must be the same size.
+/// The amount will be converted to a double, because the recipe
+/// saves the amount as a double
+List<List<Ingredient>> getIngredientsList(
+    List<List<TextEditingController>> ingredientNamesContr,
+    List<List<TextEditingController>> amountContr,
+    List<List<TextEditingController>> unitContr) {
+  List<List<Ingredient>> ingredients = [];
+
+  for (int i = 0; i < ingredientNamesContr.length; i++) {
+    ingredients.add([]);
+    for (int j = 0; j < ingredientNamesContr[i].length; j++) {
+      String ingredientName = ingredientNamesContr[i][j].text;
+      double amount = validateNumber(amountContr[i][j].text)
+          ? double.parse(
+              amountContr[i][j].text.replaceAll(new RegExp(r','), 'e'))
+          : null;
+      String unit = unitContr[i][j].text;
+      ingredients[i]
+          .add(Ingredient(name: ingredientName, amount: amount, unit: unit));
+    }
+  }
+
+  return ingredients;
+}
+
 /// removes all leading and trailing whitespaces and empty ingredients from the lists
 /// of ingredients and
 List<List<Ingredient>> getCleanIngredientData(
@@ -148,35 +176,25 @@ List<List<Ingredient>> getCleanIngredientData(
     List<List<TextEditingController>> unit) {
   /// creating the three lists with the data of the ingredients
   /// by getting the data of the controllers.
-  List<List<String>> ingredientsNames = [[]];
-  for (int i = 0; i < ingredients.length; i++) {
-    ingredientsNames.add([]);
-    for (int j = 0; j < ingredients[i].length; j++) {
-      ingredientsNames[i].add(ingredients[i][j].text);
-    }
-  }
+  List<List<String>> ingredientsNames = ingredients
+      .map((list) => list.map((ingredient) => ingredient.text).toList())
+      .toList();
 
-  List<List<double>> ingredientsAmount = [[]];
-  for (int i = 0; i < amount.length; i++) {
-    ingredientsAmount.add(new List<double>());
-    for (int j = 0; j < amount[i].length; j++) {
-      if (amount[i][j].text != "") {
-        String addValue = amount[i][j].text;
-        ingredientsAmount[i]
-            .add(double.parse(addValue.replaceAll(new RegExp(r','), 'e')));
-      } else {
-        ingredientsAmount[i].add(null);
-      }
-    }
-  }
+  List<List<double>> ingredientsAmount = amount
+      .map((list) => list.map((amount) {
+            if (amount.text != "") {
+              String addValue = amount.text;
+              return double.parse(addValue.replaceAll(new RegExp(r','), 'e'));
+            } else {
+              return null;
+            }
+          }).toList())
+      .toList();
 
-  List<List<String>> ingredientsUnit = [[]];
-  for (int i = 0; i < unit.length; i++) {
-    ingredientsUnit.add(new List<String>());
-    for (int j = 0; j < unit[i].length; j++) {
-      ingredientsUnit[i].add(unit[i][j].text == "" ? null : unit[i][j].text);
-    }
-  }
+  List<List<String>> ingredientsUnit = unit
+      .map((list) =>
+          list.map((unit) => unit.text == '' ? null : unit.text).toList())
+      .toList();
 
   /// List which will be the clean list with the list of the ingredients
   /// data.

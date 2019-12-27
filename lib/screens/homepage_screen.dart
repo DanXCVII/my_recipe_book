@@ -20,8 +20,10 @@ import '../blocs/import_recipe/import_recipe_event.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../database.dart';
 import '../generated/i18n.dart';
+import '../hive.dart';
 import '../random_recipe/random_recipe.dart';
 import '../recipe_overview/add_recipe_screen/general_info/general_info_screen.dart';
+import '../routes.dart';
 import '../search.dart';
 import '../settings/settings_screen.dart';
 import 'category_gridview.dart';
@@ -284,31 +286,15 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 onPressed: () {
                   _controller.reverse();
                   index == 1
-                      ? Navigator.push(
+                      ? Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider<AddRecipeBloc>(
-                              builder: (context) => AddRecipeBloc(
-                                recipeManagerBloc:
-                                    BlocProvider.of<RecipeManagerBloc>(
-                                        homePageContext),
-                              )..add(InitializeNewRecipe()),
-                              child: GeneralInfoScreen(),
-                            ),
-                          ),
+                          RouteNames.addRecipeGeneralInfo,
+                          arguments: GeneralInfoArguments(
+                              HiveProvider().getTmpEditingRecipe()),
                         )
-                      : Navigator.push(
+                      : Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider(
-                              builder: (context) => CategoryManagerBloc(
-                                recipeManagerBloc:
-                                    BlocProvider.of<RecipeManagerBloc>(
-                                        homePageContext),
-                              )..add(InitializeCategoryManager()),
-                              child: CategoryManager(),
-                            ),
-                          ),
+                          RouteNames.manageCategories,
                         );
                 },
               ),

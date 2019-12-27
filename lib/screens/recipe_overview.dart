@@ -296,12 +296,13 @@ class NoRecipeCategory extends StatelessWidget {
               S.of(context).no_recipes_under_this_category,
               textScaleFactor: deviceHeight / 800,
               style: TextStyle(
-                  fontSize: 30,
-                  fontFamily: 'RibeyeMarrow',
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).backgroundColor == Colors.white
-                      ? Colors.black
-                      : Colors.white),
+                fontSize: 30,
+                fontFamily: 'RibeyeMarrow',
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).backgroundColor == Colors.white
+                    ? Colors.black
+                    : Colors.white,
+              ),
             ),
           ),
         ),
@@ -340,10 +341,8 @@ class Favorite extends StatelessWidget {
                 if (recipe.isFavorite) {
                   // widget.rKeeper.removeFromFavorites(widget.recipe.name);
                   recipe.isFavorite = false;
-                  recipe.save();
                 } else {
                   recipe.isFavorite = true;
-                  recipe.save();
                 }
               });
             },

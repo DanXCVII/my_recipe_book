@@ -43,7 +43,7 @@ class HiveProvider {
     Hive.box<String>(BoxNames.ingredientNames),
     Hive.box<List<String>>(BoxNames.order),
     Hive.box<RSort>(BoxNames.recipeSort),
-    Hive.box<List<CheckableIngredient>>(BoxNames.shoppingCart),
+    Hive.box<List>(BoxNames.shoppingCart),
     Hive.box<List<String>>(BoxNames.recipeCategories),
   );
 
@@ -60,7 +60,7 @@ class HiveProvider {
 
   Box<List<String>> boxOrder;
   Box<RSort> boxRecipeSort;
-  Box<List<CheckableIngredient>> boxShoppingCart;
+  Box<List> boxShoppingCart;
   Box<List<String>> boxRecipeCategories;
 
   factory HiveProvider() {
@@ -434,10 +434,12 @@ class HiveProvider {
   ////////////// shopping cart related //////////////
   Map<String, List<CheckableIngredient>> getShoppingCart() {
     Map<String, List<CheckableIngredient>> shoppingCart = {};
+
     for (var key in boxShoppingCart.keys) {
       String recipeName =
           key == "summary" ? "summary" : boxRecipeNames.get(key);
-      List<CheckableIngredient> ingredients = boxShoppingCart.get(key);
+      List<CheckableIngredient> ingredients =
+          boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [];
       shoppingCart.addAll({recipeName: ingredients});
     }
     return shoppingCart;
@@ -489,7 +491,8 @@ class HiveProvider {
     String hiveRecipeKey = getHiveKey(recipeName);
 
     if (boxShoppingCart.get(hiveRecipeKey) != null) {
-      for (CheckableIngredient i in boxShoppingCart.get(hiveRecipeKey)) {
+      for (CheckableIngredient i
+          in boxShoppingCart.get(hiveRecipeKey).cast<CheckableIngredient>()) {
         if (i.amount == null &&
             ingredient.amount == null &&
             i.name == ingredient.name) {
@@ -521,7 +524,9 @@ class HiveProvider {
     boxShoppingCart.delete(getHiveKey(recipeName));
     List<Ingredient> toBeRemoved = [];
 
-    for (CheckableIngredient i in boxShoppingCart.get(hiveRecipeKey)) {
+    for (CheckableIngredient i
+        in boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ??
+            []) {
       toBeRemoved.add(Ingredient(
         name: i.name,
         amount: i.amount,
@@ -541,7 +546,9 @@ class HiveProvider {
     String hiveRecipeKey = getHiveKey(recipeName);
     // check if the ingredient is saved under this recipe
     if (_getSuitingIngredientRecipe(
-            ingredient, boxShoppingCart.get(hiveRecipeKey)) ==
+            ingredient,
+            boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ??
+                []) ==
         null) return;
 
     // given: the ingredient is saved under this recipe
@@ -549,11 +556,13 @@ class HiveProvider {
     if (recipeName == 'summary') {
       // remove it form every entry in the shoppingCart
       for (var key in boxShoppingCart.keys) {
-        for (CheckableIngredient i in boxShoppingCart.get(key)) {
+        for (CheckableIngredient i
+            in boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? []) {
           if (i.name == ingredient.name && i.unit == ingredient.unit) {
             await boxShoppingCart.put(
                 key,
-                List<CheckableIngredient>.from(boxShoppingCart.get(key))
+                List<CheckableIngredient>.from(
+                    boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [])
                   ..remove(i));
             break;
           }
@@ -562,19 +571,24 @@ class HiveProvider {
     } else {
       // remove ingredient from given recipe
       List<CheckableIngredient> ingredients =
-          List<CheckableIngredient>.from(boxShoppingCart.get(hiveRecipeKey));
+          boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ?? [];
       int removeIngred = _getSuitingIngredientRecipe(ingredient, ingredients);
       double removeAmount = ingredients[removeIngred].amount;
       await boxShoppingCart.put(
-          hiveRecipeKey, ingredients..remove(ingredients[removeIngred]));
+        hiveRecipeKey,
+        List<CheckableIngredient>.from(
+          ingredients..remove(ingredients[removeIngred]),
+        ),
+      );
 
       // get corresponding ingredient from summary
-      int summaryIndex = _getSuitingIngredientRecipe(
-          ingredient, boxShoppingCart.get("summary"));
+      int summaryIndex = _getSuitingIngredientRecipe(ingredient,
+          boxShoppingCart.get("summary")?.cast<CheckableIngredient>() ?? []);
       List<CheckableIngredient> summaryIngredients =
-          List<CheckableIngredient>.from(boxShoppingCart.get("summary"));
-      CheckableIngredient summaryIngred =
-          boxShoppingCart.get("summary")[summaryIndex];
+          boxShoppingCart.get("summary")?.cast<CheckableIngredient>() ?? [];
+      CheckableIngredient summaryIngred = boxShoppingCart
+          .get("summary")
+          ?.cast<CheckableIngredient>()[summaryIndex];
 
       // if the ingredient has an amount
       if (summaryIngred.amount != null && removeAmount != null) {
@@ -582,23 +596,30 @@ class HiveProvider {
         if (summaryIngred.amount - removeAmount > 0) {
           // upate the amount of the summary ingredient
           await boxShoppingCart.put(
-              "summary",
-              summaryIngredients
-                ..replaceRange(summaryIndex, summaryIndex + 1, [
-                  summaryIngred.copyWith(
-                      amount: summaryIngred.amount - removeAmount)
-                ]));
+            "summary",
+            List<CheckableIngredient>.from(summaryIngredients
+              ..replaceRange(summaryIndex, summaryIndex + 1, [
+                summaryIngred.copyWith(
+                    amount: summaryIngred.amount - removeAmount)
+              ])),
+          );
         } // the amount of the summary ingredient is equal to the amount of the removed ingredient
         else {
           // remove the ingredient from the summary
           await boxShoppingCart.put(
-              'summary', summaryIngredients..removeAt(summaryIndex));
+            'summary',
+            List<CheckableIngredient>.from(
+                summaryIngredients..removeAt(summaryIndex)),
+          );
         }
       } // the to be removed ingredient doesn't have an amount
       else {
         // if the removed ingredient is only present in the summary, remove it from there
         if (_getIngredientCount(ingredient) == 1) {
-          boxShoppingCart.get('summary').remove(summaryIngred);
+          boxShoppingCart
+              .get('summary')
+              ?.cast<CheckableIngredient>()
+              ?.remove(summaryIngred);
         }
       }
     }
@@ -610,7 +631,8 @@ class HiveProvider {
     int ingredientCount = 0;
 
     for (var key in boxShoppingCart.keys) {
-      for (CheckableIngredient i in boxShoppingCart.get(key)) {
+      for (CheckableIngredient i
+          in boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? []) {
         if (ingredient.name == i.name && ingredient.unit == i.unit) {
           ingredientCount++;
         }
@@ -630,11 +652,14 @@ class HiveProvider {
 
     if (recipeName != "summary") {
       List<CheckableIngredient> ingredients =
-          List<CheckableIngredient>.from(boxShoppingCart.get(hiveRecipeKey));
+          boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ?? [];
       int modifiiedIndex =
           _getSuitingIngredientRecipe(ingredient.getIngredient(), ingredients);
       ingredients[modifiiedIndex] = ingredient;
-      await boxShoppingCart.put(hiveRecipeKey, ingredients);
+      await boxShoppingCart.put(
+        hiveRecipeKey,
+        List<CheckableIngredient>.from(ingredients),
+      );
 
       if (_checkSummary(ingredient)) {
         await _updateAll(ingredient);
@@ -650,7 +675,8 @@ class HiveProvider {
     if (ingredient.checked == true) {
       for (var key in boxShoppingCart.keys) {
         if (key != "summary") {
-          List<CheckableIngredient> ingredients = boxShoppingCart.get(key);
+          List<CheckableIngredient> ingredients =
+              boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [];
           int i = _getSuitingIngredientRecipe(
               ingredient.getIngredient(), ingredients);
           if (i != null) {
@@ -667,7 +693,7 @@ class HiveProvider {
   Future<void> _updateAll(CheckableIngredient ingredient) async {
     for (var key in boxShoppingCart.keys) {
       List<CheckableIngredient> ingredients =
-          List<CheckableIngredient>.from(boxShoppingCart.get(key));
+          boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [];
       int ingredientIndex =
           _getSuitingIngredientRecipe(ingredient.getIngredient(), ingredients);
 
@@ -675,7 +701,10 @@ class HiveProvider {
         if (ingredients[ingredientIndex].checked != ingredient.checked) {
           ingredients[ingredientIndex] = ingredients[ingredientIndex]
               .copyWith(checked: ingredient.checked);
-          await boxShoppingCart.put(key, ingredients);
+          await boxShoppingCart.put(
+            key,
+            List<CheckableIngredient>.from(ingredients),
+          );
         }
       }
     }
@@ -683,7 +712,8 @@ class HiveProvider {
 
   void _cleanUpEmptyRecipes() {
     for (var key in boxShoppingCart.keys) {
-      if (key != 'summary' && boxShoppingCart.get(key).isEmpty) {
+      if (key != 'summary' &&
+          boxShoppingCart.get(key).cast<CheckableIngredient>().isEmpty) {
         boxShoppingCart.delete(key);
       }
     }
@@ -698,7 +728,7 @@ class HiveProvider {
     // if we already have the recipe in our shoppingCard
     if (boxShoppingCart.keys.contains(hiveRecipeKey)) {
       List<CheckableIngredient> newIngredientList =
-          List<CheckableIngredient>.from(boxShoppingCart.get(hiveRecipeKey));
+          boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ?? [];
       int indexIngred =
           _getSuitingIngredientRecipe(ingredient, newIngredientList);
 
@@ -710,22 +740,26 @@ class HiveProvider {
         }
         bool checked = false;
         await boxShoppingCart.put(
-            hiveRecipeKey,
-            newIngredientList
-              ..replaceRange(indexIngred, indexIngred + 1, [
-                modifyIngred.copyWith(amount: newAmount, checked: checked)
-              ]));
+          hiveRecipeKey,
+          List<CheckableIngredient>.from(newIngredientList
+            ..replaceRange(indexIngred, indexIngred + 1,
+                [modifyIngred.copyWith(amount: newAmount, checked: checked)])),
+        );
       } else {
         // TODO: check if it works like that
-        boxShoppingCart.get(hiveRecipeKey).add(CheckableIngredient(
-            ingredient.name, ingredient.amount, ingredient.unit, false));
+        (boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ?? [])
+            .add(CheckableIngredient(
+                ingredient.name, ingredient.amount, ingredient.unit, false));
       }
     } // if we have to add the recipe with the ingredient to cart
     else {
-      await boxShoppingCart.put(hiveRecipeKey, [
-        CheckableIngredient(
-            ingredient.name, ingredient.amount, ingredient.unit, false)
-      ]);
+      await boxShoppingCart.put(
+        hiveRecipeKey,
+        [
+          CheckableIngredient(
+              ingredient.name, ingredient.amount, ingredient.unit, false)
+        ],
+      );
     }
   }
 
@@ -747,7 +781,8 @@ class HiveProvider {
     List<CheckableIngredient> suitedIngredients = [];
 
     for (var key in boxShoppingCart.keys) {
-      for (CheckableIngredient i in boxShoppingCart.get(key)) {
+      for (CheckableIngredient i
+          in boxShoppingCart.get(key).cast<CheckableIngredient>() ?? []) {
         if (checked == null) {
           if (ingredient == i.getIngredient()) {
             suitedIngredients.add(i);
@@ -805,60 +840,49 @@ class HiveProvider {
 
 // must(!) be executed before calling the HiveProvider
 Future<void> initHive(bool firstTime) async {
-  if (firstTime) {
-    Hive.init((await getApplicationDocumentsDirectory()).path);
-    Hive.registerAdapter(IngredientAdapter(), 1);
-    Hive.registerAdapter(CheckableIngredientAdapter(), 2);
-    Hive.registerAdapter(VegetableAdapter(), 3);
-    Hive.registerAdapter(NutritionAdapter(), 4);
-    Hive.registerAdapter(StringListTupleAdapter(), 5);
-    Hive.registerAdapter(RecipeSortAdapter(), 6);
-    Hive.registerAdapter(RSortAdapter(), 7);
-    Hive.registerAdapter(RecipeAdapter(), 8);
-  }
+  Hive.init((await getApplicationDocumentsDirectory()).path);
+  Hive.registerAdapter(IngredientAdapter(), 1);
+  Hive.registerAdapter(CheckableIngredientAdapter(), 2);
+  Hive.registerAdapter(VegetableAdapter(), 3);
+  Hive.registerAdapter(NutritionAdapter(), 4);
+  Hive.registerAdapter(StringListTupleAdapter(), 5);
+  Hive.registerAdapter(RecipeSortAdapter(), 6);
+  Hive.registerAdapter(RSortAdapter(), 7);
+  Hive.registerAdapter(RecipeAdapter(), 8);
 
-  await Hive.openBox<StringListTuple>("tuple");
-  await Hive.openBox<Ingredient>("ingredient");
-  await Hive.openBox(BoxNames.recipes, lazy: true);
-  await Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString());
-  await Hive.openBox<String>(Vegetable.VEGETARIAN.toString());
-  await Hive.openBox<String>(Vegetable.VEGAN.toString());
-  await Hive.openBox<String>(BoxNames.categories);
-  await Hive.openBox<String>(BoxNames.recipeName);
-
-  await Hive.openBox<String>(BoxNames.favorites);
-  await Hive.openBox<String>(BoxNames.ingredientNames);
-
-  await Hive.openBox<List<String>>(BoxNames.order);
-  await Hive.openBox<RSort>(BoxNames.recipeSort);
-
-  await Hive.openBox<List<CheckableIngredient>>(BoxNames.shoppingCart);
-  await Hive.openBox<List<String>>(BoxNames.recipeCategories);
-
-  await Hive.openBox<Recipe>(BoxNames.tmpRecipe);
+  await Future.wait([
+    Hive.openBox<StringListTuple>("tuple"),
+    Hive.openBox<Ingredient>("ingredient"),
+    Hive.openBox(BoxNames.recipes, lazy: true),
+    Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString()),
+    Hive.openBox<String>(Vegetable.VEGETARIAN.toString()),
+    Hive.openBox<String>(Vegetable.VEGAN.toString()),
+    Hive.openBox<String>(BoxNames.categories),
+    Hive.openBox<String>(BoxNames.recipeName),
+    Hive.openBox<String>(BoxNames.favorites),
+    Hive.openBox<String>(BoxNames.ingredientNames),
+    Hive.openBox<List<String>>(BoxNames.order),
+    Hive.openBox<RSort>(BoxNames.recipeSort),
+    Hive.openBox<List>(BoxNames.shoppingCart),
+    Hive.openBox<List<String>>(BoxNames.recipeCategories),
+    Hive.openBox<Recipe>(BoxNames.tmpRecipe),
+  ]);
 
   // initializing with the must have values
-  if (Hive.box<Recipe>(BoxNames.tmpRecipe).keys.isEmpty) {
+  if (firstTime) {
     await Hive.box<Recipe>(BoxNames.tmpRecipe)
         .put(tmpRecipeKey, Recipe(name: null, vegetable: null, servings: null));
-  }
 
-  if (Hive.box<String>(BoxNames.categories).keys.isEmpty)
     await Hive.box<String>(BoxNames.categories)
         .put('no category', 'no category');
 
-  if (Hive.box<String>(BoxNames.recipeName).keys.isEmpty)
     await Hive.box<String>(BoxNames.recipeName).put('summary', 'summary');
 
-  if (Hive.box<List<CheckableIngredient>>(BoxNames.shoppingCart).keys.isEmpty)
-    await Hive.box<List<CheckableIngredient>>(BoxNames.shoppingCart)
-        .put('summary', []);
+    await Hive.box<List>(BoxNames.shoppingCart).put('summary', []);
 
-  if (Hive.box<List<String>>(BoxNames.recipeCategories).keys.isEmpty)
     await Hive.box<List<String>>(BoxNames.recipeCategories)
         .put('no category', List<String>());
 
-  if (Hive.box<List<String>>(BoxNames.order).keys.isEmpty) {
     Box<List<String>> boxOrder = Hive.box<List<String>>(BoxNames.order);
     await boxOrder.put('categories', ['no category']);
     await boxOrder.put('nutritions', List<String>());

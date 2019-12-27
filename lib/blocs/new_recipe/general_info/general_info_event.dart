@@ -6,48 +6,6 @@ abstract class GeneralInfoEvent extends Equatable {
   const GeneralInfoEvent();
 }
 
-class UpdateRecipeName extends GeneralInfoEvent {
-  final String recipeName;
-  final bool editingRecipe;
-
-  UpdateRecipeName([this.recipeName, this.editingRecipe]);
-
-  @override
-  List<Object> get props => [recipeName, editingRecipe];
-
-  @override
-  String toString() =>
-      'add recipe name { recipe name: $recipeName , editing recipe: $editingRecipe }';
-}
-
-class AddCategoryToRecipe extends GeneralInfoEvent {
-  final String category;
-  final bool editingRecipe;
-
-  AddCategoryToRecipe(this.category, this.editingRecipe);
-
-  @override
-  List<Object> get props => [category, editingRecipe];
-
-  @override
-  String toString() => 'add category { category: $category '
-      ', editingRecipe: $editingRecipe}';
-}
-
-class RemoveCategoryFromRecipe extends GeneralInfoEvent {
-  final String category;
-  final bool editingRecipe;
-
-  RemoveCategoryFromRecipe(this.category, this.editingRecipe);
-
-  @override
-  List<Object> get props => [category, editingRecipe];
-
-  @override
-  String toString() => 'remove category { category: $category, '
-      'editingRecipe: $editingRecipe }';
-}
-
 class UpdateRecipeImage extends GeneralInfoEvent {
   final File recipeImage;
   final bool editingRecipe;

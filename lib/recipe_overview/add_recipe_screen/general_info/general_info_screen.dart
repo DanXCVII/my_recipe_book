@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 
-import '../../../blocs/general_info/general_info.dart';
-import '../../../blocs/general_info/general_info_event.dart';
-import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../../../blocs/new_recipe/general_info/general_info.dart';
 import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../models/recipe.dart';
@@ -20,24 +18,22 @@ import '../validator/dialogs.dart';
 /// arguments which are provided to the route, when pushing to it
 ///
 class GeneralInfoArguments {
-  final RecipeManagerBloc recipeManagerBloc;
   final Recipe modifiedRecipe;
-  final bool editingRecipe;
+  final String editingRecipeName;
 
   GeneralInfoArguments(
-    this.recipeManagerBloc,
-    this.modifiedRecipe,
-    this.editingRecipe,
-  );
+    this.modifiedRecipe, {
+    this.editingRecipeName,
+  });
 }
 
 class GeneralInfoScreen extends StatefulWidget {
   final Recipe modifiedRecipe;
-  final bool editingRecipe;
+  final String editingRecipeName;
 
   GeneralInfoScreen({
     this.modifiedRecipe,
-    this.editingRecipe,
+    this.editingRecipeName,
   });
 
   _GeneralInfoScreenState createState() => _GeneralInfoScreenState();
@@ -55,6 +51,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   @override
   void initState() {
     super.initState();
+
+    _initializeData(widget.modifiedRecipe);
   }
 
   @override
@@ -70,7 +68,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        saveData(context, true);
+        _saveGeneralInfoData(context, true);
         return false;
       },
       child: Scaffold(
@@ -85,26 +83,25 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
           actions: <Widget>[
             BlocListener<GeneralInfoBloc, GeneralInfoState>(
               listener: (context, state) {
-                if (state is EditingFinishedGoBack) {
+                if (state is GEditingFinishedGoBack) {
                   // TODO: internationalize
                   Scaffold.of(context).showSnackBar(
                       SnackBar(content: Text('saving your input...')));
-                } else if (state is Saved) {
-                  // TODO: Navigator.pushNamed to next screen
-                } else if (state is SavedGoBack) {
+                } else if (state is GSaved) {
+                  // TODO: Navigator.pushNamed to next screen (GSaved must hold new recipe?)
+                } else if (state is GSavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
                 }
               },
               child: BlocBuilder<GeneralInfoBloc, GeneralInfoState>(
                 builder: (context, state) {
-                  if (state is SavingTmpData) {
-                    return IconButton(
-                      icon: Icon(Icons.arrow_forward),
+                  if (state is GSavingTmpData) {
+                    return Icon(
+                      Icons.arrow_forward,
                       color: Colors.grey,
-                      onPressed: () {},
                     );
-                  } else if (state is CanSave) {
+                  } else if (state is GCanSave) {
                     return IconButton(
                       icon: Icon(Icons.arrow_forward),
                       color: Colors.white,
@@ -112,7 +109,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                         _finishedEditingGeneralInfo();
                       },
                     );
-                  } else if (state is EditingFinished) {
+                  } else if (state is GEditingFinished) {
                     return CircularProgressIndicator();
                   } else {
                     return Icon(Icons.arrow_forward);
@@ -229,11 +226,25 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
     );
   }
 
-  _finishedEditingGeneralInfo() {
+  /// prefills the textfields with the data of the given recipe
+  void _initializeData(Recipe recipe) {
+    if (recipe.name != null) nameController.text = recipe.name;
+    if (recipe.preperationTime != null && recipe.preperationTime != 0.0)
+      preperationTimeController.text = recipe.preperationTime.toString();
+    if (recipe.cookingTime != null && recipe.cookingTime != 0.0)
+      cookingTimeController.text = recipe.cookingTime.toString();
+    if (recipe.totalTime != null && recipe.totalTime != 0.0)
+      totalTimeController.text = recipe.totalTime.toString();
+  }
+
+  /// validates the info with the RecipeValidator() class and shows a
+  /// suitable dialog if the info is somehow not valid. If it is, it
+  /// calls _saveGeneralInfoData(..)
+  void _finishedEditingGeneralInfo() {
     RecipeValidator()
         .validateGeneralInfo(
       _formKey,
-      widget.editingRecipe ? true : false,
+      widget.editingRecipeName != null ? true : false,
       nameController.text,
     )
         .then((v) {
@@ -246,25 +257,17 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
           break;
 
         default:
-          saveData(context, true);
+          _saveGeneralInfoData(context, false);
           break;
       }
     });
   }
 
-  void initializeData(Recipe newRecipe) {
-    if (newRecipe.name != null) nameController.text = newRecipe.name;
-    if (newRecipe.preperationTime != null && newRecipe.preperationTime != 0.0)
-      preperationTimeController.text = newRecipe.preperationTime.toString();
-    if (newRecipe.cookingTime != null && newRecipe.cookingTime != 0.0)
-      cookingTimeController.text = newRecipe.cookingTime.toString();
-    if (newRecipe.totalTime != null && newRecipe.totalTime != 0.0)
-      totalTimeController.text = newRecipe.totalTime.toString();
-  }
-
-  void saveData(BuildContext gInfoScreenContext, bool goBack) {
+  /// notifies the Bloc to save all filled in data on this screen, with
+  /// the info to go back
+  void _saveGeneralInfoData(BuildContext gInfoScreenContext, bool goBack) {
     BlocProvider.of<GeneralInfoBloc>(context).add(FinishedEditing(
-      widget.editingRecipe,
+      widget.editingRecipeName != null ? true : false,
       goBack,
       nameController.text,
       preperationTimeController.text.isEmpty
@@ -282,6 +285,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
     ));
   }
 
+  /// checks the recipeName for invalid characters like . or / or length
+  /// because the name will be used as a directory for the recipe images
   String _validateRecipeName(String recipeName) {
     if (recipeName.isEmpty) {
       return "Please enter a name";
