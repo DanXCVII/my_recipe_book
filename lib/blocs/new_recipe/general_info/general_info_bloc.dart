@@ -19,6 +19,10 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       yield* _mapUpdateRecipeImageToState(event);
     } else if (event is FinishedEditing) {
       yield* _mapFinishedEditingToState(event);
+    } else if (event is AddCategoryToRecipe) {
+      yield* _mapAddCategoryToRecipeToMap(event);
+    } else if (event is RemoveCategoryFromRecipe) {
+      yield* _mapRemoveCategoryFromRecipeToState(event);
     }
   }
 
@@ -74,9 +78,47 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     }
 
     if (event.goBack) {
-      yield GSaved();
-    } else {
       yield GSavedGoBack();
+    } else {
+      yield GSaved();
+    }
+  }
+
+  Stream<GeneralInfoState> _mapAddCategoryToRecipeToMap(
+      AddCategoryToRecipe event) async* {
+    if (!event.editingRecipe) {
+      await HiveProvider().saveTmpRecipe(
+        HiveProvider().getTmpRecipe().copyWith(
+              categories: HiveProvider().getTmpRecipe().categories
+                ..add(event.category),
+            ),
+      );
+    } else {
+      await HiveProvider().saveTmpEditingRecipe(
+        HiveProvider().getTmpEditingRecipe().copyWith(
+              categories: HiveProvider().getTmpEditingRecipe().categories
+                ..add(event.category),
+            ),
+      );
+    }
+  }
+
+  Stream<GeneralInfoState> _mapRemoveCategoryFromRecipeToState(
+      RemoveCategoryFromRecipe event) async* {
+    if (!event.editingRecipe) {
+      await HiveProvider().saveTmpRecipe(
+        HiveProvider().getTmpRecipe().copyWith(
+              categories: HiveProvider().getTmpRecipe().categories
+                ..remove(event.category),
+            ),
+      );
+    } else {
+      await HiveProvider().saveTmpEditingRecipe(
+        HiveProvider().getTmpEditingRecipe().copyWith(
+              categories: HiveProvider().getTmpEditingRecipe().categories
+                ..remove(event.category),
+            ),
+      );
     }
   }
 }

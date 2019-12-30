@@ -86,6 +86,10 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
       RMMoveCategory event) async* {
     await HiveProvider().moveCategory(event.oldIndex, event.newIndex);
 
-    yield MoveCategoryState(event.oldIndex, event.newIndex);
+    yield MoveCategoryState(
+      event.oldIndex,
+      event.newIndex,
+      event.time,
+    );
   }
 }

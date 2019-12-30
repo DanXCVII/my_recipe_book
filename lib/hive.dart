@@ -886,6 +886,15 @@ Future<void> initHive(bool firstTime) async {
     Box<List<String>> boxOrder = Hive.box<List<String>>(BoxNames.order);
     await boxOrder.put('categories', ['no category']);
     await boxOrder.put('nutritions', List<String>());
+
+    await Hive.box<Recipe>(BoxNames.tmpRecipe).put(
+        tmpRecipeKey,
+        Recipe(
+          categories: [],
+          name: null,
+          servings: null,
+          vegetable: Vegetable.VEGETARIAN,
+        ));
   }
   // Recipe dummyRecipe = await DummyData().getDummyRecipe();
   // for (String category in dummyRecipe.categories) {

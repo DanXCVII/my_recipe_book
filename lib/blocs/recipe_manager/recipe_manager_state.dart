@@ -108,11 +108,20 @@ class UpdateCategoryState extends RecipeManagerState {
 class MoveCategoryState extends RecipeManagerState {
   final int oldIndex;
   final int newIndex;
+  final DateTime time;
 
-  const MoveCategoryState(this.oldIndex, this.newIndex);
+  const MoveCategoryState(
+    this.oldIndex,
+    this.newIndex,
+    this.time,
+  );
 
   @override
-  List<Object> get props => [oldIndex, newIndex];
+  List<Object> get props => [
+        oldIndex,
+        newIndex,
+        time,
+      ];
 
   @override
   String toString() =>

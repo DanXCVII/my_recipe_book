@@ -3,7 +3,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/blocs/new_recipe/ingredients/ingredients.dart';
+import 'package:my_recipe_book/blocs/nutrition_manager/nutrition_manager.dart';
+import 'package:my_recipe_book/recipe_overview/add_recipe_screen/ingredients_info/ingredients_screen.dart';
 import 'package:my_recipe_book/screens/category_manager.dart';
+import 'package:my_recipe_book/screens/nutrition_manager.dart';
 
 import './theming.dart';
 import 'blocs/app/app_bloc.dart';
@@ -148,26 +152,37 @@ class MyApp extends StatelessWidget {
               final GeneralInfoArguments args = settings.arguments;
 
               return MaterialPageRoute(
-                  builder: (context) => MultiBlocProvider(
-                        providers: [
-                          BlocProvider(
-                            builder: (context) => GeneralInfoBloc(),
-                          ),
-                          BlocProvider(
-                            builder: (context) => CategoryManagerBloc(
-                                recipeManagerBloc:
-                                    BlocProvider.of<RecipeManagerBloc>(
-                                        context)),
-                          ),
-                        ],
-                        child: GeneralInfoScreen(
-                          modifiedRecipe: args.modifiedRecipe,
-                          editingRecipeName: args.editingRecipeName,
-                        ),
-                      ));
+                builder: (context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<GeneralInfoBloc>(
+                      builder: (context) => GeneralInfoBloc(),
+                    ),
+                    BlocProvider<CategoryManagerBloc>(
+                      builder: (context) => CategoryManagerBloc(
+                          recipeManagerBloc:
+                              BlocProvider.of<RecipeManagerBloc>(context))
+                        ..add(InitializeCategoryManager()),
+                    ),
+                  ],
+                  child: GeneralInfoScreen(
+                    modifiedRecipe: args.modifiedRecipe,
+                    editingRecipeName: args.editingRecipeName,
+                  ),
+                ),
+              );
 
             case "/add-recipe/ingredients":
-              final 
+              final IngredientsArguments args = settings.arguments;
+
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider<IngredientsBloc>(
+                  builder: (context) => IngredientsBloc(),
+                  child: IngredientsAddScreen(
+                    modifiedRecipe: args.modifiedRecipe,
+                    editingRecipeName: args.editingRecipeName,
+                  ),
+                ),
+              );
 
             case "/manage-categories":
               return MaterialPageRoute(
@@ -177,6 +192,15 @@ class MyApp extends StatelessWidget {
                         BlocProvider.of<RecipeManagerBloc>(context),
                   )..add(InitializeCategoryManager()),
                   child: CategoryManager(),
+                ),
+              );
+
+            case "/manage-nutritions":
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider<NutritionManagerBloc>(
+                  builder: (context) =>
+                      NutritionManagerBloc()..add(LoadNutritionManager()),
+                  child: NutritionManager(),
                 ),
               );
 

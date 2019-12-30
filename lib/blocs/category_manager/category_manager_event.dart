@@ -16,9 +16,6 @@ class AddCategory extends CategoryManagerEvent {
 
   @override
   List<Object> get props => [category];
-
-  @override
-  String toString() => 'add category { category: $category }';
 }
 
 class DeleteCategory extends CategoryManagerEvent {
@@ -28,23 +25,25 @@ class DeleteCategory extends CategoryManagerEvent {
 
   @override
   List<Object> get props => [category];
-
-  @override
-  String toString() => 'delete category { category: $category }';
 }
 
 class MoveCategory extends CategoryManagerEvent {
   final int oldIndex;
   final int newIndex;
+  final DateTime time;
 
-  const MoveCategory(this.oldIndex, this.newIndex);
+  const MoveCategory(
+    this.oldIndex,
+    this.newIndex,
+    this.time,
+  );
 
   @override
-  List<Object> get props => [oldIndex, newIndex];
-
-  @override
-  String toString() =>
-      'move category { oldIndex: $oldIndex , newIndex: $newIndex }';
+  List<Object> get props => [
+        oldIndex,
+        newIndex,
+        time,
+      ];
 }
 
 class UpdateCategory extends CategoryManagerEvent {
@@ -55,8 +54,4 @@ class UpdateCategory extends CategoryManagerEvent {
 
   @override
   List<Object> get props => [oldCategory, updatedCategory];
-
-  @override
-  String toString() =>
-      'update category { oldIndex: $oldCategory , newIndex: $updatedCategory }';
 }

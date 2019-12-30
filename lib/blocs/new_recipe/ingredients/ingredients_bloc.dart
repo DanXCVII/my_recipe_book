@@ -42,9 +42,9 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
     }
 
     if (event.goBack) {
-      yield ISaved();
-    } else {
       yield ISavedGoBack();
+    } else {
+      yield ISaved();
     }
   }
 }

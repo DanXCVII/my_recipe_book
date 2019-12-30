@@ -55,7 +55,8 @@ class CategoryManager extends StatelessWidget {
                     onReorder: (oldIndex, newIndex) {
                       BlocProvider.of<CategoryManagerBloc>(context)
                           .recipeManagerBloc
-                          .add(RMMoveCategory(oldIndex, newIndex));
+                          .add(RMMoveCategory(
+                              oldIndex, newIndex, DateTime.now()));
                     },
                     children: state.categories.map((categoryName) {
                       return ListTile(

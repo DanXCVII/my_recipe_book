@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:my_recipe_book/blocs/category_manager/category_manager_state.dart';
-import 'package:my_recipe_book/blocs/new_recipe/general_info/general_info_bloc.dart';
 import 'package:my_recipe_book/blocs/new_recipe/general_info/general_info_event.dart';
 
 import '../../blocs/category_manager/category_manager_bloc.dart';
+import '../../blocs/category_manager/category_manager_state.dart';
+import '../../blocs/new_recipe/general_info/general_info_bloc.dart';
 import '../../dialogs/add_nut_cat_dialog.dart';
 import '../../generated/i18n.dart';
 
@@ -19,8 +19,12 @@ class Consts {
 
 class CategorySection extends StatefulWidget {
   final List<String> selectedCategories;
+  final bool editingRecipe;
 
-  CategorySection(this.selectedCategories);
+  CategorySection({
+    this.selectedCategories = const [],
+    @required this.editingRecipe,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -99,6 +103,7 @@ class _CategorySectionState extends State<CategorySection> {
                           chipName: category,
                           isSelected:
                               widget.selectedCategories.contains(category),
+                          editingRecipe: widget.editingRecipe,
                         );
                       }).toList()
                         ..removeLast(),

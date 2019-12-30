@@ -107,13 +107,18 @@ class RMUpdateCategory extends RecipeManagerEvent {
 class RMMoveCategory extends RecipeManagerEvent {
   final int oldIndex;
   final int newIndex;
+  final DateTime time;
 
-  const RMMoveCategory(this.oldIndex, this.newIndex);
+  const RMMoveCategory(
+    this.oldIndex,
+    this.newIndex,
+    this.time,
+  );
 
   @override
-  List<Object> get props => [oldIndex, newIndex];
-
-  @override
-  String toString() =>
-      'move category { oldIndex: $oldIndex, newIndex: $newIndex }';
+  List<Object> get props => [
+        oldIndex,
+        newIndex,
+        time,
+      ];
 }

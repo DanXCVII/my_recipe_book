@@ -20,6 +20,38 @@ class UpdateRecipeImage extends GeneralInfoEvent {
       ', editing recipe: $editingRecipe }';
 }
 
+class AddCategoryToRecipe extends GeneralInfoEvent {
+  final String category;
+  final bool editingRecipe;
+
+  AddCategoryToRecipe([
+    this.category,
+    this.editingRecipe,
+  ]);
+
+  @override
+  List<Object> get props => [
+        category,
+        editingRecipe,
+      ];
+}
+
+class RemoveCategoryFromRecipe extends GeneralInfoEvent {
+  final String category;
+  final bool editingRecipe;
+
+  RemoveCategoryFromRecipe([
+    this.category,
+    this.editingRecipe,
+  ]);
+
+  @override
+  List<Object> get props => [
+        category,
+        editingRecipe,
+      ];
+}
+
 class FinishedEditing extends GeneralInfoEvent {
   final bool editingRecipe;
   final bool goBack;
@@ -47,13 +79,4 @@ class FinishedEditing extends GeneralInfoEvent {
         cookingTime,
         totalTime,
       ];
-
-  @override
-  String toString() =>
-      'finished general info { editingRecipe: $editingRecipe , '
-      'goBack: $goBack ,'
-      'recipeName: $recipeName, '
-      'preperationTime: $preperationTime'
-      'cookingTime: $cookingTime'
-      'totalTime: $totalTime }';
 }

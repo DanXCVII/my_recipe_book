@@ -4,19 +4,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/recipe_overview/add_recipe_screen/ingredients_info/ingredients_screen.dart';
 
 import '../../../blocs/new_recipe/general_info/general_info.dart';
 import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe.dart';
+import '../../../routes.dart';
 import '../categories_section.dart';
 import '../image_selector.dart' as IS;
 import '../validation_clean_up.dart';
 import '../validator/dialogs.dart';
 
 /// arguments which are provided to the route, when pushing to it
-///
 class GeneralInfoArguments {
   final Recipe modifiedRecipe;
   final String editingRecipeName;
@@ -73,12 +74,6 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.clear),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
           title: Text("add general info"),
           actions: <Widget>[
             BlocListener<GeneralInfoBloc, GeneralInfoState>(
@@ -88,7 +83,11 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                   Scaffold.of(context).showSnackBar(
                       SnackBar(content: Text('saving your input...')));
                 } else if (state is GSaved) {
-                  // TODO: Navigator.pushNamed to next screen (GSaved must hold new recipe?)
+                  Navigator.pushNamed(context, RouteNames.addRecipeIngredients,
+                      arguments: IngredientsArguments(
+                        widget.modifiedRecipe,
+                        editingRecipeName: widget.editingRecipeName,
+                      ));
                 } else if (state is GSavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
@@ -101,7 +100,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                       Icons.arrow_forward,
                       color: Colors.grey,
                     );
-                  } else if (state is GCanSave) {
+                  } else if (state is GCanSave || state is GSaved) {
                     return IconButton(
                       icon: Icon(Icons.arrow_forward),
                       color: Colors.white,
@@ -219,7 +218,10 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                 ],
               ),
             ),
-            CategorySection(widget.modifiedRecipe.categories),
+            CategorySection(
+              selectedCategories: widget.modifiedRecipe.categories,
+              editingRecipe: widget.editingRecipeName == null ? false : true,
+            ),
           ]),
         ),
       ),
@@ -268,7 +270,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   void _saveGeneralInfoData(BuildContext gInfoScreenContext, bool goBack) {
     BlocProvider.of<GeneralInfoBloc>(context).add(FinishedEditing(
       widget.editingRecipeName != null ? true : false,
-      goBack,
+      widget.editingRecipeName != null
+          ? widget.modifiedRecipe.categories
+          : goBack,
       nameController.text,
       preperationTimeController.text.isEmpty
           ? 0

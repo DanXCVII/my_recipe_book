@@ -1,12 +1,13 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_event.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_state.dart'
     as RMState;
 import 'package:my_recipe_book/hive.dart';
+
 import './category_manager.dart';
+import '../recipe_manager/recipe_manager_bloc.dart';
 
 class CategoryManagerBloc
     extends Bloc<CategoryManagerEvent, CategoryManagerState> {
@@ -23,7 +24,7 @@ class CategoryManagerBloc
         } else if (rmState is RMState.UpdateCategoryState) {
           add(UpdateCategory(rmState.oldCategory, rmState.updatedCategory));
         } else if (rmState is RMState.MoveCategoryState) {
-          add(MoveCategory(rmState.oldIndex, rmState.newIndex));
+          add(MoveCategory(rmState.oldIndex, rmState.newIndex, DateTime.now()));
         }
       }
     });
@@ -97,15 +98,17 @@ class CategoryManagerBloc
     if (state is LoadedCategoryManager) {
       // List in HiveProvider()Provider() is already updated of the recipeManager
 
-      final List<String> categories = List.from(
+      final List<String> it1 = List<String>.from(
           (state as LoadedCategoryManager).categories
             ..insert(event.newIndex,
-                (state as LoadedCategoryManager).categories[event.oldIndex])
-            ..removeAt(event.oldIndex > event.newIndex
-                ? event.oldIndex + 1
-                : event.oldIndex));
+                (state as LoadedCategoryManager).categories[event.oldIndex]));
 
-      yield LoadedCategoryManager(categories);
+      final List<String> it2 = List<String>.from(it1
+        ..removeAt(event.oldIndex > event.newIndex
+            ? event.oldIndex + 1
+            : event.oldIndex));
+
+      yield LoadedCategoryManager(it2);
     }
   }
 

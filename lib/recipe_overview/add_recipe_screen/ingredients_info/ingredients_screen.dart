@@ -1,29 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/new_recipe/ingredients/ingredients.dart';
-import 'package:my_recipe_book/blocs/new_recipe/ingredients/ingredients_bloc.dart';
-import 'package:my_recipe_book/blocs/new_recipe/ingredients/ingredients_event.dart';
 
-import '../../../blocs/add_recipe/add_recipe.dart';
+import '../../../blocs/new_recipe/ingredients/ingredients.dart';
+import '../../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
+import '../../../blocs/new_recipe/ingredients/ingredients_event.dart';
 import '../../../database.dart';
 import '../../../models/enums.dart';
 import '../../../models/ingredient.dart';
 import '../../../models/recipe.dart';
 import '../../../my_wrapper.dart';
 import '../ingredients_section.dart';
-import '../steps_info/steps_screen.dart';
 import '../validation_clean_up.dart';
 import '../validator/dialogs.dart';
 import '../vegetarian_section.dart';
 
+/// arguments which are provided to the route, when pushing to it
+class IngredientsArguments {
+  final Recipe modifiedRecipe;
+  final String editingRecipeName;
+
+  IngredientsArguments(
+    this.modifiedRecipe, {
+    this.editingRecipeName,
+  });
+}
+
 class IngredientsAddScreen extends StatefulWidget {
-  final Recipe recipe;
-  final String editRecipeName;
+  final Recipe modifiedRecipe;
+  final String editingRecipeName;
 
   IngredientsAddScreen({
-    this.recipe,
-    this.editRecipeName,
+    this.modifiedRecipe,
+    this.editingRecipeName,
     Key key,
   }) : super(key: key);
 
@@ -53,7 +62,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
     ingredientUnitController[0].add(TextEditingController());
     ingredientGlossaryController.add(TextEditingController());
 
-    _initializeData(widget.recipe);
+    _initializeData(widget.modifiedRecipe);
   }
 
   @override
@@ -253,7 +262,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
     if (goBack)
       BlocProvider.of<IngredientsBloc>(context).add(
         FinishedEditing(
-          widget.editRecipeName == null ? false : true,
+          widget.editingRecipeName == null ? false : true,
           goBack,
           getIngredientsList(
             ingredientNameController,
@@ -274,7 +283,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
 
       BlocProvider.of<IngredientsBloc>(context).add(
         FinishedEditing(
-          widget.editRecipeName == null ? false : true,
+          widget.editingRecipeName == null ? false : true,
           goBack,
           cleanIngredientsData,
           glossary,
