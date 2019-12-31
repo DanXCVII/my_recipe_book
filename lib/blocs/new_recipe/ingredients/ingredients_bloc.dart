@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 import '../../../hive.dart';
 import './ingredients.dart';
 
@@ -24,27 +25,27 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
       yield IEditingFinished();
     }
 
+    Recipe newRecipe;
     if (!event.editingRecipe) {
-      await HiveProvider().saveTmpRecipe(
-        HiveProvider().getTmpRecipe().copyWith(
-              ingredients: event.ingredients,
-              ingredientsGlossary: event.ingredientsGlossary,
-              vegetable: event.vegetable,
-            ),
-      );
+      newRecipe = HiveProvider().getTmpRecipe().copyWith(
+            ingredients: event.ingredients,
+            ingredientsGlossary: event.ingredientsGlossary,
+            vegetable: event.vegetable,
+          );
+      await HiveProvider().saveTmpRecipe(newRecipe);
     } else {
-      await HiveProvider()
-          .saveTmpEditingRecipe(HiveProvider().getTmpEditingRecipe().copyWith(
-                ingredients: event.ingredients,
-                ingredientsGlossary: event.ingredientsGlossary,
-                vegetable: event.vegetable,
-              ));
+      newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
+            ingredients: event.ingredients,
+            ingredientsGlossary: event.ingredientsGlossary,
+            vegetable: event.vegetable,
+          );
+      await HiveProvider().saveTmpEditingRecipe(newRecipe);
     }
 
     if (event.goBack) {
       yield ISavedGoBack();
     } else {
-      yield ISaved();
+      yield ISaved(newRecipe);
     }
   }
 }

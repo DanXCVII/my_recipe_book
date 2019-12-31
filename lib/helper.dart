@@ -66,7 +66,7 @@ String getUnderscoreName(String name) {
 
 bool validateNumber(String text) {
   if (text.isEmpty) {
-    return true;
+    return false;
   }
   String pattern = r"^(?!0*[.,]?0+$)\d*[.,]?\d+$";
 

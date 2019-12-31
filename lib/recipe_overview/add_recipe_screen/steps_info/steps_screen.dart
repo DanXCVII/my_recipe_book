@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/new_recipe/steps/steps.dart';
+import 'package:my_recipe_book/blocs/new_recipe/steps/steps_bloc.dart';
+import 'package:my_recipe_book/blocs/new_recipe/steps/steps_state.dart';
 
 import '../../../blocs/add_recipe/add_recipe.dart';
 import '../../../blocs/nutrition_manager/nutrition_manager.dart';
@@ -13,13 +16,24 @@ import '../../../screens/add_nutrition.dart';
 import '../complexity_section.dart';
 import '../steps_section.dart';
 
+/// arguments which are provided to the route, when pushing to it
+class StepsArguments {
+  final Recipe modifiedRecipe;
+  final String editingRecipeName;
+
+  StepsArguments(
+    this.modifiedRecipe, {
+    this.editingRecipeName,
+  });
+}
+
 class StepsScreen extends StatefulWidget {
-  final Recipe recipe;
-  final Recipe editRecipe;
+  final Recipe modifiedRecipe;
+  final String editingRecipeName;
 
   StepsScreen({
-    this.recipe,
-    this.editRecipe,
+    this.modifiedRecipe,
+    this.editingRecipeName,
     Key key,
   }) : super(key: key);
 
@@ -27,7 +41,6 @@ class StepsScreen extends StatefulWidget {
 }
 
 class _StepsScreenState extends State<StepsScreen> {
-  final List<List<String>> stepImages = [[]];
   final List<TextEditingController> stepsDescController = [];
   final TextEditingController notesController = TextEditingController();
 
@@ -40,24 +53,7 @@ class _StepsScreenState extends State<StepsScreen> {
     super.initState();
     stepsDescController.add(TextEditingController());
 
-    if (widget.recipe.notes != null) notesController.text = widget.recipe.notes;
-
-    if (widget.recipe.effort != null)
-      complexity.myDouble = widget.recipe.effort.toDouble();
-
-    if (widget.recipe.steps != null)
-      for (int i = 0; i < widget.recipe.steps.length; i++) {
-        if (i > 0) {
-          stepsDescController.add(TextEditingController());
-          stepImages.add([]);
-        }
-        stepsDescController[i].text = widget.recipe.steps[i];
-
-        if (widget.editRecipe != null)
-          for (int j = 0; j < widget.recipe.stepImages[i].length; j++) {
-            stepImages[i].add(widget.recipe.stepImages[i][j]);
-          }
-      }
+    _initializeData(widget.modifiedRecipe);
   }
 
   @override
@@ -75,12 +71,41 @@ class _StepsScreenState extends State<StepsScreen> {
       appBar: AppBar(
         title: Text("add steps"),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.check),
-            color: Colors.white,
-            onPressed: () {
-              _finishedEditingRecipe(context);
+          BlocListener<StepsBloc, StepsState>(
+            listener: (context, state) {
+              if (state is SEditingFinishedGoBack) {
+                // TODO: internationalize
+                Scaffold.of(context).showSnackBar(
+                    SnackBar(content: Text('saving your input...')));
+              } else if (state is SSaved) {
+                // TODO: Navigator.pushNamed to next screen
+              } else if (state is SSavedGoBack) {
+                Scaffold.of(context).hideCurrentSnackBar();
+                Navigator.pop(context);
+              }
             },
+            child: BlocBuilder<StepsBloc, StepsState>(
+              builder: (context, state) {
+                if (state is SSavingTmpData) {
+                  return Icon(
+                    Icons.arrow_forward,
+                    color: Colors.grey,
+                  );
+                } else if (state is SCanSave) {
+                  return IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    color: Colors.white,
+                    onPressed: () {
+                      _finishedEditingSteps();
+                    },
+                  );
+                } else if (state is SEditingFinished) {
+                  return CircularProgressIndicator();
+                } else {
+                  return Icon(Icons.arrow_forward);
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -89,15 +114,13 @@ class _StepsScreenState extends State<StepsScreen> {
           children: <Widget>[
             Form(
               key: _formKey,
-              child: widget.editRecipe != null
+              child: widget.editingRecipeName != null
                   ? Steps(
                       stepsDescController,
-                      stepImages,
-                      editRecipeName: widget.editRecipe.name,
+                      editRecipeName: widget.editingRecipeName,
                     )
                   : Steps(
                       stepsDescController,
-                      stepImages,
                     ),
             ),
             Padding(
@@ -121,48 +144,50 @@ class _StepsScreenState extends State<StepsScreen> {
     );
   }
 
-  void _finishedEditingRecipe(BuildContext stepsScreenContext) {
-    String oldRecipeImageName = widget.editRecipe == null
-        ? 'tmp'
-        : getUnderscoreName(widget.editRecipe.name);
-
-    // modifying the stepImages paths for the database
-    for (int i = 0; i < stepImages.length; i++) {
-      for (int j = 0; j < stepImages[i].length; j++) {
-        stepImages[i][j] = stepImages[i][j].replaceFirst(
-            '/$oldRecipeImageName/',
-            '/${getUnderscoreName(widget.recipe.name)}/');
-      }
-    }
-
-    Recipe newRecipe = widget.recipe.copyWith(
-      steps: removeEmptyStrings(stepsDescController),
-      stepImages: stepImages,
-      notes: notesController.text,
-      effort: complexity.myDouble.round(),
-    );
-
-    if (widget.editRecipe != null) {
-      BlocProvider.of<AddRecipeBloc>(context)
-          .add(SaveTemporaryRecipeData(newRecipe));
-    }
-
-    Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => BlocProvider<AddRecipeBloc>(
-          builder: (context) =>
-              BlocProvider.of<AddRecipeBloc>(stepsScreenContext),
-          child: BlocProvider<NutritionManagerBloc>(
-            builder: (context) =>
-                NutritionManagerBloc()..add(LoadNutritionManager()),
-            child: AddRecipeNutritions(
-              newRecipe: newRecipe,
-              editRecipe: widget.editRecipe,
-            ),
-          ),
+  void _finishedEditingSteps(bool goBack) {
+    if (goBack)
+      BlocProvider.of<StepsBloc>(context).add(
+        FinishedEditing(
+          widget.editingRecipeName == null ? false : true,
+          goBack,
+          complexity.myDouble.round(),
+          notesController.text,
+          removeEmptyStrings(stepsDescController),
         ),
-      ),
-    );
+      );
+    else {
+      BlocProvider.of<StepsBloc>(context).add(
+        FinishedEditing(
+          widget.editingRecipeName == null ? false : true,
+          goBack,
+          complexity.myDouble.round(),
+          notesController.text,
+          removeEmptyStrings(stepsDescController),
+        ),
+      );
+    }
+  }
+
+  /// prefills the textfields with the data of the given recipe
+  void _initializeData(Recipe recipe) {
+    if (widget.modifiedRecipe.notes != null)
+      notesController.text = widget.modifiedRecipe.notes;
+
+    if (widget.modifiedRecipe.effort != null)
+      complexity.myDouble = widget.modifiedRecipe.effort.toDouble();
+
+    if (widget.modifiedRecipe.steps != null)
+      for (int i = 0; i < widget.modifiedRecipe.steps.length; i++) {
+        if (i > 0) {
+          stepsDescController.add(TextEditingController());
+          stepImages.add([]);
+        }
+        stepsDescController[i].text = widget.modifiedRecipe.steps[i];
+
+        if (widget.editingRecipeName != null)
+          for (int j = 0; j < widget.modifiedRecipe.stepImages[i].length; j++) {
+            stepImages[i].add(widget.modifiedRecipe.stepImages[i][j]);
+          }
+      }
   }
 }

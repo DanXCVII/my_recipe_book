@@ -4,8 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_recipe_book/blocs/new_recipe/ingredients/ingredients.dart';
+import 'package:my_recipe_book/blocs/new_recipe/step_images/step_images_bloc.dart';
 import 'package:my_recipe_book/blocs/nutrition_manager/nutrition_manager.dart';
 import 'package:my_recipe_book/recipe_overview/add_recipe_screen/ingredients_info/ingredients_screen.dart';
+import 'package:my_recipe_book/recipe_overview/add_recipe_screen/steps_info/steps_screen.dart';
 import 'package:my_recipe_book/screens/category_manager.dart';
 import 'package:my_recipe_book/screens/nutrition_manager.dart';
 
@@ -18,6 +20,7 @@ import 'blocs/category_overview/category_overview_event.dart';
 import 'blocs/favorite_recipes/favorite_recipes_bloc.dart';
 import 'blocs/favorite_recipes/favorite_recipes_event.dart';
 import 'blocs/new_recipe/general_info/general_info_bloc.dart';
+import 'blocs/new_recipe/steps/steps_bloc.dart';
 import 'blocs/random_recipe_explorer/random_recipe_explorer.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview_event.dart';
@@ -180,6 +183,23 @@ class MyApp extends StatelessWidget {
                   child: IngredientsAddScreen(
                     modifiedRecipe: args.modifiedRecipe,
                     editingRecipeName: args.editingRecipeName,
+                  ),
+                ),
+              );
+
+            case "/add-recipe/steps":
+              final StepsArguments args = settings.arguments;
+
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider<StepImagesBloc>(
+                  builder: (context) => StepImagesBloc(),
+                  child: BlocProvider<StepsBloc>(
+                    builder: (context) =>
+                        StepsBloc(BlocProvider.of<StepImagesBloc>(context)),
+                    child: StepsScreen(
+                      modifiedRecipe: args.modifiedRecipe,
+                      editingRecipeName: args.editingRecipeName,
+                    ),
                   ),
                 ),
               );

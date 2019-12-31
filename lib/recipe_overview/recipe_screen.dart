@@ -391,7 +391,7 @@ class RecipePage extends StatelessWidget {
                     recipe.stepImages, recipe.name),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    return StepsScreen(
+                    return StepsSection(
                         recipe.steps, snapshot.data, recipe.stepImages);
                   }
                   return Container(
@@ -1002,7 +1002,7 @@ class _CategoryCircleState extends State<CategoryCircle> {
   }
 }
 
-class StepsScreen extends StatelessWidget {
+class StepsSection extends StatelessWidget {
   final List<List<String>> stepPreviewImages;
   final List<List<String>> stepImages;
   final List<String> steps;
@@ -1014,7 +1014,7 @@ class StepsScreen extends StatelessWidget {
     Color(0xff8600C5),
   ];
 
-  StepsScreen(this.steps, this.stepPreviewImages, this.stepImages);
+  StepsSection(this.steps, this.stepPreviewImages, this.stepImages);
 
   List<Widget> getSteps(BuildContext context) {
     List<Widget> output = new List<Widget>();

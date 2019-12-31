@@ -58,29 +58,29 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       yield GEditingFinished();
     }
 
+    Recipe newRecipe;
     if (!event.editingRecipe) {
-      await HiveProvider().saveTmpRecipe(
-        HiveProvider().getTmpRecipe().copyWith(
-              name: event.recipeName,
-              preperationTime: event.preperationTime,
-              cookingTime: event.cookingTime,
-              totalTime: event.totalTime,
-            ),
-      );
+      newRecipe = HiveProvider().getTmpRecipe().copyWith(
+            name: event.recipeName,
+            preperationTime: event.preperationTime,
+            cookingTime: event.cookingTime,
+            totalTime: event.totalTime,
+          );
+      await HiveProvider().saveTmpRecipe(newRecipe);
     } else {
-      await HiveProvider()
-          .saveTmpEditingRecipe(HiveProvider().getTmpEditingRecipe().copyWith(
-                name: event.recipeName,
-                preperationTime: event.preperationTime,
-                cookingTime: event.cookingTime,
-                totalTime: event.totalTime,
-              ));
+      newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
+            name: event.recipeName,
+            preperationTime: event.preperationTime,
+            cookingTime: event.cookingTime,
+            totalTime: event.totalTime,
+          );
+      await HiveProvider().saveTmpEditingRecipe(newRecipe);
     }
 
     if (event.goBack) {
       yield GSavedGoBack();
     } else {
-      yield GSaved();
+      yield GSaved(newRecipe);
     }
   }
 

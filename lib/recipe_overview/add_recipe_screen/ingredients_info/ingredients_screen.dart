@@ -93,7 +93,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        _saveIngredientsData(context, true);
+        _saveIngredientsData(true);
         return false;
       },
       child: Scaffold(
@@ -250,15 +250,14 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
         showIngredientsGlossaryIncomplete(context);
         break;
       default:
-        _saveIngredientsData(context, false);
+        _saveIngredientsData(false);
         break;
     }
   }
 
   /// notifies the Bloc to save all filled in data on this screen, with
   /// the info to go back
-  void _saveIngredientsData(
-      BuildContext ingredientsScreenContext, bool goBack) {
+  void _saveIngredientsData(bool goBack) {
     if (goBack)
       BlocProvider.of<IngredientsBloc>(context).add(
         FinishedEditing(

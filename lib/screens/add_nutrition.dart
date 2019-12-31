@@ -16,12 +16,12 @@ import '../recipe_overview/recipe_screen.dart';
 import '../routes.dart';
 
 class AddRecipeNutritions extends StatefulWidget {
-  final Recipe editRecipe;
-  final Recipe newRecipe;
+  final Recipe modifiedRecipe;
+  final String editingRecipeName;
 
   AddRecipeNutritions({
-    this.editRecipe,
-    this.newRecipe,
+    this.modifiedRecipe,
+    this.editingRecipeName,
   });
 
   @override
@@ -47,11 +47,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
 
         nutritionsController
             .addAll({currentNutrition: TextEditingController()});
-        if (widget.editRecipe != null) {
-          for (Nutrition en in widget.newRecipe.nutritions) {
-            if (en.name.compareTo(currentNutrition) == 0) {
-              nutritionsController[currentNutrition].text = en.amountUnit;
-            }
+        for (Nutrition en in widget.modifiedRecipe.nutritions) {
+          if (en.name.compareTo(currentNutrition) == 0) {
+            nutritionsController[currentNutrition].text = en.amountUnit;
           }
         }
         dismissibleKeys.add(Key('D-$currentNutrition'));
@@ -145,16 +143,17 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
   }
 
   Future<void> editingFinished() async {
-    final Recipe recipeNutrition = _addNutritionsToRecipe(widget.newRecipe);
+    final Recipe recipeNutrition =
+        _addNutritionsToRecipe(widget.modifiedRecipe);
     final Recipe recipeFinal = await _correctImagesPaths(recipeNutrition);
-    if (widget.editRecipe == null) {
+    if (widget.modifiedRecipe == null) {
       BlocProvider.of<AddRecipeBloc>(context).add(SaveNewRecipe(recipeFinal));
     } else {
       BlocProvider.of<AddRecipeBloc>(context)
-          .add(ModifyRecipe(recipeFinal, widget.editRecipe));
+          .add(ModifyRecipe(recipeFinal, widget.modifiedRecipe));
     }
 
-    if (widget.editRecipe != null) {
+    if (widget.editingRecipeName != null) {
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context);
@@ -165,8 +164,8 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
         RouteNames.recipeScreen,
         arguments: RecipeScreenArguments(
           BlocProvider.of<ShoppingCartBloc>(context),
-          widget.newRecipe,
-          getRecipePrimaryColor(widget.newRecipe.vegetable),
+          widget.modifiedRecipe,
+          getRecipePrimaryColor(widget.modifiedRecipe.vegetable),
           'heroImageTag',
         ),
       );

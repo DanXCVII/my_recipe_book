@@ -85,7 +85,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                 } else if (state is GSaved) {
                   Navigator.pushNamed(context, RouteNames.addRecipeIngredients,
                       arguments: IngredientsArguments(
-                        widget.modifiedRecipe,
+                        state.recipe,
                         editingRecipeName: widget.editingRecipeName,
                       ));
                 } else if (state is GSavedGoBack) {
