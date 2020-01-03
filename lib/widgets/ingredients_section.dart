@@ -1,8 +1,8 @@
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import "package:flutter/material.dart";
+import 'package:my_recipe_book/generated/i18n.dart';
 
-import '../../generated/i18n.dart';
-import '../../helper.dart';
+import '../helper.dart';
 
 class Ingredients extends StatefulWidget {
   final List<List<TextEditingController>> ingredientNameController;
@@ -185,147 +185,141 @@ class _IngredientSectionState extends State<IngredientSection> {
     }
   }
 
-  // returns a list of the Rows with the TextFields for the ingredients
-  List<Widget> getIngredientFields() {
-    List<Widget> output = [];
-    output.add(Padding(
-      padding: const EdgeInsets.fromLTRB(12.0, 12, 12, 12),
-      child: Row(
-          children: <Widget>[
-        Expanded(
-          child: TextField(
-            controller: widget.ingredientGlossary[widget.sectionNumber],
-            decoration: InputDecoration(
-              icon: Icon(Icons.receipt),
-              helperText: S.of(context).not_required_eg_ingredients_of_sauce,
-              labelText: S.of(context).section_name,
-              filled: true,
-            ),
-          ),
-        ),
-      ].where((c) => c != null).toList()),
-    ));
-    // add rows with the ingredient textFields to the List of widgets
-    for (int i = 0;
-        i < widget.ingredientNameController[widget.sectionNumber].length;
-        i++) {
-      output.add(Padding(
-        padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12, 12),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 40),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                flex: 9,
-                child: SimpleAutoCompleteTextField(
-                  key: keys[widget.sectionNumber][i],
-                  controller:
-                      widget.ingredientNameController[widget.sectionNumber][i],
-                  suggestions: widget.ingredientNames,
-                  decoration: InputDecoration(
-                    hintText: S.of(context).name,
-                    filled: true,
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: TextFormField(
-                    validator: (value) {
-                      if (validateNumber(value) == false && value != "")
-                        return S.of(context).no_valid_number;
-                      return null;
-                    },
-                    autovalidate: false,
-                    controller: widget
-                        .ingredientAmountController[widget.sectionNumber][i],
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: S.of(context).amnt,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: TextFormField(
-                    controller: widget
-                        .ingredientUnitController[widget.sectionNumber][i],
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: S.of(context).unit,
-                    ),
-                  ),
-                ),
-              ),
-            ].where((c) => c != null).toList(),
-          ),
-        ),
-      ));
-    }
-    // add "add ingredient" and "remove ingredient" to the list
-    output.add(
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          widget.ingredientNameController[widget.sectionNumber].length > 1
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: OutlineButton.icon(
-                      icon: Icon(Icons.remove_circle_outline),
-                      label: Text(S.of(context).remove_ingredient),
-                      onPressed: () {
-                        setState(() {
-                          widget.ingredientNameController[widget.sectionNumber]
-                              .removeLast();
-                          widget
-                              .ingredientAmountController[widget.sectionNumber]
-                              .removeLast();
-                          widget.ingredientUnitController[widget.sectionNumber]
-                              .removeLast();
-                          keys[widget.sectionNumber].removeLast();
-                        });
-                      },
-                      shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0))),
-                )
-              : null,
-          OutlineButton.icon(
-              icon: Icon(Icons.add_circle_outline),
-              label: Text(S.of(context).add_ingredient),
-              onPressed: () {
-                setState(() {
-                  widget.ingredientNameController[widget.sectionNumber]
-                      .add(new TextEditingController());
-                  widget.ingredientAmountController[widget.sectionNumber]
-                      .add(new TextEditingController());
-                  widget.ingredientUnitController[widget.sectionNumber]
-                      .add(new TextEditingController());
-                  keys[widget.sectionNumber].add(GlobalKey());
-                });
-              },
-              shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(30.0))),
-        ].where((c) => c != null).toList(),
-      ),
-    );
-    return output;
-  }
-
   @override
   Widget build(BuildContext context) {
     print(widget.ingredientAmountController.length);
-    Column _ingredients = Column(
-      children: <Widget>[],
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12.0, 12, 12, 12),
+          child: Row(
+              children: <Widget>[
+            Expanded(
+              child: TextField(
+                controller: widget.ingredientGlossary[widget.sectionNumber],
+                decoration: InputDecoration(
+                  icon: Icon(Icons.receipt),
+                  helperText:
+                      S.of(context).not_required_eg_ingredients_of_sauce,
+                  labelText: S.of(context).section_name,
+                  filled: true,
+                ),
+              ),
+            ),
+          ].where((c) => c != null).toList()),
+        )
+      ]
+        ..addAll(
+          List.generate(
+            widget.ingredientNameController[widget.sectionNumber].length,
+            (i) => Padding(
+              padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12, 12),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 40),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 9,
+                      child: SimpleAutoCompleteTextField(
+                        key: keys[widget.sectionNumber][i],
+                        controller: widget
+                            .ingredientNameController[widget.sectionNumber][i],
+                        suggestions: widget.ingredientNames,
+                        decoration: InputDecoration(
+                          hintText: S.of(context).name,
+                          filled: true,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: TextFormField(
+                          validator: (value) {
+                            if (validateNumber(value) == false && value != "")
+                              return S.of(context).no_valid_number;
+                            return null;
+                          },
+                          autovalidate: false,
+                          controller: widget.ingredientAmountController[
+                              widget.sectionNumber][i],
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            filled: true,
+                            hintText: S.of(context).amnt,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: TextFormField(
+                          controller: widget.ingredientUnitController[
+                              widget.sectionNumber][i],
+                          decoration: InputDecoration(
+                            filled: true,
+                            hintText: S.of(context).unit,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ].where((c) => c != null).toList(),
+                ),
+              ),
+            ),
+          ),
+        )
+        ..add(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              widget.ingredientNameController[widget.sectionNumber].length > 1
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: OutlineButton.icon(
+                          icon: Icon(Icons.remove_circle_outline),
+                          label: Text(S.of(context).remove_ingredient),
+                          onPressed: () {
+                            setState(() {
+                              widget.ingredientNameController[
+                                      widget.sectionNumber]
+                                  .removeLast();
+                              widget.ingredientAmountController[
+                                      widget.sectionNumber]
+                                  .removeLast();
+                              widget.ingredientUnitController[
+                                      widget.sectionNumber]
+                                  .removeLast();
+                              keys[widget.sectionNumber].removeLast();
+                            });
+                          },
+                          shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(30.0))),
+                    )
+                  : null,
+              OutlineButton.icon(
+                  icon: Icon(Icons.add_circle_outline),
+                  label: Text(S.of(context).add_ingredient),
+                  onPressed: () {
+                    setState(() {
+                      widget.ingredientNameController[widget.sectionNumber]
+                          .add(new TextEditingController());
+                      widget.ingredientAmountController[widget.sectionNumber]
+                          .add(new TextEditingController());
+                      widget.ingredientUnitController[widget.sectionNumber]
+                          .add(new TextEditingController());
+                      keys[widget.sectionNumber].add(GlobalKey());
+                    });
+                  },
+                  shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(30.0))),
+            ].where((c) => c != null).toList(),
+          ),
+        ),
     );
-    _ingredients.children.addAll(getIngredientFields());
-
-    return _ingredients;
   }
 }

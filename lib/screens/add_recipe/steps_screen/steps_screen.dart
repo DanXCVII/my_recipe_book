@@ -1,20 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/new_recipe/steps/steps.dart';
-import 'package:my_recipe_book/blocs/new_recipe/steps/steps_bloc.dart';
-import 'package:my_recipe_book/blocs/new_recipe/steps/steps_state.dart';
 
-import '../../../blocs/add_recipe/add_recipe.dart';
-import '../../../blocs/nutrition_manager/nutrition_manager.dart';
-import '../../../blocs/nutrition_manager/nutrition_manager_bloc.dart';
+import '../../../blocs/new_recipe/steps/steps.dart';
+import '../../../blocs/new_recipe/steps/steps_bloc.dart';
+import '../../../blocs/new_recipe/steps/steps_state.dart';
 import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../models/recipe.dart';
 import '../../../my_wrapper.dart';
-import '../../../screens/add_nutrition.dart';
-import '../complexity_section.dart';
-import '../steps_section.dart';
+import '../../../widgets/complexity_section.dart';
+import 'steps_section.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class StepsArguments {
@@ -96,7 +92,7 @@ class _StepsScreenState extends State<StepsScreen> {
                     icon: Icon(Icons.arrow_forward),
                     color: Colors.white,
                     onPressed: () {
-                      _finishedEditingSteps();
+                      _finishedEditingSteps(false);
                     },
                   );
                 } else if (state is SEditingFinished) {
@@ -180,14 +176,8 @@ class _StepsScreenState extends State<StepsScreen> {
       for (int i = 0; i < widget.modifiedRecipe.steps.length; i++) {
         if (i > 0) {
           stepsDescController.add(TextEditingController());
-          stepImages.add([]);
         }
         stepsDescController[i].text = widget.modifiedRecipe.steps[i];
-
-        if (widget.editingRecipeName != null)
-          for (int j = 0; j < widget.modifiedRecipe.stepImages[i].length; j++) {
-            stepImages[i].add(widget.modifiedRecipe.stepImages[i][j]);
-          }
       }
   }
 }

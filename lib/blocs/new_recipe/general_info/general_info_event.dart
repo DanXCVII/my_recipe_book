@@ -14,10 +14,6 @@ class UpdateRecipeImage extends GeneralInfoEvent {
 
   @override
   List<Object> get props => [recipeImage, editingRecipe];
-
-  @override
-  String toString() => 'recipe image { recipe image: $recipeImage '
-      ', editing recipe: $editingRecipe }';
 }
 
 class AddCategoryToRecipe extends GeneralInfoEvent {

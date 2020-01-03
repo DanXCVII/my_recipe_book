@@ -92,14 +92,19 @@ class _NutritionManagerState extends State<NutritionManager> {
                   dismissibleKeys.add(Key('D-${dismissibleKeys.length}'));
                   showDialog(
                       context: context,
-                      builder: (_) => AddDialog(
-                            true,
-                            state.nutritions,
-                            categoryManagerBloc:
-                                BlocProvider.of<CategoryManagerBloc>(context),
-                            recipeManagerBloc:
-                                BlocProvider.of<CategoryManagerBloc>(context)
-                                    .recipeManagerBloc,
+                      builder: (_) => TextFieldDialog(
+                            validation: (String name) {
+                              if (state.nutritions.contains(name)) {
+                                return 'nutrition already exists';
+                              } else {
+                                return null;
+                              }
+                            },
+                            save: (String name) {
+                              BlocProvider.of<NutritionManagerBloc>(context)
+                                  .add(AddNutrition(name));
+                            },
+                            hintText: 'nutrition name',
                           ));
                 }),
             body: state.nutritions.isEmpty
@@ -237,12 +242,21 @@ class _NutritionManagerState extends State<NutritionManager> {
         onTap: () {
           showDialog(
             context: context,
-            builder: (_) => AddDialog(
-              true,
-              nutritions,
-              nutritionManagerBloc:
-                  BlocProvider.of<NutritionManagerBloc>(context),
-              modifiedItem: nutritionName,
+            builder: (_) => TextFieldDialog(
+              validation: (String name) {
+                if (nutritions.contains(name)) {
+                  return 'nutrition already exists';
+                } else {
+                  return null;
+                }
+              },
+              save: (String name) {
+                BlocProvider.of<NutritionManagerBloc>(context).add(
+                  UpdateNutrition(nutritionName, name),
+                );
+              },
+              hintText: 'nutrition name',
+              prefilledText: nutritionName,
             ),
           );
         },

@@ -4,18 +4,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/recipe_overview/add_recipe_screen/ingredients_info/ingredients_screen.dart';
 
-import '../../../blocs/new_recipe/general_info/general_info.dart';
-import '../../../generated/i18n.dart';
-import '../../../helper.dart';
-import '../../../models/recipe.dart';
-import '../../../recipe.dart';
-import '../../../routes.dart';
-import '../categories_section.dart';
-import '../image_selector.dart' as IS;
-import '../validation_clean_up.dart';
-import '../validator/dialogs.dart';
+import '../../blocs/new_recipe/general_info/general_info.dart';
+import '../../generated/i18n.dart';
+import '../../helper.dart';
+import '../../local_storage/local_paths.dart';
+import '../../models/recipe.dart';
+import '../../recipe_overview/add_recipe_screen/categories_section.dart';
+import '../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
+import '../../recipe_overview/add_recipe_screen/validator/dialogs.dart';
+import '../../routes.dart';
+import '../../widgets/image_selector.dart' as IS;
+import 'ingredients_screen.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class GeneralInfoArguments {
@@ -123,7 +123,14 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
             // top section with the add image button
             SizedBox(height: 30),
             IS.ImageSelector(
-              modifiedRecipeImagePath: widget.modifiedRecipe.imagePath,
+              onNewImage: (File imageFile) =>
+                  BlocProvider.of<GeneralInfoBloc>(context).add(
+                UpdateRecipeImage(
+                  imageFile,
+                  widget.editingRecipeName == null ? false : true,
+                ),
+              ),
+              prefilledImage: widget.modifiedRecipe.imagePath,
               circleSize: 120,
               color: Color(0xFF790604),
             ),
@@ -301,7 +308,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
       return "invalid name";
     } else {
       try {
-        PathProvider.pP.getRecipeDir(recipeName).then((path) {
+        PathProvider.pP.getRecipeDirFull(recipeName).then((path) {
           Directory(path).create(recursive: true);
         });
       } catch (e) {

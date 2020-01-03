@@ -1,19 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/widgets/ingredients_section.dart';
 
-import '../../../blocs/new_recipe/ingredients/ingredients.dart';
-import '../../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
-import '../../../blocs/new_recipe/ingredients/ingredients_event.dart';
-import '../../../database.dart';
-import '../../../models/enums.dart';
-import '../../../models/ingredient.dart';
-import '../../../models/recipe.dart';
-import '../../../my_wrapper.dart';
-import '../ingredients_section.dart';
-import '../validation_clean_up.dart';
-import '../validator/dialogs.dart';
-import '../vegetarian_section.dart';
+import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
+import '../../blocs/new_recipe/ingredients/ingredients_event.dart';
+import '../../blocs/new_recipe/ingredients/ingredients_state.dart';
+import '../../hive.dart';
+import '../../models/enums.dart';
+import '../../models/ingredient.dart';
+import '../../models/recipe.dart';
+import '../../my_wrapper.dart';
+import '../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
+import '../../recipe_overview/add_recipe_screen/validator/dialogs.dart';
+import '../../recipe_overview/add_recipe_screen/vegetarian_section.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class IngredientsArguments {
@@ -144,22 +144,13 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
             children: <Widget>[
               Form(
                 key: _formKey,
-                child: FutureBuilder<List<String>>(
-                  future: DBProvider.db.getAllIngredientNames(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Ingredients(
-                        servingsController,
-                        ingredientNameController,
-                        ingredientAmountController,
-                        ingredientUnitController,
-                        ingredientGlossaryController,
-                        snapshot.data,
-                      );
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                  },
+                child: Ingredients(
+                  servingsController,
+                  ingredientNameController,
+                  ingredientAmountController,
+                  ingredientUnitController,
+                  ingredientGlossaryController,
+                  HiveProvider().getIngredientNames(),
                 ),
               ),
               Padding(

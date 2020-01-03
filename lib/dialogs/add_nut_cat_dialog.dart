@@ -13,31 +13,27 @@ class Consts {
   static const double padding = 16.0;
 }
 
-class AddDialog extends StatefulWidget {
+class TextFieldDialog extends StatefulWidget {
   // only needs to be specified when editing an item
-  final String modifiedItem;
-  final bool modifyNutrition;
-  final List<String> elements;
-  final RecipeManagerBloc recipeManagerBloc;
-  final NutritionManagerBloc nutritionManagerBloc;
-  final CategoryManagerBloc categoryManagerBloc;
+  final String prefilledText;
+  final String hintText;
+  final String Function(String name) validation;
+  final void Function(String name) save;
 
-  AddDialog(
-    this.modifyNutrition,
-    this.elements, {
-    this.recipeManagerBloc,
-    this.nutritionManagerBloc,
-    this.categoryManagerBloc,
-    this.modifiedItem,
+  TextFieldDialog({
+    @required this.validation,
+    @required this.save,
+    this.hintText,
+    this.prefilledText,
   });
 
   @override
   State<StatefulWidget> createState() {
-    return AddDialogState();
+    return TextFieldDialogState();
   }
 }
 
-class AddDialogState extends State<AddDialog> {
+class TextFieldDialogState extends State<TextFieldDialog> {
   TextEditingController nameController;
   static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
@@ -45,8 +41,8 @@ class AddDialogState extends State<AddDialog> {
   initState() {
     super.initState();
     nameController = new TextEditingController();
-    if (widget.modifiedItem != null) {
-      nameController.text = widget.modifiedItem;
+    if (widget.prefilledText != null) {
+      nameController.text = widget.prefilledText;
     }
   }
 
@@ -75,12 +71,11 @@ class AddDialogState extends State<AddDialog> {
               TextFormField(
                 controller: nameController,
                 validator: (value) {
-                  return validateNameField(value);
+                  return widget.validation(value);
                 },
                 decoration: InputDecoration(
                   filled: true,
-                  hintText:
-                      widget.modifyNutrition ? 'nutrition' : 'category name',
+                  hintText: widget.hintText,
                 ),
               ),
               SizedBox(height: 24.0),
@@ -107,30 +102,9 @@ class AddDialogState extends State<AddDialog> {
     );
   }
 
-  String validateNameField(String name) {
-    if (widget.elements.contains(name)) {
-      return widget.modifyNutrition
-          ? 'nutrition already exists'
-          : 'category already exists';
-    } else {
-      return null;
-    }
-  }
-
   void validateAddModifyItem() {
     if (_formKey.currentState.validate()) {
-      if (widget.modifiedItem == null) {
-        widget.modifyNutrition
-            ? BlocProvider.of<NutritionManagerBloc>(context)
-                .add(AddNutrition(nameController.text))
-            : widget.recipeManagerBloc.add(RMAddCategory(nameController.text));
-      } else {
-        widget.modifyNutrition
-            ? BlocProvider.of<NutritionManagerBloc>(context)
-                .add(UpdateNutrition(widget.modifiedItem, nameController.text))
-            : widget.recipeManagerBloc.add(
-                RMUpdateCategory(widget.modifiedItem, nameController.text));
-      }
+      widget.save(nameController.text);
       Navigator.pop(context);
     }
   }

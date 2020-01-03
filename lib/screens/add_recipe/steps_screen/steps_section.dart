@@ -4,10 +4,10 @@ import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:image_picker/image_picker.dart";
 
-import '../../blocs/new_recipe/step_images/step_images_bloc.dart';
-import '../../blocs/new_recipe/step_images/step_images_event.dart';
-import '../../blocs/new_recipe/step_images/step_images_state.dart';
-import '../../generated/i18n.dart';
+import '../../../blocs/new_recipe/step_images/step_images_bloc.dart';
+import '../../../blocs/new_recipe/step_images/step_images_event.dart';
+import '../../../blocs/new_recipe/step_images/step_images_state.dart';
+import '../../../generated/i18n.dart';
 
 class Steps extends StatefulWidget {
   final List<TextEditingController> stepsDecriptionController;
@@ -112,15 +112,30 @@ class _StepsState extends State<Steps> {
                             children: List.generate(
                               state.stepImages[i].length,
                               (j) => ImageBox(
+                                onPress: () {
+                                  BlocProvider.of<StepImagesBloc>(context)
+                                      .add(RemoveImage(
+                                    state.stepImages[i][j],
+                                    i,
+                                    widget.editRecipeName == null
+                                        ? false
+                                        : true,
+                                  ));
+                                },
                                 imagePath: state.stepImages[i][j],
-                                stepNumber: i,
-                                imageNumber: j,
-                                editRecipeName: widget.editRecipeName,
                               ),
                             )..add(
                                 AddImageBox(
-                                  editRecipeName: widget.editRecipeName,
-                                  stepNumber: i,
+                                  onNewImage: (File newImage) {
+                                    BlocProvider.of<StepImagesBloc>(context)
+                                        .add(AddImage(
+                                      newImage,
+                                      i,
+                                      widget.editRecipeName == null
+                                          ? false
+                                          : true,
+                                    ));
+                                  },
                                 ),
                               ),
                           ),
@@ -168,12 +183,6 @@ class _StepsState extends State<Steps> {
     });
   }
 
-  void _removeImage(
-      String recipeName, int stepNumber, int number, String imagePath) {
-    BlocProvider.of<StepImagesBloc>(context)
-        .add(RemoveImage(imagePath, stepNumber, widget.editRecipeName));
-  }
-
   void _addStep(String recipeName) {
     BlocProvider.of<StepImagesBloc>(context).add(AddStep(DateTime.now()));
     // stepDescController will be added in condition in BlocBuilder
@@ -187,16 +196,12 @@ class _StepsState extends State<Steps> {
 }
 
 class ImageBox extends StatelessWidget {
-  final String editRecipeName;
-  final int stepNumber;
-  final int imageNumber;
+  final void Function() onPress;
   final String imagePath;
 
   const ImageBox({
+    @required this.onPress,
     @required this.imagePath,
-    @required this.stepNumber,
-    @required this.imageNumber,
-    @required this.editRecipeName,
     Key key,
   }) : super(key: key);
 
@@ -233,26 +238,19 @@ class ImageBox extends StatelessWidget {
           icon: Icon(Icons.remove_circle_outline),
           color: Colors.white,
           onPressed: () {
-            _removeImage(context);
+            onPress();
           },
         ),
       ),
     ]);
   }
-
-  void _removeImage(BuildContext context) {
-    BlocProvider.of<StepImagesBloc>(context)
-        .add(RemoveImage(imagePath, stepNumber, editRecipeName));
-  }
 }
 
 class AddImageBox extends StatelessWidget {
-  final String editRecipeName;
-  final int stepNumber;
+  final void Function(File newImage) onNewImage;
 
   const AddImageBox({
-    @required this.editRecipeName,
-    @required this.stepNumber,
+    @required this.onNewImage,
     Key key,
   }) : super(key: key);
 
@@ -263,7 +261,7 @@ class AddImageBox extends StatelessWidget {
         child: IconButton(
           icon: Icon(Icons.add_a_photo),
           onPressed: (() {
-            _askUser(stepNumber, editRecipeName, context);
+            _askUser(context);
           }),
         ),
       ),
@@ -279,15 +277,13 @@ class AddImageBox extends StatelessWidget {
     );
   }
 
-  Future _askUser(
-      int stepNumber, String recipeName, BuildContext context) async {
+  Future _askUser(BuildContext context) async {
     File newImage = await ImagePicker.pickImage(
       source: ImageSource.gallery,
     );
 
     if (newImage != null) {
-      BlocProvider.of<StepImagesBloc>(context)
-          .add(AddImage(newImage, stepNumber, recipeName));
+      onNewImage(newImage);
     }
   }
 }

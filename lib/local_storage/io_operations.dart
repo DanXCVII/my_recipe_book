@@ -8,7 +8,67 @@ import 'package:my_recipe_book/models/recipe.dart';
 
 import '../database.dart';
 import '../helper.dart';
-import '../recipe.dart';
+import './local_paths.dart';
+
+/// moves the images of the recipe to the correct image paths which is
+/// defined by recipe.name.
+/// Condition:
+/// - all paths are the full paths to the images
+/// - stepImages include pattern: [...]/$recipeName/stepImages[...]
+Future<Recipe> fixImagePaths(Recipe recipe) async {
+  String _underscoreNewRecipeName = getUnderscoreName(recipe.name);
+
+  String newRecipeImageDataType = getImageDatatype(recipe.imagePath);
+
+  String newRecipeImagePath = await PathProvider.pP
+      .getRecipePathFull(_underscoreNewRecipeName, newRecipeImageDataType);
+  String newRecipeImagePreviewPath = await PathProvider.pP
+      .getRecipePreviewPathFull(
+          _underscoreNewRecipeName, newRecipeImageDataType);
+
+  List<List<String>> recipeStepImages = recipe.stepImages;
+
+  if (recipe.imagePath != 'images/randomFood.jpg' &&
+      recipe.imagePath != newRecipeImagePath) {
+    await File(recipe.imagePath).rename(newRecipeImagePath);
+    await File(recipe.imagePreviewPath).rename(newRecipeImagePreviewPath);
+  }
+  for (int i = 0; i < recipe.stepImages.length; i++) {
+    for (int j = 0; j < recipe.stepImages[i].length; j++) {
+      recipeStepImages[i][j] = await PathProvider.pP
+          .getRecipeStepNumberDirFull(_underscoreNewRecipeName, i);
+      if (recipe.stepImages[i][j] != recipeStepImages[i][j]) {
+        String _recipeName =
+            getRecipeNameOfStepImagePath(recipe.stepImages[i][j]);
+
+        String newStepImagePreviewPath = await PathProvider.pP
+            .getRecipeStepPreviewNumberDirFull(_underscoreNewRecipeName, i);
+        String oldStepImagePreviewPath = await PathProvider.pP
+            .getRecipeStepPreviewNumberDirFull(_recipeName, i);
+
+        await File(recipe.stepImages[i][j]).rename(recipeStepImages[i][j]);
+        await File(oldStepImagePreviewPath).rename(newStepImagePreviewPath);
+      }
+    }
+  }
+
+  return recipe.copyWith(
+    imagePath: newRecipeImagePath,
+    imagePreviewPath: newRecipeImagePreviewPath,
+    stepImages: recipeStepImages,
+  );
+}
+
+/// cuts the recipe name out of the recipeStepImagePath and returns it.
+/// stepImagePath must have the pattern:
+/// [...]/$recipeName/stepImages[...]
+String getRecipeNameOfStepImagePath(String fullImagePath) {
+  int cutIndex = fullImagePath.indexOf('/stepImages');
+  String cutImagePath = fullImagePath.substring(0, cutIndex - 1);
+  String recipeName = cutImagePath.substring(cutImagePath.lastIndexOf('/') + 1);
+
+  return recipeName;
+}
 
 Future<void> copyRecipeDataToNewPath(
     String oldRecipeName, String newRecipeName) async {
@@ -16,8 +76,8 @@ Future<void> copyRecipeDataToNewPath(
   String _underscoreOldRecipeName = getUnderscoreName(oldRecipeName);
   String _underscoreNewRecipeName = getUnderscoreName(newRecipeName);
 
-  Directory recipeDir =
-      Directory(await PathProvider.pP.getRecipeDir(_underscoreOldRecipeName));
+  Directory recipeDir = Directory(
+      await PathProvider.pP.getRecipeDirFull(_underscoreOldRecipeName));
 
   if (recipeDir.existsSync()) {
     var recipeFiles = recipeDir.listSync(recursive: true);
@@ -52,7 +112,7 @@ Future<void> copyRecipeDataToNewPath(
 Future<void> renameRecipeData(String oldRecipeName, String newRecipeName,
     {String fileExtension}) async {
   await copyRecipeDataToNewPath(oldRecipeName, newRecipeName);
-  await Directory(await PathProvider.pP.getRecipeDir(oldRecipeName))
+  await Directory(await PathProvider.pP.getRecipeDirFull(oldRecipeName))
       .delete(recursive: true);
 
   // Directory oldRecipeDir =
@@ -87,6 +147,26 @@ Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
   saveImage(pictureFile, recipeImagePreviewPathFull, 300);
 }
 
+Future<void> deleteRecipeImageIfExists(String recipeName) async {
+  Directory recipeDir =
+      Directory(await PathProvider.pP.getRecipeDirFull(recipeName));
+
+  for (FileSystemEntity f in recipeDir.listSync()) {
+    if (f is File) {
+      await f.delete();
+    }
+  }
+
+  Directory recipePreviewDir =
+      Directory(await PathProvider.pP.getRecipePreviewDirFull(recipeName));
+
+  for (FileSystemEntity f in recipeDir.listSync()) {
+    if (f is File) {
+      await f.delete();
+    }
+  }
+}
+
 Future<void> deleteStepImage(
     String recipeName, int stepNumber, String imageFileName) async {
   PathProvider.pP
@@ -112,7 +192,7 @@ String getStepImageName(String selectedImagePath) {
 Future<String> saveRecipeZip(String targetDir, String recipeName) async {
   Recipe exportRecipe = await DBProvider.db.getRecipeByName(recipeName, false);
   Directory recipeDir =
-      Directory(await PathProvider.pP.getRecipeDir(recipeName));
+      Directory(await PathProvider.pP.getRecipeDirFull(recipeName));
 
   File jsonFile = File(PathProvider.pP.getShareJsonPath(recipeName, targetDir));
   Map<String, dynamic> jsonMap = exportRecipe.toMap();

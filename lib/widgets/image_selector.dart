@@ -4,15 +4,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../my_wrapper.dart';
-
+// TODO: not saving the image. Do it in some Bloc and think about a smart solution
 class ImageSelector extends StatefulWidget {
-  final String modifiedRecipeImagePath;
+  final String prefilledImage;
   final double circleSize;
+  final void Function(File imageFile) onNewImage;
   final Color color;
 
   ImageSelector({
-    @required this.modifiedRecipeImagePath,
+    @required this.prefilledImage,
+    @required this.onNewImage,
     @required this.circleSize,
     @required this.color,
   });
@@ -29,8 +30,8 @@ class _ImageSelectorState extends State<ImageSelector> {
   @override
   void initState() {
     super.initState();
-    if (widget.modifiedRecipeImagePath != null) {
-      selectedImageFile = File(widget.modifiedRecipeImagePath);
+    if (widget.prefilledImage != null) {
+      selectedImageFile = File(widget.prefilledImage);
     }
   }
 
@@ -101,6 +102,7 @@ class _ImageSelectorState extends State<ImageSelector> {
     );
 
     if (pictureFile != null) {
+      widget.onNewImage(pictureFile);
       setState(() {
         selectedImageFile = pictureFile;
       });

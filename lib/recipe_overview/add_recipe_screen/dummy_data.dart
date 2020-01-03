@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-import '../../io/io_operations.dart' as IO;
+import '../../local_storage/io_operations.dart' as IO;
 import '../../models/enums.dart';
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
-import '../../recipe.dart';
+import '../../local_storage/local_paths.dart';
 
 class DummyData {
   Future<Recipe> getDummyRecipe() async {

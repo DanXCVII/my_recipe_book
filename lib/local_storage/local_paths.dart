@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
-import 'helper.dart';
+import '../helper.dart';
 
 /// Path to::
 /// recipe image
@@ -40,7 +40,7 @@ class PathProvider {
     return '$cRecipeName/stepImages/';
   }
 
-  Future<String> getRecipeDir(String recipeName) async {
+  Future<String> getRecipeDirFull(String recipeName) async {
     String cRecipeName = getUnderscoreName(recipeName);
 
     String imageLocalPath = await localPath;
@@ -138,12 +138,20 @@ class PathProvider {
     return '/$cRecipeName/preview/p-recipe-$cRecipeName' + ending;
   }
 
+  Future<String> getRecipePreviewDirFull(String recipeName) async {
+    String cRecipeName = getUnderscoreName(recipeName);
+
+    String imageLocalPath = await localPath;
+    return '$imageLocalPath/$cRecipeName/preview';
+  }
+
   // returns a list of the paths to the preview stepimages of the recipe
   Future<List<List<String>>> getRecipeStepPreviewPathList(
       List<List<String>> stepImages, String recipeName) async {
     String cRecipeName = getUnderscoreName(recipeName);
 
-    if (!Directory(await getRecipeDir(recipeName)).existsSync()) return [[]];
+    if (!Directory(await getRecipeDirFull(recipeName)).existsSync())
+      return [[]];
 
     List<List<String>> output = [];
     for (int i = 0; i < stepImages.length; i++) {

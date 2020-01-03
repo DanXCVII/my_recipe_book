@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
-import '../../generated/i18n.dart';
-import '../../my_wrapper.dart';
+import '../my_wrapper.dart';
 
 class ComplexitySection extends StatefulWidget {
   final MyDoubleWrapper complexity;

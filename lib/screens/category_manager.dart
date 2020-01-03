@@ -37,14 +37,20 @@ class CategoryManager extends StatelessWidget {
                 onPressed: () {
                   showDialog(
                       context: context,
-                      builder: (_) => AddDialog(
-                            false,
-                            state.categories,
-                            recipeManagerBloc:
-                                BlocProvider.of<CategoryManagerBloc>(context)
-                                    .recipeManagerBloc,
-                            categoryManagerBloc:
-                                BlocProvider.of<CategoryManagerBloc>(context),
+                      builder: (_) => TextFieldDialog(
+                            validation: (String name) {
+                              if (state.categories.contains(name)) {
+                                return 'category already exists';
+                              } else {
+                                return null;
+                              }
+                            },
+                            save: (String name) {
+                              BlocProvider.of<CategoryManagerBloc>(context)
+                                  .recipeManagerBloc
+                                  .add(RMAddCategory(name));
+                            },
+                            hintText: 'category name',
                           ));
                 }),
             body: state.categories.length == 1
@@ -64,18 +70,26 @@ class CategoryManager extends StatelessWidget {
                         title: GestureDetector(
                           onTap: () {
                             showDialog(
-                                context: context,
-                                builder: (_) => AddDialog(
-                                      false,
-                                      state.categories,
-                                      recipeManagerBloc:
-                                          BlocProvider.of<CategoryManagerBloc>(
-                                                  context)
-                                              .recipeManagerBloc,
-                                      categoryManagerBloc:
-                                          BlocProvider.of<CategoryManagerBloc>(
-                                              context),
-                                    ));
+                              context: context,
+                              builder: (_) => TextFieldDialog(
+                                validation: (String name) {
+                                  if (state.categories.contains(name)) {
+                                    return 'category already exists';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                save: (String name) {
+                                  BlocProvider.of<CategoryManagerBloc>(context)
+                                      .recipeManagerBloc
+                                      .add(
+                                        RMUpdateCategory(categoryName, name),
+                                      );
+                                },
+                                hintText: 'category name',
+                                prefilledText: categoryName,
+                              ),
+                            );
                           },
                           child: Text(categoryName),
                         ),

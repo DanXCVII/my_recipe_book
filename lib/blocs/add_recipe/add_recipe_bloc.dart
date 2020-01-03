@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_event.dart';
-import 'package:my_recipe_book/hive.dart';
-import 'package:my_recipe_book/io/io_operations.dart' as IO;
-import 'package:my_recipe_book/models/recipe.dart';
-import '../../recipe.dart';
+
 import './add_recipe.dart';
+import '../../hive.dart';
+import '../../local_storage/io_operations.dart' as IO;
+import '../../local_storage/local_paths.dart';
+import '../../models/recipe.dart';
+import '../recipe_manager/recipe_manager_bloc.dart';
+import '../recipe_manager/recipe_manager_event.dart';
 
 class AddRecipeBloc extends Bloc<AddRecipeEvent, AddRecipeState> {
   final RecipeManagerBloc recipeManagerBloc;
@@ -56,7 +58,7 @@ class AddRecipeBloc extends Bloc<AddRecipeEvent, AddRecipeState> {
         'tmp',
         event.recipe.name,
       );
-      await Directory(await PathProvider.pP.getRecipeDir('tmp'))
+      await Directory(await PathProvider.pP.getRecipeDirFull('tmp'))
           .delete(recursive: true);
     }
 
@@ -68,14 +70,15 @@ class AddRecipeBloc extends Bloc<AddRecipeEvent, AddRecipeState> {
     recipeManagerBloc.add(RMDeleteRecipe(event.oldRecipe));
 
     bool hasFiles =
-        Directory(await PathProvider.pP.getRecipeDir(event.oldRecipe.name))
+        Directory(await PathProvider.pP.getRecipeDirFull(event.oldRecipe.name))
             .existsSync();
 
     // if an image exists and the recipename changed
     if (hasFiles && event.oldRecipe.name != event.recipe.name) {
       await IO.copyRecipeDataToNewPath(event.oldRecipe.name, event.recipe.name);
       await HiveProvider().modifyRecipe(event.oldRecipe.name, event.recipe);
-      await Directory(await PathProvider.pP.getRecipeDir(event.oldRecipe.name))
+      await Directory(
+              await PathProvider.pP.getRecipeDirFull(event.oldRecipe.name))
           .delete(recursive: true);
     } // if no image exist
     else {

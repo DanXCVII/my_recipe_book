@@ -158,8 +158,16 @@ class HiveProvider {
     await boxTmpRecipe.put(tmpEditingRecipeKey, recipe);
   }
 
+  Future<void> deleteTmpEditingRecipe() async {
+    await boxTmpRecipe.delete(tmpEditingRecipeKey);
+  }
+
   Future<void> saveTmpRecipe(Recipe recipe) async {
     await boxTmpRecipe.put(tmpRecipeKey, recipe);
+  }
+
+  Future<void> deleteTmpRecipe() async {
+    await boxTmpRecipe.delete(tmpRecipeKey);
   }
 
 // TODO: Check for mistakes
@@ -373,6 +381,14 @@ class HiveProvider {
 
   int getRecipeAmountCategory(String category) {
     return boxRecipeCategories.get(getHiveKey(category)).length;
+  }
+
+  ////////////// ingredient names //////////////
+
+  List<String> getIngredientNames() {
+    return boxIngredientNames.keys
+        .map<String>((key) => boxIngredientNames.get(key))
+        .toList();
   }
 
   ////////////// nutrition related //////////////
@@ -796,16 +812,6 @@ class HiveProvider {
     }
     return suitedIngredients;
   }
-
-// bool isSameIngredient(Ingredient ingredientOne, Ingredient ingredientTwo) {
-//   return (ingredientOne.name.compareTo(ingredientTwo.name) == 0 &&
-//       ((ingredientOne.amount != null && ingredientTwo.amount != null) ||
-//           (ingredientOne.amount == null && ingredientTwo.amount == null)) &&
-//       ((ingredientOne.unit == null && ingredientTwo.unit == null) ||
-//           (ingredientOne.unit != null &&
-//               ingredientTwo.unit != null &&
-//               ingredientOne.unit.compareTo(ingredientTwo.unit) == 0)));
-// }
 
   ////////////// hive internal related //////////////
   String getHiveKey(String name) {

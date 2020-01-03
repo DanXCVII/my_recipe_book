@@ -6,8 +6,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-import './recipe.dart';
 import 'helper.dart';
+import './local_storage/local_paths.dart';
 import 'models/enums.dart';
 import 'models/ingredient.dart';
 import 'models/nutrition.dart';

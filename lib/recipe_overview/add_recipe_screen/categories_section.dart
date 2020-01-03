@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:my_recipe_book/blocs/new_recipe/general_info/general_info_event.dart';
+import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_event.dart';
 
 import '../../blocs/category_manager/category_manager_bloc.dart';
 import '../../blocs/category_manager/category_manager_state.dart';
@@ -74,14 +75,20 @@ class _CategorySectionState extends State<CategorySection> {
                       onPressed: () {
                         showDialog(
                           context: context,
-                          builder: (_) => AddDialog(
-                            false,
-                            state.categories,
-                            recipeManagerBloc:
-                                BlocProvider.of<CategoryManagerBloc>(context)
-                                    .recipeManagerBloc,
-                            categoryManagerBloc:
-                                BlocProvider.of<CategoryManagerBloc>(context),
+                          builder: (_) => TextFieldDialog(
+                            validation: (String name) {
+                              if (state.categories.contains(name)) {
+                                return 'category already exists';
+                              } else {
+                                return null;
+                              }
+                            },
+                            save: (String name) {
+                              BlocProvider.of<CategoryManagerBloc>(context)
+                                  .recipeManagerBloc
+                                  .add(RMAddCategory(name));
+                            },
+                            hintText: 'category name',
                           ),
                         );
                       },

@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:bloc/bloc.dart';
-import 'package:my_recipe_book/io/io_operations.dart' as IO;
-import '../../../recipe.dart';
+
 import './step_images.dart';
+import '../../../local_storage/io_operations.dart' as IO;
+import '../../../local_storage/local_paths.dart';
 
 class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
+  List<List<String>> editingStepImages;
+
   @override
   StepImagesState get initialState => LoadedStepImages([[]]);
 
@@ -13,7 +17,24 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
   Stream<StepImagesState> mapEventToState(
     StepImagesEvent event,
   ) async* {
-    // TODO: Add Logic
+    if (event is InitializeStepImages) {
+      yield* _mapInitializeDataToState(event);
+    } else if (event is AddImage) {
+      yield* _mapAddImageToState(event);
+    } else if (event is RemoveImage) {
+      yield* _mapRemoveImageToState(event);
+    } else if (event is AddStep) {
+      yield* _mapAddStepToState(event);
+    } else if (event is RemoveStep) {
+      yield* _mapRemoveStepToState(event);
+    }
+  }
+
+  Stream<StepImagesState> _mapInitializeDataToState(
+      InitializeStepImages event) async* {
+    editingStepImages = event.stepImages;
+
+    yield LoadedStepImages(event.stepImages);
   }
 
   Stream<StepImagesState> _mapAddImageToState(AddImage event) async* {
@@ -23,7 +44,7 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
       await IO.saveStepImage(
         event.stepImage,
         event.stepNumber,
-        recipeName: event.recipeName,
+        recipeName: event.editingRecipe ? 'edit' : 'tmp',
       ),
     );
 
@@ -34,11 +55,13 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
     String stepImageName =
         event.stepImage.substring(event.stepImage.lastIndexOf('/') + 1);
 
-    IO.deleteStepImage(
-      event.recipeName,
-      event.stepNumber,
-      stepImageName,
-    );
+    if (!editingStepImages.contains(event.stepImage)) {
+      IO.deleteStepImage(
+        event.editingRecipe ? 'edit' : 'tmp',
+        event.stepNumber,
+        stepImageName,
+      );
+    }
 
     List<List<String>> images =
         List<List<String>>.from((state as LoadedStepImages).stepImages);

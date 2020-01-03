@@ -7,8 +7,8 @@ import 'package:share_extend/share_extend.dart';
 
 import '../database.dart';
 import '../generated/i18n.dart';
-import '../io/io_operations.dart' as IO;
-import '../recipe.dart';
+import '../local_storage/io_operations.dart' as IO;
+import '../local_storage/local_paths.dart';
 
 class ExportRecipes extends StatefulWidget {
   ExportRecipes({Key key}) : super(key: key);

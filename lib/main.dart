@@ -3,41 +3,38 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:my_recipe_book/blocs/new_recipe/ingredients/ingredients.dart';
-import 'package:my_recipe_book/blocs/new_recipe/step_images/step_images_bloc.dart';
-import 'package:my_recipe_book/blocs/nutrition_manager/nutrition_manager.dart';
-import 'package:my_recipe_book/recipe_overview/add_recipe_screen/ingredients_info/ingredients_screen.dart';
-import 'package:my_recipe_book/recipe_overview/add_recipe_screen/steps_info/steps_screen.dart';
-import 'package:my_recipe_book/screens/category_manager.dart';
-import 'package:my_recipe_book/screens/nutrition_manager.dart';
 
 import './theming.dart';
-import 'blocs/app/app_bloc.dart';
+import 'blocs/app/app.dart';
 import 'blocs/app/app_event.dart';
 import 'blocs/category_manager/category_manager.dart';
-import 'blocs/category_overview/category_overview_bloc.dart';
+import 'blocs/category_overview/category_overview.dart';
 import 'blocs/category_overview/category_overview_event.dart';
-import 'blocs/favorite_recipes/favorite_recipes_bloc.dart';
+import 'blocs/favorite_recipes/favorite_recipes.dart';
 import 'blocs/favorite_recipes/favorite_recipes_event.dart';
-import 'blocs/new_recipe/general_info/general_info_bloc.dart';
-import 'blocs/new_recipe/steps/steps_bloc.dart';
+import 'blocs/new_recipe/general_info/general_info.dart';
+import 'blocs/new_recipe/ingredients/ingredients.dart';
+import 'blocs/new_recipe/step_images/step_images.dart';
+import 'blocs/new_recipe/steps/steps.dart';
+import 'blocs/nutrition_manager/nutrition_manager.dart';
 import 'blocs/random_recipe_explorer/random_recipe_explorer.dart';
-import 'blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
-import 'blocs/recipe_category_overview/recipe_category_overview_event.dart';
-import 'blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
-import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients_event.dart';
+import 'blocs/recipe_category_overview/recipe_category_overview.dart';
+import 'blocs/recipe_manager/recipe_manager.dart';
+import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients.dart';
 import 'blocs/shopping_cart/shopping_cart.dart';
-import 'blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'blocs/splash_screen/splash_screen_bloc.dart';
+import 'blocs/splash_screen/splash_screen.dart';
 import 'blocs/splash_screen/splash_screen_event.dart';
 import 'blocs/splash_screen/splash_screen_state.dart';
 import 'generated/i18n.dart';
 import 'models/shopping_cart.dart';
-import 'recipe_overview/add_recipe_screen/general_info/general_info_screen.dart';
 import 'recipe_overview/recipe_screen.dart';
 import 'screens/SplashScreen.dart';
+import 'screens/add_recipe/general_info_screen.dart';
+import 'screens/add_recipe/ingredients_screen.dart';
+import 'screens/add_recipe/steps_screen/steps_screen.dart';
+import 'screens/category_manager.dart';
 import 'screens/homepage_screen.dart';
+import 'screens/nutrition_manager.dart';
 
 void main() {
   debugPaintSizeEnabled = false;
@@ -192,7 +189,9 @@ class MyApp extends StatelessWidget {
 
               return MaterialPageRoute(
                 builder: (context) => BlocProvider<StepImagesBloc>(
-                  builder: (context) => StepImagesBloc(),
+                  builder: (context) => StepImagesBloc()
+                    ..add(InitializeStepImages(
+                        stepImages: args.modifiedRecipe.stepImages)),
                   child: BlocProvider<StepsBloc>(
                     builder: (context) =>
                         StepsBloc(BlocProvider.of<StepImagesBloc>(context)),

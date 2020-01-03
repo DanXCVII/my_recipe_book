@@ -1,11 +1,13 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:my_recipe_book/hive.dart';
-import 'package:my_recipe_book/io/io_operations.dart' as IO;
-import 'package:my_recipe_book/models/recipe.dart';
-import '../../../helper.dart';
-import '../../../recipe.dart';
+
 import './general_info.dart';
+import '../../../helper.dart';
+import '../../../hive.dart';
+import '../../../local_storage/io_operations.dart' as IO;
+import '../../../local_storage/local_paths.dart';
+import '../../../models/recipe.dart';
 
 class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
   @override
@@ -30,21 +32,31 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       UpdateRecipeImage event) async* {
     yield GSavingTmpData();
 
+    String imageDataType = getImageDatatype(event.recipeImage.path);
+    String recipeName = event.editingRecipe ? 'edit' : 'tmp';
+
+    await IO.deleteRecipeImageIfExists(recipeName);
+    await IO.saveRecipeImage(event.recipeImage, recipeName);
+
+    String recipeImagePathFull =
+        await PathProvider.pP.getRecipePathFull(recipeName, imageDataType);
+    String recipeImagePreviewPathFull = await PathProvider.pP
+        .getRecipePreviewPathFull(recipeName, imageDataType);
+
     if (!event.editingRecipe) {
-      await IO.saveRecipeImage(event.recipeImage, 'tmp');
-
-      String dataType = getImageDatatype(event.recipeImage.path);
-
-      String recipeImagePathFull =
-          await PathProvider.pP.getRecipePathFull('tmp', dataType);
-      String recipeImagePreviewPathFull =
-          await PathProvider.pP.getRecipePreviewPathFull('tmp', dataType);
-
-      await HiveProvider().saveTmpRecipe(HiveProvider().getTmpRecipe().copyWith(
-          imagePath: recipeImagePathFull,
-          imagePreviewPath: recipeImagePreviewPathFull));
+      await HiveProvider().saveTmpRecipe(
+        HiveProvider().getTmpRecipe().copyWith(
+              imagePath: recipeImagePathFull,
+              imagePreviewPath: recipeImagePreviewPathFull,
+            ),
+      );
     } else {
-      // TODO: When editing recipe
+      await HiveProvider().saveTmpEditingRecipe(
+        HiveProvider().getTmpEditingRecipe().copyWith(
+              imagePath: recipeImagePathFull,
+              imagePreviewPath: recipeImagePreviewPathFull,
+            ),
+      );
     }
 
     yield GCanSave();

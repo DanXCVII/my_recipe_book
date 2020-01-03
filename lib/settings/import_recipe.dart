@@ -7,8 +7,8 @@ import 'package:flutter/widgets.dart';
 
 import '../generated/i18n.dart';
 import '../hive.dart';
+import '../local_storage/local_paths.dart';
 import '../models/recipe.dart';
-import '../recipe.dart';
 
 Future<List<Recipe>> importSingleMultipleRecipes(
     File recipeZipPath, BuildContext context) async {
@@ -84,12 +84,12 @@ Future<Recipe> importRecipe(File recipeZip, BuildContext context) async {
 
   Directory importRecipeDir = Directory(
       await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name));
-  String recipeDir = await PathProvider.pP.getRecipeDir(importRecipe.name);
+  String recipeDir = await PathProvider.pP.getRecipeDirFull(importRecipe.name);
   if (Directory(recipeDir).existsSync()) {
     await Directory(recipeDir).delete(recursive: true);
   }
   await importRecipeDir
-      .rename(await PathProvider.pP.getRecipeDir(importRecipe.name));
+      .rename(await PathProvider.pP.getRecipeDirFull(importRecipe.name));
 
   await Directory(
           await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
@@ -171,7 +171,7 @@ Future<bool> importRecipeFromTmp(Recipe importRecipe) async {
       await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name));
 
   /// the final directory, where the new import recipe should be
-  String recipeDir = await PathProvider.pP.getRecipeDir(importRecipe.name);
+  String recipeDir = await PathProvider.pP.getRecipeDirFull(importRecipe.name);
   // if the directory already exists for whatever reason, ..
   if (Directory(recipeDir).existsSync()) {
     // .. delete it
@@ -179,7 +179,7 @@ Future<bool> importRecipeFromTmp(Recipe importRecipe) async {
   }
   // move the files from the tmp import recipe directory to the app
   await importRecipeDir
-      .rename(await PathProvider.pP.getRecipeDir(importRecipe.name));
+      .rename(await PathProvider.pP.getRecipeDirFull(importRecipe.name));
   // delete the import directory of the recipe
   await Directory(
           await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
