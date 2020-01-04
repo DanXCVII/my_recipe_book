@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/screens/add_recipe/steps_screen/steps_screen.dart';
 import 'package:my_recipe_book/widgets/ingredients_section.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
@@ -14,6 +15,7 @@ import '../../my_wrapper.dart';
 import '../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
 import '../../recipe_overview/add_recipe_screen/validator/dialogs.dart';
 import '../../recipe_overview/add_recipe_screen/vegetarian_section.dart';
+import '../../routes.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class IngredientsArguments {
@@ -107,6 +109,16 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
                   Scaffold.of(context).showSnackBar(
                       SnackBar(content: Text('saving your input...')));
                 } else if (state is ISaved) {
+                  BlocProvider.of<IngredientsBloc>(context).add(SetCanSave());
+
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.addRecipeSteps,
+                    arguments: StepsArguments(
+                      state.recipe,
+                      editingRecipeName: widget.editingRecipeName,
+                    ),
+                  );
                   // TODO: Navigator.pushNamed to next screen
                 } else if (state is ISavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();

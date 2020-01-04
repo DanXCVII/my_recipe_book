@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/screens/add_recipe/nutritions.dart';
 
 import './theming.dart';
 import 'blocs/app/app.dart';
@@ -14,6 +15,7 @@ import 'blocs/favorite_recipes/favorite_recipes.dart';
 import 'blocs/favorite_recipes/favorite_recipes_event.dart';
 import 'blocs/new_recipe/general_info/general_info.dart';
 import 'blocs/new_recipe/ingredients/ingredients.dart';
+import 'blocs/new_recipe/nutritions/nutritions_bloc.dart';
 import 'blocs/new_recipe/step_images/step_images.dart';
 import 'blocs/new_recipe/steps/steps.dart';
 import 'blocs/nutrition_manager/nutrition_manager.dart';
@@ -199,6 +201,19 @@ class MyApp extends StatelessWidget {
                       modifiedRecipe: args.modifiedRecipe,
                       editingRecipeName: args.editingRecipeName,
                     ),
+                  ),
+                ),
+              );
+
+            case "/add-recipe/nutritions":
+              final AddRecipeNutritionsArguments args = settings.arguments;
+
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider<NutritionsBloc>(
+                  builder: (context) => NutritionsBloc(),
+                  child: AddRecipeNutritions(
+                    modifiedRecipe: args.modifiedRecipe,
+                    editingRecipeName: args.editingRecipeName,
                   ),
                 ),
               );

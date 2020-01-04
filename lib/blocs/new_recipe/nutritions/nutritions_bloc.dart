@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager.dart';
 
 import './nutritions.dart';
 import '../../../hive.dart';
@@ -15,9 +16,15 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
   Stream<NutritionsState> mapEventToState(
     NutritionsEvent event,
   ) async* {
-    if (event is FinishedEditing) {
+    if (event is SetCanSave) {
+      yield* _mapSetCanSaveToState(event);
+    } else if (event is FinishedEditing) {
       yield* _mapFinishedEditingToState(event);
     }
+  }
+
+  Stream<NutritionsState> _mapSetCanSaveToState(SetCanSave event) async* {
+    yield NCanSave();
   }
 
   Stream<NutritionsState> _mapFinishedEditingToState(
@@ -29,7 +36,7 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
     }
 
     Recipe newRecipe;
-    if (!event.editingRecipe) {
+    if (event.editingRecipeName == null) {
       Recipe nutritionRecipe = HiveProvider().getTmpRecipe().copyWith(
             nutritions: event.nutritions,
           );
@@ -53,7 +60,16 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
       }
     }
     if (!event.goBack) {
-      await HiveProvider().saveRecipe(newRecipe);
+      if (event.editingRecipeName == null) {
+        event.recipeManagerBloc.add(RMAddRecipe(newRecipe));
+      } else {
+        event.recipeManagerBloc.add(
+          RMUpdateRecipe(
+            await HiveProvider().getRecipeByName(event.editingRecipeName),
+            newRecipe,
+          ),
+        );
+      }
     }
 
     if (event.goBack) {

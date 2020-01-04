@@ -83,11 +83,16 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                   Scaffold.of(context).showSnackBar(
                       SnackBar(content: Text('saving your input...')));
                 } else if (state is GSaved) {
-                  Navigator.pushNamed(context, RouteNames.addRecipeIngredients,
-                      arguments: IngredientsArguments(
-                        state.recipe,
-                        editingRecipeName: widget.editingRecipeName,
-                      ));
+                  BlocProvider.of<GeneralInfoBloc>(context).add(SetCanSave());
+
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.addRecipeIngredients,
+                    arguments: IngredientsArguments(
+                      state.recipe,
+                      editingRecipeName: widget.editingRecipeName,
+                    ),
+                  );
                 } else if (state is GSavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
@@ -100,7 +105,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                       Icons.arrow_forward,
                       color: Colors.grey,
                     );
-                  } else if (state is GCanSave || state is GSaved) {
+                  } else if (state is GCanSave) {
                     return IconButton(
                       icon: Icon(Icons.arrow_forward),
                       color: Colors.white,

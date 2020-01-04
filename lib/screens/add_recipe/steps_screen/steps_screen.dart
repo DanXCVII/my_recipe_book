@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/screens/add_recipe/nutritions.dart';
 
 import '../../../blocs/new_recipe/steps/steps.dart';
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
@@ -9,6 +10,7 @@ import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../models/recipe.dart';
 import '../../../my_wrapper.dart';
+import '../../../routes.dart';
 import '../../../widgets/complexity_section.dart';
 import 'steps_section.dart';
 
@@ -74,7 +76,16 @@ class _StepsScreenState extends State<StepsScreen> {
                 Scaffold.of(context).showSnackBar(
                     SnackBar(content: Text('saving your input...')));
               } else if (state is SSaved) {
-                // TODO: Navigator.pushNamed to next screen
+                BlocProvider.of<StepsBloc>(context).add(SetCanSave());
+
+                Navigator.pushNamed(
+                  context,
+                  RouteNames.addRecipeNutritions,
+                  arguments: AddRecipeNutritionsArguments(
+                    state.recipe,
+                    editingRecipeName: widget.editingRecipeName,
+                  ),
+                );
               } else if (state is SSavedGoBack) {
                 Scaffold.of(context).hideCurrentSnackBar();
                 Navigator.pop(context);

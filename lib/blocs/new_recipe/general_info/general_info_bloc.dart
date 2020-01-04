@@ -17,7 +17,11 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
   Stream<GeneralInfoState> mapEventToState(
     GeneralInfoEvent event,
   ) async* {
-    if (event is UpdateRecipeImage) {
+    if (event is SetCanSave) {
+      yield* _mapSetCanSaveToState(event);
+    } else if (event is InitializeGeneralInfo) {
+      yield* _mapInitializeGeneralInfoToState(event);
+    } else if (event is UpdateRecipeImage) {
       yield* _mapUpdateRecipeImageToState(event);
     } else if (event is FinishedEditing) {
       yield* _mapFinishedEditingToState(event);
@@ -26,6 +30,21 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     } else if (event is RemoveCategoryFromRecipe) {
       yield* _mapRemoveCategoryFromRecipeToState(event);
     }
+  }
+
+  Stream<GeneralInfoState> _mapSetCanSaveToState(SetCanSave event) async* {
+    yield GCanSave();
+  }
+
+  Stream<GeneralInfoState> _mapInitializeGeneralInfoToState(
+      InitializeGeneralInfo event) async* {
+    yield GSavingTmpData();
+
+    if (event.isEditing) {
+      await HiveProvider().deleteTmpEditingRecipe();
+    }
+
+    yield GCanSave();
   }
 
   Stream<GeneralInfoState> _mapUpdateRecipeImageToState(

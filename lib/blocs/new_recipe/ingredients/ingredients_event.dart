@@ -6,6 +6,11 @@ abstract class IngredientsEvent extends Equatable {
   const IngredientsEvent();
 }
 
+class SetCanSave extends IngredientsEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class FinishedEditing extends IngredientsEvent {
   final bool editingRecipe;
   final bool goBack;

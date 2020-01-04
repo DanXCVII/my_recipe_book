@@ -29,9 +29,15 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
   Stream<StepsState> mapEventToState(
     StepsEvent event,
   ) async* {
-    if (event is FinishedEditing) {
+    if (event is SetCanSave) {
+      yield* _mapSetCanSaveToState(event);
+    } else if (event is FinishedEditing) {
       yield* _mapFinishedEditingToState(event);
     }
+  }
+
+  Stream<StepsState> _mapSetCanSaveToState(SetCanSave event) async* {
+    yield SCanSave();
   }
 
   Stream<StepsState> _mapFinishedEditingToState(FinishedEditing event) async* {

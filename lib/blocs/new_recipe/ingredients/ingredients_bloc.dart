@@ -12,9 +12,15 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
   Stream<IngredientsState> mapEventToState(
     IngredientsEvent event,
   ) async* {
-    if (event is FinishedEditing) {
+    if (event is SetCanSave) {
+      yield* _mapSetCanSaveToState(event);
+    } else if (event is FinishedEditing) {
       yield* _mapFinishedEditingToState(event);
     }
+  }
+
+  Stream<IngredientsState> _mapSetCanSaveToState(SetCanSave event) async* {
+    yield ICanSave();
   }
 
   Stream<IngredientsState> _mapFinishedEditingToState(

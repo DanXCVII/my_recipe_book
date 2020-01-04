@@ -3,6 +3,8 @@ class RouteNames {
   static final home = "/home";
   static final addRecipeGeneralInfo = "/add-recipe/general-info";
   static final addRecipeIngredients = "/add-recipe/ingredients";
+  static final addRecipeSteps = "/add-recipe/steps";
+  static final addRecipeNutritions = "/add-recipe/nutritions";
   static final recipeScreen = "/recipe-screen";
   static final manageCategories = "/manage-categories";
   static final manageNutritions = "/manage-nutritions";

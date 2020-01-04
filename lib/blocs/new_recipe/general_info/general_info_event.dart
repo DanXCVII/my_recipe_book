@@ -6,6 +6,20 @@ abstract class GeneralInfoEvent extends Equatable {
   const GeneralInfoEvent();
 }
 
+class InitializeGeneralInfo extends GeneralInfoEvent {
+  final bool isEditing;
+
+  InitializeGeneralInfo(this.isEditing);
+
+  @override
+  List<Object> get props => [];
+}
+
+class SetCanSave extends GeneralInfoEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class UpdateRecipeImage extends GeneralInfoEvent {
   final File recipeImage;
   final bool editingRecipe;

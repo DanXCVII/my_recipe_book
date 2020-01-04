@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../../blocs/new_recipe/nutritions/nutritions.dart';
 import '../../blocs/nutrition_manager/nutrition_manager.dart';
 import '../../blocs/shopping_cart/shopping_cart.dart';
 import '../../dialogs/add_nut_cat_dialog.dart';
 import '../../generated/i18n.dart';
-import '../../helper.dart';
-import '../../local_storage/local_paths.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
 import '../../recipe_overview/recipe_screen.dart';
 import '../../routes.dart';
+
+/// arguments which are provided to the route, when pushing to it
+class AddRecipeNutritionsArguments {
+  final Recipe modifiedRecipe;
+  final String editingRecipeName;
+
+  AddRecipeNutritionsArguments(
+    this.modifiedRecipe, {
+    this.editingRecipeName,
+  });
+}
 
 class AddRecipeNutritions extends StatefulWidget {
   final Recipe modifiedRecipe;
@@ -90,6 +98,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                       Navigator.popUntil(context,
                           ModalRoute.withName(RouteNames.recipeScreen));
                     } else if (state is NSaved) {
+                      // TODO: differentiate between editing and new Recipe
                       Navigator.popUntil(context,
                           ModalRoute.withName(RouteNames.loadingScreen));
                       Navigator.popAndPushNamed(
@@ -207,7 +216,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
 
     BlocProvider.of<NutritionsBloc>(context).add(
       FinishedEditing(
-        widget.editingRecipeName != null ? true : false,
+        widget.editingRecipeName,
         widget.editingRecipeName != null
             ? widget.modifiedRecipe.categories
             : goBack,
