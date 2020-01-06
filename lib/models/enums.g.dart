@@ -35,6 +35,9 @@ class VegetableAdapter extends TypeAdapter<Vegetable> {
         break;
     }
   }
+
+  @override
+  int get typeId => 0;
 }
 
 class RecipeSortAdapter extends TypeAdapter<RecipeSort> {
@@ -66,4 +69,7 @@ class RecipeSortAdapter extends TypeAdapter<RecipeSort> {
         break;
     }
   }
+
+  @override
+  int get typeId => 1;
 }

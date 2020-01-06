@@ -34,6 +34,7 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
     Recipe newRecipe;
     if (!event.editingRecipe) {
       newRecipe = HiveProvider().getTmpRecipe().copyWith(
+            servings: event.servings,
             ingredients: event.ingredients,
             ingredientsGlossary: event.ingredientsGlossary,
             vegetable: event.vegetable,
@@ -41,6 +42,7 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
       await HiveProvider().saveTmpRecipe(newRecipe);
     } else {
       newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
+            servings: event.servings,
             ingredients: event.ingredients,
             ingredientsGlossary: event.ingredientsGlossary,
             vegetable: event.vegetable,

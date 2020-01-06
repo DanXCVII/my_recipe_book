@@ -39,8 +39,11 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
   }
 
   Stream<StepImagesState> _mapAddImageToState(AddImage event) async* {
-    List<List<String>> images =
-        List<List<String>>.from((state as LoadedStepImages).stepImages);
+    final List<List<String>> images = (state as LoadedStepImages)
+        .stepImages
+        .map((list) => list.map((item) => item).toList())
+        .toList();
+
     images[event.stepNumber].add(
       await IO.saveStepImage(
         event.stepImage,
@@ -64,15 +67,22 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
       );
     }
 
-    List<List<String>> images =
-        List<List<String>>.from((state as LoadedStepImages).stepImages);
+    final List<List<String>> images = (state as LoadedStepImages)
+        .stepImages
+        .map((list) => list.map((item) => item).toList())
+        .toList();
     images[event.stepNumber].remove(event.stepImage);
 
     yield LoadedStepImages(images);
   }
 
   Stream<StepImagesState> _mapAddStepToState(AddStep event) async* {
-    yield LoadedStepImages((state as LoadedStepImages).stepImages..add([]));
+    yield LoadedStepImages((state as LoadedStepImages)
+        .stepImages
+        .map<List<String>>(
+            (list) => list.map<String>((element) => element).toList())
+        .toList()
+          ..add([]));
   }
 
   Stream<StepImagesState> _mapRemoveStepToState(RemoveStep event) async* {
@@ -86,8 +96,12 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
               event.recipeName, (state as LoadedStepImages).stepImages.length);
       await Directory(stepPreviewPath).delete(recursive: true);
 
-      yield LoadedStepImages(
-          (state as LoadedStepImages).stepImages..removeLast());
+      yield LoadedStepImages((state as LoadedStepImages)
+          .stepImages
+          .map<List<String>>(
+              (list) => list.map<String>((element) => element).toList())
+          .toList()
+            ..removeLast());
     }
   }
 }

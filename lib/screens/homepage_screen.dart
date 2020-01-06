@@ -186,8 +186,8 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   static const platform = const MethodChannel('app.channel.shared.data');
 
   getIntentPath() async {
-    var sharedData = await platform.invokeMethod("getSharedText");
-    return sharedData == null ? null : sharedData;
+    // var sharedData = await platform.invokeMethod("getSharedText");
+    // return sharedData == null ? null : sharedData;
   }
 
   Widget getImportRecipeDialog(File importZipFile) {

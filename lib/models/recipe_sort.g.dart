@@ -28,4 +28,7 @@ class RSortAdapter extends TypeAdapter<RSort> {
       ..writeByte(1)
       ..write(obj.ascending);
   }
+
+  @override
+  int get typeId => 5;
 }

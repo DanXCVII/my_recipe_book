@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_recipe_book/screens/add_recipe/nutritions.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import './theming.dart';
 import 'blocs/app/app.dart';
@@ -209,11 +209,15 @@ class MyApp extends StatelessWidget {
               final AddRecipeNutritionsArguments args = settings.arguments;
 
               return MaterialPageRoute(
-                builder: (context) => BlocProvider<NutritionsBloc>(
-                  builder: (context) => NutritionsBloc(),
-                  child: AddRecipeNutritions(
-                    modifiedRecipe: args.modifiedRecipe,
-                    editingRecipeName: args.editingRecipeName,
+                builder: (context) => BlocProvider<NutritionManagerBloc>(
+                  builder: (context) =>
+                      NutritionManagerBloc()..add(LoadNutritionManager()),
+                  child: BlocProvider<NutritionsBloc>(
+                    builder: (context) => NutritionsBloc(),
+                    child: AddRecipeNutritions(
+                      modifiedRecipe: args.modifiedRecipe,
+                      editingRecipeName: args.editingRecipeName,
+                    ),
                   ),
                 ),
               );

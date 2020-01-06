@@ -151,18 +151,20 @@ Future<void> deleteRecipeImageIfExists(String recipeName) async {
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDirFull(recipeName));
 
-  for (FileSystemEntity f in recipeDir.listSync()) {
-    if (f is File) {
-      await f.delete();
+  if (await recipeDir.exists()) {
+    for (FileSystemEntity f in recipeDir.listSync()) {
+      if (f is File) {
+        await f.delete();
+      }
     }
-  }
 
-  Directory recipePreviewDir =
-      Directory(await PathProvider.pP.getRecipePreviewDirFull(recipeName));
+    Directory recipePreviewDir =
+        Directory(await PathProvider.pP.getRecipePreviewDirFull(recipeName));
 
-  for (FileSystemEntity f in recipeDir.listSync()) {
-    if (f is File) {
-      await f.delete();
+    for (FileSystemEntity f in recipePreviewDir.listSync()) {
+      if (f is File) {
+        await f.delete();
+      }
     }
   }
 }

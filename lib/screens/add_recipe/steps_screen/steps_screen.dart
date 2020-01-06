@@ -65,87 +65,93 @@ class _StepsScreenState extends State<StepsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("add steps"),
-        actions: <Widget>[
-          BlocListener<StepsBloc, StepsState>(
-            listener: (context, state) {
-              if (state is SEditingFinishedGoBack) {
-                // TODO: internationalize
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text('saving your input...')));
-              } else if (state is SSaved) {
-                BlocProvider.of<StepsBloc>(context).add(SetCanSave());
+    return WillPopScope(
+      onWillPop: () async {
+        _finishedEditingSteps(true);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("add steps"),
+          actions: <Widget>[
+            BlocListener<StepsBloc, StepsState>(
+              listener: (context, state) {
+                if (state is SEditingFinishedGoBack) {
+                  // TODO: internationalize
+                  Scaffold.of(context).showSnackBar(
+                      SnackBar(content: Text('saving your input...')));
+                } else if (state is SSaved) {
+                  BlocProvider.of<StepsBloc>(context).add(SetCanSave());
 
-                Navigator.pushNamed(
-                  context,
-                  RouteNames.addRecipeNutritions,
-                  arguments: AddRecipeNutritionsArguments(
-                    state.recipe,
-                    editingRecipeName: widget.editingRecipeName,
-                  ),
-                );
-              } else if (state is SSavedGoBack) {
-                Scaffold.of(context).hideCurrentSnackBar();
-                Navigator.pop(context);
-              }
-            },
-            child: BlocBuilder<StepsBloc, StepsState>(
-              builder: (context, state) {
-                if (state is SSavingTmpData) {
-                  return Icon(
-                    Icons.arrow_forward,
-                    color: Colors.grey,
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.addRecipeNutritions,
+                    arguments: AddRecipeNutritionsArguments(
+                      state.recipe,
+                      editingRecipeName: widget.editingRecipeName,
+                    ),
                   );
-                } else if (state is SCanSave) {
-                  return IconButton(
-                    icon: Icon(Icons.arrow_forward),
-                    color: Colors.white,
-                    onPressed: () {
-                      _finishedEditingSteps(false);
-                    },
-                  );
-                } else if (state is SEditingFinished) {
-                  return CircularProgressIndicator();
-                } else {
-                  return Icon(Icons.arrow_forward);
+                } else if (state is SSavedGoBack) {
+                  Scaffold.of(context).hideCurrentSnackBar();
+                  Navigator.pop(context);
                 }
               },
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Form(
-              key: _formKey,
-              child: widget.editingRecipeName != null
-                  ? Steps(
-                      stepsDescController,
-                      editRecipeName: widget.editingRecipeName,
-                    )
-                  : Steps(
-                      stepsDescController,
-                    ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  right: 12, top: 12, left: 18, bottom: 12),
-              child: TextField(
-                controller: notesController,
-                decoration: InputDecoration(
-                  labelText: S.of(context).notes,
-                  filled: true,
-                  icon: Icon(Icons.assignment),
-                ),
-                minLines: 3,
-                maxLines: 10,
+              child: BlocBuilder<StepsBloc, StepsState>(
+                builder: (context, state) {
+                  if (state is SSavingTmpData) {
+                    return Icon(
+                      Icons.arrow_forward,
+                      color: Colors.grey,
+                    );
+                  } else if (state is SCanSave) {
+                    return IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      color: Colors.white,
+                      onPressed: () {
+                        _finishedEditingSteps(false);
+                      },
+                    );
+                  } else if (state is SEditingFinished) {
+                    return CircularProgressIndicator();
+                  } else {
+                    return Icon(Icons.arrow_forward);
+                  }
+                },
               ),
             ),
-            ComplexitySection(complexity: complexity),
           ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Form(
+                key: _formKey,
+                child: widget.editingRecipeName != null
+                    ? Steps(
+                        stepsDescController,
+                        editRecipeName: widget.editingRecipeName,
+                      )
+                    : Steps(
+                        stepsDescController,
+                      ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    right: 12, top: 12, left: 18, bottom: 12),
+                child: TextField(
+                  controller: notesController,
+                  decoration: InputDecoration(
+                    labelText: S.of(context).notes,
+                    filled: true,
+                    icon: Icon(Icons.assignment),
+                  ),
+                  minLines: 3,
+                  maxLines: 10,
+                ),
+              ),
+              ComplexitySection(complexity: complexity),
+            ],
+          ),
         ),
       ),
     );
@@ -185,9 +191,8 @@ class _StepsScreenState extends State<StepsScreen> {
 
     if (widget.modifiedRecipe.steps != null)
       for (int i = 0; i < widget.modifiedRecipe.steps.length; i++) {
-        if (i > 0) {
-          stepsDescController.add(TextEditingController());
-        }
+        stepsDescController.add(TextEditingController());
+
         stepsDescController[i].text = widget.modifiedRecipe.steps[i];
       }
   }

@@ -112,14 +112,14 @@ packages:
       name: built_collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.3.0"
+    version: "4.3.2"
   built_value:
     dependency: transitive
     description:
       name: built_value
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.0.0"
+    version: "7.0.4"
   charcode:
     dependency: transitive
     description:
@@ -196,7 +196,7 @@ packages:
       name: equatable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   file_picker:
     dependency: "direct main"
     description:
@@ -238,7 +238,7 @@ packages:
     source: hosted
     version: "0.6.3"
   flutter_launcher_icons:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: flutter_launcher_icons
       url: "https://pub.dartlang.org"
@@ -293,7 +293,7 @@ packages:
       name: hive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "1.3.0"
   hive_flutter:
     dependency: "direct main"
     description:
@@ -321,7 +321,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.0+2"
+    version: "0.12.0+3"
   http_multi_server:
     dependency: transitive
     description:
@@ -384,7 +384,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0"
+    version: "3.0.1"
   logging:
     dependency: transitive
     description:
@@ -622,7 +622,7 @@ packages:
       name: source_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.4+6"
+    version: "0.9.4+7"
   source_span:
     dependency: transitive
     description:

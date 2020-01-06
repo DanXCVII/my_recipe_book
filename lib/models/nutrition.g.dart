@@ -28,4 +28,7 @@ class NutritionAdapter extends TypeAdapter<Nutrition> {
       ..writeByte(1)
       ..write(obj.amountUnit);
   }
+
+  @override
+  int get typeId => 4;
 }

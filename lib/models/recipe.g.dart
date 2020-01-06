@@ -77,4 +77,7 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       ..writeByte(16)
       ..write(obj.effort);
   }
+
+  @override
+  int get typeId => 6;
 }

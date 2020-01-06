@@ -34,8 +34,10 @@ class NutritionManagerBloc
   Stream<NutritionManagerState> _mapAddNutritionToState(
       AddNutrition event) async* {
     if (state is LoadedNutritionManager) {
+      // TODO: Add to hive
       final List<String> nutritions =
-          (state as LoadedNutritionManager).nutritions..add(event.nutrition);
+          List<String>.from((state as LoadedNutritionManager).nutritions)
+            ..add(event.nutrition);
 
       yield LoadedNutritionManager(nutritions);
     }
@@ -44,8 +46,10 @@ class NutritionManagerBloc
   Stream<NutritionManagerState> _mapDeleteNutritionToState(
       DeleteNutrition event) async* {
     if (state is LoadedNutritionManager) {
+      // TODO: Delete in hive
       final List<String> nutritions =
-          (state as LoadedNutritionManager).nutritions..remove(event.nutrition);
+          List<String>.from((state as LoadedNutritionManager).nutritions)
+            ..remove(event.nutrition);
 
       yield LoadedNutritionManager(nutritions);
     }
@@ -54,14 +58,12 @@ class NutritionManagerBloc
   Stream<NutritionManagerState> _mapUpdateNutritionToState(
       UpdateNutrition event) async* {
     if (state is LoadedNutritionManager) {
-      final List<String> nutritions =
-          (state as LoadedNutritionManager).nutritions.map((nutrition) {
-        if (nutrition == event.oldNutrition) {
-          return event.updatedNutrition;
-        } else {
-          return nutrition;
-        }
-      });
+      // TODO: implement in hive
+      final List<String> nutritions = (state as LoadedNutritionManager)
+          .nutritions
+          .map((nutrition) => nutrition == event.oldNutrition
+              ? event.updatedNutrition
+              : nutrition);
 
       yield LoadedNutritionManager(nutritions);
     }

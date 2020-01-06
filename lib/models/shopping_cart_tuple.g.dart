@@ -28,4 +28,7 @@ class StringListTupleAdapter extends TypeAdapter<StringListTuple> {
       ..writeByte(1)
       ..write(obj.item2);
   }
+
+  @override
+  int get typeId => 7;
 }

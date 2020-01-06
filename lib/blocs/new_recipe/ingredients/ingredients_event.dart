@@ -15,6 +15,7 @@ class FinishedEditing extends IngredientsEvent {
   final bool editingRecipe;
   final bool goBack;
 
+  final double servings;
   final List<List<Ingredient>> ingredients;
   final List<String> ingredientsGlossary;
   final Vegetable vegetable;
@@ -22,6 +23,7 @@ class FinishedEditing extends IngredientsEvent {
   FinishedEditing([
     this.editingRecipe,
     this.goBack,
+    this.servings,
     this.ingredients,
     this.ingredientsGlossary,
     this.vegetable,
@@ -31,6 +33,7 @@ class FinishedEditing extends IngredientsEvent {
   List<Object> get props => [
         editingRecipe,
         goBack,
+        servings,
         ingredients,
         ingredientsGlossary,
         vegetable,

@@ -31,6 +31,9 @@ class IngredientAdapter extends TypeAdapter<Ingredient> {
       ..writeByte(2)
       ..write(obj.unit);
   }
+
+  @override
+  int get typeId => 2;
 }
 
 class CheckableIngredientAdapter extends TypeAdapter<CheckableIngredient> {
@@ -61,4 +64,7 @@ class CheckableIngredientAdapter extends TypeAdapter<CheckableIngredient> {
       ..writeByte(3)
       ..write(obj.checked);
   }
+
+  @override
+  int get typeId => 3;
 }

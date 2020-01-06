@@ -32,8 +32,8 @@ class BoxNames {
 
 class HiveProvider {
   static final HiveProvider _singleton = HiveProvider._internal(
-    Hive.box(BoxNames.recipes) as LazyBox,
     Hive.box<String>(BoxNames.vegetarian),
+    Hive.lazyBox<Recipe>(BoxNames.recipes),
     Hive.box<String>(BoxNames.nonVegetarain),
     Hive.box<String>(BoxNames.vegan),
     Hive.box<String>(BoxNames.categories),
@@ -47,7 +47,7 @@ class HiveProvider {
     Hive.box<List<String>>(BoxNames.recipeCategories),
   );
 
-  LazyBox lazyBoxRecipes;
+  LazyBox<dynamic> lazyBoxRecipes;
   Box<String> boxVegetarian;
   Box<String> boxNonVegetarian;
   Box<String> boxVegan;
@@ -68,8 +68,8 @@ class HiveProvider {
   }
 
   HiveProvider._internal(
-    this.lazyBoxRecipes,
     this.boxVegetarian,
+    this.lazyBoxRecipes,
     this.boxNonVegetarian,
     this.boxVegan,
     this.boxCategories,
@@ -847,19 +847,19 @@ class HiveProvider {
 // must(!) be executed before calling the HiveProvider
 Future<void> initHive(bool firstTime) async {
   Hive.init((await getApplicationDocumentsDirectory()).path);
-  Hive.registerAdapter(IngredientAdapter(), 1);
-  Hive.registerAdapter(CheckableIngredientAdapter(), 2);
-  Hive.registerAdapter(VegetableAdapter(), 3);
-  Hive.registerAdapter(NutritionAdapter(), 4);
-  Hive.registerAdapter(StringListTupleAdapter(), 5);
-  Hive.registerAdapter(RecipeSortAdapter(), 6);
-  Hive.registerAdapter(RSortAdapter(), 7);
-  Hive.registerAdapter(RecipeAdapter(), 8);
+  Hive.registerAdapter(IngredientAdapter());
+  Hive.registerAdapter(CheckableIngredientAdapter());
+  Hive.registerAdapter(VegetableAdapter());
+  Hive.registerAdapter(NutritionAdapter());
+  Hive.registerAdapter(StringListTupleAdapter());
+  Hive.registerAdapter(RecipeSortAdapter());
+  Hive.registerAdapter(RSortAdapter());
+  Hive.registerAdapter(RecipeAdapter());
 
   await Future.wait([
     Hive.openBox<StringListTuple>("tuple"),
     Hive.openBox<Ingredient>("ingredient"),
-    Hive.openBox(BoxNames.recipes, lazy: true),
+    Hive.openLazyBox<Recipe>(BoxNames.recipes),
     Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString()),
     Hive.openBox<String>(Vegetable.VEGETARIAN.toString()),
     Hive.openBox<String>(Vegetable.VEGAN.toString()),

@@ -39,7 +39,6 @@ class _StepsState extends State<Steps> {
       }
       return true;
     }, builder: (context, state) {
-      List<List<String>> stepImages;
       if (state is LoadedStepImages) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +54,7 @@ class _StepsState extends State<Steps> {
           ]..addAll(
               // the sections
               List<Widget>.generate(
-                stepImages.length,
+                widget.stepsDecriptionController.length,
                 (i) => Column(
                   children: <Widget>[
                     Row(

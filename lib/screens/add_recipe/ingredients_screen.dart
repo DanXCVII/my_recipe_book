@@ -56,8 +56,6 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
   void initState() {
     super.initState();
 
-    selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
-
     // initialize list of controllers for the dynamic textFields with one element
     ingredientNameController[0].add(TextEditingController());
     ingredientAmountController[0].add(TextEditingController());
@@ -188,6 +186,12 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
   /// prefills the textfields with the data of the given recipe and the
   /// radio button with the selected vegetable
   void _initializeData(Recipe recipe) {
+    if (recipe.vegetable != null) {
+      selectedRecipeVegetable.setVegetableStatus(recipe.vegetable);
+    } else {
+      selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
+    }
+
     if (recipe.servings != null)
       servingsController.text = recipe.servings.toString();
 
@@ -266,12 +270,14 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
           goBack,
+          double.parse(servingsController.text),
           getIngredientsList(
             ingredientNameController,
             ingredientAmountController,
             ingredientUnitController,
           ),
           ingredientGlossaryController.map((item) => item.text).toList(),
+          selectedRecipeVegetable.vegetableStatus,
         ),
       );
     else {
@@ -287,8 +293,10 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
           goBack,
+          double.parse(servingsController.text),
           cleanIngredientsData,
           glossary,
+          selectedRecipeVegetable.vegetableStatus,
         ),
       );
     }
