@@ -4,6 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
+import 'package:my_recipe_book/blocs/new_recipe/clear_recipe/clear_recipe_event.dart';
+import 'package:my_recipe_book/blocs/new_recipe/clear_recipe/clear_recipe_state.dart';
+import 'package:my_recipe_book/hive.dart';
+import 'package:my_recipe_book/models/enums.dart';
 
 import '../../blocs/new_recipe/general_info/general_info.dart';
 import '../../generated/i18n.dart';
@@ -37,10 +42,12 @@ class GeneralInfoScreen extends StatefulWidget {
     this.editingRecipeName,
   });
 
-  _GeneralInfoScreenState createState() => _GeneralInfoScreenState();
+  _GeneralInfoScreenState createState() =>
+      _GeneralInfoScreenState(modifiedRecipe);
 }
 
 class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
+  Recipe modifiedRecipe;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController preperationTimeController =
       TextEditingController();
@@ -49,11 +56,13 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  _GeneralInfoScreenState(this.modifiedRecipe);
+
   @override
   void initState() {
     super.initState();
 
-    _initializeData(widget.modifiedRecipe);
+    _initializeData(modifiedRecipe);
   }
 
   @override
@@ -76,6 +85,23 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
         appBar: AppBar(
           title: Text("add general info"),
           actions: <Widget>[
+            BlocListener<ClearRecipeBloc, ClearRecipeState>(
+              listener: (context, state) {
+                if (state is ClearedRecipe) {
+                  setState(() {
+                    modifiedRecipe = state.recipe;
+                    _initializeData(state.recipe);
+                  });
+                }
+              },
+              child: IconButton(
+                  icon: Icon(Icons.format_clear),
+                  onPressed: () {
+                    BlocProvider.of<ClearRecipeBloc>(context).add(Clear(
+                        widget.editingRecipeName == null ? false : true,
+                        DateTime.now()));
+                  }),
+            ),
             BlocListener<GeneralInfoBloc, GeneralInfoState>(
               listener: (context, state) {
                 if (state is GEditingFinishedGoBack) {
@@ -135,7 +161,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                   widget.editingRecipeName == null ? false : true,
                 ),
               ),
-              prefilledImage: widget.modifiedRecipe.imagePath,
+              prefilledImage: modifiedRecipe.imagePath,
               circleSize: 120,
               color: Color(0xFF790604),
             ),
@@ -231,7 +257,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
               ),
             ),
             CategorySection(
-              selectedCategories: widget.modifiedRecipe.categories,
+              selectedCategories: modifiedRecipe.categories,
               editingRecipe: widget.editingRecipeName == null ? false : true,
             ),
           ]),
@@ -264,10 +290,14 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
         .then((v) {
       switch (v) {
         case Validator.REQUIRED_FIELDS:
-          showRequiredFieldsDialog(context);
+          MyDialogs.showInfoDialog(
+              S.of(context).check_ingredient_section_fields,
+              S.of(context).check_filled_in_information_description,
+              context);
           break;
         case Validator.NAME_TAKEN:
-          showRecipeNameTakenDialog(context);
+          MyDialogs.showInfoDialog(S.of(context).recipename_taken,
+              S.of(context).recipename_taken_description, context);
           break;
 
         default:
@@ -282,9 +312,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   void _saveGeneralInfoData(BuildContext gInfoScreenContext, bool goBack) {
     BlocProvider.of<GeneralInfoBloc>(context).add(FinishedEditing(
       widget.editingRecipeName != null ? true : false,
-      widget.editingRecipeName != null
-          ? widget.modifiedRecipe.categories
-          : goBack,
+      widget.editingRecipeName != null ? modifiedRecipe.categories : goBack,
       nameController.text,
       preperationTimeController.text.isEmpty
           ? 0

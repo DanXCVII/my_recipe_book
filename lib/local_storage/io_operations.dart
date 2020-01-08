@@ -4,11 +4,11 @@ import 'dart:math';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:my_recipe_book/models/recipe.dart';
 
+import './local_paths.dart';
 import '../database.dart';
 import '../helper.dart';
-import './local_paths.dart';
+import '../models/recipe.dart';
 
 /// moves the images of the recipe to the correct image paths which is
 /// defined by recipe.name.
@@ -36,7 +36,9 @@ Future<Recipe> fixImagePaths(Recipe recipe) async {
   for (int i = 0; i < recipe.stepImages.length; i++) {
     for (int j = 0; j < recipe.stepImages[i].length; j++) {
       recipeStepImages[i][j] = await PathProvider.pP
-          .getRecipeStepNumberDirFull(_underscoreNewRecipeName, i);
+              .getRecipeStepNumberDirFull(_underscoreNewRecipeName, i) +
+          "/" +
+          getStepImageName(recipe.stepImages[i][j]);
       if (recipe.stepImages[i][j] != recipeStepImages[i][j]) {
         String _recipeName =
             getRecipeNameOfStepImagePath(recipe.stepImages[i][j]);
@@ -68,6 +70,14 @@ String getRecipeNameOfStepImagePath(String fullImagePath) {
   String recipeName = cutImagePath.substring(cutImagePath.lastIndexOf('/') + 1);
 
   return recipeName;
+}
+
+Future<void> deleteRecipeData(String recipeName) async {
+  Directory recipeDir =
+      Directory(await PathProvider.pP.getRecipeDirFull(recipeName));
+  if (await recipeDir.exists()) {
+    await recipeDir.delete(recursive: true);
+  }
 }
 
 Future<void> copyRecipeDataToNewPath(
@@ -141,10 +151,10 @@ Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
   String recipeImagePathFull =
       await PathProvider.pP.getRecipePathFull(recipeName, dataType);
 
-  saveImage(pictureFile, recipeImagePathFull, 2000);
+  await saveImage(pictureFile, recipeImagePathFull, 2000);
   String recipeImagePreviewPathFull =
       await PathProvider.pP.getRecipePreviewPathFull(recipeName, dataType);
-  saveImage(pictureFile, recipeImagePreviewPathFull, 300);
+  await saveImage(pictureFile, recipeImagePreviewPathFull, 300);
 }
 
 Future<void> deleteRecipeImageIfExists(String recipeName) async {
@@ -173,13 +183,13 @@ Future<void> deleteStepImage(
     String recipeName, int stepNumber, String imageFileName) async {
   PathProvider.pP
       .getRecipeStepPreviewNumberDirFull(recipeName, stepNumber)
-      .then((path) {
-    File(path + 'p-' + imageFileName).deleteSync();
+      .then((path) async {
+    await File(path + '/p-$imageFileName').delete();
   });
   PathProvider.pP
       .getRecipeStepNumberDirFull(recipeName, stepNumber)
       .then((path) {
-    File(path + imageFileName).deleteSync();
+    File(path + "/$imageFileName").deleteSync();
   });
 }
 
@@ -221,18 +231,18 @@ Future<String> saveStepImage(File newImage, int stepNumber,
 
   String stepImagePathFull =
       await PathProvider.pP.getRecipeStepNumberDirFull(recipeName, stepNumber) +
-          newStepImageName;
+          "/$newStepImageName";
 
-  saveImage(
+  await saveImage(
     newImage,
     stepImagePathFull,
     2000,
   );
-  saveImage(
+  await saveImage(
     newImage,
     await PathProvider.pP
             .getRecipeStepPreviewNumberDirFull(recipeName, stepNumber) +
-        newStepImagePreviewName,
+        "/$newStepImagePreviewName",
     250,
   );
   return stepImagePathFull;

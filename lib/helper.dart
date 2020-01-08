@@ -78,12 +78,14 @@ bool validateNumber(String text) {
   }
 }
 
-List<String> removeEmptyStrings(List<TextEditingController> list) {
-  List<String> output = [];
+List<String> removeTrailingEmptyStrings(List<String> list) {
+  List<String> output = List<String>.from(list);
 
-  for (int i = 0; i < list.length; i++) {
-    if (list[i].text != "") {
-      output.add(list[i].text);
+  for (int i = list.length - 1; i >= 0; i--) {
+    if (list[i] == "") {
+      output.removeLast();
+    } else {
+      break;
     }
   }
   return output;

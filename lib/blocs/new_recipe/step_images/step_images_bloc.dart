@@ -60,7 +60,7 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
         event.stepImage.substring(event.stepImage.lastIndexOf('/') + 1);
 
     if (!editingStepImages.contains(event.stepImage)) {
-      IO.deleteStepImage(
+      await IO.deleteStepImage(
         event.editingRecipe ? 'edit' : 'tmp',
         event.stepNumber,
         stepImageName,
@@ -88,12 +88,12 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
   Stream<StepImagesState> _mapRemoveStepToState(RemoveStep event) async* {
     if ((state as LoadedStepImages).stepImages.length != 1) {
       String stepPath = await PathProvider.pP.getRecipeStepNumberDirFull(
-          event.recipeName, (state as LoadedStepImages).stepImages.length);
-      Directory(stepPath).delete(recursive: true);
+          event.recipeName, (state as LoadedStepImages).stepImages.length - 1);
+      await Directory(stepPath).delete(recursive: true);
 
       String stepPreviewPath = await PathProvider.pP
-          .getRecipeStepPreviewNumberDirFull(
-              event.recipeName, (state as LoadedStepImages).stepImages.length);
+          .getRecipeStepPreviewNumberDirFull(event.recipeName,
+              (state as LoadedStepImages).stepImages.length - 1);
       await Directory(stepPreviewPath).delete(recursive: true);
 
       yield LoadedStepImages((state as LoadedStepImages)

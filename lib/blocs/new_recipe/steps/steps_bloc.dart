@@ -42,10 +42,28 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
 
   Stream<StepsState> _mapFinishedEditingToState(FinishedEditing event) async* {
     if (state is SCanSave) {
+      bool stepImagesValid = true;
+      for (int i = event.steps.length; i < stepImages.length; i++) {
+        if (stepImages[i].length != 0) {
+          stepImagesValid = false;
+          break;
+        }
+      }
+      if (!stepImagesValid) {
+        yield SCanSave(isValid: false, time: DateTime.now());
+        return;
+      }
+
       if (event.goBack) {
         yield SEditingFinishedGoBack();
       } else {
         yield SEditingFinished();
+      }
+
+      if (event.steps.length > 1) {
+        for (int i = event.steps.length - 1; i < stepImages.length; i++) {
+          stepImages.removeLast();
+        }
       }
 
       Recipe newRecipe;

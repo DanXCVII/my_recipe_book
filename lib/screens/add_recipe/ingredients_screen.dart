@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:my_recipe_book/screens/add_recipe/steps_screen/steps_screen.dart';
 import 'package:my_recipe_book/widgets/ingredients_section.dart';
 
@@ -247,15 +248,18 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
 
     switch (v) {
       case Validator.REQUIRED_FIELDS:
-        showRequiredFieldsDialog(context);
+        MyDialogs.showInfoDialog(S.of(context).check_filled_in_information,
+            S.of(context).check_filled_in_information_description, context);
         break;
-
       case Validator.INGREDIENTS_NOT_VALID:
-        showIngredientsIncompleteDialog(context);
+        MyDialogs.showInfoDialog(S.of(context).check_ingredients_input,
+            S.of(context).check_ingredients_input_description, context);
         break;
       case Validator.GLOSSARY_NOT_VALID:
-        showIngredientsGlossaryIncomplete(context);
+        MyDialogs.showInfoDialog(S.of(context).check_ingredient_section_fields,
+            S.of(context).check_ingredient_section_fields_description, context);
         break;
+
       default:
         _saveIngredientsData(false);
         break;

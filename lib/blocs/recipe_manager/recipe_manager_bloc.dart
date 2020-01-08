@@ -1,9 +1,9 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:my_recipe_book/blocs/category_overview/category_overview_bloc.dart';
-import '../../hive.dart';
+
 import './recipe_manager.dart';
+import '../../hive.dart';
 
 class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   @override

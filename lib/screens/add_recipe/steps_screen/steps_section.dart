@@ -116,7 +116,7 @@ class _StepsState extends State<Steps> {
                                       .add(RemoveImage(
                                     state.stepImages[i][j],
                                     i,
-                                    widget.editRecipeName == null
+                                    widget.editRecipeName == 'tmp'
                                         ? false
                                         : true,
                                   ));
@@ -130,7 +130,7 @@ class _StepsState extends State<Steps> {
                                         .add(AddImage(
                                       newImage,
                                       i,
-                                      widget.editRecipeName == null
+                                      widget.editRecipeName == 'tmp'
                                           ? false
                                           : true,
                                     ));

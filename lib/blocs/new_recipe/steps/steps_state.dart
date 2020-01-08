@@ -9,7 +9,15 @@ abstract class StepsState extends Equatable {
   List<Object> get props => [];
 }
 
-class SCanSave extends StepsState {}
+class SCanSave extends StepsState {
+  final bool isValid;
+  final DateTime time;
+
+  SCanSave({this.isValid, this.time});
+
+  @override
+  List<Object> get props => [isValid, time];
+}
 
 class SSavingTmpData extends StepsState {}
 

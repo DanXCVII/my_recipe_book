@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import 'package:my_recipe_book/screens/add_recipe/nutritions.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -156,6 +157,9 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
                   providers: [
+                    BlocProvider<ClearRecipeBloc>(
+                      builder: (context) => ClearRecipeBloc(),
+                    ),
                     BlocProvider<GeneralInfoBloc>(
                       builder: (context) => GeneralInfoBloc(),
                     ),
@@ -209,15 +213,18 @@ class MyApp extends StatelessWidget {
               final AddRecipeNutritionsArguments args = settings.arguments;
 
               return MaterialPageRoute(
-                builder: (context) => BlocProvider<NutritionManagerBloc>(
-                  builder: (context) =>
-                      NutritionManagerBloc()..add(LoadNutritionManager()),
-                  child: BlocProvider<NutritionsBloc>(
-                    builder: (context) => NutritionsBloc(),
-                    child: AddRecipeNutritions(
-                      modifiedRecipe: args.modifiedRecipe,
-                      editingRecipeName: args.editingRecipeName,
-                    ),
+                builder: (context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<NutritionManagerBloc>(
+                        builder: (context) => NutritionManagerBloc()
+                          ..add(LoadNutritionManager())),
+                    BlocProvider<NutritionsBloc>(
+                      builder: (context) => NutritionsBloc(),
+                    )
+                  ],
+                  child: AddRecipeNutritions(
+                    modifiedRecipe: args.modifiedRecipe,
+                    editingRecipeName: args.editingRecipeName,
                   ),
                 ),
               );

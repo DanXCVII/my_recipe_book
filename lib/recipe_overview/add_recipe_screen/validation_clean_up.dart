@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/helper.dart';
+import 'package:my_recipe_book/hive.dart';
 
 import '../../database.dart';
 import '../../models/ingredient.dart';
@@ -82,7 +83,7 @@ class RecipeValidator {
       ingredientGlossaryController,
     ))
       return Validator.GLOSSARY_NOT_VALID;
-    else if (!editingRecipe && await DBProvider.db.doesRecipeExist(recipeName))
+    else if (!editingRecipe && await HiveProvider().doesRecipeExist(recipeName))
       return Validator.NAME_TAKEN;
     else
       return Validator.VALID;

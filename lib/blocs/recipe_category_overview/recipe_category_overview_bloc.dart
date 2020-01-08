@@ -68,7 +68,9 @@ class RecipeCategoryOverviewBloc
     for (String category in categories) {
       List<Recipe> categoryRecipeList =
           await HiveProvider().getCategoryRecipes(category);
-      categoryRecipes.add(Tuple2(category, categoryRecipeList));
+      if (categoryRecipeList.isNotEmpty) {
+        categoryRecipes.add(Tuple2(category, categoryRecipeList));
+      }
     }
 
     yield LoadedRecipeCategoryOverview(categoryRecipes);

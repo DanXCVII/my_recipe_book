@@ -303,6 +303,15 @@ class HiveProvider {
   }
 
   ////////////// condition recipe getters //////////////
+  Future<bool> doesRecipeExist(String recipeName) async {
+    if (await lazyBoxRecipes.get(getHiveKey(recipeName)) == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  /// returns the recipe if it exists and otherwise null
   Future<Recipe> getRecipeByName(String name) async {
     Recipe recipe = await lazyBoxRecipes.get(getHiveKey(name));
 

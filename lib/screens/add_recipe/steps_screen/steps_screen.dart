@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/screens/add_recipe/nutritions.dart';
 
 import '../../../blocs/new_recipe/steps/steps.dart';
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
@@ -10,8 +9,10 @@ import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../models/recipe.dart';
 import '../../../my_wrapper.dart';
+import '../../../recipe_overview/add_recipe_screen/validator/dialogs.dart';
 import '../../../routes.dart';
 import '../../../widgets/complexity_section.dart';
+import '../nutritions.dart';
 import 'steps_section.dart';
 
 /// arguments which are provided to the route, when pushing to it
@@ -94,6 +95,9 @@ class _StepsScreenState extends State<StepsScreen> {
                 } else if (state is SSavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
+                } else if (state is SCanSave && state.isValid == false) {
+                  MyDialogs.showInfoDialog(
+                      "too many images for the steps", "lol", context);
                 }
               },
               child: BlocBuilder<StepsBloc, StepsState>(
@@ -165,7 +169,8 @@ class _StepsScreenState extends State<StepsScreen> {
           goBack,
           complexity.myDouble.round(),
           notesController.text,
-          removeEmptyStrings(stepsDescController),
+          removeTrailingEmptyStrings(
+              stepsDescController.map((item) => item.text).toList()),
         ),
       );
     else {
@@ -175,7 +180,8 @@ class _StepsScreenState extends State<StepsScreen> {
           goBack,
           complexity.myDouble.round(),
           notesController.text,
-          removeEmptyStrings(stepsDescController),
+          removeTrailingEmptyStrings(
+              stepsDescController.map((item) => item.text).toList()),
         ),
       );
     }
@@ -191,7 +197,9 @@ class _StepsScreenState extends State<StepsScreen> {
 
     if (widget.modifiedRecipe.steps != null)
       for (int i = 0; i < widget.modifiedRecipe.steps.length; i++) {
-        stepsDescController.add(TextEditingController());
+        if (i > 0) {
+          stepsDescController.add(TextEditingController());
+        }
 
         stepsDescController[i].text = widget.modifiedRecipe.steps[i];
       }
