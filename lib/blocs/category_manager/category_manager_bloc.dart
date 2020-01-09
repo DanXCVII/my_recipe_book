@@ -113,8 +113,8 @@ class CategoryManagerBloc
   }
 
   @override
-  void close() {
+  Future<void> close() {
     subscription.cancel();
-    super.close();
+    return super.close();
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'package:bloc/bloc.dart';
 import '../../hive.dart';
 import './nutrition_manager.dart';
@@ -35,9 +36,10 @@ class NutritionManagerBloc
       AddNutrition event) async* {
     if (state is LoadedNutritionManager) {
       await HiveProvider().addNutrition(event.nutrition);
+
       final List<String> nutritions =
-          List<String>.from((state as LoadedNutritionManager).nutritions)
-            ..add(event.nutrition);
+          List<String>.from((state as LoadedNutritionManager).nutritions);
+      nutritions.add(event.nutrition);
 
       yield LoadedNutritionManager(nutritions);
     }

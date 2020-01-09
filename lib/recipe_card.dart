@@ -291,7 +291,7 @@ void pushVegetableRoute(BuildContext recipeCardContext, Vegetable vegetable) {
       recipeCardContext,
       CupertinoPageRoute(
         builder: (BuildContext context) => new BlocProvider<RecipeOverviewBloc>(
-          builder: (context) => RecipeOverviewBloc(
+          create: (context) => RecipeOverviewBloc(
               recipeManagerBloc:
                   BlocProvider.of<RecipeManagerBloc>(recipeCardContext))
             ..add(LoadVegetableRecipeOverview(vegetable)),

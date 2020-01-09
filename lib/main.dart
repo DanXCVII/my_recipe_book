@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     return BlocProvider<RecipeManagerBloc>(
-      builder: (context) => RecipeManagerBloc(),
+      create: (context) => RecipeManagerBloc(),
       child: MaterialApp(
         localizationsDelegates: [
           S.delegate,
@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
             case "/":
               return MaterialPageRoute(
                 builder: (context) => BlocProvider<SplashScreenBloc>(
-                  builder: (context) =>
+                  create: (context) =>
                       SplashScreenBloc()..add(SPInitializeData(context)),
                   child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
                       builder: (context, state) {
@@ -91,36 +91,36 @@ class MyApp extends StatelessWidget {
                       return SplashScreen();
                     } else if (state is InitializedData) {
                       return BlocProvider<AppBloc>(
-                        builder: (context) => AppBloc()
+                        create: (context) => AppBloc()
                           ..add(InitializeData(context,
                               state.recipeCategoryOverview, state.showIntro)),
                         child: MultiBlocProvider(providers: [
                           BlocProvider<CategoryOverviewBloc>(
-                            builder: (context) => CategoryOverviewBloc(
+                            create: (context) => CategoryOverviewBloc(
                               recipeManagerBloc:
                                   BlocProvider.of<RecipeManagerBloc>(context),
                             )..add(COLoadCategoryOverview()),
                           ),
                           BlocProvider<RecipeCategoryOverviewBloc>(
-                            builder: (context) => RecipeCategoryOverviewBloc(
+                            create: (context) => RecipeCategoryOverviewBloc(
                               recipeManagerBloc:
                                   BlocProvider.of<RecipeManagerBloc>(context),
                             )..add(RCOLoadRecipeCategoryOverview()),
                           ),
                           BlocProvider<FavoriteRecipesBloc>(
-                              builder: (context) => FavoriteRecipesBloc(
+                              create: (context) => FavoriteRecipesBloc(
                                     recipeManagerBloc:
                                         BlocProvider.of<RecipeManagerBloc>(
                                             context),
                                   )..add(LoadFavorites())),
                           BlocProvider<RandomRecipeExplorerBloc>(
-                            builder: (context) => RandomRecipeExplorerBloc(
+                            create: (context) => RandomRecipeExplorerBloc(
                               recipeManagerBloc:
                                   BlocProvider.of<RecipeManagerBloc>(context),
                             )..add(InitializeRandomRecipeExplorer()),
                           ),
                           BlocProvider<ShoppingCartBloc>(
-                            builder: (context) =>
+                            create: (context) =>
                                 ShoppingCartBloc()..add(LoadShoppingCart()),
                           ),
                         ], child: MyHomePage()),
@@ -137,7 +137,7 @@ class MyApp extends StatelessWidget {
 
               return MaterialPageRoute(
                 builder: (context) => BlocProvider<RecipeScreenIngredientsBloc>(
-                  builder: (context) => RecipeScreenIngredientsBloc(
+                  create: (context) => RecipeScreenIngredientsBloc(
                       shoppingCartBloc: args.shoppingCartBloc)
                     ..add(InitializeIngredients(
                       args.recipe.name,
@@ -158,13 +158,13 @@ class MyApp extends StatelessWidget {
                 builder: (context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<ClearRecipeBloc>(
-                      builder: (context) => ClearRecipeBloc(),
+                      create: (context) => ClearRecipeBloc(),
                     ),
                     BlocProvider<GeneralInfoBloc>(
-                      builder: (context) => GeneralInfoBloc(),
+                      create: (context) => GeneralInfoBloc(),
                     ),
                     BlocProvider<CategoryManagerBloc>(
-                      builder: (context) => CategoryManagerBloc(
+                      create: (context) => CategoryManagerBloc(
                           recipeManagerBloc:
                               BlocProvider.of<RecipeManagerBloc>(context))
                         ..add(InitializeCategoryManager()),
@@ -182,7 +182,7 @@ class MyApp extends StatelessWidget {
 
               return MaterialPageRoute(
                 builder: (context) => BlocProvider<IngredientsBloc>(
-                  builder: (context) => IngredientsBloc(),
+                  create: (context) => IngredientsBloc(),
                   child: IngredientsAddScreen(
                     modifiedRecipe: args.modifiedRecipe,
                     editingRecipeName: args.editingRecipeName,
@@ -195,11 +195,11 @@ class MyApp extends StatelessWidget {
 
               return MaterialPageRoute(
                 builder: (context) => BlocProvider<StepImagesBloc>(
-                  builder: (context) => StepImagesBloc()
+                  create: (context) => StepImagesBloc()
                     ..add(InitializeStepImages(
                         stepImages: args.modifiedRecipe.stepImages)),
                   child: BlocProvider<StepsBloc>(
-                    builder: (context) =>
+                    create: (context) =>
                         StepsBloc(BlocProvider.of<StepImagesBloc>(context)),
                     child: StepsScreen(
                       modifiedRecipe: args.modifiedRecipe,
@@ -216,10 +216,10 @@ class MyApp extends StatelessWidget {
                 builder: (context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<NutritionManagerBloc>(
-                        builder: (context) => NutritionManagerBloc()
+                        create: (context) => NutritionManagerBloc()
                           ..add(LoadNutritionManager())),
                     BlocProvider<NutritionsBloc>(
-                      builder: (context) => NutritionsBloc(),
+                      create: (context) => NutritionsBloc(),
                     )
                   ],
                   child: AddRecipeNutritions(
@@ -232,7 +232,7 @@ class MyApp extends StatelessWidget {
             case "/manage-categories":
               return MaterialPageRoute(
                 builder: (context) => BlocProvider(
-                  builder: (context) => CategoryManagerBloc(
+                  create: (context) => CategoryManagerBloc(
                     recipeManagerBloc:
                         BlocProvider.of<RecipeManagerBloc>(context),
                   )..add(InitializeCategoryManager()),
@@ -243,7 +243,7 @@ class MyApp extends StatelessWidget {
             case "/manage-nutritions":
               return MaterialPageRoute(
                 builder: (context) => BlocProvider<NutritionManagerBloc>(
-                  builder: (context) =>
+                  create: (context) =>
                       NutritionManagerBloc()..add(LoadNutritionManager()),
                   child: NutritionManager(),
                 ),

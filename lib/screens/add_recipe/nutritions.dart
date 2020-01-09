@@ -37,33 +37,15 @@ class AddRecipeNutritions extends StatefulWidget {
 }
 
 class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
+  bool isInitialized = false;
   static final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   Map<String, TextEditingController> nutritionsController = {};
   List<Key> dismissibleKeys = [];
   List<Key> listTileKeys = [];
-  Box<List<String>> boxNutritions;
 
   @override
   void initState() {
     super.initState();
-    boxNutritions = Hive.box<List<String>>('order');
-    List<String> nutritions = boxNutritions.get('nutritions');
-
-    if (nutritions.isNotEmpty) {
-      for (int i = 0; i < nutritions.length; i++) {
-        String currentNutrition = nutritions[i];
-
-        nutritionsController
-            .addAll({currentNutrition: TextEditingController()});
-        for (Nutrition en in widget.modifiedRecipe.nutritions) {
-          if (en.name.compareTo(currentNutrition) == 0) {
-            nutritionsController[currentNutrition].text = en.amountUnit;
-          }
-        }
-        dismissibleKeys.add(Key('D-$currentNutrition'));
-        listTileKeys.add(Key(currentNutrition));
-      }
-    }
   }
 
   @override
@@ -76,122 +58,152 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NutritionManagerBloc, NutritionManagerState>(
-      builder: (context, state) {
-        if (state is LoadingNutritionManager) {
-          return _getNutritionManagerLoadingScreen();
-        } else if (state is LoadedNutritionManager) {
-          int i = -1;
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(S.of(context).add_nutritions),
-              actions: <Widget>[
-                BlocListener<NutritionsBloc, NutritionsState>(
-                  listener: (context, state) {
-                    if (state is NEditingFinishedGoBack) {
-                      // TODO: internationalize
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(content: Text('saving your input...')));
-                    } else if (state is NSavedGoBack) {
-                      Scaffold.of(context).hideCurrentSnackBar();
-                      Navigator.popUntil(context,
-                          ModalRoute.withName(RouteNames.recipeScreen));
-                    } else if (state is NSaved) {
-                      // TODO: differentiate between editing and new Recipe
-                      Navigator.popUntil(context,
-                          ModalRoute.withName(RouteNames.loadingScreen));
-                      Navigator.popAndPushNamed(
-                        context,
-                        RouteNames.recipeScreen,
-                        arguments: RecipeScreenArguments(
-                          BlocProvider.of<ShoppingCartBloc>(context),
-                          state.recipe,
-                          getRecipePrimaryColor(
-                              widget.modifiedRecipe.vegetable),
-                          'heroImageTag',
-                        ),
-                      );
-                    }
-                  },
-                  child: BlocBuilder<NutritionsBloc, NutritionsState>(
-                    builder: (context, state) {
-                      if (state is NSavingTmpData) {
-                        return Icon(
-                          Icons.check,
-                          color: Colors.grey,
-                        );
-                      } else if (state is NCanSave || state is NSaved) {
-                        return IconButton(
-                          icon: Icon(Icons.check),
-                          color: Colors.white,
-                          onPressed: () {
-                            _finishedEditingNutritions(false);
-                          },
-                        );
-                      } else if (state is NEditingFinished) {
-                        return CircularProgressIndicator();
-                      } else {
-                        return Icon(Icons.check);
-                      }
-                    },
-                  ),
-                )
-              ],
-            ),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: Color(0xFF790604),
-              child: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                listTileKeys.add(Key('${listTileKeys.length}'));
-                dismissibleKeys.add(Key('D-${dismissibleKeys.length}'));
-                showDialog(
-                  context: context,
-                  builder: (_) => TextFieldDialog(
-                    validation: (String name) {
-                      if (state.nutritions.contains(name)) {
-                        return 'nutrition already exists';
-                      } else {
-                        return null;
-                      }
-                    },
-                    save: (String name) {
-                      BlocProvider.of<NutritionManagerBloc>(context)
-                          .add(AddNutrition(name));
-                    },
-                    hintText: 'nutrition name',
-                  ),
-                );
-              },
-            ),
-            body: state.nutritions.isEmpty
-                ? Center(
-                    child: Text(S.of(context).you_have_no_nutritions),
-                  )
-                : Form(
-                    key: _formKey,
-                    child: ReorderableListView(
-                      onReorder: (oldIndex, newIndex) {
-                        BlocProvider.of<NutritionManagerBloc>(context)
-                            .add(MoveNutrition(oldIndex, newIndex));
-                      },
-                      children: state.nutritions.map((currentNutrition) {
-                        i++;
-
-                        return _getNutritionListTile(currentNutrition, context,
-                            listTileKeys[i], state.nutritions);
-                      }).toList(),
-                    ),
-                  ),
-          );
-        } else {
-          return Text(state.toString());
+    return BlocListener<NutritionManagerBloc, NutritionManagerState>(
+      listener: (context, state) {
+        if (state is LoadedNutritionManager) {
+          if (!isInitialized) {
+            _initializeData(state.nutritions);
+          } else {
+            if (state.nutritions.length > listTileKeys.length) {
+              nutritionsController
+                  .addAll({state.nutritions.last: TextEditingController()});
+              listTileKeys.add(Key(state.nutritions.last));
+              dismissibleKeys.add(Key('D-${state.nutritions.last}'));
+            } else if (state.nutritions.length < listTileKeys.length) {
+              nutritionsController.remove(state.nutritions.last);
+              listTileKeys.removeLast();
+              dismissibleKeys.removeLast();
+            }
+          }
         }
       },
+      child: BlocBuilder<NutritionManagerBloc, NutritionManagerState>(
+        builder: (context, state) {
+          if (state is LoadingNutritionManager) {
+            return _getNutritionManagerLoadingScreen();
+          } else if (state is LoadedNutritionManager) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(S.of(context).add_nutritions),
+                actions: <Widget>[
+                  BlocListener<NutritionsBloc, NutritionsState>(
+                    listener: (context, state) {
+                      if (state is NEditingFinishedGoBack) {
+                        // TODO: internationalize
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(content: Text('saving your input...')));
+                      } else if (state is NSavedGoBack) {
+                        Scaffold.of(context).hideCurrentSnackBar();
+                        Navigator.popUntil(context,
+                            ModalRoute.withName(RouteNames.recipeScreen));
+                      } else if (state is NSaved) {
+                        // TODO: differentiate between editing and new Recipe
+                        Navigator.popUntil(context,
+                            ModalRoute.withName(RouteNames.loadingScreen));
+                        Navigator.popAndPushNamed(
+                          context,
+                          RouteNames.recipeScreen,
+                          arguments: RecipeScreenArguments(
+                            BlocProvider.of<ShoppingCartBloc>(context),
+                            state.recipe,
+                            getRecipePrimaryColor(
+                                widget.modifiedRecipe.vegetable),
+                            'heroImageTag',
+                          ),
+                        );
+                      }
+                    },
+                    child: BlocBuilder<NutritionsBloc, NutritionsState>(
+                      builder: (context, state) {
+                        if (state is NSavingTmpData) {
+                          return Icon(
+                            Icons.check,
+                            color: Colors.grey,
+                          );
+                        } else if (state is NCanSave || state is NSaved) {
+                          return IconButton(
+                            icon: Icon(Icons.check),
+                            color: Colors.white,
+                            onPressed: () {
+                              _finishedEditingNutritions(false);
+                            },
+                          );
+                        } else if (state is NEditingFinished) {
+                          return CircularProgressIndicator();
+                        } else {
+                          return Icon(Icons.check);
+                        }
+                      },
+                    ),
+                  )
+                ],
+              ),
+              floatingActionButton: FloatingActionButton(
+                backgroundColor: Color(0xFF790604),
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  listTileKeys.add(Key('${listTileKeys.length}'));
+                  dismissibleKeys.add(Key('D-${dismissibleKeys.length}'));
+                  showDialog(
+                    context: context,
+                    builder: (_) => TextFieldDialog(
+                      validation: (String name) {
+                        if (state.nutritions.contains(name)) {
+                          return 'nutrition already exists';
+                        } else {
+                          return null;
+                        }
+                      },
+                      save: (String name) {
+                        BlocProvider.of<NutritionManagerBloc>(context)
+                            .add(AddNutrition(name));
+                      },
+                      hintText: 'nutrition name',
+                    ),
+                  );
+                },
+              ),
+              body: state.nutritions.isEmpty
+                  ? Center(
+                      child: Text(S.of(context).you_have_no_nutritions),
+                    )
+                  : Form(
+                      key: _formKey,
+                      child: ReorderableListView(
+                        onReorder: (oldIndex, newIndex) {
+                          BlocProvider.of<NutritionManagerBloc>(context)
+                              .add(MoveNutrition(oldIndex, newIndex));
+                        },
+                        children: List<Widget>.generate(
+                          state.nutritions.length,
+                          (i) => _getNutritionListTile(state.nutritions[i],
+                              context, listTileKeys[i], state.nutritions),
+                        ),
+                      ),
+                    ),
+            );
+          } else {
+            return Text(state.toString());
+          }
+        },
+      ),
     );
+  }
+
+  void _initializeData(List<String> nutritions) {
+    for (String nutritionName in nutritions) {
+      nutritionsController.addAll({nutritionName: TextEditingController()});
+      dismissibleKeys.add(Key('D-$nutritionName'));
+      listTileKeys.add(Key(nutritionName));
+      for (Nutrition nutrition in widget.modifiedRecipe.nutritions) {
+        if (nutrition.name == nutritionName) {
+          nutritionsController[nutritionName].text = nutrition.amountUnit;
+        }
+      }
+    }
   }
 
   Widget _getNutritionManagerLoadingScreen() {

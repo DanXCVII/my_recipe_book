@@ -261,7 +261,7 @@ void _pushCategoryRoute(
       rCategoryOverviewContext,
       CupertinoPageRoute(
         builder: (BuildContext context) => new BlocProvider<RecipeOverviewBloc>(
-          builder: (context) => RecipeOverviewBloc(
+          create: (context) => RecipeOverviewBloc(
               recipeManagerBloc:
                   BlocProvider.of<RecipeManagerBloc>(rCategoryOverviewContext))
             ..add(LoadCategoryRecipeOverview(

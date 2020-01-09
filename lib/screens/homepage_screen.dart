@@ -174,7 +174,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       showDialog(
         context: context,
         builder: (context) => BlocProvider<ImportRecipeBloc>(
-          builder:
+          create:
               (context) => // TODO: probably wrong context and need context of initState()
                   ImportRecipeBloc(BlocProvider.of<RecipeManagerBloc>(context)),
           child: getImportRecipeDialog(importZipFile),

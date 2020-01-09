@@ -941,7 +941,7 @@ class _CategoryCircleState extends State<CategoryCircle> {
               MaterialPageRoute(
                 builder: (BuildContext context) =>
                     BlocProvider<RecipeOverviewBloc>(
-                  builder: (context) => RecipeOverviewBloc(
+                  create: (context) => RecipeOverviewBloc(
                       recipeManagerBloc:
                           BlocProvider.of<RecipeManagerBloc>(context))
                     ..add(LoadCategoryRecipeOverview(widget.categoryName == null
