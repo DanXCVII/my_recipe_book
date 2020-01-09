@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/category_manager/category_manager.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_event.dart';
-import '../dialogs/add_nut_cat_dialog.dart';
+import '../dialogs/textfield_dialog.dart';
 import '../generated/i18n.dart';
 
 class CategoryManager extends StatelessWidget {

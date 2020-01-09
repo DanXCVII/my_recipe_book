@@ -22,7 +22,7 @@ import '../random_recipe/random_recipe.dart';
 import '../routes.dart';
 import '../search.dart';
 import '../settings/settings_screen.dart';
-import 'add_recipe/general_info_screen.dart';
+import 'add_recipe/general_info_screen/general_info_screen.dart';
 import 'category_gridview.dart';
 import 'favorite_screen.dart';
 import 'r_category_overview.dart';

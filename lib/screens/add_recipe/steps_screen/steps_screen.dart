@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/dialogs/info_dialog.dart';
 
 import '../../../blocs/new_recipe/steps/steps.dart';
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
@@ -9,7 +10,6 @@ import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../models/recipe.dart';
 import '../../../my_wrapper.dart';
-import '../../../recipe_overview/add_recipe_screen/validator/dialogs.dart';
 import '../../../routes.dart';
 import '../../../widgets/complexity_section.dart';
 import '../nutritions.dart';
@@ -96,8 +96,10 @@ class _StepsScreenState extends State<StepsScreen> {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
                 } else if (state is SCanSave && state.isValid == false) {
-                  MyDialogs.showInfoDialog(
-                      "too many images for the steps", "lol", context);
+                  showDialog(
+                      context: context,
+                      builder: (_) => InfoDialog(
+                          title: "too many images for the steps", body: "lol"));
                 }
               },
               child: BlocBuilder<StepsBloc, StepsState>(
