@@ -21,6 +21,8 @@ class CategoryGridView extends StatelessWidget {
             mainAxisSpacing: 4,
             crossAxisSpacing: 4,
             children: getCategories(state.categories));
+      } else {
+        return Text(state.toString());
       }
     });
   }

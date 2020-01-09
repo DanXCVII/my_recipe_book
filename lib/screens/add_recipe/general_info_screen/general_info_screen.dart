@@ -4,23 +4,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
-import 'package:my_recipe_book/blocs/new_recipe/clear_recipe/clear_recipe_event.dart';
-import 'package:my_recipe_book/blocs/new_recipe/clear_recipe/clear_recipe_state.dart';
-import 'package:my_recipe_book/hive.dart';
-import 'package:my_recipe_book/models/enums.dart';
 
-import '../../blocs/new_recipe/general_info/general_info.dart';
-import '../../generated/i18n.dart';
-import '../../helper.dart';
-import '../../local_storage/local_paths.dart';
-import '../../models/recipe.dart';
-import '../../recipe_overview/add_recipe_screen/categories_section.dart';
-import '../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
-import '../../recipe_overview/add_recipe_screen/validator/dialogs.dart';
-import '../../routes.dart';
-import '../../widgets/image_selector.dart' as IS;
-import 'ingredients_screen.dart';
+import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
+import '../../../blocs/new_recipe/clear_recipe/clear_recipe_event.dart';
+import '../../../blocs/new_recipe/clear_recipe/clear_recipe_state.dart';
+import '../../../blocs/new_recipe/general_info/general_info.dart';
+import '../../../dialogs/info_dialog.dart';
+import '../../../generated/i18n.dart';
+import '../../../helper.dart';
+import '../../../local_storage/local_paths.dart';
+import '../../../models/recipe.dart';
+import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
+import '../../../routes.dart';
+import '../../../widgets/image_selector.dart' as IS;
+import '../ingredients_screen.dart';
+import 'categories_section.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class GeneralInfoArguments {
@@ -290,14 +288,18 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
         .then((v) {
       switch (v) {
         case Validator.REQUIRED_FIELDS:
-          MyDialogs.showInfoDialog(
-              S.of(context).check_ingredient_section_fields,
-              S.of(context).check_filled_in_information_description,
-              context);
+          showDialog(
+              context: context,
+              builder: (_) => InfoDialog(
+                  title: S.of(context).check_ingredient_section_fields,
+                  body: S.of(context).check_filled_in_information_description));
           break;
         case Validator.NAME_TAKEN:
-          MyDialogs.showInfoDialog(S.of(context).recipename_taken,
-              S.of(context).recipename_taken_description, context);
+          showDialog(
+              context: context,
+              builder: (_) => InfoDialog(
+                  title: S.of(context).recipename_taken,
+                  body: S.of(context).recipename_taken_description));
           break;
 
         default:

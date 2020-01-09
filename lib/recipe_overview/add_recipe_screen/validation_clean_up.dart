@@ -142,33 +142,6 @@ List<String> getCleanGlossary(List<TextEditingController> glossary,
   return output;
 }
 
-/// creating list of list of ingredients with the data of the
-/// textEditingControllers. All lists must be the same size.
-/// The amount will be converted to a double, because the recipe
-/// saves the amount as a double
-List<List<Ingredient>> getIngredientsList(
-    List<List<TextEditingController>> ingredientNamesContr,
-    List<List<TextEditingController>> amountContr,
-    List<List<TextEditingController>> unitContr) {
-  List<List<Ingredient>> ingredients = [];
-
-  for (int i = 0; i < ingredientNamesContr.length; i++) {
-    ingredients.add([]);
-    for (int j = 0; j < ingredientNamesContr[i].length; j++) {
-      String ingredientName = ingredientNamesContr[i][j].text;
-      double amount = validateNumber(amountContr[i][j].text)
-          ? double.parse(
-              amountContr[i][j].text.replaceAll(new RegExp(r','), 'e'))
-          : null;
-      String unit = unitContr[i][j].text;
-      ingredients[i]
-          .add(Ingredient(name: ingredientName, amount: amount, unit: unit));
-    }
-  }
-
-  return ingredients;
-}
-
 /// removes all leading and trailing whitespaces and empty ingredients from the lists
 /// of ingredients and
 List<List<Ingredient>> getCleanIngredientData(

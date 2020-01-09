@@ -6,7 +6,7 @@ import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager.dart';
 import '../../blocs/new_recipe/nutritions/nutritions.dart';
 import '../../blocs/nutrition_manager/nutrition_manager.dart';
 import '../../blocs/shopping_cart/shopping_cart.dart';
-import '../../dialogs/add_nut_cat_dialog.dart';
+import '../../dialogs/textfield_dialog.dart';
 import '../../generated/i18n.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';

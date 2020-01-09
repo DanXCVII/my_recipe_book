@@ -5,7 +5,7 @@ import 'package:hive/hive.dart';
 
 import '../blocs/category_manager/category_manager_bloc.dart';
 import '../blocs/nutrition_manager/nutrition_manager.dart';
-import '../dialogs/add_nut_cat_dialog.dart';
+import '../dialogs/textfield_dialog.dart';
 import '../generated/i18n.dart';
 import '../models/nutrition.dart';
 import '../models/recipe.dart';
