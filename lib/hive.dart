@@ -166,8 +166,8 @@ class HiveProvider {
     await boxTmpRecipe.put(tmpRecipeKey, recipe);
   }
 
-  Future<void> deleteTmpRecipe() async {
-    await boxTmpRecipe.delete(tmpRecipeKey);
+  Future<void> resetTmpRecipe() async {
+    await boxTmpRecipe.put(tmpRecipeKey, Recipe(name: ""));
   }
 
 // TODO: Check for mistakes

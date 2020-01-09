@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager.dart';
 
 import '../../blocs/new_recipe/nutritions/nutritions.dart';
 import '../../blocs/nutrition_manager/nutrition_manager.dart';
@@ -233,6 +234,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
             ? widget.modifiedRecipe.categories
             : goBack,
         recipeNutritions,
+        BlocProvider.of<RecipeManagerBloc>(context),
       ),
     );
 

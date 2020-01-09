@@ -147,8 +147,8 @@ class Recipe extends Equatable {
 
   Recipe copyWith(
       {String name,
-      String imagePath,
-      String imagePreviewPath,
+      String imagePath = 'images/randomFood.jpg',
+      String imagePreviewPath = 'images/randomFood.jpg',
       double preperationTime,
       double cookingTime,
       double totalTime,

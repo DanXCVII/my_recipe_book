@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-abstract class NutritionManagerState extends Equatable {
+abstract class NutritionManagerState {
   const NutritionManagerState();
 }
 

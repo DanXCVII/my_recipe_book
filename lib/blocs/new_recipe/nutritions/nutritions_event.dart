@@ -19,10 +19,11 @@ class FinishedEditing extends NutritionsEvent {
   final List<Nutrition> nutritions;
 
   FinishedEditing(
-      [this.editingRecipeName,
-      this.goBack,
-      this.nutritions,
-      this.recipeManagerBloc]);
+    this.editingRecipeName,
+    this.goBack,
+    this.nutritions,
+    this.recipeManagerBloc,
+  );
 
   @override
   List<Object> get props => [
