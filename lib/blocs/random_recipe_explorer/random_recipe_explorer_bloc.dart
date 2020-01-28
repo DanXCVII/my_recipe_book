@@ -79,7 +79,7 @@ class RandomRecipeExplorerBloc
       ..insert(0, 'all categories');
 
     List<Recipe> randomRecipes = [];
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 50; i++) {
       randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory(
           category: event.selectedCategory == "all categories"
               ? null
@@ -202,7 +202,7 @@ class RandomRecipeExplorerBloc
       final int selectedCategory =
           (state as LoadedRandomRecipeExplorer).selectedCategory;
       final List<Recipe> randomRecipes = [];
-      for (int i = 0; i < 10; i++) {
+      for (int i = 0; i < 50; i++) {
         randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory(
             category:
                 selectedCategory == 0 ? null : categories[selectedCategory]));

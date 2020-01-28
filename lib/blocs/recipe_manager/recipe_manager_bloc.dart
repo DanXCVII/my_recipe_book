@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 
 import './recipe_manager.dart';
 import '../../hive.dart';
@@ -36,15 +37,18 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   }
 
   Stream<AddRecipeState> _mapAddRecipeToState(RMAddRecipe event) async* {
-    // TODO: Add recipe to hive
+    await HiveProvider().saveRecipe(event.recipe);
+
     yield AddRecipeState(event.recipe);
   }
 
   Stream<DeleteRecipeState> _mapDeleteRecipeToState(
       RMDeleteRecipe event) async* {
-    // TODO: Delete recipe from hive
-    // Maybe first yield and then delete data
-    yield DeleteRecipeState(event.recipe);
+    Recipe deletedRecipe =
+        await HiveProvider().getRecipeByName(event.recipeName);
+    yield DeleteRecipeState(deletedRecipe);
+
+    HiveProvider().deleteRecipe(deletedRecipe.name);
   }
 
   Stream<UpdateRecipeState> _mapUpdateRecipeToState(
@@ -72,14 +76,16 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   }
 
   Stream<AddFavoriteState> _mapAddFavoriteToState(RMAddFavorite event) async* {
-    // TODO: Add favorite in hive
-    yield AddFavoriteState(event.recipe);
+    await HiveProvider().addToFavorites(event.recipe);
+
+    yield AddFavoriteState(event.recipe.copyWith(isFavorite: true));
   }
 
   Stream<RemoveFavoriteState> _mapRemoveFavoriteToState(
       RMRemoveFavorite event) async* {
-    // TODO: Remove favorite from hive
-    yield RemoveFavoriteState(event.recipe);
+    await HiveProvider().removeFromFavorites(event.recipe);
+
+    yield RemoveFavoriteState(event.recipe.copyWith(isFavorite: false));
   }
 
   Stream<MoveCategoryState> _mapMoveCategoryToState(

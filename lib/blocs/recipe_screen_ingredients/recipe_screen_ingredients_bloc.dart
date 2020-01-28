@@ -134,6 +134,7 @@ class RecipeScreenIngredientsBloc
   Stream<RecipeScreenIngredientsState> _mapDecreaseServingsToState(
       DecreaseServings event) async* {
     if (state is LoadedRecipeIngredients) {
+      if (event.newServings == 0) return;
       final List<List<CheckableIngredient>> ingredients =
           (state as LoadedRecipeIngredients)
               .ingredients
@@ -141,7 +142,7 @@ class RecipeScreenIngredientsBloc
                     if (item.amount != null) {
                       return item.copyWith(
                           amount:
-                              ((event.newServings) / event.newServings + 1) *
+                              (event.newServings / (event.newServings + 1)) *
                                   item.amount);
                     }
                     return item;
@@ -166,7 +167,7 @@ class RecipeScreenIngredientsBloc
                     if (item.amount != null) {
                       return item.copyWith(
                           amount:
-                              ((event.newServings) / event.newServings - 1) *
+                              (event.newServings / (event.newServings - 1)) *
                                   item.amount);
                     }
                     return item;

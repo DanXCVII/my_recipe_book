@@ -77,12 +77,14 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
   }
 
   Stream<StepImagesState> _mapAddStepToState(AddStep event) async* {
-    yield LoadedStepImages((state as LoadedStepImages)
+    List<List<String>> stepImages = (state as LoadedStepImages)
         .stepImages
         .map<List<String>>(
             (list) => list.map<String>((element) => element).toList())
         .toList()
-          ..add([]));
+          ..add([]);
+
+    yield LoadedStepImages(stepImages);
   }
 
   Stream<StepImagesState> _mapRemoveStepToState(RemoveStep event) async* {

@@ -10,14 +10,14 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/recipe_overview/recipe_overview_event.dart';
 import '../blocs/recipe_overview/recipe_overview_state.dart';
-import '../database.dart';
+import '../blocs/shopping_cart/shopping_cart.dart';
 import '../generated/i18n.dart';
 import '../hive.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../models/recipe_sort.dart';
-import '../recipe_card.dart';
-import '../search.dart';
+import '../widgets/recipe_card.dart';
+import '../widgets/search.dart';
 
 Map<String, List<Color>> colors = {
   "${Vegetable.NON_VEGETARIAN.toString()}1": [
@@ -85,6 +85,16 @@ Map<String, List<Color>> colors = {
   ],
 };
 
+class RecipeGridViewArguments {
+  final String category;
+  final ShoppingCartBloc shoppingCartBloc;
+
+  RecipeGridViewArguments({
+    @required this.category,
+    @required this.shoppingCartBloc,
+  });
+}
+
 class RecipeGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -104,11 +114,12 @@ class RecipeGridView extends StatelessWidget {
                     IconButton(
                       icon: Icon(Icons.search),
                       onPressed: () {
-                        DBProvider.db.getRecipeNames().then((recipeNames) {
-                          showSearch(
-                              context: context,
-                              delegate: RecipeSearch(recipeNames));
-                        });
+                        showSearch(
+                            context: context,
+                            delegate: RecipeSearch(
+                              HiveProvider().getRecipeNames(),
+                              BlocProvider.of<ShoppingCartBloc>(context),
+                            ));
                       },
                     ),
                     PopupMenuButton<RSort>(
@@ -321,8 +332,15 @@ class NoRecipeCategory extends StatelessWidget {
 class Favorite extends StatelessWidget {
   final Recipe recipe;
   final double iconSize;
+  final Function addFavorite;
+  final Function removeFavorite;
 
-  Favorite(this.recipe, {this.iconSize});
+  Favorite(
+    this.recipe, {
+    @required this.addFavorite,
+    @required this.removeFavorite,
+    this.iconSize,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -331,20 +349,17 @@ class Favorite extends StatelessWidget {
         watchKeys: [HiveProvider().getHiveKey(recipe.name)],
         builder: (context, snapshot) {
           String hiveRecipeKey = HiveProvider().getHiveKey(recipe.name);
-          bool isFavorite = snapshot.get(hiveRecipeKey) == null ? false : true;
+          bool isFavorite = snapshot.get(hiveRecipeKey) != null ? true : false;
           return IconButton(
             iconSize: iconSize == null ? 24 : iconSize,
             color: isFavorite ? Colors.pink : Colors.white,
             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
             onPressed: () {
-              snapshot.get(hiveRecipeKey).then((recipe) {
-                if (recipe.isFavorite) {
-                  // widget.rKeeper.removeFromFavorites(widget.recipe.name);
-                  recipe.isFavorite = false;
-                } else {
-                  recipe.isFavorite = true;
-                }
-              });
+              if (!isFavorite) {
+                addFavorite();
+              } else {
+                removeFavorite();
+              }
             },
           );
         });

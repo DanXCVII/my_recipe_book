@@ -61,7 +61,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
       }
 
       if (event.steps.length > 1) {
-        for (int i = event.steps.length - 1; i < stepImages.length; i++) {
+        for (int i = event.steps.length; i < stepImages.length; i++) {
           stepImages.removeLast();
         }
       }

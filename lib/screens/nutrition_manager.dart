@@ -3,12 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:hive/hive.dart';
 
-import '../blocs/category_manager/category_manager_bloc.dart';
 import '../blocs/nutrition_manager/nutrition_manager.dart';
-import '../dialogs/textfield_dialog.dart';
 import '../generated/i18n.dart';
 import '../models/nutrition.dart';
 import '../models/recipe.dart';
+import '../widgets/dialogs/textfield_dialog.dart';
 
 class NutritionManager extends StatefulWidget {
   final String editRecipeName;

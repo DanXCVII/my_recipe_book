@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import './import_recipe.dart';
 import '../generated/i18n.dart';
 import '../intro_screen.dart';
-import '../screens/nutrition_manager.dart';
+import '../routes.dart';
 import '../theming.dart';
 import 'export_recipes_screen.dart';
 
@@ -22,12 +22,7 @@ class Settings extends StatelessWidget {
           ListTile(
               title: Text(S.of(context).manage_nutritions),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NutritionManager(),
-                  ),
-                );
+                Navigator.pushNamed(context, RouteNames.manageNutritions);
               }),
           Divider(),
           GestureDetector(

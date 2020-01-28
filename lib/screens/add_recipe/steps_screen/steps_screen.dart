@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/dialogs/info_dialog.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 
 import '../../../blocs/new_recipe/steps/steps.dart';
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
@@ -99,7 +99,9 @@ class _StepsScreenState extends State<StepsScreen> {
                   showDialog(
                       context: context,
                       builder: (_) => InfoDialog(
-                          title: "too many images for the steps", body: "lol"));
+                          title: "too many images for the steps",
+                          body:
+                              "you must have a description for the steps with images"));
                 }
               },
               child: BlocBuilder<StepsBloc, StepsState>(

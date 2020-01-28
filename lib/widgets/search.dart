@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/routes.dart';
 
-import 'blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'database.dart';
-import 'generated/i18n.dart';
-import 'models/recipe.dart';
-import 'recipe_overview/recipe_screen.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../generated/i18n.dart';
+import '../hive.dart';
+import '../models/recipe.dart';
+import '../routes.dart';
+import '../screens/recipe_screen.dart';
 
 class RecipeSearch extends SearchDelegate<SearchRecipe> {
   final List<String> recipeNames;
+  final ShoppingCartBloc shoppingCartBloc;
 
-  RecipeSearch(this.recipeNames);
+  RecipeSearch(this.recipeNames, this.shoppingCartBloc);
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -77,15 +77,15 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
           return ListTile(
             title: Text(resultRecipeNames[index ~/ 2]),
             onTap: () {
-              DBProvider.db
-                  .getRecipeByName(resultRecipeNames[index ~/ 2], true)
+              HiveProvider()
+                  .getRecipeByName(resultRecipeNames[index ~/ 2])
                   .then((recipe) {
                 close(context, null);
                 Navigator.pushNamed(
                   context,
                   RouteNames.recipeScreen,
                   arguments: RecipeScreenArguments(
-                    BlocProvider.of<ShoppingCartBloc>(context),
+                    shoppingCartBloc,
                     recipe,
                     getRecipePrimaryColor(recipe.vegetable),
                     'heroTag',

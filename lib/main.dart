@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -22,14 +23,14 @@ import 'blocs/nutrition_manager/nutrition_manager.dart';
 import 'blocs/random_recipe_explorer/random_recipe_explorer.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview.dart';
 import 'blocs/recipe_manager/recipe_manager.dart';
+import 'blocs/recipe_overview/recipe_overview_bloc.dart';
+import 'blocs/recipe_overview/recipe_overview_event.dart';
 import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients.dart';
 import 'blocs/shopping_cart/shopping_cart.dart';
 import 'blocs/splash_screen/splash_screen.dart';
 import 'blocs/splash_screen/splash_screen_event.dart';
 import 'blocs/splash_screen/splash_screen_state.dart';
 import 'generated/i18n.dart';
-import 'models/shopping_cart.dart';
-import 'recipe_overview/recipe_screen.dart';
 import 'screens/SplashScreen.dart';
 import 'screens/add_recipe/general_info_screen/general_info_screen.dart';
 import 'screens/add_recipe/ingredients_screen.dart';
@@ -38,27 +39,24 @@ import 'screens/add_recipe/steps_screen/steps_screen.dart';
 import 'screens/category_manager.dart';
 import 'screens/homepage_screen.dart';
 import 'screens/nutrition_manager.dart';
+import 'screens/recipe_overview.dart';
+import 'screens/recipe_screen.dart';
 
 void main() {
   debugPaintSizeEnabled = false;
   runApp(
     CustomTheme(
       initialThemeKey: MyThemeKeys.LIGHT,
-      child: MyApp(
-        ShoppingCartKeeper(),
-      ),
+      child: MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  final ShoppingCartKeeper scKeeper;
   final appTitle = 'Drawer Demo';
   static bool initialized = false;
 
-  MyApp(
-    this.scKeeper,
-  );
+  MyApp();
 
   @override
   Widget build(BuildContext context) {
@@ -208,6 +206,26 @@ class MyApp extends StatelessWidget {
                   ),
                 ),
               );
+
+            case "/recipe-categories":
+              final RecipeGridViewArguments args = settings.arguments;
+
+              return CupertinoPageRoute(
+                  builder: (BuildContext context) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider<ShoppingCartBloc>.value(
+                              value: args.shoppingCartBloc),
+                          BlocProvider<RecipeOverviewBloc>(
+                            create: (context) => RecipeOverviewBloc(
+                                recipeManagerBloc:
+                                    BlocProvider.of<RecipeManagerBloc>(context))
+                              ..add(
+                                LoadCategoryRecipeOverview(args.category),
+                              ),
+                          ),
+                        ],
+                        child: RecipeGridView(),
+                      ));
 
             case "/add-recipe/nutritions":
               final AddRecipeNutritionsArguments args = settings.arguments;

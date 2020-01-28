@@ -6,15 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_category_overview/recipe_category_overview.dart';
-import '../blocs/recipe_manager/recipe_manager_bloc.dart';
-import '../blocs/recipe_overview/recipe_overview_bloc.dart';
-import '../blocs/recipe_overview/recipe_overview_event.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
-import '../recipe_overview/recipe_screen.dart';
 import '../routes.dart';
 import 'recipe_overview.dart';
+import 'recipe_screen.dart';
 
 // Builds the Rows of all the categories
 
@@ -57,7 +54,12 @@ class RecipeRow extends StatelessWidget {
           padding: EdgeInsets.only(left: 20),
           child: GestureDetector(
             onTap: () {
-              _pushCategoryRoute(context, category);
+              Navigator.pushNamed(context, RouteNames.recipeCategories,
+                  arguments: RecipeGridViewArguments(
+                    shoppingCartBloc:
+                        BlocProvider.of<ShoppingCartBloc>(context),
+                    category: category == null ? 'no category' : category,
+                  ));
             },
             child: Padding(
               padding: const EdgeInsets.only(top: 12.0, bottom: 10.0, right: 8),
@@ -80,10 +82,12 @@ class RecipeRow extends StatelessWidget {
             ),
           ),
         ),
-        RecipeHozizontalList(
-          categoryName: category,
-          recipes: recipes,
-        )
+        recipes.isEmpty
+            ? Container()
+            : RecipeHozizontalList(
+                categoryName: category,
+                recipes: recipes,
+              )
       ],
     );
   }
@@ -106,7 +110,7 @@ class RecipeHozizontalList extends StatelessWidget {
       height: 135,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: recipes.length,
+        itemCount: recipes.length + 1,
         itemBuilder: (context, index) {
           double leftPadding = index == 0 ? 5 : 0;
 
@@ -209,7 +213,13 @@ class RecipeHozizontalList extends StatelessWidget {
               padding: EdgeInsets.only(left: 10, bottom: 40, right: 20),
               child: GestureDetector(
                 onTap: () {
-                  _pushCategoryRoute(context, categoryName);
+                  Navigator.pushNamed(context, RouteNames.recipeCategories,
+                      arguments: RecipeGridViewArguments(
+                          shoppingCartBloc:
+                              BlocProvider.of<ShoppingCartBloc>(context),
+                          category: categoryName == null
+                              ? 'no category'
+                              : categoryName));
                 },
                 child: Container(
                   height: 90,
@@ -253,20 +263,4 @@ class RecipeHozizontalList extends StatelessWidget {
       ),
     );
   }
-}
-
-void _pushCategoryRoute(
-    BuildContext rCategoryOverviewContext, String categoryName) {
-  Navigator.push(
-      rCategoryOverviewContext,
-      CupertinoPageRoute(
-        builder: (BuildContext context) => new BlocProvider<RecipeOverviewBloc>(
-          create: (context) => RecipeOverviewBloc(
-              recipeManagerBloc:
-                  BlocProvider.of<RecipeManagerBloc>(rCategoryOverviewContext))
-            ..add(LoadCategoryRecipeOverview(
-                categoryName == null ? 'no category' : categoryName)),
-          child: RecipeGridView(),
-        ),
-      ));
 }

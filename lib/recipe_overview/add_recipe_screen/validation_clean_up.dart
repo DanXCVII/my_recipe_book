@@ -53,7 +53,8 @@ class RecipeValidator {
       bool editingRecipe, String recipeName) async {
     if (!formKey.currentState.validate())
       return Validator.REQUIRED_FIELDS;
-    else if (!editingRecipe && await DBProvider.db.doesRecipeExist(recipeName))
+    else if (!editingRecipe &&
+        await HiveProvider().getRecipeByName(recipeName) != null)
       return Validator.NAME_TAKEN;
     else
       return Validator.VALID;

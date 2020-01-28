@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
-import 'package:my_recipe_book/helper.dart';
-import 'package:my_recipe_book/models/ingredient.dart';
-import 'package:my_recipe_book/models/shopping_cart.dart';
-import 'package:scoped_model/scoped_model.dart';
+
+import '../../blocs/shopping_cart/shopping_cart.dart';
+import '../../generated/i18n.dart';
+import '../../helper.dart';
+import '../../models/ingredient.dart';
 
 class AddShoppingCartDialog extends StatefulWidget {
   const AddShoppingCartDialog({Key key}) : super(key: key);

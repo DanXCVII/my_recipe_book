@@ -160,7 +160,7 @@ class PathProvider {
       for (int j = 0; j < stepImages[i].length; j++) {
         String currentImage = stepImages[i][j];
         output[i].add(dir +
-            'p-' +
+            '/p-' +
             currentImage.substring(
                 currentImage.lastIndexOf('/') + 1, currentImage.length));
       }

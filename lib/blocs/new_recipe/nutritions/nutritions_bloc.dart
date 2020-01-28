@@ -46,6 +46,7 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
         await HiveProvider().saveTmpRecipe(newRecipe);
       } else {
         await HiveProvider().resetTmpRecipe();
+        await IO.deleteRecipeData("tmp");
       }
     } else {
       Recipe nutritionRecipe = HiveProvider().getTmpEditingRecipe().copyWith(

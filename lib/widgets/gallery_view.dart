@@ -8,13 +8,13 @@ class GalleryPhotoView extends StatefulWidget {
   final List<String> heroTags;
   final int initialIndex;
   final PageController pageController;
-  final List<String> galleryItems;
+  final List<String> galleryImagePaths;
   final List<String> descriptions;
 
   GalleryPhotoView({
     this.heroTags,
     this.initialIndex,
-    @required this.galleryItems,
+    @required this.galleryImagePaths,
     this.descriptions,
   }) : pageController = PageController(initialPage: initialIndex);
 
@@ -50,7 +50,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
             PhotoViewGallery.builder(
               scrollPhysics: const BouncingScrollPhysics(),
               builder: _buildItem,
-              itemCount: widget.galleryItems.length,
+              itemCount: widget.galleryImagePaths.length,
               loadingChild: Center(child: CircularProgressIndicator()),
               backgroundDecoration: BoxDecoration(color: Colors.black),
               pageController: widget.pageController,
@@ -87,9 +87,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     return PhotoViewGalleryPageOptions(
-      imageProvider: widget.galleryItems[index] == 'images/randomFood.jpg'
-          ? AssetImage(widget.galleryItems[index])
-          : FileImage(File(widget.galleryItems[index])),
+      imageProvider: widget.galleryImagePaths[index] == 'images/randomFood.jpg'
+          ? AssetImage(widget.galleryImagePaths[index])
+          : FileImage(File(widget.galleryImagePaths[index])),
       initialScale: PhotoViewComputedScale.contained,
       minScale: PhotoViewComputedScale.contained * (1.0),
       maxScale: PhotoViewComputedScale.covered * 1.5,

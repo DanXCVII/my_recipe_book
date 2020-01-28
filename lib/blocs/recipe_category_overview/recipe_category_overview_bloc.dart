@@ -114,13 +114,12 @@ class RecipeCategoryOverviewBloc
   Stream<RecipeCategoryOverviewState> _mapAddCategoryToState(
       RCOAddCategory event) async* {
     if (state is LoadedRecipeCategoryOverview) {
-      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview = (state
-              as LoadedRecipeCategoryOverview)
-          .rCategoryOverview
-        ..insert(
-            (state as LoadedRecipeCategoryOverview).rCategoryOverview.length -
-                1,
-            Tuple2(event.category, []));
+      int categoryCount =
+          (state as LoadedRecipeCategoryOverview).rCategoryOverview.length;
+      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview =
+          (state as LoadedRecipeCategoryOverview).rCategoryOverview
+            ..insert(categoryCount == 0 ? 0 : categoryCount - 1,
+                Tuple2(event.category, []));
 
       yield LoadedRecipeCategoryOverview(recipeCategoryOverview);
     }

@@ -6,11 +6,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/category_manager/category_manager_state.dart';
-import '../../../blocs/new_recipe/general_info/general_info_bloc.dart';
-import '../../../blocs/new_recipe/general_info/general_info_event.dart';
 import '../../../blocs/recipe_manager/recipe_manager_event.dart';
-import '../../../dialogs/textfield_dialog.dart';
 import '../../../generated/i18n.dart';
+import '../../../widgets/dialogs/textfield_dialog.dart';
 
 class Consts {
   Consts._();
@@ -19,12 +17,14 @@ class Consts {
 }
 
 class CategorySection extends StatefulWidget {
+  final Function(String) onSelect;
+  final Function(String) onDeselect;
   final List<String> selectedCategories;
-  final bool editingRecipe;
 
   CategorySection({
     this.selectedCategories = const [],
-    @required this.editingRecipe,
+    @required this.onSelect,
+    @required this.onDeselect,
   });
 
   @override
@@ -96,7 +96,8 @@ class _CategorySectionState extends State<CategorySection> {
                           chipName: category,
                           isSelected:
                               widget.selectedCategories.contains(category),
-                          editingRecipe: widget.editingRecipe,
+                          onSelect: widget.onSelect,
+                          onDeselect: widget.onDeselect,
                         );
                       }).toList()
                         ..removeLast(),
@@ -116,13 +117,15 @@ class _CategorySectionState extends State<CategorySection> {
 class MyCategoryFilterChip extends StatefulWidget {
   final String chipName;
   final isSelected;
-  final bool editingRecipe;
+  final Function(String name) onSelect;
+  final Function(String name) onDeselect;
 
   MyCategoryFilterChip({
     Key key,
     this.chipName,
     this.isSelected,
-    this.editingRecipe,
+    @required this.onSelect,
+    @required this.onDeselect,
   });
 
   @override
@@ -149,16 +152,9 @@ class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
       onSelected: (isSelected) {
         setState(() {
           if (_isSelected == true) {
-            BlocProvider.of<GeneralInfoBloc>(context)
-                .add(RemoveCategoryFromRecipe(
-              widget.chipName,
-              widget.editingRecipe,
-            ));
+            widget.onDeselect(widget.chipName);
           } else {
-            BlocProvider.of<GeneralInfoBloc>(context).add(AddCategoryToRecipe(
-              widget.chipName,
-              widget.editingRecipe,
-            ));
+            widget.onSelect(widget.chipName);
           }
           _isSelected = isSelected;
         });

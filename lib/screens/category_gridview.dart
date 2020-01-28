@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/screens/recipe_overview.dart';
 
 import '../blocs/category_overview/category_overview_bloc.dart';
 import '../blocs/category_overview/category_overview_state.dart';
 import '../models/tuple.dart';
+import '../routes.dart';
 
 class CategoryGridView extends StatelessWidget {
   @override
@@ -54,19 +57,14 @@ class CategoryGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          // TODO: fix
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (BuildContext context) =>
-          //         BlocProvider<RecipeOverviewBloc>(
-          //       bloc: RecipeOverviewBloc(category: category),
-          //       child: RecipeGridView(
-          //         category: category,
-          //       ),
-          //     ),
-          //   ),
-          // );
+          Navigator.pushNamed(
+            context,
+            RouteNames.recipeCategories,
+            arguments: RecipeGridViewArguments(
+              shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
+              category: category == null ? 'no category' : category,
+            ),
+          );
         },
         child: GridTile(
           child: randomCategoryImage == 'images/randomFood.jpg'

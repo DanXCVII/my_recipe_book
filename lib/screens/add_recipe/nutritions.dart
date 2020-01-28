@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager.dart';
+import 'package:my_recipe_book/widgets/dialogs/textfield_dialog.dart';
 
 import '../../blocs/new_recipe/nutritions/nutritions.dart';
 import '../../blocs/nutrition_manager/nutrition_manager.dart';
 import '../../blocs/shopping_cart/shopping_cart.dart';
-import '../../dialogs/textfield_dialog.dart';
 import '../../generated/i18n.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
-import '../../recipe_overview/recipe_screen.dart';
 import '../../routes.dart';
+import '../recipe_screen.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class AddRecipeNutritionsArguments {
@@ -97,21 +97,32 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                         Scaffold.of(context).hideCurrentSnackBar();
                         Navigator.popUntil(context,
                             ModalRoute.withName(RouteNames.recipeScreen));
-                      } else if (state is NSaved) {
-                        // TODO: differentiate between editing and new Recipe
-                        Navigator.popUntil(context,
-                            ModalRoute.withName(RouteNames.loadingScreen));
                         Navigator.popAndPushNamed(
                           context,
                           RouteNames.recipeScreen,
                           arguments: RecipeScreenArguments(
                             BlocProvider.of<ShoppingCartBloc>(context),
-                            state.recipe,
+                            widget.modifiedRecipe,
                             getRecipePrimaryColor(
                                 widget.modifiedRecipe.vegetable),
                             'heroImageTag',
                           ),
                         );
+                      } else if (state is NSaved) {
+                        // TODO: differentiate between editing and new Recipe
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                        // Navigator.pushNamed(
+                        //   context,
+                        //   RouteNames.recipeScreen,
+                        //   arguments: RecipeScreenArguments(
+                        //     BlocProvider.of<ShoppingCartBloc>(context),
+                        //     state.recipe,
+                        //     getRecipePrimaryColor(
+                        //         widget.modifiedRecipe.vegetable),
+                        //     'heroImageTag',
+                        //   ),
+                        // );
                       }
                     },
                     child: BlocBuilder<NutritionsBloc, NutritionsState>(
@@ -237,26 +248,6 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
         BlocProvider.of<RecipeManagerBloc>(context),
       ),
     );
-
-    if (widget.editingRecipeName != null) {
-      Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.pop(context);
-
-      Navigator.popAndPushNamed(
-        context,
-        RouteNames.recipeScreen,
-        arguments: RecipeScreenArguments(
-          BlocProvider.of<ShoppingCartBloc>(context),
-          widget.modifiedRecipe,
-          getRecipePrimaryColor(widget.modifiedRecipe.vegetable),
-          'heroImageTag',
-        ),
-      );
-    } else {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    }
   }
 
   Widget _getNutritionListTile(String nutritionName, BuildContext context,

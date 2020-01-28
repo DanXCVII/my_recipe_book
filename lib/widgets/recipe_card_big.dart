@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/screens/recipe_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -9,8 +10,7 @@ import '../generated/i18n.dart';
 import '../helper.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
-import '../recipe_card.dart';
-import '../recipe_overview/recipe_screen.dart';
+import './recipe_card.dart';
 import '../routes.dart';
 
 class RecipeCardBig extends StatelessWidget {

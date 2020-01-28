@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_recipe_book/hive.dart';
-import 'package:my_recipe_book/intro_screen.dart';
-import 'package:my_recipe_book/models/shopping_cart.dart';
-import 'package:my_recipe_book/theming.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'hive.dart';
+import 'intro_screen.dart';
+import 'theming.dart';
 
 class Consts {
   Consts._();
@@ -13,12 +13,6 @@ class Consts {
 }
 
 class SplashScreen extends StatefulWidget {
-  final ShoppingCartKeeper sCKeeper;
-
-  SplashScreen({
-    @required this.sCKeeper,
-  });
-
   @override
   State<StatefulWidget> createState() {
     return SplashScreenState();
@@ -61,7 +55,6 @@ class SplashScreenState extends State<SplashScreen> {
     _initShoppingListScreen(prefs);
     _initRecipeOverviewScreen(prefs);
     _initTheme(prefs);
-    await widget.sCKeeper.initCart();
 
     // delete cache
     // await getTemporaryDirectory()

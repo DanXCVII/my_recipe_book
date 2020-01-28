@@ -2,33 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/widgets/recipe_card.dart';
 
 import '../blocs/favorite_recipes/favorite_recipes.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
-import '../recipe_card.dart';
 
 class FavoriteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
-      // Container(
-      //     height: MediaQuery.of(context).size.height,
-      //     // width: MediaQuery.of(context).size.width,
-      //     child: Image.asset(
-      //       'images/heartsBackground.jpg',
-      //       fit: BoxFit.cover,
-      //     )),
-      // Container(
-      //   // height: MediaQuery.of(context).size.height,
-      //   // width: MediaQuery.of(context).size.width,
-      //   child: BackdropFilter(
-      //     filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-      //     child: Container(
-      //       decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
-      //     ),
-      //   ),
-      // ),
       BlocBuilder<FavoriteRecipesBloc, FavoriteRecipesState>(
           builder: (context, state) {
         if (state is LoadingFavorites) {

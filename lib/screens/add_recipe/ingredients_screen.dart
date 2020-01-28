@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import '../../blocs/new_recipe/ingredients/ingredients_event.dart';
 import '../../blocs/new_recipe/ingredients/ingredients_state.dart';
-import '../../dialogs/info_dialog.dart';
 import '../../generated/i18n.dart';
 import '../../helper.dart';
 import '../../hive.dart';
@@ -14,9 +13,10 @@ import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
 import '../../my_wrapper.dart';
 import '../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
-import '../../recipe_overview/add_recipe_screen/vegetarian_section.dart';
 import '../../routes.dart';
+import '../../widgets/dialogs/info_dialog.dart';
 import '../../widgets/ingredients_section.dart';
+import '../../widgets/vegetarian_section.dart';
 import 'steps_screen/steps_screen.dart';
 
 /// arguments which are provided to the route, when pushing to it
@@ -287,7 +287,8 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
           goBack,
-          double.parse(servingsController.text),
+          double.parse(
+              servingsController.text == "" ? "1" : servingsController.text),
           _getIngredientsList(
             ingredientNameController,
             ingredientAmountController,

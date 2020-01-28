@@ -47,7 +47,7 @@ class HiveProvider {
     Hive.box<List<String>>(BoxNames.recipeCategories),
   );
 
-  LazyBox<dynamic> lazyBoxRecipes;
+  LazyBox<Recipe> lazyBoxRecipes;
   Box<String> boxVegetarian;
   Box<String> boxNonVegetarian;
   Box<String> boxVegan;
@@ -154,6 +154,18 @@ class HiveProvider {
     print(lazyBoxRecipes.get(hiveNewRecipeKey));
   }
 
+  Future<void> addToFavorites(Recipe recipe) async {
+    await boxFavorites.put(getHiveKey(recipe.name), getHiveKey(recipe.name));
+
+    await modifyRecipe(recipe.name, recipe.copyWith(isFavorite: true));
+  }
+
+  Future<void> removeFromFavorites(Recipe recipe) async {
+    await boxFavorites.delete(getHiveKey(recipe.name));
+
+    await modifyRecipe(recipe.name, recipe.copyWith(isFavorite: false));
+  }
+
   Future<void> saveTmpEditingRecipe(Recipe recipe) async {
     await boxTmpRecipe.put(tmpEditingRecipeKey, recipe);
   }
@@ -167,13 +179,16 @@ class HiveProvider {
   }
 
   Future<void> resetTmpRecipe() async {
-    await boxTmpRecipe.put(tmpRecipeKey, Recipe(name: ""));
+    await boxTmpRecipe.put(tmpRecipeKey, Recipe(name: "", servings: null));
   }
 
 // TODO: Check for mistakes
   Future<void> deleteRecipe(String recipeName) async {
     String hiveRecipeKey = getHiveKey(recipeName);
     Recipe removeRecipe = await lazyBoxRecipes.get(hiveRecipeKey);
+
+    await boxRecipeNames.delete(hiveRecipeKey);
+    await boxFavorites.delete(hiveRecipeKey);
 
     // delete recipe from categories
     if (removeRecipe.categories.isNotEmpty) {
@@ -311,6 +326,11 @@ class HiveProvider {
     }
   }
 
+  List<String> getRecipeNames() {
+    return boxRecipeNames.keys.map((key) => boxRecipeNames.get(key)).toList()
+      ..remove('summary');
+  }
+
   /// returns the recipe if it exists and otherwise null
   Future<Recipe> getRecipeByName(String name) async {
     Recipe recipe = await lazyBoxRecipes.get(getHiveKey(name));
@@ -433,7 +453,7 @@ class HiveProvider {
   List<String> getNutritions() {
     List<String> nutritions = boxOrder.get('nutritions');
 
-    return nutritions;
+    return List<String>.from(nutritions);
   }
 
   Future<void> moveNutrition(int oldIndex, newIndex) async {
@@ -778,6 +798,7 @@ class HiveProvider {
       }
     } // if we have to add the recipe with the ingredient to cart
     else {
+      await boxRecipeNames.put(hiveRecipeKey, recipeName);
       await boxShoppingCart.put(
         hiveRecipeKey,
         [

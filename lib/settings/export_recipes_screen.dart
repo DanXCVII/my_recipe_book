@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/hive.dart';
 import 'package:share_extend/share_extend.dart';
 
-import '../database.dart';
 import '../generated/i18n.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
@@ -17,64 +17,56 @@ class ExportRecipes extends StatefulWidget {
 }
 
 class _ExportRecipesState extends State<ExportRecipes> {
-  Future<List<String>> recipeNames;
+  List<String> recipeNames;
   List<String> exportRecipeNames = [];
 
   @override
   void initState() {
     super.initState();
-    recipeNames = DBProvider.db.getRecipeNames();
+    recipeNames = HiveProvider().getRecipeNames();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(S.of(context).select_recipes),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.check),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (_) => SaveExportRecipes(
-                    exportRecipes: exportRecipeNames,
-                  ),
-                );
-              },
-            )
-          ],
-        ),
-        body: FutureBuilder<List<String>>(
-          future: recipeNames,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, index) {
-                  return CheckboxListTile(
-                    value: exportRecipeNames.contains(snapshot.data[index]),
-                    onChanged: (value) {
-                      setState(() {
-                        if (value) {
-                          exportRecipeNames.add(snapshot.data[index]);
-                        } else {
-                          exportRecipeNames.remove(snapshot.data[index]);
-                        }
-                      });
-                    },
-                    title: Text(
-                      snapshot.data[index],
-                    ),
-                  );
-                },
+      appBar: AppBar(
+        title: Text(S.of(context).select_recipes),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.check),
+            onPressed: () {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => SaveExportRecipes(
+                  exportRecipes: exportRecipeNames,
+                ),
               );
-            } else {
-              return Center(child: CircularProgressIndicator());
-            }
-          },
-        ));
+            },
+          )
+        ],
+      ),
+      body: ListView.builder(
+        itemCount: recipeNames.length,
+        itemBuilder: (context, index) {
+          return CheckboxListTile(
+            value: exportRecipeNames.contains(recipeNames[index]),
+            onChanged: (value) {
+              setState(() {
+                if (value) {
+                  exportRecipeNames.add(recipeNames[index]);
+                } else {
+                  exportRecipeNames.remove(recipeNames[index]);
+                }
+              });
+            },
+            title: Text(
+              recipeNames[index],
+            ),
+          );
+        },
+      ),
+    );
   }
 }
 

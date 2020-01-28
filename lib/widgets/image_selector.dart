@@ -30,7 +30,8 @@ class _ImageSelectorState extends State<ImageSelector> {
   @override
   void initState() {
     super.initState();
-    if (widget.prefilledImage != null) {
+    if (widget.prefilledImage != null &&
+        widget.prefilledImage != "images/randomFood.jpg") {
       selectedImageFile = File(widget.prefilledImage);
     }
   }

@@ -9,13 +9,13 @@ import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_event.dart';
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_state.dart';
 import '../../../blocs/new_recipe/general_info/general_info.dart';
-import '../../../dialogs/info_dialog.dart';
 import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
 import '../../../routes.dart';
+import '../../../widgets/dialogs/info_dialog.dart';
 import '../../../widgets/image_selector.dart' as IS;
 import '../ingredients_screen.dart';
 import 'categories_section.dart';
@@ -256,7 +256,20 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
             ),
             CategorySection(
               selectedCategories: modifiedRecipe.categories,
-              editingRecipe: widget.editingRecipeName == null ? false : true,
+              onSelect: (String chipName) {
+                BlocProvider.of<GeneralInfoBloc>(context)
+                    .add(AddCategoryToRecipe(
+                  chipName,
+                  widget.editingRecipeName == null ? false : true,
+                ));
+              },
+              onDeselect: (String chipName) {
+                BlocProvider.of<GeneralInfoBloc>(context)
+                    .add(RemoveCategoryFromRecipe(
+                  chipName,
+                  widget.editingRecipeName == null ? false : true,
+                ));
+              },
             ),
           ]),
         ),

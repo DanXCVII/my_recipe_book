@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/screens/add_recipe/general_info_screen/general_info_screen.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -20,7 +19,6 @@ import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_event.dart'
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_state.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../database.dart';
-import '../gallery_view.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
 import '../hive.dart';
@@ -29,8 +27,10 @@ import '../local_storage/local_paths.dart';
 import '../models/enums.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
-import '../recipe_card.dart';
 import '../screens/recipe_overview.dart';
+import '../widgets/gallery_view.dart';
+import '../widgets/recipe_card.dart';
+import 'add_recipe/general_info_screen/general_info_screen.dart';
 
 const double timeTextsize = 15;
 const double timeText = 17;
@@ -246,7 +246,13 @@ class RecipePage extends StatelessWidget {
             SliverAppBar(
               backgroundColor: primaryColor,
               actions: <Widget>[
-                Favorite(recipe),
+                Favorite(recipe, addFavorite: () {
+                  BlocProvider.of<RecipeManagerBloc>(context)
+                      .add(RMAddFavorite(recipe));
+                }, removeFavorite: () {
+                  BlocProvider.of<RecipeManagerBloc>(context)
+                      .add(RMRemoveFavorite(recipe));
+                }),
                 IconButton(
                   icon: Icon(Icons.edit),
                   tooltip: 'edit',
@@ -476,7 +482,7 @@ class RecipePage extends StatelessWidget {
             color: Colors.red[600],
             onPressed: () {
               BlocProvider.of<RecipeManagerBloc>(context)
-                  .add(RMDeleteRecipe(recipe));
+                  .add(RMDeleteRecipe(recipe.name));
               Navigator.pop(context);
               Navigator.pop(context);
             },
@@ -843,7 +849,7 @@ void _showStepFullView(
       MaterialPageRoute(
         builder: (context) => GalleryPhotoView(
           initialIndex: imageIndex,
-          galleryItems: flatStepImages,
+          galleryImagePaths: flatStepImages,
           descriptions: imageDescription,
           heroTags: heroTags,
         ),
@@ -856,7 +862,7 @@ void _showPictureFullView(String image, String tag, BuildContext context) {
       MaterialPageRoute(
         builder: (context) => GalleryPhotoView(
           initialIndex: 0,
-          galleryItems: [image],
+          galleryImagePaths: [image],
           descriptions: [''],
           heroTags: [tag],
         ),
@@ -1375,7 +1381,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
   void _decreaseServings(double oldServings) {
     if (oldServings <= 1) return;
     BlocProvider.of<RecipeScreenIngredientsBloc>(context)
-        .add(IncreaseServings(oldServings - 1));
+        .add(DecreaseServings(oldServings - 1));
   }
 
   void _increaseServings(double oldServings) {

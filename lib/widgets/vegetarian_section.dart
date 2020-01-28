@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 
-import '../../generated/i18n.dart';
-import '../../models/enums.dart';
-import "../../my_wrapper.dart";
+import '../generated/i18n.dart';
+import '../models/enums.dart';
+import '../my_wrapper.dart';
 
 // Widget for the radio buttons (vegetarian, vegan, etc.)
 class Vegetarian extends StatefulWidget {

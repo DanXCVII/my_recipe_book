@@ -46,8 +46,8 @@ class Recipe extends Equatable {
 
   Recipe({
     @required this.name,
-    this.imagePath,
-    this.imagePreviewPath,
+    this.imagePath = "images/randomFood.jpg",
+    this.imagePreviewPath = "images/randomFood.jpg",
     this.preperationTime,
     this.cookingTime,
     this.totalTime,
@@ -147,8 +147,8 @@ class Recipe extends Equatable {
 
   Recipe copyWith(
       {String name,
-      String imagePath = 'images/randomFood.jpg',
-      String imagePreviewPath = 'images/randomFood.jpg',
+      String imagePath,
+      String imagePreviewPath,
       double preperationTime,
       double cookingTime,
       double totalTime,

@@ -16,11 +16,13 @@ class FavoriteRecipesBloc
   FavoriteRecipesBloc({@required this.recipeManagerBloc}) {
     subscription = recipeManagerBloc.listen((state) {
       if (state is RMState.AddFavoriteState) {
-        add(AddFavorite(
-            (recipeManagerBloc.state as RMState.AddFavoriteState).recipe));
+        add(AddFavorite(state.recipe));
       } else if (state is RMState.RemoveFavoriteState) {
-        add(RemoveFavorite(
-            (recipeManagerBloc.state as RMState.RemoveFavoriteState).recipe));
+        add(RemoveFavorite(state.recipe));
+      } else if (state is RMState.DeleteRecipeState) {
+        if (state.recipe.isFavorite) {
+          add(RemoveFavorite(state.recipe));
+        }
       }
     });
   }

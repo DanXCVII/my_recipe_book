@@ -3,20 +3,19 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/database.dart';
-import 'package:my_recipe_book/recipe_overview/recipe_screen.dart';
-import 'package:my_recipe_book/routes.dart';
-import 'package:my_recipe_book/screens/recipe_overview.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 
-import 'blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'blocs/recipe_overview/recipe_overview_bloc.dart';
-import 'blocs/recipe_overview/recipe_overview_event.dart';
-import 'blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'helper.dart';
-import 'models/enums.dart';
-import 'models/recipe.dart';
+import '../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../blocs/recipe_overview/recipe_overview_bloc.dart';
+import '../blocs/recipe_overview/recipe_overview_event.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../generated/i18n.dart';
+import '../helper.dart';
+import '../models/enums.dart';
+import '../models/recipe.dart';
+import '../routes.dart';
+import '../screens/recipe_overview.dart';
+import '../screens/recipe_screen.dart';
 
 const Map<int, Color> complexityColors = {
   1: Color(0xff28E424),
@@ -53,18 +52,16 @@ class RecipeCard extends StatelessWidget {
     double gridTileWidth = deviceWidth / (deviceWidth / 300.floor() + 1);
     return GestureDetector(
       onTap: () {
-        DBProvider.db.getRecipeByName(recipe.name, true).then((recipe) {
-          Navigator.pushNamed(
-            context,
-            RouteNames.recipeScreen,
-            arguments: RecipeScreenArguments(
-              BlocProvider.of<ShoppingCartBloc>(context),
-              recipe,
-              getRecipePrimaryColor(recipe.vegetable),
-              heroImageTag,
-            ),
-          );
-        });
+        Navigator.pushNamed(
+          context,
+          RouteNames.recipeScreen,
+          arguments: RecipeScreenArguments(
+            BlocProvider.of<ShoppingCartBloc>(context),
+            recipe,
+            getRecipePrimaryColor(recipe.vegetable),
+            heroImageTag,
+          ),
+        );
       },
       child: Stack(
         children: <Widget>[

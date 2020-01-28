@@ -120,14 +120,16 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     if (!event.editingRecipe) {
       await HiveProvider().saveTmpRecipe(
         HiveProvider().getTmpRecipe().copyWith(
-              categories: HiveProvider().getTmpRecipe().categories
-                ..add(event.category),
+              categories:
+                  List<String>.from(HiveProvider().getTmpRecipe().categories)
+                    ..add(event.category),
             ),
       );
     } else {
       await HiveProvider().saveTmpEditingRecipe(
         HiveProvider().getTmpEditingRecipe().copyWith(
-              categories: HiveProvider().getTmpEditingRecipe().categories
+              categories: List<String>.from(
+                  HiveProvider().getTmpEditingRecipe().categories)
                 ..add(event.category),
             ),
       );
@@ -139,14 +141,16 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     if (!event.editingRecipe) {
       await HiveProvider().saveTmpRecipe(
         HiveProvider().getTmpRecipe().copyWith(
-              categories: HiveProvider().getTmpRecipe().categories
-                ..remove(event.category),
+              categories:
+                  List<String>.from(HiveProvider().getTmpRecipe().categories)
+                    ..remove(event.category),
             ),
       );
     } else {
       await HiveProvider().saveTmpEditingRecipe(
         HiveProvider().getTmpEditingRecipe().copyWith(
-              categories: HiveProvider().getTmpEditingRecipe().categories
+              categories: List<String>.from(
+                  HiveProvider().getTmpEditingRecipe().categories)
                 ..remove(event.category),
             ),
       );

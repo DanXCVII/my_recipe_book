@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tindercard/flutter_tindercard.dart';
 
-import './tinder_card.dart';
 import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 import '../blocs/random_recipe_explorer/random_recipe_explorer_event.dart';
 import '../blocs/random_recipe_explorer/random_recipe_explorer_state.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_overview.dart';
-import 'recipe_card_big.dart';
 
 class SwypingCardsScreen extends StatefulWidget {
   SwypingCardsScreen();
@@ -110,39 +109,46 @@ class _SwypingCardsState extends State<SwypingCards>
     if (maxWidth > MediaQuery.of(context).size.width * 0.9) {
       maxWidth = MediaQuery.of(context).size.width * 0.9;
     }
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      child: new TinderSwapCard(
-        orientation: AmassOrientation.TOP,
-        totalNum: 100,
-        stackNum: 3,
-        animDuration: 200,
-        swipeEdge: 4.0,
-        maxWidth: maxWidth,
-        maxHeight: maxHeight,
-        minWidth: maxWidth * 0.9,
-        minHeight: maxHeight - 100,
-        cardBuilder: (context, index) => RecipeCardBig(
-          recipe: widget.recipes[index - currentSwipeIndex],
-          index: index,
-          cardWidth: maxWidth,
-          cardHeight: maxHeight,
+    return Stack(children: <Widget>[
+      Container(
+        child: Center(
+          child: Text(
+            "🎉",
+            style: TextStyle(fontSize: 150),
+          ),
         ),
-        cardController: controller = CardController(),
-        swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
-          /// Get swiping card's alignment
-          if (align.x < 0) {
-            //Card is LEFT swiping
-          } else if (align.x > 0) {
-            //Card is RIGHT swiping
-          }
-        },
-        swipeCompleteCallback: (CardSwipeOrientation orientation, int index) {
-          currentSwipeIndex++;
-          BlocProvider.of<RandomRecipeExplorerBloc>(context)
-              .add(RotateRecipe());
-        },
       ),
-    );
+      Container(
+        height: MediaQuery.of(context).size.height,
+        child: TinderSwapCard(
+          orientation: AmassOrientation.TOP,
+          totalNum: 5,
+          stackNum: 3,
+          animDuration: 200,
+          swipeEdge: 4.0,
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          minWidth: maxWidth * 0.9,
+          minHeight: maxHeight - 100,
+          cardBuilder: (context, index) => RecipeCardBig(
+            recipe: widget.recipes[index - currentSwipeIndex],
+            index: index,
+            cardWidth: maxWidth,
+            cardHeight: maxHeight,
+          ),
+          cardController: controller = CardController(),
+          swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
+            /// Get swiping card's alignment
+            if (align.x < 0) {
+              //Card is LEFT swiping
+            } else if (align.x > 0) {
+              //Card is RIGHT swiping
+            }
+          },
+        ),
+      ),
+    ]);
   }
+
+  RecipeCardBig({Recipe recipe, index, double cardWidth, double cardHeight}) {}
 }
