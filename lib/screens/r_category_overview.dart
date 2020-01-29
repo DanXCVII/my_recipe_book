@@ -9,6 +9,8 @@ import '../blocs/recipe_category_overview/recipe_category_overview.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+
 import '../routes.dart';
 import 'recipe_overview.dart';
 import 'recipe_screen.dart';
@@ -48,47 +50,58 @@ class RecipeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, RouteNames.recipeCategories,
-                  arguments: RecipeGridViewArguments(
-                    shoppingCartBloc:
-                        BlocProvider.of<ShoppingCartBloc>(context),
-                    category: category == null ? 'no category' : category,
-                  ));
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12.0, bottom: 10.0, right: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    category != null ? category : S.of(context).no_category,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20,
-                        color: Theme.of(context).backgroundColor == Colors.white
-                            ? Colors.black
-                            : Colors.grey[200]),
+    return AnimationLimiter(
+      child: Column(
+        children: AnimationConfiguration.toStaggeredList(
+          duration: const Duration(milliseconds: 375),
+          childAnimationBuilder: (widget) => SlideAnimation(
+            horizontalOffset: MediaQuery.of(context).size.width / 2,
+            child: FadeInAnimation(child: widget),
+          ),
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(left: 20),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, RouteNames.recipeCategories,
+                      arguments: RecipeGridViewArguments(
+                        shoppingCartBloc:
+                            BlocProvider.of<ShoppingCartBloc>(context),
+                        category: category == null ? 'no category' : category,
+                      ));
+                },
+                child: Padding(
+                  padding:
+                      const EdgeInsets.only(top: 12.0, bottom: 10.0, right: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        category != null ? category : S.of(context).no_category,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20,
+                            color: Theme.of(context).backgroundColor ==
+                                    Colors.white
+                                ? Colors.black
+                                : Colors.grey[200]),
+                      ),
+                      Icon(Icons.arrow_forward_ios),
+                    ],
                   ),
-                  Icon(Icons.arrow_forward_ios),
-                ],
+                ),
               ),
             ),
-          ),
+            recipes.isEmpty
+                ? Container()
+                : RecipeHozizontalList(
+                    categoryName: category,
+                    recipes: recipes,
+                  )
+          ],
         ),
-        recipes.isEmpty
-            ? Container()
-            : RecipeHozizontalList(
-                categoryName: category,
-                recipes: recipes,
-              )
-      ],
+      ),
     );
   }
 }

@@ -66,7 +66,6 @@ class RecipeCard extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           Container(
-            height: 250,
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               boxShadow: [
@@ -87,52 +86,48 @@ class RecipeCard extends StatelessWidget {
             child: Material(
               color: Colors.transparent,
               child: Container(
-                height: 250,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
-                      child: Hero(
-                          tag: heroImageTag,
-                          placeholderBuilder: (context, size, widget) =>
-                              ClipRRect(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(gridTileWidth / 10),
-                                  topRight: Radius.circular(gridTileWidth / 10),
-                                ),
-                                child: FadeInImage(
-                                  image: recipe.imagePreviewPath ==
-                                          'images/randomFood.jpg'
-                                      ? AssetImage(recipe.imagePreviewPath)
-                                      : FileImage(
-                                          File(recipe.imagePreviewPath)),
-                                  placeholder: MemoryImage(kTransparentImage),
-                                  fadeInDuration: Duration(milliseconds: 250),
-                                  fit: BoxFit.cover,
-                                  height: gridTileWidth / 1.25,
-                                  width: gridTileWidth + 40,
-                                ),
-                              ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(gridTileWidth / 10),
-                                topRight: Radius.circular(gridTileWidth / 10),
-                              ),
-                              child: FadeInImage(
-                                image: recipe.imagePreviewPath ==
-                                        'images/randomFood.jpg'
-                                    ? AssetImage(recipe.imagePreviewPath)
-                                    : FileImage(File(recipe.imagePreviewPath)),
-                                placeholder: MemoryImage(kTransparentImage),
-                                fadeInDuration: Duration(milliseconds: 250),
-                                fit: BoxFit.cover,
-                                height: gridTileWidth / 1.25,
-                                width: gridTileWidth + 40,
-                              ),
-                            ),
-                          )),
+                    Hero(
+                      tag: heroImageTag,
+                      placeholderBuilder: (context, size, widget) => ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(gridTileWidth / 10),
+                          topRight: Radius.circular(gridTileWidth / 10),
+                        ),
+                        child: FadeInImage(
+                          image:
+                              recipe.imagePreviewPath == 'images/randomFood.jpg'
+                                  ? AssetImage(recipe.imagePreviewPath)
+                                  : FileImage(File(recipe.imagePreviewPath)),
+                          placeholder: MemoryImage(kTransparentImage),
+                          fadeInDuration: Duration(milliseconds: 250),
+                          fit: BoxFit.cover,
+                          height: gridTileWidth / 1.25,
+                          width: gridTileWidth + 40,
+                        ),
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(gridTileWidth / 10),
+                            topRight: Radius.circular(gridTileWidth / 10),
+                          ),
+                          child: FadeInImage(
+                            image: recipe.imagePreviewPath ==
+                                    'images/randomFood.jpg'
+                                ? AssetImage(recipe.imagePreviewPath)
+                                : FileImage(File(recipe.imagePreviewPath)),
+                            placeholder: MemoryImage(kTransparentImage),
+                            fadeInDuration: Duration(milliseconds: 250),
+                            fit: BoxFit.cover,
+                            height: gridTileWidth / 1.25,
+                            width: gridTileWidth + 40,
+                          ),
+                        ),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(15, 7, 12, 12),

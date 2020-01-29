@@ -160,6 +160,15 @@ class HiveProvider {
     await modifyRecipe(recipe.name, recipe.copyWith(isFavorite: true));
   }
 
+  bool isRecipeFavorite(String recipeName) {
+    for (var key in boxFavorites.keys) {
+      if (boxFavorites.get(key) == recipeName) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future<void> removeFromFavorites(Recipe recipe) async {
     await boxFavorites.delete(getHiveKey(recipe.name));
 

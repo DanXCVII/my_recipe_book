@@ -4,7 +4,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
+import 'package:flutter_villains/villains/villains.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:like_button/like_button.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -297,14 +299,6 @@ class RecipePage extends StatelessWidget {
                   child: Stack(children: <Widget>[
                     Hero(
                       tag: heroImageTag,
-                      placeholderBuilder: (context, size, widget) => ClipPath(
-                        clipper: MyClipper(),
-                        child: recipe.imagePath == 'images/randomFood.jpg'
-                            ? Image.asset('images/randomFood.jpg',
-                                width: double.infinity, fit: BoxFit.cover)
-                            : Image.file(File(recipe.imagePath),
-                                width: double.infinity, fit: BoxFit.cover),
-                      ),
                       child: Material(
                         color: Colors.transparent,
                         child: ClipPath(
@@ -1387,6 +1381,43 @@ class IngredientsScreenState extends State<IngredientsScreen> {
   void _increaseServings(double oldServings) {
     BlocProvider.of<RecipeScreenIngredientsBloc>(context)
         .add(IncreaseServings(oldServings + 1));
+  }
+}
+
+class Favorite extends StatelessWidget {
+  final Recipe recipe;
+  final double iconSize;
+  final Function addFavorite;
+  final Function removeFavorite;
+
+  Favorite(
+    this.recipe, {
+    @required this.addFavorite,
+    @required this.removeFavorite,
+    this.iconSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LikeButton(
+      size: iconSize == null ? 24 : iconSize,
+      isLiked: HiveProvider().isRecipeFavorite(recipe.name),
+      likeBuilder: (bool isFavorite) {
+        return Icon(
+          isFavorite ? Icons.favorite : Icons.favorite_border,
+          color: isFavorite ? Colors.pink : Colors.white,
+        );
+      },
+      onTap: (bool isFavorite) async {
+        if (!isFavorite) {
+          addFavorite();
+          return true;
+        } else {
+          removeFavorite();
+          return false;
+        }
+      },
+    );
   }
 }
 

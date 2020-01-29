@@ -54,6 +54,12 @@ dependencies:
   flutter_bloc: ^3.1.0
   equatable: ^1.0.1
   flutter_launcher_icons: "^0.7.3"
+  like_button: ^0.2.0
+  flutter_villains: ^1.2.1
+  fl_chart: ^0.2.0
+  flutter_staggered_grid_view: "^0.3.0"
+  flutter_staggered_animations: ^0.1.2
+  flushbar: ^1.9.1
 
   share:
     git:

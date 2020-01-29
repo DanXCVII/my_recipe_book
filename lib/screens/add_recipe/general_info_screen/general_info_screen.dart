@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,6 +56,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   _GeneralInfoScreenState(this.modifiedRecipe);
+  Flushbar flush;
 
   @override
   void initState() {
@@ -301,18 +303,15 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
         .then((v) {
       switch (v) {
         case Validator.REQUIRED_FIELDS:
-          showDialog(
-              context: context,
-              builder: (_) => InfoDialog(
-                  title: S.of(context).check_ingredient_section_fields,
-                  body: S.of(context).check_filled_in_information_description));
+          _showFlushInfo(
+            S.of(context).check_ingredient_section_fields,
+            S.of(context).check_filled_in_information_description,
+          );
+
           break;
         case Validator.NAME_TAKEN:
-          showDialog(
-              context: context,
-              builder: (_) => InfoDialog(
-                  title: S.of(context).recipename_taken,
-                  body: S.of(context).recipename_taken_description));
+          _showFlushInfo(S.of(context).recipename_taken,
+              S.of(context).recipename_taken_description);
           break;
 
         default:
@@ -320,6 +319,32 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
           break;
       }
     });
+  }
+
+  void _showFlushInfo(String title, String body) {
+    if (flush != null && flush.isShowing()) {
+    } else {
+      flush = Flushbar<bool>(
+        animationDuration: Duration(milliseconds: 300),
+        leftBarIndicatorColor: Colors.blue[300],
+        title: title,
+        message: body,
+        icon: Icon(
+          Icons.info_outline,
+          color: Colors.blue,
+        ),
+        mainButton: FlatButton(
+          onPressed: () {
+            flush.dismiss(true); // result = true
+          },
+          child: Text(
+            "OK",
+            style: TextStyle(color: Colors.amber),
+          ),
+        ),
+      ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+        ..show(context).then((result) {});
+    }
   }
 
   /// notifies the Bloc to save all filled in data on this screen, with

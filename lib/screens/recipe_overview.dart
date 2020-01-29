@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -228,19 +229,43 @@ class RecipeGridView extends StatelessWidget {
                 ),
                 SliverPadding(
                   padding: EdgeInsets.all(12),
-                  sliver: SliverGrid.extent(
-                    childAspectRatio: 0.75,
-                    maxCrossAxisExtent: 300,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    children: getRecipeCards(
-                      state.recipes,
-                      context,
-                      state.category,
-                      state.vegetable,
+                  sliver: SliverStaggeredGrid.countBuilder(
+                    crossAxisCount: 4,
+                    itemCount: state.recipes.length,
+                    itemBuilder: (BuildContext context, int index) =>
+                        RecipeCard(
+                      recipe: state.recipes[index],
+                      shadow: Theme.of(context).backgroundColor == Colors.white
+                          ? Colors.grey[400]
+                          : Colors.black,
+                      activateVegetableHero:
+                          state.recipes[index].vegetable == state.vegetable
+                              ? false
+                              : true,
+                      heroImageTag:
+                          "${state.category}${state.recipes[index].name}",
                     ),
+                    staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
+                    mainAxisSpacing: 12.0,
+                    crossAxisSpacing: 12.0,
                   ),
-                )
+                ),
+
+                // SliverPadding(
+                //   padding: EdgeInsets.all(12),
+                //   sliver: SliverGrid.extent(
+                //     childAspectRatio: 0.75,
+                //     maxCrossAxisExtent: 300,
+                //     mainAxisSpacing: 12,
+                //     crossAxisSpacing: 12,
+                //     children: getRecipeCards(
+                //       state.recipes,
+                //       context,
+                //       state.category,
+                //       state.vegetable,
+                //     ),
+                //   ),
+                // )
               ]),
             );
           } else {
@@ -326,42 +351,5 @@ class NoRecipeCategory extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-class Favorite extends StatelessWidget {
-  final Recipe recipe;
-  final double iconSize;
-  final Function addFavorite;
-  final Function removeFavorite;
-
-  Favorite(
-    this.recipe, {
-    @required this.addFavorite,
-    @required this.removeFavorite,
-    this.iconSize,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return WatchBoxBuilder(
-        box: Hive.box<String>('favorites'),
-        watchKeys: [HiveProvider().getHiveKey(recipe.name)],
-        builder: (context, snapshot) {
-          String hiveRecipeKey = HiveProvider().getHiveKey(recipe.name);
-          bool isFavorite = snapshot.get(hiveRecipeKey) != null ? true : false;
-          return IconButton(
-            iconSize: iconSize == null ? 24 : iconSize,
-            color: isFavorite ? Colors.pink : Colors.white,
-            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-            onPressed: () {
-              if (!isFavorite) {
-                addFavorite();
-              } else {
-                removeFavorite();
-              }
-            },
-          );
-        });
   }
 }
