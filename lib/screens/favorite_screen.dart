@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:my_recipe_book/widgets/recipe_card.dart';
 
 import '../blocs/favorite_recipes/favorite_recipes.dart';
@@ -62,29 +63,21 @@ class FavoriteRecipeCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.extent(
+    return StaggeredGridView.countBuilder(
       padding: EdgeInsets.all(12),
-      childAspectRatio: 0.75,
-      maxCrossAxisExtent: 300,
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      children: getRecipeCards(favoriteRecipes, context),
+      crossAxisCount: 4,
+      itemCount: favoriteRecipes.length,
+      itemBuilder: (BuildContext context, int index) => RecipeCard(
+        recipe: favoriteRecipes[index],
+        shadow: Theme.of(context).backgroundColor == Colors.white
+            ? Colors.grey[400]
+            : Colors.grey[900],
+        heroImageTag:
+            "${favoriteRecipes[index].imagePreviewPath}--${favoriteRecipes[index].name}",
+      ),
+      staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
+      mainAxisSpacing: 12.0,
+      crossAxisSpacing: 12.0,
     );
-  }
-
-  List<Widget> getRecipeCards(List<Recipe> recipes, BuildContext context) {
-    List<RecipeCard> recipeCards = [];
-    for (int i = 0; i < recipes.length; i++) {
-      recipeCards.add(
-        RecipeCard(
-          recipe: recipes[i],
-          shadow: Theme.of(context).backgroundColor == Colors.white
-              ? Colors.grey[400]
-              : Colors.grey[900],
-          heroImageTag: "${recipes[i].imagePreviewPath}--${recipes[i].name}",
-        ),
-      );
-    }
-    return recipeCards;
   }
 }

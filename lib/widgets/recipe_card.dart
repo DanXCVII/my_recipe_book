@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -131,120 +132,125 @@ class RecipeCard extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(15, 7, 12, 12),
-                      child: Wrap(
-                        direction: Axis.vertical,
-                        children: <Widget>[
-                          Container(
-                            width: gridTileWidth - 12,
-                            child: Text(
-                              "${recipe.name}",
-                              textScaleFactor: deviceWidth / 400,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14 + gridTileWidth / 35,
-                                  fontFamily: 'Righteous'),
+                      child: Column(children: <Widget>[
+                        Container(
+                          width: gridTileWidth - 12,
+                          child: Text(
+                            "${recipe.name}",
+                            textScaleFactor: deviceWidth / 400,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14 + gridTileWidth / 35,
+                                fontFamily: 'Righteous'),
+                          ),
+                        ),
+                        SizedBox(height: 7),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  getTimeHoursMinutes(recipe.totalTime),
+                                  textScaleFactor: deviceWidth / 400,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontWeight: itemsFW,
+                                    fontSize: 10 + gridTileWidth / 40,
+                                    fontFamily: 'Questrial',
+                                  ),
+                                ),
+                                Text(
+                                  "${getIngredientCount(recipe.ingredients)} ${S.of(context).ingredients}",
+                                  textScaleFactor: deviceWidth / 400,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontWeight: itemsFW,
+                                    fontSize: 10 + gridTileWidth / 40,
+                                    fontFamily: 'Questrial',
+                                  ),
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Container(
+                                      height: 14,
+                                      width: 14,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: complexityColors[recipe.effort],
+                                      ),
+                                    ),
+                                    Text(
+                                      ' ' + S.of(context).effort,
+                                      textScaleFactor: deviceWidth / 400,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontWeight: itemsFW,
+                                        fontSize: 10 + gridTileWidth / 40,
+                                        fontFamily: 'Questrial',
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
                             ),
-                          ),
-                          SizedBox(height: 7),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                getTimeHoursMinutes(recipe.totalTime),
-                                textScaleFactor: deviceWidth / 400,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  fontWeight: itemsFW,
-                                  fontSize: 10 + gridTileWidth / 40,
-                                  fontFamily: 'Questrial',
-                                ),
-                              ),
-                              Text(
-                                "${getIngredientCount(recipe.ingredients)} ${S.of(context).ingredients}",
-                                textScaleFactor: deviceWidth / 400,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  fontWeight: itemsFW,
-                                  fontSize: 10 + gridTileWidth / 40,
-                                  fontFamily: 'Questrial',
-                                ),
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                    height: 14,
-                                    width: 14,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: complexityColors[recipe.effort],
-                                    ),
+                            Spacer(),
+                            GestureDetector(
+                              onTap: () {
+                                if (activateVegetableHero)
+                                  pushVegetableRoute(context, recipe.vegetable);
+                              },
+                              child: Container(
+                                child: Center(
+                                  child: Image.asset(
+                                    "images/${getRecipeTypeImage(recipe.vegetable)}.png",
+                                    fit: BoxFit.scaleDown,
                                   ),
-                                  Text(
-                                    ' ' + S.of(context).effort,
-                                    textScaleFactor: deviceWidth / 400,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontWeight: itemsFW,
-                                      fontSize: 10 + gridTileWidth / 40,
-                                      fontFamily: 'Questrial',
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
+                                ),
+                                height: deviceWidth / 400 * 35,
+                                width: deviceWidth / 400 * 35,
+                              ),
+                            )
+                          ],
+                        ),
+                      ]),
                     ),
                   ],
                 ),
               ),
             ),
           ),
-          Align(
-              alignment: Alignment.bottomRight,
-              child: GestureDetector(
-                onTap: () {
-                  if (activateVegetableHero)
-                    pushVegetableRoute(context, recipe.vegetable);
-                },
-                child: Container(
-                  child: Center(
-                    child: Image.asset(
-                      "images/${getRecipeTypeImage(recipe.vegetable)}.png",
-                      height: deviceWidth / 400 * 35,
-                      width: deviceWidth / 400 * 3535,
-                      fit: BoxFit.scaleDown,
-                    ),
-                  ),
-                  height: gridTileWidth / 3,
-                  width: gridTileWidth / 3,
-                ),
-              )),
 
           recipe.isFavorite == true
               ? Align(
                   alignment: Alignment(0.95, -0.95),
-                  child: Container(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 3.0, right: 2),
+                    child: Container(
                       height: deviceWidth / 400 * 40,
                       width: deviceWidth / 400 * 40,
                       decoration: BoxDecoration(
-                          color: Colors.pink[300],
+                          color: Color.fromRGBO(50, 50, 50, 0.7),
                           borderRadius: BorderRadius.all(
                             Radius.circular(20),
                           )),
                       child: Center(
-                          child: Image.asset(
-                        'images/heart.png',
-                        height: deviceWidth / 400 * 25,
-                      ))),
+                        child: SpinKitPumpingHeart(
+                          color: Colors.pink,
+                          size: 24.0,
+                        ),
+                      ),
+                    ),
+                  ),
                 )
               : Container(),
           //Padding(

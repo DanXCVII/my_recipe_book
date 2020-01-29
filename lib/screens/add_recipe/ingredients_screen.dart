@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,6 +54,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
   final MyVegetableWrapper selectedRecipeVegetable = MyVegetableWrapper();
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Flushbar flush;
 
   @override
   void initState() {
@@ -249,28 +251,25 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
 
     switch (v) {
       case Validator.REQUIRED_FIELDS:
-        showDialog(
-          context: context,
-          builder: (_) => InfoDialog(
-              title: S.of(context).check_filled_in_information,
-              body: S.of(context).check_filled_in_information_description),
+        _showFlushInfo(
+          S.of(context).check_filled_in_information,
+          S.of(context).check_filled_in_information_description,
         );
+
         break;
       case Validator.INGREDIENTS_NOT_VALID:
-        showDialog(
-          context: context,
-          builder: (_) => InfoDialog(
-              title: S.of(context).check_ingredients_input,
-              body: S.of(context).check_ingredients_input_description),
+        _showFlushInfo(
+          S.of(context).check_ingredients_input,
+          S.of(context).check_ingredients_input_description,
         );
+
         break;
       case Validator.GLOSSARY_NOT_VALID:
-        showDialog(
-          context: context,
-          builder: (_) => InfoDialog(
-              title: S.of(context).check_ingredient_section_fields,
-              body: S.of(context).check_ingredient_section_fields_description),
+        _showFlushInfo(
+          S.of(context).check_ingredient_section_fields,
+          S.of(context).check_ingredient_section_fields_description,
         );
+
         break;
 
       default:
@@ -345,5 +344,31 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
     }
 
     return ingredients;
+  }
+
+  void _showFlushInfo(String title, String body) {
+    if (flush != null && flush.isShowing()) {
+    } else {
+      flush = Flushbar<bool>(
+        animationDuration: Duration(milliseconds: 300),
+        leftBarIndicatorColor: Colors.blue[300],
+        title: title,
+        message: body,
+        icon: Icon(
+          Icons.info_outline,
+          color: Colors.blue,
+        ),
+        mainButton: FlatButton(
+          onPressed: () {
+            flush.dismiss(true); // result = true
+          },
+          child: Text(
+            "OK",
+            style: TextStyle(color: Colors.amber),
+          ),
+        ),
+      ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+        ..show(context).then((result) {});
+    }
   }
 }

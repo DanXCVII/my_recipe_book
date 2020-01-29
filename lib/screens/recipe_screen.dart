@@ -4,12 +4,15 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_villains/villains/villains.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
+import 'package:rubber/rubber.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:stepper_touch/stepper_touch.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -70,11 +73,10 @@ class RecipeScreenArguments {
   );
 }
 
-class RecipeScreen extends StatelessWidget {
+class RecipeScreen extends StatefulWidget {
   final Recipe recipe;
   final Color primaryColor;
   final String heroImageTag;
-  final PanelController _pc = PanelController();
 
   RecipeScreen({
     @required this.recipe,
@@ -83,15 +85,36 @@ class RecipeScreen extends StatelessWidget {
   });
 
   @override
+  _RecipeScreenState createState() => _RecipeScreenState();
+}
+
+class _RecipeScreenState extends State<RecipeScreen>
+    with SingleTickerProviderStateMixin {
+  final PanelController _pc = PanelController();
+
+  RubberAnimationController _controller;
+
+  ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    _controller = RubberAnimationController(
+        vsync: this,
+        halfBoundValue: AnimationControllerValue(percentage: 0.5),
+        duration: Duration(milliseconds: 200));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return recipe.nutritions.isEmpty
+    return widget.recipe.nutritions.isEmpty
         ? RecipePage(
-            recipe: recipe,
-            primaryColor: primaryColor,
-            heroImageTag: heroImageTag,
+            recipe: widget.recipe,
+            primaryColor: widget.primaryColor,
+            heroImageTag: widget.heroImageTag,
           )
         : Scaffold(
-            backgroundColor: primaryColor,
+            backgroundColor: widget.primaryColor,
             body: SlidingUpPanel(
               controller: _pc,
               backdropColor: Colors.black,
@@ -155,7 +178,7 @@ class RecipeScreen extends StatelessWidget {
                       Container(
                         height: 435,
                         child: ListView.builder(
-                          itemCount: recipe.nutritions.length * 2,
+                          itemCount: widget.recipe.nutritions.length * 2,
                           itemBuilder: (context, index) {
                             if ((index - 1) % 2 == 0) {
                               return Divider();
@@ -165,12 +188,13 @@ class RecipeScreen extends StatelessWidget {
                                 leading: Icon(GroovinMaterialIcons.gate_or,
                                     color: Colors.white),
                                 title: Text(
-                                  recipe.nutritions[nutritionIndex].name,
+                                  widget.recipe.nutritions[nutritionIndex].name,
                                   style: TextStyle(
                                       fontSize: 18, color: Colors.white),
                                 ),
                                 trailing: Text(
-                                  recipe.nutritions[nutritionIndex].amountUnit,
+                                  widget.recipe.nutritions[nutritionIndex]
+                                      .amountUnit,
                                   style: TextStyle(
                                       fontSize: 18, color: Colors.white),
                                 ),
@@ -182,9 +206,9 @@ class RecipeScreen extends StatelessWidget {
                     ]),
               ),
               body: RecipePage(
-                recipe: recipe,
-                primaryColor: primaryColor,
-                heroImageTag: heroImageTag,
+                recipe: widget.recipe,
+                primaryColor: widget.primaryColor,
+                heroImageTag: widget.heroImageTag,
               ),
             ),
           );
@@ -242,178 +266,196 @@ class RecipePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: primaryColor,
-        body: CustomScrollView(
-          slivers: <Widget>[
-            SliverAppBar(
-              backgroundColor: primaryColor,
-              actions: <Widget>[
-                Favorite(recipe, addFavorite: () {
-                  BlocProvider.of<RecipeManagerBloc>(context)
-                      .add(RMAddFavorite(recipe));
-                }, removeFavorite: () {
-                  BlocProvider.of<RecipeManagerBloc>(context)
-                      .add(RMRemoveFavorite(recipe));
-                }),
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  tooltip: 'edit',
-                  onPressed: () {
-                    pushEditRecipe(context);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  tooltip: S.of(context).share_recipe,
-                  onPressed: () {
-                    _showDeleteDialog(context, recipe.name);
-                  },
-                ),
-                PopupMenuButton<PopupOptions>(
-                  icon: Icon(Icons.share),
-                  onSelected: (value) => _choiceAction(value, context),
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      PopupMenuItem(
-                        value: PopupOptions.EXPORT_ZIP,
-                        child: Text(S.of(context).export_zip),
-                      ),
-                      PopupMenuItem(
-                        value: PopupOptions.EXPORT_TEXT,
-                        child: Text(S.of(context).export_text),
-                      )
-                    ];
-                  },
-                ),
-              ],
-              floating: true,
-            ),
-            SliverList(
-                delegate: SliverChildListDelegate(<Widget>[
-              GestureDetector(
-                onTap: () {
-                  _showPictureFullView(recipe.imagePath, heroImageTag, context);
+      backgroundColor: primaryColor,
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            backgroundColor: primaryColor,
+            actions: <Widget>[
+              Favorite(recipe, addFavorite: () {
+                BlocProvider.of<RecipeManagerBloc>(context)
+                    .add(RMAddFavorite(recipe));
+              }, removeFavorite: () {
+                BlocProvider.of<RecipeManagerBloc>(context)
+                    .add(RMRemoveFavorite(recipe));
+              }),
+              IconButton(
+                icon: Icon(Icons.edit),
+                tooltip: 'edit',
+                onPressed: () {
+                  pushEditRecipe(context);
                 },
-                child: Container(
-                  height: 270,
-                  child: Stack(children: <Widget>[
-                    Hero(
-                      tag: heroImageTag,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: ClipPath(
-                          clipper: MyClipper(),
-                          child: Container(
-                              height: 270,
-                              child: recipe.imagePath == 'images/randomFood.jpg'
-                                  ? Image.asset('images/randomFood.jpg',
-                                      width: double.infinity, fit: BoxFit.cover)
-                                  : Image.file(File(recipe.imagePath),
-                                      width: double.infinity,
-                                      fit: BoxFit.cover)),
-                        ),
-                      ),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete),
+                tooltip: S.of(context).share_recipe,
+                onPressed: () {
+                  _showDeleteDialog(context, recipe.name);
+                },
+              ),
+              PopupMenuButton<PopupOptions>(
+                icon: Icon(Icons.share),
+                onSelected: (value) => _choiceAction(value, context),
+                itemBuilder: (BuildContext context) {
+                  return [
+                    PopupMenuItem(
+                      value: PopupOptions.EXPORT_ZIP,
+                      child: Text(S.of(context).export_zip),
                     ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          pushVegetableRoute(context, recipe.vegetable);
-                        },
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(bottom: 8.0, right: 8.0),
-                          child: Container(
-                            height: 65,
-                            width: 65,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(40),
-                                  topRight: Radius.circular(40),
-                                  bottomLeft: Radius.circular(40),
-                                  bottomRight: Radius.circular(15),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                      blurRadius: 3,
-                                      spreadRadius: 2,
-                                      offset: Offset(1, 1),
-                                      color: Colors.grey[800])
-                                ],
-                                color:
-                                    _getVegetableCircleColor(recipe.vegetable)),
-                            child: Center(
-                              child: Image.asset(
-                                "images/${getRecipeTypeImage(recipe.vegetable)}.png",
-                                height: 40,
-                                width: 40,
-                                fit: BoxFit.scaleDown,
+                    PopupMenuItem(
+                      value: PopupOptions.EXPORT_TEXT,
+                      child: Text(S.of(context).export_text),
+                    )
+                  ];
+                },
+              ),
+            ],
+            floating: true,
+          ),
+          AnimationLimiter(
+            child: SliverList(
+              delegate: SliverChildListDelegate(
+                AnimationConfiguration.toStaggeredList(
+                  duration: const Duration(milliseconds: 375),
+                  childAnimationBuilder: (widget) => SlideAnimation(
+                    verticalOffset: 50,
+                    child: FadeInAnimation(child: widget),
+                  ),
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {
+                        _showPictureFullView(
+                            recipe.imagePath, heroImageTag, context);
+                      },
+                      child: Container(
+                        height: 270,
+                        child: Stack(children: <Widget>[
+                          Hero(
+                            tag: heroImageTag,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: ClipPath(
+                                clipper: MyClipper(),
+                                child: Container(
+                                    height: 270,
+                                    child: recipe.imagePath ==
+                                            'images/randomFood.jpg'
+                                        ? Image.asset('images/randomFood.jpg',
+                                            width: double.infinity,
+                                            fit: BoxFit.cover)
+                                        : Image.file(File(recipe.imagePath),
+                                            width: double.infinity,
+                                            fit: BoxFit.cover)),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    )
-                  ]),
-                ),
-              ),
-              Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                        MediaQuery.of(context).size.width * 0.15,
-                        0,
-                        MediaQuery.of(context).size.width * 0.15,
-                        0),
-                    child: Text(
-                      "${recipe.name}",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 30,
-                        fontFamily: recipeScreenFontFamily,
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: GestureDetector(
+                              onTap: () {
+                                pushVegetableRoute(context, recipe.vegetable);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 8.0, right: 8.0),
+                                child: Container(
+                                  height: 65,
+                                  width: 65,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(40),
+                                        topRight: Radius.circular(40),
+                                        bottomLeft: Radius.circular(40),
+                                        bottomRight: Radius.circular(15),
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            blurRadius: 3,
+                                            spreadRadius: 2,
+                                            offset: Offset(1, 1),
+                                            color: Colors.grey[800])
+                                      ],
+                                      color: _getVegetableCircleColor(
+                                          recipe.vegetable)),
+                                  child: Center(
+                                    child: Image.asset(
+                                      "images/${getRecipeTypeImage(recipe.vegetable)}.png",
+                                      height: 40,
+                                      width: 40,
+                                      fit: BoxFit.scaleDown,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ]),
                       ),
                     ),
-                  )),
-              SizedBox(height: 30),
-              TopSectionRecipe(
-                preperationTime: recipe.preperationTime,
-                cookingTime: recipe.cookingTime,
-                totalTime: recipe.totalTime,
-                chartKey: GlobalKey<AnimatedCircularChartState>(),
-                effort: recipe.effort,
+                    Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(
+                              MediaQuery.of(context).size.width * 0.15,
+                              0,
+                              MediaQuery.of(context).size.width * 0.15,
+                              0),
+                          child: Text(
+                            "${recipe.name}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 30,
+                              fontFamily: recipeScreenFontFamily,
+                            ),
+                          ),
+                        )),
+                    SizedBox(height: 30),
+                    TopSectionRecipe(
+                      preperationTime: recipe.preperationTime,
+                      cookingTime: recipe.cookingTime,
+                      totalTime: recipe.totalTime,
+                      chartKey: GlobalKey<AnimatedCircularChartState>(),
+                      effort: recipe.effort,
+                    ),
+                    SizedBox(height: 30),
+                    IngredientsScreen(recipe),
+                    SizedBox(height: 30),
+                    FutureBuilder<List<List<String>>>(
+                      future: PathProvider.pP.getRecipeStepPreviewPathList(
+                          recipe.stepImages, recipe.name),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return StepsSection(
+                              recipe.steps, snapshot.data, recipe.stepImages);
+                        }
+                        return Container(
+                          height: 70,
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      },
+                    ),
+                    Container(
+                      height: 20,
+                      decoration: BoxDecoration(color: Colors.black87),
+                    ),
+                    recipe.notes != ""
+                        ? NotesSection(notes: recipe.notes)
+                        : Container(),
+                    recipe.categories.length > 0
+                        ? CategoriesSection(categories: recipe.categories)
+                        : Container(),
+                    recipe.nutritions.isEmpty
+                        ? Container()
+                        : Container(height: 50),
+                  ],
+                ),
               ),
-              SizedBox(height: 30),
-              IngredientsScreen(recipe),
-              SizedBox(height: 30),
-              FutureBuilder<List<List<String>>>(
-                future: PathProvider.pP.getRecipeStepPreviewPathList(
-                    recipe.stepImages, recipe.name),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return StepsSection(
-                        recipe.steps, snapshot.data, recipe.stepImages);
-                  }
-                  return Container(
-                    height: 70,
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                },
-              ),
-              Container(
-                height: 20,
-                decoration: BoxDecoration(color: Colors.black87),
-              ),
-              recipe.notes != ""
-                  ? NotesSection(notes: recipe.notes)
-                  : Container(),
-              recipe.categories.length > 0
-                  ? CategoriesSection(categories: recipe.categories)
-                  : Container(),
-              recipe.nutritions.isEmpty ? Container() : Container(height: 50),
-            ]))
-          ],
-        ));
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Color _getVegetableCircleColor(Vegetable vegetable) {
@@ -710,9 +752,27 @@ class TopSectionRecipe extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 15.0),
                       child: Container(
-                          height: 120,
-                          child: Image.asset(
-                              "images/${imageComplexity[effort.round()]}.png")),
+                        width: 20,
+                        height: 120,
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: Color.fromRGBO(152, 152, 152, 0.5),
+                              ),
+                            ),
+                            Container(
+                              height: effort / 10 * 120,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: Color.fromRGBO(232, 155, 41, 1),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -1171,17 +1231,37 @@ class IngredientsScreenState extends State<IngredientsScreen> {
             padding: const EdgeInsets.only(right: 20),
             child: Row(
               children: <Widget>[
-                IconButton(
-                    icon: currentIngredient.checked
-                        ? Icon(Icons.check_circle)
-                        : Icon(Icons.add_circle_outline),
-                    tooltip: 'Add to shopping Cart',
-                    onPressed: () {
-                      _pressIngredient(currentIngredient);
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: LikeButton(
+                    circleColor: CircleColor(
+                        start: Colors.green[300], end: Colors.green[800]),
+                    bubblesColor: BubblesColor(
+                        dotPrimaryColor: Colors.green[200],
+                        dotSecondaryColor: Colors.green[600],
+                        dotLastColor: Colors.green[900]),
+                    animationDuration: Duration(milliseconds: 500),
+                    isLiked: currentIngredient.checked,
+                    likeBuilder: (bool isFavorite) {
+                      return Icon(
+                        isFavorite
+                            ? Icons.check_circle
+                            : Icons.add_circle_outline,
+                        color: isFavorite ? Colors.green : Colors.white,
+                      );
                     },
-                    color: currentIngredient.checked
-                        ? Colors.green
-                        : Colors.white),
+                    onTap: (bool isFavorite) async {
+                      if (!isFavorite) {
+                        Future.delayed(Duration(milliseconds: 500))
+                            .then((_) => _pressIngredient(currentIngredient));
+                        return true;
+                      } else {
+                        _pressIngredient(currentIngredient);
+                        return false;
+                      }
+                    },
+                  ),
+                ),
                 Container(
                   width: MediaQuery.of(context).size.width - 150,
                   child: Text(
@@ -1443,4 +1523,45 @@ bool containsList(List<Ingredient> list, List<Ingredient> contains) {
     if (!list.contains(contains[i])) return false;
   }
   return true;
+}
+
+class Indicator extends StatelessWidget {
+  final Color color;
+  final String text;
+  final bool isSquare;
+  final double size;
+  final Color textColor;
+
+  const Indicator({
+    Key key,
+    this.color,
+    this.text,
+    this.isSquare,
+    this.size = 16,
+    this.textColor = const Color(0xff505050),
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
+            color: color,
+          ),
+        ),
+        const SizedBox(
+          width: 4,
+        ),
+        Text(
+          text,
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
+        )
+      ],
+    );
+  }
 }

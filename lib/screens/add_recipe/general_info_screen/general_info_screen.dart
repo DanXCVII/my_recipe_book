@@ -16,7 +16,6 @@ import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
 import '../../../routes.dart';
-import '../../../widgets/dialogs/info_dialog.dart';
 import '../../../widgets/image_selector.dart' as IS;
 import '../ingredients_screen.dart';
 import 'categories_section.dart';

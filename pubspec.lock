@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  after_layout:
+    dependency: transitive
+    description:
+      name: after_layout
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.7+2"
   analyzer:
     dependency: transitive
     description:
@@ -270,6 +277,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  flutter_spinkit:
+    dependency: "direct main"
+    description:
+      name: flutter_spinkit
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.1+1"
   flutter_staggered_animations:
     dependency: "direct main"
     description:
@@ -588,6 +602,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
+  rubber:
+    dependency: "direct main"
+    description:
+      name: rubber
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0"
   rxdart:
     dependency: "direct main"
     description:
@@ -671,7 +692,7 @@ packages:
       name: sliding_up_panel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.6"
+    version: "1.0.0"
   source_gen:
     dependency: transitive
     description:
@@ -700,6 +721,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.3"
+  stepper_touch:
+    dependency: "direct main"
+    description:
+      name: stepper_touch
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   stream_channel:
     dependency: transitive
     description:
