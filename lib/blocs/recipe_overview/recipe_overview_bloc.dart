@@ -26,6 +26,12 @@ class RecipeOverviewBloc
           add(DeleteRecipe(rmState.recipe));
         } else if (rmState is RMState.UpdateRecipeState) {
           add(UpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
+        } else if (rmState is RMState.AddFavoriteState) {
+          if (state is LoadedRecipeOverview) {
+            if (_belongsToRecipeList(rmState.recipe)) {
+              add(UpdateFavoriteStatus(rmState.recipe));
+            }
+          }
         }
       }
     });
@@ -50,6 +56,8 @@ class RecipeOverviewBloc
       yield* _mapDeleteRecipeToState(event);
     } else if (event is UpdateRecipe) {
       yield* _mapUpdateRecipeToState(event);
+    } else if (event is UpdateFavoriteStatus) {
+      yield* _mapUpdateFavoriteStatus(event);
     }
   }
 
@@ -233,5 +241,29 @@ class RecipeOverviewBloc
   Future<void> close() {
     subscription.cancel();
     return super.close();
+  }
+
+  Stream<RecipeOverviewState> _mapUpdateFavoriteStatus(
+      UpdateFavoriteStatus event) async* {
+    if (state is LoadedRecipeOverview) {
+      if (_belongsToRecipeList(event.recipe)) {
+        final List<Recipe> recipes =
+            List<Recipe>.from((state as LoadedRecipeOverview).recipes);
+        int favoriteIndex =
+            recipes.indexWhere((recipe) => recipe.name == event.recipe.name);
+        final List<Recipe> updatedRecipes = recipes
+          ..replaceRange(favoriteIndex, favoriteIndex + 1, [event.recipe]);
+        final List<Recipe> sortedRecipes = sortRecipes(
+            (state as LoadedRecipeOverview).recipeSort, updatedRecipes);
+
+        yield LoadedRecipeOverview(
+          recipes: sortedRecipes,
+          randomImage: _getRandomRecipeImage(sortedRecipes),
+          vegetable: (state as LoadedRecipeOverview).vegetable,
+          category: (state as LoadedRecipeOverview).category,
+          recipeSort: (state as LoadedRecipeOverview).recipeSort,
+        );
+      }
+    }
   }
 }

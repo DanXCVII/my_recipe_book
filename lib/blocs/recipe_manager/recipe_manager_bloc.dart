@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:my_recipe_book/models/recipe.dart';
 
 import './recipe_manager.dart';
 import '../../hive.dart';
+import '../../models/recipe.dart';
 
 class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   @override

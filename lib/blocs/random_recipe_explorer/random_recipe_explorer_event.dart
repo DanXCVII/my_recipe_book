@@ -100,5 +100,3 @@ class ChangeCategory extends RandomRecipeExplorerEvent {
   @override
   String toString() => 'Change Category { category: $category }';
 }
-
-class RotateRecipe extends RandomRecipeExplorerEvent {}

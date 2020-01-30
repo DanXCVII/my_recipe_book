@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager.dart';
-import 'package:my_recipe_book/widgets/dialogs/textfield_dialog.dart';
 
 import '../../blocs/new_recipe/nutritions/nutritions.dart';
 import '../../blocs/nutrition_manager/nutrition_manager.dart';
+import '../../blocs/recipe_manager/recipe_manager.dart';
 import '../../blocs/shopping_cart/shopping_cart.dart';
 import '../../generated/i18n.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
 import '../../routes.dart';
+import '../../widgets/dialogs/textfield_dialog.dart';
 import '../recipe_screen.dart';
 
 /// arguments which are provided to the route, when pushing to it
@@ -141,7 +140,15 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                             },
                           );
                         } else if (state is NEditingFinished) {
-                          return CircularProgressIndicator();
+                          return Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: Container(
+                                  width: 25,
+                                  height: 25,
+                                  child: CircularProgressIndicator()),
+                            ),
+                          );
                         } else {
                           return Icon(Icons.check);
                         }

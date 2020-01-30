@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 
 import '../../../blocs/new_recipe/steps/steps.dart';
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
@@ -12,6 +11,7 @@ import '../../../models/recipe.dart';
 import '../../../my_wrapper.dart';
 import '../../../routes.dart';
 import '../../../widgets/complexity_section.dart';
+import '../../../widgets/dialogs/info_dialog.dart';
 import '../nutritions.dart';
 import 'steps_section.dart';
 
@@ -120,7 +120,15 @@ class _StepsScreenState extends State<StepsScreen> {
                       },
                     );
                   } else if (state is SEditingFinished) {
-                    return CircularProgressIndicator();
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Container(
+                            width: 25,
+                            height: 25,
+                            child: CircularProgressIndicator()),
+                      ),
+                    );
                   } else {
                     return Icon(Icons.arrow_forward);
                   }

@@ -18,9 +18,6 @@ class LoadVegetableRecipeOverview extends RecipeOverviewEvent {
 
   @override
   List<Object> get props => [vegetable];
-
-  @override
-  String toString() => 'VegetableRecipeOverview { vegetable: $vegetable }';
 }
 
 class LoadCategoryRecipeOverview extends RecipeOverviewEvent {
@@ -30,9 +27,6 @@ class LoadCategoryRecipeOverview extends RecipeOverviewEvent {
 
   @override
   List<Object> get props => [category];
-
-  @override
-  String toString() => 'CategoryRecipeOverview { category: $category }';
 }
 
 class ChangeRecipeSort extends RecipeOverviewEvent {
@@ -42,9 +36,6 @@ class ChangeRecipeSort extends RecipeOverviewEvent {
 
   @override
   List<Object> get props => [recipeSort];
-
-  @override
-  String toString() => 'Change recipe sort { recipe sort: $recipeSort }';
 }
 
 class AddRecipe extends RecipeOverviewEvent {
@@ -54,9 +45,6 @@ class AddRecipe extends RecipeOverviewEvent {
 
   @override
   List<Object> get props => [recipe];
-
-  @override
-  String toString() => 'Add recipe { recipe: $recipe }';
 }
 
 class UpdateRecipe extends RecipeOverviewEvent {
@@ -67,10 +55,6 @@ class UpdateRecipe extends RecipeOverviewEvent {
 
   @override
   List<Object> get props => [oldRecipe, updatedRecipe];
-
-  @override
-  String toString() =>
-      'Update recipe { oldRecipe: $oldRecipe , updatedRecipe: $updatedRecipe }';
 }
 
 class DeleteRecipe extends RecipeOverviewEvent {
@@ -80,7 +64,13 @@ class DeleteRecipe extends RecipeOverviewEvent {
 
   @override
   List<Object> get props => [recipe];
+}
+
+class UpdateFavoriteStatus extends RecipeOverviewEvent {
+  final Recipe recipe;
+
+  const UpdateFavoriteStatus(this.recipe);
 
   @override
-  String toString() => 'Delete recipe { recipe: $recipe }';
+  List<Object> get props => [recipe];
 }

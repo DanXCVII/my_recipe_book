@@ -15,7 +15,6 @@ import '../../models/recipe.dart';
 import '../../my_wrapper.dart';
 import '../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
 import '../../routes.dart';
-import '../../widgets/dialogs/info_dialog.dart';
 import '../../widgets/ingredients_section.dart';
 import '../../widgets/vegetarian_section.dart';
 import 'steps_screen/steps_screen.dart';
@@ -143,7 +142,15 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
                       },
                     );
                   } else if (state is IEditingFinished) {
-                    return CircularProgressIndicator();
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Container(
+                            width: 25,
+                            height: 25,
+                            child: CircularProgressIndicator()),
+                      ),
+                    );
                   } else {
                     return Icon(Icons.arrow_forward);
                   }

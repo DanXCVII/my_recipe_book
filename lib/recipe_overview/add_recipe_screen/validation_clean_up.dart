@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/helper.dart';
-import 'package:my_recipe_book/hive.dart';
 
-import '../../database.dart';
+import '../../hive.dart';
 import '../../models/ingredient.dart';
 
 enum Validator {

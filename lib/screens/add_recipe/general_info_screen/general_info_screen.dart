@@ -139,7 +139,15 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                       },
                     );
                   } else if (state is GEditingFinished) {
-                    return CircularProgressIndicator();
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Container(
+                            width: 25,
+                            height: 25,
+                            child: CircularProgressIndicator()),
+                      ),
+                    );
                   } else {
                     return Icon(Icons.arrow_forward);
                   }

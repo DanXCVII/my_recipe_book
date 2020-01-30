@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/widgets/search.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_event.dart';
@@ -11,6 +10,7 @@ import '../helper.dart';
 import '../hive.dart';
 import '../models/ingredient.dart';
 import '../widgets/dialogs/shopping_cart_add_dialog.dart';
+import '../widgets/search.dart';
 
 class FancyShoppingCartScreen extends StatelessWidget {
   const FancyShoppingCartScreen({

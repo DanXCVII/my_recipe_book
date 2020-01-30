@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/models/enums.dart';
 import 'package:hive/hive.dart';
+
+import 'enums.dart';
 
 part 'recipe_sort.g.dart';
 

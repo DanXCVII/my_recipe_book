@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
+import 'package:my_recipe_book/widgets/recipe_card_big.dart';
 
 import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 import '../blocs/random_recipe_explorer/random_recipe_explorer_event.dart';
@@ -122,7 +123,7 @@ class _SwypingCardsState extends State<SwypingCards>
         height: MediaQuery.of(context).size.height,
         child: TinderSwapCard(
           orientation: AmassOrientation.TOP,
-          totalNum: 5,
+          totalNum: 50,
           stackNum: 3,
           animDuration: 200,
           swipeEdge: 4.0,
@@ -136,7 +137,7 @@ class _SwypingCardsState extends State<SwypingCards>
             cardWidth: maxWidth,
             cardHeight: maxHeight,
           ),
-          cardController: controller = CardController(),
+          cardController: CardController(),
           swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
             /// Get swiping card's alignment
             if (align.x < 0) {
@@ -149,6 +150,4 @@ class _SwypingCardsState extends State<SwypingCards>
       ),
     ]);
   }
-
-  RecipeCardBig({Recipe recipe, index, double cardWidth, double cardHeight}) {}
 }
