@@ -8,6 +8,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/local_storage/io_operations.dart';
 import 'package:rubber/rubber.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
@@ -520,10 +521,16 @@ class RecipePage extends StatelessWidget {
             textColor: Theme.of(context).textTheme.body1.color,
             color: Colors.red[600],
             onPressed: () {
-              BlocProvider.of<RecipeManagerBloc>(context)
-                  .add(RMDeleteRecipe(recipe.name));
-              Navigator.pop(context);
-              Navigator.pop(context);
+              // TODO: Check if nessesary
+              if (recipe != null) {
+                BlocProvider.of<RecipeManagerBloc>(context)
+                    .add(RMDeleteRecipe(recipe.name));
+                Future.delayed(Duration(milliseconds: 150)).then((_) async {
+                  await deleteRecipeData(recipe.name);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                });
+              }
             },
           ),
         ],

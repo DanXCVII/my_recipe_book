@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:my_recipe_book/local_storage/io_operations.dart';
 
 import './recipe_manager.dart';
 import '../../hive.dart';
@@ -42,13 +43,15 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
     yield AddRecipeState(event.recipe);
   }
 
+  /// not deleting files
   Stream<DeleteRecipeState> _mapDeleteRecipeToState(
       RMDeleteRecipe event) async* {
     Recipe deletedRecipe =
         await HiveProvider().getRecipeByName(event.recipeName);
-    yield DeleteRecipeState(deletedRecipe);
 
-    HiveProvider().deleteRecipe(deletedRecipe.name);
+    await HiveProvider().deleteRecipe(deletedRecipe.name);
+
+    yield DeleteRecipeState(deletedRecipe);
   }
 
   Stream<UpdateRecipeState> _mapUpdateRecipeToState(

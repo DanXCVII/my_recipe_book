@@ -230,10 +230,11 @@ class RecipeCategoryOverviewBloc
     if (recipe.categories.isEmpty) {
       // if the no category is already in the overview and has less then 8 recipes
       if (recipeOverview.isNotEmpty &&
-          recipeOverview.last.item1 == "no category" &&
-          recipeOverview.last.item2.length < 8) {
-        // add it to the existing no category section
-        recipeOverview.last.item2.add(recipe);
+          recipeOverview.last.item1 == "no category") {
+        if (recipeOverview.last.item2.length < 8) {
+          // add it to the existing no category section
+          recipeOverview.last.item2.add(recipe);
+        }
       } else {
         // add "no category" with the new recipe to the overview
         recipeOverview

@@ -29,6 +29,9 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
 
   Stream<NutritionsState> _mapFinishedEditingToState(
       FinishedEditing event) async* {
+    // case that the user quickly presses the done button twice
+    if (HiveProvider().getTmpRecipe().name == "") return;
+
     if (event.goBack) {
       yield NEditingFinishedGoBack();
     } else {

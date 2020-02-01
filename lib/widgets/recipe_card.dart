@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -142,9 +143,9 @@ class RecipeCard extends StatelessWidget {
                             maxLines: 2,
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14 + gridTileWidth / 35,
-                                fontFamily: 'Righteous'),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 10 + gridTileWidth / 35,
+                            ),
                           ),
                         ),
                         SizedBox(height: 7),
@@ -156,51 +157,56 @@ class RecipeCard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  getTimeHoursMinutes(recipe.totalTime),
+                                  "${getTimeHoursMinutes(recipe.totalTime)} • ${getIngredientCount(recipe.ingredients)} ${S.of(context).ingredients}",
                                   textScaleFactor: deviceWidth / 400,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: TextStyle(
                                     fontWeight: itemsFW,
-                                    fontSize: 10 + gridTileWidth / 40,
+                                    fontSize: 8 + gridTileWidth / 40,
                                     fontFamily: 'Questrial',
                                   ),
                                 ),
-                                Text(
-                                  "${getIngredientCount(recipe.ingredients)} ${S.of(context).ingredients}",
-                                  textScaleFactor: deviceWidth / 400,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    fontWeight: itemsFW,
-                                    fontSize: 10 + gridTileWidth / 40,
-                                    fontFamily: 'Questrial',
-                                  ),
-                                ),
+                                Container(height: 12),
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Container(
-                                      height: 14,
-                                      width: 14,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: complexityColors[recipe.effort],
-                                      ),
-                                    ),
-                                    Text(
-                                      ' ' + S.of(context).effort,
-                                      textScaleFactor: deviceWidth / 400,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                        fontWeight: itemsFW,
-                                        fontSize: 10 + gridTileWidth / 40,
-                                        fontFamily: 'Questrial',
-                                      ),
-                                    ),
-                                  ],
-                                )
+                                    children: List<Widget>.generate(5, (index) {
+                                  if (recipe.effort >= (index + 1) * 2) {
+                                    return Icon(
+                                      MdiIcons.knife,
+                                      size: 18,
+                                      color: Colors.black,
+                                    );
+                                  } else {
+                                    if (recipe.effort == index * 2 + 1) {
+                                      return Stack(
+                                        children: <Widget>[
+                                          Container(
+                                            child: Icon(
+                                              MdiIcons.knife,
+                                              size: 18,
+                                              // TODO: make color fit bright theme
+                                              color: Colors.grey[200],
+                                            ),
+                                          ),
+                                          // TODO: Clip half
+                                          ClipPath(
+                                            child: Icon(
+                                              MdiIcons.knife,
+                                              size: 18,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    } else {
+                                      return Icon(
+                                        MdiIcons.knife,
+                                        size: 18,
+                                        color: Colors.grey[200],
+                                      );
+                                    }
+                                  }
+                                }))
                               ],
                             ),
                             Spacer(),
@@ -210,14 +216,33 @@ class RecipeCard extends StatelessWidget {
                                   pushVegetableRoute(context, recipe.vegetable);
                               },
                               child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color:
+                                      recipe.vegetable == Vegetable.VEGETARIAN
+                                          ? Colors.green[700]
+                                          : recipe.vegetable == Vegetable.VEGAN
+                                              ? Colors.orange
+                                              : Colors.lightBlue[400],
+                                ),
                                 child: Center(
-                                  child: Image.asset(
-                                    "images/${getRecipeTypeImage(recipe.vegetable)}.png",
-                                    fit: BoxFit.scaleDown,
+                                  child: Icon(
+                                    recipe.vegetable == Vegetable.VEGETARIAN
+                                        ? MdiIcons.cheese
+                                        : recipe.vegetable == Vegetable.VEGAN
+                                            ? MdiIcons.leaf
+                                            : MdiIcons.cow,
+                                    color: recipe.vegetable ==
+                                            Vegetable.VEGETARIAN
+                                        ? Colors.amber
+                                        : recipe.vegetable == Vegetable.VEGAN
+                                            ? Colors.green[700]
+                                            : Colors.brown[800],
+                                    size: 18,
                                   ),
                                 ),
-                                height: deviceWidth / 400 * 35,
-                                width: deviceWidth / 400 * 35,
+                                height: deviceWidth / 400 * 20,
+                                width: deviceWidth / 400 * 20,
                               ),
                             )
                           ],

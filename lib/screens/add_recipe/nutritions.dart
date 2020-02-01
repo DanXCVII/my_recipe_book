@@ -109,8 +109,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                         );
                       } else if (state is NSaved) {
                         // TODO: differentiate between editing and new Recipe
-                        Navigator.of(context)
-                            .popUntil((route) => route.isFirst);
+                        Future.delayed(Duration(milliseconds: 300)).then((_) =>
+                            Navigator.of(context)
+                                .popUntil((route) => route.isFirst));
                         // Navigator.pushNamed(
                         //   context,
                         //   RouteNames.recipeScreen,

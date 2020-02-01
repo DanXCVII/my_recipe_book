@@ -4,7 +4,9 @@ import 'dart:math';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 
+import '../hive.dart';
 import './local_paths.dart';
 import '../database.dart';
 import '../helper.dart';
@@ -222,7 +224,9 @@ String getStepImageName(String selectedImagePath) {
 }
 
 Future<String> saveRecipeZip(String targetDir, String recipeName) async {
-  Recipe exportRecipe = await DBProvider.db.getRecipeByName(recipeName, false);
+  Recipe recipe = await HiveProvider().getRecipeByName(recipeName);
+  Recipe exportRecipe = await removeLocalDirRecipeFiles(recipe);
+
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDirFull(recipeName));
 
@@ -308,4 +312,31 @@ Future<void> saveImage(File image, String targetPath, int resolution) async {
     new File('${values[1]}')..writeAsBytesSync(ImageIO.encodeJpg(resizedImage));
     */
   }
+}
+
+/// returns the recipe at which the AppDocDir is removed from all files
+Future<Recipe> removeLocalDirRecipeFiles(Recipe recipe) async {
+  String imagePath = "images/randomFood.jpg";
+  String imagePreviewPath = "images/randomFood.jpg";
+  List<List<String>> stepImages = [[]];
+
+  String removeString = (await getApplicationDocumentsDirectory()).path;
+  if (recipe.imagePath != "images/randomFood.jpg") {
+    imagePath = recipe.imagePath.replaceFirst(removeString, '');
+    imagePreviewPath = recipe.imagePreviewPath.replaceFirst(removeString, '');
+  }
+  for (int i = 0; i < recipe.stepImages.length; i++) {
+    if (i > 0) {
+      stepImages.add([]);
+    }
+    for (int j = 0; j < recipe.stepImages[i].length; j++) {
+      stepImages[i].add(recipe.stepImages[i][j].replaceFirst(removeString, ''));
+    }
+  }
+
+  return recipe.copyWith(
+    imagePath: imagePath,
+    imagePreviewPath: imagePreviewPath,
+    stepImages: stepImages,
+  );
 }

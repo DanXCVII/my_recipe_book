@@ -61,7 +61,7 @@ class Recipe extends Equatable {
     this.stepImages = const [[]],
     this.notes,
     this.nutritions = const [],
-    this.isFavorite,
+    this.isFavorite = false,
     this.effort,
   });
 
@@ -114,8 +114,7 @@ class Recipe extends Equatable {
           .map((l) => List<Map<String, dynamic>>.from(l)
               .map((i) => Ingredient.fromMap(i))
               .toList())
-          .toList()
-            ..removeLast(),
+          .toList(),
       vegetable: vegetable,
       steps: List<String>.from(json['steps']),
       notes: json['notes'],

@@ -253,8 +253,11 @@ class RecipeOverviewBloc
             recipes.indexWhere((recipe) => recipe.name == event.recipe.name);
         final List<Recipe> updatedRecipes = recipes
           ..replaceRange(favoriteIndex, favoriteIndex + 1, [event.recipe]);
-        final List<Recipe> sortedRecipes = sortRecipes(
-            (state as LoadedRecipeOverview).recipeSort, updatedRecipes);
+        final List<Recipe> sortedRecipes =
+            (state as LoadedRecipeOverview).recipeSort == null
+                ? updatedRecipes
+                : sortRecipes(
+                    (state as LoadedRecipeOverview).recipeSort, updatedRecipes);
 
         yield LoadedRecipeOverview(
           recipes: sortedRecipes,

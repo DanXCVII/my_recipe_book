@@ -137,6 +137,7 @@ Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
 /// extracts the given .zip to the tmp directory and if the recipe data is valid,
 /// returns the name of the .zip with the recipe data, otherwise: name of .zip with
 /// null
+/// the json which contains the recipe object will be deleted afterwards
 Future<Map<String, Recipe>> importRecipeToTmp(File recipeZip) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir

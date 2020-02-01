@@ -173,6 +173,14 @@ class RandomRecipeExplorerBloc
       int selectedIndex =
           (state as LoadedRandomRecipeExplorer).selectedCategory;
 
+      if (await HiveProvider().getRandomRecipeOfCategory(
+              category:
+                  selectedIndex == 0 ? null : categories[selectedIndex]) ==
+          null) {
+        yield LoadedRandomRecipeExplorer([], categories, selectedIndex);
+        return;
+      }
+
       bool updated = false;
       while (randomRecipes.contains(event.recipe)) {
         randomRecipes[randomRecipes.indexOf(event.recipe)] =
