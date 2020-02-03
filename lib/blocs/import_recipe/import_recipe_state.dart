@@ -19,28 +19,45 @@ class ImportingRecipes extends ImportRecipeState {
   List<Object> get props => [percentageDone];
 }
 
-class ImportedRecipes extends ImportRecipeState {
+class MultipleRecipes extends ImportRecipeState {
   // successfully imported recipes
-  final List<Recipe> importedRecipes;
-  // names of the .zip files with invalid recipe data
-  final List<String> failedZips;
+  final List<Recipe> readyToImportRecipes;
   // the name of the recipe is already saved in hive
   final List<Recipe> alreadyExistingRecipes;
+  // names of the .zip files with invalid recipe data
+  final List<String> failedZips;
 
-  ImportedRecipes([
-    this.importedRecipes,
+  MultipleRecipes([
+    this.readyToImportRecipes,
     this.failedZips,
     this.alreadyExistingRecipes,
   ]);
 
   @override
   List<Object> get props => [
-        importedRecipes,
-        failedZips,
+        readyToImportRecipes,
         alreadyExistingRecipes,
       ];
+}
+
+class ImportedRecipes extends ImportRecipeState {
+  // successfully imported recipes
+  final List<Recipe> importedRecipes;
+  // names of the .zip files with invalid recipe data
+  final List<Recipe> failedRecipes;
+  // the name of the recipe is already saved in hive
+  final List<Recipe> alreadyExistingRecipes;
+
+  ImportedRecipes([
+    this.importedRecipes,
+    this.failedRecipes,
+    this.alreadyExistingRecipes,
+  ]);
 
   @override
-  String toString() =>
-      'Imported recipes { importedRecipes: $importedRecipes , failedZips: $failedZips, alreadyExistingRecipes: $alreadyExistingRecipes }';
+  List<Object> get props => [
+        importedRecipes,
+        failedRecipes,
+        alreadyExistingRecipes,
+      ];
 }

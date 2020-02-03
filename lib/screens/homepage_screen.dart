@@ -207,7 +207,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           child: Text("yes"),
           onPressed: () {
             BlocProvider.of<ImportRecipeBloc>(context)
-                .add(ImportRecipes(importZipFile));
+                .add(StartImportRecipes(importZipFile));
             Navigator.pop(context);
           },
         ),

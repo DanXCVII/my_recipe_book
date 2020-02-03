@@ -174,7 +174,7 @@ class RecipeCard extends StatelessWidget {
                                     return Icon(
                                       MdiIcons.knife,
                                       size: 18,
-                                      color: Colors.black,
+                                      color: Colors.grey[200],
                                     );
                                   } else {
                                     if (recipe.effort == index * 2 + 1) {
@@ -185,7 +185,7 @@ class RecipeCard extends StatelessWidget {
                                               MdiIcons.knife,
                                               size: 18,
                                               // TODO: make color fit bright theme
-                                              color: Colors.grey[200],
+                                              color: Colors.black,
                                             ),
                                           ),
                                           // TODO: Clip half
@@ -195,7 +195,7 @@ class RecipeCard extends StatelessWidget {
                                               child: Icon(
                                                 MdiIcons.knife,
                                                 size: 18,
-                                                color: Colors.black,
+                                                color: Colors.grey[200],
                                               ),
                                             ),
                                           ),
@@ -205,7 +205,7 @@ class RecipeCard extends StatelessWidget {
                                       return Icon(
                                         MdiIcons.knife,
                                         size: 18,
-                                        color: Colors.grey[200],
+                                        color: Colors.black,
                                       );
                                     }
                                   }
