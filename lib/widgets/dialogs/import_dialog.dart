@@ -1,0 +1,176 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/import_recipe/import_recipe.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
+
+class ImportDialog extends StatefulWidget {
+  ImportDialog({Key key}) : super(key: key);
+
+  @override
+  _ImportDialogState createState() => _ImportDialogState();
+}
+
+class _ImportDialogState extends State<ImportDialog>
+    with SingleTickerProviderStateMixin {
+  bool finished = false;
+  int totalListItems = 0;
+  AnimationController _controller;
+
+  @override
+  void initState() {
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 200),
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      contentPadding: EdgeInsets.all(12),
+      title: Text(finished ? "finished" : "importing recipe/s"),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      content: BlocListener<ImportRecipeBloc, ImportRecipeState>(
+        listener: (context, state) {
+          if (state is ImportedRecipes) {
+            setState(() {
+              _controller.forward();
+              finished = true;
+              totalListItems = state.importedRecipes.length +
+                  state.alreadyExistingRecipes.length +
+                  state.failedZips.length;
+            });
+          }
+        },
+        child: SizeTransition(
+          sizeFactor: _controller,
+          child: BlocBuilder<ImportRecipeBloc, ImportRecipeState>(
+              builder: (context, state) {
+            double percentageDone;
+            if (state is InitialImportRecipeState ||
+                state is ImportingRecipes) {
+              if (state is InitialImportRecipeState) {
+                percentageDone = 0;
+              } else if (state is ImportingRecipes) {
+                percentageDone = state.percentageDone;
+              }
+              return LinearPercentIndicator(
+                animation: true,
+                lineHeight: 20.0,
+                animationDuration: 500,
+                percent: percentageDone,
+                center: Text("${percentageDone * 100}%"),
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: Colors.green,
+              );
+            } else if (state is ImportedRecipes) {
+              return Container(
+                height: totalListItems.toDouble() * 60 + 62,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Container(
+                        height: totalListItems == 1
+                            ? 60
+                            : totalListItems == 2 ? 120 : 180,
+                        width: 250,
+                        child: ListView(
+                          children: List.generate(
+                            state.importedRecipes.length,
+                            (index) => ListTile(
+                              title: Text(state.importedRecipes[index].name),
+                              trailing: Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              ),
+                            ),
+                          )
+                            ..addAll(
+                              List.generate(
+                                state.alreadyExistingRecipes.length,
+                                (index) => ListTile(
+                                  title: Text(
+                                      state.alreadyExistingRecipes[index].name),
+                                  trailing: Icon(
+                                    Icons.offline_bolt,
+                                    color: Colors.yellow,
+                                  ),
+                                ),
+                              ),
+                            )
+                            ..addAll(
+                              List.generate(
+                                state.failedZips.length,
+                                (index) => ListTile(
+                                  title: Text(state.failedZips[index]),
+                                  trailing: Icon(
+                                    MdiIcons.alertCircle,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                            size: 14,
+                          ),
+                          Text(
+                            ' successful ',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          Icon(
+                            Icons.offline_bolt,
+                            color: Colors.yellow,
+                            size: 14,
+                          ),
+                          Text(
+                            ' duplicate ',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          Icon(
+                            MdiIcons.alertCircle,
+                            color: Colors.red,
+                            size: 14,
+                          ),
+                          Text(
+                            ' failed',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 60,
+                      child: FlatButton(
+                        child: Text("ok"),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }
+          }),
+        ),
+      ),
+    );
+  }
+}

@@ -4,11 +4,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/category_overview/category_overview_bloc.dart';
+import 'package:my_recipe_book/blocs/category_overview/category_overview_event.dart';
+import 'package:my_recipe_book/blocs/import_recipe/import_recipe.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager.dart';
-import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/widgets/dialogs/import_dialog.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import './import_recipe.dart';
 import '../generated/i18n.dart';
 import '../intro_screen.dart';
 import '../routes.dart';
@@ -235,17 +238,21 @@ class Settings extends StatelessWidget {
     });
   }
 
-  Future<void> _importSingleRecipe(BuildContext context) async {
+  Future<void> _importSingleRecipe(BuildContext ctxt) async {
     // Let the user select the .zip file
     String _path = await FilePicker.getFilePath(
         type: FileType.CUSTOM, fileExtension: 'zip');
-    if (_path == null) return;
-    List<Recipe> recipes =
-        await importSingleMultipleRecipes(File(_path), context);
 
-    if (recipes.isNotEmpty) {
-      BlocProvider.of<RecipeManagerBloc>(context).add(RMAddRecipe(recipes[0]));
-    }
+    if (_path == null) return;
+
+    showDialog(
+      context: ctxt,
+      builder: (context) => BlocProvider<ImportRecipeBloc>.value(
+          value: BlocProvider.of<ImportRecipeBloc>(ctxt),
+          child: ImportDialog()),
+    );
+    BlocProvider.of<ImportRecipeBloc>(ctxt)
+      ..add(ImportRecipes(File(_path), delay: Duration(milliseconds: 300)));
   }
 }
 

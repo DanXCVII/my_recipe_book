@@ -190,10 +190,13 @@ class RecipeCard extends StatelessWidget {
                                           ),
                                           // TODO: Clip half
                                           ClipPath(
-                                            child: Icon(
-                                              MdiIcons.knife,
-                                              size: 18,
-                                              color: Colors.black,
+                                            clipper: LeftHalfVerticalClipper(),
+                                            child: ClipPath(
+                                              child: Icon(
+                                                MdiIcons.knife,
+                                                size: 18,
+                                                color: Colors.black,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -334,4 +337,18 @@ String getRecipeTypeImage(Vegetable vegetable) {
     default:
       return "no valid input at getRecipeTypeImage()";
   }
+}
+
+class LeftHalfVerticalClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    return Path()
+      ..lineTo(size.width / 1.6, 0)
+      ..lineTo(size.width / 1.6, size.height)
+      ..lineTo(0, size.height)
+      ..lineTo(0, 0);
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

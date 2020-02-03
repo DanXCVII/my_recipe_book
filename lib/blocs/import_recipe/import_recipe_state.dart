@@ -10,7 +10,14 @@ abstract class ImportRecipeState extends Equatable {
 
 class InitialImportRecipeState extends ImportRecipeState {}
 
-class ImportingRecipes extends ImportRecipeState {}
+class ImportingRecipes extends ImportRecipeState {
+  final double percentageDone;
+
+  ImportingRecipes(this.percentageDone);
+
+  @override
+  List<Object> get props => [percentageDone];
+}
 
 class ImportedRecipes extends ImportRecipeState {
   // successfully imported recipes

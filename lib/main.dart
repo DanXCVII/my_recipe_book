@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -13,6 +15,7 @@ import 'blocs/category_overview/category_overview.dart';
 import 'blocs/category_overview/category_overview_event.dart';
 import 'blocs/favorite_recipes/favorite_recipes.dart';
 import 'blocs/favorite_recipes/favorite_recipes_event.dart';
+import 'blocs/import_recipe/import_recipe_bloc.dart';
 import 'blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import 'blocs/new_recipe/general_info/general_info.dart';
 import 'blocs/new_recipe/ingredients/ingredients.dart';
@@ -117,6 +120,9 @@ class MyApp extends StatelessWidget {
                                   BlocProvider.of<RecipeManagerBloc>(context),
                             )..add(InitializeRandomRecipeExplorer()),
                           ),
+                          BlocProvider<ImportRecipeBloc>(
+                              create: (context) => ImportRecipeBloc(
+                                  BlocProvider.of<RecipeManagerBloc>(context))),
                           BlocProvider<ShoppingCartBloc>(
                             create: (context) =>
                                 ShoppingCartBloc()..add(LoadShoppingCart()),

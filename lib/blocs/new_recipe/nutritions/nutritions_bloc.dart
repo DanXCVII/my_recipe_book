@@ -9,6 +9,8 @@ import '../../../local_storage/io_operations.dart' as IO;
 import '../../../models/recipe.dart';
 
 class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
+  bool finishedEditing = false;
+
   @override
   NutritionsState get initialState => NCanSave();
 
@@ -30,7 +32,8 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
   Stream<NutritionsState> _mapFinishedEditingToState(
       FinishedEditing event) async* {
     // case that the user quickly presses the done button twice
-    if (HiveProvider().getTmpRecipe().name == "") return;
+    if (finishedEditing) return;
+    finishedEditing = true;
 
     if (event.goBack) {
       yield NEditingFinishedGoBack();

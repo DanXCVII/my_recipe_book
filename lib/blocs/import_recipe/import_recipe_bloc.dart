@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager.dart';
-import 'package:my_recipe_book/hive.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/settings/import_recipe.dart';
+
 import './import_recipe.dart';
+import '../../hive.dart';
+import '../../local_storage/io_operations.dart' as IO;
+import '../../models/recipe.dart';
+import '../recipe_manager/recipe_manager.dart';
 
 class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
   RecipeManagerBloc recipeManagerBloc;
@@ -25,34 +27,42 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
 
   Stream<ImportRecipeState> _mapImportRecipesToState(
       ImportRecipes event) async* {
-    yield ImportingRecipes();
+    yield ImportingRecipes(0);
+
+    if (event.delay != null) await Future.delayed(event.delay);
 
     List<Recipe> importRecipes = [];
     List<String> failedZips = [];
     List<Recipe> alreadyExisting = [];
 
-    Map<String, Recipe> recipes = await importRecipesToTmp(event.importZipFile);
+    Map<String, Recipe> recipes =
+        await IO.importRecipesToTmp(event.importZipFile);
+    yield ImportingRecipes(0.1);
 
-    for (var key in recipes.keys) {
-      if (recipes[key] == null) {
-        failedZips.add(key.toString());
+    List<String> recipeKeys = recipes.keys.toList();
+    for (int i = 0; i < recipeKeys.length; i++) {
+      if (recipes[recipeKeys[i]] == null) {
+        failedZips.add(recipeKeys[i].toString());
       } else {
         // if a recipe with the same name isn't already save to hive
-        if (await HiveProvider().getRecipeByName(recipes[key].name) == null) {
+        if (await HiveProvider().getRecipeByName(recipes[recipeKeys[i]].name) ==
+            null) {
           // import recipe data to app ..
-          bool importedRecipeData = await importRecipeFromTmp(recipes[key]);
+          bool importedRecipeData =
+              await IO.importRecipeFromTmp(recipes[recipeKeys[i]]);
           // .. and if it doesn't fail ..
           if (importedRecipeData == true) {
             // .. save recipe data to hive
-            await HiveProvider().saveRecipe(recipes[key]);
+            await HiveProvider().saveRecipe(recipes[recipeKeys[i]]);
             // add recipe to recipeManager
-            recipeManagerBloc.add(RMAddRecipe(recipes[key]));
+            recipeManagerBloc.add(RMAddRecipe(recipes[recipeKeys[i]]));
           }
         } else {
           // if the recipe is already saved in hive, add it to the alreadyExisting list
-          alreadyExisting
-              .add(await HiveProvider().getRecipeByName(recipes[key].name));
+          alreadyExisting.add(await HiveProvider()
+              .getRecipeByName(recipes[recipeKeys[i]].name));
         }
+        yield ImportingRecipes(0.1 + (i / recipeKeys.length * 0.9));
       }
     }
 

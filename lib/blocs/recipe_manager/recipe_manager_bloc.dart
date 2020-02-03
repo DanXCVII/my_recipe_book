@@ -8,6 +8,7 @@ import '../../hive.dart';
 import '../../models/recipe.dart';
 
 class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
+  final String test = "k";
   @override
   RecipeManagerState get initialState => InitialRecipeManagerState();
 

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:my_recipe_book/widgets/recipe_card.dart';
 
@@ -38,8 +39,17 @@ class FavoriteScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Container(
-          height: deviceHeight / 800 * 80,
-          child: Image.asset('images/bigHeart.png'),
+          width: 110,
+          height: 110,
+          decoration: BoxDecoration(
+              color: Color.fromRGBO(0, 0, 0, 0.5), shape: BoxShape.circle),
+          child: Container(
+            height: deviceHeight / 800 * 80,
+            child: SpinKitPumpingHeart(
+              color: Colors.pink,
+              size: 70.0,
+            ),
+          ),
         ),
         SizedBox(height: 10),
         Padding(

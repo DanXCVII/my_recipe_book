@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_parallax/flutter_parallax.dart';
+import 'package:parallax_image/parallax_image.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_category_overview/recipe_category_overview.dart';
@@ -133,7 +135,7 @@ class RecipeHozizontalList extends StatelessWidget {
                 _pushRecipeRoute(
                   context,
                   index,
-                  '$categoryName$index-image',
+                  '${categoryName}$index-image',
                   recipes[index],
                 );
               },
@@ -145,57 +147,50 @@ class RecipeHozizontalList extends StatelessWidget {
                   width: 110,
                   child: Column(
                     children: <Widget>[
-                      // Hero(
-                      //   tag: recipelistF
-                      //       .data[index].imagePath,
-                      //   child: Material(
-                      //     color: Colors.transparent,
-                      //     child:
                       Stack(
                         children: <Widget>[
                           Hero(
-                            tag: '$categoryName$index-image',
-                            placeholderBuilder: (context, size, widget) =>
-                                ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(35),
-                                  topRight: Radius.circular(15),
-                                  bottomLeft: Radius.circular(15),
-                                  bottomRight: Radius.circular(35)),
-                              child: FadeInImage(
-                                // image: AssetImage(recipes[index].imagePath),
-                                image: recipes[index].imagePreviewPath ==
-                                        'images/randomFood.jpg'
-                                    ? AssetImage('images/randomFood.jpg')
-                                    : FileImage(
-                                        File(recipes[index].imagePreviewPath)),
-                                fadeInDuration:
-                                    const Duration(milliseconds: 250),
-                                placeholder: MemoryImage(kTransparentImage),
-                                height: 90,
-                                width: 90,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(35),
-                                  topRight: Radius.circular(15),
-                                  bottomLeft: Radius.circular(15),
-                                  bottomRight: Radius.circular(35)),
-                              child: FadeInImage(
-                                // image: AssetImage(recipes[index].imagePath),
-                                image: recipes[index].imagePreviewPath ==
-                                        'images/randomFood.jpg'
-                                    ? AssetImage('images/randomFood.jpg')
-                                    : FileImage(
-                                        File(recipes[index].imagePreviewPath)),
-                                fadeInDuration:
-                                    const Duration(milliseconds: 250),
-                                placeholder: MemoryImage(kTransparentImage),
-                                height: 90,
-                                width: 90,
-                                fit: BoxFit.cover,
+                            tag: '${categoryName}$index-image',
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(35),
+                                      topRight: Radius.circular(15),
+                                      bottomLeft: Radius.circular(15),
+                                      bottomRight: Radius.circular(35)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      offset: Offset(1, 1),
+                                      blurRadius: 2,
+                                      spreadRadius: 1,
+                                      color:
+                                          Theme.of(context).backgroundColor ==
+                                                  Colors.white
+                                              ? Colors.grey[400]
+                                              : Colors.black,
+                                    ),
+                                  ]),
+                              height: 90,
+                              width: 90,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(35),
+                                    topRight: Radius.circular(15),
+                                    bottomLeft: Radius.circular(15),
+                                    bottomRight: Radius.circular(35)),
+                                child: FadeInImage(
+                                  image: recipes[index].imagePreviewPath ==
+                                          'images/randomFood.jpg'
+                                      ? AssetImage('images/randomFood.jpg')
+                                      : FileImage(File(
+                                          recipes[index].imagePreviewPath)),
+                                  fadeInDuration:
+                                      const Duration(milliseconds: 250),
+                                  placeholder: MemoryImage(kTransparentImage),
+                                  height: 90,
+                                  width: 150,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),

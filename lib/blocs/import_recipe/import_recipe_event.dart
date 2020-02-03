@@ -8,11 +8,12 @@ abstract class ImportRecipeEvent extends Equatable {
 
 class ImportRecipes extends ImportRecipeEvent {
   final File importZipFile;
+  final Duration delay;
 
-  ImportRecipes(this.importZipFile);
+  ImportRecipes(this.importZipFile, {this.delay});
 
   @override
-  List<Object> get props => [importZipFile];
+  List<Object> get props => [importZipFile, delay];
 
   @override
   String toString() => 'Import recipe { importZipFile: $importZipFile }';

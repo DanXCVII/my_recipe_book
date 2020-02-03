@@ -64,6 +64,10 @@ dependencies:
   flutter_spinkit: ^4.1.1+1
   stepper_touch: ^0.0.1
   material_design_icons_flutter: ^3.4.4895
+  parallax_image: 0.3.1+1
+  flutter_parallax: ^0.1.2
+  wave: ^0.0.8
+  percent_indicator: ^2.1.1+1
 
 
   share:
