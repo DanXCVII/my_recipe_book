@@ -227,7 +227,7 @@ String getStepImageName(String selectedImagePath) {
 
 Future<String> saveRecipeZip(String targetDir, String recipeName) async {
   Recipe recipe = await HiveProvider().getRecipeByName(recipeName);
-  Recipe exportRecipe = await removeLocalDirRecipeFiles(recipe);
+  Recipe exportRecipe = await PathProvider.pP.removeLocalDirRecipeFiles(recipe);
 
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDirFull(recipeName));
@@ -316,37 +316,11 @@ Future<void> saveImage(File image, String targetPath, int resolution) async {
   }
 }
 
-/// returns the recipe at which the AppDocDir is removed from all files
-Future<Recipe> removeLocalDirRecipeFiles(Recipe recipe) async {
-  String imagePath = "images/randomFood.jpg";
-  String imagePreviewPath = "images/randomFood.jpg";
-  List<List<String>> stepImages = [[]];
-
-  String removeString = (await getApplicationDocumentsDirectory()).path;
-  if (recipe.imagePath != "images/randomFood.jpg") {
-    imagePath = recipe.imagePath.replaceFirst(removeString, '');
-    imagePreviewPath = recipe.imagePreviewPath.replaceFirst(removeString, '');
-  }
-  for (int i = 0; i < recipe.stepImages.length; i++) {
-    if (i > 0) {
-      stepImages.add([]);
-    }
-    for (int j = 0; j < recipe.stepImages[i].length; j++) {
-      stepImages[i].add(recipe.stepImages[i][j].replaceFirst(removeString, ''));
-    }
-  }
-
-  return recipe.copyWith(
-    imagePath: imagePath,
-    imagePreviewPath: imagePreviewPath,
-    stepImages: stepImages,
-  );
-}
-
 /// extracts the given .zip to the tmp directory and if the recipe/s data is valid,
 /// returns the name of the .zip with the recipe data, otherwise: name of .zip with
 /// null
 Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
+  await Directory(await PathProvider.pP.getImportDir()).delete(recursive: true);
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
   await exstractZip(recipeZip, importDir.path);
@@ -388,7 +362,7 @@ Future<Map<String, Recipe>> importRecipeToTmp(File recipeZip) async {
 
   Recipe importRecipe;
   // loop through the import files
-  for (File file in importFiles) {
+  for (FileSystemEntity file in importFiles) {
     // stop if json found
     if (file.path.endsWith('.json')) {
       try {
@@ -459,7 +433,8 @@ _showImportedRecipeToast(
 Future<Recipe> getRecipeFromJson(File jsonFile) async {
   String json = await jsonFile.readAsString();
   Map<String, dynamic> jsonMap = jsonDecode(json);
-  return Recipe.fromMap(jsonMap);
+  Recipe importRecipe = Recipe.fromMap(jsonMap);
+  return await PathProvider.pP.addLocalDirRecipeFiles(importRecipe);
 }
 
 Future<void> exstractZip(File encode, String destination) async {

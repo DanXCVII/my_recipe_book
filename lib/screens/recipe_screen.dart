@@ -1454,7 +1454,8 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     List<Widget> output = [];
     bool oneSection = ingredients.isEmpty;
 
-    for (int i = 0; i < ingredients.length; i++) {
+    // for (int i = 0; i < ingredients.length; i++) {
+    for (int i = 0; i < widget.currentRecipe.ingredientsGlossary.length; i++) {
       List<CheckableIngredient> sectionIngredients = ingredients[i];
       output.add(
         Padding(

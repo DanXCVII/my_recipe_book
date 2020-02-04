@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:my_recipe_book/models/recipe.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../helper.dart';
@@ -218,5 +219,61 @@ class PathProvider {
     String cRecipeName = getUnderscoreName(recipeName);
 
     return '$fullTargetDir/$cRecipeName.json';
+  }
+
+  ////////////// Import recipe related //////////////////
+
+  /// returns the recipe at which the AppDocDir is removed from all files
+  Future<Recipe> removeLocalDirRecipeFiles(Recipe recipe) async {
+    String imagePath = "images/randomFood.jpg";
+    String imagePreviewPath = "images/randomFood.jpg";
+    List<List<String>> stepImages = [[]];
+
+    String removeString = (await getApplicationDocumentsDirectory()).path;
+    if (recipe.imagePath != "images/randomFood.jpg") {
+      imagePath = recipe.imagePath.replaceFirst(removeString, '');
+      imagePreviewPath = recipe.imagePreviewPath.replaceFirst(removeString, '');
+    }
+    for (int i = 0; i < recipe.stepImages.length; i++) {
+      if (i > 0) {
+        stepImages.add([]);
+      }
+      for (int j = 0; j < recipe.stepImages[i].length; j++) {
+        stepImages[i]
+            .add(recipe.stepImages[i][j].replaceFirst(removeString, ''));
+      }
+    }
+
+    return recipe.copyWith(
+      imagePath: imagePath,
+      imagePreviewPath: imagePreviewPath,
+      stepImages: stepImages,
+    );
+  }
+
+  Future<Recipe> addLocalDirRecipeFiles(Recipe recipe) async {
+    String imagePath = "images/randomFood.jpg";
+    String imagePreviewPath = "images/randomFood.jpg";
+    List<List<String>> stepImages = [[]];
+
+    String appDocDir = (await getApplicationDocumentsDirectory()).path;
+    if (recipe.imagePath != "images/randomFood.jpg") {
+      imagePath = "$appDocDir/${recipe.imagePath}";
+      imagePreviewPath = "$appDocDir${recipe.imagePreviewPath}";
+    }
+    for (int i = 0; i < recipe.stepImages.length; i++) {
+      if (i > 0) {
+        stepImages.add([]);
+      }
+      for (int j = 0; j < recipe.stepImages[i].length; j++) {
+        stepImages[i].add("$appDocDir${recipe.stepImages[i][j]}");
+      }
+    }
+
+    return recipe.copyWith(
+      imagePath: imagePath,
+      imagePreviewPath: imagePreviewPath,
+      stepImages: stepImages,
+    );
   }
 }

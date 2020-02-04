@@ -82,7 +82,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
     yield ImportingRecipes(0.1);
 
     for (int i = 0; i < event.recipes.length; i++) {
-      await Future.delayed(Duration(seconds: 1));
+      // await Future.delayed(Duration(seconds: 1));
       // if a recipe with the same name isn't already save to hive -> double check
       if (await HiveProvider().getRecipeByName(event.recipes[i].name) == null) {
         // import recipe data to app ..
@@ -90,6 +90,13 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
             await IO.importRecipeFromTmp(event.recipes[i]);
         // .. and if it succeeded ..
         if (importedRecipeData == true) {
+          List<String> categories = HiveProvider().getCategoryNames();
+          for (String category in event.recipes[i].categories) {
+            if (!categories.contains(category)) {
+              recipeManagerBloc.add(RMAddCategory(category));
+              await Future.delayed(Duration(milliseconds: 50));
+            }
+          }
           // add recipe to recipeManager
           recipeManagerBloc.add(RMAddRecipe(event.recipes[i]));
           importRecipes.add(event.recipes[i]);

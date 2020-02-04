@@ -99,7 +99,9 @@ class _ImportDialogState extends State<ImportDialog>
               );
             } else if (state is MultipleRecipes) {
               return Container(
-                height: totalListItems.toDouble() * 60 + 62,
+                height: totalListItems > 4
+                    ? 242
+                    : totalListItems.toDouble() * 60 + 62,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
@@ -112,32 +114,50 @@ class _ImportDialogState extends State<ImportDialog>
                         width: 250,
                         child: ListView(
                           children: List.generate(
-                            state.readyToImportRecipes.length,
-                            (index) => ListTile(
-                                title: Text(
-                                    state.readyToImportRecipes[index].name),
-                                trailing: Checkbox(
-                                  value: selectedRecipes.contains(
-                                      state.readyToImportRecipes[index]),
-                                  onChanged: (status) {
-                                    setState(() {
-                                      if (status) {
-                                        selectedRecipes.add(
-                                            state.readyToImportRecipes[index]);
-                                      } else {
-                                        selectedRecipes.remove(
-                                            state.readyToImportRecipes[index]);
-                                      }
-                                    });
-                                  },
-                                )),
+                            state.readyToImportRecipes.length * 2 - 1,
+                            (index) => (index + 1) % 2 == 0
+                                ? Divider()
+                                : ListTile(
+                                    title: Text(
+                                      state
+                                          .readyToImportRecipes[
+                                              (index == 0 ? 0 : index / 2)
+                                                  .round()]
+                                          .name,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    trailing: Checkbox(
+                                      value: selectedRecipes.contains(
+                                          state.readyToImportRecipes[
+                                              (index == 0 ? 0 : index / 2)
+                                                  .round()]),
+                                      onChanged: (status) {
+                                        setState(() {
+                                          if (status) {
+                                            selectedRecipes.add(
+                                                state.readyToImportRecipes[
+                                                    (index == 0 ? 0 : index / 2)
+                                                        .round()]);
+                                          } else {
+                                            selectedRecipes.remove(
+                                                state.readyToImportRecipes[
+                                                    (index == 0 ? 0 : index / 2)
+                                                        .round()]);
+                                          }
+                                        });
+                                      },
+                                    )),
                           )
                             ..addAll(
                               List.generate(
                                 state.alreadyExistingRecipes.length,
                                 (index) => ListTile(
                                   title: Text(
-                                      state.alreadyExistingRecipes[index].name),
+                                    state.alreadyExistingRecipes[index].name,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                   trailing: Icon(
                                     Icons.offline_bolt,
                                     color: Colors.yellow,
@@ -149,7 +169,11 @@ class _ImportDialogState extends State<ImportDialog>
                               List.generate(
                                 state.failedZips.length,
                                 (index) => ListTile(
-                                  title: Text(state.failedZips[index]),
+                                  title: Text(
+                                    state.failedZips[index],
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                   trailing: Icon(
                                     MdiIcons.alertCircle,
                                     color: Colors.red,
@@ -195,6 +219,7 @@ class _ImportDialogState extends State<ImportDialog>
                       ),
                     ),
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
                         Container(
@@ -224,7 +249,9 @@ class _ImportDialogState extends State<ImportDialog>
               );
             } else if (state is ImportedRecipes) {
               return Container(
-                height: totalListItems.toDouble() * 60 + 62,
+                height: totalListItems > 4
+                    ? 242
+                    : totalListItems.toDouble() * 60 + 62,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
