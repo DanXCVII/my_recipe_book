@@ -499,18 +499,19 @@ class HiveProvider {
     return shoppingCart;
   }
 
-  void addMulitpleIngredientsToCart(
-      String recipeName, List<Ingredient> ingredients) {
+  Future<void> addMulitpleIngredientsToCart(
+      String recipeName, List<Ingredient> ingredients) async {
     for (Ingredient i in ingredients) {
-      addSingleIngredientToCart(recipeName, i);
+      await addSingleIngredientToCart(recipeName, i);
     }
   }
 
   /// adds the ingredient with checked = false status to the list
   /// and updates the summary
-  void addSingleIngredientToCart(String recipeName, Ingredient ingredient) {
-    _addIngredientToRecipe('summary', ingredient);
-    _addIngredientToRecipe(recipeName, ingredient);
+  Future<void> addSingleIngredientToCart(
+      String recipeName, Ingredient ingredient) async {
+    await _addIngredientToRecipe('summary', ingredient);
+    await _addIngredientToRecipe(recipeName, ingredient);
   }
 
   /// removes the ingredient from recipe and then adds it again
@@ -520,8 +521,8 @@ class HiveProvider {
   /// => afterwards on the list: 3 eggs in Pizza, 4 in summary
   Future<void> removeAndAddIngredient(
       String recipeName, Ingredient ingredient) async {
-    removeIngredientFromCart(recipeName, ingredient);
-    addSingleIngredientToCart(recipeName, ingredient);
+    await removeIngredientFromCart(recipeName, ingredient);
+    await addSingleIngredientToCart(recipeName, ingredient);
   }
 
 // see removeAndAddIngredient
@@ -610,14 +611,11 @@ class HiveProvider {
     if (recipeName == 'summary') {
       // remove it form every entry in the shoppingCart
       for (var key in boxShoppingCart.keys) {
-        for (CheckableIngredient i
-            in boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? []) {
+        List<CheckableIngredient> currentIngredients =
+            boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [];
+        for (CheckableIngredient i in currentIngredients) {
           if (i.name == ingredient.name && i.unit == ingredient.unit) {
-            await boxShoppingCart.put(
-                key,
-                List<CheckableIngredient>.from(
-                    boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [])
-                  ..remove(i));
+            await boxShoppingCart.put(key, currentIngredients..remove(i));
             break;
           }
         }
@@ -628,6 +626,7 @@ class HiveProvider {
           boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ?? [];
       int removeIngred = _getSuitingIngredientRecipe(ingredient, ingredients);
       double removeAmount = ingredients[removeIngred].amount;
+
       await boxShoppingCart.put(
         hiveRecipeKey,
         List<CheckableIngredient>.from(
@@ -636,44 +635,36 @@ class HiveProvider {
       );
 
       // get corresponding ingredient from summary
-      int summaryIndex = _getSuitingIngredientRecipe(ingredient,
-          boxShoppingCart.get("summary")?.cast<CheckableIngredient>() ?? []);
       List<CheckableIngredient> summaryIngredients =
           boxShoppingCart.get("summary")?.cast<CheckableIngredient>() ?? [];
-      CheckableIngredient summaryIngred = boxShoppingCart
-          .get("summary")
-          ?.cast<CheckableIngredient>()[summaryIndex];
+
+      int summaryIndex =
+          _getSuitingIngredientRecipe(ingredient, summaryIngredients);
+
+      CheckableIngredient summaryIngred = summaryIngredients[summaryIndex];
 
       // if the ingredient has an amount
       if (summaryIngred.amount != null && removeAmount != null) {
-        // if the amount of the summary is greater than the one of the removed ingredient
-        if (summaryIngred.amount - removeAmount > 0) {
-          // upate the amount of the summary ingredient
-          await boxShoppingCart.put(
-            "summary",
-            List<CheckableIngredient>.from(summaryIngredients
-              ..replaceRange(summaryIndex, summaryIndex + 1, [
-                summaryIngred.copyWith(
-                    amount: summaryIngred.amount - removeAmount)
-              ])),
-          );
-        } // the amount of the summary ingredient is equal to the amount of the removed ingredient
-        else {
-          // remove the ingredient from the summary
-          await boxShoppingCart.put(
-            'summary',
-            List<CheckableIngredient>.from(
-                summaryIngredients..removeAt(summaryIndex)),
-          );
-        }
+        await boxShoppingCart.put(
+          "summary",
+          summaryIngred.amount - removeAmount > 0
+              ? List<CheckableIngredient>.from(summaryIngredients
+                ..replaceRange(summaryIndex, summaryIndex + 1, [
+                  summaryIngred.copyWith(
+                      amount: summaryIngred.amount - removeAmount)
+                ]))
+              : List<CheckableIngredient>.from(
+                  summaryIngredients..removeAt(summaryIndex)),
+        );
       } // the to be removed ingredient doesn't have an amount
       else {
         // if the removed ingredient is only present in the summary, remove it from there
         if (_getIngredientCount(ingredient) == 1) {
-          boxShoppingCart
+          List<CheckableIngredient> updatedSummaryIngreds = boxShoppingCart
               .get('summary')
               ?.cast<CheckableIngredient>()
-              ?.remove(summaryIngred);
+                ..remove(summaryIngred);
+          await boxShoppingCart.put('summary', updatedSummaryIngreds);
         }
       }
     }
