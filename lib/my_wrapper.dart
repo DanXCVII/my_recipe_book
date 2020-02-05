@@ -9,13 +9,19 @@ class MyImageWrapper {
 class MyBooleanWrapper {
   bool myBool;
 
-  MyBooleanWrapper({this.myBool});
+  MyBooleanWrapper(this.myBool);
 }
 
 class MyDoubleWrapper {
   double myDouble;
 
   MyDoubleWrapper({this.myDouble});
+}
+
+class MyIntWrapper {
+  int myInt;
+
+  MyIntWrapper(this.myInt);
 }
 
 class MyVegetableWrapper {

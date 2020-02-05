@@ -9,6 +9,7 @@ import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/local_storage/io_operations.dart';
+import 'package:my_recipe_book/my_wrapper.dart';
 import 'package:rubber/rubber.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
@@ -424,7 +425,11 @@ class RecipePage extends StatelessWidget {
                     effort: recipe.effort,
                   ),
                   SizedBox(height: 30),
-                  IngredientsScreen(recipe),
+                  IngredientsScreen(
+                    currentRecipe: recipe,
+                    animationWaitTime: MyIntWrapper(0),
+                    addToCartIngredients: [],
+                  ),
                   SizedBox(height: 30),
                   FutureBuilder<List<List<String>>>(
                     future: PathProvider.pP.getRecipeStepPreviewPathList(
@@ -1352,18 +1357,22 @@ class StepsSection extends StatelessWidget {
   }
 }
 
-class IngredientsScreen extends StatefulWidget {
+class IngredientsScreen extends StatelessWidget {
   final Recipe currentRecipe;
+  final MyIntWrapper animationWaitTime;
+  final List<Ingredient> addToCartIngredients;
 
-  IngredientsScreen(this.currentRecipe);
+  const IngredientsScreen({
+    Key key,
+    @required this.currentRecipe,
+    // needs to be initialized with 0
+    @required this.animationWaitTime,
+    // needs to be initialized with an empty list
+    @required this.addToCartIngredients,
+  }) : super(key: key);
 
-  @override
-  State<StatefulWidget> createState() => IngredientsScreenState();
-}
-
-class IngredientsScreenState extends State<IngredientsScreen> {
-  List<Widget> getIngredientsSection(
-      List<CheckableIngredient> ingredients, bool oneSection) {
+  List<Widget> getIngredientsSection(List<CheckableIngredient> ingredients,
+      bool oneSection, BuildContext context) {
     return [
       SizedBox(
         height: oneSection ? 0 : 15,
@@ -1395,11 +1404,11 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                     },
                     onTap: (bool isFavorite) async {
                       if (!isFavorite) {
-                        Future.delayed(Duration(milliseconds: 500))
-                            .then((_) => _pressIngredient(currentIngredient));
+                        _pressIngredient(currentIngredient, context);
                         return true;
                       } else {
-                        _pressIngredient(currentIngredient);
+                        _pressIngredient(
+                            currentIngredient.copyWith(checked: true), context);
                         return false;
                       }
                     },
@@ -1439,18 +1448,31 @@ class IngredientsScreenState extends State<IngredientsScreen> {
 
   /// adds or removes the ingredient to/from the shopping cart and changes its
   /// checked status
-  void _pressIngredient(CheckableIngredient ingredient) {
+  void _pressIngredient(
+      CheckableIngredient ingredient, BuildContext context) async {
     if (ingredient.checked) {
-      BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(RemoveFromCart(
-          widget.currentRecipe.name, [ingredient.getIngredient()]));
+      Future.delayed(Duration(milliseconds: animationWaitTime.myInt)).then(
+          (_) => BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
+                RemoveFromCart(
+                    currentRecipe.name, [ingredient.getIngredient()]),
+              ));
     } else {
+      addToCartIngredients.add(ingredient.getIngredient());
+      animationWaitTime.myInt += 500;
+      await Future.delayed(Duration(milliseconds: 500));
+      animationWaitTime.myInt -= 500;
+      if (animationWaitTime.myInt > 0) {
+        return;
+      }
+
       BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
-          AddToCart(widget.currentRecipe.name, [ingredient.getIngredient()]));
+        AddToCart(currentRecipe.name, addToCartIngredients),
+      );
     }
   }
 
-  List<Widget> getIngredientsData(
-      List<List<CheckableIngredient>> ingredients, List<bool> sectionCheck) {
+  List<Widget> getIngredientsData(List<List<CheckableIngredient>> ingredients,
+      List<bool> sectionCheck, BuildContext context) {
     List<Widget> output = [];
     bool oneSection = ingredients.isEmpty;
 
@@ -1468,7 +1490,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                  "${widget.currentRecipe.ingredientsGlossary.isNotEmpty ? widget.currentRecipe.ingredientsGlossary[i] : ''}",
+                  "${currentRecipe.ingredientsGlossary.isNotEmpty ? currentRecipe.ingredientsGlossary[i] : ''}",
                   style: TextStyle(
                     color: textColor,
                     fontSize: 24,
@@ -1484,7 +1506,8 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                       sectionIngredients
                           .map((ingred) => ingred.getIngredient())
                           .toList(),
-                      sectionCheck[i]);
+                      sectionCheck[i],
+                      context);
                 },
                 color: sectionCheck[i] ? Colors.green : textColor,
               )
@@ -1493,19 +1516,20 @@ class IngredientsScreenState extends State<IngredientsScreen> {
         ),
       );
 
-      output.addAll(getIngredientsSection(ingredients[i], oneSection));
+      output.addAll(getIngredientsSection(ingredients[i], oneSection, context));
     }
 
     return output;
   }
 
-  void _pressAddSection(List<Ingredient> ingredients, bool isChecked) {
+  void _pressAddSection(
+      List<Ingredient> ingredients, bool isChecked, BuildContext context) {
     if (isChecked) {
       BlocProvider.of<RecipeScreenIngredientsBloc>(context)
-          .add(RemoveFromCart(widget.currentRecipe.name, ingredients));
+          .add(RemoveFromCart(currentRecipe.name, ingredients));
     } else {
       BlocProvider.of<RecipeScreenIngredientsBloc>(context)
-          .add(AddToCart(widget.currentRecipe.name, ingredients));
+          .add(AddToCart(currentRecipe.name, ingredients));
     }
   }
 
@@ -1513,7 +1537,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
   Widget build(BuildContext context) {
     // TODO: check how the list of no ingredients looks like
     List<Ingredient> allIngredients =
-        flattenIngredients(widget.currentRecipe.ingredients);
+        flattenIngredients(currentRecipe.ingredients);
     if (allIngredients.isEmpty) return Container();
     return BlocBuilder<RecipeScreenIngredientsBloc,
         RecipeScreenIngredientsState>(
@@ -1549,7 +1573,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                                 color: Colors.white),
                             tooltip: S.of(context).decrease_servings,
                             onPressed: () {
-                              _decreaseServings(state.servings);
+                              _decreaseServings(state.servings, context);
                             },
                           ),
                           Text(
@@ -1565,7 +1589,7 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                                 color: Colors.white),
                             tooltip: S.of(context).increase_servings,
                             onPressed: () {
-                              _increaseServings(state.servings);
+                              _increaseServings(state.servings, context);
                             },
                           ),
                           Padding(
@@ -1586,7 +1610,8 @@ class IngredientsScreenState extends State<IngredientsScreen> {
                 ),
               ),
             ]..addAll(
-                getIngredientsData(state.ingredients, state.sectionCheck),
+                getIngredientsData(
+                    state.ingredients, state.sectionCheck, context),
               ),
           );
         } else {
@@ -1596,13 +1621,13 @@ class IngredientsScreenState extends State<IngredientsScreen> {
     );
   }
 
-  void _decreaseServings(double oldServings) {
+  void _decreaseServings(double oldServings, BuildContext context) {
     if (oldServings <= 1) return;
     BlocProvider.of<RecipeScreenIngredientsBloc>(context)
         .add(DecreaseServings(oldServings - 1));
   }
 
-  void _increaseServings(double oldServings) {
+  void _increaseServings(double oldServings, BuildContext context) {
     BlocProvider.of<RecipeScreenIngredientsBloc>(context)
         .add(IncreaseServings(oldServings + 1));
   }
