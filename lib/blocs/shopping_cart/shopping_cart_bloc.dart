@@ -1,8 +1,10 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:my_recipe_book/hive.dart';
-import 'package:my_recipe_book/models/ingredient.dart';
+
 import './shopping_cart.dart';
+import '../../hive.dart';
+import '../../models/ingredient.dart';
 
 class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
   @override

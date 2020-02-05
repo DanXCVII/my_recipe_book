@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/models/tuple.dart';
+
+import '../../models/recipe.dart';
+import '../../models/tuple.dart';
 
 abstract class RecipeCategoryOverviewState extends Equatable {
   const RecipeCategoryOverviewState();

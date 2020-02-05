@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
-import 'package:my_recipe_book/widgets/recipe_card_big.dart';
 
 import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 import '../blocs/random_recipe_explorer/random_recipe_explorer_event.dart';
@@ -9,6 +8,7 @@ import '../blocs/random_recipe_explorer/random_recipe_explorer_state.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_overview.dart';
+import '../widgets/recipe_card_big.dart';
 
 class SwypingCardsScreen extends StatefulWidget {
   SwypingCardsScreen();
@@ -62,16 +62,20 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
       } else if (state is LoadedRandomRecipeExplorer) {
         return Column(
           children: <Widget>[
-            Container(
-              height: 40,
-              padding: const EdgeInsets.only(top: 8.0),
-              width: MediaQuery.of(context).size.width,
-              child: _getCategorySelector(
-                  state.categories, state.categories[state.selectedCategory]),
+            SafeArea(
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.only(top: 8.0),
+                width: MediaQuery.of(context).size.width,
+                child: _getCategorySelector(
+                    state.categories, state.categories[state.selectedCategory]),
+              ),
             ),
             Divider(),
             Container(
-                height: MediaQuery.of(context).size.height - 200,
+                height: MediaQuery.of(context).size.height > 730
+                    ? MediaQuery.of(context).size.height - 200
+                    : MediaQuery.of(context).size.height - 136,
                 child: state.randomRecipes.isEmpty
                     ? NoRecipeCategory()
                     : SwypingCards(
@@ -105,7 +109,9 @@ class _SwypingCardsState extends State<SwypingCards>
 
   @override
   Widget build(BuildContext context) {
-    double maxHeight = MediaQuery.of(context).size.height - 200;
+    double maxHeight = MediaQuery.of(context).size.height > 730
+        ? MediaQuery.of(context).size.height - 200
+        : MediaQuery.of(context).size.height - 150;
     double maxWidth = maxHeight / 1.4;
     if (maxWidth > MediaQuery.of(context).size.width * 0.9) {
       maxWidth = MediaQuery.of(context).size.width * 0.9;
@@ -120,7 +126,9 @@ class _SwypingCardsState extends State<SwypingCards>
         ),
       ),
       Container(
-        height: MediaQuery.of(context).size.height,
+        height: MediaQuery.of(context).size.height > 730
+            ? MediaQuery.of(context).size.height - 200
+            : MediaQuery.of(context).size.height - 50,
         child: TinderSwapCard(
           orientation: AmassOrientation.TOP,
           totalNum: 50,

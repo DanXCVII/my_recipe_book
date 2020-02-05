@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:my_recipe_book/blocs/new_recipe/general_info/general_info.dart';
 
 import './step_images.dart';
 import '../../../local_storage/io_operations.dart' as IO;

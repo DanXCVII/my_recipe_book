@@ -1,7 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/models/enums.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/models/recipe_sort.dart';
+
+import '../../models/enums.dart';
+import '../../models/recipe.dart';
+import '../../models/recipe_sort.dart';
 
 abstract class RecipeOverviewState extends Equatable {
   const RecipeOverviewState();

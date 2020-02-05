@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager.dart';
-import 'package:my_recipe_book/models/nutrition.dart';
+
+import '../../../models/nutrition.dart';
+import '../../recipe_manager/recipe_manager.dart';
 
 abstract class NutritionsEvent extends Equatable {
   const NutritionsEvent();

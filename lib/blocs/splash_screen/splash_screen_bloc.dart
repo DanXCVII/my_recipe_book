@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/theming.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../hive.dart';
+
 import './splash_screen.dart';
+import '../../hive.dart';
+import '../../theming.dart';
 
 class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   @override

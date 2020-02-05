@@ -1,9 +1,11 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:my_recipe_book/hive.dart';
-import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
-import 'package:my_recipe_book/models/recipe.dart';
+
 import './clear_recipe.dart';
+import '../../../hive.dart';
+import '../../../local_storage/io_operations.dart' as IO;
+import '../../../models/recipe.dart';
 
 class ClearRecipeBloc extends Bloc<ClearRecipeEvent, ClearRecipeState> {
   @override

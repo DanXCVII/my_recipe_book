@@ -4,18 +4,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/category_overview/category_overview_bloc.dart';
-import 'package:my_recipe_book/blocs/category_overview/category_overview_event.dart';
-import 'package:my_recipe_book/blocs/import_recipe/import_recipe.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager.dart';
-import 'package:my_recipe_book/widgets/dialogs/import_dialog.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../blocs/import_recipe/import_recipe.dart';
 import '../generated/i18n.dart';
 import '../intro_screen.dart';
 import '../routes.dart';
 import '../theming.dart';
+import '../widgets/dialogs/import_dialog.dart';
 import 'export_recipes_screen.dart';
 
 class Settings extends StatelessWidget {

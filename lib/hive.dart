@@ -216,7 +216,7 @@ class HiveProvider {
     Box<String> boxVegetable = _getBoxVegetable(removeRecipe.vegetable);
 
     for (var key in boxVegetable.keys) {
-      if (boxVegetable.get(key) == hiveRecipeKey) boxVegetable.delete(key);
+      if (boxVegetable.get(key) == hiveRecipeKey) await boxVegetable.delete(key);
     }
 
     // delete recipe from recipes
@@ -669,7 +669,7 @@ class HiveProvider {
       }
     }
 
-    _cleanUpEmptyRecipes();
+    await _cleanUpEmptyRecipes();
   }
 
   int _getIngredientCount(Ingredient ingredient) {
@@ -755,11 +755,11 @@ class HiveProvider {
     }
   }
 
-  void _cleanUpEmptyRecipes() {
+  Future<void> _cleanUpEmptyRecipes() async {
     for (var key in boxShoppingCart.keys) {
       if (key != 'summary' &&
           boxShoppingCart.get(key).cast<CheckableIngredient>().isEmpty) {
-        boxShoppingCart.delete(key);
+        await boxShoppingCart.delete(key);
       }
     }
   }

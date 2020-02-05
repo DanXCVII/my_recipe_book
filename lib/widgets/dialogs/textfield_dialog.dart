@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/category_manager/category_manager.dart';
-import 'package:my_recipe_book/blocs/nutrition_manager/nutrition_manager_bloc.dart';
-import 'package:my_recipe_book/blocs/nutrition_manager/nutrition_manager_event.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_event.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+
+import '../../generated/i18n.dart';
 
 class Consts {
   Consts._();

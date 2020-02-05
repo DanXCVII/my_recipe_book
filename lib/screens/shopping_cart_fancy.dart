@@ -176,11 +176,6 @@ class FancyShoppingCartScreen extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: backgroundcolor,
-                border: Border(
-                  bottom: BorderSide(
-                      width:
-                          ingredient == ingredients[recipeName].last ? 0 : 0),
-                ),
               ),
               child: IngredientRow(
                 ingredient: ingredient,
@@ -254,10 +249,10 @@ class IngredientRow extends StatelessWidget {
         Container(
           height: 50,
           width: 50,
-          decoration: BoxDecoration(
-              border: Border(right: BorderSide(width: showBorder ? 2 : 0))),
+          decoration: BoxDecoration(),
           child: Center(
             child: IconButton(
+              splashColor: Colors.transparent,
               iconSize: 30,
               icon: Icon(
                 ingredient.checked
@@ -295,9 +290,7 @@ class IngredientRow extends StatelessWidget {
                 padding: EdgeInsets.all(3),
                 height: 50,
                 width: 99,
-                decoration: BoxDecoration(
-                    border:
-                        Border(left: BorderSide(width: showBorder ? 2 : 0))),
+                decoration: BoxDecoration(),
                 child: Center(
                   child: Text(
                     '${cutDouble(ingredient.amount)} ${ingredient.unit == null ? "" : ingredient.unit}',

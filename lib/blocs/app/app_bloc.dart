@@ -1,8 +1,10 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import './app.dart';
+import '../../generated/i18n.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
   @override

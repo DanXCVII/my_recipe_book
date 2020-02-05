@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:my_recipe_book/widgets/recipe_card.dart';
 
 import '../blocs/favorite_recipes/favorite_recipes.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
+import '../widgets/recipe_card.dart';
 
 class FavoriteScreen extends StatelessWidget {
   @override

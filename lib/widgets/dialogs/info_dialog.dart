@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+
+import '../../generated/i18n.dart';
 
 class InfoDialog extends StatelessWidget {
   final String title;

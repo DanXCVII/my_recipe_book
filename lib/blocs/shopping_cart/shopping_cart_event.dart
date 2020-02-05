@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/models/ingredient.dart';
+
+import '../../models/ingredient.dart';
 
 abstract class ShoppingCartEvent extends Equatable {
   const ShoppingCartEvent();

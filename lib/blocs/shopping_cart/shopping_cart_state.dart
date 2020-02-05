@@ -1,22 +1,15 @@
-import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/models/ingredient.dart';
+import '../../models/ingredient.dart';
 
-abstract class ShoppingCartState extends Equatable {
+abstract class ShoppingCartState {
   const ShoppingCartState();
 }
 
-class LoadingShoppingCart extends ShoppingCartState {
-  @override
-  List<Object> get props => [];
-}
+class LoadingShoppingCart extends ShoppingCartState {}
 
 class LoadedShoppingCart extends ShoppingCartState {
   final Map<String, List<CheckableIngredient>> shoppingCart;
 
   LoadedShoppingCart(this.shoppingCart);
-
-  @override
-  List<Object> get props => [shoppingCart];
 
   @override
   String toString() => 'Loaded recipe overview { shoppingCart: $shoppingCart}';

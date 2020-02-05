@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/recipe_overview/recipe_overview_event.dart';

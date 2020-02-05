@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_state.dart'
-    as RMState;
-import 'package:my_recipe_book/models/recipe.dart';
+
 import '../../hive.dart';
+import '../../models/recipe.dart';
+import '../recipe_manager/recipe_manager_bloc.dart';
+import '../recipe_manager/recipe_manager_state.dart' as RMState;
 import 'random_recipe_explorer.dart';
 
 class RandomRecipeExplorerBloc

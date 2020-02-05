@@ -8,8 +8,6 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/local_storage/io_operations.dart';
-import 'package:my_recipe_book/my_wrapper.dart';
 import 'package:rubber/rubber.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
@@ -30,11 +28,13 @@ import '../database.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
 import '../hive.dart';
+import '../local_storage/io_operations.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
 import '../models/enums.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
+import '../my_wrapper.dart';
 import '../screens/recipe_overview.dart';
 import '../widgets/gallery_view.dart';
 import '../widgets/recipe_card.dart';
@@ -730,56 +730,61 @@ class TopSectionRecipe extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 10),
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            height: 35,
-                            width: 35,
-                            decoration: BoxDecoration(
-                              color: Colors.yellow,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black45,
-                                  blurRadius: 2.0,
-                                  spreadRadius: 1.0,
-                                  offset: Offset(
-                                    0,
-                                    1.0,
-                                  ),
+                      remainingTimeChart == 0
+                          ? null
+                          : Row(
+                              children: <Widget>[
+                              Container(
+                                height: 35,
+                                width: 35,
+                                decoration: BoxDecoration(
+                                  color: Colors.yellow,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black45,
+                                      blurRadius: 2.0,
+                                      spreadRadius: 1.0,
+                                      offset: Offset(
+                                        0,
+                                        1.0,
+                                      ),
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                              ],
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Icon(
-                              Icons.hourglass_empty,
-                              color: Colors.black,
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "remaining time:",
-                                style: TextStyle(
-                                  color: textColor,
-                                  fontFamily: recipeScreenFontFamily,
-                                  fontSize: 12,
+                                child: Icon(
+                                  Icons.hourglass_empty,
+                                  color: Colors.black,
                                 ),
                               ),
-                              Text(
-                                getTimeHoursMinutes(remainingTimeChart),
-                                style: TextStyle(
-                                  color: textColor,
-                                  fontFamily: recipeScreenFontFamily,
-                                  fontSize: 16,
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      )
-                    ],
+                              SizedBox(width: 10),
+                              remainingTimeChart != 0
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          "remaining time:",
+                                          style: TextStyle(
+                                            color: textColor,
+                                            fontFamily: recipeScreenFontFamily,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        Text(
+                                          getTimeHoursMinutes(
+                                              remainingTimeChart),
+                                          style: TextStyle(
+                                            color: textColor,
+                                            fontFamily: recipeScreenFontFamily,
+                                            fontSize: 16,
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  : null
+                            ]..removeWhere((item) => item == null))
+                    ]..removeWhere((item) => item == null),
                   ),
                 ),
                 Expanded(
@@ -796,7 +801,7 @@ class TopSectionRecipe extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        getTimeHoursMinutes(remainingTimeChart),
+                        getTimeHoursMinutes(totalTimeChart),
                         style: TextStyle(
                           color: textColor,
                           fontFamily: recipeScreenFontFamily,

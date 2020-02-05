@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager.dart';
 
 import './nutritions.dart';
 import '../../../hive.dart';
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../models/recipe.dart';
+import '../../recipe_manager/recipe_manager.dart';
 
 class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
   bool finishedEditing = false;

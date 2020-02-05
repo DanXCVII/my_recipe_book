@@ -5,13 +5,11 @@ import 'dart:math';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
-import 'package:path_provider/path_provider.dart';
 
-import '../hive.dart';
 import './local_paths.dart';
-import '../database.dart';
+import '../generated/i18n.dart';
 import '../helper.dart';
+import '../hive.dart';
 import '../models/recipe.dart';
 
 /// moves the images of the recipe to the correct image paths which is

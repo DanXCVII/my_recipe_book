@@ -3,16 +3,13 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_parallax/flutter_parallax.dart';
-import 'package:parallax_image/parallax_image.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_category_overview/recipe_category_overview.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-
 import '../routes.dart';
 import 'recipe_overview.dart';
 import 'recipe_screen.dart';
@@ -122,7 +119,7 @@ class RecipeHozizontalList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 135,
+      height: 128,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: recipes.length + 1,
@@ -218,7 +215,7 @@ class RecipeHozizontalList extends StatelessWidget {
             );
           } else {
             return Padding(
-              padding: EdgeInsets.only(left: 10, bottom: 40, right: 20),
+              padding: EdgeInsets.only(left: 10, bottom: 35, right: 20),
               child: GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(context, RouteNames.recipeCategories,

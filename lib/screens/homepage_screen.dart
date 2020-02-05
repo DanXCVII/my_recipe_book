@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/widgets/search.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/app/app_bloc.dart';
@@ -21,6 +20,7 @@ import '../generated/i18n.dart';
 import '../hive.dart';
 import '../routes.dart';
 import '../settings/settings_screen.dart';
+import '../widgets/search.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 import 'category_gridview.dart';
 import 'favorite_screen.dart';
@@ -221,7 +221,8 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
     if (currentIndex == 2) {
       return null;
-    }
+    } else if (currentIndex == 3 && MediaQuery.of(context).size.height < 730)
+      return null;
     return AppBar(
         title: Text(title),
         actions: <Widget>[
