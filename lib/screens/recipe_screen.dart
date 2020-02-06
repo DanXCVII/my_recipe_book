@@ -9,7 +9,7 @@ import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rubber/rubber.dart';
-import 'package:share/share.dart';
+// import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -496,8 +496,8 @@ class RecipePage extends StatelessWidget {
 
   void _choiceAction(PopupOptions value, context) {
     if (value == PopupOptions.EXPORT_TEXT) {
-      Share.plainText(text: _getRecipeAsString(recipe), title: 'recipe')
-          .share();
+      // Share.plainText(text: _getRecipeAsString(recipe), title: 'recipe')
+      //     .share();
     } else if (value == PopupOptions.EXPORT_ZIP) {
       exportRecipe(recipe).then((_) {});
     }
