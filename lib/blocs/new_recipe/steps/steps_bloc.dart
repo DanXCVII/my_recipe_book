@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 
-import './steps.dart';
 import '../../../hive.dart';
 import '../../../models/recipe.dart';
 import '../step_images/step_images_bloc.dart';
 import '../step_images/step_images_state.dart';
+
+part 'steps_event.dart';
+part 'steps_state.dart';
 
 class StepsBloc extends Bloc<StepsEvent, StepsState> {
   List<List<String>> stepImages;

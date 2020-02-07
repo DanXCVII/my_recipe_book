@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'clear_recipe_bloc.dart';
 
 abstract class ClearRecipeEvent extends Equatable {
   const ClearRecipeEvent();

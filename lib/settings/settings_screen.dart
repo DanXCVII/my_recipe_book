@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../blocs/import_recipe/import_recipe.dart';
+import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../generated/i18n.dart';
 import '../intro_screen.dart';
 import '../routes.dart';

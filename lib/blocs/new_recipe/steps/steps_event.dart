@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'steps_bloc.dart';
 
 abstract class StepsEvent extends Equatable {
   const StepsEvent();

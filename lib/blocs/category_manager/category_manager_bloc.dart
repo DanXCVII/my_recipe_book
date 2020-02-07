@@ -1,28 +1,30 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-import './category_manager.dart';
 import '../../hive.dart';
-import '../recipe_manager/recipe_manager_bloc.dart';
-import '../recipe_manager/recipe_manager_state.dart' as RMState;
+import '../recipe_manager/recipe_manager_bloc.dart' as RM;
+
+part 'category_manager_event.dart';
+part 'category_manager_state.dart';
 
 class CategoryManagerBloc
     extends Bloc<CategoryManagerEvent, CategoryManagerState> {
-  final RecipeManagerBloc recipeManagerBloc;
+  final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
   CategoryManagerBloc({@required this.recipeManagerBloc}) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedCategoryManager) {
-        if (rmState is RMState.AddCategoryState) {
+        if (rmState is RM.AddCategoryState) {
           add(AddCategory(rmState.category));
-        } else if (rmState is RMState.DeleteCategoryState) {
+        } else if (rmState is RM.DeleteCategoryState) {
           add(DeleteCategory(rmState.category));
-        } else if (rmState is RMState.UpdateCategoryState) {
+        } else if (rmState is RM.UpdateCategoryState) {
           add(UpdateCategory(rmState.oldCategory, rmState.updatedCategory));
-        } else if (rmState is RMState.MoveCategoryState) {
+        } else if (rmState is RM.MoveCategoryState) {
           add(MoveCategory(rmState.oldIndex, rmState.newIndex, DateTime.now()));
         }
       }

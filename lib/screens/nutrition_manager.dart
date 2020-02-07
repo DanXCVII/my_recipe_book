@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:hive/hive.dart';
 
-import '../blocs/nutrition_manager/nutrition_manager.dart';
+import '../blocs/nutrition_manager/nutrition_manager_bloc.dart';
 import '../generated/i18n.dart';
 import '../models/nutrition.dart';
 import '../models/recipe.dart';

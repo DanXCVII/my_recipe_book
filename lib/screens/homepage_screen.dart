@@ -13,7 +13,6 @@ import '../blocs/app/app_bloc.dart';
 import '../blocs/app/app_event.dart';
 import '../blocs/app/app_state.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
-import '../blocs/import_recipe/import_recipe_event.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart.dart';
 import '../generated/i18n.dart';
@@ -290,7 +289,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                           context,
                           RouteNames.addRecipeGeneralInfo,
                           arguments: GeneralInfoArguments(
-                              HiveProvider().getTmpEditingRecipe()),
+                              HiveProvider().getTmpRecipe()),
                         )
                       : Navigator.pushNamed(
                           context,

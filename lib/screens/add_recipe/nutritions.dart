@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../blocs/new_recipe/nutritions/nutritions.dart';
-import '../../blocs/nutrition_manager/nutrition_manager.dart';
-import '../../blocs/recipe_manager/recipe_manager.dart';
+import '../../blocs/new_recipe/nutritions/nutritions_bloc.dart';
+import '../../blocs/new_recipe/nutritions/nutritions_event.dart';
+import '../../blocs/new_recipe/nutritions/nutritions_state.dart';
+import '../../blocs/nutrition_manager/nutrition_manager_bloc.dart';
+import '../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../blocs/shopping_cart/shopping_cart.dart';
 import '../../generated/i18n.dart';
 import '../../models/nutrition.dart';
@@ -105,6 +107,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                             getRecipePrimaryColor(
                                 widget.modifiedRecipe.vegetable),
                             'heroImageTag',
+                            BlocProvider.of<RecipeManagerBloc>(context),
                           ),
                         );
                       } else if (state is NSaved) {
@@ -249,9 +252,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
     BlocProvider.of<NutritionsBloc>(context).add(
       FinishedEditing(
         widget.editingRecipeName,
-        widget.editingRecipeName != null
-            ? widget.modifiedRecipe.categories
-            : goBack,
+        goBack,
         recipeNutritions,
         BlocProvider.of<RecipeManagerBloc>(context),
       ),

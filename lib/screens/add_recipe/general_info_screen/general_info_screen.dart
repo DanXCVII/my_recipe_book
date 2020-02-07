@@ -5,11 +5,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/blocs/new_recipe/general_info/general_info_bloc.dart';
 
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
-import '../../../blocs/new_recipe/clear_recipe/clear_recipe_event.dart';
-import '../../../blocs/new_recipe/clear_recipe/clear_recipe_state.dart';
-import '../../../blocs/new_recipe/general_info/general_info.dart';
 import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../local_storage/local_paths.dart';
@@ -359,7 +357,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   void _saveGeneralInfoData(BuildContext gInfoScreenContext, bool goBack) {
     BlocProvider.of<GeneralInfoBloc>(context).add(FinishedEditing(
       widget.editingRecipeName != null ? true : false,
-      widget.editingRecipeName != null ? modifiedRecipe.categories : goBack,
+      goBack,
       nameController.text,
       preperationTimeController.text.isEmpty
           ? 0

@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 
 import '../../hive.dart';
 import '../../models/recipe.dart';
-import '../recipe_manager/recipe_manager_bloc.dart';
-import '../recipe_manager/recipe_manager_state.dart' as RMState;
-import 'random_recipe_explorer.dart';
+import '../recipe_manager/recipe_manager_bloc.dart' as RM;
+import 'random_recipe_explorer_event.dart';
+import 'random_recipe_explorer_state.dart';
 
 class RandomRecipeExplorerBloc
     extends Bloc<RandomRecipeExplorerEvent, RandomRecipeExplorerState> {
-  final RecipeManagerBloc recipeManagerBloc;
+  final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
   RandomRecipeExplorerBloc({@required this.recipeManagerBloc}) {
@@ -23,22 +23,22 @@ class RandomRecipeExplorerBloc
             (this.state as LoadedRandomRecipeExplorer).selectedCategory;
         final String selectedCategory = categories[selectedIndex];
 
-        if (rmState is RMState.AddRecipeState) {
+        if (rmState is RM.AddRecipeState) {
           if (rmState.recipe.categories.contains(selectedCategory) ||
               selectedCategory == "all categories" ||
               (rmState.recipe.categories.isEmpty &&
                   selectedCategory == "no category")) {
             add(ReloadRandomRecipeExplorer());
           }
-        } else if (rmState is RMState.DeleteRecipeState) {
+        } else if (rmState is RM.DeleteRecipeState) {
           add(DeleteRecipe(rmState.recipe));
-        } else if (rmState is RMState.UpdateRecipeState) {
+        } else if (rmState is RM.UpdateRecipeState) {
           add(UpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
-        } else if (rmState is RMState.AddCategoryState) {
+        } else if (rmState is RM.AddCategoryState) {
           add(AddCategory(rmState.category));
-        } else if (rmState is RMState.DeleteCategoryState) {
+        } else if (rmState is RM.DeleteCategoryState) {
           add(DeleteCategory(rmState.category));
-        } else if (rmState is RMState.UpdateCategoryState) {
+        } else if (rmState is RM.UpdateCategoryState) {
           add(UpdateCategory(rmState.oldCategory, rmState.updatedCategory));
         }
       }

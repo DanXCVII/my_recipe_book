@@ -8,7 +8,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:rubber/rubber.dart';
+import 'package:my_recipe_book/blocs/recipe_screen/recipe_screen_bloc.dart';
 // import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -17,9 +17,7 @@ import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
-import '../blocs/recipe_manager/recipe_manager_event.dart';
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
-import '../blocs/recipe_overview/recipe_overview_event.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_event.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_state.dart';
@@ -35,6 +33,7 @@ import '../models/enums.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../my_wrapper.dart';
+import '../routes.dart';
 import '../screens/recipe_overview.dart';
 import '../widgets/gallery_view.dart';
 import '../widgets/recipe_card.dart';
@@ -67,22 +66,22 @@ class RecipeScreenArguments {
   final Recipe recipe;
   final Color primaryColor;
   final String heroImageTag;
+  final RecipeManagerBloc recipeManagerBloc;
 
   RecipeScreenArguments(
     this.shoppingCartBloc,
     this.recipe,
     this.primaryColor,
     this.heroImageTag,
+    this.recipeManagerBloc,
   );
 }
 
 class RecipeScreen extends StatefulWidget {
-  final Recipe recipe;
   final Color primaryColor;
   final String heroImageTag;
 
   RecipeScreen({
-    @required this.recipe,
     @required this.primaryColor,
     this.heroImageTag,
   });
@@ -95,126 +94,132 @@ class _RecipeScreenState extends State<RecipeScreen>
     with SingleTickerProviderStateMixin {
   final PanelController _pc = PanelController();
 
-  RubberAnimationController _controller;
-
-  ScrollController _scrollController = ScrollController();
-
   @override
   void initState() {
-    _controller = RubberAnimationController(
-        vsync: this,
-        halfBoundValue: AnimationControllerValue(percentage: 0.5),
-        duration: Duration(milliseconds: 200));
     super.initState();
   }
 
   @override
+  void dispose() {
+    if (_pc.isAttached) _pc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return widget.recipe.nutritions.isEmpty
-        ? RecipePage(
-            recipe: widget.recipe,
-            primaryColor: widget.primaryColor,
-            heroImageTag: widget.heroImageTag,
-          )
-        : Scaffold(
-            backgroundColor: widget.primaryColor,
-            body: SlidingUpPanel(
-              controller: _pc,
-              backdropColor: Colors.black,
-              backdropEnabled: true,
-              // margin: EdgeInsets.only(left: 20, right: 20),
-              parallaxEnabled: true,
-              parallaxOffset: 0.5,
-              minHeight: 70,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(25),
-                topRight: Radius.circular(25),
-              ),
-              panel: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xff7E4400),
-                      Color(0xffCFAC53),
-                    ],
-                    begin: FractionalOffset.topLeft,
-                    end: FractionalOffset.bottomRight,
-                    stops: [0.0, 1.0],
-                  ),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
-                ),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () {
-                          _pc.animatePanelToPosition(1);
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          width: 30,
-                          height: 5,
-                          decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12.0))),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () {
-                          _pc.animatePanelToPosition(1);
-                        },
-                        child: Text(
-                          S.of(context).nutritions,
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white),
-                        ),
-                      ),
-                      Container(height: 10),
-                      Container(
-                        height: 435,
-                        child: ListView.builder(
-                          itemCount: widget.recipe.nutritions.length * 2,
-                          itemBuilder: (context, index) {
-                            if ((index - 1) % 2 == 0) {
-                              return Divider();
-                            } else {
-                              int nutritionIndex = (index / 2).round();
-                              return ListTile(
-                                leading: Icon(GroovinMaterialIcons.gate_or,
-                                    color: Colors.white),
-                                title: Text(
-                                  widget.recipe.nutritions[nutritionIndex].name,
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
-                                ),
-                                trailing: Text(
-                                  widget.recipe.nutritions[nutritionIndex]
-                                      .amountUnit,
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      )
-                    ]),
-              ),
-              body: RecipePage(
-                recipe: widget.recipe,
+    return BlocBuilder<RecipeScreenBloc, RecipeScreenState>(
+        builder: (context, state) {
+      if (state is RecipeScreenInfo) {
+        return state.recipe.nutritions.isEmpty
+            ? RecipePage(
+                recipe: state.recipe,
                 primaryColor: widget.primaryColor,
                 heroImageTag: widget.heroImageTag,
-              ),
-            ),
-          );
+              )
+            : Scaffold(
+                backgroundColor: widget.primaryColor,
+                body: SlidingUpPanel(
+                  controller: _pc,
+                  backdropColor: Colors.black,
+                  backdropEnabled: true,
+                  // margin: EdgeInsets.only(left: 20, right: 20),
+                  parallaxEnabled: true,
+                  parallaxOffset: 0.5,
+                  minHeight: 70,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
+                  ),
+                  panel: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xff7E4400),
+                          Color(0xffCFAC53),
+                        ],
+                        begin: FractionalOffset.topLeft,
+                        end: FractionalOffset.bottomRight,
+                        stops: [0.0, 1.0],
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
+                      ),
+                    ),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: () {
+                              _pc.animatePanelToPosition(1);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              width: 30,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(12.0))),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: () {
+                              _pc.animatePanelToPosition(1);
+                            },
+                            child: Text(
+                              S.of(context).nutritions,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
+                            ),
+                          ),
+                          Container(height: 10),
+                          Container(
+                            height: 435,
+                            child: ListView.builder(
+                              itemCount: state.recipe.nutritions.length * 2,
+                              itemBuilder: (context, index) {
+                                if ((index - 1) % 2 == 0) {
+                                  return Divider();
+                                } else {
+                                  int nutritionIndex = (index / 2).round();
+                                  return ListTile(
+                                    leading: Icon(GroovinMaterialIcons.gate_or,
+                                        color: Colors.white),
+                                    title: Text(
+                                      state.recipe.nutritions[nutritionIndex]
+                                          .name,
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.white),
+                                    ),
+                                    trailing: Text(
+                                      state.recipe.nutritions[nutritionIndex]
+                                          .amountUnit,
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.white),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          )
+                        ]),
+                  ),
+                  body: RecipePage(
+                    recipe: state.recipe,
+                    primaryColor: widget.primaryColor,
+                    heroImageTag: widget.heroImageTag,
+                  ),
+                ),
+              );
+      } else {
+        return Text("unknown state: " + state.toString());
+      }
+    });
   }
 }
 
@@ -286,7 +291,14 @@ class RecipePage extends StatelessWidget {
                 icon: Icon(Icons.edit),
                 tooltip: 'edit',
                 onPressed: () {
-                  pushEditRecipe(context);
+                  HiveProvider()
+                      .saveTmpEditingRecipe(recipe)
+                      .then((_) => Navigator.pushNamed(
+                            context,
+                            RouteNames.addRecipeGeneralInfo,
+                            arguments: GeneralInfoArguments(recipe,
+                                editingRecipeName: recipe.name),
+                          ));
                 },
               ),
               IconButton(
@@ -480,20 +492,6 @@ class RecipePage extends StatelessWidget {
     }
   }
 
-  void pushEditRecipe(BuildContext context) {
-    Recipe modifyRecipe = Recipe(name: null, servings: null, vegetable: null);
-    // TODO: fix
-    // modifyRecipe.setEqual(recipe);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => GeneralInfoScreen(
-          modifiedRecipe: recipe,
-        ),
-      ),
-    );
-  }
-
   void _choiceAction(PopupOptions value, context) {
     if (value == PopupOptions.EXPORT_TEXT) {
       // Share.plainText(text: _getRecipeAsString(recipe), title: 'recipe')
@@ -529,7 +527,7 @@ class RecipePage extends StatelessWidget {
               // TODO: Check if nessesary
               if (recipe != null) {
                 BlocProvider.of<RecipeManagerBloc>(context)
-                    .add(RMDeleteRecipe(recipe.name));
+                    .add(RMDeleteRecipe(recipe.name, deleteFiles: true));
                 Future.delayed(Duration(milliseconds: 150)).then((_) async {
                   await deleteRecipeData(recipe.name);
                   Navigator.pop(context);

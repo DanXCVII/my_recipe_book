@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
-import '../../blocs/new_recipe/ingredients/ingredients_event.dart';
-import '../../blocs/new_recipe/ingredients/ingredients_state.dart';
 import '../../generated/i18n.dart';
 import '../../helper.dart';
 import '../../hive.dart';

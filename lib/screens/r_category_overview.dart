@@ -4,9 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-import '../blocs/recipe_category_overview/recipe_category_overview.dart';
+import '../blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
+import '../blocs/recipe_category_overview/recipe_category_overview_state.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
@@ -265,6 +267,7 @@ class RecipeHozizontalList extends StatelessWidget {
         recipe,
         getRecipePrimaryColor(recipes[index].vegetable),
         heroImageTag,
+        BlocProvider.of<RecipeManagerBloc>(context),
       ),
     );
   }

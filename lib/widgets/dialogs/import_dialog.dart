@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
-import '../../blocs/import_recipe/import_recipe.dart';
+import '../../blocs/import_recipe/import_recipe_bloc.dart';
 import '../../models/recipe.dart';
 
 enum ImportStatus { Loading, Selection, Finished }

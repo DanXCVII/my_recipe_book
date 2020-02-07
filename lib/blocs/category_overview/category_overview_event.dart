@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../models/recipe.dart';
+part of 'category_overview_bloc.dart';
 
 abstract class CategoryOverviewEvent extends Equatable {
   const CategoryOverviewEvent();

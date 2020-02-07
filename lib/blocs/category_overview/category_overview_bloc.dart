@@ -1,36 +1,38 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 
-import './category_overview.dart';
 import '../../hive.dart';
 import '../../models/recipe.dart';
 import '../../models/tuple.dart';
-import '../recipe_manager/recipe_manager_bloc.dart';
-import '../recipe_manager/recipe_manager_state.dart' as RMState;
+import '../recipe_manager/recipe_manager_bloc.dart' as RM;
+
+part 'category_overview_event.dart';
+part 'category_overview_state.dart';
 
 class CategoryOverviewBloc
     extends Bloc<CategoryOverviewEvent, CategoryOverviewState> {
-  final RecipeManagerBloc recipeManagerBloc;
+  final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
   CategoryOverviewBloc({@required this.recipeManagerBloc}) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedCategoryOverview) {
-        if (rmState is RMState.AddRecipeState) {
+        if (rmState is RM.AddRecipeState) {
           add(COAddRecipe(rmState.recipe));
-        } else if (rmState is RMState.DeleteRecipeState) {
+        } else if (rmState is RM.DeleteRecipeState) {
           add(CODeleteRecipe(rmState.recipe));
-        } else if (rmState is RMState.UpdateRecipeState) {
+        } else if (rmState is RM.UpdateRecipeState) {
           add(COUpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
-        } else if (rmState is RMState.AddCategoryState) {
+        } else if (rmState is RM.AddCategoryState) {
           add(COAddCategory(rmState.category));
-        } else if (rmState is RMState.DeleteCategoryState) {
+        } else if (rmState is RM.DeleteCategoryState) {
           add(CODeleteCategory(rmState.category));
-        } else if (rmState is RMState.UpdateCategoryState) {
+        } else if (rmState is RM.UpdateCategoryState) {
           add(COUpdateCategory(rmState.oldCategory, rmState.updatedCategory));
-        } else if (rmState is RMState.MoveCategoryState) {
+        } else if (rmState is RM.MoveCategoryState) {
           add(COMoveCategory(rmState.oldIndex, rmState.newIndex));
         }
       }

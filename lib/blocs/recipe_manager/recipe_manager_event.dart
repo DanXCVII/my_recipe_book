@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../models/recipe.dart';
+part of 'recipe_manager_bloc.dart';
 
 abstract class RecipeManagerEvent extends Equatable {
   const RecipeManagerEvent();
@@ -33,8 +31,9 @@ class RMUpdateRecipe extends RecipeManagerEvent {
 
 class RMDeleteRecipe extends RecipeManagerEvent {
   final String recipeName;
+  final bool deleteFiles;
 
-  const RMDeleteRecipe(this.recipeName);
+  const RMDeleteRecipe(this.recipeName, {@required this.deleteFiles});
 
   @override
   List<Object> get props => [recipeName];

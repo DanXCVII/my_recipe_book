@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 
-import './nutritions.dart';
 import '../../../hive.dart';
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../models/recipe.dart';
-import '../../recipe_manager/recipe_manager.dart';
+import '../../recipe_manager/recipe_manager_bloc.dart';
+import 'nutritions_event.dart';
+import 'nutritions_state.dart';
 
 class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
   bool finishedEditing = false;
@@ -46,36 +47,35 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
       Recipe nutritionRecipe = HiveProvider().getTmpRecipe().copyWith(
             nutritions: event.nutritions,
           );
-      newRecipe = await IO.fixImagePaths(nutritionRecipe);
 
       if (event.goBack) {
         await HiveProvider().saveTmpRecipe(newRecipe);
       } else {
+        newRecipe = await IO.fixImagePaths(nutritionRecipe);
         await HiveProvider().resetTmpRecipe();
         await IO.deleteRecipeData("tmp");
+        event.recipeManagerBloc.add(RMAddRecipe(newRecipe));
       }
     } else {
-      Recipe nutritionRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
-            nutritions: event.nutritions,
-          );
-      newRecipe = await IO.fixImagePaths(nutritionRecipe);
-
       if (event.goBack) {
         await HiveProvider().saveTmpEditingRecipe(newRecipe);
-      } else {
-        await HiveProvider().deleteTmpEditingRecipe();
       }
-    }
-    if (!event.goBack) {
-      if (event.editingRecipeName == null) {
-        event.recipeManagerBloc.add(RMAddRecipe(newRecipe));
-      } else {
-        event.recipeManagerBloc.add(
-          RMUpdateRecipe(
-            await HiveProvider().getRecipeByName(event.editingRecipeName),
-            newRecipe,
-          ),
-        );
+
+      if (!event.goBack) {
+        if (event.editingRecipeName == null) {
+          event.recipeManagerBloc.add(RMAddRecipe(newRecipe));
+        } else {
+          event.recipeManagerBloc
+              .add(RMDeleteRecipe(event.editingRecipeName, deleteFiles: false));
+          await Future.delayed(Duration(milliseconds: 100));
+          Recipe nutritionRecipe = HiveProvider()
+              .getTmpEditingRecipe()
+              .copyWith(nutritions: event.nutritions);
+          newRecipe = await IO.fixImagePaths(nutritionRecipe);
+          // IO.deleteRecipeData('edit');
+          await HiveProvider().deleteTmpEditingRecipe();
+          event.recipeManagerBloc.add(RMAddRecipe(newRecipe));
+        }
       }
     }
 

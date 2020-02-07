@@ -1,8 +1,4 @@
-import 'dart:io';
-
-import 'package:equatable/equatable.dart';
-
-import '../../models/recipe.dart';
+part of 'import_recipe_bloc.dart';
 
 abstract class ImportRecipeEvent extends Equatable {
   const ImportRecipeEvent();

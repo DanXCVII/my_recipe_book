@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../../models/recipe.dart';
+part of 'clear_recipe_bloc.dart';
 
 abstract class ClearRecipeState extends Equatable {
   const ClearRecipeState();

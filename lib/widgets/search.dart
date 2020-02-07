@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../generated/i18n.dart';
@@ -89,6 +91,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                     recipe,
                     getRecipePrimaryColor(recipe.vegetable),
                     'heroTag',
+                    BlocProvider.of<RecipeManagerBloc>(context),
                   ),
                 );
               });

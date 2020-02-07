@@ -9,7 +9,6 @@ import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
-import '../blocs/recipe_overview/recipe_overview_event.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
@@ -62,6 +61,7 @@ class RecipeCard extends StatelessWidget {
             recipe,
             getRecipePrimaryColor(recipe.vegetable),
             heroImageTag,
+            BlocProvider.of<RecipeManagerBloc>(context),
           ),
         );
       },

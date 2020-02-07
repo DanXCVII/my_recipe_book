@@ -1,10 +1,15 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:my_recipe_book/models/enums.dart';
+import 'package:my_recipe_book/models/ingredient.dart';
 
-import './ingredients.dart';
 import '../../../hive.dart';
 import '../../../models/recipe.dart';
+
+part 'ingredients_event.dart';
+part 'ingredients_state.dart';
 
 class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
   @override

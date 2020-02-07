@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:equatable/equatable.dart';
+part of 'general_info_bloc.dart';
 
 abstract class GeneralInfoEvent extends Equatable {
   const GeneralInfoEvent();

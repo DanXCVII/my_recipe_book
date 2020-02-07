@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
+import 'package:my_recipe_book/models/recipe.dart';
+import 'package:equatable/equatable.dart';
 
-import './recipe_manager.dart';
 import '../../hive.dart';
-import '../../models/recipe.dart';
+part 'recipe_manager_event.dart';
+part 'recipe_manager_state.dart';
 
 class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   final String test = "k";
@@ -46,6 +49,7 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   /// not deleting files
   Stream<DeleteRecipeState> _mapDeleteRecipeToState(
       RMDeleteRecipe event) async* {
+    // TODO: Delete files if set
     Recipe deletedRecipe =
         await HiveProvider().getRecipeByName(event.recipeName);
 

@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../models/recipe.dart';
+part of 'import_recipe_bloc.dart';
 
 abstract class ImportRecipeState extends Equatable {
   const ImportRecipeState();

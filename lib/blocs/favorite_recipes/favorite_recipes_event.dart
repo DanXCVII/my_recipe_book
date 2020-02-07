@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../models/recipe.dart';
+part of 'favorite_recipes_bloc.dart';
 
 abstract class FavoriteRecipesEvent extends Equatable {
   const FavoriteRecipesEvent();

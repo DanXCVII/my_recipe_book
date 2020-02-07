@@ -3,9 +3,10 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 
-import './step_images.dart';
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../local_storage/local_paths.dart';
+import 'step_images_event.dart';
+import 'step_images_state.dart';
 
 class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
   List<List<String>> editingStepImages;

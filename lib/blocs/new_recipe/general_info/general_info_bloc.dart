@@ -1,13 +1,17 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 
-import './general_info.dart';
 import '../../../helper.dart';
 import '../../../hive.dart';
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
+
+part 'general_info_event.dart';
+part 'general_info_state.dart';
 
 class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
   @override

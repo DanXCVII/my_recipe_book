@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'nutrition_manager_bloc.dart';
 
 abstract class NutritionManagerEvent extends Equatable {
   const NutritionManagerEvent();

@@ -1,7 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../../models/enums.dart';
-import '../../../models/ingredient.dart';
+part of 'ingredients_bloc.dart';
 
 abstract class IngredientsEvent extends Equatable {
   const IngredientsEvent();

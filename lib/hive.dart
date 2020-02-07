@@ -131,26 +131,11 @@ class HiveProvider {
 
     // DELETE OLD RECIPE FROM HIVE
 
-    for (String category in editRecipe.categories) {
-      await boxRecipeCategories.put(
-          getHiveKey(category),
-          boxRecipeCategories.get(category)
-            ..removeWhere((hiveRecipeKey) =>
-                hiveRecipeKey.compareTo(hiveOldRecipeKey) == 0));
-    }
-    if (editRecipe.categories.isEmpty) {
-      await boxRecipeCategories.put(
-          'no category',
-          boxRecipeCategories.get('no category')
-            ..removeWhere((hiveRecipeKey) =>
-                hiveRecipeKey.compareTo(hiveOldRecipeKey) == 0));
-    }
-
-    lazyBoxRecipes.delete(hiveOldRecipeKey);
+    await deleteRecipe(oldRecipeName);
 
     // ADD NEW RECIPE TO HIVE
 
-    saveRecipe(newRecipe);
+    await saveRecipe(newRecipe);
     print(lazyBoxRecipes.get(hiveNewRecipeKey));
   }
 
@@ -216,7 +201,8 @@ class HiveProvider {
     Box<String> boxVegetable = _getBoxVegetable(removeRecipe.vegetable);
 
     for (var key in boxVegetable.keys) {
-      if (boxVegetable.get(key) == hiveRecipeKey) await boxVegetable.delete(key);
+      if (boxVegetable.get(key) == hiveRecipeKey)
+        await boxVegetable.delete(key);
     }
 
     // delete recipe from recipes
@@ -412,7 +398,7 @@ class HiveProvider {
   }
 
   Recipe getTmpEditingRecipe() {
-    Recipe tmpRecipe = boxTmpRecipe.get(tmpRecipeKey);
+    Recipe tmpRecipe = boxTmpRecipe.get(tmpEditingRecipeKey);
 
     return tmpRecipe;
   }

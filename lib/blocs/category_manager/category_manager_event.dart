@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'category_manager_bloc.dart';
 
 abstract class CategoryManagerEvent extends Equatable {
   const CategoryManagerEvent();

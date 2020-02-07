@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 
-import './import_recipe.dart';
 import '../../hive.dart';
 import '../../local_storage/io_operations.dart' as IO;
 import '../../models/recipe.dart';
-import '../recipe_manager/recipe_manager.dart';
+import '../recipe_manager/recipe_manager_bloc.dart';
+
+part 'import_recipe_event.dart';
+part 'import_recipe_state.dart';
 
 class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
   RecipeManagerBloc recipeManagerBloc;

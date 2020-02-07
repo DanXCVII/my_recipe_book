@@ -1,8 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../models/enums.dart';
-import '../../models/recipe.dart';
-import '../../models/recipe_sort.dart';
+part of 'recipe_overview_bloc.dart';
 
 // TODO: Maybe add "addCategory" "updateCategory" "deleteCategory" events
 abstract class RecipeOverviewEvent extends Equatable {

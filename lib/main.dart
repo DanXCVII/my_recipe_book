@@ -4,28 +4,29 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/blocs/recipe_screen/recipe_screen_bloc.dart';
 
 import './theming.dart';
 import 'blocs/app/app.dart';
 import 'blocs/app/app_event.dart';
-import 'blocs/category_manager/category_manager.dart';
-import 'blocs/category_overview/category_overview.dart';
-import 'blocs/category_overview/category_overview_event.dart';
-import 'blocs/favorite_recipes/favorite_recipes.dart';
-import 'blocs/favorite_recipes/favorite_recipes_event.dart';
+import 'blocs/category_manager/category_manager_bloc.dart';
+import 'blocs/category_overview/category_overview_bloc.dart';
+import 'blocs/favorite_recipes/favorite_recipes_bloc.dart';
 import 'blocs/import_recipe/import_recipe_bloc.dart';
 import 'blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
-import 'blocs/new_recipe/general_info/general_info.dart';
-import 'blocs/new_recipe/ingredients/ingredients.dart';
+import 'blocs/new_recipe/general_info/general_info_bloc.dart';
+import 'blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import 'blocs/new_recipe/nutritions/nutritions_bloc.dart';
-import 'blocs/new_recipe/step_images/step_images.dart';
-import 'blocs/new_recipe/steps/steps.dart';
-import 'blocs/nutrition_manager/nutrition_manager.dart';
-import 'blocs/random_recipe_explorer/random_recipe_explorer.dart';
-import 'blocs/recipe_category_overview/recipe_category_overview.dart';
-import 'blocs/recipe_manager/recipe_manager.dart';
+import 'blocs/new_recipe/step_images/step_images_bloc.dart';
+import 'blocs/new_recipe/step_images/step_images_event.dart';
+import 'blocs/new_recipe/steps/steps_bloc.dart';
+import 'blocs/nutrition_manager/nutrition_manager_bloc.dart';
+import 'blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
+import 'blocs/random_recipe_explorer/random_recipe_explorer_event.dart';
+import 'blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
+import 'blocs/recipe_category_overview/recipe_category_overview_event.dart';
+import 'blocs/recipe_manager/recipe_manager_bloc.dart' show RecipeManagerBloc;
 import 'blocs/recipe_overview/recipe_overview_bloc.dart';
-import 'blocs/recipe_overview/recipe_overview_event.dart';
 import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients.dart';
 import 'blocs/shopping_cart/shopping_cart.dart';
 import 'blocs/splash_screen/splash_screen.dart';
@@ -138,16 +139,25 @@ class MyApp extends StatelessWidget {
               final RecipeScreenArguments args = settings.arguments;
 
               return MaterialPageRoute(
-                builder: (context) => BlocProvider<RecipeScreenIngredientsBloc>(
-                  create: (context) => RecipeScreenIngredientsBloc(
-                      shoppingCartBloc: args.shoppingCartBloc)
-                    ..add(InitializeIngredients(
-                      args.recipe.name,
-                      args.recipe.servings,
-                      args.recipe.ingredients,
-                    )),
+                builder: (context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<RecipeScreenBloc>(
+                        create: (context) => RecipeScreenBloc(
+                              args.recipe,
+                              args.recipeManagerBloc,
+                            )..add(InitRecipeScreen(
+                                args.recipe,
+                              ))),
+                    BlocProvider<RecipeScreenIngredientsBloc>(
+                        create: (context) => RecipeScreenIngredientsBloc(
+                            shoppingCartBloc: args.shoppingCartBloc)
+                          ..add(InitializeIngredients(
+                            args.recipe.name,
+                            args.recipe.servings,
+                            args.recipe.ingredients,
+                          ))),
+                  ],
                   child: RecipeScreen(
-                    recipe: args.recipe,
                     primaryColor: args.primaryColor,
                     heroImageTag: args.heroImageTag,
                   ),

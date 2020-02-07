@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 
-import './nutrition_manager.dart';
 import '../../hive.dart';
+
+part 'nutrition_manager_event.dart';
+part 'nutrition_manager_state.dart';
 
 class NutritionManagerBloc
     extends Bloc<NutritionManagerEvent, NutritionManagerState> {

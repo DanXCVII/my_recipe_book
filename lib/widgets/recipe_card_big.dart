@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import './recipe_card.dart';
@@ -54,6 +55,7 @@ class RecipeCardBig extends StatelessWidget {
               recipe,
               getRecipePrimaryColor(recipe.vegetable),
               heroImageTag,
+              BlocProvider.of<RecipeManagerBloc>(context),
             ),
           );
         },

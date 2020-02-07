@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../../models/recipe.dart';
+part of 'steps_bloc.dart';
 
 abstract class StepsState extends Equatable {
   const StepsState();

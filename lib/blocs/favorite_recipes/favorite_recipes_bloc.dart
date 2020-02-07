@@ -1,26 +1,28 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-import './favorite_recipes.dart';
 import '../../hive.dart';
 import '../../models/recipe.dart';
-import '../recipe_manager/recipe_manager_bloc.dart';
-import '../recipe_manager/recipe_manager_state.dart' as RMState;
+import '../recipe_manager/recipe_manager_bloc.dart' as RM;
+
+part 'favorite_recipes_event.dart';
+part 'favorite_recipes_state.dart';
 
 class FavoriteRecipesBloc
     extends Bloc<FavoriteRecipesEvent, FavoriteRecipesState> {
-  final RecipeManagerBloc recipeManagerBloc;
+  final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
   FavoriteRecipesBloc({@required this.recipeManagerBloc}) {
     subscription = recipeManagerBloc.listen((state) {
-      if (state is RMState.AddFavoriteState) {
+      if (state is RM.AddFavoriteState) {
         add(AddFavorite(state.recipe));
-      } else if (state is RMState.RemoveFavoriteState) {
+      } else if (state is RM.RemoveFavoriteState) {
         add(RemoveFavorite(state.recipe));
-      } else if (state is RMState.DeleteRecipeState) {
+      } else if (state is RM.DeleteRecipeState) {
         if (state.recipe.isFavorite) {
           add(RemoveFavorite(state.recipe));
         }

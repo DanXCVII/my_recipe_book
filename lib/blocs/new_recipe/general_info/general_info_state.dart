@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../../models/recipe.dart';
+part of 'general_info_bloc.dart';
 
 abstract class GeneralInfoState extends Equatable {
   const GeneralInfoState();

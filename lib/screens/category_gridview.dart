@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../blocs/category_overview/category_overview_bloc.dart';
-import '../blocs/category_overview/category_overview_state.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../models/tuple.dart';
 import '../routes.dart';

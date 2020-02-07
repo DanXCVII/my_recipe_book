@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../blocs/new_recipe/steps/steps.dart';
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
-import '../../../blocs/new_recipe/steps/steps_state.dart';
 import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../models/recipe.dart';
