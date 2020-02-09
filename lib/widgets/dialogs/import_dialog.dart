@@ -346,6 +346,8 @@ class _ImportDialogState extends State<ImportDialog>
                   ],
                 ),
               );
+            } else {
+              return Text(state.toString());
             }
           }),
         ),

@@ -11,9 +11,6 @@ class RMAddRecipe extends RecipeManagerEvent {
 
   @override
   List<Object> get props => [recipe];
-
-  @override
-  String toString() => 'AddRecipe { recipe: $recipe }';
 }
 
 class RMUpdateRecipe extends RecipeManagerEvent {

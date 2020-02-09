@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-// TODO: not saving the image. Do it in some Bloc and think about a smart solution
 class ImageSelector extends StatefulWidget {
   final String prefilledImage;
   final double circleSize;

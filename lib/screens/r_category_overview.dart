@@ -134,7 +134,7 @@ class RecipeHozizontalList extends StatelessWidget {
                 _pushRecipeRoute(
                   context,
                   index,
-                  '${categoryName}$index-image',
+                  '$categoryName$index-image',
                   recipes[index],
                 );
               },
@@ -149,7 +149,7 @@ class RecipeHozizontalList extends StatelessWidget {
                       Stack(
                         children: <Widget>[
                           Hero(
-                            tag: '${categoryName}$index-image',
+                            tag: '$categoryName$index-image',
                             child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.only(

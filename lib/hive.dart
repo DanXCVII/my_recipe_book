@@ -648,7 +648,7 @@ class HiveProvider {
         if (_getIngredientCount(ingredient) == 1) {
           List<CheckableIngredient> updatedSummaryIngreds = boxShoppingCart
               .get('summary')
-              ?.cast<CheckableIngredient>()
+              .cast<CheckableIngredient>()
                 ..remove(summaryIngred);
           await boxShoppingCart.put('summary', updatedSummaryIngreds);
         }
@@ -777,7 +777,6 @@ class HiveProvider {
                 [modifyIngred.copyWith(amount: newAmount, checked: checked)])),
         );
       } else {
-        // TODO: check if it works like that
         (boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ?? [])
             .add(CheckableIngredient(
                 ingredient.name, ingredient.amount, ingredient.unit, false));

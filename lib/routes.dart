@@ -9,4 +9,5 @@ class RouteNames {
   static final manageCategories = "/manage-categories";
   static final manageNutritions = "/manage-nutritions";
   static final recipeCategories = "/recipe-categories";
+  static final vegetableRecipes = "/vegetable-recipes-oveview";
 }

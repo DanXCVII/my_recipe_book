@@ -241,6 +241,27 @@ class MyApp extends StatelessWidget {
                         child: RecipeGridView(),
                       ));
 
+            case "/vegetable-recipes-oveview":
+              final RecipeGridViewArguments args = settings.arguments;
+
+              return CupertinoPageRoute(
+                builder: (BuildContext context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc),
+                    BlocProvider<RecipeOverviewBloc>(
+                      create: (context) => RecipeOverviewBloc(
+                          recipeManagerBloc:
+                              BlocProvider.of<RecipeManagerBloc>(context))
+                        ..add(
+                          LoadVegetableRecipeOverview(args.vegetable),
+                        ),
+                    ),
+                  ],
+                  child: RecipeGridView(),
+                ),
+              );
+
             case "/add-recipe/nutritions":
               final AddRecipeNutritionsArguments args = settings.arguments;
 

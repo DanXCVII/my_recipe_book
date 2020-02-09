@@ -138,13 +138,33 @@ class FancyShoppingCartScreen extends StatelessWidget {
     return Container(
       height: deviceHeight / 2,
       child: Center(
-        child: Text(
-          S.of(context).shopping_cart_is_empty,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 22,
-            fontFamily: 'RibeyeMarrow',
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              width: 110,
+              height: 110,
+              decoration: BoxDecoration(
+                  color: Color.fromRGBO(0, 0, 0, 0.5), shape: BoxShape.circle),
+              child: Container(
+                height: deviceHeight / 800 * 80,
+                child: Icon(
+                  Icons.shopping_basket,
+                  color: Colors.brown,
+                  size: 70.0,
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(S.of(context).shopping_cart_is_empty,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+            ),
+          ],
         ),
       ),
     );
@@ -261,7 +281,8 @@ class IngredientRow extends StatelessWidget {
               ),
               color: ingredient.checked ? Colors.green : Colors.grey,
               onPressed: () {
-                _checkIngredient(context);
+                BlocProvider.of<ShoppingCartBloc>(context)
+                    .add(CheckIngredients([ingredient], recipeName));
               },
             ),
           ),
@@ -308,17 +329,6 @@ class IngredientRow extends StatelessWidget {
             : null
       ]..removeWhere((item) => item == null),
     );
-  }
-
-  // TODO: fix..
-  void _checkIngredient(BuildContext context) {
-    if (ingredient.checked) {
-      // ingredient.checked = false;
-    } else {
-      // ingredient.checked = true;
-    }
-    BlocProvider.of<ShoppingCartBloc>(context)
-        .add(CheckIngredients([ingredient], recipeName));
   }
 }
 

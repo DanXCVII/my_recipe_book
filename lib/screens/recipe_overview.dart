@@ -84,10 +84,12 @@ Map<String, List<Color>> colors = {
 
 class RecipeGridViewArguments {
   final String category;
+  final Vegetable vegetable;
   final ShoppingCartBloc shoppingCartBloc;
 
   RecipeGridViewArguments({
-    @required this.category,
+    this.category,
+    this.vegetable,
     @required this.shoppingCartBloc,
   });
 }

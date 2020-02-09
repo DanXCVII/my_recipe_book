@@ -8,7 +8,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
-import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
@@ -188,7 +187,6 @@ class RecipeCard extends StatelessWidget {
                                               color: Colors.black,
                                             ),
                                           ),
-                                          // TODO: Clip half
                                           ClipPath(
                                             clipper: LeftHalfVerticalClipper(),
                                             child: ClipPath(
@@ -216,7 +214,15 @@ class RecipeCard extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 if (activateVegetableHero)
-                                  pushVegetableRoute(context, recipe.vegetable);
+                                  Navigator.pushNamed(
+                                    context,
+                                    RouteNames.vegetableRecipes,
+                                    arguments: RecipeGridViewArguments(
+                                        shoppingCartBloc:
+                                            BlocProvider.of<ShoppingCartBloc>(
+                                                context),
+                                        vegetable: recipe.vegetable),
+                                  );
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -310,20 +316,6 @@ class RecipeCard extends StatelessWidget {
   /// returns the image for the icon which is displayed at the bottom left corner
   /// of the recipe depending on whether recipe is vegetarian, vegan, etc.
 
-}
-
-void pushVegetableRoute(BuildContext recipeCardContext, Vegetable vegetable) {
-  Navigator.push(
-      recipeCardContext,
-      CupertinoPageRoute(
-        builder: (BuildContext context) => new BlocProvider<RecipeOverviewBloc>(
-          create: (context) => RecipeOverviewBloc(
-              recipeManagerBloc:
-                  BlocProvider.of<RecipeManagerBloc>(recipeCardContext))
-            ..add(LoadVegetableRecipeOverview(vegetable)),
-          child: RecipeGridView(),
-        ),
-      ));
 }
 
 String getRecipeTypeImage(Vegetable vegetable) {

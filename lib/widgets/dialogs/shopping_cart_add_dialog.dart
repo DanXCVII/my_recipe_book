@@ -1,5 +1,7 @@
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/hive.dart';
 
 import '../../blocs/shopping_cart/shopping_cart.dart';
 import '../../generated/i18n.dart';
@@ -20,6 +22,8 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
       new TextEditingController();
   TextEditingController ingredientUnitController = new TextEditingController();
   GlobalKey<FormState> formKey = new GlobalKey<FormState>();
+  GlobalKey<AutoCompleteTextFieldState<String>> autoCompletionTextField =
+      new GlobalKey();
 
   @override
   void dispose() {
@@ -56,8 +60,9 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                   children: <Widget>[
                     Expanded(
                       flex: 3,
-                      // TODO: Make autoCompletionTextField
-                      child: TextFormField(
+                      child: SimpleAutoCompleteTextField(
+                        key: autoCompletionTextField,
+                        suggestions: HiveProvider().getIngredientNames(),
                         controller: ingredientNameController,
                         decoration: InputDecoration(
                           labelText: S.of(context).ingredient,

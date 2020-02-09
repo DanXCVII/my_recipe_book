@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
+import 'package:my_recipe_book/screens/recipe_overview.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import './recipe_card.dart';
@@ -126,8 +127,14 @@ class RecipeCardBig extends StatelessWidget {
                                   padding: EdgeInsets.all(scaleFactor * 12.0),
                                   child: GestureDetector(
                                     onTap: () {
-                                      pushVegetableRoute(
-                                          context, recipe.vegetable);
+                                      Navigator.pushNamed(
+                                        context,
+                                        RouteNames.vegetableRecipes,
+                                        arguments: RecipeGridViewArguments(
+                                            shoppingCartBloc: BlocProvider.of<
+                                                ShoppingCartBloc>(context),
+                                            vegetable: recipe.vegetable),
+                                      );
                                     },
                                     child: Image.asset(
                                       "images/${getRecipeTypeImage(recipe.vegetable)}.png",

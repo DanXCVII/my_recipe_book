@@ -8,8 +8,6 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_screen/recipe_screen_bloc.dart';
-// import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -17,7 +15,7 @@ import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
-import '../blocs/recipe_overview/recipe_overview_bloc.dart';
+import '../blocs/recipe_screen/recipe_screen_bloc.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_event.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_state.dart';
@@ -263,7 +261,6 @@ class RecipePage extends StatelessWidget {
   final Recipe recipe;
   final Color primaryColor;
   final String heroImageTag;
-  final PanelController _pc = PanelController();
 
   RecipePage({
     @required this.recipe,
@@ -362,7 +359,15 @@ class RecipePage extends StatelessWidget {
                           alignment: Alignment.bottomRight,
                           child: GestureDetector(
                             onTap: () {
-                              pushVegetableRoute(context, recipe.vegetable);
+                              Navigator.pushNamed(
+                                context,
+                                RouteNames.vegetableRecipes,
+                                arguments: RecipeGridViewArguments(
+                                    shoppingCartBloc:
+                                        BlocProvider.of<ShoppingCartBloc>(
+                                            context),
+                                    vegetable: recipe.vegetable),
+                              );
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(
@@ -1147,19 +1152,14 @@ class _CategoryCircleState extends State<CategoryCircle> {
           DBProvider.db
               .getRecipePreviewOfCategory(widget.categoryName)
               .then((r) {
-            Navigator.push(
+            Navigator.pushNamed(
               context,
-              MaterialPageRoute(
-                builder: (BuildContext context) =>
-                    BlocProvider<RecipeOverviewBloc>(
-                  create: (context) => RecipeOverviewBloc(
-                      recipeManagerBloc:
-                          BlocProvider.of<RecipeManagerBloc>(context))
-                    ..add(LoadCategoryRecipeOverview(widget.categoryName == null
-                        ? 'no category'
-                        : widget.categoryName)),
-                  child: RecipeGridView(),
-                ),
+              RouteNames.recipeCategories,
+              arguments: RecipeGridViewArguments(
+                category: widget.categoryName == null
+                    ? 'no category'
+                    : widget.categoryName,
+                shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
               ),
             );
           });
@@ -1538,7 +1538,6 @@ class IngredientsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: check how the list of no ingredients looks like
     List<Ingredient> allIngredients =
         flattenIngredients(currentRecipe.ingredients);
     if (allIngredients.isEmpty) return Container();

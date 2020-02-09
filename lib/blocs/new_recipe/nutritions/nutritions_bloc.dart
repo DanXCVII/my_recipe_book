@@ -49,7 +49,7 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
           );
 
       if (event.goBack) {
-        await HiveProvider().saveTmpRecipe(newRecipe);
+        await HiveProvider().saveTmpRecipe(nutritionRecipe);
       } else {
         newRecipe = await IO.fixImagePaths(nutritionRecipe);
         await HiveProvider().resetTmpRecipe();
@@ -57,8 +57,11 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
         event.recipeManagerBloc.add(RMAddRecipe(newRecipe));
       }
     } else {
+      Recipe nutritionRecipe = HiveProvider()
+          .getTmpEditingRecipe()
+          .copyWith(nutritions: event.nutritions);
       if (event.goBack) {
-        await HiveProvider().saveTmpEditingRecipe(newRecipe);
+        await HiveProvider().saveTmpEditingRecipe(nutritionRecipe);
       }
 
       if (!event.goBack) {
@@ -68,9 +71,6 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
           event.recipeManagerBloc
               .add(RMDeleteRecipe(event.editingRecipeName, deleteFiles: false));
           await Future.delayed(Duration(milliseconds: 100));
-          Recipe nutritionRecipe = HiveProvider()
-              .getTmpEditingRecipe()
-              .copyWith(nutritions: event.nutritions);
           newRecipe = await IO.fixImagePaths(nutritionRecipe);
           // IO.deleteRecipeData('edit');
           await HiveProvider().deleteTmpEditingRecipe();

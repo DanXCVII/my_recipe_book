@@ -20,7 +20,7 @@ class FavoriteScreen extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         } else if (state is LoadedFavorites) {
           if (state.recipes.isEmpty) {
-            return getCenterHeart(context);
+            return Center(child: getCenterHeart(context));
           }
           return FavoriteRecipeCards(
             favoriteRecipes: state.recipes,
@@ -56,10 +56,7 @@ class FavoriteScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Text(S.of(context).no_added_favorites_yet,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 22,
-                fontFamily: 'RibeyeMarrow',
-              )),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
         ),
       ],
     );
