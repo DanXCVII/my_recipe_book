@@ -18,9 +18,11 @@ import '../recipe_screen.dart';
 class AddRecipeNutritionsArguments {
   final Recipe modifiedRecipe;
   final String editingRecipeName;
+  final ShoppingCartBloc shoppingCartBloc;
 
   AddRecipeNutritionsArguments(
-    this.modifiedRecipe, {
+    this.modifiedRecipe,
+    this.shoppingCartBloc, {
     this.editingRecipeName,
   });
 }
@@ -108,7 +110,6 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                                 (_) => Navigator.of(context)
                                     .popUntil((route) => route.isFirst));
                           } else {
-                            Navigator.pop(context);
                             Navigator.pop(context);
                             Navigator.pop(context);
                             Navigator.pop(context);

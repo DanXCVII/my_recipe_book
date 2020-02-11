@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_event.dart';
@@ -138,35 +139,13 @@ class FancyShoppingCartScreen extends StatelessWidget {
     return Container(
       height: deviceHeight / 2,
       child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(
-                  color: Color.fromRGBO(0, 0, 0, 0.5), shape: BoxShape.circle),
-              child: Container(
-                height: deviceHeight / 800 * 80,
-                child: Icon(
-                  Icons.shopping_basket,
-                  color: Colors.brown,
-                  size: 70.0,
-                ),
+          child: IconInfoMessage(
+              iconWidget: Icon(
+                Icons.shopping_basket,
+                color: Colors.brown,
+                size: 70.0,
               ),
-            ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(S.of(context).shopping_cart_is_empty,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
-            ),
-          ],
-        ),
-      ),
+              description: S.of(context).shopping_cart_is_empty)),
     );
   }
 

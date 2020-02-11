@@ -2,6 +2,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import '../../generated/i18n.dart';
@@ -21,9 +22,11 @@ import 'steps_screen/steps_screen.dart';
 class IngredientsArguments {
   final Recipe modifiedRecipe;
   final String editingRecipeName;
+  final ShoppingCartBloc shoppingCartBloc;
 
   IngredientsArguments(
-    this.modifiedRecipe, {
+    this.modifiedRecipe,
+    this.shoppingCartBloc, {
     this.editingRecipeName,
   });
 }
@@ -115,6 +118,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
                     RouteNames.addRecipeSteps,
                     arguments: StepsArguments(
                       state.recipe,
+                      BlocProvider.of<ShoppingCartBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
                   );

@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 
-import '../blocs/nutrition_manager/nutrition_manager_bloc.dart';
+import '../blocs/ingredinets_manager/ingredients_manager_bloc.dart';
 import '../generated/i18n.dart';
-import '../models/nutrition.dart';
 import '../models/recipe.dart';
 import '../widgets/dialogs/textfield_dialog.dart';
 
-class NutritionManager extends StatefulWidget {
+class IngredientsManager extends StatefulWidget {
+  final String editRecipeName;
   final Recipe newRecipe;
 
-  NutritionManager({this.newRecipe});
+  IngredientsManager({this.editRecipeName, this.newRecipe});
 
   @override
-  _NutritionManagerState createState() => _NutritionManagerState();
+  _IngredientsManagerState createState() => _IngredientsManagerState();
 }
 
-class _NutritionManagerState extends State<NutritionManager> {
+class _IngredientsManagerState extends State<IngredientsManager> {
   static final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  Map<String, TextEditingController> nutritionsController = {};
+  Map<String, TextEditingController> ingredientsController = {};
   List<Key> dismissibleKeys = [];
   List<Key> listTileKeys = [];
   bool isInitialized = false;
@@ -31,42 +31,43 @@ class _NutritionManagerState extends State<NutritionManager> {
 
   @override
   void dispose() {
-    for (String k in nutritionsController.keys) {
-      nutritionsController[k].dispose();
+    for (String k in ingredientsController.keys) {
+      ingredientsController[k].dispose();
     }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<NutritionManagerBloc, NutritionManagerState>(
+    return BlocListener<IngredientsManagerBloc, IngredientsManagerState>(
       listener: (context, state) {
-        if (state is LoadedNutritionManager) {
-          if (isInitialized == false && state.nutritions.isNotEmpty) {
+        if (state is LoadedIngredientsManager) {
+          if (isInitialized == false && state.ingredients.isNotEmpty) {
             setState(() {
               isInitialized = true;
-              for (int i = 0; i < state.nutritions.length; i++) {
-                String currentNutrition = state.nutritions[i];
+              for (int i = 0; i < state.ingredients.length; i++) {
+                String currentingredient = state.ingredients[i];
 
-                nutritionsController
-                    .addAll({currentNutrition: TextEditingController()});
-                dismissibleKeys.add(Key('D-$currentNutrition'));
-                listTileKeys.add(Key(currentNutrition));
+                ingredientsController
+                    .addAll({currentingredient: TextEditingController()});
+
+                dismissibleKeys.add(Key('D-$currentingredient'));
+                listTileKeys.add(Key(currentingredient));
               }
             });
           }
         }
       },
-      child: BlocBuilder<NutritionManagerBloc, NutritionManagerState>(
+      child: BlocBuilder<IngredientsManagerBloc, IngredientsManagerState>(
         builder: (context, state) {
-          if (state is LoadingNutritionManager) {
-            return _getNutritionManagerLoadingScreen();
-          } else if (state is LoadedNutritionManager) {
+          if (state is LoadingIngredientsManager) {
+            return _getIngredientManagerLoadingScreen();
+          } else if (state is LoadedIngredientsManager) {
             int i = -1;
 
             return Scaffold(
               appBar: AppBar(
-                title: Text(S.of(context).manage_nutritions),
+                title: Text("Manage ingredients"),
                 actions: <Widget>[
                   IconButton(
                     icon: Icon(Icons.check),
@@ -89,31 +90,27 @@ class _NutritionManagerState extends State<NutritionManager> {
                         context: context,
                         builder: (_) => TextFieldDialog(
                               validation: (String name) {
-                                if (state.nutritions.contains(name)) {
-                                  return 'nutrition already exists';
+                                if (state.ingredients.contains(name)) {
+                                  return 'Ingredient already exists';
                                 } else {
                                   return null;
                                 }
                               },
                               save: (String name) {
-                                BlocProvider.of<NutritionManagerBloc>(context)
-                                    .add(AddNutrition(name));
+                                BlocProvider.of<IngredientsManagerBloc>(context)
+                                    .add(AddIngredient(name));
                               },
-                              hintText: 'nutrition name',
+                              hintText: 'Ingredient name',
                             ));
                   }),
-              body: state.nutritions.isEmpty
+              body: state.ingredients.isEmpty
                   ? Center(
-                      child: Text(S.of(context).you_have_no_nutritions),
+                      child: Text("you have no ingredients"),
                     )
                   : Form(
                       key: _formKey,
-                      child: ReorderableListView(
-                        onReorder: (oldIndex, newIndex) {
-                          BlocProvider.of<NutritionManagerBloc>(context)
-                              .add(MoveNutrition(oldIndex, newIndex));
-                        },
-                        children: state.nutritions.map((currentNutrition) {
+                      child: ListView(
+                        children: state.ingredients.map((currentIngredient) {
                           i++;
 
                           return Dismissible(
@@ -122,12 +119,12 @@ class _NutritionManagerState extends State<NutritionManager> {
                             secondaryBackground:
                                 _getSecondaryBackgroundDismissible(),
                             onDismissed: (_) {
-                              nutritionsController.remove(currentNutrition);
-                              BlocProvider.of<NutritionManagerBloc>(context)
-                                  .add(DeleteNutrition(currentNutrition));
+                              ingredientsController.remove(currentIngredient);
+                              BlocProvider.of<IngredientsManagerBloc>(context)
+                                  .add(DeleteIngredient(currentIngredient));
                             },
-                            child: _getNutritionListTile(currentNutrition,
-                                context, listTileKeys[i], state.nutritions),
+                            child: _getIngredientListTile(currentIngredient,
+                                context, listTileKeys[i], state.ingredients),
                           );
                         }).toList(),
                       ),
@@ -141,24 +138,26 @@ class _NutritionManagerState extends State<NutritionManager> {
     );
   }
 
-  Widget _getNutritionManagerLoadingScreen() {
+  Widget _getIngredientManagerLoadingScreen() {
     return Scaffold(
         appBar: AppBar(
-          title: Text(S.of(context).manage_nutritions),
+          title: Text(
+            "manage ingredients",
+          ),
         ),
         body: Center(
           child: CircularProgressIndicator(),
         ));
   }
 
-  _showDeleteDialog(BuildContext context, String nutritionName) {
+  _showDeleteDialog(BuildContext context, String ingredientName) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(S.of(context).delete_nutrition),
+        title: Text("delete ingredient"),
         content: Text(S.of(context).sure_you_want_to_delete_this_nutrition +
-            " $nutritionName"),
+            " $ingredientName"),
         actions: <Widget>[
           FlatButton(
             child: Text(S.of(context).no),
@@ -177,10 +176,10 @@ class _NutritionManagerState extends State<NutritionManager> {
             textColor: Theme.of(context).textTheme.body1.color,
             color: Colors.red[600],
             onPressed: () {
-              BlocProvider.of<NutritionManagerBloc>(context)
-                  .add(DeleteNutrition(nutritionName));
+              BlocProvider.of<IngredientsManagerBloc>(context)
+                  .add(DeleteIngredient(ingredientName));
 
-              nutritionsController.remove(nutritionName);
+              ingredientsController.remove(ingredientName);
               Navigator.pop(context, true);
               return true;
             },
@@ -230,8 +229,8 @@ class _NutritionManagerState extends State<NutritionManager> {
     );
   }
 
-  Widget _getNutritionListTile(String nutritionName, BuildContext context,
-      Key key, List<String> nutritions) {
+  Widget _getIngredientListTile(String ingredientName, BuildContext context,
+      Key key, List<String> ingredients) {
     return ListTile(
       key: key,
       title: GestureDetector(
@@ -240,23 +239,23 @@ class _NutritionManagerState extends State<NutritionManager> {
             context: context,
             builder: (_) => TextFieldDialog(
               validation: (String name) {
-                if (nutritions.contains(name)) {
-                  return 'nutrition already exists';
+                if (ingredients.contains(name)) {
+                  return 'ingredient already exists';
                 } else {
                   return null;
                 }
               },
               save: (String name) {
-                BlocProvider.of<NutritionManagerBloc>(context).add(
-                  UpdateNutrition(nutritionName, name),
+                BlocProvider.of<IngredientsManagerBloc>(context).add(
+                  UpdateIngredient(ingredientName, name),
                 );
               },
-              hintText: 'nutrition name',
-              prefilledText: nutritionName,
+              hintText: 'ingredient name',
+              prefilledText: ingredientName,
             ),
           );
         },
-        child: Text(nutritionName),
+        child: Text(ingredientName),
       ),
       leading: Icon(Icons.reorder),
       trailing: Container(
@@ -266,7 +265,7 @@ class _NutritionManagerState extends State<NutritionManager> {
         child: IconButton(
           icon: Icon(Icons.delete),
           onPressed: () {
-            _showDeleteDialog(context, nutritionName);
+            _showDeleteDialog(context, ingredientName);
           },
         ),
       ),

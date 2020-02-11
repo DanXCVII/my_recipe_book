@@ -34,7 +34,7 @@ class MyHomePage extends StatefulWidget {
   MyHomePageState createState() => MyHomePageState();
 }
 
-class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+class MyHomePageState extends State<MyHomePage> {
   Future<SharedPreferences> prefs;
 
   MyHomePageState({
@@ -42,7 +42,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     String title,
   });
 
-  AnimationController _controller;
   static const List<IconData> icons = const [
     GroovinMaterialIcons.grid_large,
     Icons.description,
@@ -52,10 +51,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     prefs = SharedPreferences.getInstance();
-    _controller = new AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-    );
 
     SystemChannels.lifecycle.setMessageHandler((msg) {
       if (msg.contains('resumed')) {
@@ -69,12 +64,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
@@ -84,7 +73,8 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           return Scaffold(
             appBar: _buildAppBar(
                 state.selectedIndex, state.recipeCategoryOverview, state.title),
-            floatingActionButton: _getFloatingB(state.selectedIndex, context),
+            floatingActionButton:
+                state.selectedIndex == 0 ? FloatingActionButtonMenu() : null,
             body: IndexedStack(
               index: state.selectedIndex,
               children: [
@@ -260,78 +250,6 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     });
   }
 
-  Widget _getFloatingB(int selectedIndex, BuildContext homePageContext) {
-    Color backgroundColor = Theme.of(context).primaryColor;
-    //  Color foregroundColor = Theme.of(context).accentColor;
-    if (selectedIndex == 0) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(icons.length, (int index) {
-          Widget child = Container(
-            height: 70.0,
-            width: 56.0,
-            alignment: FractionalOffset.topCenter,
-            child: ScaleTransition(
-              scale: CurvedAnimation(
-                parent: _controller,
-                curve: Interval(0.0, 1.0 - index / icons.length / 2.0,
-                    curve: Curves.easeOut),
-              ),
-              child: FloatingActionButton(
-                heroTag: null,
-                backgroundColor: Colors.white,
-                mini: true,
-                child: Icon(icons[index], color: backgroundColor),
-                onPressed: () {
-                  _controller.reverse();
-                  index == 1
-                      ? Navigator.pushNamed(
-                          context,
-                          RouteNames.addRecipeGeneralInfo,
-                          arguments: GeneralInfoArguments(
-                              HiveProvider().getTmpRecipe()),
-                        )
-                      : Navigator.pushNamed(
-                          context,
-                          RouteNames.manageCategories,
-                        );
-                },
-              ),
-            ),
-          );
-          return child;
-        }).toList()
-          ..add(
-            FloatingActionButton(
-              backgroundColor: backgroundColor,
-              heroTag: null,
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (BuildContext context, Widget child) {
-                  return Transform(
-                    transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
-                    alignment: FractionalOffset.center,
-                    child: Icon(
-                      _controller.isDismissed ? Icons.add : Icons.close,
-                      color: Colors.white,
-                    ),
-                  );
-                },
-              ),
-              onPressed: () {
-                if (_controller.isDismissed) {
-                  _controller.forward();
-                } else {
-                  _controller.reverse();
-                }
-              },
-            ),
-          ),
-      );
-    }
-    return null;
-  }
-
   Color _getBackgroundColor(int selectedIndex) {
     if (selectedIndex == 0) {
       return Theme.of(context).scaffoldBackgroundColor;
@@ -354,5 +272,136 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   void _onItemTapped(int index, BuildContext context) {
     BlocProvider.of<AppBloc>(context)..add(ChangeView(index, context));
+  }
+}
+
+class FloatingActionButtonMenu extends StatefulWidget {
+  FloatingActionButtonMenu({Key key}) : super(key: key);
+
+  @override
+  _FloatingActionButtonMenuState createState() =>
+      _FloatingActionButtonMenuState();
+}
+
+class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
+    with TickerProviderStateMixin {
+  AnimationController _controller;
+  static const List<IconData> icons = const [
+    GroovinMaterialIcons.grid_large,
+    Icons.description,
+  ];
+  bool isOpen = false;
+
+  @override
+  void initState() {
+    _controller = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Column menu = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: isOpen
+            ? [
+                _getFloatingItem(
+                  () {
+                    Navigator.pushNamed(
+                      context,
+                      RouteNames.manageCategories,
+                    );
+                  },
+                  Icon(GroovinMaterialIcons.grid_large,
+                      color: Theme.of(context).primaryColor),
+                  2,
+                ),
+                _getFloatingItem(
+                  () {
+                    Navigator.pushNamed(
+                      context,
+                      RouteNames.addRecipeGeneralInfo,
+                      arguments: GeneralInfoArguments(
+                        HiveProvider().getTmpRecipe(),
+                        BlocProvider.of<ShoppingCartBloc>(context),
+                      ),
+                    );
+                  },
+                  Icon(Icons.description,
+                      color: Theme.of(context).primaryColor),
+                  1,
+                ),
+              ]
+            : []);
+    menu.children.add(
+      FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        heroTag: null,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (BuildContext context, Widget child) {
+            return Transform(
+              transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
+              alignment: FractionalOffset.center,
+              child: Icon(
+                _controller.isDismissed ? Icons.add : Icons.close,
+                color: Colors.white,
+              ),
+            );
+          },
+        ),
+        onPressed: () {
+          if (_controller.isDismissed) {
+            setState(() {
+              isOpen = true;
+              _controller.forward();
+            });
+          } else {
+            setState(() {
+              _controller.reverse();
+              Future.delayed(Duration(milliseconds: 100))
+                  .then((_) => setState(() {
+                        isOpen = false;
+                      }));
+            });
+          }
+        },
+      ),
+    );
+    return menu;
+  }
+
+  Widget _getFloatingItem(void Function() onTap, Icon icon, int index) {
+    return Container(
+      height: 70.0,
+      width: 56.0,
+      alignment: FractionalOffset.topCenter,
+      child: ScaleTransition(
+        scale: CurvedAnimation(
+          parent: _controller,
+          curve: Interval(0.0, 1.0 - index / icons.length / 2.0,
+              curve: Curves.easeOut),
+        ),
+        child: FloatingActionButton(
+          heroTag: null,
+          backgroundColor: Colors.white,
+          mini: true,
+          child: icon,
+          onPressed: () {
+            _controller.reverse();
+            onTap();
+          },
+        ),
+      ),
+    );
   }
 }

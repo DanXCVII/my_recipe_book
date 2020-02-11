@@ -11,6 +11,16 @@ class LoadingRandomRecipeExplorer extends RandomRecipeExplorerState {
   List<Object> get props => [];
 }
 
+class LoadingRecipes extends RandomRecipeExplorerState {
+  final List<String> categories;
+  final int selectedCategory;
+
+  LoadingRecipes(this.categories, this.selectedCategory);
+
+  @override
+  List<Object> get props => [categories, selectedCategory];
+}
+
 class LoadedRandomRecipeExplorer extends RandomRecipeExplorerState {
   final List<String> categories;
   final int selectedCategory;

@@ -39,15 +39,15 @@ List<Ingredient> flattenIngredients(List<List<Ingredient>> listList) {
 String getTimeHoursMinutes(double min) {
   if (min ~/ 60 > 0) {
     String returnString =
-        '${(min ~/ 60).toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')}h ';
+        '${(min ~/ 60).toStringAsPrecision(2).replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')}h ';
     if (min - (min ~/ 60 * 60) != 0) {
       return returnString +=
-          '${(min - (min ~/ 60 * 60)).toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min';
+          '${(min - (min ~/ 60 * 60)).toStringAsPrecision(2).replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min';
     } else {
       return returnString;
     }
   }
-  return "${min.toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min";
+  return "${min.toStringAsPrecision(2).replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min";
 }
 
 int getIngredientCount(List<List<Ingredient>> ingredients) {

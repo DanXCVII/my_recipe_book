@@ -293,8 +293,11 @@ class RecipePage extends StatelessWidget {
                       .then((_) => Navigator.pushNamed(
                             context,
                             RouteNames.addRecipeGeneralInfo,
-                            arguments: GeneralInfoArguments(recipe,
-                                editingRecipeName: recipe.name),
+                            arguments: GeneralInfoArguments(
+                              recipe,
+                              BlocProvider.of<ShoppingCartBloc>(context),
+                              editingRecipeName: recipe.name,
+                            ),
                           ));
                 },
               ),

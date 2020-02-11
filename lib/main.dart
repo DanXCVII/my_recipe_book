@@ -156,6 +156,8 @@ class MyApp extends StatelessWidget {
                             args.recipe.servings,
                             args.recipe.ingredients,
                           ))),
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc),
                   ],
                   child: RecipeScreen(
                     primaryColor: args.primaryColor,
@@ -181,6 +183,8 @@ class MyApp extends StatelessWidget {
                               BlocProvider.of<RecipeManagerBloc>(context))
                         ..add(InitializeCategoryManager()),
                     ),
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc),
                   ],
                   child: GeneralInfoScreen(
                     modifiedRecipe: args.modifiedRecipe,
@@ -193,8 +197,13 @@ class MyApp extends StatelessWidget {
               final IngredientsArguments args = settings.arguments;
 
               return MaterialPageRoute(
-                builder: (context) => BlocProvider<IngredientsBloc>(
-                  create: (context) => IngredientsBloc(),
+                builder: (context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<IngredientsBloc>(
+                        create: (context) => IngredientsBloc()),
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc)
+                  ],
                   child: IngredientsAddScreen(
                     modifiedRecipe: args.modifiedRecipe,
                     editingRecipeName: args.editingRecipeName,
@@ -206,17 +215,22 @@ class MyApp extends StatelessWidget {
               final StepsArguments args = settings.arguments;
 
               return MaterialPageRoute(
-                builder: (context) => BlocProvider<StepImagesBloc>(
-                  create: (context) => StepImagesBloc()
-                    ..add(InitializeStepImages(
-                        stepImages: args.modifiedRecipe.stepImages)),
-                  child: BlocProvider<StepsBloc>(
-                    create: (context) =>
-                        StepsBloc(BlocProvider.of<StepImagesBloc>(context)),
-                    child: StepsScreen(
-                      modifiedRecipe: args.modifiedRecipe,
-                      editingRecipeName: args.editingRecipeName,
+                builder: (context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<StepImagesBloc>(
+                        create: (context) => StepImagesBloc()
+                          ..add(InitializeStepImages(
+                              stepImages: args.modifiedRecipe.stepImages))),
+                    BlocProvider<StepsBloc>(
+                      create: (context) =>
+                          StepsBloc(BlocProvider.of<StepImagesBloc>(context)),
                     ),
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc),
+                  ],
+                  child: StepsScreen(
+                    modifiedRecipe: args.modifiedRecipe,
+                    editingRecipeName: args.editingRecipeName,
                   ),
                 ),
               );
@@ -273,7 +287,9 @@ class MyApp extends StatelessWidget {
                           ..add(LoadNutritionManager())),
                     BlocProvider<NutritionsBloc>(
                       create: (context) => NutritionsBloc(),
-                    )
+                    ),
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc),
                   ],
                   child: AddRecipeNutritions(
                     modifiedRecipe: args.modifiedRecipe,

@@ -142,12 +142,6 @@ class Settings extends StatelessWidget {
             ),
           ),
           Divider(),
-          SwitchListTile(
-            title: Text(S.of(context).switch_shopping_cart_look),
-            value: true,
-            onChanged: (value) {},
-          ),
-          Divider(),
           ListTile(
             title: Text(S.of(context).view_intro),
             onTap: () {

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/blocs/new_recipe/general_info/general_info_bloc.dart';
+import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart.dart';
 
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import '../../../generated/i18n.dart';
@@ -22,9 +23,11 @@ import 'categories_section.dart';
 class GeneralInfoArguments {
   final Recipe modifiedRecipe;
   final String editingRecipeName;
+  final ShoppingCartBloc shoppingCartBloc;
 
   GeneralInfoArguments(
-    this.modifiedRecipe, {
+    this.modifiedRecipe,
+    this.shoppingCartBloc, {
     this.editingRecipeName,
   });
 }
@@ -113,6 +116,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                     RouteNames.addRecipeIngredients,
                     arguments: IngredientsArguments(
                       state.recipe,
+                      BlocProvider.of<ShoppingCartBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
                   );

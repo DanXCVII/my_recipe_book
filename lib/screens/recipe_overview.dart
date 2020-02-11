@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart.dart';
@@ -267,7 +269,11 @@ class RecipeGridView extends StatelessWidget {
               ]),
             );
           } else {
-            return Scaffold(appBar: AppBar(), body: NoRecipeCategory());
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text("no recipes"),
+                ),
+                body: NoRecipeCategory());
           }
         } else {
           return Text(state.toString());
@@ -319,35 +325,14 @@ class NoRecipeCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double deviceHeight = MediaQuery.of(context).size.height;
-    return Stack(
-      children: <Widget>[
-        Align(
-          alignment: Alignment(0, -0.5),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text(
-              S.of(context).no_recipes_under_this_category,
-              textScaleFactor: deviceHeight / 800,
-              style: TextStyle(
-                fontSize: 30,
-                fontFamily: 'RibeyeMarrow',
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).backgroundColor == Colors.white
-                    ? Colors.black
-                    : Colors.white,
-              ),
-            ),
+    return Center(
+      child: IconInfoMessage(
+          iconWidget: Icon(
+            MdiIcons.chefHat,
+            color: Colors.white,
+            size: 70.0,
           ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Image.asset(
-            'images/hatWithSpoonFork.png',
-            height: deviceHeight / 800 * 280,
-          ),
-        ),
-      ],
+          description: S.of(context).no_recipes_under_this_category),
     );
   }
 }

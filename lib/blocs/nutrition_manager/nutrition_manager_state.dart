@@ -21,7 +21,4 @@ class LoadedNutritionManager extends NutritionManagerState {
 
   @override
   List<Object> get props => [nutritions];
-
-  @override
-  String toString() => 'Categories loaded { nutritions: $nutritions }';
 }

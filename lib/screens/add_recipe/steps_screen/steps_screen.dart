@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart.dart';
 
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
 import '../../../generated/i18n.dart';
@@ -17,9 +18,11 @@ import 'steps_section.dart';
 class StepsArguments {
   final Recipe modifiedRecipe;
   final String editingRecipeName;
+  final ShoppingCartBloc shoppingCartBloc;
 
   StepsArguments(
-    this.modifiedRecipe, {
+    this.modifiedRecipe,
+    this.shoppingCartBloc, {
     this.editingRecipeName,
   });
 }
@@ -87,6 +90,7 @@ class _StepsScreenState extends State<StepsScreen> {
                     RouteNames.addRecipeNutritions,
                     arguments: AddRecipeNutritionsArguments(
                       state.recipe,
+                      BlocProvider.of<ShoppingCartBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
                   );

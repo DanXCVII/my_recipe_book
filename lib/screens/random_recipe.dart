@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 import '../blocs/random_recipe_explorer/random_recipe_explorer_event.dart';
@@ -59,6 +61,24 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
         builder: (context, state) {
       if (state is LoadingRandomRecipeExplorer) {
         return Center(child: CircularProgressIndicator());
+      } else if (state is LoadingRecipes) {
+        return Column(children: <Widget>[
+          SafeArea(
+            child: Container(
+              height: 40,
+              padding: const EdgeInsets.only(top: 8.0),
+              width: MediaQuery.of(context).size.width,
+              child: _getCategorySelector(
+                  state.categories, state.categories[state.selectedCategory]),
+            ),
+          ),
+          Divider(),
+          Expanded(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        ]);
       } else if (state is LoadedRandomRecipeExplorer) {
         return Column(
           children: <Widget>[
@@ -73,15 +93,55 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
             ),
             Divider(),
             Container(
-                height: MediaQuery.of(context).size.height > 730
-                    ? MediaQuery.of(context).size.height - 200
-                    : MediaQuery.of(context).size.height - 136,
-                child: state.randomRecipes.isEmpty
-                    ? NoRecipeCategory()
-                    : SwypingCards(
-                        key: Key(state.categories[state.selectedCategory]),
+              height: MediaQuery.of(context).size.height > 730
+                  ? MediaQuery.of(context).size.height - 200
+                  : MediaQuery.of(context).size.height - 136,
+              child: state.randomRecipes.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            width: 110,
+                            height: 110,
+                            decoration: BoxDecoration(
+                                color: Color.fromRGBO(0, 0, 0, 0.5),
+                                shape: BoxShape.circle),
+                            child: Container(
+                              height:
+                                  MediaQuery.of(context).size.height / 800 * 80,
+                              child: Icon(
+                                MdiIcons.chefHat,
+                                color: Colors.white,
+                                size: 70.0,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                                S.of(context).no_recipes_under_this_category,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w400)),
+                          ),
+                        ],
+                      ),
+                    )
+                  : TweenAnimationBuilder(
+                      tween: Tween<double>(begin: 0.1, end: 1),
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeOutQuad,
+                      child: SwypingCards(
                         recipes: state.randomRecipes,
-                      ))
+                      ),
+                      builder: (_, double opacity, myChild) =>
+                          Opacity(opacity: opacity, child: myChild),
+                    ),
+            ),
           ],
         );
       } else {
@@ -117,14 +177,18 @@ class _SwypingCardsState extends State<SwypingCards>
       maxWidth = MediaQuery.of(context).size.width * 0.9;
     }
     return Stack(children: <Widget>[
-      Container(
-        child: Center(
-          child: Text(
-            "🎉",
-            style: TextStyle(fontSize: 150),
-          ),
+      Center(
+          child: IconInfoMessage(
+        iconWidget: IconButton(
+          icon: Icon(Icons.refresh),
+          iconSize: 70,
+          onPressed: () {
+            BlocProvider.of<RandomRecipeExplorerBloc>(context)
+                .add(ReloadRandomRecipeExplorer());
+          },
         ),
-      ),
+        description: "you made it to the end",
+      )),
       Container(
         height: MediaQuery.of(context).size.height > 730
             ? MediaQuery.of(context).size.height - 200

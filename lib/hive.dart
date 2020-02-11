@@ -500,6 +500,19 @@ class HiveProvider {
     await _addIngredientToRecipe(recipeName, ingredient);
   }
 
+  Future<void> addIngredient(String ingredient) async {
+    await boxIngredientNames.add(ingredient);
+  }
+
+  Future<void> deleteIngredient(String ingredient) async {
+    for (var key in boxIngredientNames.keys) {
+      if (boxIngredientNames.get(key) == ingredient) {
+        await boxIngredientNames.delete(key);
+        return;
+      }
+    }
+  }
+
   /// removes the ingredient from recipe and then adds it again
   /// with the new amount
   /// e.g.: 2 eggs in Pizza, 4 in summary
