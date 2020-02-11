@@ -1,10 +1,14 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:my_recipe_book/models/recipe.dart';
 
-import './shopping_cart.dart';
 import '../../hive.dart';
 import '../../models/ingredient.dart';
+
+part 'shopping_cart_event.dart';
+part 'shopping_cart_state.dart';
 
 class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
   @override
@@ -27,8 +31,8 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
 
   Stream<ShoppingCartState> _mapLoadShoppingCartToState(
       ShoppingCartEvent event) async* {
-    Map<String, List<CheckableIngredient>> shoppingCart =
-        HiveProvider().getShoppingCart();
+    Map<Recipe, List<CheckableIngredient>> shoppingCart =
+        await HiveProvider().getShoppingCart();
 
     yield LoadedShoppingCart(shoppingCart);
   }
@@ -38,25 +42,25 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
     await HiveProvider()
         .removeAndAddIngredients(event.recipeName, event.ingredients);
 
-    yield LoadedShoppingCart(HiveProvider().getShoppingCart());
+    yield LoadedShoppingCart(await HiveProvider().getShoppingCart());
   }
 
   Stream<ShoppingCartState> _mapRemoveIngredientsToState(
       RemoveIngredients event) async* {
     await HiveProvider()
-        .removeIngredientsFromCart(event.recipeName, event.ingredients);
-    yield LoadedShoppingCart(HiveProvider().getShoppingCart());
+        .removeIngredientsFromCart(event.recipeName.name, event.ingredients);
+    yield LoadedShoppingCart(await HiveProvider().getShoppingCart());
   }
 
   Stream<ShoppingCartState> _mapCheckIngredientsToState(
       CheckIngredients event) async* {
     for (CheckableIngredient i in event.ingredients) {
-      await HiveProvider()
-          .checkIngredient(event.recipeName, i.copyWith(checked: !i.checked));
+      await HiveProvider().checkIngredient(
+          event.recipeName.name, i.copyWith(checked: !i.checked));
     }
 
-    Map<String, List<CheckableIngredient>> shoppingCart =
-        HiveProvider().getShoppingCart();
+    Map<Recipe, List<CheckableIngredient>> shoppingCart =
+        await HiveProvider().getShoppingCart();
 
     yield LoadedShoppingCart(shoppingCart);
   }

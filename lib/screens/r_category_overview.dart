@@ -64,12 +64,15 @@ class RecipeRow extends StatelessWidget {
               padding: EdgeInsets.only(left: 20),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, RouteNames.recipeCategories,
-                      arguments: RecipeGridViewArguments(
-                        shoppingCartBloc:
-                            BlocProvider.of<ShoppingCartBloc>(context),
-                        category: category == null ? 'no category' : category,
-                      ));
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.recipeCategories,
+                    arguments: RecipeGridViewArguments(
+                      shoppingCartBloc:
+                          BlocProvider.of<ShoppingCartBloc>(context),
+                      category: category == null ? 'no category' : category,
+                    ),
+                  );
                 },
                 child: Padding(
                   padding:
@@ -121,7 +124,7 @@ class RecipeHozizontalList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 128,
+      height: 130,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: recipes.length + 1,
@@ -220,13 +223,16 @@ class RecipeHozizontalList extends StatelessWidget {
               padding: EdgeInsets.only(left: 10, bottom: 35, right: 20),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, RouteNames.recipeCategories,
-                      arguments: RecipeGridViewArguments(
-                          shoppingCartBloc:
-                              BlocProvider.of<ShoppingCartBloc>(context),
-                          category: categoryName == null
-                              ? 'no category'
-                              : categoryName));
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.recipeCategories,
+                    arguments: RecipeGridViewArguments(
+                      shoppingCartBloc:
+                          BlocProvider.of<ShoppingCartBloc>(context),
+                      category:
+                          categoryName == null ? 'no category' : categoryName,
+                    ),
+                  );
                 },
                 child: Container(
                   height: 90,

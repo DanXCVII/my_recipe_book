@@ -27,6 +27,12 @@ class Settings extends StatelessWidget {
                 Navigator.pushNamed(context, RouteNames.manageNutritions);
               }),
           Divider(),
+          ListTile(
+              title: Text("manage ingredients"),
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.manageIngredients);
+              }),
+          Divider(),
           GestureDetector(
             onTap: () {
               _importSingleRecipe(context).then((_) {});

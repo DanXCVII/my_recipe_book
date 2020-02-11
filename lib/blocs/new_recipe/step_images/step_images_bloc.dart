@@ -60,11 +60,13 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
         event.stepImage.substring(event.stepImage.lastIndexOf('/') + 1);
 
     if (!editingStepImages.contains(event.stepImage)) {
-      await IO.deleteStepImage(
-        event.editingRecipe ? 'edit' : 'tmp',
-        event.stepNumber,
-        stepImageName,
-      );
+      if (!event.editingRecipe) {
+        await IO.deleteStepImage(
+          'tmp',
+          event.stepNumber,
+          stepImageName,
+        );
+      }
     }
 
     final List<List<String>> images = (state as LoadedStepImages)

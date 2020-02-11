@@ -621,11 +621,6 @@ class TopSectionRecipe extends StatelessWidget {
     else
       totalTimeChart = preperationTime + cookingTime;
 
-    print(totalTimeChart);
-    print(remainingTimeChart);
-    print(preperationTime);
-    print(cookingTime);
-
     return _showComplexTopArea(preperationTime, cookingTime, totalTime)
         ? Padding(
             padding: const EdgeInsets.only(left: 16.0),
@@ -817,7 +812,9 @@ class TopSectionRecipe extends StatelessWidget {
                       SizedBox(height: 7),
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
-                        child: TweenAnimationBuilder(
+                        child: ClipPath(
+                          clipper: RoundTopBottomClipper(),
+                          child: TweenAnimationBuilder(
                             duration: Duration(milliseconds: 700),
                             curve: Curves.easeInOut,
                             child: Stack(
@@ -861,14 +858,14 @@ class TopSectionRecipe extends StatelessWidget {
                             ),
                             tween: Tween<double>(begin: 10, end: 100),
                             builder: (_, double height, myChild) => Column(
-                                  children: <Widget>[
-                                    Container(height: 100 - height, width: 20),
-                                    Container(
-                                        width: 20,
-                                        height: height,
-                                        child: myChild),
-                                  ],
-                                )),
+                              children: <Widget>[
+                                Container(height: 100 - height, width: 20),
+                                Container(
+                                    width: 20, height: height, child: myChild),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -1738,4 +1735,49 @@ class Indicator extends StatelessWidget {
       ],
     );
   }
+}
+
+class RoundEdgeShoppingCartClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    return Path()
+      ..lineTo(0.0, 240)
+      ..quadraticBezierTo(10, 200, 50, 200)
+      ..lineTo(size.width - 50, 200)
+      ..quadraticBezierTo(size.width - 10, 200, size.width, 240)
+      ..lineTo(size.width, 0)
+      ..lineTo(0, 0)
+      ..close();
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class RoundTopBottomClipper extends CustomClipper<Path> {
+  RoundTopBottomClipper();
+
+  @override
+  Path getClip(Size size) {
+    final path = Path()
+      ..moveTo(0, size.width / 2)
+      ..arcToPoint(
+        Offset(size.width, size.width / 2),
+        clockwise: true,
+        radius: Radius.circular(size.width / 2),
+      )
+      ..lineTo(size.width, size.height - size.width / 2)
+      ..arcToPoint(
+        Offset(0, size.height - size.width / 2),
+        clockwise: true,
+        radius: Radius.circular(size.width / 2),
+      )
+      ..lineTo(0, size.width / 2);
+
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(RoundTopBottomClipper oldClipper) => true;
 }

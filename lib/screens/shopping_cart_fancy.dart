@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/screens/recipe_screen.dart';
 import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
-import '../blocs/shopping_cart/shopping_cart_event.dart';
-import '../blocs/shopping_cart/shopping_cart_state.dart';
+import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
 import '../hive.dart';
 import '../models/ingredient.dart';
+import '../routes.dart';
 import '../widgets/dialogs/shopping_cart_add_dialog.dart';
 import '../widgets/search.dart';
 
@@ -90,43 +92,43 @@ class FancyShoppingCartScreen extends StatelessWidget {
   }
 
   List<Widget> getRecipeShoppingList(
-      Map<String, List<CheckableIngredient>> ingredients,
+      Map<Recipe, List<CheckableIngredient>> ingredients,
       BuildContext context,
       scaleFactor) {
-    List<String> recipes = ingredients.keys.toList();
-    if (ingredients['summary'].isEmpty) {
+    List<Recipe> recipes = ingredients.keys.toList();
+    if (ingredients[ingredients.keys.first].isEmpty) {
       return [
         displayNothingAdded(context, scaleFactor),
       ];
     }
-    return recipes.map((recipeName) {
+    return recipes.map((recipe) {
       Color ingredBackgroundColor =
           Theme.of(context).brightness == Brightness.dark
               ? Color(0xff40392F)
               : Color(0xffFEF3E1);
-      if (recipeName.compareTo('summary') == 0) {
-        return getRecipeTile(
-          recipeName,
+      if (recipe.name == 'summary') {
+        return _getRecipeTile(
+          recipe,
           ingredBackgroundColor,
-          ingredients,
+          ingredients[recipe],
           context,
         );
       } else {
         return Dismissible(
-          key: Key('$recipeName'),
+          key: Key('$recipe'),
           onDismissed: (_) {
-            List<Ingredient> removeIngreds = ingredients[recipeName]
+            List<Ingredient> removeIngreds = ingredients[recipe]
                 .map((ingred) => ingred.getIngredient())
                 .toList();
             BlocProvider.of<ShoppingCartBloc>(context)
-                .add(RemoveIngredients(removeIngreds, recipeName));
+                .add(RemoveIngredients(removeIngreds, recipe));
           },
           background: _getPrimaryBackgroundDismissible(),
           secondaryBackground: _getSecondaryBackgroundDismissible(),
-          child: getRecipeTile(
-            recipeName,
+          child: _getRecipeTile(
+            recipe,
             ingredBackgroundColor,
-            ingredients,
+            ingredients[recipe],
             context,
           ),
         );
@@ -149,26 +151,53 @@ class FancyShoppingCartScreen extends StatelessWidget {
     );
   }
 
-  Widget getRecipeTile(
-      String recipeName,
-      Color backgroundcolor,
-      Map<String, List<CheckableIngredient>> ingredients,
-      BuildContext context) {
+  Widget _getRecipeTile(Recipe recipe, Color backgroundcolor,
+      List<CheckableIngredient> ingredients, BuildContext context) {
     return Card(
       child: ExpansionTile(
+        leading: recipe.name == "summary"
+            ? null
+            : GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.recipeScreen,
+                    arguments: RecipeScreenArguments(
+                      BlocProvider.of<ShoppingCartBloc>(context),
+                      recipe,
+                      getRecipePrimaryColor(recipe.vegetable),
+                      recipe.name,
+                      BlocProvider.of<RecipeManagerBloc>(context),
+                    ),
+                  );
+                },
+                child: Hero(
+                  tag: recipe.name,
+                  child: ClipOval(
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      child: Image.asset(
+                        recipe.imagePreviewPath,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
         title: Text(
-          recipeName,
+          recipe.name,
         ),
-        children: ingredients[recipeName].map((ingredient) {
+        children: ingredients.map((ingredient) {
           return Dismissible(
-            key: Key('$recipeName${ingredient.name}${ingredient.unit}'),
+            key: Key('${recipe.name}${ingredient.name}${ingredient.unit}'),
             onDismissed: (_) {
               BlocProvider.of<ShoppingCartBloc>(context).add(RemoveIngredients([
                 Ingredient(
                     name: ingredient.name,
                     amount: ingredient.amount,
                     unit: ingredient.unit)
-              ], recipeName));
+              ], recipe));
             },
             background: _getPrimaryBackgroundDismissible(),
             secondaryBackground: _getSecondaryBackgroundDismissible(),
@@ -178,7 +207,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
               ),
               child: IngredientRow(
                 ingredient: ingredient,
-                recipeName: recipeName,
+                recipe: recipe,
               ),
             ),
           );
@@ -226,7 +255,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
 
 class IngredientRow extends StatelessWidget {
   final CheckableIngredient ingredient;
-  final String recipeName;
+  final Recipe recipe;
   final Color textColor;
   final bool showBorder;
 
@@ -234,7 +263,7 @@ class IngredientRow extends StatelessWidget {
     Key key,
     this.textColor,
     this.showBorder = false,
-    @required this.recipeName,
+    @required this.recipe,
     @required this.ingredient,
   }) : super(key: key);
 
@@ -261,7 +290,7 @@ class IngredientRow extends StatelessWidget {
               color: ingredient.checked ? Colors.green : Colors.grey,
               onPressed: () {
                 BlocProvider.of<ShoppingCartBloc>(context)
-                    .add(CheckIngredients([ingredient], recipeName));
+                    .add(CheckIngredients([ingredient], recipe));
               },
             ),
           ),
@@ -309,21 +338,4 @@ class IngredientRow extends StatelessWidget {
       ]..removeWhere((item) => item == null),
     );
   }
-}
-
-class RoundEdgeShoppingCartClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    return Path()
-      ..lineTo(0.0, 240)
-      ..quadraticBezierTo(10, 200, 50, 200)
-      ..lineTo(size.width - 50, 200)
-      ..quadraticBezierTo(size.width - 10, 200, size.width, 240)
-      ..lineTo(size.width, 0)
-      ..lineTo(0, 0)
-      ..close();
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

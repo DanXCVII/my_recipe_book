@@ -6,10 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
-import '../blocs/shopping_cart/shopping_cart.dart';
 import '../generated/i18n.dart';
 import '../hive.dart';
 import '../models/enums.dart';

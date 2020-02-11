@@ -252,7 +252,7 @@ class _ImportDialogState extends State<ImportDialog>
               return Container(
                 height: totalListItems > 4
                     ? 242
-                    : totalListItems.toDouble() * 60 + 62,
+                    : totalListItems.toDouble() * 60 + 74,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
@@ -301,6 +301,9 @@ class _ImportDialogState extends State<ImportDialog>
                             ),
                         ),
                       ),
+                    ),
+                    SizedBox(
+                      height: 10,
                     ),
                     Center(
                       child: Row(

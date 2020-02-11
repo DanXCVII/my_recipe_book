@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:my_recipe_book/blocs/recipe_screen/recipe_screen_bloc.dart';
+import 'package:my_recipe_book/screens/ingredients_manager.dart';
 
 import './theming.dart';
 import 'blocs/app/app.dart';
@@ -13,6 +13,7 @@ import 'blocs/category_manager/category_manager_bloc.dart';
 import 'blocs/category_overview/category_overview_bloc.dart';
 import 'blocs/favorite_recipes/favorite_recipes_bloc.dart';
 import 'blocs/import_recipe/import_recipe_bloc.dart';
+import 'blocs/ingredinets_manager/ingredients_manager_bloc.dart';
 import 'blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import 'blocs/new_recipe/general_info/general_info_bloc.dart';
 import 'blocs/new_recipe/ingredients/ingredients_bloc.dart';
@@ -27,8 +28,9 @@ import 'blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview_event.dart';
 import 'blocs/recipe_manager/recipe_manager_bloc.dart' show RecipeManagerBloc;
 import 'blocs/recipe_overview/recipe_overview_bloc.dart';
+import 'blocs/recipe_screen/recipe_screen_bloc.dart';
 import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients.dart';
-import 'blocs/shopping_cart/shopping_cart.dart';
+import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen.dart';
 import 'blocs/splash_screen/splash_screen_event.dart';
 import 'blocs/splash_screen/splash_screen_state.dart';
@@ -46,6 +48,8 @@ import 'screens/recipe_screen.dart';
 
 void main() {
   debugPaintSizeEnabled = false;
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+
   runApp(
     CustomTheme(
       initialThemeKey: MyThemeKeys.LIGHT,
@@ -315,6 +319,15 @@ class MyApp extends StatelessWidget {
                   create: (context) =>
                       NutritionManagerBloc()..add(LoadNutritionManager()),
                   child: NutritionManager(),
+                ),
+              );
+
+            case "/manage-ingredients":
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider<IngredientsManagerBloc>(
+                  create: (context) =>
+                      IngredientsManagerBloc()..add(LoadIngredientsManager()),
+                  child: IngredientsManager(),
                 ),
               );
 

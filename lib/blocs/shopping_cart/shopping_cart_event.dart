@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../models/ingredient.dart';
+part of 'shopping_cart_bloc.dart';
 
 abstract class ShoppingCartEvent extends Equatable {
   const ShoppingCartEvent();
@@ -26,29 +24,21 @@ class CleanAddIngredients extends ShoppingCartEvent {
 }
 
 class CheckIngredients extends ShoppingCartEvent {
-  final String recipeName;
+  final Recipe recipeName;
   final List<CheckableIngredient> ingredients;
 
   const CheckIngredients(this.ingredients, this.recipeName);
 
   @override
   List<Object> get props => [ingredients, recipeName];
-
-  @override
-  String toString() =>
-      'Check ingredients { ingrdients: $ingredients, recipeName: $recipeName }';
 }
 
 class RemoveIngredients extends ShoppingCartEvent {
-  final String recipeName;
+  final Recipe recipeName;
   final List<Ingredient> ingredients;
 
   const RemoveIngredients(this.ingredients, this.recipeName);
 
   @override
   List<Object> get props => [ingredients, recipeName];
-
-  @override
-  String toString() =>
-      'Remove ingredients { ingredients: $ingredients, recipeName: $recipeName }';
 }

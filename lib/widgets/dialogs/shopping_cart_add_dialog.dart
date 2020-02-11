@@ -1,11 +1,11 @@
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/hive.dart';
 
-import '../../blocs/shopping_cart/shopping_cart.dart';
+import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../generated/i18n.dart';
 import '../../helper.dart';
+import '../../hive.dart';
 import '../../models/ingredient.dart';
 
 class AddShoppingCartDialog extends StatefulWidget {

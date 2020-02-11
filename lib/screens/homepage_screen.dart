@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/app/app_bloc.dart';
@@ -14,7 +15,6 @@ import '../blocs/app/app_event.dart';
 import '../blocs/app/app_state.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
-import '../blocs/shopping_cart/shopping_cart.dart';
 import '../generated/i18n.dart';
 import '../hive.dart';
 import '../routes.dart';

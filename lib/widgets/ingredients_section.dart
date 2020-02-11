@@ -117,7 +117,6 @@ class _IngredientsState extends State<Ingredients> {
   }
 
   void updateAndRemoveController() {
-    print(widget.ingredientGlossary.length);
     setState(() {
       if (widget.ingredientGlossary.length > 1) {
         widget.ingredientGlossary.removeLast();
@@ -187,7 +186,6 @@ class _IngredientSectionState extends State<IngredientSection> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.ingredientAmountController.length);
     return Column(
       children: <Widget>[
         Padding(

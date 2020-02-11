@@ -1,5 +1,7 @@
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 
 import '../blocs/ingredinets_manager/ingredients_manager_bloc.dart';
@@ -23,6 +25,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
   List<Key> dismissibleKeys = [];
   List<Key> listTileKeys = [];
   bool isInitialized = false;
+  final ScrollController _controller = ScrollController();
 
   @override
   void initState() {
@@ -34,6 +37,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
     for (String k in ingredientsController.keys) {
       ingredientsController[k].dispose();
     }
+    _controller.dispose();
     super.dispose();
   }
 
@@ -107,26 +111,49 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                   ? Center(
                       child: Text("you have no ingredients"),
                     )
-                  : Form(
-                      key: _formKey,
-                      child: ListView(
-                        children: state.ingredients.map((currentIngredient) {
-                          i++;
+                  : AnimationLimiter(
+                      child: Form(
+                        key: _formKey,
+                        child: DraggableScrollbar.semicircle(
+                          controller: _controller,
+                          labelTextBuilder: (offset) {
+                            final int currentItem = _controller.hasClients
+                                ? (_controller.offset /
+                                        _controller.position.maxScrollExtent *
+                                        (state.ingredients.length - 1))
+                                    .floor()
+                                : 0;
 
-                          return Dismissible(
-                            key: dismissibleKeys[i],
-                            background: _getPrimaryBackgroundDismissible(),
-                            secondaryBackground:
-                                _getSecondaryBackgroundDismissible(),
-                            onDismissed: (_) {
-                              ingredientsController.remove(currentIngredient);
-                              BlocProvider.of<IngredientsManagerBloc>(context)
-                                  .add(DeleteIngredient(currentIngredient));
-                            },
-                            child: _getIngredientListTile(currentIngredient,
-                                context, listTileKeys[i], state.ingredients),
-                          );
-                        }).toList(),
+                            return Text(
+                                state.ingredients[currentItem].substring(0, 1));
+                          },
+                          child: ListView(
+                            controller: _controller,
+                            children: List<Widget>.generate(
+                                state.ingredients.length, (index) {
+                              return AnimationConfiguration.staggeredList(
+                                position: index,
+                                duration: const Duration(milliseconds: 150),
+                                child: SlideAnimation(
+                                  verticalOffset: 50.0,
+                                  child: FadeInAnimation(
+                                    child: index % 2 == 1
+                                        ? Divider()
+                                        : _getIngredientListTile(
+                                            state.ingredients[index == 0
+                                                ? 0
+                                                : (index / 2).floor()],
+                                            context,
+                                            listTileKeys[index == 0
+                                                ? 0
+                                                : (index / 2).floor()],
+                                            state.ingredients),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
                       ),
                     ),
             );
@@ -257,7 +284,6 @@ class _IngredientsManagerState extends State<IngredientsManager> {
         },
         child: Text(ingredientName),
       ),
-      leading: Icon(Icons.reorder),
       trailing: Container(
         width: MediaQuery.of(context).size.width / 3 > 50
             ? 50

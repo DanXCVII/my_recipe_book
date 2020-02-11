@@ -177,7 +177,6 @@ class _ThemeSelectorState extends State<ThemeSelector> {
 
   _handleValueChange(MyThemeKeys value, BuildContext context) {
     CustomTheme.instanceOf(context).changeTheme(value);
-    print(value.toString());
 
     setState(() {
       _selectedTheme = value;
