@@ -52,6 +52,7 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                 TextFormField(
                   controller: recipeNameController,
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(),
                     labelText: S.of(context).recipe_name,
                   ),
                 ),
@@ -65,6 +66,7 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                         suggestions: HiveProvider().getIngredientNames(),
                         controller: ingredientNameController,
                         decoration: InputDecoration(
+                          border: OutlineInputBorder(),
                           labelText: S.of(context).ingredient,
                         ),
                       ),
@@ -76,6 +78,7 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                         controller: ingredientAmountController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
+                          border: OutlineInputBorder(),
                           labelText: S.of(context).amnt,
                         ),
                         validator: (value) {
@@ -92,6 +95,7 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                       child: TextField(
                         controller: ingredientUnitController,
                         decoration: InputDecoration(
+                          border: OutlineInputBorder(),
                           labelText: S.of(context).unit,
                         ),
                       ),

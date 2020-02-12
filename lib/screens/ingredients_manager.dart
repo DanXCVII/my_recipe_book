@@ -130,7 +130,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                           child: ListView(
                             controller: _controller,
                             children: List<Widget>.generate(
-                                state.ingredients.length, (index) {
+                                state.ingredients.length * 2, (index) {
                               return AnimationConfiguration.staggeredList(
                                 position: index,
                                 duration: const Duration(milliseconds: 150),

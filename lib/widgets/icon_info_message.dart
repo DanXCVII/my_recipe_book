@@ -29,7 +29,7 @@ class IconInfoMessage extends StatelessWidget {
         ),
         SizedBox(height: 10),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: Text(description,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),

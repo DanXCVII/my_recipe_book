@@ -319,6 +319,25 @@ class HiveProvider {
     }
   }
 
+  Future<List<Recipe>> getRecipesWithIngredients(
+      List<String> ingredients) async {
+    List<Recipe> foundRecipes = [];
+    for (var key in lazyBoxRecipes.keys) {
+      Recipe currentRecipe = await lazyBoxRecipes.get(key);
+      List<String> recipeIngredients = (currentRecipe)
+          .ingredients
+          .expand((i) => i)
+          .toList()
+          .map((i) => i.name)
+          .toList();
+
+      if (_containsList(recipeIngredients, ingredients)) {
+        foundRecipes.add(currentRecipe);
+      }
+    }
+    return foundRecipes;
+  }
+
   List<String> getRecipeNames() {
     return boxRecipeNames.keys.map((key) => boxRecipeNames.get(key)).toList()
       ..remove('summary');
@@ -479,7 +498,11 @@ class HiveProvider {
           : await lazyBoxRecipes.get(boxRecipeNames.get(key));
       List<CheckableIngredient> ingredients =
           boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [];
-      shoppingCart.addAll({recipe: ingredients});
+      if (recipe != null) {
+        shoppingCart.addAll({recipe: ingredients});
+      } else {
+        await boxShoppingCart.delete(key);
+      }
     }
     return shoppingCart;
   }
@@ -855,6 +878,16 @@ class HiveProvider {
       return String.fromCharCodes(bytes);
     }
     return name;
+  }
+
+  bool _containsList(List<String> list, List<String> searchElements) {
+    for (String searchI in searchElements) {
+      if (!list.contains(searchI)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   Box<String> _getBoxVegetable(Vegetable vegetable) {

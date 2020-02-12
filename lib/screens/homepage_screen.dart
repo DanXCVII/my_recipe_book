@@ -8,7 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/screens/ingredient_search.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/app/app_bloc.dart';
 import '../blocs/app/app_event.dart';
@@ -215,6 +217,15 @@ class MyHomePageState extends State<MyHomePage> {
     return AppBar(
         title: Text(title),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => IngredientSearchScreen()));
+            },
+          ),
           currentIndex == 0
               ? IconButton(
                   icon: Icon(

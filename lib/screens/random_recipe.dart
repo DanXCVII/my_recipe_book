@@ -98,39 +98,14 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                   : MediaQuery.of(context).size.height - 136,
               child: state.randomRecipes.isEmpty
                   ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            width: 110,
-                            height: 110,
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(0, 0, 0, 0.5),
-                                shape: BoxShape.circle),
-                            child: Container(
-                              height:
-                                  MediaQuery.of(context).size.height / 800 * 80,
-                              child: Icon(
-                                MdiIcons.chefHat,
-                                color: Colors.white,
-                                size: 70.0,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                                S.of(context).no_recipes_under_this_category,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w400)),
-                          ),
-                        ],
+                      child: IconInfoMessage(
+                      iconWidget: Icon(
+                        MdiIcons.chefHat,
+                        color: Colors.white,
+                        size: 70.0,
                       ),
-                    )
+                      description: S.of(context).no_recipes_under_this_category,
+                    ))
                   : TweenAnimationBuilder(
                       tween: Tween<double>(begin: 0.1, end: 1),
                       duration: Duration(milliseconds: 300),

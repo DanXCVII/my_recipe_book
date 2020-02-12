@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
@@ -177,10 +179,15 @@ class FancyShoppingCartScreen extends StatelessWidget {
                     child: Container(
                       width: 30,
                       height: 30,
-                      child: Image.asset(
-                        recipe.imagePreviewPath,
-                        fit: BoxFit.cover,
-                      ),
+                      child: recipe.imagePreviewPath == "images/randomFood.jpg"
+                          ? Image.asset(
+                              recipe.imagePreviewPath,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.file(
+                              File(recipe.imagePreviewPath),
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
                 ),

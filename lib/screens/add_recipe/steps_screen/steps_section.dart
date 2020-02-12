@@ -33,7 +33,9 @@ class _StepsState extends State<Steps> {
       if (oldState is LoadedStepImages && newState is LoadedStepImages) {
         if (oldState.stepImages.length > newState.stepImages.length) {
           widget.stepsDecriptionController.removeLast();
-        } else if (oldState.stepImages.length < newState.stepImages.length) {
+        } else if (oldState.stepImages.length < newState.stepImages.length &&
+            widget.stepsDecriptionController.length <
+                newState.stepImages.length) {
           widget.stepsDecriptionController.add(TextEditingController());
         }
       }
@@ -109,7 +111,9 @@ class _StepsState extends State<Steps> {
                             spacing: 5.0,
                             runSpacing: 3.0,
                             children: List.generate(
-                              state.stepImages[i].length,
+                              i > state.stepImages.length
+                                  ? state.stepImages[i].length
+                                  : 0,
                               (j) => ImageBox(
                                 onPress: () {
                                   BlocProvider.of<StepImagesBloc>(context)
