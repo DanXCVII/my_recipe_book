@@ -184,6 +184,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                     child: TextFormField(
                       validator: _validateRecipeName,
                       controller: nameController,
+                      textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
                         filled: true,
                         labelText: S.of(context).name + "*",

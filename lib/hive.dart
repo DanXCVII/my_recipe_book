@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:hive/hive.dart';
+import 'package:my_recipe_book/models/tuple.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'models/enums.dart';
@@ -138,12 +139,13 @@ class HiveProvider {
   }
 
   Future<void> addToFavorites(Recipe recipe) async {
-    await boxFavorites.put(getHiveKey(recipe.name), getHiveKey(recipe.name));
-
     await modifyRecipe(recipe.name, recipe.copyWith(isFavorite: true));
+    // order is important because modifyRecipy deletes the old recipe and therefore it's favorite status
+    await boxFavorites.put(getHiveKey(recipe.name), recipe.name);
   }
 
   bool isRecipeFavorite(String recipeName) {
+    print(boxFavorites.keys.length);
     for (var key in boxFavorites.keys) {
       if (boxFavorites.get(key) == recipeName) {
         return true;
@@ -319,9 +321,10 @@ class HiveProvider {
     }
   }
 
-  Future<List<Recipe>> getRecipesWithIngredients(
+  Future<List<Tuple2<int, Recipe>>> getRecipesWithIngredients(
       List<String> ingredients) async {
-    List<Recipe> foundRecipes = [];
+    List<Tuple2<int, Recipe>> foundRecipes = [];
+
     for (var key in lazyBoxRecipes.keys) {
       Recipe currentRecipe = await lazyBoxRecipes.get(key);
       List<String> recipeIngredients = (currentRecipe)
@@ -331,8 +334,11 @@ class HiveProvider {
           .map((i) => i.name)
           .toList();
 
-      if (_containsList(recipeIngredients, ingredients)) {
-        foundRecipes.add(currentRecipe);
+      int elementsInList = _elementsInList(
+          recipeIngredients.map((element) => element.toLowerCase()).toList(),
+          ingredients.map((element) => element.toLowerCase()).toList());
+      if (0 != elementsInList) {
+        foundRecipes.add(Tuple2(elementsInList, currentRecipe));
       }
     }
     return foundRecipes;
@@ -880,14 +886,18 @@ class HiveProvider {
     return name;
   }
 
-  bool _containsList(List<String> list, List<String> searchElements) {
+  int _elementsInList(List<String> list, List<String> searchElements) {
+    int count = 0;
     for (String searchI in searchElements) {
-      if (!list.contains(searchI)) {
-        return false;
+      for (String ingredient in list) {
+        if (ingredient.contains(searchI)) {
+          count++;
+          break;
+        }
       }
     }
 
-    return true;
+    return count;
   }
 
   Box<String> _getBoxVegetable(Vegetable vegetable) {

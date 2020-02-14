@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 
 import '../../../hive.dart';
 import '../../../local_storage/io_operations.dart' as IO;
@@ -72,6 +73,7 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
               .add(RMDeleteRecipe(event.editingRecipeName, deleteFiles: false));
           await Future.delayed(Duration(milliseconds: 100));
           newRecipe = await IO.fixImagePaths(nutritionRecipe);
+          imageCache.clear();
           // IO.deleteRecipeData('edit');
           await HiveProvider().deleteTmpEditingRecipe();
           event.recipeManagerBloc.add(RMAddRecipe(newRecipe));

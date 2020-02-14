@@ -220,10 +220,12 @@ class MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => IngredientSearchScreen()));
+              Navigator.pushNamed(
+                context,
+                RouteNames.ingredientSearch,
+                arguments: IngredientSearchScreenArguments(
+                    BlocProvider.of<ShoppingCartBloc>(context)),
+              );
             },
           ),
           currentIndex == 0

@@ -38,7 +38,8 @@ class CategoryGridView extends StatelessWidget {
 
     int index = 0;
     for (final Tuple2<String, String> categoryTuple in categoryNames) {
-      gridTiles.add(AnimationConfiguration.staggeredGrid(
+      gridTiles.add(
+        AnimationConfiguration.staggeredGrid(
           position: index,
           duration: const Duration(milliseconds: 200),
           columnCount: 2,
@@ -50,7 +51,9 @@ class CategoryGridView extends StatelessWidget {
                 randomCategoryImage: categoryTuple.item2,
               ),
             ),
-          )));
+          ),
+        ),
+      );
       index++;
     }
     return gridTiles;

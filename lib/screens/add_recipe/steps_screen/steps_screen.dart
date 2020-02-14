@@ -158,6 +158,7 @@ class _StepsScreenState extends State<StepsScreen> {
                     right: 12, top: 12, left: 18, bottom: 12),
                 child: TextField(
                   controller: notesController,
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     labelText: S.of(context).notes,
                     filled: true,

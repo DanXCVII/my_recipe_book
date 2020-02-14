@@ -198,10 +198,10 @@ class CategoryOverviewBloc
     for (String category in categories) {
       Recipe randomRecipe =
           await HiveProvider().getRandomRecipeOfCategory(category: category);
-      String randomImage = randomRecipe == null
-          ? "images/randomFood.jpg"
-          : randomRecipe.imagePath;
-      categoryRandomImageList.add(Tuple2(category, randomImage));
+      String randomImage = randomRecipe == null ? null : randomRecipe.imagePath;
+      if (randomImage != null) {
+        categoryRandomImageList.add(Tuple2(category, randomImage));
+      }
     }
     return categoryRandomImageList;
   }
@@ -211,7 +211,8 @@ class CategoryOverviewBloc
   Future<List<Tuple2<String, String>>> _addCategoryRandomImage(
       List<Tuple2<String, String>> oldCategoryRandomImageList,
       Recipe recipe) async {
-    List<Tuple2<String, String>> categoryRandomImageList = [];
+    List<Tuple2<String, String>> categoryRandomImageList =
+        List<Tuple2<String, String>>.from(oldCategoryRandomImageList);
 
     for (String category in recipe.categories) {
       bool alreadyAdded = false;

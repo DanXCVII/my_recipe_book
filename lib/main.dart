@@ -4,6 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/blocs/ingredient_search/ingredient_search_bloc.dart';
+import 'package:my_recipe_book/screens/ingredient_search.dart';
 import 'package:my_recipe_book/screens/ingredients_manager.dart';
 
 import './theming.dart';
@@ -29,7 +31,7 @@ import 'blocs/recipe_category_overview/recipe_category_overview_event.dart';
 import 'blocs/recipe_manager/recipe_manager_bloc.dart' show RecipeManagerBloc;
 import 'blocs/recipe_overview/recipe_overview_bloc.dart';
 import 'blocs/recipe_screen/recipe_screen_bloc.dart';
-import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients.dart';
+import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen.dart';
 import 'blocs/splash_screen/splash_screen_event.dart';
@@ -299,6 +301,22 @@ class MyApp extends StatelessWidget {
                     modifiedRecipe: args.modifiedRecipe,
                     editingRecipeName: args.editingRecipeName,
                   ),
+                ),
+              );
+
+            case "/ingredient-search":
+              final IngredientSearchScreenArguments args = settings.arguments;
+
+              return MaterialPageRoute(
+                builder: (context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<IngredientSearchBloc>(
+                      create: (context) => IngredientSearchBloc(),
+                    ),
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc)
+                  ],
+                  child: IngredientSearchScreen(),
                 ),
               );
 

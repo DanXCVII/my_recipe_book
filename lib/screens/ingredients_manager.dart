@@ -116,6 +116,10 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                         key: _formKey,
                         child: DraggableScrollbar.semicircle(
                           controller: _controller,
+                          backgroundColor:
+                              Theme.of(context).backgroundColor == Colors.white
+                                  ? Colors.white
+                                  : Colors.grey[800],
                           labelTextBuilder: (offset) {
                             final int currentItem = _controller.hasClients
                                 ? (_controller.offset /

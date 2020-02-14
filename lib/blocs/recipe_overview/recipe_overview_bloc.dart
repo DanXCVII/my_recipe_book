@@ -35,6 +35,12 @@ class RecipeOverviewBloc
               add(UpdateFavoriteStatus(rmState.recipe));
             }
           }
+        } else if (rmState is RM.RemoveFavoriteState) {
+          if (state is LoadedRecipeOverview) {
+            if (_belongsToRecipeList(rmState.recipe)) {
+              add(UpdateFavoriteStatus(rmState.recipe));
+            }
+          }
         }
       }
     });

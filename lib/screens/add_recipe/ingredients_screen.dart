@@ -209,14 +209,16 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
       servingsController.text = recipe.servings.toString();
 
     if (recipe.ingredientsGlossary != null)
-      for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
+      for (int i = 0; i < recipe.ingredients.length; i++) {
         if (i > 0) {
           ingredientGlossaryController.add(TextEditingController());
           ingredientNameController.add([]);
           ingredientAmountController.add([]);
           ingredientUnitController.add([]);
         }
-        ingredientGlossaryController[i].text = recipe.ingredientsGlossary[i];
+        if (recipe.ingredientsGlossary.length > 0) {
+          ingredientGlossaryController[i].text = recipe.ingredientsGlossary[i];
+        }
 
         if (recipe.ingredients != null)
           for (int j = 0; j < recipe.ingredients[i].length; j++) {

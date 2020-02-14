@@ -17,8 +17,6 @@ import 'package:wave/wave.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_screen/recipe_screen_bloc.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
-import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_event.dart';
-import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_state.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../database.dart';
 import '../generated/i18n.dart';
@@ -1278,20 +1276,6 @@ class StepsSection extends StatelessWidget {
           },
           child: Hero(
             tag: "Schritt$i:$j",
-            placeholderBuilder: (context, size, widget) => ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                child: Container(
-                  width: 100,
-                  height: 80,
-                  child: FadeInImage(
-                    fadeInDuration: Duration(milliseconds: 100),
-                    placeholder: MemoryImage(kTransparentImage),
-                    image: FileImage(
-                      File(stepPreviewImages[i][j]),
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                )),
             child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 child: Container(

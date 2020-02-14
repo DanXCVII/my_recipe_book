@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../models/ingredient.dart';
+part of 'recipe_screen_ingredients_bloc.dart';
 
 abstract class RecipeScreenIngredientsEvent extends Equatable {
   const RecipeScreenIngredientsEvent();

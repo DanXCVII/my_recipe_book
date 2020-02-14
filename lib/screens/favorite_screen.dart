@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/favorite_recipes/favorite_recipes_bloc.dart';
 import '../generated/i18n.dart';
@@ -20,7 +21,14 @@ class FavoriteScreen extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         } else if (state is LoadedFavorites) {
           if (state.recipes.isEmpty) {
-            return Center(child: getCenterHeart(context));
+            return Center(
+              child: IconInfoMessage(
+                  iconWidget: SpinKitPumpingHeart(
+                    color: Colors.pink,
+                    size: 70.0,
+                  ),
+                  description: S.of(context).no_added_favorites_yet),
+            );
           }
           return FavoriteRecipeCards(
             favoriteRecipes: state.recipes,
@@ -29,37 +37,6 @@ class FavoriteScreen extends StatelessWidget {
         return Text(state.toString());
       })
     ]);
-  }
-
-  Widget getCenterHeart(BuildContext context) {
-    double deviceHeight = MediaQuery.of(context).size.height;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Container(
-          width: 110,
-          height: 110,
-          decoration: BoxDecoration(
-              color: Color.fromRGBO(0, 0, 0, 0.5), shape: BoxShape.circle),
-          child: Container(
-            height: deviceHeight / 800 * 80,
-            child: SpinKitPumpingHeart(
-              color: Colors.pink,
-              size: 70.0,
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(S.of(context).no_added_favorites_yet,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
-        ),
-      ],
-    );
   }
 }
 

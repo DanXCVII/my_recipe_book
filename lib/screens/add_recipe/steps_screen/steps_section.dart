@@ -111,9 +111,9 @@ class _StepsState extends State<Steps> {
                             spacing: 5.0,
                             runSpacing: 3.0,
                             children: List.generate(
-                              i > state.stepImages.length
-                                  ? state.stepImages[i].length
-                                  : 0,
+                              i > state.stepImages.length - 1
+                                  ? 0
+                                  : state.stepImages[i].length,
                               (j) => ImageBox(
                                 onPress: () {
                                   BlocProvider.of<StepImagesBloc>(context)
@@ -129,6 +129,14 @@ class _StepsState extends State<Steps> {
                               ),
                             )..add(
                                 AddImageBox(
+                                  size: state.stepImages.length > i
+                                      ? state.stepImages[i].length > 0 ? 80 : 50
+                                      : 50,
+                                  iconSize: state.stepImages.length > i
+                                      ? state.stepImages[i].length > 0
+                                          ? null
+                                          : 20
+                                      : 20,
                                   onNewImage: (File newImage) {
                                     BlocProvider.of<StepImagesBloc>(context)
                                         .add(AddImage(
@@ -201,10 +209,12 @@ class _StepsState extends State<Steps> {
 class ImageBox extends StatelessWidget {
   final void Function() onPress;
   final String imagePath;
+  final double size;
 
   const ImageBox({
     @required this.onPress,
     @required this.imagePath,
+    this.size = 80,
     Key key,
   }) : super(key: key);
 
@@ -219,8 +229,8 @@ class ImageBox extends StatelessWidget {
             imagePath,
             fit: BoxFit.cover,
           ),
-          width: 80,
-          height: 80,
+          width: size,
+          height: size,
         ),
       ),
       Opacity(
@@ -230,13 +240,13 @@ class ImageBox extends StatelessWidget {
             borderRadius: BorderRadius.circular(7),
             color: Colors.black87,
           ),
-          width: 80,
-          height: 80,
+          width: size,
+          height: size,
         ),
       ),
       Container(
-        width: 80,
-        height: 80,
+        width: size,
+        height: size,
         child: IconButton(
           icon: Icon(Icons.remove_circle_outline),
           color: Colors.white,
@@ -251,8 +261,12 @@ class ImageBox extends StatelessWidget {
 
 class AddImageBox extends StatelessWidget {
   final void Function(File newImage) onNewImage;
+  final double size;
+  final double iconSize;
 
   const AddImageBox({
+    this.size = 80,
+    this.iconSize,
     @required this.onNewImage,
     Key key,
   }) : super(key: key);
@@ -262,14 +276,17 @@ class AddImageBox extends StatelessWidget {
     return Container(
       child: Center(
         child: IconButton(
-          icon: Icon(Icons.add_a_photo),
+          icon: Icon(
+            Icons.add_a_photo,
+            size: iconSize,
+          ),
           onPressed: (() {
             _askUser(context);
           }),
         ),
       ),
-      width: 80,
-      height: 80,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(const Radius.circular(7.0)),
         border: Border.all(

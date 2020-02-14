@@ -29,6 +29,7 @@ Future<Recipe> fixImagePaths(Recipe recipe) async {
       .map((list) => list.map((item) => item).toList())
       .toList();
 
+  // if the recipe image has changed
   if (recipe.imagePath != 'images/randomFood.jpg' &&
       recipe.imagePath != newRecipeImagePath) {
     newRecipeImagePath = await PathProvider.pP
@@ -66,11 +67,39 @@ Future<Recipe> fixImagePaths(Recipe recipe) async {
     }
   }
 
-  return recipe.copyWith(
+  Recipe newRecipe = recipe.copyWith(
     imagePath: newRecipeImagePath,
     imagePreviewPath: newRecipeImagePreviewPath,
     stepImages: recipeStepImages,
   );
+
+  await _cleanRecipeFiles(newRecipe);
+
+  return newRecipe;
+}
+
+Future<void> _cleanRecipeFiles(Recipe recipe) async {
+  Directory recipeDir =
+      Directory(await PathProvider.pP.getRecipeDirFull(recipe.name));
+  List<String> recipeFiles = await _extractImagePaths(recipe);
+
+  for (FileSystemEntity file in recipeDir.listSync(recursive: true)) {
+    if (file is File) {
+      if (!recipeFiles.contains(file.path)) {
+        await file.delete();
+      }
+    }
+  }
+}
+
+Future<List<String>> _extractImagePaths(Recipe recipe) async {
+  return []
+    ..addAll([recipe.imagePath, recipe.imagePreviewPath])
+    ..addAll(recipe.stepImages.expand((i) => i).toList())
+    ..addAll((await PathProvider.pP
+            .getRecipeStepPreviewPathList(recipe.stepImages, recipe.name))
+        .expand((i) => i)
+        .toList());
 }
 
 /// cuts the recipe name out of the recipeStepImagePath and returns it.

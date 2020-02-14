@@ -115,15 +115,19 @@ class _ImportDialogState extends State<ImportDialog>
                         width: 250,
                         child: ListView(
                           children: List.generate(
-                            state.readyToImportRecipes.length * 2 - 1,
-                            (index) => (index + 1) % 2 == 0
+                              state.readyToImportRecipes.length == 0
+                                  ? 0
+                                  : state.readyToImportRecipes.length * 2 - 1,
+                              (index) {
+                            int currentRecipeIndex = index == 0 ? 0 : index / 2;
+
+                            return (index + 1) % 2 == 0
                                 ? Divider()
                                 : ListTile(
                                     title: Text(
                                       state
                                           .readyToImportRecipes[
-                                              (index == 0 ? 0 : index / 2)
-                                                  .round()]
+                                              currentRecipeIndex.round()]
                                           .name,
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
@@ -131,56 +135,72 @@ class _ImportDialogState extends State<ImportDialog>
                                     trailing: Checkbox(
                                       value: selectedRecipes.contains(
                                           state.readyToImportRecipes[
-                                              (index == 0 ? 0 : index / 2)
-                                                  .round()]),
+                                              currentRecipeIndex.round()]),
                                       onChanged: (status) {
                                         setState(() {
                                           if (status) {
-                                            selectedRecipes.add(
-                                                state.readyToImportRecipes[
-                                                    (index == 0 ? 0 : index / 2)
-                                                        .round()]);
+                                            selectedRecipes.add(state
+                                                    .readyToImportRecipes[
+                                                currentRecipeIndex.round()]);
                                           } else {
-                                            selectedRecipes.remove(
-                                                state.readyToImportRecipes[
-                                                    (index == 0 ? 0 : index / 2)
-                                                        .round()]);
+                                            selectedRecipes.remove(state
+                                                    .readyToImportRecipes[
+                                                currentRecipeIndex.round()]);
                                           }
                                         });
                                       },
-                                    )),
-                          )
+                                    ),
+                                  );
+                          })
                             ..addAll(
                               List.generate(
-                                state.alreadyExistingRecipes.length,
-                                (index) => ListTile(
-                                  title: Text(
-                                    state.alreadyExistingRecipes[index].name,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  trailing: Icon(
-                                    Icons.offline_bolt,
-                                    color: Colors.yellow,
-                                  ),
-                                ),
-                              ),
+                                  state.alreadyExistingRecipes.length == 0
+                                      ? 0
+                                      : state.alreadyExistingRecipes.length *
+                                              2 -
+                                          1, (index) {
+                                int currentRecipeIndex =
+                                    index == 0 ? 0 : index / 2;
+                                return (index + 1) % 2 == 0
+                                    ? Divider()
+                                    : ListTile(
+                                        title: Text(
+                                          state
+                                              .alreadyExistingRecipes[
+                                                  currentRecipeIndex]
+                                              .name,
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        trailing: Icon(
+                                          Icons.offline_bolt,
+                                          color: Colors.yellow,
+                                        ),
+                                      );
+                              }),
                             )
                             ..addAll(
                               List.generate(
-                                state.failedZips.length,
-                                (index) => ListTile(
-                                  title: Text(
-                                    state.failedZips[index],
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  trailing: Icon(
-                                    MdiIcons.alertCircle,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              ),
+                                  state.failedZips.length == 0
+                                      ? 0
+                                      : state.failedZips.length * 2 - 1,
+                                  (index) {
+                                int currentRecipeIndex =
+                                    index == 0 ? 0 : index / 2;
+                                return (index + 1) % 2 == 0
+                                    ? Divider()
+                                    : ListTile(
+                                        title: Text(
+                                          state.failedZips[currentRecipeIndex],
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        trailing: Icon(
+                                          MdiIcons.alertCircle,
+                                          color: Colors.red,
+                                        ),
+                                      );
+                              }),
                             ),
                         ),
                       ),

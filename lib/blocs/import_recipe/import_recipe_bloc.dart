@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../hive.dart';
 import '../../local_storage/io_operations.dart' as IO;
@@ -114,7 +115,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
       }
       yield ImportingRecipes(0.1 + (i / event.recipes.length * 0.9));
     }
-
+    imageCache.clear();
     yield ImportedRecipes(importRecipes, failedRecipes, alreadyExisting);
   }
 }

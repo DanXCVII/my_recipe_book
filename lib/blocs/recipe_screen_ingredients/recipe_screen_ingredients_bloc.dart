@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 
-import './recipe_screen_ingredients.dart';
 import '../../hive.dart';
 import '../../models/ingredient.dart';
+
+part 'recipe_screen_ingredients_event.dart';
+part 'recipe_screen_ingredients_state.dart';
 
 class RecipeScreenIngredientsBloc
     extends Bloc<RecipeScreenIngredientsEvent, RecipeScreenIngredientsState> {

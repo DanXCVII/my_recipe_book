@@ -21,7 +21,11 @@ class IconInfoMessage extends StatelessWidget {
           width: 110,
           height: 110,
           decoration: BoxDecoration(
-              color: Color.fromRGBO(0, 0, 0, 0.5), shape: BoxShape.circle),
+            color: Theme.of(context).backgroundColor == Colors.white
+                ? Color.fromRGBO(0, 0, 0, 0.8)
+                : Color.fromRGBO(0, 0, 0, 0.5),
+            shape: BoxShape.circle,
+          ),
           child: Container(
             height: MediaQuery.of(context).size.height / 800 * 80,
             child: iconWidget,
@@ -30,9 +34,16 @@ class IconInfoMessage extends StatelessWidget {
         SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text(description,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+          child: Text(
+            description,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+                color: Theme.of(context).backgroundColor == Colors.white
+                    ? Colors.grey[800]
+                    : Colors.white),
+          ),
         ),
       ],
     );

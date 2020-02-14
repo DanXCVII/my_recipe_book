@@ -1,20 +1,16 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/screens/recipe_screen.dart';
-import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
-import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
 import '../hive.dart';
 import '../models/ingredient.dart';
-import '../routes.dart';
+import '../models/recipe.dart';
 import '../widgets/dialogs/shopping_cart_add_dialog.dart';
+import '../widgets/icon_info_message.dart';
+import '../widgets/recipe_image_hero.dart';
 import '../widgets/search.dart';
 
 class FancyShoppingCartScreen extends StatelessWidget {
@@ -103,6 +99,12 @@ class FancyShoppingCartScreen extends StatelessWidget {
         displayNothingAdded(context, scaleFactor),
       ];
     }
+    Recipe summaryRecipe =
+        recipes.firstWhere((recipe) => recipe.name == "summary");
+    if (summaryRecipe != recipes.first) {
+      recipes.removeWhere((recipe) => recipe.name == "summary");
+      recipes.insert(0, summaryRecipe);
+    }
     return recipes.map((recipe) {
       Color ingredBackgroundColor =
           Theme.of(context).brightness == Brightness.dark
@@ -143,13 +145,14 @@ class FancyShoppingCartScreen extends StatelessWidget {
     return Container(
       height: deviceHeight / 2,
       child: Center(
-          child: IconInfoMessage(
-              iconWidget: Icon(
-                Icons.shopping_basket,
-                color: Colors.brown,
-                size: 70.0,
-              ),
-              description: S.of(context).shopping_cart_is_empty)),
+        child: IconInfoMessage(
+            iconWidget: Icon(
+              Icons.shopping_basket,
+              color: Colors.brown,
+              size: 70.0,
+            ),
+            description: S.of(context).shopping_cart_is_empty),
+      ),
     );
   }
 
@@ -157,41 +160,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
       List<CheckableIngredient> ingredients, BuildContext context) {
     return Card(
       child: ExpansionTile(
-        leading: recipe.name == "summary"
-            ? null
-            : GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.recipeScreen,
-                    arguments: RecipeScreenArguments(
-                      BlocProvider.of<ShoppingCartBloc>(context),
-                      recipe,
-                      getRecipePrimaryColor(recipe.vegetable),
-                      recipe.name,
-                      BlocProvider.of<RecipeManagerBloc>(context),
-                    ),
-                  );
-                },
-                child: Hero(
-                  tag: recipe.name,
-                  child: ClipOval(
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      child: recipe.imagePreviewPath == "images/randomFood.jpg"
-                          ? Image.asset(
-                              recipe.imagePreviewPath,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.file(
-                              File(recipe.imagePreviewPath),
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ),
-                ),
-              ),
+        leading: recipe.name == "summary" ? null : RecipeImageHero(recipe),
         title: Text(
           recipe.name,
         ),

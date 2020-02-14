@@ -85,12 +85,6 @@ class RecipeCardBig extends StatelessWidget {
                     children: <Widget>[
                       Hero(
                         tag: heroImageTag,
-                        placeholderBuilder: (context, size, widget) => recipe
-                                    .imagePath ==
-                                'images/randomFood.jpg'
-                            ? Image.asset(recipe.imagePath, fit: BoxFit.cover)
-                            : Image.file(File(recipe.imagePath),
-                                fit: BoxFit.cover),
                         child: FadeInImage(
                           image: recipe.imagePath == 'images/randomFood.jpg'
                               ? AssetImage(recipe.imagePath)
@@ -236,6 +230,7 @@ class RecipeCardBig extends StatelessWidget {
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Wrap(
                               alignment: WrapAlignment.start,

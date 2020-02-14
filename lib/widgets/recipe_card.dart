@@ -92,23 +92,6 @@ class RecipeCard extends StatelessWidget {
                   children: <Widget>[
                     Hero(
                       tag: heroImageTag,
-                      placeholderBuilder: (context, size, widget) => ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(gridTileWidth / 10),
-                          topRight: Radius.circular(gridTileWidth / 10),
-                        ),
-                        child: FadeInImage(
-                          image:
-                              recipe.imagePreviewPath == 'images/randomFood.jpg'
-                                  ? AssetImage(recipe.imagePreviewPath)
-                                  : FileImage(File(recipe.imagePreviewPath)),
-                          placeholder: MemoryImage(kTransparentImage),
-                          fadeInDuration: Duration(milliseconds: 250),
-                          fit: BoxFit.cover,
-                          height: gridTileWidth / 1.25,
-                          width: gridTileWidth + 40,
-                        ),
-                      ),
                       child: Material(
                         color: Colors.transparent,
                         child: ClipRRect(
@@ -173,7 +156,11 @@ class RecipeCard extends StatelessWidget {
                                     return Icon(
                                       MdiIcons.knife,
                                       size: 18,
-                                      color: Colors.grey[200],
+                                      color:
+                                          Theme.of(context).backgroundColor ==
+                                                  Colors.white
+                                              ? Colors.grey[400]
+                                              : Colors.grey[200],
                                     );
                                   } else {
                                     if (recipe.effort == index * 2 + 1) {
@@ -184,7 +171,11 @@ class RecipeCard extends StatelessWidget {
                                               MdiIcons.knife,
                                               size: 18,
                                               // TODO: make color fit bright theme
-                                              color: Colors.black,
+                                              color: Theme.of(context)
+                                                          .backgroundColor ==
+                                                      Colors.white
+                                                  ? Colors.grey[900]
+                                                  : Colors.black,
                                             ),
                                           ),
                                           ClipPath(
@@ -193,7 +184,11 @@ class RecipeCard extends StatelessWidget {
                                               child: Icon(
                                                 MdiIcons.knife,
                                                 size: 18,
-                                                color: Colors.grey[200],
+                                                color: Theme.of(context)
+                                                            .backgroundColor ==
+                                                        Colors.white
+                                                    ? Colors.grey[400]
+                                                    : Colors.grey[200],
                                               ),
                                             ),
                                           ),
@@ -203,7 +198,11 @@ class RecipeCard extends StatelessWidget {
                                       return Icon(
                                         MdiIcons.knife,
                                         size: 18,
-                                        color: Colors.black,
+                                        color:
+                                            Theme.of(context).backgroundColor ==
+                                                    Colors.white
+                                                ? Colors.grey[900]
+                                                : Colors.black,
                                       );
                                     }
                                   }
