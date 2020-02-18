@@ -1534,51 +1534,67 @@ class IngredientsScreen extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 12, right: 12),
                       child: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            I18n.of(context).ingredients_for,
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: headingSize,
-                              fontFamily: recipeScreenFontFamily,
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.remove_circle_outline,
-                                color: Colors.white),
-                            tooltip: I18n.of(context).decrease_servings,
-                            onPressed: () {
-                              _decreaseServings(state.servings, context);
-                            },
-                          ),
-                          Text(
-                            '${state.servings}',
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: headingSize,
-                              fontFamily: recipeScreenFontFamily,
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.add_circle_outline,
-                                color: Colors.white),
-                            tooltip: I18n.of(context).increase_servings,
-                            onPressed: () {
-                              _increaseServings(state.servings, context);
-                            },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(
-                              I18n.of(context).servings,
-                              style: TextStyle(
-                                color: textColor,
-                                fontSize: headingSize,
-                                fontFamily: recipeScreenFontFamily,
-                              ),
-                            ),
-                          ),
-                        ],
+                        children: state.servings == null
+                            ? [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 12.0),
+                                  child: Text(
+                                    I18n.of(context).ingredients,
+                                    style: TextStyle(
+                                      color: textColor,
+                                      fontSize: headingSize,
+                                      fontFamily: recipeScreenFontFamily,
+                                    ),
+                                  ),
+                                )
+                              ]
+                            : <Widget>[
+                                Text(
+                                  I18n.of(context).ingredients_for,
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: headingSize,
+                                    fontFamily: recipeScreenFontFamily,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.remove_circle_outline,
+                                      color: Colors.white),
+                                  tooltip: I18n.of(context).decrease_servings,
+                                  onPressed: () {
+                                    _decreaseServings(state.servings, context);
+                                  },
+                                ),
+                                Text(
+                                  '${state.servings}',
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: headingSize,
+                                    fontFamily: recipeScreenFontFamily,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.add_circle_outline,
+                                      color: Colors.white),
+                                  tooltip: I18n.of(context).increase_servings,
+                                  onPressed: () {
+                                    _increaseServings(state.servings, context);
+                                  },
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(
+                                    I18n.of(context).servings,
+                                    style: TextStyle(
+                                      color: textColor,
+                                      fontSize: headingSize,
+                                      fontFamily: recipeScreenFontFamily,
+                                    ),
+                                  ),
+                                ),
+                              ],
                       ),
                     ),
                   ),

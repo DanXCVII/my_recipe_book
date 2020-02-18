@@ -102,7 +102,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("add ingredients info"),
+          title: Text(I18n.of(context).add_ingredients_info),
           actions: <Widget>[
             BlocListener<IngredientsBloc, IngredientsState>(
               listener: (context, state) {
@@ -297,8 +297,9 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
           goBack,
-          double.parse(
-              servingsController.text == "" ? "1" : servingsController.text),
+          servingsController.text == ""
+              ? null
+              : double.parse(servingsController.text),
           _getIngredientsList(
             ingredientNameController,
             ingredientAmountController,
@@ -321,7 +322,9 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
           goBack,
-          double.parse(servingsController.text),
+          servingsController.text == ""
+              ? null
+              : double.parse(servingsController.text),
           cleanIngredientsData,
           glossary,
           selectedRecipeVegetable.vegetableStatus,

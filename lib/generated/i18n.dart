@@ -110,8 +110,8 @@ class I18n implements WidgetsLocalizations {
   String get notes => "Notes";
   /// "Categories"
   String get categories => "Categories";
-  /// "Ingredients for"
-  String get ingredients_for => "Ingredients for";
+  /// "ingredients for"
+  String get ingredients_for => "ingredients for";
   /// "ingredients"
   String get ingredients => "ingredients";
   /// "ingredient"

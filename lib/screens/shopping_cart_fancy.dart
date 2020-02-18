@@ -44,15 +44,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
                 context: context,
                 builder: (_) => BlocProvider.value(
                   value: BlocProvider.of<ShoppingCartBloc>(context),
-                  child: Dialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(22, 22, 22, 12),
-                      child: AddShoppingCartDialog(),
-                    ),
-                  ),
+                  child: AddShoppingCartDialog(),
                 ),
               );
             },

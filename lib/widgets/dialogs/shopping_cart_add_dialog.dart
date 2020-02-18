@@ -36,111 +36,103 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 245,
-      child: Column(
-        children: <Widget>[
-          Text(
-            I18n.of(context).add_to_cart,
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 21),
-          ),
-          SizedBox(height: 16),
-          Form(
-            key: formKey,
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  controller: recipeNameController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: I18n.of(context).recipe_name,
-                  ),
-                ),
-                Container(height: 12),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 3,
-                      child: SimpleAutoCompleteTextField(
-                        key: autoCompletionTextField,
-                        suggestions: HiveProvider().getIngredientNames(),
-                        controller: ingredientNameController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: I18n.of(context).ingredient,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      flex: 1,
-                      child: TextFormField(
-                        controller: ingredientAmountController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: I18n.of(context).amnt,
-                        ),
-                        validator: (value) {
-                          if (stringIsValidDouble(value)) {
-                            return null;
-                          }
-                          return I18n.of(context).no_valid_number;
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      flex: 1,
-                      child: TextField(
-                        controller: ingredientUnitController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: I18n.of(context).unit,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-          SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              FlatButton(
-                child: Text(I18n.of(context).cancel),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              SizedBox(width: 3),
-              FlatButton(
-                child: Text(I18n.of(context).add),
-                onPressed: () {
-                  if (formKey.currentState.validate()) {
-                    BlocProvider.of<ShoppingCartBloc>(context).add(
-                      CleanAddIngredients(
-                          [
-                            Ingredient(
-                                name: ingredientNameController.text,
-                                amount: double.parse(
-                                    ingredientAmountController.text),
-                                unit: ingredientUnitController.text)
-                          ],
-                          recipeNameController.text == ''
-                              ? I18n.of(context).summary
-                              : recipeNameController.text),
-                    );
+    return AlertDialog(
+      title: Text(I18n.of(context).add_to_cart),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      actions: <Widget>[
+        FlatButton(
+          child: Text(I18n.of(context).cancel),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        FlatButton(
+          child: Text(I18n.of(context).add),
+          onPressed: () {
+            if (formKey.currentState.validate()) {
+              BlocProvider.of<ShoppingCartBloc>(context).add(
+                CleanAddIngredients(
+                    [
+                      Ingredient(
+                          name: ingredientNameController.text,
+                          amount: double.parse(ingredientAmountController.text),
+                          unit: ingredientUnitController.text)
+                    ],
+                    recipeNameController.text == ''
+                        ? I18n.of(context).summary
+                        : recipeNameController.text),
+              );
 
-                    Navigator.of(context).pop();
-                  }
-                },
+              Navigator.of(context).pop();
+            }
+          },
+        )
+      ],
+      content: Container(
+        width: MediaQuery.of(context).size.width > 350
+            ? 350
+            : MediaQuery.of(context).size.width * 0.9,
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextFormField(
+                controller: recipeNameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: I18n.of(context).recipe_name,
+                ),
+              ),
+              Container(height: 12),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: SimpleAutoCompleteTextField(
+                      key: autoCompletionTextField,
+                      suggestions: HiveProvider().getIngredientNames(),
+                      controller: ingredientNameController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: I18n.of(context).ingredient,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    flex: 1,
+                    child: TextFormField(
+                      controller: ingredientAmountController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: I18n.of(context).amnt,
+                      ),
+                      validator: (value) {
+                        if (stringIsValidDouble(value)) {
+                          return null;
+                        }
+                        return I18n.of(context).no_valid_number;
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    flex: 1,
+                    child: TextField(
+                      controller: ingredientUnitController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: I18n.of(context).unit,
+                      ),
+                    ),
+                  ),
+                ],
               )
             ],
-          )
-        ],
+          ),
+        ),
       ),
     );
   }

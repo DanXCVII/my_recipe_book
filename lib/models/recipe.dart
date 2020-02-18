@@ -52,7 +52,7 @@ class Recipe extends Equatable {
     this.preperationTime = 0,
     this.cookingTime = 0,
     this.totalTime = 0,
-    this.servings = 1,
+    this.servings,
     this.categories = const [],
     this.ingredientsGlossary = const [],
     this.ingredients = const [[]],

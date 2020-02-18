@@ -38,15 +38,6 @@ class _IngredientsState extends State<Ingredients> {
           padding:
               const EdgeInsets.only(left: 12, top: 22, bottom: 12, right: 200),
           child: TextFormField(
-            validator: (value) {
-              if (stringIsValidDouble(value) == false) {
-                return I18n.of(context).no_valid_number;
-              }
-              if (value.isEmpty) {
-                return I18n.of(context).data_required;
-              }
-              return null;
-            },
             controller: widget.servingsController,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(

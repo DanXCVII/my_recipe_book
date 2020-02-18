@@ -249,23 +249,26 @@ class RecipeCardBig extends StatelessWidget {
                             ),
                             Expanded(
                               flex: 1,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(I18n.of(context).categories,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(I18n.of(context).categories,
+                                          textScaleFactor: scaleFactor,
+                                          style: smallHeading),
+                                      Text(
+                                        _getRecipeCategoriesString(
+                                            recipe.categories),
                                         textScaleFactor: scaleFactor,
-                                        style: smallHeading),
-                                    Text(
-                                      _getRecipeCategoriesString(
-                                          recipe.categories),
-                                      textScaleFactor: scaleFactor,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    )
-                                  ],
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

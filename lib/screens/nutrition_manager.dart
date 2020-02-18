@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/nutrition_manager/nutrition_manager_bloc.dart';
 import '../generated/i18n.dart';
@@ -104,8 +106,14 @@ class _NutritionManagerState extends State<NutritionManager> {
                   }),
               body: state.nutritions.isEmpty
                   ? Center(
-                      child: Text(I18n.of(context).you_have_no_nutritions),
-                    )
+                      child: IconInfoMessage(
+                      iconWidget: Icon(
+                        MdiIcons.nutrition,
+                        color: Colors.grey[200],
+                        size: 70.0,
+                      ),
+                      description: I18n.of(context).you_have_no_nutritions,
+                    ))
                   : Form(
                       key: _formKey,
                       child: ReorderableListView(
