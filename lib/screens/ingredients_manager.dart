@@ -71,7 +71,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
 
             return Scaffold(
               appBar: AppBar(
-                title: Text("Manage ingredients"),
+                title: Text(I18n.of(context).manage_ingredients),
                 actions: <Widget>[
                   IconButton(
                     icon: Icon(Icons.check),
@@ -95,7 +95,8 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                         builder: (_) => TextFieldDialog(
                               validation: (String name) {
                                 if (state.ingredients.contains(name)) {
-                                  return 'Ingredient already exists';
+                                  return I18n.of(context)
+                                      .ingredient_already_exists;
                                 } else {
                                   return null;
                                 }
@@ -104,12 +105,12 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                                 BlocProvider.of<IngredientsManagerBloc>(context)
                                     .add(AddIngredient(name));
                               },
-                              hintText: 'Ingredient name',
+                              hintText: I18n.of(context).ingredient,
                             ));
                   }),
               body: state.ingredients.isEmpty
                   ? Center(
-                      child: Text("you have no ingredients"),
+                      child: Text(I18n.of(context).you_have_no_ingredients),
                     )
                   : AnimationLimiter(
                       child: Form(
@@ -173,7 +174,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            "manage ingredients",
+            I18n.of(context).manage_ingredients,
           ),
         ),
         body: Center(
@@ -186,12 +187,12 @@ class _IngredientsManagerState extends State<IngredientsManager> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text("delete ingredient"),
-        content: Text(S.of(context).sure_you_want_to_delete_this_nutrition +
+        title: Text(I18n.of(context).delete_ingredient),
+        content: Text(I18n.of(context).sure_you_want_to_delete_this_nutrition +
             " $ingredientName"),
         actions: <Widget>[
           FlatButton(
-            child: Text(S.of(context).no),
+            child: Text(I18n.of(context).no),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             textColor: Theme.of(context).textTheme.body1.color,
@@ -201,7 +202,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
             },
           ),
           FlatButton(
-            child: Text(S.of(context).yes),
+            child: Text(I18n.of(context).yes),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             textColor: Theme.of(context).textTheme.body1.color,
@@ -224,42 +225,6 @@ class _IngredientsManagerState extends State<IngredientsManager> {
     Navigator.pop(context);
   }
 
-  Widget _getPrimaryBackgroundDismissible() {
-    return Container(
-      color: Colors.red,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0),
-            child: Icon(
-              GroovinMaterialIcons.delete_sweep,
-              color: Colors.white,
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _getSecondaryBackgroundDismissible() {
-    return Container(
-      color: Colors.red,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Icon(
-              GroovinMaterialIcons.delete_sweep,
-              color: Colors.white,
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
   Widget _getIngredientListTile(String ingredientName, BuildContext context,
       Key key, List<String> ingredients) {
     return ListTile(
@@ -271,7 +236,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
             builder: (_) => TextFieldDialog(
               validation: (String name) {
                 if (ingredients.contains(name)) {
-                  return 'ingredient already exists';
+                  return I18n.of(context).ingredient_already_exists;
                 } else {
                   return null;
                 }
@@ -281,7 +246,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                   UpdateIngredient(ingredientName, name),
                 );
               },
-              hintText: 'ingredient name',
+              hintText: I18n.of(context).ingredient,
               prefilledText: ingredientName,
             ),
           );

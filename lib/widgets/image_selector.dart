@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 
 class ImageSelector extends StatefulWidget {
   final String prefilledImage;
@@ -30,7 +31,7 @@ class _ImageSelectorState extends State<ImageSelector> {
   void initState() {
     super.initState();
     if (widget.prefilledImage != null &&
-        widget.prefilledImage != "images/randomFood.jpg") {
+        widget.prefilledImage != Constants.noRecipeImage) {
       selectedImageFile = File(widget.prefilledImage);
     }
   }

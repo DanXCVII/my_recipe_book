@@ -58,11 +58,11 @@ int getIngredientCount(List<List<Ingredient>> ingredients) {
   return ingredientCount;
 }
 
-String getUnderscoreName(String name) {
+String stringReplaceSpaceUnderscore(String name) {
   return name.replaceAll(' ', '_');
 }
 
-bool validateNumber(String text) {
+bool stringIsValidDouble(String text) {
   if (text.isEmpty) {
     return false;
   }

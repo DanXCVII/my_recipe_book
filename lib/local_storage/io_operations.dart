@@ -18,7 +18,7 @@ import '../models/recipe.dart';
 /// - all paths are the full paths to the images
 /// - stepImages include pattern: [...]/$recipeName/stepImages[...]
 Future<Recipe> fixImagePaths(Recipe recipe) async {
-  String _underscoreNewRecipeName = getUnderscoreName(recipe.name);
+  String _underscoreNewRecipeName = stringReplaceSpaceUnderscore(recipe.name);
 
   String newRecipeImageDataType = getImageDatatype(recipe.imagePath);
 
@@ -128,8 +128,8 @@ Future<void> deleteRecipeData(String recipeName) async {
 Future<void> copyRecipeDataToNewPath(
     String oldRecipeName, String newRecipeName) async {
   print('IO Anfang');
-  String _underscoreOldRecipeName = getUnderscoreName(oldRecipeName);
-  String _underscoreNewRecipeName = getUnderscoreName(newRecipeName);
+  String _underscoreOldRecipeName = stringReplaceSpaceUnderscore(oldRecipeName);
+  String _underscoreNewRecipeName = stringReplaceSpaceUnderscore(newRecipeName);
 
   Directory recipeDir = Directory(
       await PathProvider.pP.getRecipeDirFull(_underscoreOldRecipeName));
@@ -442,17 +442,18 @@ _showImportedRecipeToast(
 
   String snackbarMessage;
   if (recipeName == null) {
-    snackbarMessage = S.of(context).no_valid_import_file;
+    snackbarMessage = I18n.of(context).no_valid_import_file;
   } else if (!importSuccessfull) {
-    snackbarMessage = "${S.of(context).you_already_have}: $recipeName";
+    snackbarMessage = "${I18n.of(context).you_already_have}: $recipeName";
   } else {
-    snackbarMessage = "${S.of(context).imported}: $recipeName";
+    snackbarMessage = "${I18n.of(context).imported}: $recipeName";
   }
   scaffold.showSnackBar(
     SnackBar(
       content: Text(snackbarMessage),
       action: SnackBarAction(
-          label: S.of(context).hide, onPressed: scaffold.hideCurrentSnackBar),
+          label: I18n.of(context).hide,
+          onPressed: scaffold.hideCurrentSnackBar),
     ),
   );
 }

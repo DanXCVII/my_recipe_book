@@ -3,11 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
+import 'package:my_recipe_book/constants/routes.dart';
 
 import '../blocs/category_overview/category_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../models/tuple.dart';
-import '../routes.dart';
 import 'recipe_overview.dart';
 
 class CategoryGridView extends StatelessWidget {
@@ -73,27 +74,28 @@ class CategoryGridTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            RouteNames.recipeCategories,
-            arguments: RecipeGridViewArguments(
-              shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
-              category: category == null ? 'no category' : category,
-            ),
-          );
-        },
-        child: GridTile(
-          child: randomCategoryImage == 'images/randomFood.jpg'
-              ? Image.asset(randomCategoryImage, fit: BoxFit.cover)
-              : Image.file(File(randomCategoryImage), fit: BoxFit.cover),
-          footer: GridTileBar(
-            title: Text(
-              category,
-              style: TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.black45,
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          RouteNames.recipeCategories,
+          arguments: RecipeGridViewArguments(
+            shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
+            category: category == null ? Constants.noCategory : category,
           ),
-        ));
+        );
+      },
+      child: GridTile(
+        child: randomCategoryImage == Constants.noRecipeImage
+            ? Image.asset(randomCategoryImage, fit: BoxFit.cover)
+            : Image.file(File(randomCategoryImage), fit: BoxFit.cover),
+        footer: GridTileBar(
+          title: Text(
+            category,
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.black45,
+        ),
+      ),
+    );
   }
 }

@@ -22,7 +22,7 @@ class InfoDialog extends StatelessWidget {
       ),
       actions: <Widget>[
         FlatButton(
-          child: Text(S.of(context).alright),
+          child: Text(I18n.of(context).alright),
           onPressed: () {
             Navigator.pop(context);
           },

@@ -1,14 +1,15 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/constants/routes.dart';
 
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
 import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../models/recipe.dart';
 import '../../../my_wrapper.dart';
-import '../../../routes.dart';
 import '../../../widgets/complexity_section.dart';
 import '../../../widgets/dialogs/info_dialog.dart';
 import '../nutritions.dart';
@@ -45,6 +46,7 @@ class _StepsScreenState extends State<StepsScreen> {
   final TextEditingController notesController = TextEditingController();
 
   final MyDoubleWrapper complexity = MyDoubleWrapper(myDouble: 5.0);
+  Flushbar flush;
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -74,14 +76,14 @@ class _StepsScreenState extends State<StepsScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("add steps"),
+          title: Text(I18n.of(context).add_steps),
           actions: <Widget>[
             BlocListener<StepsBloc, StepsState>(
               listener: (context, state) {
                 if (state is SEditingFinishedGoBack) {
                   // TODO: internationalize
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(content: Text('saving your input...')));
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(I18n.of(context).saving_your_input)));
                 } else if (state is SSaved) {
                   BlocProvider.of<StepsBloc>(context).add(SetCanSave());
 
@@ -98,12 +100,10 @@ class _StepsScreenState extends State<StepsScreen> {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
                 } else if (state is SCanSave && state.isValid == false) {
-                  showDialog(
-                      context: context,
-                      builder: (_) => InfoDialog(
-                          title: "too many images for the steps",
-                          body:
-                              "you must have a description for the steps with images"));
+                  _showFlushInfo(
+                    I18n.of(context).too_many_images_for_the_steps,
+                    I18n.of(context).too_many_images_for_the_steps_description,
+                  );
                 }
               },
               child: BlocBuilder<StepsBloc, StepsState>(
@@ -160,7 +160,7 @@ class _StepsScreenState extends State<StepsScreen> {
                   controller: notesController,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
-                    labelText: S.of(context).notes,
+                    labelText: I18n.of(context).notes,
                     filled: true,
                     icon: Icon(Icons.assignment),
                   ),
@@ -174,6 +174,32 @@ class _StepsScreenState extends State<StepsScreen> {
         ),
       ),
     );
+  }
+
+  void _showFlushInfo(String title, String body) {
+    if (flush != null && flush.isShowing()) {
+    } else {
+      flush = Flushbar<bool>(
+        animationDuration: Duration(milliseconds: 300),
+        leftBarIndicatorColor: Colors.blue[300],
+        title: title,
+        message: body,
+        icon: Icon(
+          Icons.info_outline,
+          color: Colors.blue,
+        ),
+        mainButton: FlatButton(
+          onPressed: () {
+            flush.dismiss(true); // result = true
+          },
+          child: Text(
+            "OK",
+            style: TextStyle(color: Colors.amber),
+          ),
+        ),
+      ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+        ..show(context).then((result) {});
+    }
   }
 
   void _finishedEditingSteps(bool goBack) {

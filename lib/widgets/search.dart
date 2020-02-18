@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
 
+import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../hive.dart';
 import '../models/recipe.dart';
-import '../routes.dart';
 import '../screens/recipe_screen.dart';
 
 class RecipeSearch extends SearchDelegate<SearchRecipe> {
@@ -63,8 +63,8 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
     if (recipeNames.isEmpty) {
       return Container(
           height: 70,
-          child:
-              Center(child: Text(S.of(context).no_recipes_to_search_through)));
+          child: Center(
+              child: Text(I18n.of(context).no_recipes_to_search_through)));
     }
     List<String> resultRecipeNames = recipeNames
         .where((recipeName) =>

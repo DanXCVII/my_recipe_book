@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/constants/routes.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/screens/recipe_screen.dart';
@@ -11,7 +12,6 @@ import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/ingredient_search/ingredient_search_bloc.dart';
 import '../hive.dart';
-import '../routes.dart';
 import '../widgets/recipe_image_hero.dart';
 
 class IngredientSearchScreenArguments {
@@ -45,7 +45,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("ingredient search"),
+          title: Text(I18n.of(context).ingredient_search),
         ),
         body: Column(
           children: <Widget>[
@@ -93,7 +93,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                                   color: Colors.white,
                                   size: 70.0,
                                 ),
-                                description: "please enter some ingredients",
+                                description: I18n.of(context)
+                                    .please_enter_some_ingredients,
                               )
                             : IconInfoMessage(
                                 iconWidget: Icon(
@@ -101,7 +102,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                                   color: Colors.white,
                                   size: 70.0,
                                 ),
-                                description: "no matching recipes",
+                                description:
+                                    I18n.of(context).no_matching_recipes,
                               ),
                       ),
                     ),
@@ -135,7 +137,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                               title: Text(state
                                   .tupleMatchesRecipe[recipeIndex].item2.name),
                               subtitle: Text(
-                                  "matches: ${state.tupleMatchesRecipe[recipeIndex].item1} out of ${state.totalIngredAmount}"),
+                                  "${I18n.of(context).matches}: ${state.tupleMatchesRecipe[recipeIndex].item1} ${I18n.of(context).out_of} ${state.totalIngredAmount}"),
                               leading: RecipeImageHero(currentRecipe),
                             );
                     }),
@@ -165,7 +167,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                   controller: _controllers[index],
                   // style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: S.of(context).ingredient,
+                    labelText: I18n.of(context).ingredient,
                     labelStyle: TextStyle(
                         fontWeight: FontWeight.w500, color: Colors.grey[500]),
                     border: OutlineInputBorder(),
@@ -262,7 +264,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
               controller: _controllers[index],
               style: new TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                labelText: S.of(context).ingredient,
+                labelText: I18n.of(context).ingredient,
                 labelStyle: TextStyle(
                     fontWeight: FontWeight.w500, color: Colors.grey[500]),
                 border: OutlineInputBorder(),

@@ -3,6 +3,7 @@ import "dart:io";
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:image_picker/image_picker.dart";
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 
 import '../../../blocs/new_recipe/step_images/step_images_bloc.dart';
 import '../../../blocs/new_recipe/step_images/step_images_event.dart';
@@ -15,7 +16,7 @@ class Steps extends StatefulWidget {
 
   Steps(
     this.stepsDecriptionController, {
-    this.editRecipeName = 'tmp',
+    this.editRecipeName = Constants.newEditingRecipeName,
   });
 
   @override
@@ -49,7 +50,7 @@ class _StepsState extends State<Steps> {
             Padding(
               padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
               child: Text(
-                S.of(context).steps + ':',
+                I18n.of(context).steps + ':',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
@@ -92,7 +93,7 @@ class _StepsState extends State<Steps> {
                               keyboardType: TextInputType.multiline,
                               decoration: InputDecoration(
                                 filled: true,
-                                labelText: S.of(context).description,
+                                labelText: I18n.of(context).description,
                               ),
                               minLines: 3,
                               maxLines: 10,
@@ -120,7 +121,8 @@ class _StepsState extends State<Steps> {
                                       .add(RemoveImage(
                                     state.stepImages[i][j],
                                     i,
-                                    widget.editRecipeName == 'tmp'
+                                    widget.editRecipeName ==
+                                            Constants.newEditingRecipeName
                                         ? false
                                         : true,
                                   ));
@@ -142,7 +144,8 @@ class _StepsState extends State<Steps> {
                                         .add(AddImage(
                                       newImage,
                                       i,
-                                      widget.editRecipeName == 'tmp'
+                                      widget.editRecipeName ==
+                                              Constants.newEditingRecipeName
                                           ? false
                                           : true,
                                     ));
@@ -163,7 +166,7 @@ class _StepsState extends State<Steps> {
                               padding: const EdgeInsets.only(right: 12),
                               child: OutlineButton.icon(
                                 icon: Icon(Icons.remove_circle),
-                                label: Text(S.of(context).remove_step),
+                                label: Text(I18n.of(context).remove_step),
                                 onPressed: () {
                                   _removeStep(widget.editRecipeName);
                                 },
@@ -175,7 +178,7 @@ class _StepsState extends State<Steps> {
                           : null,
                       OutlineButton.icon(
                         icon: Icon(Icons.add_circle),
-                        label: Text(S.of(context).add_step),
+                        label: Text(I18n.of(context).add_step),
                         onPressed: () {
                           _addStep(widget.editRecipeName);
                         },

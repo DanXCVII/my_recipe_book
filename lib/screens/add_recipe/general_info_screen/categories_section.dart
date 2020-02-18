@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
+import 'package:my_recipe_book/hive.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../generated/i18n.dart';
@@ -49,7 +50,7 @@ class _CategorySectionState extends State<CategorySection> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      S.of(context).select_subcategories,
+                      I18n.of(context).select_subcategories,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -63,7 +64,7 @@ class _CategorySectionState extends State<CategorySection> {
                           builder: (_) => TextFieldDialog(
                             validation: (String name) {
                               if (state.categories.contains(name)) {
-                                return 'category already exists';
+                                return I18n.of(context).category_already_exists;
                               } else {
                                 return null;
                               }
@@ -73,7 +74,7 @@ class _CategorySectionState extends State<CategorySection> {
                                   .recipeManagerBloc
                                   .add(RMAddCategory(name));
                             },
-                            hintText: 'category name',
+                            hintText: I18n.of(context).categoryname,
                           ),
                         );
                       },
@@ -84,9 +85,10 @@ class _CategorySectionState extends State<CategorySection> {
             Container(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: WatchBoxBuilder(
-                  box: Hive.box<List<String>>('order'),
+                  box: Hive.box<List<String>>(BoxNames.order),
                   builder: (context, boxCategory) {
-                    List<String> categories = boxCategory.get('categories');
+                    List<String> categories =
+                        boxCategory.get(BoxNames.categories);
                     return Wrap(
                       spacing: 5.0,
                       runSpacing: 3.0,

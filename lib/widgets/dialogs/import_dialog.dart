@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../blocs/import_recipe/import_recipe_bloc.dart';
@@ -335,7 +336,7 @@ class _ImportDialogState extends State<ImportDialog>
                             size: 14,
                           ),
                           Text(
-                            ' successful ',
+                            ' ${I18n.of(context).successful} ',
                             style: TextStyle(fontSize: 12),
                           ),
                           Icon(
@@ -344,7 +345,7 @@ class _ImportDialogState extends State<ImportDialog>
                             size: 14,
                           ),
                           Text(
-                            ' duplicate ',
+                            ' ${I18n.of(context).duplicate} ',
                             style: TextStyle(fontSize: 12),
                           ),
                           Icon(
@@ -353,7 +354,7 @@ class _ImportDialogState extends State<ImportDialog>
                             size: 14,
                           ),
                           Text(
-                            ' failed',
+                            ' ${I18n.of(context).failed}',
                             style: TextStyle(fontSize: 12),
                           ),
                         ],

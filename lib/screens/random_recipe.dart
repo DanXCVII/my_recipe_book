@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 import '../blocs/random_recipe_explorer/random_recipe_explorer_event.dart';
 import '../blocs/random_recipe_explorer/random_recipe_explorer_state.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
-import '../screens/recipe_overview.dart';
+import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_card_big.dart';
 
 class SwypingCardsScreen extends StatefulWidget {
@@ -42,10 +41,10 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                   .add(ChangeCategory(currentCategory));
             },
             // TODO: put strings in extra class
-            child: Text(currentCategory == "no category"
-                ? S.of(context).no_category
-                : currentCategory == "all categories"
-                    ? S.of(context).all_categories
+            child: Text(currentCategory == I18n.of(context).no_category
+                ? I18n.of(context).no_category
+                : currentCategory == I18n.of(context).all_categories
+                    ? I18n.of(context).all_categories
                     : currentCategory),
           );
         } else {
@@ -104,7 +103,8 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                         color: Colors.white,
                         size: 70.0,
                       ),
-                      description: S.of(context).no_recipes_under_this_category,
+                      description:
+                          I18n.of(context).no_recipes_under_this_category,
                     ))
                   : TweenAnimationBuilder(
                       tween: Tween<double>(begin: 0.1, end: 1),
@@ -162,7 +162,7 @@ class _SwypingCardsState extends State<SwypingCards>
                 .add(ReloadRandomRecipeExplorer());
           },
         ),
-        description: "you made it to the end",
+        description: I18n.of(context).you_made_it_to_the_end,
       )),
       Container(
         height: MediaQuery.of(context).size.height > 730

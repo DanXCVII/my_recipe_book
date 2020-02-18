@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -87,7 +88,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     return PhotoViewGalleryPageOptions(
-      imageProvider: widget.galleryImagePaths[index] == 'images/randomFood.jpg'
+      imageProvider: widget.galleryImagePaths[index] == Constants.noRecipeImage
           ? AssetImage(widget.galleryImagePaths[index])
           : FileImage(File(widget.galleryImagePaths[index])),
       initialScale: PhotoViewComputedScale.contained,

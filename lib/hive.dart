@@ -31,6 +31,66 @@ class BoxNames {
   static final nonVegetarain = Vegetable.NON_VEGETARIAN.toString();
 }
 
+// must(!) be executed before interacting with the HiveProvider
+Future<void> initHive(bool firstTime) async {
+  Hive.init((await getApplicationDocumentsDirectory()).path);
+  Hive.registerAdapter(IngredientAdapter());
+  Hive.registerAdapter(CheckableIngredientAdapter());
+  Hive.registerAdapter(VegetableAdapter());
+  Hive.registerAdapter(NutritionAdapter());
+  Hive.registerAdapter(StringListTupleAdapter());
+  Hive.registerAdapter(RecipeSortAdapter());
+  Hive.registerAdapter(RSortAdapter());
+  Hive.registerAdapter(RecipeAdapter());
+
+  await Future.wait([
+    Hive.openBox<StringListTuple>("tuple"),
+    Hive.openBox<Ingredient>("ingredient"),
+    Hive.openLazyBox<Recipe>(BoxNames.recipes),
+    Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString()),
+    Hive.openBox<String>(Vegetable.VEGETARIAN.toString()),
+    Hive.openBox<String>(Vegetable.VEGAN.toString()),
+    Hive.openBox<String>(BoxNames.categories),
+    Hive.openBox<String>(BoxNames.recipeName),
+    Hive.openBox<String>(BoxNames.favorites),
+    Hive.openBox<String>(BoxNames.ingredientNames),
+    Hive.openBox<List<String>>(BoxNames.order),
+    Hive.openBox<RSort>(BoxNames.recipeSort),
+    Hive.openBox<List>(BoxNames.shoppingCart),
+    Hive.openBox<List<String>>(BoxNames.recipeCategories),
+    Hive.openBox<Recipe>(BoxNames.tmpRecipe),
+  ]);
+
+  // initializing with the must have values
+  if (firstTime) {
+    await Hive.box<Recipe>(BoxNames.tmpRecipe)
+        .put(tmpRecipeKey, Recipe(name: null, vegetable: null, servings: null));
+
+    await Hive.box<String>(BoxNames.categories)
+        .put('no category', 'no category');
+
+    await Hive.box<String>(BoxNames.recipeName).put('summary', 'summary');
+
+    await Hive.box<List>(BoxNames.shoppingCart).put('summary', []);
+
+    await Hive.box<List<String>>(BoxNames.recipeCategories)
+        .put('no category', List<String>());
+
+    Box<List<String>> boxOrder = Hive.box<List<String>>(BoxNames.order);
+    await boxOrder.put('categories', ['no category']);
+    await boxOrder.put('nutritions', List<String>());
+
+    await Hive.box<Recipe>(BoxNames.tmpRecipe).put(
+        tmpRecipeKey,
+        Recipe(
+          categories: [],
+          name: null,
+          servings: null,
+          vegetable: Vegetable.VEGETARIAN,
+        ));
+  }
+}
+
 class HiveProvider {
   static final HiveProvider _singleton = HiveProvider._internal(
     Hive.box<String>(BoxNames.vegetarian),
@@ -912,69 +972,4 @@ class HiveProvider {
         throw (ArgumentError);
     }
   }
-}
-
-// must(!) be executed before calling the HiveProvider
-Future<void> initHive(bool firstTime) async {
-  Hive.init((await getApplicationDocumentsDirectory()).path);
-  Hive.registerAdapter(IngredientAdapter());
-  Hive.registerAdapter(CheckableIngredientAdapter());
-  Hive.registerAdapter(VegetableAdapter());
-  Hive.registerAdapter(NutritionAdapter());
-  Hive.registerAdapter(StringListTupleAdapter());
-  Hive.registerAdapter(RecipeSortAdapter());
-  Hive.registerAdapter(RSortAdapter());
-  Hive.registerAdapter(RecipeAdapter());
-
-  await Future.wait([
-    Hive.openBox<StringListTuple>("tuple"),
-    Hive.openBox<Ingredient>("ingredient"),
-    Hive.openLazyBox<Recipe>(BoxNames.recipes),
-    Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString()),
-    Hive.openBox<String>(Vegetable.VEGETARIAN.toString()),
-    Hive.openBox<String>(Vegetable.VEGAN.toString()),
-    Hive.openBox<String>(BoxNames.categories),
-    Hive.openBox<String>(BoxNames.recipeName),
-    Hive.openBox<String>(BoxNames.favorites),
-    Hive.openBox<String>(BoxNames.ingredientNames),
-    Hive.openBox<List<String>>(BoxNames.order),
-    Hive.openBox<RSort>(BoxNames.recipeSort),
-    Hive.openBox<List>(BoxNames.shoppingCart),
-    Hive.openBox<List<String>>(BoxNames.recipeCategories),
-    Hive.openBox<Recipe>(BoxNames.tmpRecipe),
-  ]);
-
-  // initializing with the must have values
-  if (firstTime) {
-    await Hive.box<Recipe>(BoxNames.tmpRecipe)
-        .put(tmpRecipeKey, Recipe(name: null, vegetable: null, servings: null));
-
-    await Hive.box<String>(BoxNames.categories)
-        .put('no category', 'no category');
-
-    await Hive.box<String>(BoxNames.recipeName).put('summary', 'summary');
-
-    await Hive.box<List>(BoxNames.shoppingCart).put('summary', []);
-
-    await Hive.box<List<String>>(BoxNames.recipeCategories)
-        .put('no category', List<String>());
-
-    Box<List<String>> boxOrder = Hive.box<List<String>>(BoxNames.order);
-    await boxOrder.put('categories', ['no category']);
-    await boxOrder.put('nutritions', List<String>());
-
-    await Hive.box<Recipe>(BoxNames.tmpRecipe).put(
-        tmpRecipeKey,
-        Recipe(
-          categories: [],
-          name: null,
-          servings: null,
-          vegetable: Vegetable.VEGETARIAN,
-        ));
-  }
-  // Recipe dummyRecipe = await DummyData().getDummyRecipe();
-  // for (String category in dummyRecipe.categories) {
-  //   addCategory(category);
-  // }
-  // saveRecipe(dummyRecipe);
 }

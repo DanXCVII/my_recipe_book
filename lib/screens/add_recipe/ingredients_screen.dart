@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/constants/routes.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import '../../generated/i18n.dart';
@@ -13,7 +14,6 @@ import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
 import '../../my_wrapper.dart';
 import '../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
-import '../../routes.dart';
 import '../../widgets/ingredients_section.dart';
 import '../../widgets/vegetarian_section.dart';
 import 'steps_screen/steps_screen.dart';
@@ -108,8 +108,8 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
               listener: (context, state) {
                 if (state is IEditingFinishedGoBack) {
                   // TODO: internationalize
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(content: Text('saving your input...')));
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(I18n.of(context).saving_your_input)));
                 } else if (state is ISaved) {
                   BlocProvider.of<IngredientsBloc>(context).add(SetCanSave());
 
@@ -263,22 +263,22 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
     switch (v) {
       case Validator.REQUIRED_FIELDS:
         _showFlushInfo(
-          S.of(context).check_filled_in_information,
-          S.of(context).check_filled_in_information_description,
+          I18n.of(context).check_filled_in_information,
+          I18n.of(context).check_filled_in_information_description,
         );
 
         break;
       case Validator.INGREDIENTS_NOT_VALID:
         _showFlushInfo(
-          S.of(context).check_ingredients_input,
-          S.of(context).check_ingredients_input_description,
+          I18n.of(context).check_ingredients_input,
+          I18n.of(context).check_ingredients_input_description,
         );
 
         break;
       case Validator.GLOSSARY_NOT_VALID:
         _showFlushInfo(
-          S.of(context).check_ingredient_section_fields,
-          S.of(context).check_ingredient_section_fields_description,
+          I18n.of(context).check_ingredient_section_fields,
+          I18n.of(context).check_ingredient_section_fields_description,
         );
 
         break;
@@ -344,7 +344,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
       ingredients.add([]);
       for (int j = 0; j < ingredientNamesContr[i].length; j++) {
         String ingredientName = ingredientNamesContr[i][j].text;
-        double amount = validateNumber(amountContr[i][j].text)
+        double amount = stringIsValidDouble(amountContr[i][j].text)
             ? double.parse(
                 amountContr[i][j].text.replaceAll(new RegExp(r','), 'e'))
             : null;

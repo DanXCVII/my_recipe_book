@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/constants/routes.dart';
 
 import '../../blocs/new_recipe/nutritions/nutritions_bloc.dart';
 import '../../blocs/new_recipe/nutritions/nutritions_event.dart';
@@ -10,7 +11,6 @@ import '../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../generated/i18n.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
-import '../../routes.dart';
 import '../../widgets/dialogs/textfield_dialog.dart';
 import '../recipe_screen.dart';
 
@@ -93,14 +93,15 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
             } else if (state is LoadedNutritionManager) {
               return Scaffold(
                 appBar: AppBar(
-                  title: Text(S.of(context).add_nutritions),
+                  title: Text(I18n.of(context).add_nutritions),
                   actions: <Widget>[
                     BlocListener<NutritionsBloc, NutritionsState>(
                       listener: (context, state) {
                         if (state is NEditingFinishedGoBack) {
                           // TODO: internationalize
-                          Scaffold.of(context).showSnackBar(
-                              SnackBar(content: Text('saving your input...')));
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              content:
+                                  Text(I18n.of(context).saving_your_input)));
                         } else if (state is NSavedGoBack) {
                           Scaffold.of(context).hideCurrentSnackBar();
                           Navigator.pop(context);
@@ -178,7 +179,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                       builder: (_) => TextFieldDialog(
                         validation: (String name) {
                           if (state.nutritions.contains(name)) {
-                            return 'nutrition already exists';
+                            return I18n.of(context).nutrition_already_exists;
                           } else {
                             return null;
                           }
@@ -187,14 +188,14 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                           BlocProvider.of<NutritionManagerBloc>(context)
                               .add(AddNutrition(name));
                         },
-                        hintText: 'nutrition name',
+                        hintText: I18n.of(context).nutrition,
                       ),
                     );
                   },
                 ),
                 body: state.nutritions.isEmpty
                     ? Center(
-                        child: Text(S.of(context).you_have_no_nutritions),
+                        child: Text(I18n.of(context).you_have_no_nutritions),
                       )
                     : Form(
                         key: _formKey,
@@ -236,7 +237,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
   Widget _getNutritionManagerLoadingScreen() {
     return Scaffold(
         appBar: AppBar(
-          title: Text(S.of(context).add_nutritions),
+          title: Text(I18n.of(context).add_nutritions),
         ),
         body: Center(
           child: CircularProgressIndicator(),
@@ -274,7 +275,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
             builder: (_) => TextFieldDialog(
               validation: (String name) {
                 if (nutritions.contains(name)) {
-                  return 'nutrition already exists';
+                  return I18n.of(context).nutrition_already_exists;
                 } else {
                   return null;
                 }
@@ -283,7 +284,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                 BlocProvider.of<NutritionManagerBloc>(context)
                     .add(UpdateNutrition(nutritionName, name));
               },
-              hintText: 'nutrition name',
+              hintText: I18n.of(context).nutrition,
               prefilledText: nutritionName,
             ),
           );

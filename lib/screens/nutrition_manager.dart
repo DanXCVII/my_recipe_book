@@ -4,7 +4,6 @@ import 'package:groovin_material_icons/groovin_material_icons.dart';
 
 import '../blocs/nutrition_manager/nutrition_manager_bloc.dart';
 import '../generated/i18n.dart';
-import '../models/nutrition.dart';
 import '../models/recipe.dart';
 import '../widgets/dialogs/textfield_dialog.dart';
 
@@ -66,7 +65,7 @@ class _NutritionManagerState extends State<NutritionManager> {
 
             return Scaffold(
               appBar: AppBar(
-                title: Text(S.of(context).manage_nutritions),
+                title: Text(I18n.of(context).manage_nutritions),
                 actions: <Widget>[
                   IconButton(
                     icon: Icon(Icons.check),
@@ -90,7 +89,8 @@ class _NutritionManagerState extends State<NutritionManager> {
                         builder: (_) => TextFieldDialog(
                               validation: (String name) {
                                 if (state.nutritions.contains(name)) {
-                                  return 'nutrition already exists';
+                                  return I18n.of(context)
+                                      .nutrition_already_exists;
                                 } else {
                                   return null;
                                 }
@@ -99,12 +99,12 @@ class _NutritionManagerState extends State<NutritionManager> {
                                 BlocProvider.of<NutritionManagerBloc>(context)
                                     .add(AddNutrition(name));
                               },
-                              hintText: 'nutrition name',
+                              hintText: I18n.of(context).nutrition,
                             ));
                   }),
               body: state.nutritions.isEmpty
                   ? Center(
-                      child: Text(S.of(context).you_have_no_nutritions),
+                      child: Text(I18n.of(context).you_have_no_nutritions),
                     )
                   : Form(
                       key: _formKey,
@@ -144,7 +144,7 @@ class _NutritionManagerState extends State<NutritionManager> {
   Widget _getNutritionManagerLoadingScreen() {
     return Scaffold(
         appBar: AppBar(
-          title: Text(S.of(context).manage_nutritions),
+          title: Text(I18n.of(context).manage_nutritions),
         ),
         body: Center(
           child: CircularProgressIndicator(),
@@ -156,12 +156,12 @@ class _NutritionManagerState extends State<NutritionManager> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(S.of(context).delete_nutrition),
-        content: Text(S.of(context).sure_you_want_to_delete_this_nutrition +
+        title: Text(I18n.of(context).delete_nutrition),
+        content: Text(I18n.of(context).sure_you_want_to_delete_this_nutrition +
             " $nutritionName"),
         actions: <Widget>[
           FlatButton(
-            child: Text(S.of(context).no),
+            child: Text(I18n.of(context).no),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             textColor: Theme.of(context).textTheme.body1.color,
@@ -171,7 +171,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             },
           ),
           FlatButton(
-            child: Text(S.of(context).yes),
+            child: Text(I18n.of(context).yes),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             textColor: Theme.of(context).textTheme.body1.color,
@@ -241,7 +241,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             builder: (_) => TextFieldDialog(
               validation: (String name) {
                 if (nutritions.contains(name)) {
-                  return 'nutrition already exists';
+                  return I18n.of(context).nutrition_already_exists;
                 } else {
                   return null;
                 }
@@ -251,7 +251,7 @@ class _NutritionManagerState extends State<NutritionManager> {
                   UpdateNutrition(nutritionName, name),
                 );
               },
-              hintText: 'nutrition name',
+              hintText: I18n.of(context).nutrition,
               prefilledText: nutritionName,
             ),
           );

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
+import 'package:my_recipe_book/constants/routes.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
@@ -12,7 +14,6 @@ import '../blocs/recipe_category_overview/recipe_category_overview_state.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
-import '../routes.dart';
 import 'recipe_overview.dart';
 import 'recipe_screen.dart';
 
@@ -70,7 +71,8 @@ class RecipeRow extends StatelessWidget {
                     arguments: RecipeGridViewArguments(
                       shoppingCartBloc:
                           BlocProvider.of<ShoppingCartBloc>(context),
-                      category: category == null ? 'no category' : category,
+                      category:
+                          category == null ? Constants.noCategory : category,
                     ),
                   );
                 },
@@ -81,7 +83,9 @@ class RecipeRow extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        category != null ? category : S.of(context).no_category,
+                        category != null
+                            ? category
+                            : I18n.of(context).no_category,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -182,8 +186,8 @@ class RecipeHozizontalList extends StatelessWidget {
                                     bottomRight: Radius.circular(35)),
                                 child: FadeInImage(
                                   image: recipes[index].imagePreviewPath ==
-                                          'images/randomFood.jpg'
-                                      ? AssetImage('images/randomFood.jpg')
+                                          Constants.noRecipeImage
+                                      ? AssetImage(Constants.noRecipeImage)
                                       : FileImage(File(
                                           recipes[index].imagePreviewPath)),
                                   fadeInDuration:
@@ -229,8 +233,9 @@ class RecipeHozizontalList extends StatelessWidget {
                     arguments: RecipeGridViewArguments(
                       shoppingCartBloc:
                           BlocProvider.of<ShoppingCartBloc>(context),
-                      category:
-                          categoryName == null ? 'no category' : categoryName,
+                      category: categoryName == null
+                          ? Constants.noCategory
+                          : categoryName,
                     ),
                   );
                 },

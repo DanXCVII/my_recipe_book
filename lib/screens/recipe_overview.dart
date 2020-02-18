@@ -7,6 +7,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
@@ -140,7 +141,7 @@ class RecipeGridView extends StatelessWidget {
                               children: <Widget>[
                                 Icon(GroovinMaterialIcons.arrow_up_bold),
                                 SizedBox(width: 5),
-                                Text(S.of(context).by_name),
+                                Text(I18n.of(context).by_name),
                               ],
                             ),
                           ),
@@ -151,7 +152,7 @@ class RecipeGridView extends StatelessWidget {
                               children: <Widget>[
                                 Icon(GroovinMaterialIcons.arrow_down_bold),
                                 SizedBox(width: 5),
-                                Text(S.of(context).by_name),
+                                Text(I18n.of(context).by_name),
                               ],
                             ),
                           ),
@@ -162,7 +163,7 @@ class RecipeGridView extends StatelessWidget {
                               children: <Widget>[
                                 Icon(GroovinMaterialIcons.arrow_up_bold),
                                 SizedBox(width: 5),
-                                Text(S.of(context).by_effort),
+                                Text(I18n.of(context).by_effort),
                               ],
                             ),
                           ),
@@ -173,7 +174,7 @@ class RecipeGridView extends StatelessWidget {
                               children: <Widget>[
                                 Icon(GroovinMaterialIcons.arrow_down_bold),
                                 SizedBox(width: 5),
-                                Text(S.of(context).by_effort),
+                                Text(I18n.of(context).by_effort),
                               ],
                             ),
                           ),
@@ -184,7 +185,7 @@ class RecipeGridView extends StatelessWidget {
                               children: <Widget>[
                                 Icon(GroovinMaterialIcons.arrow_up_bold),
                                 SizedBox(width: 5),
-                                Text(S.of(context).by_ingredientsamount),
+                                Text(I18n.of(context).by_ingredientsamount),
                               ],
                             ),
                           ),
@@ -195,7 +196,7 @@ class RecipeGridView extends StatelessWidget {
                               children: <Widget>[
                                 Icon(GroovinMaterialIcons.arrow_down_bold),
                                 SizedBox(width: 5),
-                                Text(S.of(context).by_ingredientsamount),
+                                Text(I18n.of(context).by_ingredientsamount),
                               ],
                             ),
                           ),
@@ -212,7 +213,7 @@ class RecipeGridView extends StatelessWidget {
                       background: Container(
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: state.randomImage == 'images/randomFood.jpg'
+                            image: state.randomImage == Constants.noRecipeImage
                                 ? AssetImage(state.randomImage)
                                 : FileImage(File(state.randomImage)),
                             fit: BoxFit.cover,
@@ -271,7 +272,7 @@ class RecipeGridView extends StatelessWidget {
           } else {
             return Scaffold(
                 appBar: AppBar(
-                  title: Text("no recipes"),
+                  title: Text(I18n.of(context).no_recipes),
                 ),
                 body: NoRecipeCategory());
           }
@@ -300,20 +301,20 @@ class RecipeGridView extends StatelessWidget {
 
   String _getTitle(BuildContext context, String category, Vegetable vegetable) {
     if (category != null) {
-      if (category == "no category") {
-        return S.of(context).no_category;
-      } else if (category == "all categories") {
-        return S.of(context).all_categories;
+      if (category == Constants.noCategory) {
+        return I18n.of(context).no_category;
+      } else if (category == Constants.allCategories) {
+        return I18n.of(context).all_categories;
       } else {
         return category;
       }
     } else {
       if (vegetable == Vegetable.NON_VEGETARIAN) {
-        return S.of(context).with_meat;
+        return I18n.of(context).with_meat;
       } else if (vegetable == Vegetable.VEGETARIAN) {
-        return S.of(context).vegetarian;
+        return I18n.of(context).vegetarian;
       } else if (vegetable == Vegetable.VEGAN) {
-        return S.of(context).vegan;
+        return I18n.of(context).vegan;
       }
     }
     return "title not found";
@@ -332,7 +333,7 @@ class NoRecipeCategory extends StatelessWidget {
             color: Colors.white,
             size: 70.0,
           ),
-          description: S.of(context).no_recipes_under_this_category),
+          description: I18n.of(context).no_recipes_under_this_category),
     );
   }
 }

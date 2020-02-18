@@ -78,12 +78,12 @@ class TextFieldDialogState extends State<TextFieldDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   FlatButton(
-                      child: Text(S.of(context).cancel),
+                      child: Text(I18n.of(context).cancel),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
                   FlatButton(
-                    child: Text(S.of(context).save),
+                    child: Text(I18n.of(context).save),
                     onPressed: () {
                       validateAddModifyItem();
                     },

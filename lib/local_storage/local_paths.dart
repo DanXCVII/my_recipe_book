@@ -36,13 +36,13 @@ class PathProvider {
   }
 
   String getRecipeStepDir(String recipeName) {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '$cRecipeName/stepImages/';
   }
 
   Future<String> getRecipeDirFull(String recipeName) async {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String imageLocalPath = await localPath;
     return '$imageLocalPath/$cRecipeName';
@@ -50,7 +50,7 @@ class PathProvider {
 
   Future<String> getRecipeStepNumberDirFull(
       String recipeName, int stepNumber) async {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/$cRecipeName/stepImages/$stepNumber')
@@ -59,7 +59,7 @@ class PathProvider {
   }
 
   String getRecipeStepNumberDir(String recipeName, int stepNumber) {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '/$cRecipeName/stepImages/$stepNumber';
   }
@@ -72,7 +72,7 @@ class PathProvider {
 
   Future<String> getRecipeStepPreviewNumberDirFull(
       String recipeName, int stepNumber) async {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String imageLocalPath = await localPath;
     await Directory(
@@ -82,7 +82,7 @@ class PathProvider {
   }
 
   String getRecipeStepPreviewNumberDir(String recipeName, int stepNumber) {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '/$cRecipeName/preview/stepImages/p-$stepNumber';
   }
@@ -91,8 +91,8 @@ class PathProvider {
 
   Future<String> getRecipeOldPathFull(
       String oldRecipeName, String newRecipeName, String ending) async {
-    String cOldRecipeName = getUnderscoreName(oldRecipeName);
-    String cNewRecipeName = getUnderscoreName(newRecipeName);
+    String cOldRecipeName = stringReplaceSpaceUnderscore(oldRecipeName);
+    String cNewRecipeName = stringReplaceSpaceUnderscore(newRecipeName);
 
     String imageLocalPath = await localPath;
     return '$imageLocalPath/$cNewRecipeName/$cOldRecipeName' + ending;
@@ -100,15 +100,15 @@ class PathProvider {
 
   Future<String> getRecipePreviewOldPathFull(
       String oldRecipeName, String newRecipeName, String ending) async {
-    String cOldRecipeName = getUnderscoreName(oldRecipeName);
-    String cNewRecipeName = getUnderscoreName(newRecipeName);
+    String cOldRecipeName = stringReplaceSpaceUnderscore(oldRecipeName);
+    String cNewRecipeName = stringReplaceSpaceUnderscore(newRecipeName);
 
     String imageLocalPath = await localPath;
     return '$imageLocalPath/$cNewRecipeName/preview/p-$cOldRecipeName' + ending;
   }
 
   Future<String> getRecipePathFull(String recipeName, String ending) async {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/$cRecipeName').create(recursive: true);
@@ -116,7 +116,7 @@ class PathProvider {
   }
 
   String getRecipePath(String recipeName, String ending) {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '/$cRecipeName/$cRecipeName' + ending;
   }
@@ -125,7 +125,7 @@ class PathProvider {
 
   Future<String> getRecipePreviewPathFull(
       String recipeName, String ending) async {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String imageLocalPath = await localPath;
     await Directory('$imageLocalPath/$cRecipeName/preview')
@@ -134,13 +134,13 @@ class PathProvider {
   }
 
   String getRecipePreviewPath(String recipeName, String ending) {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '/$cRecipeName/preview/p-recipe-$cRecipeName' + ending;
   }
 
   Future<String> getRecipePreviewDirFull(String recipeName) async {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String imageLocalPath = await localPath;
     return '$imageLocalPath/$cRecipeName/preview';
@@ -149,7 +149,7 @@ class PathProvider {
   // returns a list of the paths to the preview stepimages of the recipe
   Future<List<List<String>>> getRecipeStepPreviewPathList(
       List<List<String>> stepImages, String recipeName) async {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     if (!Directory(await getRecipeDirFull(recipeName)).existsSync())
       return [[]];
@@ -178,7 +178,7 @@ class PathProvider {
   }
 
   Future<String> getRecipeImportDir(String recipeName) async {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     var tmpDir = await getTemporaryDirectory();
     await Directory('${tmpDir.path}/import/$cRecipeName/$cRecipeName')
@@ -187,7 +187,7 @@ class PathProvider {
   }
 
   Future<String> getRecipeImportDirFolder(String recipeName) async {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     var tmpDir = await getTemporaryDirectory();
     await Directory('${tmpDir.path}/import/$cRecipeName')
@@ -210,13 +210,13 @@ class PathProvider {
   }
 
   String getShareZipFile(String recipeName, String fullTargetDir) {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '$fullTargetDir/$cRecipeName.zip';
   }
 
   String getShareJsonPath(String recipeName, String fullTargetDir) {
-    String cRecipeName = getUnderscoreName(recipeName);
+    String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '$fullTargetDir/$cRecipeName.json';
   }

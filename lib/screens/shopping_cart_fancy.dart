@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as Constants;
 import '../generated/i18n.dart';
 import '../helper.dart';
 import '../hive.dart';
@@ -62,7 +63,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
         pinned: true,
         flexibleSpace: FlexibleSpaceBar(
             centerTitle: false,
-            title: Text(S.of(context).shoppingcart),
+            title: Text(I18n.of(context).shoppingcart),
             background: Image(
               image: AssetImage('images/cuisine.jpg'),
               fit: BoxFit.cover,
@@ -100,7 +101,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
       ];
     }
     Recipe summaryRecipe =
-        recipes.firstWhere((recipe) => recipe.name == "summary");
+        recipes.firstWhere((recipe) => recipe.name == Constants.summary);
     if (summaryRecipe != recipes.first) {
       recipes.removeWhere((recipe) => recipe.name == "summary");
       recipes.insert(0, summaryRecipe);
@@ -151,7 +152,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
               color: Colors.brown,
               size: 70.0,
             ),
-            description: S.of(context).shopping_cart_is_empty),
+            description: I18n.of(context).shopping_cart_is_empty),
       ),
     );
   }
@@ -160,7 +161,8 @@ class FancyShoppingCartScreen extends StatelessWidget {
       List<CheckableIngredient> ingredients, BuildContext context) {
     return Card(
       child: ExpansionTile(
-        leading: recipe.name == "summary" ? null : RecipeImageHero(recipe),
+        leading:
+            recipe.name == Constants.summary ? null : RecipeImageHero(recipe),
         title: Text(
           recipe.name,
         ),

@@ -25,26 +25,26 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   Stream<AppState> _mapLoadingToState(InitializeData event) async* {
     yield LoadedState(event.recipeCategoryOverview, event.showIntro, 0,
-        S.of(event.context).recipes);
+        I18n.of(event.context).recipes);
   }
 
   Stream<AppState> _mapChangeViewToState(ChangeView event) async* {
     String title;
     switch (event.index) {
       case 0:
-        title = S.of(event.context).recipes;
+        title = I18n.of(event.context).recipes;
         break;
       case 1:
-        title = S.of(event.context).favorites;
+        title = I18n.of(event.context).favorites;
         break;
       case 2:
-        title = S.of(event.context).shoppingcart;
+        title = I18n.of(event.context).shoppingcart;
         break;
       case 3:
-        title = S.of(event.context).roll_the_dice;
+        title = I18n.of(event.context).roll_the_dice;
         break;
       case 4:
-        title = S.of(event.context).settings;
+        title = I18n.of(event.context).settings;
         break;
       default:
         break;

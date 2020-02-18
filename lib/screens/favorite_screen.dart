@@ -27,7 +27,7 @@ class FavoriteScreen extends StatelessWidget {
                     color: Colors.pink,
                     size: 70.0,
                   ),
-                  description: S.of(context).no_added_favorites_yet),
+                  description: I18n.of(context).no_added_favorites_yet),
             );
           }
           return FavoriteRecipeCards(

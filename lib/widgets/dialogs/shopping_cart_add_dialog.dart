@@ -41,7 +41,7 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
       child: Column(
         children: <Widget>[
           Text(
-            S.of(context).add_to_cart,
+            I18n.of(context).add_to_cart,
             style: TextStyle(fontWeight: FontWeight.w800, fontSize: 21),
           ),
           SizedBox(height: 16),
@@ -53,7 +53,7 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                   controller: recipeNameController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: S.of(context).recipe_name,
+                    labelText: I18n.of(context).recipe_name,
                   ),
                 ),
                 Container(height: 12),
@@ -67,7 +67,7 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                         controller: ingredientNameController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: S.of(context).ingredient,
+                          labelText: I18n.of(context).ingredient,
                         ),
                       ),
                     ),
@@ -79,13 +79,13 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: S.of(context).amnt,
+                          labelText: I18n.of(context).amnt,
                         ),
                         validator: (value) {
-                          if (validateNumber(value)) {
+                          if (stringIsValidDouble(value)) {
                             return null;
                           }
-                          return S.of(context).no_valid_number;
+                          return I18n.of(context).no_valid_number;
                         },
                       ),
                     ),
@@ -96,7 +96,7 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                         controller: ingredientUnitController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: S.of(context).unit,
+                          labelText: I18n.of(context).unit,
                         ),
                       ),
                     ),
@@ -110,14 +110,14 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               FlatButton(
-                child: Text(S.of(context).cancel),
+                child: Text(I18n.of(context).cancel),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               SizedBox(width: 3),
               FlatButton(
-                child: Text(S.of(context).add),
+                child: Text(I18n.of(context).add),
                 onPressed: () {
                   if (formKey.currentState.validate()) {
                     BlocProvider.of<ShoppingCartBloc>(context).add(
@@ -130,7 +130,7 @@ class _AddShoppingCartDialogState extends State<AddShoppingCartDialog> {
                                 unit: ingredientUnitController.text)
                           ],
                           recipeNameController.text == ''
-                              ? 'summary'
+                              ? I18n.of(context).summary
                               : recipeNameController.text),
                     );
 

@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/screens/recipe_screen.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
 
-import '../routes.dart';
+import '../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as Constants;
+import '../constants/routes.dart';
+import '../models/recipe.dart';
+import '../screens/recipe_screen.dart';
 
 class RecipeImageHero extends StatelessWidget {
   final Recipe recipe;
@@ -36,7 +37,7 @@ class RecipeImageHero extends StatelessWidget {
           child: Container(
             width: 30,
             height: 30,
-            child: recipe.imagePreviewPath == "images/randomFood.jpg"
+            child: recipe.imagePreviewPath == Constants.noRecipeImage
                 ? Image.asset(
                     recipe.imagePreviewPath,
                     fit: BoxFit.cover,

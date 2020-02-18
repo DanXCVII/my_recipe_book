@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/blocs/new_recipe/general_info/general_info_bloc.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/constants/routes.dart';
 
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import '../../../generated/i18n.dart';
@@ -14,7 +15,6 @@ import '../../../helper.dart';
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
-import '../../../routes.dart';
 import '../../../widgets/image_selector.dart' as IS;
 import '../ingredients_screen.dart';
 import 'categories_section.dart';
@@ -83,7 +83,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("add general info"),
+          title: Text(I18n.of(context).add_general_info),
           actions: <Widget>[
             BlocListener<ClearRecipeBloc, ClearRecipeState>(
               listener: (context, state) {
@@ -106,8 +106,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
               listener: (context, state) {
                 if (state is GEditingFinishedGoBack) {
                   // TODO: internationalize
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(content: Text('saving your input...')));
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(I18n.of(context).saving_your_input)));
                 } else if (state is GSaved) {
                   BlocProvider.of<GeneralInfoBloc>(context).add(SetCanSave());
 
@@ -187,7 +187,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                       textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
                         filled: true,
-                        labelText: S.of(context).name + "*",
+                        labelText: I18n.of(context).name + "*",
                         icon: Icon(GroovinMaterialIcons.notebook),
                       ),
                     ),
@@ -202,9 +202,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                           padding: const EdgeInsets.all(12.0),
                           child: TextFormField(
                             validator: (value) {
-                              if (validateNumber(value) == false &&
+                              if (stringIsValidDouble(value) == false &&
                                   value != "") {
-                                return S.of(context).no_valid_number;
+                                return I18n.of(context).no_valid_number;
                               }
                               return null;
                             },
@@ -213,7 +213,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               filled: true,
-                              labelText: S.of(context).prep_time,
+                              labelText: I18n.of(context).prep_time,
                               icon: Icon(Icons.access_time),
                             ),
                           ),
@@ -225,9 +225,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                           padding: const EdgeInsets.all(12),
                           child: TextFormField(
                             validator: (value) {
-                              if (validateNumber(value) == false &&
+                              if (stringIsValidDouble(value) == false &&
                                   value != "") {
-                                return S.of(context).no_valid_number;
+                                return I18n.of(context).no_valid_number;
                               }
                               return null;
                             },
@@ -236,7 +236,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               filled: true,
-                              labelText: S.of(context).cook_time,
+                              labelText: I18n.of(context).cook_time,
                             ),
                           ),
                         ),
@@ -248,8 +248,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                         left: 52, top: 12, right: 12, bottom: 12),
                     child: TextFormField(
                       validator: (value) {
-                        if (validateNumber(value) == false && value != "") {
-                          return S.of(context).no_valid_number;
+                        if (stringIsValidDouble(value) == false &&
+                            value != "") {
+                          return I18n.of(context).no_valid_number;
                         }
                         return null;
                       },
@@ -257,9 +258,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                       controller: totalTimeController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        helperText: S.of(context).in_minutes,
+                        helperText: I18n.of(context).in_minutes,
                         filled: true,
-                        labelText: S.of(context).total_time,
+                        labelText: I18n.of(context).total_time,
                       ),
                     ),
                   ),
@@ -314,14 +315,14 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
       switch (v) {
         case Validator.REQUIRED_FIELDS:
           _showFlushInfo(
-            S.of(context).check_ingredient_section_fields,
-            S.of(context).check_filled_in_information_description,
+            I18n.of(context).check_ingredient_section_fields,
+            I18n.of(context).check_filled_in_information_description,
           );
 
           break;
         case Validator.NAME_TAKEN:
-          _showFlushInfo(S.of(context).recipename_taken,
-              S.of(context).recipename_taken_description);
+          _showFlushInfo(I18n.of(context).recipename_taken,
+              I18n.of(context).recipename_taken_description);
           break;
 
         default:
@@ -383,12 +384,12 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   /// because the name will be used as a directory for the recipe images
   String _validateRecipeName(String recipeName) {
     if (recipeName.isEmpty) {
-      return "Please enter a name";
+      return I18n.of(context).please_enter_a_name;
     }
     if (recipeName.contains('/') ||
         recipeName.contains('.') ||
         recipeName.length >= 70) {
-      return "invalid name";
+      return I18n.of(context).invalid_name;
     } else {
       try {
         PathProvider.pP.getRecipeDirFull(recipeName).then((path) {

@@ -18,7 +18,7 @@ class CategoryManager extends StatelessWidget {
         } else if (state is LoadedCategoryManager) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(S.of(context).manage_categories),
+              title: Text(I18n.of(context).manage_categories),
               actions: <Widget>[
                 IconButton(
                     icon: Icon(Icons.check),
@@ -54,7 +54,7 @@ class CategoryManager extends StatelessWidget {
                 }),
             body: state.categories.length == 1
                 ? Center(
-                    child: Text(S.of(context).you_have_no_categories),
+                    child: Text(I18n.of(context).you_have_no_categories),
                   )
                 : ReorderableListView(
                     onReorder: (oldIndex, newIndex) {
@@ -73,7 +73,8 @@ class CategoryManager extends StatelessWidget {
                               builder: (_) => TextFieldDialog(
                                 validation: (String name) {
                                   if (state.categories.contains(name)) {
-                                    return 'category already exists';
+                                    return I18n.of(context)
+                                        .category_already_exists;
                                   } else {
                                     return null;
                                   }
@@ -85,7 +86,7 @@ class CategoryManager extends StatelessWidget {
                                         RMUpdateCategory(categoryName, name),
                                       );
                                 },
-                                hintText: 'category name',
+                                hintText: I18n.of(context).categoryname,
                                 prefilledText: categoryName,
                               ),
                             );
@@ -114,7 +115,7 @@ class CategoryManager extends StatelessWidget {
   Widget _getLoadedScreen(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).manage_categories),
+        title: Text(I18n.of(context).manage_categories),
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.check),
@@ -134,12 +135,12 @@ class CategoryManager extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(S.of(context).delete_category),
-        content: Text(S.of(context).sure_you_want_to_delete_this_category +
+        title: Text(I18n.of(context).delete_category),
+        content: Text(I18n.of(context).sure_you_want_to_delete_this_category +
             " $categoryName"),
         actions: <Widget>[
           FlatButton(
-            child: Text(S.of(context).no),
+            child: Text(I18n.of(context).no),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             textColor: Theme.of(context).textTheme.body1.color,
@@ -148,7 +149,7 @@ class CategoryManager extends StatelessWidget {
             },
           ),
           FlatButton(
-            child: Text(S.of(context).yes),
+            child: Text(I18n.of(context).yes),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             color: Colors.red[600],

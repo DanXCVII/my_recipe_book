@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
+import 'package:my_recipe_book/constants/routes.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -13,7 +15,6 @@ import '../generated/i18n.dart';
 import '../helper.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
-import '../routes.dart';
 import '../screens/recipe_overview.dart';
 import '../screens/recipe_screen.dart';
 
@@ -101,7 +102,7 @@ class RecipeCard extends StatelessWidget {
                           ),
                           child: FadeInImage(
                             image: recipe.imagePreviewPath ==
-                                    'images/randomFood.jpg'
+                                    Constants.noRecipeImage
                                 ? AssetImage(recipe.imagePreviewPath)
                                 : FileImage(File(recipe.imagePreviewPath)),
                             placeholder: MemoryImage(kTransparentImage),
@@ -139,7 +140,7 @@ class RecipeCard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  "${getTimeHoursMinutes(recipe.totalTime)} • ${getIngredientCount(recipe.ingredients)} ${S.of(context).ingredients}",
+                                  "${getTimeHoursMinutes(recipe.totalTime)} • ${getIngredientCount(recipe.ingredients)} ${I18n.of(context).ingredients}",
                                   textScaleFactor: deviceWidth / 400,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,

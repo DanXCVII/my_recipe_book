@@ -4,12 +4,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/constants/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../generated/i18n.dart';
 import '../intro_screen.dart';
-import '../routes.dart';
 import '../theming.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import 'export_recipes_screen.dart';
@@ -22,13 +22,13 @@ class Settings extends StatelessWidget {
         children: <Widget>[
           Divider(),
           ListTile(
-              title: Text(S.of(context).manage_nutritions),
+              title: Text(I18n.of(context).manage_nutritions),
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.manageNutritions);
               }),
           Divider(),
           ListTile(
-              title: Text("manage ingredients"),
+              title: Text(I18n.of(context).manage_ingredients),
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.manageIngredients);
               }),
@@ -38,12 +38,12 @@ class Settings extends StatelessWidget {
               _importSingleRecipe(context).then((_) {});
             },
             child: ListTile(
-              title: Text(S.of(context).import_recipe_s),
+              title: Text(I18n.of(context).import_recipe_s),
             ),
           ),
           Divider(),
           ListTile(
-            title: Text(S.of(context).export_recipe_s),
+            title: Text(I18n.of(context).export_recipe_s),
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ExportRecipes()));
@@ -51,7 +51,7 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            title: Text(S.of(context).switch_theme),
+            title: Text(I18n.of(context).switch_theme),
             trailing: Container(
               width: 130,
               height: 25,
@@ -149,15 +149,15 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            title: Text(S.of(context).view_intro),
+            title: Text(I18n.of(context).view_intro),
             onTap: () {
               _pushViewIntroScreen(context);
             },
           ),
           Divider(),
-          ListTile(title: Text(S.of(context).about_me)),
+          ListTile(title: Text(I18n.of(context).about_me)),
           Divider(),
-          ListTile(title: Text(S.of(context).rate_app)),
+          ListTile(title: Text(I18n.of(context).rate_app)),
           Divider(),
         ],
       ),
@@ -185,9 +185,9 @@ class Settings extends StatelessWidget {
           prefs.setInt('theme', 0);
           scaffold.showSnackBar(
             SnackBar(
-              content: Text(S.of(context).snackbar_automatic_theme_applied),
+              content: Text(I18n.of(context).snackbar_automatic_theme_applied),
               action: SnackBarAction(
-                label: S.of(context).dismiss,
+                label: I18n.of(context).dismiss,
                 onPressed: scaffold.hideCurrentSnackBar,
               ),
             ),
@@ -197,9 +197,9 @@ class Settings extends StatelessWidget {
           prefs.setInt('theme', 1);
           scaffold.showSnackBar(
             SnackBar(
-              content: Text(S.of(context).snackbar_bright_theme_applied),
+              content: Text(I18n.of(context).snackbar_bright_theme_applied),
               action: SnackBarAction(
-                label: S.of(context).dismiss,
+                label: I18n.of(context).dismiss,
                 onPressed: scaffold.hideCurrentSnackBar,
               ),
             ),
@@ -209,9 +209,9 @@ class Settings extends StatelessWidget {
           prefs.setInt('theme', 2);
           scaffold.showSnackBar(
             SnackBar(
-              content: Text(S.of(context).snackbar_dark_theme_applied),
+              content: Text(I18n.of(context).snackbar_dark_theme_applied),
               action: SnackBarAction(
-                label: S.of(context).dismiss,
+                label: I18n.of(context).dismiss,
                 onPressed: scaffold.hideCurrentSnackBar,
               ),
             ),
@@ -221,9 +221,9 @@ class Settings extends StatelessWidget {
           prefs.setInt('theme', 3);
           scaffold.showSnackBar(
             SnackBar(
-              content: Text(S.of(context).snackbar_midnight_theme_applied),
+              content: Text(I18n.of(context).snackbar_midnight_theme_applied),
               action: SnackBarAction(
-                label: S.of(context).dismiss,
+                label: I18n.of(context).dismiss,
                 onPressed: scaffold.hideCurrentSnackBar,
               ),
             ),

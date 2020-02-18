@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/constants/routes.dart';
 import 'package:my_recipe_book/screens/ingredient_search.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -19,7 +20,6 @@ import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../generated/i18n.dart';
 import '../hive.dart';
-import '../routes.dart';
 import '../settings/settings_screen.dart';
 import '../widgets/search.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
@@ -104,29 +104,29 @@ class MyHomePageState extends State<MyHomePage> {
                 items: [
                   BottomNavyBarItem(
                       icon: Icon(GroovinMaterialIcons.notebook),
-                      title: Text(S.of(context).recipes),
+                      title: Text(I18n.of(context).recipes),
                       activeColor: Colors.orange,
                       inactiveColor: Colors.white),
                   BottomNavyBarItem(
                     icon: Icon(Icons.favorite),
-                    title: Text(S.of(context).favorites),
+                    title: Text(I18n.of(context).favorites),
                     activeColor: Colors.pink,
                     inactiveColor: Colors.white,
                   ),
                   BottomNavyBarItem(
                       icon: Icon(Icons.shopping_basket),
-                      title: Text(S.of(context).basket),
+                      title: Text(I18n.of(context).basket),
                       activeColor: Colors.brown[300],
                       inactiveColor: Colors.white),
                   BottomNavyBarItem(
                     icon: Icon(GroovinMaterialIcons.dice_multiple),
-                    title: Text(S.of(context).explore),
+                    title: Text(I18n.of(context).explore),
                     activeColor: Colors.green,
                     inactiveColor: Colors.white,
                   ),
                   BottomNavyBarItem(
                       icon: Icon(Icons.settings),
-                      title: Text(S.of(context).settings),
+                      title: Text(I18n.of(context).settings),
                       activeColor: Colors.grey[100],
                       inactiveColor: Colors.white)
                 ],
@@ -184,18 +184,18 @@ class MyHomePageState extends State<MyHomePage> {
   Widget getImportRecipeDialog(File importZipFile) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Text("import recipe"),
+      title: Text(I18n.of(context).import_recipe_s),
       content: Text(
-        'Do you want to import the recipe/s?',
+        I18n.of(context).do_you_want_to_import_the_recipe,
       ),
       actions: <Widget>[
         FlatButton(
-            child: Text("no"),
+            child: Text(I18n.of(context).no),
             onPressed: () {
               Navigator.pop(context);
             }),
         FlatButton(
-          child: Text("yes"),
+          child: Text(I18n.of(context).yes),
           onPressed: () {
             BlocProvider.of<ImportRecipeBloc>(context)
                 .add(StartImportRecipes(importZipFile));

@@ -39,11 +39,11 @@ class _IngredientsState extends State<Ingredients> {
               const EdgeInsets.only(left: 12, top: 22, bottom: 12, right: 200),
           child: TextFormField(
             validator: (value) {
-              if (validateNumber(value) == false) {
-                return S.of(context).no_valid_number;
+              if (stringIsValidDouble(value) == false) {
+                return I18n.of(context).no_valid_number;
               }
               if (value.isEmpty) {
-                return S.of(context).data_required;
+                return I18n.of(context).data_required;
               }
               return null;
             },
@@ -51,7 +51,7 @@ class _IngredientsState extends State<Ingredients> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               filled: true,
-              labelText: S.of(context).servings + "*",
+              labelText: I18n.of(context).servings + "*",
               icon: Icon(Icons.local_dining),
             ),
           ),
@@ -59,7 +59,7 @@ class _IngredientsState extends State<Ingredients> {
         Padding(
           padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
           child: Text(
-            S.of(context).ingredients + ':',
+            I18n.of(context).ingredients + ':',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -91,7 +91,7 @@ class _IngredientsState extends State<Ingredients> {
                     padding: const EdgeInsets.only(right: 12),
                     child: OutlineButton.icon(
                       icon: Icon(Icons.remove_circle),
-                      label: Text(S.of(context).remove_section),
+                      label: Text(I18n.of(context).remove_section),
                       onPressed: () {
                         updateAndRemoveController();
                       },
@@ -103,7 +103,7 @@ class _IngredientsState extends State<Ingredients> {
                 : null,
             OutlineButton.icon(
               icon: Icon(Icons.add_circle),
-              label: Text(S.of(context).add_section),
+              label: Text(I18n.of(context).add_section),
               onPressed: () {
                 updateAndAddController();
               },
@@ -198,8 +198,8 @@ class _IngredientSectionState extends State<IngredientSection> {
                 decoration: InputDecoration(
                   icon: Icon(Icons.receipt),
                   helperText:
-                      S.of(context).not_required_eg_ingredients_of_sauce,
-                  labelText: S.of(context).section_name,
+                      I18n.of(context).not_required_eg_ingredients_of_sauce,
+                  labelText: I18n.of(context).section_name,
                   filled: true,
                 ),
               ),
@@ -225,7 +225,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                             .ingredientNameController[widget.sectionNumber][i],
                         suggestions: widget.ingredientNames,
                         decoration: InputDecoration(
-                          hintText: S.of(context).name,
+                          hintText: I18n.of(context).name,
                           filled: true,
                         ),
                       ),
@@ -236,8 +236,9 @@ class _IngredientSectionState extends State<IngredientSection> {
                         padding: const EdgeInsets.only(left: 10),
                         child: TextFormField(
                           validator: (value) {
-                            if (validateNumber(value) == false && value != "")
-                              return S.of(context).no_valid_number;
+                            if (stringIsValidDouble(value) == false &&
+                                value != "")
+                              return I18n.of(context).no_valid_number;
                             return null;
                           },
                           autovalidate: false,
@@ -246,7 +247,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             filled: true,
-                            hintText: S.of(context).amnt,
+                            hintText: I18n.of(context).amnt,
                           ),
                         ),
                       ),
@@ -260,7 +261,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                               widget.sectionNumber][i],
                           decoration: InputDecoration(
                             filled: true,
-                            hintText: S.of(context).unit,
+                            hintText: I18n.of(context).unit,
                           ),
                         ),
                       ),
@@ -280,7 +281,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                       padding: const EdgeInsets.only(right: 10),
                       child: OutlineButton.icon(
                           icon: Icon(Icons.remove_circle_outline),
-                          label: Text(S.of(context).remove_ingredient),
+                          label: Text(I18n.of(context).remove_ingredient),
                           onPressed: () {
                             setState(() {
                               widget.ingredientNameController[
@@ -301,7 +302,7 @@ class _IngredientSectionState extends State<IngredientSection> {
                   : null,
               OutlineButton.icon(
                   icon: Icon(Icons.add_circle_outline),
-                  label: Text(S.of(context).add_ingredient),
+                  label: Text(I18n.of(context).add_ingredient),
                   onPressed: () {
                     setState(() {
                       widget.ingredientNameController[widget.sectionNumber]

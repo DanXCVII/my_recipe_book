@@ -18,7 +18,8 @@ import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_screen/recipe_screen_bloc.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
-import '../database.dart';
+import '../constants/global_constants.dart' as Constants;
+import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
 import '../hive.dart';
@@ -29,7 +30,6 @@ import '../models/enums.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../my_wrapper.dart';
-import '../routes.dart';
 import '../screens/recipe_overview.dart';
 import '../widgets/gallery_view.dart';
 import '../widgets/recipe_card.dart';
@@ -41,19 +41,6 @@ const double paddingBottomTime = 5;
 const double headingSize = 20;
 const Color textColor = Colors.white;
 const String recipeScreenFontFamily = 'Questrial';
-
-const imageComplexity = [
-  "termoOne",
-  "termoTwo",
-  "termoThree",
-  "termoFour",
-  "termoFive",
-  "termoSix",
-  "termoSeven",
-  "termoEight",
-  "termoNine",
-  "termoTen",
-];
 
 enum PopupOptions { EXPORT_ZIP, EXPORT_TEXT }
 
@@ -166,7 +153,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                               _pc.animatePanelToPosition(1);
                             },
                             child: Text(
-                              S.of(context).nutritions,
+                              I18n.of(context).nutritions,
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
@@ -233,7 +220,7 @@ class NotesSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              S.of(context).notes,
+              I18n.of(context).notes,
               style: TextStyle(
                 color: textColor,
                 fontSize: 24,
@@ -301,7 +288,7 @@ class RecipePage extends StatelessWidget {
               ),
               IconButton(
                 icon: Icon(Icons.delete),
-                tooltip: S.of(context).share_recipe,
+                tooltip: I18n.of(context).share_recipe,
                 onPressed: () {
                   _showDeleteDialog(context, recipe.name);
                 },
@@ -313,11 +300,11 @@ class RecipePage extends StatelessWidget {
                   return [
                     PopupMenuItem(
                       value: PopupOptions.EXPORT_ZIP,
-                      child: Text(S.of(context).export_zip),
+                      child: Text(I18n.of(context).export_zip),
                     ),
                     PopupMenuItem(
                       value: PopupOptions.EXPORT_TEXT,
-                      child: Text(S.of(context).export_text),
+                      child: Text(I18n.of(context).export_text),
                     )
                   ];
                 },
@@ -346,8 +333,8 @@ class RecipePage extends StatelessWidget {
                               child: Container(
                                   height: 270,
                                   child: recipe.imagePath ==
-                                          'images/randomFood.jpg'
-                                      ? Image.asset('images/randomFood.jpg',
+                                          Constants.noRecipeImage
+                                      ? Image.asset(Constants.noRecipeImage,
                                           width: double.infinity,
                                           fit: BoxFit.cover)
                                       : Image.file(File(recipe.imagePath),
@@ -512,12 +499,12 @@ class RecipePage extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(S.of(context).delete_recipe),
-        content: Text(
-            S.of(context).sure_you_want_to_delete_this_recipe + " $recipeName"),
+        title: Text(I18n.of(context).delete_recipe),
+        content: Text(I18n.of(context).sure_you_want_to_delete_this_recipe +
+            " $recipeName"),
         actions: <Widget>[
           FlatButton(
-            child: Text(S.of(context).no),
+            child: Text(I18n.of(context).no),
             textColor: Theme.of(context).textTheme.body1.color,
             onPressed: () {
               Navigator.pop(context);
@@ -526,7 +513,7 @@ class RecipePage extends StatelessWidget {
           FlatButton(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Text(S.of(context).yes),
+            child: Text(I18n.of(context).yes),
             textColor: Theme.of(context).textTheme.body1.color,
             color: Colors.red[600],
             onPressed: () {
@@ -556,14 +543,14 @@ class RecipePage extends StatelessWidget {
     return true;
   }
 
-  String _getRecipeAsString(Recipe recipe) {
+  String _getRecipeAsString(Recipe recipe, BuildContext context) {
     String recipeText = 'recipename: ${recipe.name}\n'
         '====================\n'
-        'preperation Time: ${recipe.preperationTime} min\n'
-        'cooking Time: ${recipe.cookingTime} min\n'
-        'total Time: ${recipe.totalTime} min\n'
+        '${I18n.of(context).prep_time}: ${recipe.preperationTime} min\n'
+        '${I18n.of(context).cook_time}: ${recipe.cookingTime} min\n'
+        '${I18n.of(context).total_time}: ${recipe.totalTime} min\n'
         '====================\n'
-        'recipe for ${recipe.servings} servings:\n';
+        'recipe for ${recipe.servings} ${I18n.of(context).servings}:\n';
     if (recipe.ingredientsGlossary.isNotEmpty) {
       for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
         recipeText += 'ingredients for ${recipe.ingredientsGlossary[i]}:\n';
@@ -582,7 +569,7 @@ class RecipePage extends StatelessWidget {
     }
     if (recipe.notes != null && recipe.notes != '') {
       recipeText += '====================\n';
-      recipeText += 'notes: ${recipe.notes}\n';
+      recipeText += '${I18n.of(context).notes}: ${recipe.notes}\n';
     }
 
     return recipeText;
@@ -659,7 +646,7 @@ class TopSectionRecipe extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                "preperation time:",
+                                "${I18n.of(context).prep_time}:",
                                 style: TextStyle(
                                   color: textColor,
                                   fontFamily: recipeScreenFontFamily,
@@ -709,7 +696,7 @@ class TopSectionRecipe extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                "cooking time:",
+                                "${I18n.of(context).cook_time}:",
                                 style: TextStyle(
                                   color: textColor,
                                   fontFamily: recipeScreenFontFamily,
@@ -763,7 +750,7 @@ class TopSectionRecipe extends StatelessWidget {
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
-                                          "remaining time:",
+                                          "${I18n.of(context).remaining_time}:",
                                           style: TextStyle(
                                             color: textColor,
                                             fontFamily: recipeScreenFontFamily,
@@ -792,7 +779,7 @@ class TopSectionRecipe extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "total time:",
+                        "${I18n.of(context).total_time}:",
                         style: TextStyle(
                           color: textColor,
                           fontFamily: recipeScreenFontFamily,
@@ -872,7 +859,7 @@ class TopSectionRecipe extends StatelessWidget {
                   flex: 7,
                   child: Column(
                     children: <Widget>[
-                      Text(S.of(context).complexity + ':',
+                      Text(I18n.of(context).complexity + ':',
                           style: TextStyle(
                             fontSize: 15,
                             color: textColor,
@@ -951,7 +938,11 @@ class TopSectionRecipe extends StatelessWidget {
                           padding: EdgeInsets.all(9),
                           child: Text(
                             _getTimeString(
-                                preperationTime, cookingTime, totalTime),
+                              preperationTime,
+                              cookingTime,
+                              totalTime,
+                              context,
+                            ),
                             style: TextStyle(
                               fontSize: 18,
                               color: Colors.white,
@@ -968,7 +959,7 @@ class TopSectionRecipe extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(9),
                     child: Text(
-                      "${S.of(context).complexity}: $effort",
+                      "${I18n.of(context).complexity}: $effort",
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -1009,11 +1000,13 @@ class TopSectionRecipe extends StatelessWidget {
     }
   }
 
-  String _getTimeString(
-      double preperationTime, double cookingTime, double totalTime) {
-    if (totalTime != 0) return "total time: " + cutDouble(totalTime);
-    if (cookingTime != 0) return "cooking time: " + cutDouble(cookingTime);
-    return "preperation time: " + cutDouble(preperationTime);
+  String _getTimeString(double preperationTime, double cookingTime,
+      double totalTime, BuildContext context) {
+    if (totalTime != 0)
+      return "${I18n.of(context).total_time}: " + cutDouble(totalTime);
+    if (cookingTime != 0)
+      return "${I18n.of(context).cook_time}: " + cutDouble(cookingTime);
+    return "${I18n.of(context).prep_time}: " + cutDouble(preperationTime);
   }
 
   /// method which determines if the circular chart and complexity termometer should be
@@ -1092,7 +1085,7 @@ class CategoriesSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              S.of(context).categories,
+              I18n.of(context).categories,
               style: TextStyle(
                 color: textColor,
                 fontSize: 24,
@@ -1110,7 +1103,7 @@ class CategoriesSection extends StatelessWidget {
                         return CategoryCircle(
                           categoryName: categoryName,
                           imageName: snapshot.data == null
-                              ? 'images/randomFood.jpg'
+                              ? Constants.noRecipeImage
                               : snapshot.data.imagePath,
                         );
                       }
@@ -1146,68 +1139,64 @@ class _CategoryCircleState extends State<CategoryCircle> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          DBProvider.db
-              .getRecipePreviewOfCategory(widget.categoryName)
-              .then((r) {
-            Navigator.pushNamed(
-              context,
-              RouteNames.recipeCategories,
-              arguments: RecipeGridViewArguments(
-                category: widget.categoryName == null
-                    ? 'no category'
-                    : widget.categoryName,
-                shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
-              ),
-            );
-          });
-        },
-        child: ClipOval(
-          child: Stack(
-            children: <Widget>[
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: widget.imageName != 'images/randomFood.jpg'
-                        ? FileImage(File(widget.imageName))
-                        : AssetImage('images/randomFood.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-                  child: Container(
-                    decoration:
-                        BoxDecoration(color: Colors.white.withOpacity(0.0)),
-                  ),
-                ),
-              ),
-              Container(
-                  margin: EdgeInsets.only(top: 30),
-                  decoration:
-                      BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.4)),
-                  width: 100,
-                  height: 40,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        widget.categoryName,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: recipeScreenFontFamily,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ))
-            ],
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          RouteNames.recipeCategories,
+          arguments: RecipeGridViewArguments(
+            category: widget.categoryName == null
+                ? Constants.noCategory
+                : widget.categoryName,
+            shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
           ),
-        ));
+        );
+      },
+      child: ClipOval(
+        child: Stack(
+          children: <Widget>[
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: widget.imageName != Constants.noRecipeImage
+                      ? FileImage(File(widget.imageName))
+                      : AssetImage(Constants.noRecipeImage),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+                child: Container(
+                  decoration:
+                      BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                ),
+              ),
+            ),
+            Container(
+                margin: EdgeInsets.only(top: 30),
+                decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.4)),
+                width: 100,
+                height: 40,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      widget.categoryName,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: recipeScreenFontFamily,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ))
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -1323,7 +1312,7 @@ class StepsSection extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        S.of(context).directions,
+                        I18n.of(context).directions,
                         style: TextStyle(
                           color: textColor,
                           fontSize: headingSize,
@@ -1487,7 +1476,7 @@ class IngredientsScreen extends StatelessWidget {
                 icon: sectionCheck[i]
                     ? Icon(Icons.shopping_cart)
                     : Icon(Icons.add_shopping_cart),
-                tooltip: 'add to shopping cart',
+                tooltip: I18n.of(context).add_to_cart,
                 onPressed: () {
                   _pressAddSection(
                       sectionIngredients
@@ -1547,7 +1536,7 @@ class IngredientsScreen extends StatelessWidget {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: <Widget>[
                           Text(
-                            S.of(context).ingredients_for,
+                            I18n.of(context).ingredients_for,
                             style: TextStyle(
                               color: textColor,
                               fontSize: headingSize,
@@ -1557,7 +1546,7 @@ class IngredientsScreen extends StatelessWidget {
                           IconButton(
                             icon: Icon(Icons.remove_circle_outline,
                                 color: Colors.white),
-                            tooltip: S.of(context).decrease_servings,
+                            tooltip: I18n.of(context).decrease_servings,
                             onPressed: () {
                               _decreaseServings(state.servings, context);
                             },
@@ -1573,7 +1562,7 @@ class IngredientsScreen extends StatelessWidget {
                           IconButton(
                             icon: Icon(Icons.add_circle_outline,
                                 color: Colors.white),
-                            tooltip: S.of(context).increase_servings,
+                            tooltip: I18n.of(context).increase_servings,
                             onPressed: () {
                               _increaseServings(state.servings, context);
                             },
@@ -1581,7 +1570,7 @@ class IngredientsScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
-                              S.of(context).servings,
+                              I18n.of(context).servings,
                               style: TextStyle(
                                 color: textColor,
                                 fontSize: headingSize,
@@ -1714,7 +1703,10 @@ class Indicator extends StatelessWidget {
         Text(
           text,
           style: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
         )
       ],
     );

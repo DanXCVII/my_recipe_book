@@ -76,11 +76,11 @@ class MyApp extends StatelessWidget {
       create: (context) => RecipeManagerBloc(),
       child: MaterialApp(
         localizationsDelegates: [
-          S.delegate,
+          I18n.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
-        supportedLocales: S.delegate.supportedLocales,
+        supportedLocales: I18n.delegate.supportedLocales,
         showPerformanceOverlay: false,
         theme: CustomTheme.of(context),
         initialRoute: "/",
