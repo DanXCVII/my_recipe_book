@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
 import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 import 'package:my_recipe_book/constants/routes.dart';
@@ -96,53 +97,79 @@ class RecipeCardBig extends StatelessWidget {
                         ),
                       ),
                       Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            color: Theme.of(context).cardColor.withOpacity(0.6),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Container(
-                                  width: cardWidth - 130,
-                                  padding: EdgeInsets.all(scaleFactor * 12.0),
-                                  child: Text(
-                                    recipe.name,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    textScaleFactor: scaleFactor,
-                                    style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w700,
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          color: Theme.of(context).cardColor.withOpacity(0.6),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Container(
+                                width: cardWidth - 130,
+                                padding: EdgeInsets.all(scaleFactor * 12.0),
+                                child: Text(
+                                  recipe.name,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  textScaleFactor: scaleFactor,
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(scaleFactor * 12.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      RouteNames.vegetableRecipes,
+                                      arguments: RecipeGridViewArguments(
+                                          shoppingCartBloc:
+                                              BlocProvider.of<ShoppingCartBloc>(
+                                                  context),
+                                          vegetable: recipe.vegetable),
+                                    );
+                                  },
+                                  child: Image.asset(
+                                    "images/${getRecipeTypeImage(recipe.vegetable)}.png",
+                                    height: scaleFactor * 35,
+                                    width: scaleFactor * 35,
+                                    fit: BoxFit.scaleDown,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      recipe.isFavorite == true
+                          ? Align(
+                              alignment: Alignment(0.95, -0.95),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 3.0, right: 2),
+                                child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                      color: Color.fromRGBO(50, 50, 50, 0.7),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20),
+                                      )),
+                                  child: Center(
+                                    child: SpinKitPumpingHeart(
+                                      color: Colors.pink,
+                                      size: 24.0,
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.all(scaleFactor * 12.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        RouteNames.vegetableRecipes,
-                                        arguments: RecipeGridViewArguments(
-                                            shoppingCartBloc: BlocProvider.of<
-                                                ShoppingCartBloc>(context),
-                                            vegetable: recipe.vegetable),
-                                      );
-                                    },
-                                    child: Image.asset(
-                                      "images/${getRecipeTypeImage(recipe.vegetable)}.png",
-                                      height: scaleFactor * 35,
-                                      width: scaleFactor * 35,
-                                      fit: BoxFit.scaleDown,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ))
-                    ],
+                              ),
+                            )
+                          : null
+                    ]..removeWhere((i) => i == null),
                   ),
                 ),
                 Expanded(

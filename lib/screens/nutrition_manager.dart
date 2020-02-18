@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/nutrition_manager/nutrition_manager_bloc.dart';
@@ -70,6 +71,18 @@ class _NutritionManagerState extends State<NutritionManager> {
                 title: Text(I18n.of(context).manage_nutritions),
                 actions: <Widget>[
                   IconButton(
+                    icon: Icon(Icons.help_outline),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => InfoDialog(
+                          title: I18n.of(context).info,
+                          body: I18n.of(context).nutrition_manager_description,
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
                     icon: Icon(Icons.check),
                     onPressed: () {
                       editingFinished();
@@ -87,22 +100,22 @@ class _NutritionManagerState extends State<NutritionManager> {
                     listTileKeys.add(Key('${listTileKeys.length}'));
                     dismissibleKeys.add(Key('D-${dismissibleKeys.length}'));
                     showDialog(
-                        context: context,
-                        builder: (_) => TextFieldDialog(
-                              validation: (String name) {
-                                if (state.nutritions.contains(name)) {
-                                  return I18n.of(context)
-                                      .nutrition_already_exists;
-                                } else {
-                                  return null;
-                                }
-                              },
-                              save: (String name) {
-                                BlocProvider.of<NutritionManagerBloc>(context)
-                                    .add(AddNutrition(name));
-                              },
-                              hintText: I18n.of(context).nutrition,
-                            ));
+                      context: context,
+                      builder: (_) => TextFieldDialog(
+                        validation: (String name) {
+                          if (state.nutritions.contains(name)) {
+                            return I18n.of(context).nutrition_already_exists;
+                          } else {
+                            return null;
+                          }
+                        },
+                        save: (String name) {
+                          BlocProvider.of<NutritionManagerBloc>(context)
+                              .add(AddNutrition(name));
+                        },
+                        hintText: I18n.of(context).nutrition,
+                      ),
+                    );
                   }),
               body: state.nutritions.isEmpty
                   ? Center(

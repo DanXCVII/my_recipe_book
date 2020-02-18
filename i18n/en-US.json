@@ -150,5 +150,8 @@
     "categoy": "category",
     "do_you_want_to_import_the_recipe": "do you want to import the recipe's?",
     "you_have_no_ingredients": "you have no ingredients",
-    "recipe_for": "recipe for"
+    "recipe_for": "recipe for",
+    "info": "information",
+    "ingredient_manager_description": "Here you can manage the ingredients, which you get suggested when adding a recipe or searching for them. When you edit or delete them, they don't change for the recipe. It's just for the suggestions for saving time when typing.",
+    "nutrition_manager_description": "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself."
 }

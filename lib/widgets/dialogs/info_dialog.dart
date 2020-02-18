@@ -17,12 +17,13 @@ class InfoDialog extends StatelessWidget {
     return AlertDialog(
       title: Text(title),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      content: Text(
-        body,
-      ),
+      content: Text(body),
       actions: <Widget>[
         FlatButton(
           child: Text(I18n.of(context).alright),
+          textColor: Theme.of(context).backgroundColor == Colors.white
+              ? null
+              : Colors.amber,
           onPressed: () {
             Navigator.pop(context);
           },

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/ingredinets_manager/ingredients_manager_bloc.dart';
@@ -75,6 +76,18 @@ class _IngredientsManagerState extends State<IngredientsManager> {
               appBar: AppBar(
                 title: Text(I18n.of(context).manage_ingredients),
                 actions: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.help_outline),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => InfoDialog(
+                          title: I18n.of(context).info,
+                          body: I18n.of(context).ingredient_manager_description,
+                        ),
+                      );
+                    },
+                  ),
                   IconButton(
                     icon: Icon(Icons.check),
                     onPressed: () {

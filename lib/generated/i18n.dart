@@ -336,6 +336,12 @@ class I18n implements WidgetsLocalizations {
   String get you_have_no_ingredients => "you have no ingredients";
   /// "recipe for"
   String get recipe_for => "recipe for";
+  /// "information"
+  String get info => "information";
+  /// "Here you can manage the ingredients, which you get suggested when adding a recipe or searching for them. When you edit or delete them, they don't change for the recipe. It's just for the suggestions for saving time when typing."
+  String get ingredient_manager_description => "Here you can manage the ingredients, which you get suggested when adding a recipe or searching for them. When you edit or delete them, they don't change for the recipe. It's just for the suggestions for saving time when typing.";
+  /// "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself."
+  String get nutrition_manager_description => "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself.";
 }
 
 class _I18n_en_US extends I18n {
@@ -801,6 +807,15 @@ class _I18n_de_DE extends I18n {
   /// "Rezept für"
   @override
   String get recipe_for => "Rezept für";
+  /// "Hilfe"
+  @override
+  String get info => "Hilfe";
+  /// "Hier kannst du die Namen der Zutaten, die dir vorgeschlagen werden ändern oder hinzufügen. Wenn du dies tust, werden die Zutaten nicht für die bereits existierenden Rezepte geändert. Es dient lediglich der Zeitersparnis beim Eintippen der Zutaten."
+  @override
+  String get ingredient_manager_description => "Hier kannst du die Namen der Zutaten, die dir vorgeschlagen werden ändern oder hinzufügen. Wenn du dies tust, werden die Zutaten nicht für die bereits existierenden Rezepte geändert. Es dient lediglich der Zeitersparnis beim Eintippen der Zutaten.";
+  /// "Hier kannst du die Namen der Nährstoffe verwalten. Beim ändern oder löschen der exisiterenden werden nicht die Nährwerte, der bereits hinzugefügten Rezepte geändert. Diese bleiben so wie sie sind, solange das Rezept nicht an sich bearbeitet wird."
+  @override
+  String get nutrition_manager_description => "Hier kannst du die Namen der Nährstoffe verwalten. Beim ändern oder löschen der exisiterenden werden nicht die Nährwerte, der bereits hinzugefügten Rezepte geändert. Diese bleiben so wie sie sind, solange das Rezept nicht an sich bearbeitet wird.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;
