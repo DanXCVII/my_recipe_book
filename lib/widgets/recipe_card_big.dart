@@ -56,7 +56,6 @@ class RecipeCardBig extends StatelessWidget {
             arguments: RecipeScreenArguments(
               BlocProvider.of<ShoppingCartBloc>(context),
               recipe,
-              getRecipePrimaryColor(recipe.vegetable),
               heroImageTag,
               BlocProvider.of<RecipeManagerBloc>(context),
             ),

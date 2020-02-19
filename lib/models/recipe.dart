@@ -206,18 +206,6 @@ class Recipe extends Equatable {
       ];
 }
 
-Color getRecipePrimaryColor(Vegetable vegetable) {
-  switch (vegetable) {
-    case Vegetable.NON_VEGETARIAN:
-      return Color(0xff4D0B06);
-    case Vegetable.VEGAN:
-      return Color(0xff133F12);
-    case Vegetable.VEGETARIAN:
-      return Color(0xff074505);
-  }
-  return null;
-}
-
 class SearchRecipe {
   String name;
   int id;

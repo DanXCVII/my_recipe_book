@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:my_recipe_book/constants/routes.dart';
 
@@ -92,7 +93,12 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
               return _getNutritionManagerLoadingScreen();
             } else if (state is LoadedNutritionManager) {
               return Scaffold(
-                appBar: AppBar(
+                appBar: GradientAppBar(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xffAF1E1E), Color(0xff641414)],
+                  ),
                   title: Text(I18n.of(context).add_nutritions),
                   actions: <Widget>[
                     BlocListener<NutritionsBloc, NutritionsState>(
@@ -123,8 +129,6 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                               arguments: RecipeScreenArguments(
                                 BlocProvider.of<ShoppingCartBloc>(context),
                                 state.recipe,
-                                getRecipePrimaryColor(
-                                    widget.modifiedRecipe.vegetable),
                                 'heroImageTag',
                                 BlocProvider.of<RecipeManagerBloc>(context),
                               ),
@@ -236,7 +240,12 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
 
   Widget _getNutritionManagerLoadingScreen() {
     return Scaffold(
-        appBar: AppBar(
+        appBar: GradientAppBar(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+          ),
           title: Text(I18n.of(context).add_nutritions),
         ),
         body: Center(

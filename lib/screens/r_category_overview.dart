@@ -276,7 +276,6 @@ class RecipeHozizontalList extends StatelessWidget {
       arguments: RecipeScreenArguments(
         BlocProvider.of<ShoppingCartBloc>(context),
         recipe,
-        getRecipePrimaryColor(recipes[index].vegetable),
         heroImageTag,
         BlocProvider.of<RecipeManagerBloc>(context),
       ),

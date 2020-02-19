@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
 
 import '../blocs/category_manager/category_manager_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -17,7 +18,12 @@ class CategoryManager extends StatelessWidget {
           return _getLoadedScreen(context);
         } else if (state is LoadedCategoryManager) {
           return Scaffold(
-            appBar: AppBar(
+            appBar: GradientAppBar(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)],
+              ),
               title: Text(I18n.of(context).manage_categories),
               actions: <Widget>[
                 IconButton(
@@ -114,7 +120,12 @@ class CategoryManager extends StatelessWidget {
 
   Widget _getLoadedScreen(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: GradientAppBar(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xffAF1E1E), Color(0xff641414)],
+        ),
         title: Text(I18n.of(context).manage_categories),
         actions: <Widget>[
           IconButton(

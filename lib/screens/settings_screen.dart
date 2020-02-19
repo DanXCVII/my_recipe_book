@@ -33,13 +33,11 @@ class Settings extends StatelessWidget {
                 Navigator.pushNamed(context, RouteNames.manageIngredients);
               }),
           Divider(),
-          GestureDetector(
+          ListTile(
             onTap: () {
               _importSingleRecipe(context).then((_) {});
             },
-            child: ListTile(
-              title: Text(I18n.of(context).import_recipe_s),
-            ),
+            title: Text(I18n.of(context).import_recipe_s),
           ),
           Divider(),
           ListTile(
@@ -155,7 +153,11 @@ class Settings extends StatelessWidget {
             },
           ),
           Divider(),
-          ListTile(title: Text(I18n.of(context).about_me)),
+          ListTile(
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.aboutMe);
+              },
+              title: Text(I18n.of(context).about_me)),
           Divider(),
           ListTile(title: Text(I18n.of(context).rate_app)),
           Divider(),

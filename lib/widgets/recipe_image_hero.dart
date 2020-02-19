@@ -25,7 +25,6 @@ class RecipeImageHero extends StatelessWidget {
           arguments: RecipeScreenArguments(
             BlocProvider.of<ShoppingCartBloc>(context),
             recipe,
-            getRecipePrimaryColor(recipe.vegetable),
             recipe.name,
             BlocProvider.of<RecipeManagerBloc>(context),
           ),

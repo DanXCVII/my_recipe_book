@@ -2,6 +2,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:my_recipe_book/constants/routes.dart';
 
@@ -101,7 +102,12 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
+        appBar: GradientAppBar(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+          ),
           title: Text(I18n.of(context).add_ingredients_info),
           actions: <Widget>[
             BlocListener<IngredientsBloc, IngredientsState>(

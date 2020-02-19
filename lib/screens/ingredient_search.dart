@@ -1,6 +1,7 @@
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -44,7 +45,12 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+        appBar: GradientAppBar(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+          ),
           title: Text(I18n.of(context).ingredient_search),
         ),
         body: Column(
@@ -54,6 +60,14 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color.fromRGBO(70, 70, 70, 1),
+                        Color.fromRGBO(60, 60, 60, 1)
+                      ],
+                    ),
                     borderRadius: BorderRadius.circular(25),
                     color: Color.fromRGBO(70, 70, 70, 1),
                   ),
@@ -125,10 +139,6 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                                   arguments: RecipeScreenArguments(
                                     BlocProvider.of<ShoppingCartBloc>(context),
                                     currentRecipe,
-                                    getRecipePrimaryColor(state
-                                        .tupleMatchesRecipe[recipeIndex]
-                                        .item2
-                                        .vegetable),
                                     currentRecipe.name,
                                     BlocProvider.of<RecipeManagerBloc>(context),
                                   ),

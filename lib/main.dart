@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_recipe_book/blocs/ingredient_search/ingredient_search_bloc.dart';
+import 'package:my_recipe_book/screens/about_me.dart';
 import 'package:my_recipe_book/screens/ingredient_search.dart';
 import 'package:my_recipe_book/screens/ingredients_manager.dart';
 
@@ -166,7 +167,6 @@ class MyApp extends StatelessWidget {
                         value: args.shoppingCartBloc),
                   ],
                   child: RecipeScreen(
-                    primaryColor: args.primaryColor,
                     heroImageTag: args.heroImageTag,
                   ),
                 ),
@@ -347,6 +347,11 @@ class MyApp extends StatelessWidget {
                       IngredientsManagerBloc()..add(LoadIngredientsManager()),
                   child: IngredientsManager(),
                 ),
+              );
+
+            case "/about-me":
+              return MaterialPageRoute(
+                builder: (context) => AboutMeScreen(),
               );
 
             default:

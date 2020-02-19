@@ -59,7 +59,6 @@ class RecipeCard extends StatelessWidget {
           arguments: RecipeScreenArguments(
             BlocProvider.of<ShoppingCartBloc>(context),
             recipe,
-            getRecipePrimaryColor(recipe.vegetable),
             heroImageTag,
             BlocProvider.of<RecipeManagerBloc>(context),
           ),
@@ -69,6 +68,11 @@ class RecipeCard extends StatelessWidget {
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Colors.black, Theme.of(context).cardColor],
+              ),
               color: Theme.of(context).cardColor,
               boxShadow: [
                 BoxShadow(

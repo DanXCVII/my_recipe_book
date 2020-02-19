@@ -12,4 +12,5 @@ class RouteNames {
   static final recipeCategories = "/recipe-categories";
   static final vegetableRecipes = "/vegetable-recipes-oveview";
   static final ingredientSearch = "/ingredient-search";
+  static final aboutMe = "/about-me";
 }

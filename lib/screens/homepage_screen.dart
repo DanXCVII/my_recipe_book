@@ -6,10 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:my_recipe_book/constants/routes.dart';
 import 'package:my_recipe_book/screens/ingredient_search.dart';
+import 'package:my_recipe_book/screens/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -20,7 +22,6 @@ import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../generated/i18n.dart';
 import '../hive.dart';
-import '../settings/settings_screen.dart';
 import '../widgets/search.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 import 'category_gridview.dart';
@@ -206,7 +207,7 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  AppBar _buildAppBar(
+  GradientAppBar _buildAppBar(
       int currentIndex, bool recipeCategoryOverview, String title) {
     // if shoppingCartPage with sliverAppBar
 
@@ -214,7 +215,12 @@ class MyHomePageState extends State<MyHomePage> {
       return null;
     } else if (currentIndex == 3 && MediaQuery.of(context).size.height < 730)
       return null;
-    return AppBar(
+    return GradientAppBar(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xffAF1E1E), Color(0xff641414)],
+        ),
         title: Text(title),
         actions: <Widget>[
           IconButton(

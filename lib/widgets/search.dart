@@ -89,7 +89,6 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                   arguments: RecipeScreenArguments(
                     shoppingCartBloc,
                     recipe,
-                    getRecipePrimaryColor(recipe.vegetable),
                     'heroTag',
                     BlocProvider.of<RecipeManagerBloc>(context),
                   ),
