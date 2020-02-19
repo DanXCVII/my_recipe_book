@@ -521,6 +521,7 @@ class RecipePage extends StatelessWidget {
 
   _showDeleteDialog(BuildContext context, String recipeName) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -546,7 +547,7 @@ class RecipePage extends StatelessWidget {
               if (recipe != null) {
                 BlocProvider.of<RecipeManagerBloc>(context)
                     .add(RMDeleteRecipe(recipe.name, deleteFiles: true));
-                Future.delayed(Duration(milliseconds: 150)).then((_) async {
+                Future.delayed(Duration(milliseconds: 60)).then((_) async {
                   await deleteRecipeData(recipe.name);
                   Navigator.pop(context);
                   Navigator.pop(context);

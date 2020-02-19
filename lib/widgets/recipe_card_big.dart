@@ -63,7 +63,16 @@ class RecipeCardBig extends StatelessWidget {
         },
         child: Container(
           decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[900]
+                      : Color(0xffFFF6D8),
+                  Theme.of(context).cardColor,
+                ],
+              ),
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(

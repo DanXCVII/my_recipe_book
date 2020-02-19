@@ -87,7 +87,8 @@ class FancyShoppingCartScreen extends StatelessWidget {
       BuildContext context,
       scaleFactor) {
     List<Recipe> recipes = ingredients.keys.toList();
-    if (ingredients[ingredients.keys.first].isEmpty) {
+    if (ingredients.keys.isEmpty ||
+        ingredients[ingredients.keys.first].isEmpty) {
       return [
         displayNothingAdded(context, scaleFactor),
       ];

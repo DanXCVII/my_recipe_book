@@ -71,7 +71,12 @@ class RecipeCard extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomCenter,
-                colors: [Colors.black, Theme.of(context).cardColor],
+                colors: [
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black
+                      : Color(0xffFFF6D8),
+                  Theme.of(context).cardColor
+                ],
               ),
               color: Theme.of(context).cardColor,
               boxShadow: [
