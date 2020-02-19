@@ -9,6 +9,7 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import 'package:my_recipe_book/widgets/category_circle_image.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:share/share.dart';
@@ -269,6 +270,33 @@ class RecipePage extends StatelessWidget {
                 ],
               ),
               actions: <Widget>[
+                BlocBuilder<RecipeBubbleBloc, RecipeBubbleState>(
+                  builder: (context, state) {
+                    if (state is LoadedRecipeBubbles) {
+                      bool isPinned = false;
+                      if (state.recipes.contains(recipe)) {
+                        isPinned = true;
+                      }
+                      return IconButton(
+                        icon: Icon(
+                          isPinned ? MdiIcons.pin : MdiIcons.pinOff,
+                          color: isPinned == false && state.recipes.length == 3
+                              ? Colors.grey[400]
+                              : null,
+                        ),
+                        onPressed: () {
+                          isPinned
+                              ? BlocProvider.of<RecipeBubbleBloc>(context)
+                                  .add(RemoveRecipeBubble(recipe))
+                              : BlocProvider.of<RecipeBubbleBloc>(context)
+                                  .add(AddRecipeBubble(recipe));
+                        },
+                      );
+                    } else {
+                      return Text("unknown state");
+                    }
+                  },
+                ),
                 Favorite(recipe, addFavorite: () {
                   BlocProvider.of<RecipeManagerBloc>(context)
                       .add(RMAddFavorite(recipe));

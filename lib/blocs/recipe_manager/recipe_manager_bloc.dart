@@ -50,12 +50,15 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   Stream<DeleteRecipeState> _mapDeleteRecipeToState(
       RMDeleteRecipe event) async* {
     // TODO: Delete files if set
+
     Recipe deletedRecipe =
         await HiveProvider().getRecipeByName(event.recipeName);
 
-    await HiveProvider().deleteRecipe(deletedRecipe.name);
+    if (deletedRecipe != null) {
+      await HiveProvider().deleteRecipe(deletedRecipe.name);
 
-    yield DeleteRecipeState(deletedRecipe);
+      yield DeleteRecipeState(deletedRecipe);
+    }
   }
 
   Stream<UpdateRecipeState> _mapUpdateRecipeToState(

@@ -50,81 +50,103 @@ class AboutMeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                    child: Card(
-                      child: Container(
-                        height: 175,
-                        child: Column(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Center(
-                                child: Text(
-                                  "Share this App",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Card(
+                        child: Container(
+                          height: 160,
+                          child: Column(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Center(
+                                  child: Text(
+                                    "Share this App",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Container(
-                              width: 150,
-                              child: Wrap(
-                                alignment: WrapAlignment.center,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Icon(MdiIcons.whatsapp, size: 40),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Icon(MdiIcons.facebook, size: 40),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Icon(MdiIcons.instagram, size: 40),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Icon(MdiIcons.twitter, size: 40),
-                                  ),
-                                ],
+                              Container(
+                                width: 130,
+                                child: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(MdiIcons.whatsapp, size: 30),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(MdiIcons.facebook, size: 30),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(MdiIcons.instagram, size: 30),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(MdiIcons.twitter, size: 30),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 12)
-                          ],
+                              SizedBox(height: 12)
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                   Expanded(
-                    child: Card(
-                      child: Container(
-                        height: 175,
-                        child: Column(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Center(
-                                child: Text(
-                                  "contact me",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Card(
+                        child: Container(
+                          height: 160,
+                          child: Column(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Center(
+                                  child: Text(
+                                    "contact me",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 25,
-                            ),
-                            Icon(Icons.mail, size: 40)
-                          ],
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 2, color: Colors.white)),
+                                child: Icon(Icons.mail, size: 40),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ],
+              ),
+            ),
+            Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "- MADE BY DANIEL WEISSEN -",
+                style: TextStyle(fontWeight: FontWeight.w300),
               ),
             )
           ],

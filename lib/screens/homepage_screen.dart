@@ -8,26 +8,31 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'package:my_recipe_book/constants/routes.dart';
-import 'package:my_recipe_book/screens/ingredient_search.dart';
-import 'package:my_recipe_book/screens/settings_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/screens/recipe_screen.dart';
+import 'package:my_recipe_book/widgets/recipe_bubble.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/app/app_bloc.dart';
 import '../blocs/app/app_event.dart';
 import '../blocs/app/app_state.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
+import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as Constants;
+import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../hive.dart';
+import '../models/recipe.dart';
 import '../widgets/search.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 import 'category_gridview.dart';
 import 'favorite_screen.dart';
+import 'ingredient_search.dart';
 import 'r_category_overview.dart';
 import 'random_recipe.dart';
+import 'settings_screen.dart';
 import 'shopping_cart_fancy.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -73,66 +78,72 @@ class MyHomePageState extends State<MyHomePage> {
         if (state is LoadingState) {
           return _getSplashScreen();
         } else if (state is LoadedState) {
-          return Scaffold(
-            appBar: _buildAppBar(
-                state.selectedIndex, state.recipeCategoryOverview, state.title),
-            floatingActionButton:
-                state.selectedIndex == 0 ? FloatingActionButtonMenu() : null,
-            body: IndexedStack(
-              index: state.selectedIndex,
-              children: [
-                AnimatedSwitcher(
-                  duration: Duration(milliseconds: 200),
-                  child: state.recipeCategoryOverview == true
-                      ? RecipeCategoryOverview()
-                      : CategoryGridView(),
+          return Stack(
+            children: <Widget>[
+              Scaffold(
+                appBar: _buildAppBar(state.selectedIndex,
+                    state.recipeCategoryOverview, state.title),
+                floatingActionButton: state.selectedIndex == 0
+                    ? FloatingActionButtonMenu()
+                    : null,
+                body: IndexedStack(
+                  index: state.selectedIndex,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: Duration(milliseconds: 200),
+                      child: state.recipeCategoryOverview == true
+                          ? RecipeCategoryOverview()
+                          : CategoryGridView(),
+                    ),
+                    FavoriteScreen(),
+                    FancyShoppingCartScreen(),
+                    SwypingCardsScreen(),
+                    Settings(),
+                  ],
                 ),
-                FavoriteScreen(),
-                FancyShoppingCartScreen(),
-                SwypingCardsScreen(),
-                Settings(),
-              ],
-            ),
-            backgroundColor: _getBackgroundColor(state.selectedIndex),
-            bottomNavigationBar: Theme(
-              data: Theme.of(context).copyWith(canvasColor: Colors.black87),
-              child: BottomNavyBar(
-                backgroundColor: Color(0xff232323),
-                animationDuration: Duration(milliseconds: 150),
-                selectedIndex: state.selectedIndex,
-                showElevation: true,
-                onItemSelected: (index) => _onItemTapped(index, context),
-                items: [
-                  BottomNavyBarItem(
-                      icon: Icon(GroovinMaterialIcons.notebook),
-                      title: Text(I18n.of(context).recipes),
-                      activeColor: Colors.orange,
-                      inactiveColor: Colors.white),
-                  BottomNavyBarItem(
-                    icon: Icon(Icons.favorite),
-                    title: Text(I18n.of(context).favorites),
-                    activeColor: Colors.pink,
-                    inactiveColor: Colors.white,
+                backgroundColor: _getBackgroundColor(state.selectedIndex),
+                bottomNavigationBar: Theme(
+                  data: Theme.of(context).copyWith(canvasColor: Colors.black87),
+                  child: BottomNavyBar(
+                    backgroundColor: Color(0xff232323),
+                    animationDuration: Duration(milliseconds: 150),
+                    selectedIndex: state.selectedIndex,
+                    showElevation: true,
+                    onItemSelected: (index) => _onItemTapped(index, context),
+                    items: [
+                      BottomNavyBarItem(
+                          icon: Icon(GroovinMaterialIcons.notebook),
+                          title: Text(I18n.of(context).recipes),
+                          activeColor: Colors.orange,
+                          inactiveColor: Colors.white),
+                      BottomNavyBarItem(
+                        icon: Icon(Icons.favorite),
+                        title: Text(I18n.of(context).favorites),
+                        activeColor: Colors.pink,
+                        inactiveColor: Colors.white,
+                      ),
+                      BottomNavyBarItem(
+                          icon: Icon(Icons.shopping_basket),
+                          title: Text(I18n.of(context).basket),
+                          activeColor: Colors.brown[300],
+                          inactiveColor: Colors.white),
+                      BottomNavyBarItem(
+                        icon: Icon(GroovinMaterialIcons.dice_multiple),
+                        title: Text(I18n.of(context).explore),
+                        activeColor: Colors.green,
+                        inactiveColor: Colors.white,
+                      ),
+                      BottomNavyBarItem(
+                          icon: Icon(Icons.settings),
+                          title: Text(I18n.of(context).settings),
+                          activeColor: Colors.grey[100],
+                          inactiveColor: Colors.white)
+                    ],
                   ),
-                  BottomNavyBarItem(
-                      icon: Icon(Icons.shopping_basket),
-                      title: Text(I18n.of(context).basket),
-                      activeColor: Colors.brown[300],
-                      inactiveColor: Colors.white),
-                  BottomNavyBarItem(
-                    icon: Icon(GroovinMaterialIcons.dice_multiple),
-                    title: Text(I18n.of(context).explore),
-                    activeColor: Colors.green,
-                    inactiveColor: Colors.white,
-                  ),
-                  BottomNavyBarItem(
-                      icon: Icon(Icons.settings),
-                      title: Text(I18n.of(context).settings),
-                      activeColor: Colors.grey[100],
-                      inactiveColor: Colors.white)
-                ],
+                ),
               ),
-            ),
+              RecipeBubbles(),
+            ],
           );
         } else {
           return Text(state.toString());
@@ -421,6 +432,34 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
           },
         ),
       ),
+    );
+  }
+}
+
+class RecipeBubbles extends StatelessWidget {
+  const RecipeBubbles({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<RecipeBubbleBloc, RecipeBubbleState>(
+      builder: (context, state) {
+        if (state is LoadedRecipeBubbles) {
+          return Stack(
+            children: List<Widget>.generate(
+              state.recipes.length,
+              (index) => RecipeBubble(
+                recipe: state.recipes[index],
+                initialPosition: Offset(
+                  MediaQuery.of(context).size.width - 60,
+                  90 - (index.toDouble() * 20),
+                ),
+              ),
+            )..reversed,
+          );
+        } else {
+          return Text("unknown state");
+        }
+      },
     );
   }
 }

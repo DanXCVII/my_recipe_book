@@ -26,6 +26,7 @@ class BoxNames {
   static final recipeSort = "recipeSort";
   static final shoppingCart = "shoppingCart";
   static final recipeCategories = "recipeCategories";
+  // static final recipeBubbles = "recipeBubbles";
   static final vegetarian = Vegetable.VEGETARIAN.toString();
   static final vegan = Vegetable.VEGAN.toString();
   static final nonVegetarain = Vegetable.NON_VEGETARIAN.toString();
@@ -52,6 +53,7 @@ Future<void> initHive(bool firstTime) async {
     Hive.openBox<String>(Vegetable.VEGAN.toString()),
     Hive.openBox<String>(BoxNames.categories),
     Hive.openBox<String>(BoxNames.recipeName),
+    // Hive.openBox<String>(BoxNames.recipeBubbles),
     Hive.openBox<String>(BoxNames.favorites),
     Hive.openBox<String>(BoxNames.ingredientNames),
     Hive.openBox<List<String>>(BoxNames.order),
@@ -106,6 +108,7 @@ class HiveProvider {
     Hive.box<RSort>(BoxNames.recipeSort),
     Hive.box<List>(BoxNames.shoppingCart),
     Hive.box<List<String>>(BoxNames.recipeCategories),
+    // Hive.box<String>(BoxNames.recipeBubbles),
   );
 
   LazyBox<Recipe> lazyBoxRecipes;
@@ -118,6 +121,7 @@ class HiveProvider {
 
   Box<String> boxFavorites;
   Box<String> boxIngredientNames;
+  // Box<String> boxRecipeBubbles;
 
   Box<List<String>> boxOrder;
   Box<RSort> boxRecipeSort;
@@ -142,6 +146,7 @@ class HiveProvider {
     this.boxRecipeSort,
     this.boxShoppingCart,
     this.boxRecipeCategories,
+    // this.boxRecipeBubbles,
   );
 
   ////////////// single recipe related //////////////
@@ -185,9 +190,6 @@ class HiveProvider {
 
   Future<void> modifyRecipe(String oldRecipeName, Recipe newRecipe) async {
     String hiveOldRecipeKey = getHiveKey(oldRecipeName);
-    String hiveNewRecipeKey = getHiveKey(newRecipe.name);
-
-    Recipe editRecipe = await lazyBoxRecipes.get(hiveOldRecipeKey);
 
     // DELETE OLD RECIPE FROM HIVE
 

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_recipe_book/blocs/ingredient_search/ingredient_search_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import 'package:my_recipe_book/screens/about_me.dart';
 import 'package:my_recipe_book/screens/ingredient_search.dart';
 import 'package:my_recipe_book/screens/ingredients_manager.dart';
@@ -73,8 +74,15 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    return BlocProvider<RecipeManagerBloc>(
-      create: (context) => RecipeManagerBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<RecipeManagerBloc>(
+            create: (context) => RecipeManagerBloc()),
+        BlocProvider<RecipeBubbleBloc>(
+          create: (context) => RecipeBubbleBloc(
+              recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(context)),
+        )
+      ],
       child: MaterialApp(
         localizationsDelegates: [
           I18n.delegate,
