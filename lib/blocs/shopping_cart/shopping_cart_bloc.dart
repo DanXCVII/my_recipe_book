@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 
 import '../../hive.dart';
@@ -12,7 +13,9 @@ part 'shopping_cart_state.dart';
 
 class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
   @override
-  ShoppingCartState get initialState => LoadingShoppingCart();
+  ShoppingCartState get initialState {
+    return LoadingShoppingCart();
+  }
 
   @override
   Stream<ShoppingCartState> mapEventToState(

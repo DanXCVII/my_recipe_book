@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
-import 'package:my_recipe_book/constants/routes.dart';
 
 import '../blocs/category_overview/category_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as Constants;
+import '../constants/routes.dart';
 import '../models/tuple.dart';
 import 'recipe_overview.dart';
 

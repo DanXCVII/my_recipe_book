@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/hive.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
+import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../../generated/i18n.dart';
+import '../../../hive.dart';
 import '../../../widgets/dialogs/textfield_dialog.dart';
 
 class Consts {

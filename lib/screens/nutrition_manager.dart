@@ -3,13 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
-import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/nutrition_manager/nutrition_manager_bloc.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
+import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/dialogs/textfield_dialog.dart';
+import '../widgets/icon_info_message.dart';
 
 class NutritionManager extends StatefulWidget {
   final Recipe newRecipe;

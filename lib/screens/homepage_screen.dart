@@ -9,8 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/screens/recipe_screen.dart';
-import 'package:my_recipe_book/widgets/recipe_bubble.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/app/app_bloc.dart';
@@ -20,11 +18,10 @@ import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
-import '../constants/global_constants.dart' as Constants;
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../hive.dart';
-import '../models/recipe.dart';
+import '../widgets/recipe_bubble.dart';
 import '../widgets/search.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 import 'category_gridview.dart';
@@ -44,6 +41,7 @@ class MyHomePage extends StatefulWidget {
 
 class MyHomePageState extends State<MyHomePage> {
   Future<SharedPreferences> prefs;
+  Image shoppingCartImage;
 
   MyHomePageState({
     Key key,
@@ -59,6 +57,10 @@ class MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     prefs = SharedPreferences.getInstance();
+    shoppingCartImage = Image.asset(
+      'images/cuisine.jpg',
+      fit: BoxFit.cover,
+    );
 
     SystemChannels.lifecycle.setMessageHandler((msg) {
       if (msg.contains('resumed')) {
@@ -69,6 +71,12 @@ class MyHomePageState extends State<MyHomePage> {
     // Case 2: App is started by the intent:
     // Call Java MethodHandler on application start up to check for shared data
     initializeIntent();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(shoppingCartImage.image, context);
   }
 
   @override
@@ -96,7 +104,7 @@ class MyHomePageState extends State<MyHomePage> {
                           : CategoryGridView(),
                     ),
                     FavoriteScreen(),
-                    FancyShoppingCartScreen(),
+                    FancyShoppingCartScreen(shoppingCartImage),
                     SwypingCardsScreen(),
                     Settings(),
                   ],

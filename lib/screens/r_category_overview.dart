@@ -4,14 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
-import 'package:my_recipe_book/constants/routes.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
 import '../blocs/recipe_category_overview/recipe_category_overview_state.dart';
+import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as Constants;
+import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
 import 'recipe_overview.dart';

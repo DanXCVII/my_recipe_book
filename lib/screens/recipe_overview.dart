@@ -7,16 +7,16 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
-import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as Constants;
 import '../generated/i18n.dart';
 import '../hive.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../models/recipe_sort.dart';
+import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_card.dart';
 import '../widgets/search.dart';
 

@@ -9,15 +9,14 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_bubble/recipe_bubble_bloc.dart';
-import 'package:my_recipe_book/widgets/category_circle_image.dart';
-import 'package:share_extend/share_extend.dart';
 import 'package:share/share.dart';
+import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
+import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_screen/recipe_screen_bloc.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
@@ -35,6 +34,7 @@ import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../my_wrapper.dart';
 import '../screens/recipe_overview.dart';
+import '../widgets/category_circle_image.dart';
 import '../widgets/gallery_view.dart';
 import '../widgets/recipe_card.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
@@ -279,7 +279,7 @@ class RecipePage extends StatelessWidget {
                       }
                       return IconButton(
                         icon: Icon(
-                          isPinned ? MdiIcons.pin : MdiIcons.pinOff,
+                          isPinned ? MdiIcons.pin : MdiIcons.pinOutline,
                           color: isPinned == false && state.recipes.length == 3
                               ? Colors.grey[400]
                               : null,

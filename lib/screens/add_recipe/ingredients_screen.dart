@@ -3,10 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'package:my_recipe_book/constants/routes.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
+import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../../constants/routes.dart';
 import '../../generated/i18n.dart';
 import '../../helper.dart';
 import '../../hive.dart';

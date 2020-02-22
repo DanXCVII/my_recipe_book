@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'package:my_recipe_book/constants/routes.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/screens/recipe_screen.dart';
-import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/ingredient_search/ingredient_search_bloc.dart';
+import '../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/routes.dart';
+import '../generated/i18n.dart';
 import '../hive.dart';
+import '../models/recipe.dart';
+import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_image_hero.dart';
+import 'recipe_screen.dart';
 
 class IngredientSearchScreenArguments {
   final ShoppingCartBloc shoppingCartBloc;

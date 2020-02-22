@@ -2,15 +2,14 @@ import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
-import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/ingredinets_manager/ingredients_manager_bloc.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
+import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/dialogs/textfield_dialog.dart';
+import '../widgets/icon_info_message.dart';
 
 class IngredientsManager extends StatefulWidget {
   final String editRecipeName;

@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:my_recipe_book/blocs/new_recipe/general_info/general_info_bloc.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'package:my_recipe_book/constants/routes.dart';
 
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
+import '../../../blocs/new_recipe/general_info/general_info_bloc.dart';
+import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../../../constants/routes.dart';
 import '../../../generated/i18n.dart';
 import '../../../helper.dart';
 import '../../../local_storage/local_paths.dart';

@@ -2,7 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
+
+import '../constants/global_constants.dart' as Constants;
 
 class CategoryCircle extends StatelessWidget {
   final String categoryName;

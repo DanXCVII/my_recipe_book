@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
-import 'package:my_recipe_book/constants/routes.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/screens/recipe_screen.dart';
+
+import '../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as Constants;
+import '../constants/routes.dart';
+import '../models/recipe.dart';
+import '../screens/recipe_screen.dart';
 
 class RecipeBubble extends StatefulWidget {
   final Offset initialPosition;

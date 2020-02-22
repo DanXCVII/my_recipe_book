@@ -15,7 +15,10 @@ import '../widgets/recipe_image_hero.dart';
 import '../widgets/search.dart';
 
 class FancyShoppingCartScreen extends StatelessWidget {
-  const FancyShoppingCartScreen({
+  final Image shoppingCartImage;
+
+  const FancyShoppingCartScreen(
+    this.shoppingCartImage, {
     Key key,
   }) : super(key: key);
 
@@ -54,12 +57,10 @@ class FancyShoppingCartScreen extends StatelessWidget {
         floating: false,
         pinned: true,
         flexibleSpace: FlexibleSpaceBar(
-            centerTitle: false,
-            title: Text(I18n.of(context).shoppingcart),
-            background: Image(
-              image: AssetImage('images/cuisine.jpg'),
-              fit: BoxFit.cover,
-            )),
+          centerTitle: false,
+          title: Text(I18n.of(context).shoppingcart),
+          background: shoppingCartImage,
+        ),
       ),
       SliverPadding(
         padding: EdgeInsets.all(12),

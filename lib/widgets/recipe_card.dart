@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
-import 'package:my_recipe_book/constants/routes.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as Constants;
+import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
 import '../models/enums.dart';
@@ -73,7 +73,7 @@ class RecipeCard extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [
                   Theme.of(context).brightness == Brightness.dark
-                      ? Colors.black
+                      ? Colors.grey[900]
                       : Color(0xffFFF6D8),
                   Theme.of(context).cardColor
                 ],

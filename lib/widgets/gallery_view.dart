@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+
+import '../constants/global_constants.dart' as Constants;
 
 class GalleryPhotoView extends StatefulWidget {
   final List<String> heroTags;
