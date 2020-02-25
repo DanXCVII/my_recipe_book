@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/dialogs/import_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/app/app_bloc.dart';
@@ -179,17 +180,16 @@ class MyHomePageState extends State<MyHomePage> {
 
   // TODO: fix open zip with recipe app to work again
   initializeIntent() async {
-    var importZipFile = await getIntentPath();
-    if (importZipFile != null) {
+    var importZipFilePath = await getIntentPath();
+    if (importZipFilePath != null) {
       // TODO: add recipe to hive and notify blocs when importing
       showDialog(
         context: context,
-        builder: (context) => BlocProvider<ImportRecipeBloc>(
-          create:
-              (context) => // TODO: probably wrong context and need context of initState()
-                  ImportRecipeBloc(BlocProvider.of<RecipeManagerBloc>(context)),
-          child: getImportRecipeDialog(importZipFile),
-        ),
+        builder: (context) => BlocProvider<ImportRecipeBloc>.value(
+            value: BlocProvider.of<ImportRecipeBloc>(context)
+              ..add(StartImportRecipes(File(importZipFilePath.toString()),
+                  delay: Duration(milliseconds: 300))),
+            child: ImportDialog()),
       );
     }
   }
@@ -197,8 +197,8 @@ class MyHomePageState extends State<MyHomePage> {
   static const platform = const MethodChannel('app.channel.shared.data');
 
   getIntentPath() async {
-    // var sharedData = await platform.invokeMethod("getSharedText");
-    // return sharedData == null ? null : sharedData;
+    var sharedData = await platform.invokeMethod("getSharedText");
+    return sharedData == null ? null : sharedData;
   }
 
   Widget getImportRecipeDialog(File importZipFile) {

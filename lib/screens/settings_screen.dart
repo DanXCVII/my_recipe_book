@@ -246,12 +246,11 @@ class Settings extends StatelessWidget {
     showDialog(
       context: ctxt,
       builder: (context) => BlocProvider<ImportRecipeBloc>.value(
-          value: BlocProvider.of<ImportRecipeBloc>(ctxt),
+          value: BlocProvider.of<ImportRecipeBloc>(ctxt)
+            ..add(StartImportRecipes(File(_path),
+                delay: Duration(milliseconds: 300))),
           child: ImportDialog()),
     );
-    BlocProvider.of<ImportRecipeBloc>(ctxt)
-      ..add(
-          StartImportRecipes(File(_path), delay: Duration(milliseconds: 300)));
   }
 }
 
