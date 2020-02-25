@@ -1,10 +1,24 @@
-import 'recipe.dart';
+import 'models/ingredient.dart';
 
 String cutDouble(double number) {
   if (number == number.floor().toDouble()) {
     return number.toStringAsFixed(0);
   }
   return number.toStringAsFixed(2);
+}
+
+String getImageDatatype(String filename) {
+  String dataType;
+  String partWithDataType = filename.substring(filename.length - 5);
+  if (partWithDataType.contains('.')) {
+    dataType = partWithDataType.substring(partWithDataType.lastIndexOf('.'));
+  } else {
+    if (partWithDataType.endsWith('jpg')) dataType = '.jpg';
+    if (partWithDataType.endsWith('png')) dataType = '.png';
+    if (partWithDataType.endsWith('jpeg')) dataType = '.jpeg';
+    if (partWithDataType.endsWith('jpg')) dataType = '.jpg';
+  }
+  return dataType;
 }
 
 /// Takes a List<List<Ingredient>> and flattens it to a List<Ingredient>
@@ -25,15 +39,15 @@ List<Ingredient> flattenIngredients(List<List<Ingredient>> listList) {
 String getTimeHoursMinutes(double min) {
   if (min ~/ 60 > 0) {
     String returnString =
-        '${(min ~/ 60).toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')}h ';
+        '${(min ~/ 60).toStringAsPrecision(2).replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')}h ';
     if (min - (min ~/ 60 * 60) != 0) {
       return returnString +=
-          '${(min - (min ~/ 60 * 60)).toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min';
+          '${(min - (min ~/ 60 * 60)).toStringAsPrecision(2).replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min';
     } else {
       return returnString;
     }
   }
-  return "${min.toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min";
+  return "${min.toStringAsPrecision(2).replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min";
 }
 
 int getIngredientCount(List<List<Ingredient>> ingredients) {
@@ -44,6 +58,33 @@ int getIngredientCount(List<List<Ingredient>> ingredients) {
   return ingredientCount;
 }
 
-String getUnderscoreName(String name) {
+String stringReplaceSpaceUnderscore(String name) {
   return name.replaceAll(' ', '_');
+}
+
+bool stringIsValidDouble(String text) {
+  if (text.isEmpty) {
+    return false;
+  }
+  String pattern = r"^(?!0*[.,]?0+$)\d*[.,]?\d+$";
+
+  RegExp regex = RegExp(pattern);
+  if (regex.hasMatch(text)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+List<String> removeTrailingEmptyStrings(List<String> list) {
+  List<String> output = List<String>.from(list);
+
+  for (int i = list.length - 1; i >= 0; i--) {
+    if (list[i] == "") {
+      output.removeLast();
+    } else {
+      break;
+    }
+  }
+  return output;
 }
