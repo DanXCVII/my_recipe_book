@@ -79,7 +79,7 @@ class _ImportDialogState extends State<ImportDialog> {
             return Container(
               height: totalListItems > 4
                   ? 245
-                  : totalListItems.toDouble() * 60 + 62,
+                  : totalListItems.toDouble() * 60 + 64,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
@@ -149,9 +149,12 @@ class _ImportDialogState extends State<ImportDialog> {
                                         maxLines: 3,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      trailing: Icon(
-                                        Icons.offline_bolt,
-                                        color: Colors.yellow,
+                                      trailing: Padding(
+                                        padding: const EdgeInsets.only(right: 12.0),
+                                        child: Icon(
+                                          Icons.offline_bolt,
+                                          color: Colors.yellow,
+                                        ),
                                       ),
                                     );
                             }),
@@ -171,9 +174,12 @@ class _ImportDialogState extends State<ImportDialog> {
                                         maxLines: 3,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      trailing: Icon(
-                                        MdiIcons.alertCircle,
-                                        color: Colors.red,
+                                      trailing: Padding(
+                                        padding: const EdgeInsets.only(right:12.0),
+                                        child: Icon(
+                                          MdiIcons.alertCircle,
+                                          color: Colors.red,
+                                        ),
                                       ),
                                     );
                             }),
@@ -289,9 +295,12 @@ class _ImportDialogState extends State<ImportDialog> {
                               state.failedRecipes.length,
                               (index) => ListTile(
                                 title: Text(state.failedRecipes[index].name),
-                                trailing: Icon(
-                                  MdiIcons.alertCircle,
-                                  color: Colors.red,
+                                trailing: Padding(
+                                  padding: const EdgeInsets.only(right: 12.0),
+                                  child: Icon(
+                                    MdiIcons.alertCircle,
+                                    color: Colors.red,
+                                  ),
                                 ),
                               ),
                             ),

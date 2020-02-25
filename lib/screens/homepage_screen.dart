@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/widgets/dialogs/import_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/app/app_bloc.dart';
@@ -17,11 +16,11 @@ import '../blocs/app/app_event.dart';
 import '../blocs/app/app_state.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
-import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../hive.dart';
+import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/recipe_bubble.dart';
 import '../widgets/search.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
@@ -40,9 +39,11 @@ class MyHomePage extends StatefulWidget {
   MyHomePageState createState() => MyHomePageState();
 }
 
-class MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   Future<SharedPreferences> prefs;
   Image shoppingCartImage;
+
+  static const platform = const MethodChannel('app.channel.shared.data');
 
   MyHomePageState({
     Key key,
@@ -63,21 +64,23 @@ class MyHomePageState extends State<MyHomePage> {
       fit: BoxFit.cover,
     );
 
-    SystemChannels.lifecycle.setMessageHandler((msg) {
-      if (msg.contains('resumed')) {
-        initializeIntent();
-      }
-      return;
-    });
-    // Case 2: App is started by the intent:
-    // Call Java MethodHandler on application start up to check for shared data
     initializeIntent();
+
+    // Listen to lifecycle events.
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    precacheImage(shoppingCartImage.image, context);
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      initializeIntent();
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   @override
@@ -182,19 +185,18 @@ class MyHomePageState extends State<MyHomePage> {
   initializeIntent() async {
     var importZipFilePath = await getIntentPath();
     if (importZipFilePath != null) {
+      BuildContext importRecipeBlocContext = context;
       // TODO: add recipe to hive and notify blocs when importing
       showDialog(
         context: context,
         builder: (context) => BlocProvider<ImportRecipeBloc>.value(
-            value: BlocProvider.of<ImportRecipeBloc>(context)
+            value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
               ..add(StartImportRecipes(File(importZipFilePath.toString()),
                   delay: Duration(milliseconds: 300))),
             child: ImportDialog()),
       );
     }
   }
-
-  static const platform = const MethodChannel('app.channel.shared.data');
 
   getIntentPath() async {
     var sharedData = await platform.invokeMethod("getSharedText");
