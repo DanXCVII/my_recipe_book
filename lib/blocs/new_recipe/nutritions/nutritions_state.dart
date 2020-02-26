@@ -6,7 +6,6 @@ abstract class NutritionsState extends Equatable {
   const NutritionsState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 

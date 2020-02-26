@@ -342,6 +342,18 @@ class I18n implements WidgetsLocalizations {
   String get ingredient_manager_description => "Here you can manage the ingredients, which you get suggested when adding a recipe or searching for them. When you edit or delete them, they don't change for the recipe. It's just for the suggestions for saving time when typing.";
   /// "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself."
   String get nutrition_manager_description => "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself.";
+  /// "no recipes fit your filter"
+  String get no_recipes_fit_your_filter => "no recipes fit your filter";
+  /// "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook."
+  String get disclaimer_description => "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook.";
+  /// "share this app"
+  String get share_this_app => "share this app";
+  /// "recipe pinned to overview"
+  String get recipe_pinned_to_overview => "recipe pinned to overview";
+  /// "field must not be empty"
+  String get field_must_not_be_empty => "field must not be empty";
+  /// "by last modified"
+  String get by_last_modified => "by last modified";
 }
 
 class _I18n_en_US extends I18n {
@@ -816,6 +828,24 @@ class _I18n_de_DE extends I18n {
   /// "Hier kannst du die Namen der Nährstoffe verwalten. Beim ändern oder löschen der exisiterenden werden nicht die Nährwerte, der bereits hinzugefügten Rezepte geändert. Diese bleiben so wie sie sind, solange das Rezept nicht an sich bearbeitet wird."
   @override
   String get nutrition_manager_description => "Hier kannst du die Namen der Nährstoffe verwalten. Beim ändern oder löschen der exisiterenden werden nicht die Nährwerte, der bereits hinzugefügten Rezepte geändert. Diese bleiben so wie sie sind, solange das Rezept nicht an sich bearbeitet wird.";
+  /// "Keine Rezepte passen zum angegebenen Filter"
+  @override
+  String get no_recipes_fit_your_filter => "Keine Rezepte passen zum angegebenen Filter";
+  /// "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook."
+  @override
+  String get disclaimer_description => "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook.";
+  /// "teile diese App"
+  @override
+  String get share_this_app => "teile diese App";
+  /// "Rezept an Hauptansicht angepinnt"
+  @override
+  String get recipe_pinned_to_overview => "Rezept an Hauptansicht angepinnt";
+  /// "Textfeld darf nicht leer sein"
+  @override
+  String get field_must_not_be_empty => "Textfeld darf nicht leer sein";
+  /// "nach Änderungsdatum"
+  @override
+  String get by_last_modified => "nach Änderungsdatum";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

@@ -30,5 +30,5 @@ class NutritionAdapter extends TypeAdapter<Nutrition> {
   }
 
   @override
-  int get typeId => 4;
+  int get typeId => 5;
 }

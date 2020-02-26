@@ -30,5 +30,5 @@ class RSortAdapter extends TypeAdapter<RSort> {
   }
 
   @override
-  int get typeId => 5;
+  int get typeId => 6;
 }

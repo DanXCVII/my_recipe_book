@@ -189,8 +189,6 @@ class HiveProvider {
   }
 
   Future<void> modifyRecipe(String oldRecipeName, Recipe newRecipe) async {
-    String hiveOldRecipeKey = getHiveKey(oldRecipeName);
-
     // DELETE OLD RECIPE FROM HIVE
 
     await deleteRecipe(oldRecipeName);
@@ -238,7 +236,6 @@ class HiveProvider {
     await boxTmpRecipe.put(tmpRecipeKey, Recipe(name: "", servings: null));
   }
 
-// TODO: Check for mistakes
   Future<void> deleteRecipe(String recipeName) async {
     String hiveRecipeKey = getHiveKey(recipeName);
     Recipe removeRecipe = await lazyBoxRecipes.get(hiveRecipeKey);
@@ -273,8 +270,6 @@ class HiveProvider {
 
   ////////////// category related //////////////
   Future<void> addCategory(String categoryName) async {
-    // TODO: Verify if working
-
     String hiveCategoryKey = getHiveKey(categoryName);
 
     await boxCategories.put(hiveCategoryKey, categoryName);
@@ -285,7 +280,7 @@ class HiveProvider {
 
     await boxRecipeCategories.put(hiveCategoryKey, []);
 
-    boxRecipeSort.add(RSort(RecipeSort.BY_NAME, true));
+    await boxRecipeSort.put(hiveCategoryKey, RSort(RecipeSort.BY_NAME, true));
   }
 
   Future<void> renameCategory(String oldName, String newName) async {
@@ -297,9 +292,8 @@ class HiveProvider {
     await boxRecipeCategories.put(hiveNewKey, recipes);
 
     boxCategories.delete(hiveOldKey);
-    boxCategories.add(hiveNewKey);
+    boxCategories.put(hiveNewKey, newName);
 
-    // TODO: Verify if working
     for (var key in lazyBoxRecipes.keys) {
       Recipe recipe = await lazyBoxRecipes.get(key);
 
@@ -312,12 +306,10 @@ class HiveProvider {
       }
     }
 
-    List<String> categories = boxOrder.get('categories');
-    await boxOrder.put(
-        'categories',
-        categories
-          ..remove(oldName)
-          ..add(newName));
+    List<String> categories = List<String>.from(boxOrder.get('categories'));
+    categories[categories.indexOf(oldName)] = newName;
+
+    await boxOrder.put('categories', categories);
   }
 
   Future<void> deleteCategory(String categoryName) async {
@@ -329,9 +321,10 @@ class HiveProvider {
 
     for (var key in lazyBoxRecipes.keys) {
       Recipe currentRecipe = await lazyBoxRecipes.get(key);
-      for (String category in currentRecipe.categories) {
-        if (currentRecipe.categories.contains(category)) {
-          currentRecipe.categories.remove(category);
+
+      for (int i = 0; i < currentRecipe.categories.length; i++) {
+        if (currentRecipe.categories.contains(currentRecipe.categories[i])) {
+          currentRecipe.categories.remove(currentRecipe.categories[i]);
 
           lazyBoxRecipes.put(key, currentRecipe);
           if (currentRecipe.categories.isEmpty) {
@@ -369,9 +362,15 @@ class HiveProvider {
     await boxRecipeSort.put(hiveCategoryKey, recipeSort);
   }
 
-  RSort getSortOrder(String category) {
+  Future<RSort> getSortOrder(String category) async {
     String hiveCategoryKey = getHiveKey(category);
-    return boxRecipeSort.get(hiveCategoryKey);
+    RSort categorySort = boxRecipeSort.get(hiveCategoryKey);
+    if (categorySort == null) {
+      categorySort = RSort(RecipeSort.BY_NAME, true);
+      await changeSortOrder(categorySort, hiveCategoryKey);
+    }
+
+    return categorySort;
   }
 
   ////////////// condition recipe getters //////////////
@@ -510,12 +509,11 @@ class HiveProvider {
           ..remove(oldName)
           ..add(newName));
 
-    // TODO: Verify if working
     for (var key in lazyBoxRecipes.keys) {
       Recipe oldHiveRecipe = await lazyBoxRecipes.get(key);
 
-      for (Nutrition n in oldHiveRecipe.nutritions) {
-        if (n.name.compareTo(oldName) == 0) {
+      for (int i = 0; i < oldHiveRecipe.nutritions.length; i++) {
+        if (oldHiveRecipe.nutritions[i].name.compareTo(oldName) == 0) {
           Recipe newHiveRecipe = oldHiveRecipe.copyWith(name: newName);
           await lazyBoxRecipes.put(
               getHiveKey(newHiveRecipe.name), newHiveRecipe);
@@ -684,7 +682,6 @@ class HiveProvider {
 
   /// removes the ingrdient of the given recipe (if existing) from the list and
   /// also updates the summary
-// TODO: Verified 80%, not tested
   Future<void> removeIngredientFromCart(
       String recipeName, Ingredient ingredient) async {
     String hiveRecipeKey = getHiveKey(recipeName);
@@ -779,7 +776,6 @@ class HiveProvider {
   /// checks/unchecks the given ingredient with the value of the given
   /// CheckableIngredient.checked and also updates the summary checked
   /// if necessary
-  // TODO: Verified, not tested
   Future<void> checkIngredient(
       String recipeName, CheckableIngredient ingredient) async {
     String hiveRecipeKey = getHiveKey(recipeName);
@@ -907,28 +903,6 @@ class HiveProvider {
           ingredient.unit == ingredients[i].unit) return i;
     }
     return null;
-  }
-
-// see _getSuitingIngredientRecipe()
-  List<CheckableIngredient> _getAllSuitingIngredients(Ingredient ingredient,
-      {bool checked}) {
-    List<CheckableIngredient> suitedIngredients = [];
-
-    for (var key in boxShoppingCart.keys) {
-      for (CheckableIngredient i
-          in boxShoppingCart.get(key).cast<CheckableIngredient>() ?? []) {
-        if (checked == null) {
-          if (ingredient == i.getIngredient()) {
-            suitedIngredients.add(i);
-          }
-        } else {
-          if (ingredient == i.getIngredient() && checked == i.checked) {
-            suitedIngredients.add(i);
-          }
-        }
-      }
-    }
-    return suitedIngredients;
   }
 
   ////////////// hive internal related //////////////

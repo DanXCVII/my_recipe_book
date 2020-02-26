@@ -37,7 +37,7 @@ class VegetableAdapter extends TypeAdapter<Vegetable> {
   }
 
   @override
-  int get typeId => 0;
+  int get typeId => 1;
 }
 
 class RecipeSortAdapter extends TypeAdapter<RecipeSort> {
@@ -50,6 +50,8 @@ class RecipeSortAdapter extends TypeAdapter<RecipeSort> {
         return RecipeSort.BY_INGREDIENT_COUNT;
       case 2:
         return RecipeSort.BY_EFFORT;
+      case 3:
+        return RecipeSort.BY_LAST_MODIFIED;
       default:
         return null;
     }
@@ -67,9 +69,12 @@ class RecipeSortAdapter extends TypeAdapter<RecipeSort> {
       case RecipeSort.BY_EFFORT:
         writer.writeByte(2);
         break;
+      case RecipeSort.BY_LAST_MODIFIED:
+        writer.writeByte(3);
+        break;
     }
   }
 
   @override
-  int get typeId => 1;
+  int get typeId => 2;
 }

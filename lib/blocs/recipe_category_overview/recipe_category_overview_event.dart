@@ -49,12 +49,12 @@ class RCODeleteRecipe extends RecipeCategoryOverviewEvent {
 }
 
 class RCOAddCategory extends RecipeCategoryOverviewEvent {
-  final String category;
+  final List<String> categories;
 
-  const RCOAddCategory(this.category);
+  const RCOAddCategory(this.categories);
 
   @override
-  List<Object> get props => [category];
+  List<Object> get props => [categories];
 }
 
 class RCODeleteCategory extends RecipeCategoryOverviewEvent {

@@ -181,12 +181,11 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     );
   }
 
-  // TODO: fix open zip with recipe app to work again
   initializeIntent() async {
     var importZipFilePath = await getIntentPath();
     if (importZipFilePath != null) {
       BuildContext importRecipeBlocContext = context;
-      // TODO: add recipe to hive and notify blocs when importing
+
       showDialog(
         context: context,
         builder: (context) => BlocProvider<ImportRecipeBloc>.value(

@@ -18,8 +18,8 @@ class CategoryManagerBloc
   CategoryManagerBloc({@required this.recipeManagerBloc}) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedCategoryManager) {
-        if (rmState is RM.AddCategoryState) {
-          add(AddCategory(rmState.category));
+        if (rmState is RM.AddCategoriesState) {
+          add(AddCategories(rmState.categories));
         } else if (rmState is RM.DeleteCategoryState) {
           add(DeleteCategory(rmState.category));
         } else if (rmState is RM.UpdateCategoryState) {
@@ -39,8 +39,8 @@ class CategoryManagerBloc
       CategoryManagerEvent event) async* {
     if (event is InitializeCategoryManager) {
       yield* _mapLoadingCategoryManagerToState();
-    } else if (event is AddCategory) {
-      yield* _mapAddCategoryToState(event);
+    } else if (event is AddCategories) {
+      yield* _mapAddCategoriesToState(event);
     } else if (event is DeleteCategory) {
       yield* _mapDeleteCategoryToState(event);
     } else if (event is UpdateCategory) {
@@ -56,13 +56,13 @@ class CategoryManagerBloc
     yield LoadedCategoryManager(categories);
   }
 
-  Stream<CategoryManagerState> _mapAddCategoryToState(
-      AddCategory event) async* {
+  Stream<CategoryManagerState> _mapAddCategoriesToState(
+      AddCategories event) async* {
     if (state is LoadedCategoryManager) {
       final List<String> categories =
           List.from((state as LoadedCategoryManager).categories)
-            ..insert((state as LoadedCategoryManager).categories.length - 1,
-                event.category);
+            ..insertAll((state as LoadedCategoryManager).categories.length - 1,
+                event.categories);
 
       yield LoadedCategoryManager(categories);
     }
@@ -72,7 +72,8 @@ class CategoryManagerBloc
       DeleteCategory event) async* {
     if (state is LoadedCategoryManager) {
       final List<String> categories =
-          (state as LoadedCategoryManager).categories..remove(event.category);
+          List<String>.from((state as LoadedCategoryManager).categories)
+            ..remove(event.category);
 
       yield LoadedCategoryManager(categories);
     }
@@ -88,7 +89,7 @@ class CategoryManagerBloc
         } else {
           return category;
         }
-      });
+      }).toList();
 
       yield LoadedCategoryManager(categories);
     }

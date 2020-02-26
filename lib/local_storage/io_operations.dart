@@ -3,11 +3,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:archive/archive_io.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import './local_paths.dart';
-import '../generated/i18n.dart';
 import '../helper.dart';
 import '../hive.dart';
 import '../models/recipe.dart';
@@ -429,33 +427,6 @@ Future<bool> importRecipeFromTmp(Recipe importRecipe) async {
           await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
       .delete(recursive: true);
   return true;
-}
-
-_showImportedRecipeToast(
-    String recipeName,
-    bool importSuccessfull,
-    BuildContext context,
-    void Function(String recipename) onSuccessful,
-    void Function(String recipename) alreadyExistent) {
-  final scaffold = Scaffold.of(context);
-  scaffold.hideCurrentSnackBar();
-
-  String snackbarMessage;
-  if (recipeName == null) {
-    snackbarMessage = I18n.of(context).no_valid_import_file;
-  } else if (!importSuccessfull) {
-    snackbarMessage = "${I18n.of(context).you_already_have}: $recipeName";
-  } else {
-    snackbarMessage = "${I18n.of(context).imported}: $recipeName";
-  }
-  scaffold.showSnackBar(
-    SnackBar(
-      content: Text(snackbarMessage),
-      action: SnackBarAction(
-          label: I18n.of(context).hide,
-          onPressed: scaffold.hideCurrentSnackBar),
-    ),
-  );
 }
 
 Future<Recipe> getRecipeFromJson(File jsonFile) async {

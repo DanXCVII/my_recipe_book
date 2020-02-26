@@ -71,8 +71,9 @@ class RecipeRow extends StatelessWidget {
                     arguments: RecipeGridViewArguments(
                       shoppingCartBloc:
                           BlocProvider.of<ShoppingCartBloc>(context),
-                      category:
-                          category == null ? Constants.noCategory : category,
+                      category: category == null
+                          ? I18n.of(context).no_category
+                          : category,
                     ),
                   );
                 },

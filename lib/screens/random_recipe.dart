@@ -40,7 +40,6 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
               BlocProvider.of<RandomRecipeExplorerBloc>(context)
                   .add(ChangeCategory(currentCategory));
             },
-            // TODO: put strings in extra class
             child: Text(currentCategory == I18n.of(context).no_category
                 ? I18n.of(context).no_category
                 : currentCategory == I18n.of(context).all_categories

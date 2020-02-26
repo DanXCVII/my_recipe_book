@@ -180,7 +180,6 @@ class RecipeCard extends StatelessWidget {
                                             child: Icon(
                                               MdiIcons.knife,
                                               size: 18,
-                                              // TODO: make color fit bright theme
                                               color: Theme.of(context)
                                                           .backgroundColor ==
                                                       Colors.white

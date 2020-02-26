@@ -52,15 +52,13 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
       if (event.goBack) {
         await HiveProvider().saveTmpRecipe(nutritionRecipe);
       } else {
-        newRecipe = await IO.fixImagePaths(nutritionRecipe);
+        newRecipe = (await IO.fixImagePaths(nutritionRecipe));
         await HiveProvider().resetTmpRecipe();
         await IO.deleteRecipeData("tmp");
         event.recipeManagerBloc.add(RMAddRecipe(newRecipe));
       }
     } else {
-      Recipe nutritionRecipe = HiveProvider()
-          .getTmpEditingRecipe()
-          .copyWith(nutritions: event.nutritions);
+      Recipe nutritionRecipe = HiveProvider().getTmpEditingRecipe();
       if (event.goBack) {
         await HiveProvider().saveTmpEditingRecipe(nutritionRecipe);
       }

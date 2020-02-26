@@ -20,6 +20,8 @@ class RecipeOverviewBloc
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
+  List<Recipe> unfilteredRecipes = [];
+
   RecipeOverviewBloc({@required this.recipeManagerBloc}) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedRecipeOverview) {
@@ -67,6 +69,10 @@ class RecipeOverviewBloc
       yield* _mapUpdateRecipeToState(event);
     } else if (event is UpdateFavoriteStatus) {
       yield* _mapUpdateFavoriteStatus(event);
+    } else if (event is FilterRecipes) {
+      yield* _mapFilterRecipesToState(event);
+    } else if (event is ChangeAscending) {
+      yield* _mapChangeAscendingToState(event);
     }
   }
 
@@ -75,10 +81,16 @@ class RecipeOverviewBloc
     final List<Recipe> recipes =
         await HiveProvider().getCategoryRecipes(event.category);
     final String randomRecipeImage = _getRandomRecipeImage(recipes);
+    final RSort categorySort =
+        await HiveProvider().getSortOrder(event.category);
+    final List<Recipe> sortedRecipes = sortRecipes(categorySort, recipes);
+
+    unfilteredRecipes = List<Recipe>.from(sortedRecipes);
 
     yield LoadedRecipeOverview(
-      recipes: recipes,
+      recipes: sortedRecipes,
       randomImage: randomRecipeImage,
+      recipeSort: categorySort,
       category: event.category,
     );
   }
@@ -88,6 +100,7 @@ class RecipeOverviewBloc
     final List<Recipe> recipes =
         await HiveProvider().getVegetableRecipes(event.vegetable);
     final String randomRecipeImage = _getRandomRecipeImage(recipes);
+    unfilteredRecipes = List<Recipe>.from(recipes);
 
     yield LoadedRecipeOverview(
       recipes: recipes,
@@ -100,15 +113,24 @@ class RecipeOverviewBloc
   Stream<RecipeOverviewState> _mapChangeRecipeSortToState(
       ChangeRecipeSort event) async* {
     if (state is LoadedRecipeOverview) {
+      final RSort newRecipeSort = RSort(event.recipeSort,
+          (state as LoadedRecipeOverview).recipeSort.ascending);
+
       final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
-      final List<Recipe> sortedRecipes = sortRecipes(event.recipeSort, recipes);
+      final List<Recipe> sortedRecipes = sortRecipes(newRecipeSort, recipes);
+      unfilteredRecipes = sortedRecipes;
+
+      if ((state as LoadedRecipeOverview).category != null) {
+        await HiveProvider().changeSortOrder(
+            newRecipeSort, (state as LoadedRecipeOverview).category);
+      }
 
       yield LoadedRecipeOverview(
         recipes: sortedRecipes,
         randomImage: (state as LoadedRecipeOverview).randomImage,
         vegetable: (state as LoadedRecipeOverview).vegetable,
         category: (state as LoadedRecipeOverview).category,
-        recipeSort: event.recipeSort,
+        recipeSort: newRecipeSort,
       );
     }
   }
@@ -242,6 +264,22 @@ class RecipeOverviewBloc
               : getIngredientCount(b.ingredients)
                   .compareTo(getIngredientCount(a.ingredients)));
         break;
+      case RecipeSort.BY_LAST_MODIFIED:
+        return recipes
+          ..sort((a, b) => recipeSort.ascending
+              ? DateTime.parse(a.lastModified == null
+                      ? DateTime.now().toString()
+                      : a.lastModified)
+                  .compareTo(DateTime.parse(b.lastModified == null
+                      ? DateTime.now().toString()
+                      : b.lastModified))
+              : DateTime.parse(b.lastModified == null
+                      ? DateTime.now().toString()
+                      : b.lastModified)
+                  .compareTo(DateTime.parse(a.lastModified == null
+                      ? DateTime.now().toString()
+                      : a.lastModified)));
+        break;
     }
     return recipes;
   }
@@ -276,6 +314,52 @@ class RecipeOverviewBloc
           recipeSort: (state as LoadedRecipeOverview).recipeSort,
         );
       }
+    }
+  }
+
+  Stream<RecipeOverviewState> _mapFilterRecipesToState(
+      FilterRecipes event) async* {
+    if (state is LoadedRecipeOverview) {
+      yield LoadedRecipeOverview(
+        recipes: List<Recipe>.from(unfilteredRecipes)
+          ..removeWhere((recipe) {
+            if (event.vegetable == null) {
+              return false;
+            } else {
+              return recipe.vegetable != event.vegetable;
+            }
+          }),
+        randomImage: (state as LoadedRecipeOverview).randomImage,
+        vegetable: (state as LoadedRecipeOverview).vegetable,
+        category: (state as LoadedRecipeOverview).category,
+        recipeSort: (state as LoadedRecipeOverview).recipeSort,
+      );
+    }
+  }
+
+  Stream<RecipeOverviewState> _mapChangeAscendingToState(
+      ChangeAscending event) async* {
+    if (state is LoadedRecipeOverview) {
+      final RSort newRecipeSort = RSort(
+          (state as LoadedRecipeOverview).recipeSort.sort, event.ascending);
+
+      final List<Recipe> recipes =
+          List<Recipe>.from((state as LoadedRecipeOverview).recipes);
+      final List<Recipe> sortedRecipes = sortRecipes(newRecipeSort, recipes);
+      unfilteredRecipes = sortedRecipes;
+
+      if ((state as LoadedRecipeOverview).category != null) {
+        await HiveProvider().changeSortOrder(
+            newRecipeSort, (state as LoadedRecipeOverview).category);
+      }
+
+      yield LoadedRecipeOverview(
+        recipes: sortedRecipes,
+        randomImage: (state as LoadedRecipeOverview).randomImage,
+        vegetable: (state as LoadedRecipeOverview).vegetable,
+        category: (state as LoadedRecipeOverview).category,
+        recipeSort: (state as LoadedRecipeOverview).recipeSort,
+      );
     }
   }
 }

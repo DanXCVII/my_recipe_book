@@ -35,13 +35,14 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       nutritions: (fields[14] as List)?.cast<Nutrition>(),
       isFavorite: fields[15] as bool,
       effort: fields[16] as int,
+      lastModified: fields[17] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Recipe obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -75,9 +76,11 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       ..writeByte(15)
       ..write(obj.isFavorite)
       ..writeByte(16)
-      ..write(obj.effort);
+      ..write(obj.effort)
+      ..writeByte(17)
+      ..write(obj.lastModified);
   }
 
   @override
-  int get typeId => 6;
+  int get typeId => 7;
 }

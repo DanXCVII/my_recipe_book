@@ -70,7 +70,8 @@ class NutritionManagerBloc
           .nutritions
           .map((nutrition) => nutrition == event.oldNutrition
               ? event.updatedNutrition
-              : nutrition);
+              : nutrition)
+          .toList();
 
       yield LoadedNutritionManager(nutritions);
     }

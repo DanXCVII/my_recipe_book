@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../generated/i18n.dart';
+import '../widgets/dialogs/info_dialog.dart';
+
 class AboutMeScreen extends StatelessWidget {
   const AboutMeScreen({Key key}) : super(key: key);
 
@@ -32,14 +35,22 @@ class AboutMeScreen extends StatelessWidget {
               ),
             ),
             Text(
-              "My CookBook",
+              "My RecipeBook",
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
             ),
             SizedBox(height: 10),
             OutlineButton.icon(
               icon: Icon(Icons.info_outline),
               label: Text("Disclaimer"),
-              onPressed: () {},
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => InfoDialog(
+                    title: "disclaimer",
+                    body: I18n.of(context).disclaimer_description,
+                  ),
+                );
+              },
               shape: RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0),
               ),
@@ -61,7 +72,7 @@ class AboutMeScreen extends StatelessWidget {
                                 padding: const EdgeInsets.all(12.0),
                                 child: Center(
                                   child: Text(
-                                    "Share this App",
+                                    I18n.of(context).share_this_app,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

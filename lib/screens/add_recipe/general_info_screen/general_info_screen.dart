@@ -111,7 +111,6 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
             BlocListener<GeneralInfoBloc, GeneralInfoState>(
               listener: (context, state) {
                 if (state is GEditingFinishedGoBack) {
-                  // TODO: internationalize
                   Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text(I18n.of(context).saving_your_input)));
                 } else if (state is GSaved) {

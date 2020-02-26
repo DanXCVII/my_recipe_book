@@ -20,4 +20,6 @@ enum RecipeSort {
   BY_INGREDIENT_COUNT,
   @HiveField(2)
   BY_EFFORT,
+  @HiveField(3)
+  BY_LAST_MODIFIED,
 }

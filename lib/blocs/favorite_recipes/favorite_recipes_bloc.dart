@@ -53,7 +53,6 @@ class FavoriteRecipesBloc
     yield LoadedFavorites(favoriteRecipes);
   }
 
-  // TODO: Keep track of the sort order
   Stream<FavoriteRecipesState> _mapAddFavoriteToState(
       AddFavorite event) async* {
     if (state is LoadedFavorites) {

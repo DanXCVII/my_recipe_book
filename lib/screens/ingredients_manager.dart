@@ -69,8 +69,6 @@ class _IngredientsManagerState extends State<IngredientsManager> {
           if (state is LoadingIngredientsManager) {
             return _getIngredientManagerLoadingScreen();
           } else if (state is LoadedIngredientsManager) {
-            int i = -1;
-
             return Scaffold(
               appBar: AppBar(
                 title: Text(I18n.of(context).manage_ingredients),

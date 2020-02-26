@@ -19,8 +19,6 @@ import '../models/recipe.dart';
 /// recipe step image preview
 /// /$recipeId/stepImages/preview/${recipeId}s${stepNumber}s$number.jpg
 
-// TODO: Continue
-
 class PathProvider {
   PathProvider._();
   static final PathProvider pP = PathProvider._();

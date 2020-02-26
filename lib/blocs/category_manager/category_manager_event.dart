@@ -9,13 +9,13 @@ class InitializeCategoryManager extends CategoryManagerEvent {
   List<Object> get props => [];
 }
 
-class AddCategory extends CategoryManagerEvent {
-  final String category;
+class AddCategories extends CategoryManagerEvent {
+  final List<String> categories;
 
-  const AddCategory(this.category);
+  const AddCategories(this.categories);
 
   @override
-  List<Object> get props => [category];
+  List<Object> get props => [categories];
 }
 
 class DeleteCategory extends CategoryManagerEvent {

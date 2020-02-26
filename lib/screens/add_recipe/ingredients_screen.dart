@@ -113,7 +113,6 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
             BlocListener<IngredientsBloc, IngredientsState>(
               listener: (context, state) {
                 if (state is IEditingFinishedGoBack) {
-                  // TODO: internationalize
                   Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text(I18n.of(context).saving_your_input)));
                 } else if (state is ISaved) {
@@ -128,7 +127,6 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
                       editingRecipeName: widget.editingRecipeName,
                     ),
                   );
-                  // TODO: Navigator.pushNamed to next screen
                 } else if (state is ISavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);

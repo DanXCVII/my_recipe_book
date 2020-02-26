@@ -53,7 +53,7 @@ class CategoryManager extends StatelessWidget {
                             save: (String name) {
                               BlocProvider.of<CategoryManagerBloc>(context)
                                   .recipeManagerBloc
-                                  .add(RMAddCategory(name));
+                                  .add(RMAddCategories([name]));
                             },
                             hintText: 'category name',
                           ));
@@ -81,6 +81,9 @@ class CategoryManager extends StatelessWidget {
                                   if (state.categories.contains(name)) {
                                     return I18n.of(context)
                                         .category_already_exists;
+                                  } else if (name == "") {
+                                    return I18n.of(context)
+                                        .field_must_not_be_empty;
                                   } else {
                                     return null;
                                   }

@@ -13,19 +13,6 @@ class RMAddRecipe extends RecipeManagerEvent {
   List<Object> get props => [recipe];
 }
 
-class RMUpdateRecipe extends RecipeManagerEvent {
-  final Recipe oldRecipe;
-  final Recipe updatedRecipe;
-
-  const RMUpdateRecipe(this.oldRecipe, this.updatedRecipe);
-
-  @override
-  List<Object> get props => [oldRecipe, updatedRecipe];
-
-  @override
-  String toString() => 'UpdateRecipe { updatedRecipe: $updatedRecipe }';
-}
-
 class RMDeleteRecipe extends RecipeManagerEvent {
   final String recipeName;
   final bool deleteFiles;
@@ -34,9 +21,6 @@ class RMDeleteRecipe extends RecipeManagerEvent {
 
   @override
   List<Object> get props => [recipeName];
-
-  @override
-  String toString() => 'DeleteRecipe { recipeName: $recipeName }';
 }
 
 class RMAddFavorite extends RecipeManagerEvent {
@@ -46,9 +30,6 @@ class RMAddFavorite extends RecipeManagerEvent {
 
   @override
   List<Object> get props => [recipe];
-
-  @override
-  String toString() => 'Add Favorite { recipe: $recipe }';
 }
 
 class RMRemoveFavorite extends RecipeManagerEvent {
@@ -58,9 +39,6 @@ class RMRemoveFavorite extends RecipeManagerEvent {
 
   @override
   List<Object> get props => [recipe];
-
-  @override
-  String toString() => 'Add Favorite { recipe: $recipe }';
 }
 
 class RMDeleteCategory extends RecipeManagerEvent {
@@ -70,21 +48,15 @@ class RMDeleteCategory extends RecipeManagerEvent {
 
   @override
   List<Object> get props => [category];
-
-  @override
-  String toString() => 'DeleteCategory { category: $category }';
 }
 
-class RMAddCategory extends RecipeManagerEvent {
-  final String category;
+class RMAddCategories extends RecipeManagerEvent {
+  final List<String> categories;
 
-  const RMAddCategory(this.category);
-
-  @override
-  List<Object> get props => [category];
+  const RMAddCategories(this.categories);
 
   @override
-  String toString() => 'AddCategory { category: $category }';
+  List<Object> get props => [categories];
 }
 
 class RMUpdateCategory extends RecipeManagerEvent {
@@ -95,10 +67,6 @@ class RMUpdateCategory extends RecipeManagerEvent {
 
   @override
   List<Object> get props => [oldCategory, updatedCategory];
-
-  @override
-  String toString() =>
-      'UpdateCategory { oldCategory: $oldCategory, updatedCategory: $updatedCategory }';
 }
 
 class RMMoveCategory extends RecipeManagerEvent {

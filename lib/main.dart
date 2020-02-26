@@ -138,8 +138,9 @@ class MyApp extends StatelessWidget {
                               create: (context) => ImportRecipeBloc(
                                   BlocProvider.of<RecipeManagerBloc>(context))),
                           BlocProvider<ShoppingCartBloc>(
-                            create: (context) =>
-                                ShoppingCartBloc()..add(LoadShoppingCart()),
+                            create: (context) => ShoppingCartBloc(
+                                BlocProvider.of<RecipeManagerBloc>(context))
+                              ..add(LoadShoppingCart()),
                           ),
                         ], child: MyHomePage()),
                       );

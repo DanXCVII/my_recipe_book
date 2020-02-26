@@ -30,5 +30,5 @@ class StringListTupleAdapter extends TypeAdapter<StringListTuple> {
   }
 
   @override
-  int get typeId => 7;
+  int get typeId => 8;
 }

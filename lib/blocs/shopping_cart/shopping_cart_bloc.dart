@@ -2,16 +2,30 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart'
+    as RM;
 
 import '../../hive.dart';
 import '../../models/ingredient.dart';
+import '../../models/recipe.dart';
 
 part 'shopping_cart_event.dart';
 part 'shopping_cart_state.dart';
 
 class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
+  final RM.RecipeManagerBloc recipeManagerBloc;
+  StreamSubscription subscription;
+
+  ShoppingCartBloc(this.recipeManagerBloc) {
+    subscription = recipeManagerBloc.listen((rmState) {
+      if (state is LoadedShoppingCart) {
+        if (rmState is RM.DeleteRecipeState) {
+          add(RemoveIngredients(null, rmState.recipe));
+        }
+      }
+    });
+  }
+
   @override
   ShoppingCartState get initialState {
     return LoadingShoppingCart();
@@ -50,8 +64,13 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
 
   Stream<ShoppingCartState> _mapRemoveIngredientsToState(
       RemoveIngredients event) async* {
-    await HiveProvider()
-        .removeIngredientsFromCart(event.recipeName.name, event.ingredients);
+    if (event.ingredients == null) {
+      await HiveProvider().removeRecipeFromCart(event.recipeName.name);
+    } else {
+      await HiveProvider()
+          .removeIngredientsFromCart(event.recipeName.name, event.ingredients);
+    }
+
     yield LoadedShoppingCart(await HiveProvider().getShoppingCart());
   }
 
@@ -66,5 +85,11 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
         await HiveProvider().getShoppingCart();
 
     yield LoadedShoppingCart(shoppingCart);
+  }
+
+  @override
+  Future<void> close() {
+    subscription.cancel();
+    return super.close();
   }
 }

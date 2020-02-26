@@ -47,12 +47,12 @@ class CODeleteRecipe extends CategoryOverviewEvent {
 }
 
 class COAddCategory extends CategoryOverviewEvent {
-  final String category;
+  final List<String> categories;
 
-  const COAddCategory(this.category);
+  const COAddCategory(this.categories);
 
   @override
-  List<Object> get props => [category];
+  List<Object> get props => [categories];
 }
 
 class CODeleteCategory extends CategoryOverviewEvent {

@@ -26,7 +26,6 @@ import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
 import '../hive.dart';
-import '../local_storage/io_operations.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
 import '../models/enums.dart';
@@ -285,11 +284,27 @@ class RecipePage extends StatelessWidget {
                               : null,
                         ),
                         onPressed: () {
-                          isPinned
-                              ? BlocProvider.of<RecipeBubbleBloc>(context)
-                                  .add(RemoveRecipeBubble(recipe))
-                              : BlocProvider.of<RecipeBubbleBloc>(context)
-                                  .add(AddRecipeBubble(recipe));
+                          if (isPinned) {
+                            BlocProvider.of<RecipeBubbleBloc>(context)
+                                .add(RemoveRecipeBubble(recipe));
+                          } else {
+                            BlocProvider.of<RecipeBubbleBloc>(context)
+                                .add(AddRecipeBubble(recipe));
+
+                            final scaffold = Scaffold.of(context);
+                            scaffold.hideCurrentSnackBar();
+
+                            scaffold.showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    I18n.of(context).recipe_pinned_to_overview),
+                                action: SnackBarAction(
+                                  label: I18n.of(context).dismiss,
+                                  onPressed: scaffold.hideCurrentSnackBar,
+                                ),
+                              ),
+                            );
+                          }
                         },
                       );
                     } else {
@@ -571,12 +586,11 @@ class RecipePage extends StatelessWidget {
             textColor: Theme.of(context).textTheme.body1.color,
             color: Colors.red[600],
             onPressed: () {
-              // TODO: Check if nessesary
               if (recipe != null) {
                 BlocProvider.of<RecipeManagerBloc>(context)
                     .add(RMDeleteRecipe(recipe.name, deleteFiles: true));
                 Future.delayed(Duration(milliseconds: 60)).then((_) async {
-                  await deleteRecipeData(recipe.name);
+                  await IO.deleteRecipeData(recipe.name);
                   Navigator.pop(context);
                   Navigator.pop(context);
                 });

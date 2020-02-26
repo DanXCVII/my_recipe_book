@@ -44,6 +44,8 @@ class Recipe extends Equatable {
   final bool isFavorite;
   @HiveField(16)
   final int effort;
+  @HiveField(17)
+  final String lastModified;
 
   Recipe({
     @required this.name,
@@ -63,6 +65,7 @@ class Recipe extends Equatable {
     this.nutritions = const [],
     this.isFavorite = false,
     this.effort,
+    this.lastModified,
   });
 
   @override
@@ -83,7 +86,8 @@ class Recipe extends Equatable {
         'nutritions : ${nutritions.toString()}\n'
         'categories : ${categories.toString()}\n'
         'complexity : $effort\n'
-        'isFavorite : $isFavorite');
+        'isFavorite : $isFavorite\n'
+        'lastModified : $lastModified');
   }
 
   factory Recipe.fromMap(Map<String, dynamic> json) {
@@ -121,6 +125,7 @@ class Recipe extends Equatable {
       nutritions: List<dynamic>.from(json['nutritions'])
           .map((n) => Nutrition.fromMap(n))
           .toList(),
+      lastModified: DateTime.now().toString(),
     );
   }
 
@@ -142,7 +147,8 @@ class Recipe extends Equatable {
         'steps': steps,
         'stepImages': stepImages,
         'notes': notes,
-        'nutritions': nutritions.map((n) => n.toMap()).toList()
+        'nutritions': nutritions.map((n) => n.toMap()).toList(),
+        'lastModified': lastModified,
       };
 
   Recipe copyWith(
@@ -162,7 +168,8 @@ class Recipe extends Equatable {
       List<Nutrition> nutritions,
       List<String> categories,
       int effort,
-      bool isFavorite}) {
+      bool isFavorite,
+      String lastModified}) {
     return Recipe(
       name: name ?? this.name,
       imagePath: imagePath ?? this.imagePath,
@@ -181,6 +188,7 @@ class Recipe extends Equatable {
       categories: categories ?? this.categories,
       effort: effort ?? this.effort,
       isFavorite: isFavorite ?? this.isFavorite,
+      lastModified: lastModified ?? this.lastModified,
     );
   }
 
@@ -202,7 +210,8 @@ class Recipe extends Equatable {
         nutritions,
         categories,
         effort,
-        isFavorite
+        isFavorite,
+        lastModified,
       ];
 }
 

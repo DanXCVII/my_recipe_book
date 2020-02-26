@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../blocs/category_overview/category_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -25,7 +26,7 @@ class CategoryGridView extends StatelessWidget {
             padding: const EdgeInsets.all(4),
             mainAxisSpacing: 4,
             crossAxisSpacing: 4,
-            children: getCategories(state.categories),
+            children: getCategories(state.categories, context),
           ),
         );
       } else {
@@ -34,7 +35,8 @@ class CategoryGridView extends StatelessWidget {
     });
   }
 
-  List<Widget> getCategories(List<Tuple2<String, String>> categoryNames) {
+  List<Widget> getCategories(
+      List<Tuple2<String, String>> categoryNames, BuildContext context) {
     List<Widget> gridTiles = [];
 
     int index = 0;
@@ -48,7 +50,9 @@ class CategoryGridView extends StatelessWidget {
             scale: 0.8,
             child: FadeInAnimation(
               child: CategoryGridTile(
-                category: categoryTuple.item1,
+                category: categoryTuple.item1 == "no category"
+                    ? I18n.of(context).no_category
+                    : categoryTuple.item1,
                 randomCategoryImage: categoryTuple.item2,
               ),
             ),

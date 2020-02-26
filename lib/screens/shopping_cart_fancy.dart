@@ -252,6 +252,7 @@ class IngredientRow extends StatelessWidget {
           decoration: BoxDecoration(),
           child: Center(
             child: IconButton(
+              highlightColor: Colors.transparent,
               splashColor: Colors.transparent,
               iconSize: 30,
               icon: Icon(

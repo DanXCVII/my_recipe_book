@@ -72,7 +72,7 @@ class _CategorySectionState extends State<CategorySection> {
                             save: (String name) {
                               BlocProvider.of<CategoryManagerBloc>(context)
                                   .recipeManagerBloc
-                                  .add(RMAddCategory(name));
+                                  .add(RMAddCategories([name]));
                             },
                             hintText: I18n.of(context).categoryname,
                           ),

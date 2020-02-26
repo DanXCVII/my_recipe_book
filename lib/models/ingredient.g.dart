@@ -33,7 +33,7 @@ class IngredientAdapter extends TypeAdapter<Ingredient> {
   }
 
   @override
-  int get typeId => 2;
+  int get typeId => 3;
 }
 
 class CheckableIngredientAdapter extends TypeAdapter<CheckableIngredient> {
@@ -66,5 +66,5 @@ class CheckableIngredientAdapter extends TypeAdapter<CheckableIngredient> {
   }
 
   @override
-  int get typeId => 3;
+  int get typeId => 4;
 }

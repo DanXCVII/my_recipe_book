@@ -26,8 +26,8 @@ class CategoryOverviewBloc
           add(CODeleteRecipe(rmState.recipe));
         } else if (rmState is RM.UpdateRecipeState) {
           add(COUpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
-        } else if (rmState is RM.AddCategoryState) {
-          add(COAddCategory(rmState.category));
+        } else if (rmState is RM.AddCategoriesState) {
+          add(COAddCategory(rmState.categories));
         } else if (rmState is RM.DeleteCategoryState) {
           add(CODeleteCategory(rmState.category));
         } else if (rmState is RM.UpdateCategoryState) {
@@ -55,7 +55,7 @@ class CategoryOverviewBloc
     } else if (event is CODeleteRecipe) {
       yield* _mapDeleteRecipeToState(event);
     } else if (event is COAddCategory) {
-      yield* _mapAddCategoryToState(event);
+      yield* _mapAddCategoriesToState(event);
     } else if (event is CODeleteCategory) {
       yield* _mapDeleteCategoryToState(event);
     } else if (event is COUpdateCategory) {
@@ -106,13 +106,11 @@ class CategoryOverviewBloc
     }
   }
 
-  Stream<CategoryOverviewState> _mapAddCategoryToState(
+  Stream<CategoryOverviewState> _mapAddCategoriesToState(
       COAddCategory event) async* {
     if (state is LoadedCategoryOverview) {
       final List<Tuple2<String, String>> categoryRandomImageList =
-          (state as LoadedCategoryOverview).categories
-            ..insert((state as LoadedCategoryOverview).categories.length - 1,
-                Tuple2(event.category, "images/randomFood.jpg"));
+          await _getCategoriesRandomImage();
 
       yield LoadedCategoryOverview(categoryRandomImageList);
     }
@@ -135,7 +133,7 @@ class CategoryOverviewBloc
       final List<Tuple2<String, String>> categoryRandomImageList =
           (state as LoadedCategoryOverview).categories.map((t) {
         if (t.item1 == event.oldCategory) {
-          return Tuple2(t.item1, event.updatedCategory);
+          return Tuple2(event.updatedCategory, t.item2);
         } else {
           return t;
         }

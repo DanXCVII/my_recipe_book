@@ -14,7 +14,6 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   @override
   RecipeManagerState get initialState => InitialRecipeManagerState();
 
-  // TODO: IMPORTANT: Map the events to state and ALSO!! update the database accordingly
   @override
   Stream<RecipeManagerState> mapEventToState(
     RecipeManagerEvent event,
@@ -23,10 +22,8 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
       yield* _mapAddRecipeToState(event);
     } else if (event is RMDeleteRecipe) {
       yield* _mapDeleteRecipeToState(event);
-    } else if (event is RMUpdateRecipe) {
-      yield* _mapUpdateRecipeToState(event);
-    } else if (event is RMAddCategory) {
-      yield* _mapAddCategoryToState(event);
+    } else if (event is RMAddCategories) {
+      yield* _mapAddCategoriesToState(event);
     } else if (event is RMDeleteCategory) {
       yield* _mapDeleteCategoryToState(event);
     } else if (event is RMUpdateCategory) {
@@ -41,16 +38,16 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   }
 
   Stream<AddRecipeState> _mapAddRecipeToState(RMAddRecipe event) async* {
-    await HiveProvider().saveRecipe(event.recipe);
+    Recipe newRecipe =
+        event.recipe.copyWith(lastModified: DateTime.now().toString());
+    await HiveProvider().saveRecipe(newRecipe);
 
-    yield AddRecipeState(event.recipe);
+    yield AddRecipeState(newRecipe);
   }
 
-  /// not deleting files
+  /// not deleting files because when a recipe is modified, the event also fires
   Stream<DeleteRecipeState> _mapDeleteRecipeToState(
       RMDeleteRecipe event) async* {
-    // TODO: Delete files if set
-
     Recipe deletedRecipe =
         await HiveProvider().getRecipeByName(event.recipeName);
 
@@ -61,27 +58,26 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
     }
   }
 
-  Stream<UpdateRecipeState> _mapUpdateRecipeToState(
-      RMUpdateRecipe event) async* {
-    // TODO: Update recipe in hive
-    yield UpdateRecipeState(event.oldRecipe, event.updatedRecipe);
-  }
+  Stream<AddCategoriesState> _mapAddCategoriesToState(
+      RMAddCategories event) async* {
+    for (String category in event.categories) {
+      await HiveProvider().addCategory(category);
+    }
 
-  Stream<AddCategoryState> _mapAddCategoryToState(RMAddCategory event) async* {
-    await HiveProvider().addCategory(event.category);
-
-    yield AddCategoryState(event.category);
+    yield AddCategoriesState(event.categories);
   }
 
   Stream<DeleteCategoryState> _mapDeleteCategoryToState(
       RMDeleteCategory event) async* {
-    // TODO: Delete category from hive
+    await HiveProvider().deleteCategory(event.category);
+
     yield DeleteCategoryState(event.category);
   }
 
   Stream<UpdateCategoryState> _mapUpdateCategoryToState(
       RMUpdateCategory event) async* {
-    // TODO: Update category in hive
+    HiveProvider().renameCategory(event.oldCategory, event.updatedCategory);
+
     yield UpdateCategoryState(event.oldCategory, event.updatedCategory);
   }
 

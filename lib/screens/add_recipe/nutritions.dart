@@ -104,7 +104,6 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                     BlocListener<NutritionsBloc, NutritionsState>(
                       listener: (context, state) {
                         if (state is NEditingFinishedGoBack) {
-                          // TODO: internationalize
                           Scaffold.of(context).showSnackBar(SnackBar(
                               content:
                                   Text(I18n.of(context).saving_your_input)));
@@ -122,7 +121,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                             Navigator.pop(context);
                             Navigator.pop(context);
                             Navigator.pop(context);
-                            // TODO: Not working because the shoppingCartBloc is not present here
+
                             Navigator.pushNamed(
                               context,
                               RouteNames.recipeScreen,

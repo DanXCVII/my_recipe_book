@@ -153,6 +153,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                     }),
                   );
                 }
+              } else {
+                return Text(state.toString());
               }
             }))
           ],
@@ -231,6 +233,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                 child: Row(
                   children: <Widget>[
                     IconButton(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
                       icon: Icon(Icons.remove),
                       onPressed: () {
                         if (_controllers.length > 2)
@@ -241,11 +245,15 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                       },
                     ),
                     IconButton(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
                       icon: Icon(Icons.add),
                       onPressed: () {
                         setState(() {
-                          _controllers.add(TextEditingController());
-                          _autoCompletionKeys.add(GlobalKey());
+                          if (_controllers.length < 20) {
+                            _controllers.add(TextEditingController());
+                            _autoCompletionKeys.add(GlobalKey());
+                          }
                         });
                       },
                     )

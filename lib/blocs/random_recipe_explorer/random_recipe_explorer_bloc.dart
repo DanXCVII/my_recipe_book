@@ -34,8 +34,8 @@ class RandomRecipeExplorerBloc
           add(DeleteRecipe(rmState.recipe));
         } else if (rmState is RM.UpdateRecipeState) {
           add(UpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
-        } else if (rmState is RM.AddCategoryState) {
-          add(AddCategory(rmState.category));
+        } else if (rmState is RM.AddCategoriesState) {
+          add(AddCategories(rmState.categories));
         } else if (rmState is RM.DeleteCategoryState) {
           add(DeleteCategory(rmState.category));
         } else if (rmState is RM.UpdateCategoryState) {
@@ -56,7 +56,7 @@ class RandomRecipeExplorerBloc
       yield* _mapInitializeRandomRecipeExplorerToState(event);
     } else if (event is ReloadRandomRecipeExplorer) {
       yield* _mapReloadRandomRecipeExplorerToState(event);
-    } else if (event is AddCategory) {
+    } else if (event is AddCategories) {
       yield* _mapAddCategoryToState(event);
     } else if (event is DeleteCategory) {
       yield* _mapDeleteCategoryToState(event);
@@ -90,13 +90,13 @@ class RandomRecipeExplorerBloc
   }
 
   Stream<RandomRecipeExplorerState> _mapAddCategoryToState(
-      AddCategory event) async* {
+      AddCategories event) async* {
     if (state is LoadedRandomRecipeExplorer) {
       final List<String> categories =
           List<String>.from((state as LoadedRandomRecipeExplorer).categories)
-            ..insert(
+            ..insertAll(
                 (state as LoadedRandomRecipeExplorer).categories.length - 1,
-                event.category);
+                event.categories);
 
       yield LoadedRandomRecipeExplorer(
         (state as LoadedRandomRecipeExplorer).randomRecipes,
@@ -198,16 +198,18 @@ class RandomRecipeExplorerBloc
 
   Stream<RandomRecipeExplorerState> _mapUpdateCategoryToState(
       UpdateCategory event) async* {
-    final List<String> categories =
-        List<String>.from((state as LoadedRandomRecipeExplorer).categories);
-    int renamedCategoryIndex = categories.indexOf(event.oldCategory);
-    categories[renamedCategoryIndex] = event.newCategory;
+    if (state is LoadedRandomRecipeExplorer) {
+      final List<String> categories =
+          List<String>.from((state as LoadedRandomRecipeExplorer).categories);
+      int renamedCategoryIndex = categories.indexOf(event.oldCategory);
+      categories[renamedCategoryIndex] = event.newCategory;
 
-    yield LoadedRandomRecipeExplorer(
-      (state as LoadedRandomRecipeExplorer).randomRecipes,
-      categories,
-      (state as LoadedRandomRecipeExplorer).selectedCategory,
-    );
+      yield LoadedRandomRecipeExplorer(
+        (state as LoadedRandomRecipeExplorer).randomRecipes,
+        categories,
+        (state as LoadedRandomRecipeExplorer).selectedCategory,
+      );
+    }
   }
 
   Stream<RandomRecipeExplorerState> _mapReloadRandomRecipeExplorerToState(

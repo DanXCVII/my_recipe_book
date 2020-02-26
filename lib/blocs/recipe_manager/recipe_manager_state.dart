@@ -15,9 +15,6 @@ class AddRecipeState extends RecipeManagerState {
   const AddRecipeState(this.recipe);
   @override
   List<Object> get props => [recipe];
-
-  @override
-  String toString() => 'AddRecipe { recipe: $recipe }';
 }
 
 class AddFavoriteState extends RecipeManagerState {
@@ -26,31 +23,24 @@ class AddFavoriteState extends RecipeManagerState {
   const AddFavoriteState(this.recipe);
   @override
   List<Object> get props => [recipe];
-
-  @override
-  String toString() => 'Add favorite { recipe: $recipe }';
 }
 
 class RemoveFavoriteState extends RecipeManagerState {
   final Recipe recipe;
 
   const RemoveFavoriteState(this.recipe);
-  @override
-  List<Object> get props => [recipe];
 
   @override
-  String toString() => 'Remove favorite { recipe: $recipe }';
+  List<Object> get props => [recipe];
 }
 
 class DeleteRecipeState extends RecipeManagerState {
   final Recipe recipe;
 
   const DeleteRecipeState(this.recipe);
-  @override
-  List<Object> get props => [recipe];
 
   @override
-  String toString() => 'DeleteRecipe { recipe: $recipe }';
+  List<Object> get props => [recipe];
 }
 
 class UpdateRecipeState extends RecipeManagerState {
@@ -61,21 +51,15 @@ class UpdateRecipeState extends RecipeManagerState {
 
   @override
   List<Object> get props => [oldRecipe, updatedRecipe];
-
-  @override
-  String toString() =>
-      'DeleteRecipe { oldRecipe: $oldRecipe, updatedRecipe: $updatedRecipe }';
 }
 
-class AddCategoryState extends RecipeManagerState {
-  final String category;
+class AddCategoriesState extends RecipeManagerState {
+  final List<String> categories;
 
-  const AddCategoryState(this.category);
-  @override
-  List<Object> get props => [category];
+  const AddCategoriesState(this.categories);
 
   @override
-  String toString() => 'AddCategory { category: $category }';
+  List<Object> get props => [categories];
 }
 
 class DeleteCategoryState extends RecipeManagerState {
@@ -85,9 +69,6 @@ class DeleteCategoryState extends RecipeManagerState {
 
   @override
   List<Object> get props => [category];
-
-  @override
-  String toString() => 'DeleteCategory { category: $category }';
 }
 
 class UpdateCategoryState extends RecipeManagerState {
@@ -98,10 +79,6 @@ class UpdateCategoryState extends RecipeManagerState {
 
   @override
   List<Object> get props => [oldCategory, updatedCategory];
-
-  @override
-  String toString() =>
-      'DeleteCategory { oldCategory: $oldCategory, updatedCategory: $updatedCategory }';
 }
 
 class MoveCategoryState extends RecipeManagerState {
@@ -121,8 +98,4 @@ class MoveCategoryState extends RecipeManagerState {
         newIndex,
         time,
       ];
-
-  @override
-  String toString() =>
-      'move category { oldIndex: $oldIndex, newIndex: $newIndex }';
 }

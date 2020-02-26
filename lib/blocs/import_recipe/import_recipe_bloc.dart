@@ -96,12 +96,13 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         // .. and if it succeeded ..
         if (importedRecipeData == true) {
           List<String> categories = HiveProvider().getCategoryNames();
+          List<String> newCategories = [];
           for (String category in event.recipes[i].categories) {
             if (!categories.contains(category)) {
-              recipeManagerBloc.add(RMAddCategory(category));
-              await Future.delayed(Duration(milliseconds: 50));
+              newCategories.add(category);
             }
           }
+          recipeManagerBloc.add(RMAddCategories(newCategories));
           // add recipe to recipeManager
           recipeManagerBloc.add(RMAddRecipe(event.recipes[i]));
           importRecipes.add(event.recipes[i]);
