@@ -40,9 +40,9 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
               BlocProvider.of<RandomRecipeExplorerBloc>(context)
                   .add(ChangeCategory(currentCategory));
             },
-            child: Text(currentCategory == I18n.of(context).no_category
+            child: Text(currentCategory == "no category"
                 ? I18n.of(context).no_category
-                : currentCategory == I18n.of(context).all_categories
+                : currentCategory == "all categories"
                     ? I18n.of(context).all_categories
                     : currentCategory),
           );

@@ -732,9 +732,9 @@ class _I18n_de_DE extends I18n {
   /// "Keine passenden Rezpete gefunden"
   @override
   String get no_matching_recipes => "Keine passenden Rezpete gefunden";
-  /// "Trffer"
+  /// "Treffer"
   @override
-  String get matches => "Trffer";
+  String get matches => "Treffer";
   /// "Zutat löschen"
   @override
   String get delete_ingredient => "Zutat löschen";

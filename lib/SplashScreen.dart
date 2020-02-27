@@ -89,7 +89,7 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   void _initTheme(SharedPreferences prefs) {
-    int theme = 0;
+    int theme = 2;
     if (prefs.containsKey('theme')) {
       theme = prefs.getInt('theme');
     }

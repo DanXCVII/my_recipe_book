@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../generated/i18n.dart';
 import '../widgets/dialogs/info_dialog.dart';
@@ -62,7 +63,7 @@ class AboutMeScreen extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Card(
                         child: Container(
                           height: 160,
@@ -73,6 +74,7 @@ class AboutMeScreen extends StatelessWidget {
                                 child: Center(
                                   child: Text(
                                     I18n.of(context).share_this_app,
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -113,37 +115,46 @@ class AboutMeScreen extends StatelessWidget {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Card(
-                        child: Container(
-                          height: 160,
-                          child: Column(
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Center(
-                                  child: Text(
-                                    "contact me",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                      padding: const EdgeInsets.all(4.0),
+                      child: GestureDetector(
+                        onTap: () async {
+                          if (await canLaunch(
+                              "mailto:daniel.weissen.developer@gmail.com")) {
+                            await launch(
+                                "mailto:daniel.weissen.developer@gmail.com");
+                          }
+                        },
+                        child: Card(
+                          child: Container(
+                            height: 160,
+                            child: Column(
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Center(
+                                    child: Text(
+                                      "contact me",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        width: 2, color: Colors.white)),
-                                child: Icon(Icons.mail, size: 40),
-                              )
-                            ],
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                  width: 60,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          width: 2, color: Colors.white)),
+                                  child: Icon(Icons.mail, size: 40),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
