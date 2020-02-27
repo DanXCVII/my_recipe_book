@@ -1,4 +1,4 @@
-package com.example.my_recipe_book
+package com.release.my_recipe_book
 
 import android.content.Intent
 import androidx.annotation.NonNull
