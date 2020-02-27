@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../blocs/category_overview/category_overview_bloc.dart';
@@ -13,6 +14,9 @@ import '../models/tuple.dart';
 import 'recipe_overview.dart';
 
 class CategoryGridView extends StatelessWidget {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CategoryOverviewBloc, CategoryOverviewState>(
@@ -21,12 +25,21 @@ class CategoryGridView extends StatelessWidget {
         return Center(child: CircularProgressIndicator());
       } else if (state is LoadedCategoryOverview) {
         return AnimationLimiter(
-          child: GridView.extent(
-            maxCrossAxisExtent: 300,
-            padding: const EdgeInsets.all(4),
-            mainAxisSpacing: 4,
-            crossAxisSpacing: 4,
-            children: getCategories(state.categories, context),
+          child: LiquidPullToRefresh(
+            key: _refreshIndicatorKey,
+            springAnimationDurationInMilliseconds: 300,
+            onRefresh: () async {
+              await Future.delayed(Duration(milliseconds: 200));
+              BlocProvider.of<CategoryOverviewBloc>(context)
+                  .add(COLoadCategoryOverview());
+            },
+            child: GridView.extent(
+              maxCrossAxisExtent: 300,
+              padding: const EdgeInsets.all(4),
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 4,
+              children: getCategories(state.categories, context),
+            ),
           ),
         );
       } else {

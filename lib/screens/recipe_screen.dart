@@ -9,6 +9,8 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/animated_stepper/animated_stepper_bloc.dart';
+import 'package:my_recipe_book/widgets/animated_stepper.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -1096,39 +1098,6 @@ class TopSectionRecipe extends StatelessWidget {
   }
 }
 
-void _showStepFullView(
-  List<List<String>> stepImages,
-  List<String> description,
-  int stepNumber,
-  int imageNumber,
-  BuildContext context,
-) {
-  List<String> flatStepImages = [];
-  List<String> imageDescription = [];
-  List<String> heroTags = [];
-  int imageIndex = 0;
-  for (int i = 0; i < stepImages.length; i++) {
-    if (i < stepNumber) imageIndex += stepImages[i].length;
-    for (int j = 0; j < stepImages[i].length; j++) {
-      imageDescription.add(description[i]);
-      flatStepImages.add(stepImages[i][j]);
-      heroTags.add("Schritt$i:$j");
-    }
-  }
-  imageIndex += imageNumber;
-
-  Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => GalleryPhotoView(
-          initialIndex: imageIndex,
-          galleryImagePaths: flatStepImages,
-          descriptions: imageDescription,
-          heroTags: heroTags,
-        ),
-      ));
-}
-
 void _showPictureFullView(String image, String tag, BuildContext context) {
   Navigator.push(
       context,
@@ -1221,133 +1190,59 @@ class StepsSection extends StatelessWidget {
 
   StepsSection(this.steps, this.stepPreviewImages, this.stepImages);
 
-  List<Widget> getSteps(BuildContext context) {
-    List<Widget> output = new List<Widget>();
-
-    for (int i = 0; i < steps.length; i++) {
-      output.add(
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 20, 12, 12),
-              child: Stack(children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 0, top: 20),
-                  child: Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: stepsColors[i % (stepsColors.length)])),
-                ),
-                Text("${i + 1}.",
-                    style: TextStyle(color: Colors.white, fontSize: 54))
-              ]),
-            ),
-            Container(
-              padding: EdgeInsets.only(top: 30),
-              width: MediaQuery.of(context).size.width - 100,
-              child: Text(
-                steps[i],
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontFamily: recipeScreenFontFamily,
-                ),
-              ),
-            )
-          ],
-        ),
-      );
-      Wrap stepPics = new Wrap(
-        runSpacing: 10,
-        spacing: 10,
-        children: <Widget>[],
-      );
-      for (int j = 0; j < stepPreviewImages[i].length; j++) {
-        stepPics.children.add(GestureDetector(
-          onTap: () {
-            _showStepFullView(stepImages, steps, i, j, context);
-          },
-          child: Hero(
-            tag: "Schritt$i:$j",
-            child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                child: Container(
-                  width: 100,
-                  height: 80,
-                  child: FadeInImage(
-                    fadeInDuration: Duration(milliseconds: 100),
-                    placeholder: MemoryImage(kTransparentImage),
-                    image: FileImage(
-                      File(stepPreviewImages[i][j]),
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                )),
-          ),
-        ));
-
-        if (j == stepPreviewImages[i].length - 1) {
-          output.add(Padding(
-            padding: const EdgeInsets.only(left: 80, right: 20, top: 20),
-            child: stepPics,
-          ));
-        }
-      }
-    }
-    return output;
-  }
-
   @override
   Widget build(BuildContext context) {
     if (steps.isEmpty) return Container();
-    Column output = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-            height: 40,
-            decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.3)),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12, right: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        I18n.of(context).directions,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: headingSize,
-                          fontFamily: recipeScreenFontFamily,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xff672B00),
+            Color(0xff3A1900),
+          ],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+              height: 40,
+              decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.3)),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 12, right: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          I18n.of(context).directions,
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: headingSize,
+                            fontFamily: recipeScreenFontFamily,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            )),
-        SizedBox(height: 25),
-      ],
-    );
-    output.children.addAll(getSteps(context));
-    output.children.add(SizedBox(height: 25));
-    return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xff672B00),
-              Color(0xff3A1900),
-            ],
+              )),
+          SizedBox(height: 25),
+          AnimatedStepper(
+            steps,
+            stepImages: stepImages,
+            fontFamily: recipeScreenFontFamily,
+            lowResStepImages: stepPreviewImages,
           ),
-        ),
-        child: output);
+          SizedBox(height: 25),
+        ],
+      ),
+    );
   }
 }
 

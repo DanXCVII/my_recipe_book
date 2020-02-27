@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:my_recipe_book/blocs/recipe_category_overview/recipe_category_overview_event.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
@@ -20,6 +22,9 @@ import 'recipe_screen.dart';
 // Builds the Rows of all the categories
 
 class RecipeCategoryOverview extends StatelessWidget {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RecipeCategoryOverviewBloc, RecipeCategoryOverviewState>(
@@ -27,14 +32,23 @@ class RecipeCategoryOverview extends StatelessWidget {
       if (state is LoadingRecipeCategoryOverviewState) {
         return Center(child: CircularProgressIndicator());
       } else if (state is LoadedRecipeCategoryOverview) {
-        return ListView.builder(
-            itemCount: state.rCategoryOverview.length,
-            itemBuilder: (context, index) {
-              return RecipeRow(
-                category: state.rCategoryOverview[index].item1,
-                recipes: state.rCategoryOverview[index].item2,
-              );
-            });
+        return LiquidPullToRefresh(
+          key: _refreshIndicatorKey,
+          springAnimationDurationInMilliseconds: 300,
+          onRefresh: () async {
+            await Future.delayed(Duration(milliseconds: 200));
+            BlocProvider.of<RecipeCategoryOverviewBloc>(context)
+                .add(RCOLoadRecipeCategoryOverview());
+          },
+          child: ListView.builder(
+              itemCount: state.rCategoryOverview.length,
+              itemBuilder: (context, index) {
+                return RecipeRow(
+                  category: state.rCategoryOverview[index].item1,
+                  recipes: state.rCategoryOverview[index].item2,
+                );
+              }),
+        );
       }
       return (Text(state.toString()));
     });

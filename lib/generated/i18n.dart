@@ -156,8 +156,8 @@ class I18n implements WidgetsLocalizations {
   String get select_subcategories => "select subcategories:";
   /// "select a category"
   String get select_a_category => "select a category";
-  /// "basket"
-  String get basket => "basket";
+  /// "shopping"
+  String get basket => "shopping";
   /// "Your shoppingcart is empty"
   String get shopping_cart_is_empty => "Your shoppingcart is empty";
   /// "explore"
@@ -555,9 +555,9 @@ class _I18n_de_DE extends I18n {
   /// "Dein Einkaufswagen ist leer"
   @override
   String get shopping_cart_is_empty => "Dein Einkaufswagen ist leer";
-  /// "wische"
+  /// "zufällig"
   @override
-  String get explore => "wische";
+  String get explore => "zufällig";
   /// "zufällige Rezepte"
   @override
   String get roll_the_dice => "zufällige Rezepte";
@@ -594,9 +594,9 @@ class _I18n_de_DE extends I18n {
   /// "bewerte diese App"
   @override
   String get rate_app => "bewerte diese App";
-  /// "Einstellungen"
+  /// "Allgemeines"
   @override
-  String get settings => "Einstellungen";
+  String get settings => "Allgemeines";
   /// "Abbrechen"
   @override
   String get cancel => "Abbrechen";

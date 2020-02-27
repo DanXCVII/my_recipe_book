@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/blocs/animated_stepper/animated_stepper_bloc.dart';
 import 'package:my_recipe_book/blocs/ingredient_search/ingredient_search_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import 'package:my_recipe_book/screens/about_me.dart';
@@ -172,6 +173,9 @@ class MyApp extends StatelessWidget {
                             args.recipe.servings,
                             args.recipe.ingredients,
                           ))),
+                    BlocProvider<AnimatedStepperBloc>(
+                      create: (context) => AnimatedStepperBloc(),
+                    ),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
