@@ -77,5 +77,6 @@
 
 **/AndroidManifest.xml
 /app/android/key.properties
-**/android/**/key.jks
 **/android/**/key.properties
+*.jks
+**/ad_related/ad_id.dart
