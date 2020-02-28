@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:my_recipe_book/blocs/animated_stepper/animated_stepper_bloc.dart';
 import 'package:my_recipe_book/blocs/ingredient_search/ingredient_search_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_bubble/recipe_bubble_bloc.dart';
@@ -179,9 +180,9 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
-                  child: RecipeScreen(
+                  child: _getAdPage(RecipeScreen(
                     heroImageTag: args.heroImageTag,
-                  ),
+                  )),
                 ),
               );
             case "/add-recipe/general-info":
@@ -217,17 +218,18 @@ class MyApp extends StatelessWidget {
 
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<IngredientsBloc>(
-                        create: (context) => IngredientsBloc()),
-                    BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc)
-                  ],
-                  child: IngredientsAddScreen(
-                    modifiedRecipe: args.modifiedRecipe,
-                    editingRecipeName: args.editingRecipeName,
-                  ),
-                ),
+                    providers: [
+                      BlocProvider<IngredientsBloc>(
+                          create: (context) => IngredientsBloc()),
+                      BlocProvider<ShoppingCartBloc>.value(
+                          value: args.shoppingCartBloc)
+                    ],
+                    child: _getAdPage(
+                      IngredientsAddScreen(
+                        modifiedRecipe: args.modifiedRecipe,
+                        editingRecipeName: args.editingRecipeName,
+                      ),
+                    )),
               );
 
             case "/add-recipe/steps":
@@ -271,7 +273,7 @@ class MyApp extends StatelessWidget {
                               ),
                           ),
                         ],
-                        child: RecipeGridView(),
+                        child: _getAdPage(RecipeGridView()),
                       ));
 
             case "/vegetable-recipes-oveview":
@@ -291,7 +293,7 @@ class MyApp extends StatelessWidget {
                         ),
                     ),
                   ],
-                  child: RecipeGridView(),
+                  child: _getAdPage(RecipeGridView()),
                 ),
               );
 
@@ -329,7 +331,7 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc)
                   ],
-                  child: IngredientSearchScreen(),
+                  child: _getAdPage(IngredientSearchScreen()),
                 ),
               );
 
@@ -340,7 +342,7 @@ class MyApp extends StatelessWidget {
                     recipeManagerBloc:
                         BlocProvider.of<RecipeManagerBloc>(context),
                   )..add(InitializeCategoryManager()),
-                  child: CategoryManager(),
+                  child: _getAdPage(CategoryManager()),
                 ),
               );
 
@@ -349,7 +351,7 @@ class MyApp extends StatelessWidget {
                 builder: (context) => BlocProvider<NutritionManagerBloc>(
                   create: (context) =>
                       NutritionManagerBloc()..add(LoadNutritionManager()),
-                  child: NutritionManager(),
+                  child: _getAdPage(NutritionManager()),
                 ),
               );
 
@@ -358,7 +360,7 @@ class MyApp extends StatelessWidget {
                 builder: (context) => BlocProvider<IngredientsManagerBloc>(
                   create: (context) =>
                       IngredientsManagerBloc()..add(LoadIngredientsManager()),
-                  child: IngredientsManager(),
+                  child: _getAdPage(IngredientsManager()),
                 ),
               );
 
@@ -373,6 +375,24 @@ class MyApp extends StatelessWidget {
           }
         },
       ),
+    );
+  }
+
+  Widget _getAdPage(Widget page) {
+    return Column(
+      children: <Widget>[
+        Expanded(child: page),
+        Ads.shouldShowAds()
+            ? Container(
+                height: 50,
+                width: double.infinity,
+                color: Colors.brown,
+                child: Image.asset(
+                  "images/bannerAd.png",
+                ),
+              )
+            : null,
+      ]..removeWhere((item) => item == null),
     );
   }
 }

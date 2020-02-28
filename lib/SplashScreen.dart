@@ -52,7 +52,6 @@ class SplashScreenState extends State<SplashScreen> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    _initShoppingListScreen(prefs);
     _initRecipeOverviewScreen(prefs);
     _initTheme(prefs);
 
@@ -75,12 +74,6 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> clearCache() async {}
-
-  void _initShoppingListScreen(SharedPreferences prefs) {
-    if (prefs.containsKey('showFancyShoppingList')) {
-      showFancyShoppingList = prefs.getBool('showFancyShoppingList');
-    }
-  }
 
   void _initRecipeOverviewScreen(SharedPreferences prefs) {
     if (prefs.containsKey('recipeCatOverview')) {
