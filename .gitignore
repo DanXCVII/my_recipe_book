@@ -75,8 +75,6 @@
 # images because of copyright
 ./images
 
-**/AndroidManifest.xml
 /app/android/key.properties
 **/android/**/key.properties
 *.jks
-**/ad_related/ad_id.dart
