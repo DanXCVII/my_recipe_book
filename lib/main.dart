@@ -379,11 +379,11 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _getAdPage(Widget page) {
-    return Column(
-      children: <Widget>[
-        Expanded(child: page),
-        Ads.shouldShowAds()
-            ? Container(
+    return Ads.shouldShowAds()
+        ? Column(
+            children: <Widget>[
+              Expanded(child: page),
+              Container(
                 height: 50,
                 width: double.infinity,
                 color: Colors.brown,
@@ -391,8 +391,8 @@ class MyApp extends StatelessWidget {
                   "images/bannerAd.png",
                 ),
               )
-            : null,
-      ]..removeWhere((item) => item == null),
-    );
+            ],
+          )
+        : page;
   }
 }
