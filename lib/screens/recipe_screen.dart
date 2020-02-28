@@ -27,7 +27,7 @@ import '../constants/global_constants.dart' as Constants;
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
-import '../hive.dart';
+import '../local_storage/hive.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
 import '../models/enums.dart';

@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import '../../helper.dart';
-import '../../hive.dart';
+import '../../local_storage/hive.dart';
 import '../../models/enums.dart';
 import '../../models/recipe.dart';
 import '../../models/recipe_sort.dart';

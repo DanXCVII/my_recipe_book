@@ -5,12 +5,12 @@ import 'package:hive/hive.dart';
 import 'package:my_recipe_book/models/tuple.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'models/enums.dart';
-import 'models/ingredient.dart';
-import 'models/nutrition.dart';
-import 'models/recipe.dart';
-import 'models/recipe_sort.dart';
-import 'models/shopping_cart_tuple.dart';
+import '../models/enums.dart';
+import '../models/ingredient.dart';
+import '../models/nutrition.dart';
+import '../models/recipe.dart';
+import '../models/recipe_sort.dart';
+import '../models/shopping_cart_tuple.dart';
 
 const String tmpRecipeKey = '000';
 const String tmpEditingRecipeKey = '001';

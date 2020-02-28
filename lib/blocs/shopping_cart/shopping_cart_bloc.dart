@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart'
     as RM;
 
-import '../../hive.dart';
+import '../../local_storage/hive.dart';
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
 

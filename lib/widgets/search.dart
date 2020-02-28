@@ -5,7 +5,7 @@ import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
-import '../hive.dart';
+import '../local_storage/hive.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_screen.dart';
 

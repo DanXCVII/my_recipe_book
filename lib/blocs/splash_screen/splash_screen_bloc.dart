@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './splash_screen.dart';
-import '../../hive.dart';
+import '../../local_storage/hive.dart';
 import '../../theming.dart';
 
 class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {

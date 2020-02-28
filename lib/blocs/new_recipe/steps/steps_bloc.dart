@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../hive.dart';
+import '../../../local_storage/hive.dart';
 import '../../../models/recipe.dart';
 import '../step_images/step_images_bloc.dart';
 import '../step_images/step_images_state.dart';

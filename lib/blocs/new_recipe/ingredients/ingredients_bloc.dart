@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:my_recipe_book/models/enums.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
 
-import '../../../hive.dart';
+import '../../../local_storage/hive.dart';
 import '../../../models/recipe.dart';
 
 part 'ingredients_event.dart';

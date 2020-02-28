@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../generated/i18n.dart';
 import '../../helper.dart';
-import '../../hive.dart';
+import '../../local_storage/hive.dart';
 import '../../models/ingredient.dart';
 
 class AddShoppingCartDialog extends StatefulWidget {

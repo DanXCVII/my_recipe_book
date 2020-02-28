@@ -9,10 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
-import '../intro_screen.dart';
 import '../theming.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import 'export_recipes_screen.dart';
+import 'intro_screen.dart';
 
 class Settings extends StatelessWidget {
   @override

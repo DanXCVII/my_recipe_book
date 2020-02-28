@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 
-import '../../hive.dart';
+import '../../local_storage/hive.dart';
 import '../../models/ingredient.dart';
 
 part 'recipe_screen_ingredients_event.dart';

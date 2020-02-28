@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:share_extend/share_extend.dart';
 
 import '../generated/i18n.dart';
-import '../hive.dart';
+import '../local_storage/hive.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
 

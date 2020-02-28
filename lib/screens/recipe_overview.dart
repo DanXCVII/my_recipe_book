@@ -12,7 +12,7 @@ import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../generated/i18n.dart';
-import '../hive.dart';
+import '../local_storage/hive.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../widgets/icon_info_message.dart';

@@ -6,7 +6,7 @@ import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../generated/i18n.dart';
 import '../helper.dart';
-import '../hive.dart';
+import '../local_storage/hive.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../widgets/dialogs/shopping_cart_add_dialog.dart';

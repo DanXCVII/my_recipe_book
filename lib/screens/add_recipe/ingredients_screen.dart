@@ -9,7 +9,7 @@ import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../constants/routes.dart';
 import '../../generated/i18n.dart';
 import '../../helper.dart';
-import '../../hive.dart';
+import '../../local_storage/hive.dart';
 import '../../models/enums.dart';
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'hive.dart';
-import 'intro_screen.dart';
+import 'local_storage/hive.dart';
+import 'screens/intro_screen.dart';
 import 'theming.dart';
 
 class Consts {

@@ -7,7 +7,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import './local_paths.dart';
 import '../helper.dart';
-import '../hive.dart';
+import '../local_storage/hive.dart';
 import '../models/recipe.dart';
 
 /// moves the images of the recipe to the correct image paths which is

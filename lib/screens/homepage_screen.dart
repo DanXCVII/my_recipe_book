@@ -19,7 +19,7 @@ import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
-import '../hive.dart';
+import '../local_storage/hive.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/recipe_bubble.dart';
 import '../widgets/search.dart';

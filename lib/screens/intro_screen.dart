@@ -4,8 +4,8 @@ import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 
-import 'generated/i18n.dart';
-import 'theming.dart';
+import '../generated/i18n.dart';
+import '../theming.dart';
 
 class IntroScreen extends StatelessWidget {
   //making list of pages needed to pass in IntroViewsFlutter constructor.

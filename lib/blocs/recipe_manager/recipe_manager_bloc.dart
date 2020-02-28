@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../hive.dart';
+import '../../local_storage/hive.dart';
 part 'recipe_manager_event.dart';
 part 'recipe_manager_state.dart';
 

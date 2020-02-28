@@ -5,7 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../hive.dart';
+import '../../local_storage/hive.dart';
 import '../../local_storage/io_operations.dart' as IO;
 import '../../models/recipe.dart';
 import '../recipe_manager/recipe_manager_bloc.dart';

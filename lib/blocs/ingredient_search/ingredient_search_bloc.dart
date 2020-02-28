@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/hive.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/models/tuple.dart';
+
+import '../../local_storage/hive.dart';
+import '../../models/recipe.dart';
+import '../../models/tuple.dart';
 
 part 'ingredient_search_event.dart';
 part 'ingredient_search_state.dart';

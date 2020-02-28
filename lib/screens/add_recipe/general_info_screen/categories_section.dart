@@ -7,7 +7,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../../generated/i18n.dart';
-import '../../../hive.dart';
+import '../../../local_storage/hive.dart';
 import '../../../widgets/dialogs/textfield_dialog.dart';
 
 class Consts {

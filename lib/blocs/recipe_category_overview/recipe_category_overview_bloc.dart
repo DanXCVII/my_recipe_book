@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
-import '../../hive.dart';
+import '../../local_storage/hive.dart';
 import '../../models/recipe.dart';
 import '../../models/tuple.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;
