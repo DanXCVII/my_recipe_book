@@ -6,4 +6,4 @@ gradle-wrapper.jar
 /local.properties
 GeneratedPluginRegistrant.java
 
-AndroidManifest.xml
+**/AndroidManifest.xml
