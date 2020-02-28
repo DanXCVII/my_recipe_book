@@ -10,10 +10,10 @@ abstract class SplashScreenEvent extends Equatable {
 
 class SPInitializeData extends SplashScreenEvent {
   final BuildContext context;
-  final int deviceWidth;
+  final double deviceWidth;
 
-  SPInitializeData([this.context, this.deviceWidth]);
+  SPInitializeData(this.context, this.deviceWidth);
 
   @override
-  List<Object> get props => [context];
+  List<Object> get props => [context, deviceWidth];
 }
