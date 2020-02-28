@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/app/app_bloc.dart';
@@ -33,14 +34,13 @@ import 'settings_screen.dart';
 import 'shopping_cart_fancy.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage();
+  MyHomePage({Key key}) : super(key: key);
 
   @override
   MyHomePageState createState() => MyHomePageState();
 }
 
 class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-  Future<SharedPreferences> prefs;
   Image shoppingCartImage;
 
   static const platform = const MethodChannel('app.channel.shared.data');
@@ -58,7 +58,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    prefs = SharedPreferences.getInstance();
     shoppingCartImage = Image.asset(
       'images/cuisine.jpg',
       fit: BoxFit.cover,
@@ -251,7 +250,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 RouteNames.ingredientSearch,
                 arguments: IngredientSearchScreenArguments(
                     BlocProvider.of<ShoppingCartBloc>(context)),
-              );
+              ).then((_) => Ads.hideBottomBannerAd());
             },
           ),
           currentIndex == 0
@@ -278,15 +277,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   void _changeMainPageOverview(bool rCatOverview) {
-    prefs.then((prefs) {
-      bool recipeCategoryOverview = false;
-      if (rCatOverview == false) {
-        recipeCategoryOverview = true;
-      }
+    bool recipeCategoryOverview = false;
+    if (rCatOverview == false) {
+      recipeCategoryOverview = true;
+    }
 
-      BlocProvider.of<AppBloc>(context)
-        ..add(ChangeCategoryOverview(recipeCategoryOverview));
-    });
+    BlocProvider.of<AppBloc>(context)
+      ..add(ChangeCategoryOverview(recipeCategoryOverview));
   }
 
   Color _getBackgroundColor(int selectedIndex) {
@@ -358,7 +355,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     Navigator.pushNamed(
                       context,
                       RouteNames.manageCategories,
-                    );
+                    ).then((_) => Ads.hideBottomBannerAd());
                   },
                   Icon(GroovinMaterialIcons.grid_large,
                       color: Theme.of(context).primaryColor),

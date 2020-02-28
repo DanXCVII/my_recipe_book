@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './splash_screen.dart';
+import '../../ad_related/ad.dart';
 import '../../local_storage/hive.dart';
 import '../../theming.dart';
 
@@ -44,6 +45,8 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       await initHive(false);
     }
 
+    Ads.initialize(event.deviceWidth >= 468 ? true : false);
+
     yield InitializedData(recipeCategoryOverview, showIntro);
   }
 
@@ -55,7 +58,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   }
 
   void _initTheme(SharedPreferences prefs, BuildContext context) {
-    int theme = 0;
+    int theme = 2;
     if (prefs.containsKey('theme')) {
       theme = prefs.getInt('theme');
     }

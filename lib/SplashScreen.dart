@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'ad_related/ad.dart';
 import 'local_storage/hive.dart';
 import 'screens/intro_screen.dart';
 import 'theming.dart';
@@ -52,6 +53,7 @@ class SplashScreenState extends State<SplashScreen> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    Ads.initialize(MediaQuery.of(context).size.width >= 468 ? true : false);
     _initRecipeOverviewScreen(prefs);
     _initTheme(prefs);
 

@@ -141,6 +141,7 @@ class RecipeGridView extends StatelessWidget {
                                       : true,
                               heroImageTag:
                                   "${state.category}${state.recipes[index].name}",
+                              showAds: true,
                             ),
                             staggeredTileBuilder: (int index) =>
                                 StaggeredTile.fit(2),
@@ -181,6 +182,7 @@ class RecipeGridView extends StatelessWidget {
                 : Colors.black,
             activateVegetableHero: recipe.vegetable == vegetable ? false : true,
             heroImageTag: "$category${recipe.name}",
+            showAds: true,
           ),
         )
         .toList();

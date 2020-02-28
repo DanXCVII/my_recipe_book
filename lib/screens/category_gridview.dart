@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../blocs/category_overview/category_overview_bloc.dart';
@@ -99,7 +100,7 @@ class CategoryGridTile extends StatelessWidget {
             shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
             category: category == null ? Constants.noCategory : category,
           ),
-        );
+        ).then((_) => Ads.hideBottomBannerAd());
       },
       child: GridTile(
         child: randomCategoryImage == Constants.noRecipeImage

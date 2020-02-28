@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:my_recipe_book/blocs/recipe_category_overview/recipe_category_overview_event.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -25,6 +26,8 @@ class RecipeCategoryOverview extends StatelessWidget {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
+  RecipeCategoryOverview({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RecipeCategoryOverviewBloc, RecipeCategoryOverviewState>(
@@ -32,22 +35,33 @@ class RecipeCategoryOverview extends StatelessWidget {
       if (state is LoadingRecipeCategoryOverviewState) {
         return Center(child: CircularProgressIndicator());
       } else if (state is LoadedRecipeCategoryOverview) {
-        return LiquidPullToRefresh(
-          key: _refreshIndicatorKey,
-          springAnimationDurationInMilliseconds: 300,
-          onRefresh: () async {
-            await Future.delayed(Duration(milliseconds: 200));
-            BlocProvider.of<RecipeCategoryOverviewBloc>(context)
-                .add(RCOLoadRecipeCategoryOverview());
-          },
-          child: ListView.builder(
+        return AnimationLimiter(
+          child: LiquidPullToRefresh(
+            key: _refreshIndicatorKey,
+            springAnimationDurationInMilliseconds: 300,
+            onRefresh: () async {
+              await Future.delayed(Duration(milliseconds: 200));
+              BlocProvider.of<RecipeCategoryOverviewBloc>(context)
+                  .add(RCOLoadRecipeCategoryOverview());
+            },
+            child: ListView.builder(
               itemCount: state.rCategoryOverview.length,
-              itemBuilder: (context, index) {
-                return RecipeRow(
-                  category: state.rCategoryOverview[index].item1,
-                  recipes: state.rCategoryOverview[index].item2,
-                );
-              }),
+              itemBuilder: (context, index) =>
+                  AnimationConfiguration.staggeredList(
+                position: index,
+                duration: const Duration(milliseconds: 375),
+                child: SlideAnimation(
+                  horizontalOffset: MediaQuery.of(context).size.width / 2,
+                  child: FadeInAnimation(
+                    child: RecipeRow(
+                      category: state.rCategoryOverview[index].item1,
+                      recipes: state.rCategoryOverview[index].item2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         );
       }
       return (Text(state.toString()));
@@ -66,65 +80,51 @@ class RecipeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimationLimiter(
-      child: Column(
-        children: AnimationConfiguration.toStaggeredList(
-          duration: const Duration(milliseconds: 375),
-          childAnimationBuilder: (widget) => SlideAnimation(
-            horizontalOffset: MediaQuery.of(context).size.width / 2,
-            child: FadeInAnimation(child: widget),
-          ),
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left: 20),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.recipeCategories,
-                    arguments: RecipeGridViewArguments(
-                      shoppingCartBloc:
-                          BlocProvider.of<ShoppingCartBloc>(context),
-                      category: category == null
-                          ? I18n.of(context).no_category
-                          : category,
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only(top: 12.0, bottom: 10.0, right: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        category != null
-                            ? category
-                            : I18n.of(context).no_category,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 20,
-                            color: Theme.of(context).backgroundColor ==
-                                    Colors.white
-                                ? Colors.black
-                                : Colors.grey[200]),
-                      ),
-                      Icon(Icons.arrow_forward_ios),
-                    ],
-                  ),
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                RouteNames.recipeCategories,
+                arguments: RecipeGridViewArguments(
+                  shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
+                  category: category == null
+                      ? I18n.of(context).no_category
+                      : category,
                 ),
+              ).then((_) => Ads.hideBottomBannerAd());
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12.0, bottom: 10.0, right: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    category != null ? category : I18n.of(context).no_category,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                        color: Theme.of(context).backgroundColor == Colors.white
+                            ? Colors.black
+                            : Colors.grey[200]),
+                  ),
+                  Icon(Icons.arrow_forward_ios),
+                ],
               ),
             ),
-            recipes.isEmpty
-                ? Container()
-                : RecipeHozizontalList(
-                    categoryName: category,
-                    recipes: recipes,
-                  )
-          ],
+          ),
         ),
-      ),
+        recipes.isEmpty
+            ? Container()
+            : RecipeHozizontalList(
+                categoryName: category,
+                recipes: recipes,
+              )
+      ],
     );
   }
 }
@@ -252,7 +252,7 @@ class RecipeHozizontalList extends StatelessWidget {
                           ? Constants.noCategory
                           : categoryName,
                     ),
-                  );
+                  ).then((_) => Ads.hideBottomBannerAd());
                 },
                 child: Container(
                   height: 90,
@@ -294,6 +294,6 @@ class RecipeHozizontalList extends StatelessWidget {
         heroImageTag,
         BlocProvider.of<RecipeManagerBloc>(context),
       ),
-    );
+    ).then((_) => Ads.hideBottomBannerAd());
   }
 }

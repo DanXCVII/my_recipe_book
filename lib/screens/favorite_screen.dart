@@ -56,6 +56,7 @@ class FavoriteRecipeCards extends StatelessWidget {
             : Colors.grey[900],
         heroImageTag:
             "${favoriteRecipes[index].imagePreviewPath}--${favoriteRecipes[index].name}",
+        showAds: false,
       ),
       staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
       mainAxisSpacing: 12.0,

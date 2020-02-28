@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 
 import '../../blocs/new_recipe/nutritions/nutritions_bloc.dart';
 import '../../blocs/new_recipe/nutritions/nutritions_event.dart';
@@ -131,7 +132,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
                                 'heroImageTag',
                                 BlocProvider.of<RecipeManagerBloc>(context),
                               ),
-                            );
+                            ).then((_) => Ads.hideBottomBannerAd());
                           }
                         }
                       },

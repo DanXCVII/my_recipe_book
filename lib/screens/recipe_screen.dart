@@ -9,6 +9,7 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -98,7 +99,7 @@ class _RecipeScreenState extends State<RecipeScreen>
     return BlocBuilder<RecipeScreenBloc, RecipeScreenState>(
         builder: (context, state) {
       if (state is RecipeScreenInfo) {
-        return state.recipe.nutritions.isEmpty
+        return state.recipe.nutritions.isEmpty || Ads.shouldShowAds()
             ? RecipePage(
                 recipe: state.recipe,
                 heroImageTag: widget.heroImageTag,

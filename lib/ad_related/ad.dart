@@ -11,15 +11,17 @@ class Ads {
   static bool _topBIsGoingToBeShown = false;
   static BannerAd _bottomBannerAd;
   static BannerAd _topBannerAd;
+  static bool wideBottomBannerAd = false;
 
-  static void initialize() {
+  static void initialize(bool wideBottomBannerAd) {
     FirebaseAdMob.instance.initialize(appId: getAdAppId());
+    wideBottomBannerAd = wideBottomBannerAd;
   }
 
   static void setBottomBannerAd() {
     _bottomBannerAd = BannerAd(
       adUnitId: getBannerAdUnitId(),
-      size: AdSize.smartBanner, // maybe smartBanner
+      size: wideBottomBannerAd ? AdSize.fullBanner : AdSize.banner,
       targetingInfo: _getMobileAdTargetingInfo(),
       listener: (MobileAdEvent event) {
         if (event == MobileAdEvent.loaded) {

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import './recipe_card.dart';
@@ -59,7 +60,7 @@ class RecipeCardBig extends StatelessWidget {
               heroImageTag,
               BlocProvider.of<RecipeManagerBloc>(context),
             ),
-          );
+          ).then((_) => Ads.hideBottomBannerAd());
         },
         child: Container(
           decoration: BoxDecoration(
@@ -139,7 +140,7 @@ class RecipeCardBig extends StatelessWidget {
                                               BlocProvider.of<ShoppingCartBloc>(
                                                   context),
                                           vegetable: recipe.vegetable),
-                                    );
+                                    ).then((_) => Ads.hideBottomBannerAd());
                                   },
                                   child: Image.asset(
                                     "images/${getRecipeTypeImage(recipe.vegetable)}.png",

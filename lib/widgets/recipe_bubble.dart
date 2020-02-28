@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -62,7 +63,7 @@ class _RecipeBubbleState extends State<RecipeBubble> {
             widget.recipe.name + "##bubble#",
             BlocProvider.of<RecipeManagerBloc>(context),
           ),
-        );
+        ).then((_) => Ads.hideBottomBannerAd());
       },
       child: Hero(
         tag: widget.recipe.name + "##bubble#",

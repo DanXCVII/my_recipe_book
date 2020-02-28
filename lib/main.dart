@@ -11,6 +11,7 @@ import 'package:my_recipe_book/blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import 'package:my_recipe_book/screens/about_me.dart';
 import 'package:my_recipe_book/screens/ingredient_search.dart';
 import 'package:my_recipe_book/screens/ingredients_manager.dart';
+import 'package:my_recipe_book/screens/intro_screen.dart';
 
 import './theming.dart';
 import 'blocs/app/app.dart';
@@ -156,6 +157,8 @@ class MyApp extends StatelessWidget {
             case "/recipe-screen":
               final RecipeScreenArguments args = settings.arguments;
 
+              Ads.showBottomBannerAd();
+
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
                   providers: [
@@ -216,6 +219,8 @@ class MyApp extends StatelessWidget {
             case "/add-recipe/ingredients":
               final IngredientsArguments args = settings.arguments;
 
+              Ads.showBottomBannerAd();
+
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
                     providers: [
@@ -259,6 +264,8 @@ class MyApp extends StatelessWidget {
             case "/recipe-categories":
               final RecipeGridViewArguments args = settings.arguments;
 
+              Ads.showBottomBannerAd();
+
               return CupertinoPageRoute(
                   builder: (BuildContext context) => MultiBlocProvider(
                         providers: [
@@ -278,6 +285,8 @@ class MyApp extends StatelessWidget {
 
             case "/vegetable-recipes-oveview":
               final RecipeGridViewArguments args = settings.arguments;
+
+              Ads.showBottomBannerAd();
 
               return CupertinoPageRoute(
                 builder: (BuildContext context) => MultiBlocProvider(
@@ -300,6 +309,8 @@ class MyApp extends StatelessWidget {
             case "/add-recipe/nutritions":
               final AddRecipeNutritionsArguments args = settings.arguments;
 
+              Ads.hideBottomBannerAd();
+
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
                   providers: [
@@ -320,6 +331,7 @@ class MyApp extends StatelessWidget {
               );
 
             case "/ingredient-search":
+              Ads.showBottomBannerAd();
               final IngredientSearchScreenArguments args = settings.arguments;
 
               return MaterialPageRoute(
@@ -336,6 +348,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/manage-categories":
+              Ads.showBottomBannerAd();
+
               return MaterialPageRoute(
                 builder: (context) => BlocProvider(
                   create: (context) => CategoryManagerBloc(
@@ -347,6 +361,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/manage-nutritions":
+              Ads.showBottomBannerAd();
+
               return MaterialPageRoute(
                 builder: (context) => BlocProvider<NutritionManagerBloc>(
                   create: (context) =>
@@ -356,6 +372,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/manage-ingredients":
+              Ads.showBottomBannerAd();
+
               return MaterialPageRoute(
                 builder: (context) => BlocProvider<IngredientsManagerBloc>(
                   create: (context) =>
@@ -371,7 +389,8 @@ class MyApp extends StatelessWidget {
 
             default:
               return MaterialPageRoute(
-                  builder: (context) => Text("failllll kek"));
+                builder: (context) => Text("failllll kek"),
+              );
           }
         },
       ),

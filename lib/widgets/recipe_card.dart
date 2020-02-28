@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -38,9 +39,11 @@ class RecipeCard extends StatelessWidget {
   final Color shadow;
   final String heroImageTag;
   final bool activateVegetableHero;
+  final bool showAds;
 
   const RecipeCard({
     this.recipe,
+    @required this.showAds,
     @required this.shadow,
     @required this.heroImageTag,
     this.activateVegetableHero = true,
@@ -62,7 +65,9 @@ class RecipeCard extends StatelessWidget {
             heroImageTag,
             BlocProvider.of<RecipeManagerBloc>(context),
           ),
-        );
+        ).then((_) {
+          if (!showAds) Ads.hideBottomBannerAd();
+        });
       },
       child: Stack(
         children: <Widget>[
@@ -230,7 +235,9 @@ class RecipeCard extends StatelessWidget {
                                             BlocProvider.of<ShoppingCartBloc>(
                                                 context),
                                         vegetable: recipe.vegetable),
-                                  );
+                                  ).then((_) {
+                                    if (!showAds) Ads.hideBottomBannerAd();
+                                  });
                               },
                               child: Container(
                                 decoration: BoxDecoration(

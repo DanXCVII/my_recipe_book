@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/import_recipe/import_recipe_bloc.dart';
@@ -24,13 +25,15 @@ class Settings extends StatelessWidget {
           ListTile(
               title: Text(I18n.of(context).manage_nutritions),
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.manageNutritions);
+                Navigator.pushNamed(context, RouteNames.manageNutritions)
+                    .then((_) => Ads.hideBottomBannerAd());
               }),
           Divider(),
           ListTile(
               title: Text(I18n.of(context).manage_ingredients),
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.manageIngredients);
+                Navigator.pushNamed(context, RouteNames.manageIngredients)
+                    .then((_) => Ads.hideBottomBannerAd());
               }),
           Divider(),
           ListTile(
