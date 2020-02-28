@@ -149,7 +149,7 @@ class Settings extends StatelessWidget {
           ListTile(
             title: Text(I18n.of(context).view_intro),
             onTap: () {
-              _pushViewIntroScreen(context);
+              Navigator.of(context).pushNamed(RouteNames.intro);
             },
           ),
           Divider(),
@@ -164,17 +164,6 @@ class Settings extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  void _pushViewIntroScreen(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => WillPopScope(
-            onWillPop: () async {
-              SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-              return true;
-            },
-            child: IntroScreen())));
   }
 
   void _changeTheme(BuildContext context, MyThemeKeys key) {

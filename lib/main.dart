@@ -4,20 +4,17 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:my_recipe_book/blocs/animated_stepper/animated_stepper_bloc.dart';
-import 'package:my_recipe_book/blocs/ingredient_search/ingredient_search_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_bubble/recipe_bubble_bloc.dart';
-import 'package:my_recipe_book/screens/about_me.dart';
-import 'package:my_recipe_book/screens/ingredient_search.dart';
-import 'package:my_recipe_book/screens/ingredients_manager.dart';
+import 'package:my_recipe_book/constants/routes.dart';
 
 import './theming.dart';
+import 'blocs/animated_stepper/animated_stepper_bloc.dart';
 import 'blocs/app/app.dart';
 import 'blocs/app/app_event.dart';
 import 'blocs/category_manager/category_manager_bloc.dart';
 import 'blocs/category_overview/category_overview_bloc.dart';
 import 'blocs/favorite_recipes/favorite_recipes_bloc.dart';
 import 'blocs/import_recipe/import_recipe_bloc.dart';
+import 'blocs/ingredient_search/ingredient_search_bloc.dart';
 import 'blocs/ingredinets_manager/ingredients_manager_bloc.dart';
 import 'blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import 'blocs/new_recipe/general_info/general_info_bloc.dart';
@@ -29,6 +26,7 @@ import 'blocs/new_recipe/steps/steps_bloc.dart';
 import 'blocs/nutrition_manager/nutrition_manager_bloc.dart';
 import 'blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 import 'blocs/random_recipe_explorer/random_recipe_explorer_event.dart';
+import 'blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview_event.dart';
 import 'blocs/recipe_manager/recipe_manager_bloc.dart' show RecipeManagerBloc;
@@ -41,12 +39,16 @@ import 'blocs/splash_screen/splash_screen_event.dart';
 import 'blocs/splash_screen/splash_screen_state.dart';
 import 'generated/i18n.dart';
 import 'screens/SplashScreen.dart';
+import 'screens/about_me.dart';
 import 'screens/add_recipe/general_info_screen/general_info_screen.dart';
 import 'screens/add_recipe/ingredients_screen.dart';
 import 'screens/add_recipe/nutritions.dart';
 import 'screens/add_recipe/steps_screen/steps_screen.dart';
 import 'screens/category_manager.dart';
 import 'screens/homepage_screen.dart';
+import 'screens/ingredient_search.dart';
+import 'screens/ingredients_manager.dart';
+import 'screens/intro_screen.dart';
 import 'screens/nutrition_manager.dart';
 import 'screens/recipe_overview.dart';
 import 'screens/recipe_screen.dart';
@@ -101,54 +103,64 @@ class MyApp extends StatelessWidget {
                 builder: (context) => BlocProvider<SplashScreenBloc>(
                   create: (context) =>
                       SplashScreenBloc()..add(SPInitializeData(context)),
-                  child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
-                      builder: (context, state) {
-                    if (state is InitializingData) {
-                      return SplashScreen();
-                    } else if (state is InitializedData) {
-                      return BlocProvider<AppBloc>(
-                        create: (context) => AppBloc()
-                          ..add(InitializeData(context,
-                              state.recipeCategoryOverview, state.showIntro)),
-                        child: MultiBlocProvider(providers: [
-                          BlocProvider<CategoryOverviewBloc>(
-                            create: (context) => CategoryOverviewBloc(
-                              recipeManagerBloc:
-                                  BlocProvider.of<RecipeManagerBloc>(context),
-                            )..add(COLoadCategoryOverview()),
-                          ),
-                          BlocProvider<RecipeCategoryOverviewBloc>(
-                            create: (context) => RecipeCategoryOverviewBloc(
-                              recipeManagerBloc:
-                                  BlocProvider.of<RecipeManagerBloc>(context),
-                            )..add(RCOLoadRecipeCategoryOverview()),
-                          ),
-                          BlocProvider<FavoriteRecipesBloc>(
-                              create: (context) => FavoriteRecipesBloc(
-                                    recipeManagerBloc:
-                                        BlocProvider.of<RecipeManagerBloc>(
-                                            context),
-                                  )..add(LoadFavorites())),
-                          BlocProvider<RandomRecipeExplorerBloc>(
-                            create: (context) => RandomRecipeExplorerBloc(
-                              recipeManagerBloc:
-                                  BlocProvider.of<RecipeManagerBloc>(context),
-                            )..add(InitializeRandomRecipeExplorer()),
-                          ),
-                          BlocProvider<ImportRecipeBloc>(
-                              create: (context) => ImportRecipeBloc(
-                                  BlocProvider.of<RecipeManagerBloc>(context))),
-                          BlocProvider<ShoppingCartBloc>(
-                            create: (context) => ShoppingCartBloc(
-                                BlocProvider.of<RecipeManagerBloc>(context))
-                              ..add(LoadShoppingCart()),
-                          ),
-                        ], child: MyHomePage()),
-                      );
-                    } else {
-                      return Text(state.toString());
-                    }
-                  }),
+                  child: BlocListener<SplashScreenBloc, SplashScreenState>(
+                    listener: (context, state) => {
+                      if (state is InitializedData)
+                        {
+                          if (state.showIntro)
+                            {Navigator.of(context).pushNamed(RouteNames.intro)}
+                        }
+                    },
+                    child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
+                        builder: (context, state) {
+                      if (state is InitializingData) {
+                        return SplashScreen();
+                      } else if (state is InitializedData) {
+                        return BlocProvider<AppBloc>(
+                          create: (context) => AppBloc()
+                            ..add(InitializeData(context,
+                                state.recipeCategoryOverview, state.showIntro)),
+                          child: MultiBlocProvider(providers: [
+                            BlocProvider<CategoryOverviewBloc>(
+                              create: (context) => CategoryOverviewBloc(
+                                recipeManagerBloc:
+                                    BlocProvider.of<RecipeManagerBloc>(context),
+                              )..add(COLoadCategoryOverview()),
+                            ),
+                            BlocProvider<RecipeCategoryOverviewBloc>(
+                              create: (context) => RecipeCategoryOverviewBloc(
+                                recipeManagerBloc:
+                                    BlocProvider.of<RecipeManagerBloc>(context),
+                              )..add(RCOLoadRecipeCategoryOverview()),
+                            ),
+                            BlocProvider<FavoriteRecipesBloc>(
+                                create: (context) => FavoriteRecipesBloc(
+                                      recipeManagerBloc:
+                                          BlocProvider.of<RecipeManagerBloc>(
+                                              context),
+                                    )..add(LoadFavorites())),
+                            BlocProvider<RandomRecipeExplorerBloc>(
+                              create: (context) => RandomRecipeExplorerBloc(
+                                recipeManagerBloc:
+                                    BlocProvider.of<RecipeManagerBloc>(context),
+                              )..add(InitializeRandomRecipeExplorer()),
+                            ),
+                            BlocProvider<ImportRecipeBloc>(
+                                create: (context) => ImportRecipeBloc(
+                                    BlocProvider.of<RecipeManagerBloc>(
+                                        context))),
+                            BlocProvider<ShoppingCartBloc>(
+                              create: (context) => ShoppingCartBloc(
+                                  BlocProvider.of<RecipeManagerBloc>(context))
+                                ..add(LoadShoppingCart()),
+                            ),
+                          ], child: MyHomePage()),
+                        );
+                      } else {
+                        return Text(state.toString());
+                      }
+                    }),
+                  ),
                 ),
               );
 
@@ -359,6 +371,20 @@ class MyApp extends StatelessWidget {
                   create: (context) =>
                       IngredientsManagerBloc()..add(LoadIngredientsManager()),
                   child: IngredientsManager(),
+                ),
+              );
+
+            case "/intro":
+              SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+
+              return MaterialPageRoute(
+                builder: (context) => WillPopScope(
+                  onWillPop: () async {
+                    SystemChrome.setEnabledSystemUIOverlays(
+                        SystemUiOverlay.values);
+                    return true;
+                  },
+                  child: IntroScreen(),
                 ),
               );
 
