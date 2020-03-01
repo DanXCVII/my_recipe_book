@@ -72,7 +72,7 @@ class _ShoppingCartAddDialogContentState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              'add ingredient',
+              I18n.of(context).add_ingredient,
               style: Theme.of(context).textTheme.title,
             ),
             IconButton(
