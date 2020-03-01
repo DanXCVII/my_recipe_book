@@ -106,6 +106,7 @@ class Ads {
   static int _reloaded = 0;
 
   static void hideBottomBannerAd() {
+    if (!_showAds) return;
     if (_bottomBannerAd != null && !_bottomBIsGoingToBeShown) {
       _bottomBannerAd.dispose().then((disposed) {
         bottomBIsShown = !disposed;

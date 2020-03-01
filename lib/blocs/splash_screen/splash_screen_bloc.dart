@@ -62,7 +62,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   Future<void> _initAds() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    if (prefs.containsKey('noAdsUntil')) {
+    if (!prefs.containsKey('noAdsUntil')) {
       await prefs.setString('noAdsUntil',
           DateTime.now().subtract(Duration(days: 1000)).toString());
     }
