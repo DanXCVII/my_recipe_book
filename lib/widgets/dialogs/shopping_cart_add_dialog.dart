@@ -178,7 +178,14 @@ class _ShoppingCartAddDialogContentState
               },
             ),
             FlatButton(
-              child: Text(I18n.of(context).add),
+              child: Text(
+                I18n.of(context).add,
+                style: TextStyle(color: Colors.black),
+              ),
+              color: Theme.of(context).backgroundColor == Colors.white
+                  ? null
+                  : Colors.amber,
+              textTheme: ButtonTextTheme.primary,
               onPressed: () {
                 if (formKey.currentState.validate()) {
                   BlocProvider.of<ShoppingCartBloc>(context).add(

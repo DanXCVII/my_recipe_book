@@ -39,7 +39,9 @@ class _RecipeFilterState extends State<RecipeFilter> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey[800],
+      color: Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey[800]
+          : Colors.grey[300],
       height: kToolbarHeight,
       child: Row(
         children: <Widget>[

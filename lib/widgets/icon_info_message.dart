@@ -22,7 +22,7 @@ class IconInfoMessage extends StatelessWidget {
           height: 110,
           decoration: BoxDecoration(
             color: Theme.of(context).backgroundColor == Colors.white
-                ? Color.fromRGBO(0, 0, 0, 0.8)
+                ? Color.fromRGBO(0, 0, 0, 0.4)
                 : Color.fromRGBO(0, 0, 0, 0.5),
             shape: BoxShape.circle,
           ),

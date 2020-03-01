@@ -47,7 +47,7 @@ class MyThemes {
   static final ThemeData lightTheme = ThemeData(
     primaryColor: Color(0xFF790604), // maybe brown[700]
     backgroundColor: Colors.white,
-    scaffoldBackgroundColor: Color(0xffFEF3E1),
+    scaffoldBackgroundColor: Colors.grey[200],
     canvasColor: Colors.white,
     cardColor: Color(0xffFFE8C2),
     //  textSelectionColor: Colors.white,

@@ -69,8 +69,10 @@ class RecipeCardBig extends StatelessWidget {
                 colors: [
                   Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[900]
-                      : Color(0xffFFF6D8),
-                  Theme.of(context).cardColor,
+                      : Colors.grey[100],
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Theme.of(context).cardColor
+                      : Colors.white,
                 ],
               ),
               borderRadius: BorderRadius.circular(10),
@@ -107,7 +109,9 @@ class RecipeCardBig extends StatelessWidget {
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Container(
-                          color: Theme.of(context).cardColor.withOpacity(0.6),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).cardColor.withOpacity(0.6)
+                              : Colors.white.withOpacity(0.6),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
