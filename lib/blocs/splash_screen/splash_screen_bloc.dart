@@ -56,7 +56,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   }
 
   void _initTheme(SharedPreferences prefs, BuildContext context) {
-    int theme = 0;
+    int theme = 2;
     if (prefs.containsKey('theme')) {
       theme = prefs.getInt('theme');
     }

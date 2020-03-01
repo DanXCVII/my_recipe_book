@@ -50,6 +50,7 @@ class MyThemes {
     scaffoldBackgroundColor: Colors.grey[200],
     canvasColor: Colors.white,
     cardColor: Color(0xffFFE8C2),
+    // accentColor: Colors.orange[700],
     //  textSelectionColor: Colors.white,
     //      hintColor: Colors.white,
     //      textSelectionHandleColor: Colors.white,

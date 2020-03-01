@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,7 +11,6 @@ import '../generated/i18n.dart';
 import '../theming.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import 'export_recipes_screen.dart';
-import 'intro_screen.dart';
 
 class Settings extends StatelessWidget {
   @override

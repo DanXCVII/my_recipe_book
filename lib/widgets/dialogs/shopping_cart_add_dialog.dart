@@ -1,15 +1,14 @@
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/screens/add_recipe/general_info_screen/categories_section.dart';
 
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../generated/i18n.dart';
 import '../../helper.dart';
 import '../../local_storage/hive.dart';
 import '../../models/ingredient.dart';
+import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 
 class ShoppingCartAddDialog extends StatelessWidget {
   const ShoppingCartAddDialog({Key key}) : super(key: key);

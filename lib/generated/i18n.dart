@@ -354,6 +354,8 @@ class I18n implements WidgetsLocalizations {
   String get field_must_not_be_empty => "field must not be empty";
   /// "by last modified"
   String get by_last_modified => "by last modified";
+  /// "import"
+  String get import => "import";
 }
 
 class _I18n_en_US extends I18n {
@@ -846,6 +848,9 @@ class _I18n_de_DE extends I18n {
   /// "nach Änderungsdatum"
   @override
   String get by_last_modified => "nach Änderungsdatum";
+  /// "importiere"
+  @override
+  String get import => "importiere";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;
