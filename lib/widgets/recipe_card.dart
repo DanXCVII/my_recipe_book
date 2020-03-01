@@ -79,8 +79,10 @@ class RecipeCard extends StatelessWidget {
                 colors: [
                   Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[900]
-                      : Color(0xffFFF6D8),
-                  Theme.of(context).cardColor
+                      : Colors.grey[100],
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Theme.of(context).cardColor
+                      : Colors.white,
                 ],
               ),
               color: Theme.of(context).cardColor,

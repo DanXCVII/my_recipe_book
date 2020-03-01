@@ -9,13 +9,13 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
+import '../ad_related/ad.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_screen/recipe_screen_bloc.dart';

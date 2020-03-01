@@ -27,10 +27,10 @@ class _ImportDialogState extends State<ImportDialog> {
     return AlertDialog(
       contentPadding: EdgeInsets.all(12),
       title: Text(importStatus == ImportStatus.Finished
-          ? "finished"
+          ? I18n.of(context).finished
           : importStatus == ImportStatus.Loading
-              ? "importing recipe/s"
-              : "select recipes to import"),
+              ? I18n.of(context).import_recipe_s
+              : I18n.of(context).select_recipes_to_import),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       content: BlocListener<ImportRecipeBloc, ImportRecipeState>(
         listener: (context, state) {
@@ -200,7 +200,7 @@ class _ImportDialogState extends State<ImportDialog> {
                           size: 14,
                         ),
                         Text(
-                          ' ready ',
+                          ' ${I18n.of(context).ready} ',
                           style: TextStyle(fontSize: 12),
                         ),
                         Icon(
@@ -209,7 +209,7 @@ class _ImportDialogState extends State<ImportDialog> {
                           size: 14,
                         ),
                         Text(
-                          ' duplicate ',
+                          ' ${I18n.of(context).duplicate} ',
                           style: TextStyle(fontSize: 12),
                         ),
                         Icon(
@@ -218,7 +218,7 @@ class _ImportDialogState extends State<ImportDialog> {
                           size: 14,
                         ),
                         Text(
-                          ' failed',
+                          ' ${I18n.of(context).failed}',
                           style: TextStyle(fontSize: 12),
                         ),
                       ],
@@ -231,7 +231,7 @@ class _ImportDialogState extends State<ImportDialog> {
                       Container(
                         width: 80,
                         child: FlatButton(
-                          child: Text("cancel"),
+                          child: Text(I18n.of(context).cancel),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ),
@@ -241,7 +241,7 @@ class _ImportDialogState extends State<ImportDialog> {
                       Container(
                         width: 80,
                         child: FlatButton(
-                          child: Text("import"),
+                          child: Text(I18n.of(context).import),
                           onPressed: () => selectedRecipes.isNotEmpty
                               ? BlocProvider.of<ImportRecipeBloc>(context)
                                   .add(FinishImportRecipes(selectedRecipes))
@@ -351,9 +351,10 @@ class _ImportDialogState extends State<ImportDialog> {
                   Container(
                     width: 60,
                     child: FlatButton(
-                      child: Text("ok"),
-                      onPressed: () => Navigator.pop(context),
-                    ),
+                        child: Text("ok"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
                   )
                 ],
               ),
