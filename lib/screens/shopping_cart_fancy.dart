@@ -47,7 +47,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
                 context: context,
                 builder: (_) => BlocProvider.value(
                   value: BlocProvider.of<ShoppingCartBloc>(context),
-                  child: AddShoppingCartDialog(),
+                  child: ShoppingCartAddDialog(),
                 ),
               );
             },
@@ -158,7 +158,9 @@ class FancyShoppingCartScreen extends StatelessWidget {
         leading:
             recipe.name == Constants.summary ? null : RecipeImageHero(recipe),
         title: Text(
-          recipe.name,
+          recipe.name == Constants.summary
+              ? I18n.of(context).summary
+              : recipe.name,
         ),
         children: ingredients.map((ingredient) {
           return Dismissible(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import '../../generated/i18n.dart';
 
@@ -14,6 +15,7 @@ class TextFieldDialog extends StatefulWidget {
   final String hintText;
   final String Function(String name) validation;
   final void Function(String name) save;
+  final focus = FocusNode();
 
   TextFieldDialog({
     @required this.validation,
@@ -39,6 +41,9 @@ class TextFieldDialogState extends State<TextFieldDialog> {
     if (widget.prefilledText != null) {
       nameController.text = widget.prefilledText;
     }
+    SchedulerBinding.instance.addPostFrameCallback((Duration _) {
+      FocusScope.of(context).requestFocus(widget.focus);
+    });
   }
 
   @override
@@ -64,6 +69,7 @@ class TextFieldDialogState extends State<TextFieldDialog> {
             children: <Widget>[
               SizedBox(height: 16.0),
               TextFormField(
+                focusNode: widget.focus,
                 controller: nameController,
                 validator: (value) {
                   return widget.validation(value);
