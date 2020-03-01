@@ -2,18 +2,17 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
+import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../ad_related/ad.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../theming.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import 'export_recipes_screen.dart';
-import 'intro_screen.dart';
 
 class Settings extends StatelessWidget {
   @override
@@ -21,6 +20,13 @@ class Settings extends StatelessWidget {
     return Container(
       child: ListView(
         children: <Widget>[
+          Divider(),
+          ListTile(
+              title: Text("watch video to remove ads for 40 min"),
+              onTap: () {
+                BlocProvider.of<AdManagerBloc>(context)
+                    .add(StartWatchingVideo(DateTime.now()));
+              }),
           Divider(),
           ListTile(
               title: Text(I18n.of(context).manage_nutritions),

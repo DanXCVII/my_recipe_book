@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 
@@ -11,17 +13,20 @@ class Ads {
   static bool _topBIsGoingToBeShown = false;
   static BannerAd _bottomBannerAd;
   static BannerAd _topBannerAd;
-  static bool wideBottomBannerAd = false;
+  static bool _wideBottomBannerAd = false;
 
-  static void initialize(bool wideBottomBannerAd) {
+  static void initialize() {
     FirebaseAdMob.instance.initialize(appId: getAdAppId());
-    wideBottomBannerAd = wideBottomBannerAd;
+  }
+
+  static void showWideBannerAds() {
+    _wideBottomBannerAd = true;
   }
 
   static void setBottomBannerAd() {
     _bottomBannerAd = BannerAd(
       adUnitId: getBannerAdUnitId(),
-      size: wideBottomBannerAd ? AdSize.fullBanner : AdSize.banner,
+      size: _wideBottomBannerAd ? AdSize.fullBanner : AdSize.banner,
       targetingInfo: _getMobileAdTargetingInfo(),
       listener: (MobileAdEvent event) {
         if (event == MobileAdEvent.loaded) {
@@ -31,7 +36,6 @@ class Ads {
           bottomBIsShown = false;
           _bottomBIsGoingToBeShown = false;
         }
-        print("BannerAd event is $event");
       },
     );
   }
@@ -49,14 +53,29 @@ class Ads {
           topBIsShown = false;
           _topBIsGoingToBeShown = false;
         }
-        print("BannerAd event is $event");
       },
     );
   }
 
+  static Future<void> showRewardedVideo([State state]) async {
+    if (state != null && !state.mounted) return;
+
+    await RewardedVideoAd.instance
+        .load(
+          adUnitId: getRewardAdUnitId(),
+          targetingInfo: _getMobileAdTargetingInfo(),
+        )
+        .catchError((e) => print('error loading'));
+
+    for (int i = 0; i < 3; i++) {
+      await Future.delayed(Duration(milliseconds: 1000));
+      RewardedVideoAd.instance.show();
+    }
+  }
+
   static void showBottomBannerAd([State state]) {
     // if (Purchases.isNoAds()) return;
-    if (state != null && !state.mounted) return;
+    if (!_showAds || (state != null && !state.mounted)) return;
     if (_bottomBannerAd == null) setBottomBannerAd();
     if (!bottomBIsShown && !_bottomBIsGoingToBeShown) {
       _bottomBIsGoingToBeShown = true;
@@ -71,7 +90,7 @@ class Ads {
 
   static void showTopBannerAd([State state]) {
     // if (Purchases.isNoAds()) return;
-    if (state != null && !state.mounted) return;
+    if (!_showAds || (state != null && !state.mounted)) return;
     if (_topBannerAd == null) setTopBannerAd();
     if (!topBIsShown && !_topBIsGoingToBeShown) {
       _topBIsGoingToBeShown = true;
@@ -87,7 +106,6 @@ class Ads {
   static int _reloaded = 0;
 
   static void hideBottomBannerAd() {
-    print(_bottomBIsGoingToBeShown);
     if (_bottomBannerAd != null && !_bottomBIsGoingToBeShown) {
       _bottomBannerAd.dispose().then((disposed) {
         bottomBIsShown = !disposed;
@@ -103,7 +121,6 @@ class Ads {
             _bottomBannerAd = null;
           });
         } else {
-          print('loool');
           _reloaded++;
           if (_reloaded == 10) {
             _bottomBIsGoingToBeShown = false;
@@ -116,7 +133,6 @@ class Ads {
   }
 
   static void hideTopBannerAd() {
-    print(_topBIsGoingToBeShown);
     if (_topBannerAd != null && !_topBIsGoingToBeShown) {
       _topBannerAd.dispose().then((disposed) {
         topBIsShown = !disposed;
@@ -132,7 +148,6 @@ class Ads {
             _topBannerAd = null;
           });
         } else {
-          print('loool');
           hideTopBannerAd();
         }
       });
@@ -143,9 +158,7 @@ class Ads {
     var interstitialAd = InterstitialAd(
       adUnitId: getInterstitialAdUnitId(),
       targetingInfo: _getMobileAdTargetingInfo(),
-      listener: (MobileAdEvent event) {
-        print("InterstitialAd event is $event");
-      },
+      listener: (MobileAdEvent event) {},
     );
     interstitialAd
       ..load()
@@ -168,6 +181,7 @@ class Ads {
     return MobileAdTargetingInfo(
       keywords: <String>[
         'recipes',
+        'kitchen',
         'cooking',
       ],
       // contentUrl: 'https://flutter.io',

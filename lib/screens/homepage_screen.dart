@@ -62,7 +62,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       'images/cuisine.jpg',
       fit: BoxFit.cover,
     );
-
     initializeIntent();
 
     // Listen to lifecycle events.

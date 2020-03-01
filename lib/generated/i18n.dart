@@ -594,9 +594,9 @@ class _I18n_de_DE extends I18n {
   /// "bewerte diese App"
   @override
   String get rate_app => "bewerte diese App";
-  /// "Allgemeines"
+  /// "Allgemein"
   @override
-  String get settings => "Allgemeines";
+  String get settings => "Allgemein";
   /// "Abbrechen"
   @override
   String get cancel => "Abbrechen";

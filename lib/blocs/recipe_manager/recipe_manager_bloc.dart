@@ -10,7 +10,6 @@ part 'recipe_manager_event.dart';
 part 'recipe_manager_state.dart';
 
 class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
-  final String test = "k";
   @override
   RecipeManagerState get initialState => InitialRecipeManagerState();
 

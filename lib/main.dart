@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import './theming.dart';
 import 'ad_related/ad.dart';
+import 'blocs/ad_manager/ad_manager_bloc.dart';
 import 'blocs/animated_stepper/animated_stepper_bloc.dart';
 import 'blocs/app/app.dart';
 import 'blocs/app/app_event.dart';
@@ -67,9 +70,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  final appTitle = 'Drawer Demo';
-  static bool initialized = false;
-
   MyApp();
 
   @override
@@ -81,11 +81,15 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<RecipeManagerBloc>(
-            create: (context) => RecipeManagerBloc()),
+          create: (context) => RecipeManagerBloc(),
+        ),
         BlocProvider<RecipeBubbleBloc>(
           create: (context) => RecipeBubbleBloc(
               recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(context)),
-        )
+        ),
+        BlocProvider<AdManagerBloc>(
+          create: (context) => AdManagerBloc()..add(InitializeAds()),
+        ),
       ],
       child: MaterialApp(
         localizationsDelegates: [
@@ -102,16 +106,18 @@ class MyApp extends StatelessWidget {
             case "/":
               return MaterialPageRoute(
                 builder: (context) => BlocProvider<SplashScreenBloc>(
-                  create: (context) => SplashScreenBloc()
-                    ..add(SPInitializeData(
-                        context, MediaQuery.of(context).size.width)),
+                  create: (context) =>
+                      SplashScreenBloc()..add(SPInitializeData(context)),
                   child: BlocListener<SplashScreenBloc, SplashScreenState>(
-                    listener: (context, state) => {
-                      if (state is InitializedData)
-                        {
-                          if (state.showIntro)
-                            {Navigator.of(context).pushNamed(RouteNames.intro)}
+                    listener: (context, state) {
+                      if (state is InitializedData) {
+                        BlocProvider.of<AdManagerBloc>(context)
+                            .add(InitializeAds());
+
+                        if (state.showIntro) {
+                          Navigator.of(context).pushNamed(RouteNames.intro);
                         }
+                      }
                     },
                     child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
                         builder: (context, state) {
@@ -203,6 +209,8 @@ class MyApp extends StatelessWidget {
             case "/add-recipe/general-info":
               final GeneralInfoArguments args = settings.arguments;
 
+              Ads.hideBottomBannerAd();
+
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
                   providers: [
@@ -251,6 +259,8 @@ class MyApp extends StatelessWidget {
 
             case "/add-recipe/steps":
               final StepsArguments args = settings.arguments;
+
+              Ads.hideBottomBannerAd();
 
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(

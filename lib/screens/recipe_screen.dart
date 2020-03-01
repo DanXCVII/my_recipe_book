@@ -324,17 +324,17 @@ class RecipePage extends StatelessWidget {
                   icon: Icon(Icons.edit),
                   tooltip: 'edit',
                   onPressed: () {
-                    HiveProvider()
-                        .saveTmpEditingRecipe(recipe)
-                        .then((_) => Navigator.pushNamed(
-                              context,
-                              RouteNames.addRecipeGeneralInfo,
-                              arguments: GeneralInfoArguments(
-                                recipe,
-                                BlocProvider.of<ShoppingCartBloc>(context),
-                                editingRecipeName: recipe.name,
-                              ),
-                            ));
+                    HiveProvider().saveTmpEditingRecipe(recipe).then(
+                          (_) => Navigator.pushNamed(
+                            context,
+                            RouteNames.addRecipeGeneralInfo,
+                            arguments: GeneralInfoArguments(
+                              recipe,
+                              BlocProvider.of<ShoppingCartBloc>(context),
+                              editingRecipeName: recipe.name,
+                            ),
+                          ).then((_) => Ads.showBottomBannerAd()),
+                        );
                   },
                 ),
                 IconButton(

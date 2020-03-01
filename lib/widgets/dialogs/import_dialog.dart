@@ -7,6 +7,7 @@ import '../../blocs/import_recipe/import_recipe_bloc.dart';
 import '../../generated/i18n.dart';
 import '../../models/recipe.dart';
 
+// TODO: Show info dialog that pull to refresh may be needed after importing recipes
 enum ImportStatus { Loading, Selection, Finished }
 
 class ImportDialog extends StatefulWidget {
@@ -150,7 +151,8 @@ class _ImportDialogState extends State<ImportDialog> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       trailing: Padding(
-                                        padding: const EdgeInsets.only(right: 12.0),
+                                        padding:
+                                            const EdgeInsets.only(right: 12.0),
                                         child: Icon(
                                           Icons.offline_bolt,
                                           color: Colors.yellow,
@@ -175,7 +177,8 @@ class _ImportDialogState extends State<ImportDialog> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       trailing: Padding(
-                                        padding: const EdgeInsets.only(right:12.0),
+                                        padding:
+                                            const EdgeInsets.only(right: 12.0),
                                         child: Icon(
                                           MdiIcons.alertCircle,
                                           color: Colors.red,

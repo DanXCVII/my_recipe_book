@@ -32,6 +32,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
 
     recipeCategoryOverview = _initRecipeOverviewScreen(prefs);
     _initTheme(prefs, event.context);
+    await _initAds();
 
     // delete cache
     // await getTemporaryDirectory()
@@ -45,8 +46,8 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     } else {
       await initHive(false);
     }
-
-    Ads.initialize(event.deviceWidth >= 468 ? true : false);
+    Ads.initialize();
+    Ads.setBottomBannerAd();
 
     yield InitializedData(recipeCategoryOverview, showIntro);
   }
@@ -56,6 +57,15 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       return prefs.getBool('recipeCatOverview');
     }
     return true;
+  }
+
+  Future<void> _initAds() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (prefs.containsKey('noAdsUntil')) {
+      await prefs.setString('noAdsUntil',
+          DateTime.now().subtract(Duration(days: 1000)).toString());
+    }
   }
 
   void _initTheme(SharedPreferences prefs, BuildContext context) {
