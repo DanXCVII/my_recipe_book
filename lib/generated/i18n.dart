@@ -358,6 +358,8 @@ class I18n implements WidgetsLocalizations {
   String get import => "import";
   /// "pull down to refresh page and show imported recipes"
   String get pull_down_to_refresh => "pull down to refresh page and show imported recipes";
+  /// "if recipes don't show up in overview, pull down to refresh the page."
+  String get recipes_not_in_overview => "if recipes don't show up in overview, pull down to refresh the page.";
 }
 
 class _I18n_en_US extends I18n {
@@ -856,6 +858,9 @@ class _I18n_de_DE extends I18n {
   /// "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen"
   @override
   String get pull_down_to_refresh => "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen";
+  /// "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren."
+  @override
+  String get recipes_not_in_overview => "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

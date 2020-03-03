@@ -36,6 +36,7 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       isFavorite: fields[15] as bool,
       effort: fields[16] as int,
       lastModified: fields[17] as String,
+      rating: fields[18] as int,
     );
   }
 
@@ -78,7 +79,9 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       ..writeByte(16)
       ..write(obj.effort)
       ..writeByte(17)
-      ..write(obj.lastModified);
+      ..write(obj.lastModified)
+      ..writeByte(18)
+      ..write(obj.rating);
   }
 
   @override
