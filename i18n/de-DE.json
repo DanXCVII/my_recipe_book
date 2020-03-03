@@ -167,5 +167,6 @@
     "watch_video_remove_ads": "Werbevideo → +30 min werbefrei",
     "ad_free_until": "werbefrei bis",
     "pro_version": "Pro Version",
-    "ingredient_filter_description": "Kaufe die Vollversion in den Einstellungen um Zugriff zum Zutatenfilter zu bekommen"
+    "ingredient_filter_description": "Kaufe die Vollversion in den Einstellungen um Zugriff zum Zutatenfilter zu bekommen",
+    "pull_down_to_refresh": "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen"
 }

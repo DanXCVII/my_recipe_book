@@ -20,8 +20,4 @@ class LoadedRecipeCategoryOverview extends RecipeCategoryOverviewState {
 
   @override
   List<Object> get props => [rCategoryOverview];
-
-  @override
-  String toString() =>
-      'recipe category overview loaded { overview: $rCategoryOverview }';
 }

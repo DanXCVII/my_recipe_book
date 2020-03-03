@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -401,6 +399,20 @@ class MyApp extends StatelessWidget {
                   create: (context) =>
                       IngredientsManagerBloc()..add(LoadIngredientsManager()),
                   child: _getAdPage(IngredientsManager()),
+                ),
+              );
+
+            case "/intro":
+              SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+
+              return MaterialPageRoute(
+                builder: (context) => WillPopScope(
+                  onWillPop: () async {
+                    SystemChrome.setEnabledSystemUIOverlays(
+                        SystemUiOverlay.values);
+                    return true;
+                  },
+                  child: IntroScreen(),
                 ),
               );
 

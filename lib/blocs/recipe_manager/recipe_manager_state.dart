@@ -9,12 +9,13 @@ class InitialRecipeManagerState extends RecipeManagerState {
   List<Object> get props => [];
 }
 
-class AddRecipeState extends RecipeManagerState {
-  final Recipe recipe;
+class AddRecipesState extends RecipeManagerState {
+  final List<Recipe> recipes;
 
-  const AddRecipeState(this.recipe);
+  const AddRecipesState(this.recipes);
+
   @override
-  List<Object> get props => [recipe];
+  List<Object> get props => [recipes];
 }
 
 class AddFavoriteState extends RecipeManagerState {

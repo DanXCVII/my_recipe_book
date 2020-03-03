@@ -52,13 +52,13 @@ class FilterRecipes extends RecipeOverviewEvent {
   List<Object> get props => [vegetable];
 }
 
-class AddRecipe extends RecipeOverviewEvent {
-  final Recipe recipe;
+class AddRecipes extends RecipeOverviewEvent {
+  final List<Recipe> recipes;
 
-  const AddRecipe(this.recipe);
+  const AddRecipes(this.recipes);
 
   @override
-  List<Object> get props => [recipe];
+  List<Object> get props => [recipes];
 }
 
 class UpdateRecipe extends RecipeOverviewEvent {
