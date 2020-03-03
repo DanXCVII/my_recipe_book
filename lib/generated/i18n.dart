@@ -374,6 +374,8 @@ class I18n implements WidgetsLocalizations {
   String get ingredient_filter_description => "purchase pro version in settings to get access to ingredient filter";
   /// "pull down to refresh page and show imported recipes"
   String get pull_down_to_refresh => "pull down to refresh page and show imported recipes";
+  /// "remove ads\nupgrade in settings"
+  String get remove_ads_upgrade_in_settings => "remove ads\nupgrade in settings";
 }
 
 class _I18n_en_US extends I18n {
@@ -896,6 +898,9 @@ class _I18n_de_DE extends I18n {
   /// "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen"
   @override
   String get pull_down_to_refresh => "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen";
+  /// "Werbung entfernen\nin den Einstellungen"
+  @override
+  String get remove_ads_upgrade_in_settings => "Werbung entfernen\nin den Einstellungen";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

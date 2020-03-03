@@ -168,5 +168,6 @@
     "ad_free_until": "werbefrei bis",
     "pro_version": "Pro Version",
     "ingredient_filter_description": "Kaufe die Vollversion in den Einstellungen um Zugriff zum Zutatenfilter zu bekommen",
-    "pull_down_to_refresh": "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen"
+    "pull_down_to_refresh": "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen",
+    "remove_ads_upgrade_in_settings": "Werbung entfernen\nin den Einstellungen"
 }

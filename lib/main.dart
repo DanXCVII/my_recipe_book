@@ -199,9 +199,8 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
-                  child: _getAdPage(RecipeScreen(
-                    heroImageTag: args.heroImageTag,
-                  )),
+                  child: _getAdPage(
+                      RecipeScreen(heroImageTag: args.heroImageTag), context),
                 ),
               );
             case "/add-recipe/general-info":
@@ -248,11 +247,11 @@ class MyApp extends StatelessWidget {
                           value: args.shoppingCartBloc)
                     ],
                     child: _getAdPage(
-                      IngredientsAddScreen(
-                        modifiedRecipe: args.modifiedRecipe,
-                        editingRecipeName: args.editingRecipeName,
-                      ),
-                    )),
+                        IngredientsAddScreen(
+                          modifiedRecipe: args.modifiedRecipe,
+                          editingRecipeName: args.editingRecipeName,
+                        ),
+                        context)),
               );
 
             case "/add-recipe/steps":
@@ -300,7 +299,7 @@ class MyApp extends StatelessWidget {
                               ),
                           ),
                         ],
-                        child: _getAdPage(RecipeGridView()),
+                        child: _getAdPage(RecipeGridView(), context),
                       ));
 
             case "/vegetable-recipes-oveview":
@@ -322,7 +321,7 @@ class MyApp extends StatelessWidget {
                         ),
                     ),
                   ],
-                  child: _getAdPage(RecipeGridView()),
+                  child: _getAdPage(RecipeGridView(), context),
                 ),
               );
 
@@ -363,7 +362,7 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc)
                   ],
-                  child: _getAdPage(IngredientSearchScreen()),
+                  child: _getAdPage(IngredientSearchScreen(), context),
                 ),
               );
 
@@ -376,7 +375,7 @@ class MyApp extends StatelessWidget {
                     recipeManagerBloc:
                         BlocProvider.of<RecipeManagerBloc>(context),
                   )..add(InitializeCategoryManager()),
-                  child: _getAdPage(CategoryManager()),
+                  child: _getAdPage(CategoryManager(), context),
                 ),
               );
 
@@ -387,7 +386,7 @@ class MyApp extends StatelessWidget {
                 builder: (context) => BlocProvider<NutritionManagerBloc>(
                   create: (context) =>
                       NutritionManagerBloc()..add(LoadNutritionManager()),
-                  child: _getAdPage(NutritionManager()),
+                  child: _getAdPage(NutritionManager(), context),
                 ),
               );
 
@@ -398,7 +397,7 @@ class MyApp extends StatelessWidget {
                 builder: (context) => BlocProvider<IngredientsManagerBloc>(
                   create: (context) =>
                       IngredientsManagerBloc()..add(LoadIngredientsManager()),
-                  child: _getAdPage(IngredientsManager()),
+                  child: _getAdPage(IngredientsManager(), context),
                 ),
               );
 
@@ -445,17 +444,34 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  Widget _getAdPage(Widget page) {
+  Widget _getAdPage(Widget page, BuildContext context) {
     return Ads.shouldShowAds()
         ? Column(
             children: <Widget>[
               Expanded(child: page),
               Container(
                 height: 50,
-                width: double.infinity,
-                color: Colors.brown,
-                child: Image.asset(
-                  "images/bannerAd.png",
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      height: 50,
+                      width: double.infinity,
+                      color: Colors.brown,
+                      child: Image.asset(
+                        "images/bannerAd.png",
+                      ),
+                    ),
+                    Material(
+                      type: MaterialType.transparency,
+                      child: Center(
+                        child: Text(
+                          I18n.of(context).remove_ads_upgrade_in_settings,
+                          style: TextStyle(fontSize: 18),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               )
             ],

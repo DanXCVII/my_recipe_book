@@ -25,62 +25,52 @@ class Settings extends StatelessWidget {
             if (state is IsPurchased) {
               return Container();
             } else {
-              return GestureDetector(
-                  child: Container(
-                      height: 60,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Center(
-                          child: Row(
-                            children: <Widget>[
-                              Icon(Icons.movie),
-                              SizedBox(width: 12),
-                              Text(
-                                I18n.of(context).watch_video_remove_ads,
-                                style: Theme.of(context).textTheme.subhead,
-                              ),
-                              Spacer(),
-                              state is ShowAds
-                                  ? Container()
-                                  : state is AdFreeUntil
-                                      ? Text(
-                                          "${I18n.of(context).ad_free_until}:\n${state.time.hour}:" +
-                                              (state.time.minute < 10
-                                                  ? "0${state.time.minute}"
-                                                  : "${state.time.minute}"),
-                                          textAlign: TextAlign.center,
-                                        )
-                                      : Container(),
-                            ],
-                          ),
-                        ),
-                      )),
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => InfoDialog(
-                        title: I18n.of(context).video_to_remove_ads,
-                        body: I18n.of(context).video_to_remove_ads_desc,
-                        onOk: () {
-                          Navigator.pop(context);
-                          BlocProvider.of<AdManagerBloc>(context)
-                              .add(StartWatchingVideo(DateTime.now()));
-                        },
-                        okText: I18n.of(context).watch,
+              return Column(
+                children: <Widget>[
+                  Divider(),
+                  ListTile(
+                      title: Text(
+                        I18n.of(context).watch_video_remove_ads,
+                        style: Theme.of(context).textTheme.subhead,
                       ),
-                    );
-                  });
+                      leading: Icon(Icons.movie),
+                      trailing: state is ShowAds
+                          ? Container()
+                          : state is AdFreeUntil
+                              ? Text(
+                                  "${I18n.of(context).ad_free_until}:\n${state.time.hour}:" +
+                                      (state.time.minute < 10
+                                          ? "0${state.time.minute}"
+                                          : "${state.time.minute}"),
+                                  textAlign: TextAlign.center,
+                                )
+                              : null,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => InfoDialog(
+                            title: I18n.of(context).video_to_remove_ads,
+                            body: I18n.of(context).video_to_remove_ads_desc,
+                            onOk: () {
+                              Navigator.pop(context);
+                              BlocProvider.of<AdManagerBloc>(context)
+                                  .add(StartWatchingVideo(DateTime.now()));
+                            },
+                            okText: I18n.of(context).watch,
+                          ),
+                        );
+                      }),
+                  Divider(),
+                  ListTile(
+                      title: Text(I18n.of(context).purchase_pro),
+                      onTap: () {
+                        BlocProvider.of<AdManagerBloc>(context)
+                            .add(PurchaseProVersion());
+                      })
+                ],
+              );
             }
           }),
-          Ads.shouldShowAds() ? Divider() : Container(),
-          Ads.shouldShowAds()
-              ? ListTile(
-                  title: Text(I18n.of(context).purchase_pro),
-                  onTap: () {
-                    BlocProvider.of<AdManagerBloc>(context)
-                        .add(PurchaseProVersion());
-                  })
-              : Container(),
           Divider(),
           ListTile(
               title: Text(I18n.of(context).manage_nutritions),
