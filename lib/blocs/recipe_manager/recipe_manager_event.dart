@@ -4,13 +4,13 @@ abstract class RecipeManagerEvent extends Equatable {
   const RecipeManagerEvent();
 }
 
-class RMAddRecipe extends RecipeManagerEvent {
-  final Recipe recipe;
+class RMAddRecipes extends RecipeManagerEvent {
+  final List<Recipe> recipes;
 
-  const RMAddRecipe(this.recipe);
+  const RMAddRecipes(this.recipes);
 
   @override
-  List<Object> get props => [recipe];
+  List<Object> get props => [recipes];
 }
 
 class RMDeleteRecipe extends RecipeManagerEvent {

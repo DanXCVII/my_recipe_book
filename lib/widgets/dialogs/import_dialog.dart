@@ -227,25 +227,19 @@ class _ImportDialogState extends State<ImportDialog> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      Container(
-                        width: 80,
-                        child: FlatButton(
-                          child: Text(I18n.of(context).cancel),
-                          onPressed: () => Navigator.pop(context),
-                        ),
+                      FlatButton(
+                        child: Text(I18n.of(context).cancel),
+                        onPressed: () => Navigator.pop(context),
                       ),
                       SizedBox(
                         width: 6,
                       ),
-                      Container(
-                        width: 80,
-                        child: FlatButton(
-                          child: Text(I18n.of(context).import),
-                          onPressed: () => selectedRecipes.isNotEmpty
-                              ? BlocProvider.of<ImportRecipeBloc>(context)
-                                  .add(FinishImportRecipes(selectedRecipes))
-                              : {},
-                        ),
+                      FlatButton(
+                        child: Text(I18n.of(context).import),
+                        onPressed: () => selectedRecipes.isNotEmpty
+                            ? BlocProvider.of<ImportRecipeBloc>(context)
+                                .add(FinishImportRecipes(selectedRecipes))
+                            : {},
                       ),
                     ],
                   ),
@@ -347,14 +341,26 @@ class _ImportDialogState extends State<ImportDialog> {
                       ],
                     ),
                   ),
-                  Container(
-                    width: 60,
-                    child: FlatButton(
-                        child: Text("ok"),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }),
-                  )
+                  FlatButton(
+                      child: Text("ok"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        if (state.importedRecipes.length > 0) {
+                          final scaffold = Scaffold.of(context);
+                          scaffold.hideCurrentSnackBar();
+
+                          scaffold.showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text(I18n.of(context).pull_down_to_refresh),
+                              action: SnackBarAction(
+                                label: I18n.of(context).dismiss,
+                                onPressed: scaffold.hideCurrentSnackBar,
+                              ),
+                            ),
+                          );
+                        }
+                      }),
                 ],
               ),
             );

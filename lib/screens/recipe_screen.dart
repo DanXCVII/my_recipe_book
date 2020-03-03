@@ -580,8 +580,6 @@ class RecipePage extends StatelessWidget {
             },
           ),
           FlatButton(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Text(I18n.of(context).yes),
             textColor: Theme.of(context).textTheme.body1.color,
             color: Colors.red[600],

@@ -3,19 +3,19 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../blocs/category_overview/category_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../constants/routes.dart';
+import '../generated/i18n.dart';
 import '../models/tuple.dart';
 import 'recipe_overview.dart';
 
 class CategoryGridView extends StatelessWidget {
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +25,16 @@ class CategoryGridView extends StatelessWidget {
         return Center(child: CircularProgressIndicator());
       } else if (state is LoadedCategoryOverview) {
         return AnimationLimiter(
-          child: LiquidPullToRefresh(
-            key: _refreshIndicatorKey,
-            springAnimationDurationInMilliseconds: 300,
+          child: SmartRefresher(
+            enablePullDown: true,
+            enablePullUp: false,
+            header: WaterDropMaterialHeader(),
+            controller: _refreshController,
             onRefresh: () async {
               await Future.delayed(Duration(milliseconds: 200));
               BlocProvider.of<CategoryOverviewBloc>(context)
                   .add(COLoadCategoryOverview());
+              _refreshController.refreshCompleted();
             },
             child: GridView.extent(
               maxCrossAxisExtent: 300,

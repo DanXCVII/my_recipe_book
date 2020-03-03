@@ -159,5 +159,6 @@
     "recipe_pinned_to_overview": "Rezept an Hauptansicht angepinnt",
     "field_must_not_be_empty": "Textfeld darf nicht leer sein",
     "by_last_modified": "nach Änderungsdatum",
-    "import": "importiere"
+    "import": "importiere",
+    "pull_down_to_refresh": "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen"
 }

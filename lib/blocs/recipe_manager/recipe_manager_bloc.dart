@@ -10,7 +10,6 @@ part 'recipe_manager_event.dart';
 part 'recipe_manager_state.dart';
 
 class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
-  final String test = "k";
   @override
   RecipeManagerState get initialState => InitialRecipeManagerState();
 
@@ -18,7 +17,7 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   Stream<RecipeManagerState> mapEventToState(
     RecipeManagerEvent event,
   ) async* {
-    if (event is RMAddRecipe) {
+    if (event is RMAddRecipes) {
       yield* _mapAddRecipeToState(event);
     } else if (event is RMDeleteRecipe) {
       yield* _mapDeleteRecipeToState(event);
@@ -37,12 +36,16 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
     }
   }
 
-  Stream<AddRecipeState> _mapAddRecipeToState(RMAddRecipe event) async* {
-    Recipe newRecipe =
-        event.recipe.copyWith(lastModified: DateTime.now().toString());
-    await HiveProvider().saveRecipe(newRecipe);
+  Stream<AddRecipesState> _mapAddRecipeToState(RMAddRecipes event) async* {
+    List<Recipe> newRecipes = [];
 
-    yield AddRecipeState(newRecipe);
+    for (Recipe r in event.recipes) {
+      Recipe newRecipe = r.copyWith(lastModified: DateTime.now().toString());
+      newRecipes.add(newRecipe);
+      await HiveProvider().saveRecipe(newRecipe);
+    }
+
+    yield AddRecipesState(newRecipes);
   }
 
   /// not deleting files because when a recipe is modified, the event also fires

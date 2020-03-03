@@ -84,11 +84,13 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
     List<Recipe> alreadyExisting = [];
     List<Recipe> failedRecipes = [];
 
+    List<String> importCategories = [];
+
     yield ImportingRecipes(0.1);
 
     for (int i = 0; i < event.recipes.length; i++) {
       // await Future.delayed(Duration(seconds: 1));
-      // if a recipe with the same name isn't already save to hive -> double check
+      // if a recipe with the same name isn't already saved to hive -> double check
       if (await HiveProvider().getRecipeByName(event.recipes[i].name) == null) {
         // import recipe data to app ..
         bool importedRecipeData =
@@ -98,13 +100,13 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
           List<String> categories = HiveProvider().getCategoryNames();
           List<String> newCategories = [];
           for (String category in event.recipes[i].categories) {
-            if (!categories.contains(category)) {
+            if (!categories.contains(category) &&
+                !importCategories.contains(category)) {
               newCategories.add(category);
             }
           }
-          recipeManagerBloc.add(RMAddCategories(newCategories));
           // add recipe to recipeManager
-          recipeManagerBloc.add(RMAddRecipe(event.recipes[i]));
+          importCategories.addAll(newCategories);
           importRecipes.add(event.recipes[i]);
         } else {
           failedRecipes.add(event.recipes[i]);
@@ -114,8 +116,13 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         alreadyExisting
             .add(await HiveProvider().getRecipeByName(event.recipes[i].name));
       }
-      yield ImportingRecipes(0.1 + (i / event.recipes.length * 0.9));
+      yield ImportingRecipes(
+          (0.1 + (i / event.recipes.length * 0.9)).roundToDouble());
     }
+    recipeManagerBloc.add(RMAddCategories(importCategories));
+    Future.delayed(Duration(milliseconds: 100))
+        .then((_) => recipeManagerBloc.add(RMAddRecipes(importRecipes)));
+
     imageCache.clear();
     yield ImportedRecipes(importRecipes, failedRecipes, alreadyExisting);
   }

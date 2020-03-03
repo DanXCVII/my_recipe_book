@@ -356,6 +356,8 @@ class I18n implements WidgetsLocalizations {
   String get by_last_modified => "by last modified";
   /// "import"
   String get import => "import";
+  /// "pull down to refresh page and show imported recipes"
+  String get pull_down_to_refresh => "pull down to refresh page and show imported recipes";
 }
 
 class _I18n_en_US extends I18n {
@@ -851,6 +853,9 @@ class _I18n_de_DE extends I18n {
   /// "importiere"
   @override
   String get import => "importiere";
+  /// "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen"
+  @override
+  String get pull_down_to_refresh => "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

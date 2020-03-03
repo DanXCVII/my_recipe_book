@@ -30,12 +30,6 @@ class IntroScreen extends StatelessWidget {
         Slide(
           title: I18n.of(context).choose_a_theme,
           styleTitle: titleStyle.copyWith(color: Colors.black),
-          widgetDescription: Container(
-            child: ThemeSelector(
-              initialTheme: _initialTheme,
-            ),
-            height: MediaQuery.of(context).size.height - 360,
-          ),
           styleDescription: descStyle,
           backgroundImage: "images/theme.png",
           backgroundImageFit: BoxFit.cover,
@@ -92,95 +86,5 @@ class IntroScreen extends StatelessWidget {
         Navigator.pop(context);
       },
     );
-  }
-}
-
-class ThemeSelector extends StatefulWidget {
-  final initialTheme;
-
-  ThemeSelector({this.initialTheme, Key key}) : super(key: key);
-
-  _ThemeSelectorState createState() => _ThemeSelectorState();
-}
-
-class _ThemeSelectorState extends State<ThemeSelector> {
-  MyThemeKeys _selectedTheme;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedTheme = widget.initialTheme;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Align(
-          alignment: Alignment.topLeft,
-          child: IconButton(
-            icon: _selectedTheme == MyThemeKeys.LIGHT
-                ? Icon(
-                    GroovinMaterialIcons.check_circle,
-                    color: Colors.green,
-                  )
-                : Icon(
-                    GroovinMaterialIcons.circle_outline,
-                    color: Colors.grey[300],
-                  ),
-            onPressed: () {
-              _handleValueChange(MyThemeKeys.LIGHT, context);
-            },
-            iconSize: 60,
-          ),
-        ),
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 100.0),
-            child: IconButton(
-              icon: _selectedTheme == MyThemeKeys.DARK
-                  ? Icon(
-                      GroovinMaterialIcons.check_circle,
-                      color: Colors.green,
-                    )
-                  : Icon(
-                      GroovinMaterialIcons.circle_outline,
-                      color: Colors.grey[300],
-                    ),
-              onPressed: () {
-                _handleValueChange(MyThemeKeys.DARK, context);
-              },
-              iconSize: 60,
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: IconButton(
-            icon: _selectedTheme == MyThemeKeys.OLEDBLACK
-                ? Icon(
-                    GroovinMaterialIcons.check_circle,
-                    color: Colors.green,
-                  )
-                : Icon(
-                    GroovinMaterialIcons.circle_outline,
-                    color: Colors.grey[300],
-                  ),
-            onPressed: () {
-              _handleValueChange(MyThemeKeys.OLEDBLACK, context);
-            },
-            iconSize: 60,
-          ),
-        ),
-      ],
-    );
-  }
-
-  _handleValueChange(MyThemeKeys value, BuildContext context) {
-    CustomTheme.instanceOf(context).changeTheme(value);
-
-    setState(() {
-      _selectedTheme = value;
-    });
   }
 }

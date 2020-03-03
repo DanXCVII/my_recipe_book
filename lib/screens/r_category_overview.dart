@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:my_recipe_book/blocs/recipe_category_overview/recipe_category_overview_event.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
@@ -22,8 +22,8 @@ import 'recipe_screen.dart';
 // Builds the Rows of all the categories
 
 class RecipeCategoryOverview extends StatelessWidget {
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +33,16 @@ class RecipeCategoryOverview extends StatelessWidget {
         return Center(child: CircularProgressIndicator());
       } else if (state is LoadedRecipeCategoryOverview) {
         return AnimationLimiter(
-          child: LiquidPullToRefresh(
-            key: _refreshIndicatorKey,
-            springAnimationDurationInMilliseconds: 300,
+          child: SmartRefresher(
+            enablePullDown: true,
+            enablePullUp: false,
+            header: WaterDropMaterialHeader(),
+            controller: _refreshController,
             onRefresh: () async {
               await Future.delayed(Duration(milliseconds: 200));
               BlocProvider.of<RecipeCategoryOverviewBloc>(context)
                   .add(RCOLoadRecipeCategoryOverview());
+              _refreshController.refreshCompleted();
             },
             child: ListView.builder(
               itemCount: state.rCategoryOverview.length,

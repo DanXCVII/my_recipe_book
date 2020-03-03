@@ -23,12 +23,14 @@ class RandomRecipeExplorerBloc
             (this.state as LoadedRandomRecipeExplorer).selectedCategory;
         final String selectedCategory = categories[selectedIndex];
 
-        if (rmState is RM.AddRecipeState) {
-          if (rmState.recipe.categories.contains(selectedCategory) ||
-              selectedCategory == "all categories" ||
-              (rmState.recipe.categories.isEmpty &&
-                  selectedCategory == "no category")) {
-            add(ReloadRandomRecipeExplorer());
+        if (rmState is RM.AddRecipesState) {
+          for (Recipe recipe in rmState.recipes) {
+            if (recipe.categories.contains(selectedCategory) ||
+                selectedCategory == "all categories" ||
+                (recipe.categories.isEmpty &&
+                    selectedCategory == "no category")) {
+              add(ReloadRandomRecipeExplorer());
+            }
           }
         } else if (rmState is RM.DeleteRecipeState) {
           add(DeleteRecipe(rmState.recipe));

@@ -9,16 +9,13 @@ abstract class CategoryOverviewEvent extends Equatable {
 
 class COLoadCategoryOverview extends CategoryOverviewEvent {}
 
-class COAddRecipe extends CategoryOverviewEvent {
-  final Recipe recipe;
+class COAddRecipes extends CategoryOverviewEvent {
+  final List<Recipe> recipes;
 
-  const COAddRecipe(this.recipe);
-
-  @override
-  List<Object> get props => [recipe];
+  const COAddRecipes(this.recipes);
 
   @override
-  String toString() => 'AddRecipe { recipe: $recipe }';
+  List<Object> get props => [recipes];
 }
 
 class COUpdateRecipe extends CategoryOverviewEvent {
@@ -29,9 +26,6 @@ class COUpdateRecipe extends CategoryOverviewEvent {
 
   @override
   List<Object> get props => [oldRecipe, updatedRecipe];
-
-  @override
-  String toString() => 'UpdateRecipe { updatedRecipe: $updatedRecipe }';
 }
 
 class CODeleteRecipe extends CategoryOverviewEvent {
@@ -41,9 +35,6 @@ class CODeleteRecipe extends CategoryOverviewEvent {
 
   @override
   List<Object> get props => [recipe];
-
-  @override
-  String toString() => 'DeleteRecipe { recipe: $recipe }';
 }
 
 class COAddCategory extends CategoryOverviewEvent {
@@ -82,8 +73,4 @@ class COMoveCategory extends CategoryOverviewEvent {
 
   @override
   List<Object> get props => [oldIndex, newIndex];
-
-  @override
-  String toString() =>
-      'move category { oldIndex: $oldIndex , newIndex: $newIndex }';
 }

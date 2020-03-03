@@ -25,8 +25,8 @@ class RecipeOverviewBloc
   RecipeOverviewBloc({@required this.recipeManagerBloc}) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedRecipeOverview) {
-        if (rmState is RM.AddRecipeState) {
-          add(AddRecipe(rmState.recipe));
+        if (rmState is RM.AddRecipesState) {
+          add(AddRecipes(rmState.recipes));
         } else if (rmState is RM.DeleteRecipeState) {
           add(DeleteRecipe(rmState.recipe));
         } else if (rmState is RM.UpdateRecipeState) {
@@ -61,7 +61,7 @@ class RecipeOverviewBloc
       yield* _mapLoadVegetableRecipeOverviewToState(event);
     } else if (event is ChangeRecipeSort) {
       yield* _mapChangeRecipeSortToState(event);
-    } else if (event is AddRecipe) {
+    } else if (event is AddRecipes) {
       yield* _mapAddRecipeToState(event);
     } else if (event is DeleteRecipe) {
       yield* _mapDeleteRecipeToState(event);
@@ -153,22 +153,25 @@ class RecipeOverviewBloc
     }
   }
 
-  Stream<RecipeOverviewState> _mapAddRecipeToState(AddRecipe event) async* {
+  Stream<RecipeOverviewState> _mapAddRecipeToState(AddRecipes event) async* {
     if (state is LoadedRecipeOverview) {
-      if (_belongsToRecipeList(event.recipe)) {
-        final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
-        final List<Recipe> sortedRecipes = sortRecipes(
-            (state as LoadedRecipeOverview).recipeSort,
-            recipes..add(event.recipe));
+      final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
 
-        yield LoadedRecipeOverview(
-          recipes: sortedRecipes,
-          randomImage: _getRandomRecipeImage(sortedRecipes),
-          vegetable: (state as LoadedRecipeOverview).vegetable,
-          category: (state as LoadedRecipeOverview).category,
-          recipeSort: (state as LoadedRecipeOverview).recipeSort,
-        );
+      for (Recipe r in event.recipes) {
+        if (_belongsToRecipeList(r)) {
+          recipes..add(r);
+        }
       }
+      final List<Recipe> sortedRecipes =
+          sortRecipes((state as LoadedRecipeOverview).recipeSort, recipes);
+
+      yield LoadedRecipeOverview(
+        recipes: sortedRecipes,
+        randomImage: _getRandomRecipeImage(sortedRecipes),
+        vegetable: (state as LoadedRecipeOverview).vegetable,
+        category: (state as LoadedRecipeOverview).category,
+        recipeSort: (state as LoadedRecipeOverview).recipeSort,
+      );
     }
   }
 

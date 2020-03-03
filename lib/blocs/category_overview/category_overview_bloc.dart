@@ -20,8 +20,8 @@ class CategoryOverviewBloc
   CategoryOverviewBloc({@required this.recipeManagerBloc}) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedCategoryOverview) {
-        if (rmState is RM.AddRecipeState) {
-          add(COAddRecipe(rmState.recipe));
+        if (rmState is RM.AddRecipesState) {
+          add(COAddRecipes(rmState.recipes));
         } else if (rmState is RM.DeleteRecipeState) {
           add(CODeleteRecipe(rmState.recipe));
         } else if (rmState is RM.UpdateRecipeState) {
@@ -48,8 +48,8 @@ class CategoryOverviewBloc
   ) async* {
     if (event is COLoadCategoryOverview) {
       yield* _mapLoadCategoryOverviewToState();
-    } else if (event is COAddRecipe) {
-      yield* _mapAddRecipeToState(event);
+    } else if (event is COAddRecipes) {
+      yield* _mapAddRecipesToState(event);
     } else if (event is COUpdateRecipe) {
       yield* _mapUpdateRecipeToState(event);
     } else if (event is CODeleteRecipe) {
@@ -72,11 +72,12 @@ class CategoryOverviewBloc
     yield LoadedCategoryOverview(categoryRandomImageList);
   }
 
-  Stream<CategoryOverviewState> _mapAddRecipeToState(COAddRecipe event) async* {
+  Stream<CategoryOverviewState> _mapAddRecipesToState(
+      COAddRecipes event) async* {
     if (state is LoadedCategoryOverview) {
       final List<Tuple2<String, String>> categoryRandomImageList =
           await _addCategoryRandomImage(
-              (state as LoadedCategoryOverview).categories, event.recipe);
+              (state as LoadedCategoryOverview).categories, event.recipes);
 
       yield LoadedCategoryOverview(categoryRandomImageList);
     }
@@ -90,7 +91,7 @@ class CategoryOverviewBloc
               (state as LoadedCategoryOverview).categories, event.oldRecipe);
       final List<Tuple2<String, String>> updatedRecipeCategoryOverview =
           await _addCategoryRandomImage(
-              removedRecipeCategoryOverview, event.updatedRecipe);
+              removedRecipeCategoryOverview, [event.updatedRecipe]);
 
       yield LoadedCategoryOverview(updatedRecipeCategoryOverview);
     }
@@ -208,28 +209,31 @@ class CategoryOverviewBloc
   /// overview with the new recipeImage
   Future<List<Tuple2<String, String>>> _addCategoryRandomImage(
       List<Tuple2<String, String>> oldCategoryRandomImageList,
-      Recipe recipe) async {
+      List<Recipe> recipes) async {
     List<Tuple2<String, String>> categoryRandomImageList =
         List<Tuple2<String, String>>.from(oldCategoryRandomImageList);
 
-    for (String category in recipe.categories) {
-      bool alreadyAdded = false;
-      for (Tuple2<String, String> t in oldCategoryRandomImageList) {
-        // if the current recipeCategory is already in the overview
-        if (t.item1.compareTo(category) == 0) {
-          // add the old category to the new overviewList
-          categoryRandomImageList.add(t);
-          alreadyAdded = true;
-          break;
+    for (Recipe recipe in recipes) {
+      for (String category in recipe.categories) {
+        bool alreadyAdded = false;
+        for (Tuple2<String, String> t in categoryRandomImageList) {
+          // if the current recipeCategory is already in the overview
+          if (t.item1.compareTo(category) == 0) {
+            // add the old category to the new overviewList
+            categoryRandomImageList.add(t);
+            alreadyAdded = true;
+            break;
+          }
         }
-      }
-      // if the current recipeCategory is not yet in the overview
-      if (!alreadyAdded) {
-        // add the category with the image of the recipe
-        categoryRandomImageList.add(Tuple2<String, String>(
-            category,
-            (await HiveProvider().getRandomRecipeOfCategory(category: category))
-                .imagePath));
+        // if the current recipeCategory is not yet in the overview
+        if (!alreadyAdded) {
+          // add the category with the image of the recipe
+          categoryRandomImageList.add(Tuple2<String, String>(
+              category,
+              (await HiveProvider()
+                      .getRandomRecipeOfCategory(category: category))
+                  .imagePath));
+        }
       }
     }
     return categoryRandomImageList;

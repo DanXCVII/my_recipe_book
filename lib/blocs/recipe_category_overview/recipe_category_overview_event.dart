@@ -11,16 +11,13 @@ abstract class RecipeCategoryOverviewEvent extends Equatable {
 
 class RCOLoadRecipeCategoryOverview extends RecipeCategoryOverviewEvent {}
 
-class RCOAddRecipe extends RecipeCategoryOverviewEvent {
-  final Recipe recipe;
+class RCOAddRecipes extends RecipeCategoryOverviewEvent {
+  final List<Recipe> recipes;
 
-  const RCOAddRecipe(this.recipe);
-
-  @override
-  List<Object> get props => [recipe];
+  const RCOAddRecipes(this.recipes);
 
   @override
-  String toString() => 'AddRecipe { recipe: $recipe }';
+  List<Object> get props => [recipes];
 }
 
 class RCOUpdateRecipe extends RecipeCategoryOverviewEvent {
@@ -31,9 +28,6 @@ class RCOUpdateRecipe extends RecipeCategoryOverviewEvent {
 
   @override
   List<Object> get props => [oldRecipe, updatedRecipe];
-
-  @override
-  String toString() => 'UpdateRecipe { updatedRecipe: $updatedRecipe }';
 }
 
 class RCODeleteRecipe extends RecipeCategoryOverviewEvent {
@@ -43,9 +37,6 @@ class RCODeleteRecipe extends RecipeCategoryOverviewEvent {
 
   @override
   List<Object> get props => [recipe];
-
-  @override
-  String toString() => 'DeleteRecipe { recipe: $recipe }';
 }
 
 class RCOAddCategory extends RecipeCategoryOverviewEvent {
@@ -84,8 +75,4 @@ class RCOMoveCategory extends RecipeCategoryOverviewEvent {
 
   @override
   List<Object> get props => [oldIndex, newIndex];
-
-  @override
-  String toString() =>
-      'move category { oldIndex: $oldIndex , newIndex: $newIndex }';
 }
