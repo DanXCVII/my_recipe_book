@@ -376,6 +376,8 @@ class I18n implements WidgetsLocalizations {
   String get pull_down_to_refresh => "pull down to refresh page and show imported recipes";
   /// "remove ads\nupgrade in settings"
   String get remove_ads_upgrade_in_settings => "remove ads\nupgrade in settings";
+  /// "if recipes don't show up in overview, pull down to refresh the page."
+  String get recipes_not_in_overview => "if recipes don't show up in overview, pull down to refresh the page.";
 }
 
 class _I18n_en_US extends I18n {
@@ -901,6 +903,9 @@ class _I18n_de_DE extends I18n {
   /// "Werbung entfernen\nin den Einstellungen"
   @override
   String get remove_ads_upgrade_in_settings => "Werbung entfernen\nin den Einstellungen";
+  /// "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren."
+  @override
+  String get recipes_not_in_overview => "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;
