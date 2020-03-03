@@ -28,3 +28,18 @@ class StartWatchingVideo extends AdManagerEvent {
   @override
   List<Object> get props => [time];
 }
+
+class ShowAdsAgain extends AdManagerEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class PurchaseProVersion extends AdManagerEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class _PurchaseSuccessfull extends AdManagerEvent {
+  @override
+  List<Object> get props => [];
+}

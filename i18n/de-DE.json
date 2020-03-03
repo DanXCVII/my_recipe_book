@@ -159,5 +159,13 @@
     "recipe_pinned_to_overview": "Rezept an Hauptansicht angepinnt",
     "field_must_not_be_empty": "Textfeld darf nicht leer sein",
     "by_last_modified": "nach Änderungsdatum",
-    "import": "importiere"
+    "import": "importiere",
+    "purchase_pro": "Pro Version kaufen",
+    "video_to_remove_ads": "Werbevideo zum entfernen der Banner",
+    "video_to_remove_ads_desc": "Wenn du auf \"anzeigen\" tippst, wird dir ein Werbevideo angezeigt und du erhältst für 30 min keine Werbebanner mehr. Bei wiederholtem schauen, erhöht sich die werbefreie Zeit.",
+    "watch": "anzeigen",
+    "watch_video_remove_ads": "Werbevideo → +30 min werbefrei",
+    "ad_free_until": "werbefrei bis",
+    "pro_version": "Pro Version",
+    "ingredient_filter_description": "Kaufe die Vollversion in den Einstellungen um Zugriff zum Zutatenfilter zu bekommen"
 }

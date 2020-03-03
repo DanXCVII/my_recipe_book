@@ -17,3 +17,7 @@ class AdFreeUntil extends AdManagerState {
   @override
   List<Object> get props => [time];
 }
+
+class ShowAds extends AdManagerState {}
+
+class IsPurchased extends AdManagerState {}

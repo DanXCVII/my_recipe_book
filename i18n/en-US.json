@@ -160,5 +160,13 @@
     "recipe_pinned_to_overview": "recipe pinned to overview",
     "field_must_not_be_empty": "field must not be empty",
     "by_last_modified": "by last modified",
-    "import": "import"
+    "import": "import",
+    "purchase_pro": "purchase pro version",
+    "video_to_remove_ads": "watch video ad to remove banner ads",
+    "video_to_remove_ads_desc": "by pressing \"watch\", you'll see an advertisement video and no more banner ads will be displayed for 30 min. You can stack this.",
+    "watch": "watch",
+    "watch_video_remove_ads": "watch video → remove ads",
+    "ad_free_until": "ad free until",
+    "pro_version": "pro version",
+    "ingredient_filter_description": "purchase pro version in settings to get access to ingredient filter"
 }

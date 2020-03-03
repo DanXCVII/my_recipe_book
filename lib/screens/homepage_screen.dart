@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/ad_related/ad.dart';
+import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/app/app_bloc.dart';
@@ -42,6 +44,7 @@ class MyHomePage extends StatefulWidget {
 
 class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   Image shoppingCartImage;
+  Flushbar flush;
 
   static const platform = const MethodChannel('app.channel.shared.data');
 
@@ -241,17 +244,47 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ),
         title: Text(title),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
-            onPressed: () {
-              Navigator.pushNamed(
-                context,
-                RouteNames.ingredientSearch,
-                arguments: IngredientSearchScreenArguments(
-                    BlocProvider.of<ShoppingCartBloc>(context)),
-              ).then((_) => Ads.hideBottomBannerAd());
-            },
-          ),
+          BlocBuilder<AdManagerBloc, AdManagerState>(builder: (context, state) {
+            if (state is IsPurchased) {
+              return IconButton(
+                icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.ingredientSearch,
+                    arguments: IngredientSearchScreenArguments(
+                        BlocProvider.of<ShoppingCartBloc>(context)),
+                  ).then((_) => Ads.hideBottomBannerAd());
+                },
+              );
+            } else {
+              return IconButton(
+                icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
+                onPressed: () {
+                  flush = Flushbar<bool>(
+                    animationDuration: Duration(milliseconds: 300),
+                    leftBarIndicatorColor: Colors.blue[300],
+                    title: I18n.of(context).pro_version,
+                    message: I18n.of(context).ingredient_filter_description,
+                    icon: Icon(
+                      Icons.info_outline,
+                      color: Colors.blue,
+                    ),
+                    mainButton: FlatButton(
+                      onPressed: () {
+                        flush.dismiss(true); // result = true
+                      },
+                      child: Text(
+                        "OK",
+                        style: TextStyle(color: Colors.amber),
+                      ),
+                    ),
+                  ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+                    ..show(context).then((result) {});
+                },
+              );
+            }
+          }),
           currentIndex == 0
               ? IconButton(
                   icon: Icon(

@@ -356,6 +356,22 @@ class I18n implements WidgetsLocalizations {
   String get by_last_modified => "by last modified";
   /// "import"
   String get import => "import";
+  /// "purchase pro version"
+  String get purchase_pro => "purchase pro version";
+  /// "watch video ad to remove banner ads"
+  String get video_to_remove_ads => "watch video ad to remove banner ads";
+  /// "by pressing \"watch\", you'll see an advertisement video and no more banner ads will be displayed for 30 min. You can stack this."
+  String get video_to_remove_ads_desc => "by pressing \"watch\", you'll see an advertisement video and no more banner ads will be displayed for 30 min. You can stack this.";
+  /// "watch"
+  String get watch => "watch";
+  /// "watch video → remove ads"
+  String get watch_video_remove_ads => "watch video → remove ads";
+  /// "ad free until"
+  String get ad_free_until => "ad free until";
+  /// "pro version"
+  String get pro_version => "pro version";
+  /// "purchase pro version in settings to get access to ingredient filter"
+  String get ingredient_filter_description => "purchase pro version in settings to get access to ingredient filter";
 }
 
 class _I18n_en_US extends I18n {
@@ -851,6 +867,30 @@ class _I18n_de_DE extends I18n {
   /// "importiere"
   @override
   String get import => "importiere";
+  /// "Pro Version kaufen"
+  @override
+  String get purchase_pro => "Pro Version kaufen";
+  /// "Werbevideo zum entfernen der Banner"
+  @override
+  String get video_to_remove_ads => "Werbevideo zum entfernen der Banner";
+  /// "Wenn du auf \"anzeigen\" tippst, wird dir ein Werbevideo angezeigt und du erhältst für 30 min keine Werbebanner mehr. Bei wiederholtem schauen, erhöht sich die werbefreie Zeit."
+  @override
+  String get video_to_remove_ads_desc => "Wenn du auf \"anzeigen\" tippst, wird dir ein Werbevideo angezeigt und du erhältst für 30 min keine Werbebanner mehr. Bei wiederholtem schauen, erhöht sich die werbefreie Zeit.";
+  /// "anzeigen"
+  @override
+  String get watch => "anzeigen";
+  /// "Werbevideo → +30 min werbefrei"
+  @override
+  String get watch_video_remove_ads => "Werbevideo → +30 min werbefrei";
+  /// "werbefrei bis"
+  @override
+  String get ad_free_until => "werbefrei bis";
+  /// "Pro Version"
+  @override
+  String get pro_version => "Pro Version";
+  /// "Kaufe die Vollversion in den Einstellungen um Zugriff zum Zutatenfilter zu bekommen"
+  @override
+  String get ingredient_filter_description => "Kaufe die Vollversion in den Einstellungen um Zugriff zum Zutatenfilter zu bekommen";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

@@ -5,10 +5,14 @@ import '../../generated/i18n.dart';
 class InfoDialog extends StatelessWidget {
   final String title;
   final String body;
+  final String okText;
+  final Function onOk;
 
   const InfoDialog({
     @required this.title,
     @required this.body,
+    this.okText,
+    this.onOk,
     Key key,
   }) : super(key: key);
 
@@ -20,12 +24,15 @@ class InfoDialog extends StatelessWidget {
       content: Text(body),
       actions: <Widget>[
         FlatButton(
-          child: Text(I18n.of(context).alright),
+          child: okText == null ? Text(I18n.of(context).alright) : Text(okText),
           textColor: Theme.of(context).backgroundColor == Colors.white
               ? null
               : Colors.amber,
           onPressed: () {
-            Navigator.pop(context);
+            if (onOk == null) {
+              Navigator.pop(context);
+            }
+            onOk();
           },
         )
       ],

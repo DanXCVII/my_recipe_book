@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ad_related/ad.dart';
@@ -15,6 +17,25 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   bool isInitialized = false;
   DateTime lastTimeStartedWatching =
       DateTime.now().subtract(Duration(days: 10));
+
+  bool _isPurchased = false;
+
+  /// if the API is available on the device
+  bool _available = true;
+
+  /// In App Purchase plugin
+  InAppPurchaseConnection _iap;
+
+  /// products for sale
+  List<ProductDetails> _products = [];
+
+  /// past purchases
+  List<PurchaseDetails> _purchases = [];
+
+  /// Updates to purchases
+  StreamSubscription _subscription;
+
+  SharedPreferences _sP;
 
   AdManagerBloc() {
     RewardedVideoAd.instance.listener =
@@ -43,6 +64,12 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       yield* _mapInitializeAdsToState(event);
     } else if (event is StartWatchingVideo) {
       yield* _mapStartWatchingVideoToState(event);
+    } else if (event is ShowAdsAgain) {
+      yield* _mapShowAdsAgain(event);
+    } else if (event is PurchaseProVersion) {
+      yield* _mapPurchaseProVersionToState(event);
+    } else if (event is _PurchaseSuccessfull) {
+      yield* _mapPurchaseSuccessfullToState(event);
     }
   }
 
@@ -50,29 +77,50 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     if (isInitialized) return;
     isInitialized = true;
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _sP ??= await SharedPreferences.getInstance();
 
-    Ads.showAds(true);
+    if (_sP.getBool('pro_version') == true) {
+      Ads.showAds(false);
+      yield IsPurchased();
+    } else {
+      Ads.showAds(true);
+      InAppPurchaseConnection.enablePendingPurchases();
+      print(await InAppPurchaseConnection.instance.isAvailable());
+      _iap = InAppPurchaseConnection.instance;
+      _available = await _iap.isAvailable();
 
-    if (prefs.getString('noAdsUntil') != null) {
-      DateTime noAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
+      if (_available) {
+        await _getProducts();
+        await _getPastPurchases();
+        await _verifyPurchase();
 
-      if (noAdsUntil.isAfter(DateTime.now())) {
-        Ads.showAds(false);
-
-        int waitTime = DateTime.now().difference(noAdsUntil).inMinutes + 5;
-
-        _periodicSub = Stream.periodic(const Duration(minutes: 1), (v) => v)
-            .take(waitTime)
-            .listen((count) {
-          print(count);
-          if (DateTime.now().isAfter(noAdsUntil)) {
-            Ads.showAds(true);
-            _periodicSub.cancel();
-          }
+        _subscription = _iap.purchaseUpdatedStream.listen((data) {
+          _purchases.addAll(data);
+          _verifyPurchase();
         });
+      }
 
-        yield AdFreeUntil(noAdsUntil);
+      if (_sP.getString('noAdsUntil') != null) {
+        DateTime noAdsUntil = DateTime.parse(_sP.getString('noAdsUntil'));
+
+        if (noAdsUntil.isAfter(DateTime.now())) {
+          Ads.showAds(false);
+
+          int waitTime = DateTime.now().difference(noAdsUntil).inMinutes + 5;
+
+          _periodicSub = Stream.periodic(const Duration(minutes: 1), (v) => v)
+              .take(waitTime)
+              .listen((count) {
+            print(count);
+            if (DateTime.now().isAfter(noAdsUntil)) {
+              Ads.showAds(true);
+              _periodicSub.cancel();
+              add(ShowAdsAgain());
+            }
+          });
+
+          yield AdFreeUntil(noAdsUntil);
+        }
       }
     }
   }
@@ -83,9 +131,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     DateTime oldNoAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
     DateTime noAdsUntil;
     if (oldNoAdsUntil.isAfter(DateTime.now())) {
-      noAdsUntil = oldNoAdsUntil.add(Duration(minutes: 20));
+      noAdsUntil = oldNoAdsUntil.add(Duration(minutes: 30));
     } else {
-      noAdsUntil = DateTime.now().add(Duration(minutes: 20));
+      noAdsUntil = DateTime.now().add(Duration(minutes: 30));
     }
 
     await prefs.setString('noAdsUntil', noAdsUntil.toString());
@@ -102,6 +150,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       if (DateTime.now().isAfter(noAdsUntil)) {
         Ads.showAds(true);
         _periodicSub.cancel();
+        add(ShowAdsAgain());
       }
     });
 
@@ -112,6 +161,59 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       StartWatchingVideo event) async* {
     lastTimeStartedWatching = event.time;
     await Ads.showRewardedVideo();
+  }
+
+  Stream<AdManagerState> _mapShowAdsAgain(ShowAdsAgain event) async* {
+    yield ShowAds();
+  }
+
+  Stream<AdManagerState> _mapPurchaseProVersionToState(
+      PurchaseProVersion event) async* {
+    if (_products != null && _products.isNotEmpty) {
+      final PurchaseParam purchaseParam =
+          PurchaseParam(productDetails: _products.first);
+      await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+    }
+  }
+
+  Stream<AdManagerState> _mapPurchaseSuccessfullToState(
+      _PurchaseSuccessfull event) async* {
+    yield IsPurchased();
+  }
+
+  Future<void> _getProducts() async {
+    Set<String> ids = Set.from(['pro_version']);
+    ProductDetailsResponse response = await _iap.queryProductDetails(ids);
+
+    _products = response.productDetails;
+  }
+
+  Future<void> _getPastPurchases() async {
+    QueryPurchaseDetailsResponse response = await _iap.queryPastPurchases();
+
+    for (PurchaseDetails purchase in response.pastPurchases) {
+      if (Platform.isIOS) {
+        InAppPurchaseConnection.instance.completePurchase(purchase);
+      }
+    }
+
+    _purchases = response.pastPurchases;
+  }
+
+  Future<void> _verifyPurchase() async {
+    PurchaseDetails purchase = _hasPurchased('pro_version');
+
+    if (purchase != null && purchase.status == PurchaseStatus.purchased) {
+      _sP ??= await SharedPreferences.getInstance();
+      _sP.setBool('pro_version', true);
+      Ads.showAds(false);
+      add(_PurchaseSuccessfull());
+    }
+  }
+
+  PurchaseDetails _hasPurchased(String productID) {
+    return _purchases.firstWhere((purchase) => purchase.productID == productID,
+        orElse: () => null);
   }
 
   @override

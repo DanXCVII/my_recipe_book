@@ -40,9 +40,10 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
 
     if (!prefs.containsKey('showIntro')) {
       showIntro = true;
-      prefs.setBool('showIntro', false);
+      await prefs.setBool('showIntro', false);
       await _initializeFirstStartData();
       await initHive(true);
+      await prefs.setBool('pro_version', false);
     } else {
       await initHive(false);
     }
