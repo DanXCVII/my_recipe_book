@@ -10,6 +10,9 @@ import '../../local_storage/hive.dart';
 import '../../theming.dart';
 
 class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
+  bool recipeCategoryOverview;
+  bool showIntro;
+
   @override
   SplashScreenState get initialState => InitializingData();
 
@@ -19,6 +22,8 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   ) async* {
     if (event is SPInitializeData) {
       yield* _mapInitializeDataToState(event);
+    } else if (event is CheckForImport) {
+      yield* _mapCheckForImportToState(event);
     }
   }
 
@@ -45,7 +50,15 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       await initHive(false);
     }
 
-    yield InitializedData(recipeCategoryOverview, showIntro);
+    this.recipeCategoryOverview = recipeCategoryOverview;
+    this.showIntro = showIntro;
+  }
+
+  Stream<SplashScreenState> _mapCheckForImportToState(
+      CheckForImport event) async* {
+    yield event.newImports
+        ? IntentImportRecipes()
+        : InitializedData(recipeCategoryOverview, showIntro);
   }
 
   bool _initRecipeOverviewScreen(SharedPreferences prefs) {

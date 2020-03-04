@@ -46,7 +46,7 @@ class RecipeCategoryOverviewBloc
     RecipeCategoryOverviewEvent event,
   ) async* {
     if (event is RCOLoadRecipeCategoryOverview) {
-      yield* _mapLoadCategoryOverviewToState();
+      yield* _mapLoadCategoryOverviewToState(event);
     } else if (event is RCOAddRecipes) {
       yield* _mapAddRecipesToState(event);
     } else if (event is RCOUpdateRecipe) {
@@ -62,7 +62,10 @@ class RecipeCategoryOverviewBloc
     }
   }
 
-  Stream<RecipeCategoryOverviewState> _mapLoadCategoryOverviewToState() async* {
+  Stream<RecipeCategoryOverviewState> _mapLoadCategoryOverviewToState(
+      event) async* {
+    if (event.reopenBoxes) await HiveProvider().reopenBoxes();
+
     List<Tuple2<String, List<Recipe>>> categoryRecipes = [];
     final List<String> categories = HiveProvider().getCategoryNames();
 

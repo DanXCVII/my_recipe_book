@@ -113,8 +113,12 @@ class MyApp extends StatelessWidget {
                     },
                     child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
                         builder: (context, state) {
-                      if (state is InitializingData) {
-                        return SplashScreen();
+                      if (state is InitializingData ||
+                          state is IntentImportRecipes) {
+                        return BlocProvider<ImportRecipeBloc>(
+                            create: (context) => ImportRecipeBloc(
+                                BlocProvider.of<RecipeManagerBloc>(context)),
+                            child: SplashScreen());
                       } else if (state is InitializedData) {
                         return BlocProvider<AppBloc>(
                           create: (context) => AppBloc()
@@ -125,13 +129,13 @@ class MyApp extends StatelessWidget {
                               create: (context) => CategoryOverviewBloc(
                                 recipeManagerBloc:
                                     BlocProvider.of<RecipeManagerBloc>(context),
-                              )..add(COLoadCategoryOverview()),
+                              )..add(COLoadCategoryOverview(false)),
                             ),
                             BlocProvider<RecipeCategoryOverviewBloc>(
                               create: (context) => RecipeCategoryOverviewBloc(
                                 recipeManagerBloc:
                                     BlocProvider.of<RecipeManagerBloc>(context),
-                              )..add(RCOLoadRecipeCategoryOverview()),
+                              )..add(RCOLoadRecipeCategoryOverview(false)),
                             ),
                             BlocProvider<FavoriteRecipesBloc>(
                                 create: (context) => FavoriteRecipesBloc(

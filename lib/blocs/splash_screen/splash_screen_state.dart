@@ -2,12 +2,12 @@ import 'package:equatable/equatable.dart';
 
 abstract class SplashScreenState extends Equatable {
   const SplashScreenState();
-}
 
-class InitializingData extends SplashScreenState {
   @override
   List<Object> get props => [];
 }
+
+class InitializingData extends SplashScreenState {}
 
 class InitializedData extends SplashScreenState {
   final bool recipeCategoryOverview;
@@ -29,3 +29,5 @@ class InitializedData extends SplashScreenState {
       'Loaded State { recipeCategoryOverview : $recipeCategoryOverview, '
       'showIntro : $showIntro }';
 }
+
+class IntentImportRecipes extends SplashScreenState {}

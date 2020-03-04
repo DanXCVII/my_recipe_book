@@ -39,7 +39,7 @@ class MyHomePage extends StatefulWidget {
   MyHomePageState createState() => MyHomePageState();
 }
 
-class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+class MyHomePageState extends State<MyHomePage> {
   Future<SharedPreferences> prefs;
   Image shoppingCartImage;
 
@@ -63,24 +63,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       'images/cuisine.jpg',
       fit: BoxFit.cover,
     );
-
-    initializeIntent();
-
-    // Listen to lifecycle events.
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      initializeIntent();
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
   }
 
   @override
@@ -178,52 +160,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           ),
         ],
       )),
-    );
-  }
-
-  initializeIntent() async {
-    var importZipFilePath = await getIntentPath();
-    if (importZipFilePath != null) {
-      BuildContext importRecipeBlocContext = context;
-
-      showDialog(
-        context: context,
-        builder: (context) => BlocProvider<ImportRecipeBloc>.value(
-            value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
-              ..add(StartImportRecipes(File(importZipFilePath.toString()),
-                  delay: Duration(milliseconds: 300))),
-            child: ImportDialog()),
-      );
-    }
-  }
-
-  getIntentPath() async {
-    var sharedData = await platform.invokeMethod("getSharedText");
-    return sharedData == null ? null : sharedData;
-  }
-
-  Widget getImportRecipeDialog(File importZipFile) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Text(I18n.of(context).import_recipe_s),
-      content: Text(
-        I18n.of(context).do_you_want_to_import_the_recipe,
-      ),
-      actions: <Widget>[
-        FlatButton(
-            child: Text(I18n.of(context).no),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-        FlatButton(
-          child: Text(I18n.of(context).yes),
-          onPressed: () {
-            BlocProvider.of<ImportRecipeBloc>(context)
-                .add(StartImportRecipes(importZipFile));
-            Navigator.pop(context);
-          },
-        ),
-      ],
     );
   }
 

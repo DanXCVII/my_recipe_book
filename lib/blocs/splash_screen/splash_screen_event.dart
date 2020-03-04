@@ -19,3 +19,12 @@ class SPInitializeData extends SplashScreenEvent {
   @override
   String toString() => 'SPInitializeData { context: $context }';
 }
+
+class CheckForImport extends SplashScreenEvent {
+  final bool newImports;
+
+  CheckForImport(this.newImports);
+
+  @override
+  List<Object> get props => [newImports];
+}

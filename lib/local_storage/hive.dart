@@ -149,6 +149,38 @@ class HiveProvider {
     // this.boxRecipeBubbles,
   );
 
+  Future<void> reopenBoxes() async {
+    await boxVegetarian.close();
+    await boxNonVegetarian.close();
+    await boxVegan.close();
+    await boxCategories.close();
+    await boxRecipeNames.close();
+    await boxTmpRecipe.close();
+    await boxFavorites.close();
+    await boxIngredientNames.close();
+    await boxOrder.close();
+    await boxRecipeSort.close();
+    await boxShoppingCart.close();
+    await boxRecipeCategories.close();
+    await lazyBoxRecipes.close();
+
+    boxNonVegetarian =
+        await Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString());
+    boxVegetarian = await Hive.openBox<String>(Vegetable.VEGETARIAN.toString());
+    boxVegan = await Hive.openBox<String>(Vegetable.VEGAN.toString());
+    boxCategories = await Hive.openBox<String>(BoxNames.categories);
+    boxRecipeNames = await Hive.openBox<String>(BoxNames.recipeName);
+    boxFavorites = await Hive.openBox<String>(BoxNames.favorites);
+    boxIngredientNames = await Hive.openBox<String>(BoxNames.ingredientNames);
+    boxOrder = await Hive.openBox<List<String>>(BoxNames.order);
+    boxRecipeSort = await Hive.openBox<RSort>(BoxNames.recipeSort);
+    boxShoppingCart = await Hive.openBox<List>(BoxNames.shoppingCart);
+    boxRecipeCategories =
+        await Hive.openBox<List<String>>(BoxNames.recipeCategories);
+    boxTmpRecipe = await Hive.openBox<Recipe>(BoxNames.tmpRecipe);
+    lazyBoxRecipes = await Hive.openLazyBox<Recipe>(BoxNames.recipes);
+  }
+
   ////////////// single recipe related //////////////
   Future<void> saveRecipe(Recipe newRecipe) async {
     // add recipe to recipes

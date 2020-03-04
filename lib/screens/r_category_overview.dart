@@ -41,7 +41,7 @@ class RecipeCategoryOverview extends StatelessWidget {
             onRefresh: () async {
               await Future.delayed(Duration(milliseconds: 200));
               BlocProvider.of<RecipeCategoryOverviewBloc>(context)
-                  .add(RCOLoadRecipeCategoryOverview());
+                  .add(RCOLoadRecipeCategoryOverview(true));
               _refreshController.refreshCompleted();
             },
             child: ListView.builder(

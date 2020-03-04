@@ -9,7 +9,14 @@ abstract class RecipeCategoryOverviewEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class RCOLoadRecipeCategoryOverview extends RecipeCategoryOverviewEvent {}
+class RCOLoadRecipeCategoryOverview extends RecipeCategoryOverviewEvent {
+  final bool reopenBoxes;
+
+  RCOLoadRecipeCategoryOverview(this.reopenBoxes);
+
+  @override
+  List<Object> get props => [reopenBoxes];
+}
 
 class RCOAddRecipes extends RecipeCategoryOverviewEvent {
   final List<Recipe> recipes;
