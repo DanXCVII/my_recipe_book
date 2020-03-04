@@ -4,11 +4,6 @@ abstract class AnimatedStepperState extends Equatable {
   const AnimatedStepperState();
 }
 
-class AnimatedStepperInitial extends AnimatedStepperState {
-  @override
-  List<Object> get props => [];
-}
-
 class SelectedStep extends AnimatedStepperState {
   final int selectedStep;
 

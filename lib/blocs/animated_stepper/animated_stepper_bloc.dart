@@ -8,8 +8,12 @@ part 'animated_stepper_state.dart';
 
 class AnimatedStepperBloc
     extends Bloc<AnimatedStepperEvent, AnimatedStepperState> {
+  final initialStep;
+
+  AnimatedStepperBloc({this.initialStep});
+
   @override
-  AnimatedStepperState get initialState => SelectedStep(null);
+  AnimatedStepperState get initialState => SelectedStep(initialStep);
 
   @override
   Stream<AnimatedStepperState> mapEventToState(

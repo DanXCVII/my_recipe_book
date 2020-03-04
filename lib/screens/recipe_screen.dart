@@ -9,6 +9,8 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
+import 'package:my_recipe_book/blocs/animated_stepper/animated_stepper_bloc.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -59,29 +61,37 @@ class RecipeScreenArguments {
   final Recipe recipe;
   final String heroImageTag;
   final RecipeManagerBloc recipeManagerBloc;
+  final double initialScrollOffset;
+  final int initialSelectedStep;
 
   RecipeScreenArguments(
     this.shoppingCartBloc,
     this.recipe,
     this.heroImageTag,
-    this.recipeManagerBloc,
-  );
+    this.recipeManagerBloc, {
+    this.initialScrollOffset,
+    this.initialSelectedStep,
+  });
 }
 
 class RecipeScreen extends StatefulWidget {
   final String heroImageTag;
+  final double initialScrollOffset;
 
   RecipeScreen({
     this.heroImageTag,
+    this.initialScrollOffset,
   });
 
   @override
-  _RecipeScreenState createState() => _RecipeScreenState();
+  _RecipeScreenState createState() =>
+      _RecipeScreenState(initialScrollOffset: initialScrollOffset);
 }
 
 class _RecipeScreenState extends State<RecipeScreen>
     with SingleTickerProviderStateMixin {
   final PanelController _pc = PanelController();
+  ScrollController _scrollController;
 
   @override
   void initState() {
@@ -94,114 +104,147 @@ class _RecipeScreenState extends State<RecipeScreen>
     super.dispose();
   }
 
+  _RecipeScreenState({double initialScrollOffset}) {
+    _scrollController = ScrollController(
+        initialScrollOffset:
+            initialScrollOffset == null ? 0 : initialScrollOffset,
+        keepScrollOffset: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RecipeScreenBloc, RecipeScreenState>(
         builder: (context, state) {
       if (state is RecipeScreenInfo) {
-        return state.recipe.nutritions.isEmpty || Ads.shouldShowAds()
-            ? RecipePage(
-                recipe: state.recipe,
-                heroImageTag: widget.heroImageTag,
-              )
-            : Scaffold(
-                body: SlidingUpPanel(
-                  controller: _pc,
-                  backdropColor: Colors.black,
-                  backdropEnabled: true,
-                  // margin: EdgeInsets.only(left: 20, right: 20),
-                  parallaxEnabled: true,
-                  parallaxOffset: 0.5,
-                  minHeight: 70,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                  ),
-                  panel: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xff7E4400),
-                          Color(0xffCFAC53),
-                        ],
-                        begin: FractionalOffset.topLeft,
-                        end: FractionalOffset.bottomRight,
-                        stops: [0.0, 1.0],
-                      ),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(24),
-                        topRight: Radius.circular(24),
-                      ),
-                    ),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: () {
-                              _pc.animatePanelToPosition(1);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                              width: 30,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(12.0))),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: () {
-                              _pc.animatePanelToPosition(1);
-                            },
-                            child: Text(
-                              I18n.of(context).nutritions,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white),
-                            ),
-                          ),
-                          Container(height: 10),
-                          Container(
-                            height: 435,
-                            child: ListView.builder(
-                              itemCount: state.recipe.nutritions.length * 2,
-                              itemBuilder: (context, index) {
-                                if ((index - 1) % 2 == 0) {
-                                  return Divider();
-                                } else {
-                                  int nutritionIndex = (index / 2).round();
-                                  return ListTile(
-                                    leading: Icon(GroovinMaterialIcons.gate_or,
-                                        color: Colors.white),
-                                    title: Text(
-                                      state.recipe.nutritions[nutritionIndex]
-                                          .name,
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ),
-                                    trailing: Text(
-                                      state.recipe.nutritions[nutritionIndex]
-                                          .amountUnit,
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          )
-                        ]),
-                  ),
-                  body: RecipePage(
+        return BlocListener<AdManagerBloc, AdManagerState>(
+            listener: (context, adState) {
+              if (adState is ShowAds) {
+                Navigator.popAndPushNamed(
+                  context,
+                  RouteNames.recipeScreen,
+                  arguments: RecipeScreenArguments(
+                      BlocProvider.of<ShoppingCartBloc>(context),
+                      state.recipe,
+                      "",
+                      BlocProvider.of<RecipeManagerBloc>(context),
+                      initialScrollOffset: _scrollController.offset,
+                      initialSelectedStep:
+                          (BlocProvider.of<AnimatedStepperBloc>(context).state
+                                  as SelectedStep)
+                              .selectedStep),
+                ).then((_) => Ads.showBottomBannerAd());
+              }
+            },
+            child: state.recipe.nutritions.isEmpty || Ads.shouldShowAds()
+                ? RecipePage(
                     recipe: state.recipe,
                     heroImageTag: widget.heroImageTag,
-                  ),
-                ),
-              );
+                    scrollController: _scrollController,
+                  )
+                : Scaffold(
+                    body: SlidingUpPanel(
+                      controller: _pc,
+                      backdropColor: Colors.black,
+                      backdropEnabled: true,
+                      // margin: EdgeInsets.only(left: 20, right: 20),
+                      parallaxEnabled: true,
+                      parallaxOffset: 0.5,
+                      minHeight: 70,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                        topRight: Radius.circular(25),
+                      ),
+                      panel: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Color(0xff7E4400),
+                              Color(0xffCFAC53),
+                            ],
+                            begin: FractionalOffset.topLeft,
+                            end: FractionalOffset.bottomRight,
+                            stops: [0.0, 1.0],
+                          ),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(24),
+                            topRight: Radius.circular(24),
+                          ),
+                        ),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              SizedBox(height: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  _pc.animatePanelToPosition(1);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  width: 30,
+                                  height: 5,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(12.0))),
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  _pc.animatePanelToPosition(1);
+                                },
+                                child: Text(
+                                  I18n.of(context).nutritions,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white),
+                                ),
+                              ),
+                              Container(height: 10),
+                              Container(
+                                height: 435,
+                                child: ListView.builder(
+                                  itemCount: state.recipe.nutritions.length * 2,
+                                  itemBuilder: (context, index) {
+                                    if ((index - 1) % 2 == 0) {
+                                      return Divider();
+                                    } else {
+                                      int nutritionIndex = (index / 2).round();
+                                      return ListTile(
+                                        leading: Icon(
+                                            GroovinMaterialIcons.gate_or,
+                                            color: Colors.white),
+                                        title: Text(
+                                          state.recipe
+                                              .nutritions[nutritionIndex].name,
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white),
+                                        ),
+                                        trailing: Text(
+                                          state
+                                              .recipe
+                                              .nutritions[nutritionIndex]
+                                              .amountUnit,
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              )
+                            ]),
+                      ),
+                      body: RecipePage(
+                        recipe: state.recipe,
+                        heroImageTag: widget.heroImageTag,
+                        scrollController: _scrollController,
+                      ),
+                    ),
+                  ));
       } else {
         return Text("unknown state: " + state.toString());
       }
@@ -248,16 +291,19 @@ class NotesSection extends StatelessWidget {
 class RecipePage extends StatelessWidget {
   final Recipe recipe;
   final String heroImageTag;
+  final ScrollController scrollController;
 
   RecipePage({
     @required this.recipe,
     this.heroImageTag,
+    this.scrollController,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
+        controller: scrollController,
         slivers: <Widget>[
           SliverAppBar(
             flexibleSpace: GradientAppBar(

@@ -35,7 +35,7 @@ class Settings extends StatelessWidget {
                       ),
                       leading: Icon(Icons.movie),
                       trailing: state is ShowAds
-                          ? Container()
+                          ? null
                           : state is AdFreeUntil
                               ? Text(
                                   "${I18n.of(context).ad_free_until}:\n${state.time.hour}:" +

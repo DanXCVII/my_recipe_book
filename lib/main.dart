@@ -194,13 +194,18 @@ class MyApp extends StatelessWidget {
                             args.recipe.ingredients,
                           ))),
                     BlocProvider<AnimatedStepperBloc>(
-                      create: (context) => AnimatedStepperBloc(),
+                      create: (context) => AnimatedStepperBloc(
+                          initialStep: args.initialSelectedStep),
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
                   child: _getAdPage(
-                      RecipeScreen(heroImageTag: args.heroImageTag), context),
+                      RecipeScreen(
+                        heroImageTag: args.heroImageTag,
+                        initialScrollOffset: args.initialScrollOffset,
+                      ),
+                      context),
                 ),
               );
             case "/add-recipe/general-info":
