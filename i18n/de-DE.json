@@ -170,5 +170,7 @@
     "ingredient_filter_description": "Kaufe die Vollversion in den Einstellungen um Zugriff zum Zutatenfilter zu bekommen",
     "remove_ads_upgrade_in_settings": "Werbung entfernen\nin den Einstellungen",
     "pull_down_to_refresh": "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen",
-    "recipes_not_in_overview": "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren."
+    "recipes_not_in_overview": "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren.",
+    "no_internet_connection": "keine Internetverbindung",
+    "no_internet_connection_desc": "es kann kein Werbevideo geladen werden, da keine aktive Internetverbindung vorliegt."
 }

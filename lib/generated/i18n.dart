@@ -378,6 +378,10 @@ class I18n implements WidgetsLocalizations {
   String get remove_ads_upgrade_in_settings => "remove ads\nupgrade in settings";
   /// "if recipes don't show up in overview, pull down to refresh the page."
   String get recipes_not_in_overview => "if recipes don't show up in overview, pull down to refresh the page.";
+  /// "no internet connection"
+  String get no_internet_connection => "no internet connection";
+  /// "could not connect to the internet and therefore not load the video."
+  String get no_internet_connection_desc => "could not connect to the internet and therefore not load the video.";
 }
 
 class _I18n_en_US extends I18n {
@@ -879,9 +883,9 @@ class _I18n_de_DE extends I18n {
   /// "Werbevideo zum entfernen der Banner"
   @override
   String get video_to_remove_ads => "Werbevideo zum entfernen der Banner";
-  /// "Wenn du auf \"anzeigen\" tippst, wird dir ein Werbevideo angezeigt und du erhältst für 30 min keine Werbebanner mehr. Bei wiederholtem schauen, erhöht sich die werbefreie Zeit."
+  /// "Wenn du auf \"anzeigen\" tippst, wird dir ein Werbevideo angezeigt und du erhältst für 30 min keine neuen Werbebanner mehr. Bei wiederholtem schauen, erhöht sich die werbefreie Zeit."
   @override
-  String get video_to_remove_ads_desc => "Wenn du auf \"anzeigen\" tippst, wird dir ein Werbevideo angezeigt und du erhältst für 30 min keine Werbebanner mehr. Bei wiederholtem schauen, erhöht sich die werbefreie Zeit.";
+  String get video_to_remove_ads_desc => "Wenn du auf \"anzeigen\" tippst, wird dir ein Werbevideo angezeigt und du erhältst für 30 min keine neuen Werbebanner mehr. Bei wiederholtem schauen, erhöht sich die werbefreie Zeit.";
   /// "anzeigen"
   @override
   String get watch => "anzeigen";
@@ -906,6 +910,12 @@ class _I18n_de_DE extends I18n {
   /// "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren."
   @override
   String get recipes_not_in_overview => "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren.";
+  /// "keine Internetverbindung"
+  @override
+  String get no_internet_connection => "keine Internetverbindung";
+  /// "es kann kein Werbevideo geladen werden, da keine aktive Internetverbindung vorliegt."
+  @override
+  String get no_internet_connection_desc => "es kann kein Werbevideo geladen werden, da keine aktive Internetverbindung vorliegt.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

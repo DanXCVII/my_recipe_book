@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
@@ -21,58 +22,86 @@ class Settings extends StatelessWidget {
     return Container(
       child: ListView(
         children: <Widget>[
-          BlocBuilder<AdManagerBloc, AdManagerState>(builder: (context, state) {
-            if (state is IsPurchased) {
-              return Container();
-            } else {
-              return Column(
-                children: <Widget>[
-                  Divider(),
-                  ListTile(
-                      title: Text(
-                        I18n.of(context).watch_video_remove_ads,
-                        style: Theme.of(context).textTheme.subhead,
-                      ),
-                      leading: Icon(Icons.movie),
-                      trailing: state is ShowAds
-                          ? null
-                          : state is AdFreeUntil
-                              ? Text(
-                                  "${I18n.of(context).ad_free_until}:\n${state.time.hour}:" +
-                                      (state.time.minute < 10
-                                          ? "0${state.time.minute}"
-                                          : "${state.time.minute}"),
-                                  textAlign: TextAlign.center,
-                                )
-                              : state is LoadingVideo
-                                  ? CircularProgressIndicator()
-                                  : null,
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => InfoDialog(
-                            title: I18n.of(context).video_to_remove_ads,
-                            body: I18n.of(context).video_to_remove_ads_desc,
-                            onOk: () {
-                              Navigator.pop(context);
-                              BlocProvider.of<AdManagerBloc>(context)
-                                  .add(StartWatchingVideo(DateTime.now()));
-                            },
-                            okText: I18n.of(context).watch,
-                          ),
-                        );
-                      }),
-                  Divider(),
-                  ListTile(
-                      title: Text(I18n.of(context).purchase_pro),
-                      onTap: () {
-                        BlocProvider.of<AdManagerBloc>(context)
-                            .add(PurchaseProVersion());
-                      })
-                ],
-              );
-            }
-          }),
+          BlocListener<AdManagerBloc, AdManagerState>(
+            listener: (context, state) {
+              if (state is NotConnected) {
+                Flushbar flush;
+                flush = Flushbar<bool>(
+                  animationDuration: Duration(milliseconds: 300),
+                  leftBarIndicatorColor: Colors.blue[300],
+                  title: I18n.of(context).no_internet_connection,
+                  message: I18n.of(context).no_internet_connection_desc,
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: Colors.blue,
+                  ),
+                  mainButton: FlatButton(
+                    onPressed: () {
+                      flush.dismiss(true); // result = true
+                    },
+                    child: Text(
+                      "OK",
+                      style: TextStyle(color: Colors.amber),
+                    ),
+                  ),
+                ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+                  ..show(context).then((result) {});
+              }
+            },
+            child: BlocBuilder<AdManagerBloc, AdManagerState>(
+                builder: (context, state) {
+              if (state is IsPurchased) {
+                return Container();
+              } else {
+                return Column(
+                  children: <Widget>[
+                    Divider(),
+                    ListTile(
+                        title: Text(
+                          I18n.of(context).watch_video_remove_ads,
+                          style: Theme.of(context).textTheme.subhead,
+                        ),
+                        leading: Icon(Icons.movie),
+                        trailing: state is ShowAds
+                            ? null
+                            : state is AdFreeUntil
+                                ? Text(
+                                    "${I18n.of(context).ad_free_until}:\n${state.time.hour}:" +
+                                        (state.time.minute < 10
+                                            ? "0${state.time.minute}"
+                                            : "${state.time.minute}"),
+                                    textAlign: TextAlign.center,
+                                  )
+                                : state is LoadingVideo
+                                    ? CircularProgressIndicator()
+                                    : null,
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => InfoDialog(
+                              title: I18n.of(context).video_to_remove_ads,
+                              body: I18n.of(context).video_to_remove_ads_desc,
+                              onOk: () {
+                                Navigator.pop(context);
+                                BlocProvider.of<AdManagerBloc>(context)
+                                    .add(StartWatchingVideo(DateTime.now()));
+                              },
+                              okText: I18n.of(context).watch,
+                            ),
+                          );
+                        }),
+                    Divider(),
+                    ListTile(
+                        title: Text(I18n.of(context).purchase_pro),
+                        onTap: () {
+                          BlocProvider.of<AdManagerBloc>(context)
+                              .add(PurchaseProVersion());
+                        })
+                  ],
+                );
+              }
+            }),
+          ),
           Divider(),
           ListTile(
               title: Text(I18n.of(context).manage_nutritions),

@@ -119,20 +119,22 @@ class _RecipeScreenState extends State<RecipeScreen>
         return BlocListener<AdManagerBloc, AdManagerState>(
             listener: (context, adState) {
               if (adState is ShowAds) {
-                Navigator.popAndPushNamed(
-                  context,
-                  RouteNames.recipeScreen,
-                  arguments: RecipeScreenArguments(
-                      BlocProvider.of<ShoppingCartBloc>(context),
-                      state.recipe,
-                      "",
-                      BlocProvider.of<RecipeManagerBloc>(context),
-                      initialScrollOffset: _scrollController.offset,
-                      initialSelectedStep:
-                          (BlocProvider.of<AnimatedStepperBloc>(context).state
-                                  as SelectedStep)
-                              .selectedStep),
-                ).then((_) => Ads.showBottomBannerAd());
+                Navigator.pop(context);
+                Future.delayed(Duration(milliseconds: 50))
+                    .then((_) => Navigator.pushNamed(
+                          context,
+                          RouteNames.recipeScreen,
+                          arguments: RecipeScreenArguments(
+                              BlocProvider.of<ShoppingCartBloc>(context),
+                              state.recipe,
+                              "",
+                              BlocProvider.of<RecipeManagerBloc>(context),
+                              initialScrollOffset: _scrollController.offset,
+                              initialSelectedStep:
+                                  (BlocProvider.of<AnimatedStepperBloc>(context)
+                                          .state as SelectedStep)
+                                      .selectedStep),
+                        ).then((_) => Ads.hideBottomBannerAd()));
               }
             },
             child: state.recipe.nutritions.isEmpty || Ads.shouldShowAds()

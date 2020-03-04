@@ -171,5 +171,7 @@
     "ingredient_filter_description": "purchase pro version in settings to get access to ingredient filter",
     "pull_down_to_refresh": "pull down to refresh page and show imported recipes",
     "remove_ads_upgrade_in_settings": "remove ads\nupgrade in settings",
-    "recipes_not_in_overview": "if recipes don't show up in overview, pull down to refresh the page."
+    "recipes_not_in_overview": "if recipes don't show up in overview, pull down to refresh the page.",
+    "no_internet_connection": "no internet connection",
+    "no_internet_connection_desc": "could not connect to the internet and therefore not load the video."
 }

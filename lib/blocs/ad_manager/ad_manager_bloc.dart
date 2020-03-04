@@ -158,10 +158,24 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
   Stream<AdManagerState> _mapStartWatchingVideoToState(
       StartWatchingVideo event) async* {
-    lastTimeStartedWatching = event.time;
-    await Ads.showRewardedVideo();
+    bool hasInternetConnection = false;
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        hasInternetConnection = true;
+      }
+    } on SocketException catch (_) {
+      hasInternetConnection = false;
+    }
 
-    yield LoadingVideo();
+    if (hasInternetConnection) {
+      lastTimeStartedWatching = event.time;
+      await Ads.showRewardedVideo();
+
+      yield LoadingVideo();
+    } else {
+      yield NotConnected();
+    }
   }
 
   Stream<AdManagerState> _mapShowAdsAgain(ShowAdsAgain event) async* {

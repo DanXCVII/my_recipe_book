@@ -74,7 +74,7 @@ class Ads {
       print("showBottomBannerAd: return");
       return;
     }
-    ;
+
     if (_bottomBannerAd == null) {
       print("showBottomBannerAd: _bottomBannerAd = $_bottomBannerAd");
       setBottomBannerAd();
