@@ -21,3 +21,5 @@ class AdFreeUntil extends AdManagerState {
 class ShowAds extends AdManagerState {}
 
 class IsPurchased extends AdManagerState {}
+
+class LoadingVideo extends AdManagerState {}

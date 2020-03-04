@@ -66,18 +66,22 @@ class Ads {
           targetingInfo: _getMobileAdTargetingInfo(),
         )
         .catchError((e) => print('error loading'));
-
-    for (int i = 0; i < 3; i++) {
-      await Future.delayed(Duration(milliseconds: 1000));
-      RewardedVideoAd.instance.show();
-    }
   }
 
   static void showBottomBannerAd([State state]) {
     // if (Purchases.isNoAds()) return;
-    if (!_showAds || (state != null && !state.mounted)) return;
-    if (_bottomBannerAd == null) setBottomBannerAd();
+    if (!_showAds || (state != null && !state.mounted)) {
+      print("showBottomBannerAd: return");
+      return;
+    }
+    ;
+    if (_bottomBannerAd == null) {
+      print("showBottomBannerAd: _bottomBannerAd = $_bottomBannerAd");
+      setBottomBannerAd();
+    }
     if (!bottomBIsShown && !_bottomBIsGoingToBeShown) {
+      print(
+          "showBottomBannerAd: bottomBIsShown = false, _bottomBIsGoingToBeShow = false");
       _bottomBIsGoingToBeShown = true;
       _bottomBannerAd
         ..load()
@@ -108,15 +112,25 @@ class Ads {
   static void hideBottomBannerAd() {
     if (!_showAds) return;
     if (_bottomBannerAd != null && !_bottomBIsGoingToBeShown) {
+      print(
+          'hideBottomBannerAd: _bottomBannerAd != null, _bottomBIsGoingToBeShow = false');
       _bottomBannerAd.dispose().then((disposed) {
+        print('hideBottomBannerAd: setting bottomBIsShown to ${!disposed}');
         bottomBIsShown = !disposed;
       });
+      print('hideBottomBannerAd: setting _bottomBannerAd to null');
       _bottomBannerAd = null;
     }
     if (_bottomBannerAd != null && _bottomBIsGoingToBeShown) {
+      print(
+          'hideBottomBannerAd: _bottomBannerAd != null, _bottomBIsGoingToBeShown = true');
       Future.delayed(const Duration(milliseconds: 100), () {
         if (_bottomBannerAd != null && !_bottomBIsGoingToBeShown) {
+          print(
+              'hideBottomBannerAd: _bottomBannerAd != null, _bottomBIsGoingToBeShown = false');
           _bottomBannerAd.dispose().then((disposed) {
+            print(
+                'hideBottomBannerAd: disposing (setting _bottomBIsShow = ${!disposed}, _bottomBIsGoingToBeShown = false, _bottomBannerAd = null');
             bottomBIsShown = !disposed;
             _bottomBIsGoingToBeShown = false;
             _bottomBannerAd = null;
@@ -124,7 +138,6 @@ class Ads {
         } else {
           _reloaded++;
           if (_reloaded == 10) {
-            _bottomBIsGoingToBeShown = false;
             _reloaded = 0;
           }
           hideBottomBannerAd();

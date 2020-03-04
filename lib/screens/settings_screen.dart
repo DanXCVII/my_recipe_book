@@ -44,7 +44,9 @@ class Settings extends StatelessWidget {
                                           : "${state.time.minute}"),
                                   textAlign: TextAlign.center,
                                 )
-                              : null,
+                              : state is LoadingVideo
+                                  ? CircularProgressIndicator()
+                                  : null,
                       onTap: () {
                         showDialog(
                           context: context,

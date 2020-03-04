@@ -471,7 +471,7 @@ class MyApp extends StatelessWidget {
                       child: Center(
                         child: Text(
                           I18n.of(context).remove_ads_upgrade_in_settings,
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
                       ),

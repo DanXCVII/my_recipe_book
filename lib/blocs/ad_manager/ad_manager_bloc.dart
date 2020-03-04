@@ -43,9 +43,8 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       if (event == RewardedVideoAdEvent.rewarded) {
         print(DateTime.now().toLocal().toString());
         add(WatchedVideo(DateTime.now()));
-      } else if (event == RewardedVideoAdEvent.loaded &&
-          DateTime.now().difference(lastTimeStartedWatching) <
-              Duration(minutes: 5)) {
+      } else if (event == RewardedVideoAdEvent.loaded) {
+        print('video ad loaded');
         RewardedVideoAd.instance.show();
       }
     };
@@ -161,6 +160,8 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       StartWatchingVideo event) async* {
     lastTimeStartedWatching = event.time;
     await Ads.showRewardedVideo();
+
+    yield LoadingVideo();
   }
 
   Stream<AdManagerState> _mapShowAdsAgain(ShowAdsAgain event) async* {
