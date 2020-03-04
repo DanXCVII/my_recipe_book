@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
@@ -10,20 +9,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
-import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../ad_related/ad.dart';
+import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/app/app_bloc.dart';
 import '../blocs/app/app_event.dart';
 import '../blocs/app/app_state.dart';
-import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../local_storage/hive.dart';
-import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/recipe_bubble.dart';
 import '../widgets/search.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
@@ -42,7 +39,8 @@ class MyHomePage extends StatefulWidget {
   MyHomePageState createState() => MyHomePageState();
 }
 
-class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+class MyHomePageState extends State<MyHomePage> {
+  Future<SharedPreferences> prefs;
   Image shoppingCartImage;
   Flushbar flush;
 
@@ -65,23 +63,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       'images/cuisine.jpg',
       fit: BoxFit.cover,
     );
-    initializeIntent();
-
-    // Listen to lifecycle events.
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      initializeIntent();
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
   }
 
   @override
@@ -179,52 +160,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           ),
         ],
       )),
-    );
-  }
-
-  initializeIntent() async {
-    var importZipFilePath = await getIntentPath();
-    if (importZipFilePath != null) {
-      BuildContext importRecipeBlocContext = context;
-
-      showDialog(
-        context: context,
-        builder: (context) => BlocProvider<ImportRecipeBloc>.value(
-            value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
-              ..add(StartImportRecipes(File(importZipFilePath.toString()),
-                  delay: Duration(milliseconds: 300))),
-            child: ImportDialog()),
-      );
-    }
-  }
-
-  getIntentPath() async {
-    var sharedData = await platform.invokeMethod("getSharedText");
-    return sharedData == null ? null : sharedData;
-  }
-
-  Widget getImportRecipeDialog(File importZipFile) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Text(I18n.of(context).import_recipe_s),
-      content: Text(
-        I18n.of(context).do_you_want_to_import_the_recipe,
-      ),
-      actions: <Widget>[
-        FlatButton(
-            child: Text(I18n.of(context).no),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-        FlatButton(
-          child: Text(I18n.of(context).yes),
-          onPressed: () {
-            BlocProvider.of<ImportRecipeBloc>(context)
-                .add(StartImportRecipes(importZipFile));
-            Navigator.pop(context);
-          },
-        ),
-      ],
     );
   }
 

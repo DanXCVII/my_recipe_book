@@ -7,7 +7,14 @@ abstract class CategoryOverviewEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class COLoadCategoryOverview extends CategoryOverviewEvent {}
+class COLoadCategoryOverview extends CategoryOverviewEvent {
+  final bool reopenBoxes;
+
+  COLoadCategoryOverview(this.reopenBoxes);
+
+  @override
+  List<Object> get props => [reopenBoxes];
+}
 
 class COAddRecipes extends CategoryOverviewEvent {
   final List<Recipe> recipes;

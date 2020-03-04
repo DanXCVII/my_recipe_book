@@ -1,5 +1,6 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -8,11 +9,12 @@ import '../../blocs/import_recipe/import_recipe_bloc.dart';
 import '../../generated/i18n.dart';
 import '../../models/recipe.dart';
 
-// TODO: Show info dialog that pull to refresh may be needed after importing recipes
 enum ImportStatus { Loading, Selection, Finished }
 
 class ImportDialog extends StatefulWidget {
-  ImportDialog({Key key}) : super(key: key);
+  final bool closeAfterFinished;
+
+  ImportDialog({this.closeAfterFinished = false, Key key}) : super(key: key);
 
   @override
   _ImportDialogState createState() => _ImportDialogState();
@@ -80,8 +82,8 @@ class _ImportDialogState extends State<ImportDialog> {
           } else if (state is MultipleRecipes) {
             return Container(
               height: totalListItems > 4
-                  ? 245
-                  : totalListItems.toDouble() * 60 + 64,
+                  ? 250
+                  : totalListItems.toDouble() * 60 + 70,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
@@ -191,6 +193,7 @@ class _ImportDialogState extends State<ImportDialog> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 6),
                   Center(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -231,7 +234,10 @@ class _ImportDialogState extends State<ImportDialog> {
                     children: <Widget>[
                       FlatButton(
                         child: Text(I18n.of(context).cancel),
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => widget.closeAfterFinished
+                            ? SystemChannels.platform
+                                .invokeMethod('SystemNavigator.pop')
+                            : Navigator.pop(context),
                       ),
                       SizedBox(
                         width: 6,
@@ -346,27 +352,32 @@ class _ImportDialogState extends State<ImportDialog> {
                   FlatButton(
                       child: Text("ok"),
                       onPressed: () {
-                        if (state.importedRecipes.length > 0) {
-                          Navigator.pop(context);
-                          Flushbar flush;
-                          flush = Flushbar<bool>(
-                            animationDuration: Duration(milliseconds: 300),
-                            leftBarIndicatorColor: Colors.blue[300],
-                            message: I18n.of(context).recipes_not_in_overview,
-                            icon: Icon(
-                              Icons.info_outline,
-                              color: Colors.blue,
-                            ),
-                            mainButton: FlatButton(
-                              onPressed: () {
-                                flush.dismiss(true); // result = true
-                              },
-                              child: Text(
-                                "OK",
-                                style: TextStyle(color: Colors.amber),
+                        if (widget.closeAfterFinished) {
+                          SystemChannels.platform
+                              .invokeMethod('SystemNavigator.pop');
+                        } else {
+                          if (state.importedRecipes.length > 0) {
+                            Navigator.pop(context);
+                            Flushbar flush;
+                            flush = Flushbar<bool>(
+                              animationDuration: Duration(milliseconds: 300),
+                              leftBarIndicatorColor: Colors.blue[300],
+                              message: I18n.of(context).recipes_not_in_overview,
+                              icon: Icon(
+                                Icons.info_outline,
+                                color: Colors.blue,
                               ),
-                            ),
-                          )..show(context).then((r) {});
+                              mainButton: FlatButton(
+                                onPressed: () {
+                                  flush.dismiss(true); // result = true
+                                },
+                                child: Text(
+                                  "OK",
+                                  style: TextStyle(color: Colors.amber),
+                                ),
+                              ),
+                            )..show(context).then((r) {});
+                          }
                         }
                       }),
                 ],

@@ -34,7 +34,7 @@ class CategoryGridView extends StatelessWidget {
             onRefresh: () async {
               await Future.delayed(Duration(milliseconds: 200));
               BlocProvider.of<CategoryOverviewBloc>(context)
-                  .add(COLoadCategoryOverview());
+                  .add(COLoadCategoryOverview(true));
               _refreshController.refreshCompleted();
             },
             child: GridView.extent(

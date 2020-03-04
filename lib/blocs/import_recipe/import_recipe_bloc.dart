@@ -62,7 +62,8 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
           importRecipes.add(recipes[recipeKeys[i]]);
         }
         if (recipeKeys.length != 1) {
-          yield ImportingRecipes(0.1 + (i / recipeKeys.length * 0.9));
+          yield ImportingRecipes(
+              0.1 + (i / recipeKeys.length * 0.9).roundToDouble());
         } else {
           if (importRecipes.isNotEmpty) {
             yield* _mapFinishImportRecipes(

@@ -42,7 +42,7 @@ class _IngredientsState extends State<Ingredients> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               filled: true,
-              labelText: I18n.of(context).servings + "*",
+              labelText: I18n.of(context).servings,
               icon: Icon(Icons.local_dining),
             ),
           ),

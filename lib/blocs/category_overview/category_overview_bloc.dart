@@ -47,7 +47,7 @@ class CategoryOverviewBloc
     CategoryOverviewEvent event,
   ) async* {
     if (event is COLoadCategoryOverview) {
-      yield* _mapLoadCategoryOverviewToState();
+      yield* _mapLoadCategoryOverviewToState(event);
     } else if (event is COAddRecipes) {
       yield* _mapAddRecipesToState(event);
     } else if (event is COUpdateRecipe) {
@@ -65,7 +65,9 @@ class CategoryOverviewBloc
     }
   }
 
-  Stream<CategoryOverviewState> _mapLoadCategoryOverviewToState() async* {
+  Stream<CategoryOverviewState> _mapLoadCategoryOverviewToState(event) async* {
+    if (event.reopenBoxes) await HiveProvider().reopenBoxes();
+
     final List<Tuple2<String, String>> categoryRandomImageList =
         await _getCategoriesRandomImage();
 
