@@ -624,8 +624,8 @@ class RecipePage extends StatelessWidget {
             '${I18n.of(context).ingredients}: ${recipe.ingredientsGlossary[i]}:\n';
         for (int j = 0; j < recipe.ingredients[i].length; j++) {
           recipeText += '${recipe.ingredients[i][j].name} '
-              '${recipe.ingredients[i][j].amount} '
-              '${recipe.ingredients[i][j].unit}\n';
+              '${recipe.ingredients[i][j].amount ?? ""} '
+              '${recipe.ingredients[i][j].unit ?? ""}\n';
         }
         recipeText += '====================\n';
       }
