@@ -661,20 +661,22 @@ class RecipePage extends StatelessWidget {
 
   String _getRecipeAsString(Recipe recipe, BuildContext context) {
     String recipeText = '${I18n.of(context).recipe_name}: ${recipe.name}\n'
-        '====================\n'
-        '${I18n.of(context).prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n'
-        '${I18n.of(context).cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n'
-        '${I18n.of(context).total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
-        '====================\n'
-        '${I18n.of(context).ingredients_for} ${recipe.servings} ${I18n.of(context).servings}:\n';
+            '====================\n'
+            '${I18n.of(context).prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n'
+            '${I18n.of(context).cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n'
+            '${I18n.of(context).total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
+            '====================\n' +
+        (recipe.servings == null
+            ? I18n.of(context).ingredients + ":"
+            : '${I18n.of(context).ingredients_for} ${recipe.servings} ${I18n.of(context).servings}:\n');
     if (recipe.ingredientsGlossary.isNotEmpty) {
       for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
         recipeText +=
             '${I18n.of(context).ingredients}: ${recipe.ingredientsGlossary[i]}:\n';
         for (int j = 0; j < recipe.ingredients[i].length; j++) {
           recipeText += '${recipe.ingredients[i][j].name} '
-              '${recipe.ingredients[i][j].amount} '
-              '${recipe.ingredients[i][j].unit}\n';
+              '${recipe.ingredients[i][j].amount ?? ""} '
+              '${recipe.ingredients[i][j].unit ?? ""}\n';
         }
         recipeText += '====================\n';
       }
