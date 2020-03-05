@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+part of 'app_bloc.dart';
 
 abstract class AppEvent extends Equatable {
   const AppEvent();

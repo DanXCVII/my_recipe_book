@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../local_storage/local_paths.dart';
-import 'step_images_event.dart';
-import 'step_images_state.dart';
+
+part 'step_images_event.dart';
+part 'step_images_state.dart';
 
 class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
   List<List<String>> editingStepImages;

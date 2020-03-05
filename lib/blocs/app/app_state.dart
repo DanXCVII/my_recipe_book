@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'app_bloc.dart';
 
 abstract class AppState extends Equatable {
   const AppState();

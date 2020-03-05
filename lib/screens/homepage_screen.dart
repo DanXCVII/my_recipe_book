@@ -14,8 +14,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/app/app_bloc.dart';
-import '../blocs/app/app_event.dart';
-import '../blocs/app/app_state.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/routes.dart';

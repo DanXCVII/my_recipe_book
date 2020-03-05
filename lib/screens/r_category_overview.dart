@@ -9,8 +9,6 @@ import 'package:transparent_image/transparent_image.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
-import '../blocs/recipe_category_overview/recipe_category_overview_event.dart';
-import '../blocs/recipe_category_overview/recipe_category_overview_state.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -43,8 +41,9 @@ class RecipeCategoryOverview extends StatelessWidget {
             controller: _refreshController,
             onRefresh: () async {
               await Future.delayed(Duration(milliseconds: 200));
-              BlocProvider.of<RecipeCategoryOverviewBloc>(context)
-                  .add(RCOLoadRecipeCategoryOverview(true));
+              BlocProvider.of<RecipeCategoryOverviewBloc>(context).add(
+                  RCOLoadRecipeCategoryOverview(
+                      reopenBoxes: true, randomRecipeBlocContext: context));
               _refreshController.refreshCompleted();
             },
             child: ListView.builder(

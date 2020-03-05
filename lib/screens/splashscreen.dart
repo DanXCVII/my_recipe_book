@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../ad_related/ad.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/splash_screen/splash_screen_bloc.dart';
-import '../blocs/splash_screen/splash_screen_event.dart';
 import '../widgets/dialogs/import_dialog.dart';
 
 class SplashScreen extends StatefulWidget {
