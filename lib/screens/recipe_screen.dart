@@ -653,7 +653,8 @@ class RecipePage extends StatelessWidget {
     String zipFilePath = await IO.saveRecipeZip(
         await PathProvider.pP.getShareDir(), recipe.name);
 
-    ShareExtend.share(zipFilePath, "file");
+    ShareExtend.share(zipFilePath, "file",
+        subject: stringReplaceSpaceUnderscore(recipe.name) + ".zip");
 
     return true;
   }

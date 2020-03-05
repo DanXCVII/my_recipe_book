@@ -125,7 +125,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
                       BlocProvider.of<ShoppingCartBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
-                  ).then((_) => Ads.showBottomBannerAd());
+                  ).then((_) => Ads.hideBottomBannerAd());
                 } else if (state is GSavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
