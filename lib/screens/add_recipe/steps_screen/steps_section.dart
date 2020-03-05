@@ -227,9 +227,9 @@ class ImageBox extends StatelessWidget {
       ClipRRect(
         borderRadius: BorderRadius.circular(7),
         child: Container(
-          child: Image.asset(
+          child: Image.file(
             // widget.stepImages[widget.stepNumber][i],
-            imagePath,
+            File(imagePath),
             fit: BoxFit.cover,
           ),
           width: size,

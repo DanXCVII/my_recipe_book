@@ -72,8 +72,8 @@ class I18n implements WidgetsLocalizations {
   String get remove_step => "remove step";
   /// "export as zip"
   String get export_zip => "export as zip";
-  /// "export as text"
-  String get export_text => "export as text";
+  /// "share in textform"
+  String get export_text => "share in textform";
   /// "edit"
   String get edit => "edit";
   /// "shoppingcart"
@@ -426,12 +426,12 @@ class _I18n_de_DE extends I18n {
   /// "Schritt entfernen"
   @override
   String get remove_step => "Schritt entfernen";
-  /// "als zip exportieren"
+  /// "als Datei exportieren"
   @override
-  String get export_zip => "als zip exportieren";
-  /// "als text exportieren"
+  String get export_zip => "als Datei exportieren";
+  /// "in Textform teilen"
   @override
-  String get export_text => "als text exportieren";
+  String get export_text => "in Textform teilen";
   /// "editieren"
   @override
   String get edit => "editieren";

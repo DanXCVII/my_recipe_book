@@ -109,40 +109,49 @@ class AnimatedStepper extends StatelessWidget {
                                   child: Container(
                                     width:
                                         MediaQuery.of(context).size.width - 90,
-                                    child: Wrap(
-                                      runSpacing: 10,
-                                      spacing: 10,
-                                      children: List<Widget>.generate(
-                                        lowResStepImages == null
-                                            ? stepImages[index].length
-                                            : lowResStepImages[index].length,
-                                        (wrapIndex) => GestureDetector(
-                                          onTap: () {
-                                            _showStepFullView(stepImages, steps,
-                                                index, wrapIndex, context);
-                                          },
-                                          child: Hero(
-                                            tag: "Schritt$index:$wrapIndex",
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)),
-                                              child: Container(
-                                                width: 100,
-                                                height: 80,
-                                                child: FadeInImage(
-                                                  fadeInDuration: Duration(
-                                                      milliseconds: 100),
-                                                  placeholder: MemoryImage(
-                                                      kTransparentImage),
-                                                  image: FileImage(
-                                                    File(lowResStepImages ==
-                                                            null
-                                                        ? stepImages[index]
-                                                            [wrapIndex]
-                                                        : lowResStepImages[
-                                                            index][wrapIndex]),
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 8.0),
+                                      child: Wrap(
+                                        runSpacing: 10,
+                                        spacing: 10,
+                                        children: List<Widget>.generate(
+                                          lowResStepImages == null
+                                              ? stepImages[index].length
+                                              : lowResStepImages[index].length,
+                                          (wrapIndex) => GestureDetector(
+                                            onTap: () {
+                                              _showStepFullView(
+                                                  stepImages,
+                                                  steps,
+                                                  index,
+                                                  wrapIndex,
+                                                  context);
+                                            },
+                                            child: Hero(
+                                              tag: "Schritt$index:$wrapIndex",
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10)),
+                                                child: Container(
+                                                  width: 100,
+                                                  height: 80,
+                                                  child: FadeInImage(
+                                                    fadeInDuration: Duration(
+                                                        milliseconds: 100),
+                                                    placeholder: MemoryImage(
+                                                        kTransparentImage),
+                                                    image: FileImage(
+                                                      File(lowResStepImages ==
+                                                              null
+                                                          ? stepImages[index]
+                                                              [wrapIndex]
+                                                          : lowResStepImages[
+                                                                  index]
+                                                              [wrapIndex]),
+                                                    ),
+                                                    fit: BoxFit.cover,
                                                   ),
-                                                  fit: BoxFit.cover,
                                                 ),
                                               ),
                                             ),
