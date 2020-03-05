@@ -1,14 +1,18 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 
 import '../../local_storage/hive.dart';
 import '../../models/recipe.dart';
 import '../../models/tuple.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;
-import 'recipe_category_overview_event.dart';
-import 'recipe_category_overview_state.dart';
+
+part 'recipe_category_overview_event.dart';
+part 'recipe_category_overview_state.dart';
 
 class RecipeCategoryOverviewBloc
     extends Bloc<RecipeCategoryOverviewEvent, RecipeCategoryOverviewState> {
@@ -63,7 +67,7 @@ class RecipeCategoryOverviewBloc
   }
 
   Stream<RecipeCategoryOverviewState> _mapLoadCategoryOverviewToState(
-      event) async* {
+      RCOLoadRecipeCategoryOverview event) async* {
     if (event.reopenBoxes) await HiveProvider().reopenBoxes();
 
     List<Tuple2<String, List<Recipe>>> categoryRecipes = [];
@@ -78,6 +82,11 @@ class RecipeCategoryOverviewBloc
     }
 
     yield LoadedRecipeCategoryOverview(categoryRecipes);
+
+    if (event.randomRecipeBlocContext != null) {
+      BlocProvider.of<RandomRecipeExplorerBloc>(event.randomRecipeBlocContext)
+          .add(InitializeRandomRecipeExplorer());
+    }
   }
 
   Stream<RecipeCategoryOverviewState> _mapAddRecipesToState(

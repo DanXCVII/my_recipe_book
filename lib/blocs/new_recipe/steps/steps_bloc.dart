@@ -6,7 +6,6 @@ import 'package:equatable/equatable.dart';
 import '../../../local_storage/hive.dart';
 import '../../../models/recipe.dart';
 import '../step_images/step_images_bloc.dart';
-import '../step_images/step_images_state.dart';
 
 part 'steps_event.dart';
 part 'steps_state.dart';

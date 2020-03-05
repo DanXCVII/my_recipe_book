@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../models/recipe.dart';
+part of 'random_recipe_explorer_bloc.dart';
 
 abstract class RandomRecipeExplorerState extends Equatable {
   const RandomRecipeExplorerState();

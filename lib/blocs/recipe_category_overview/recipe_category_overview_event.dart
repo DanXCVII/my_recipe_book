@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../models/recipe.dart';
+part of 'recipe_category_overview_bloc.dart';
 
 abstract class RecipeCategoryOverviewEvent extends Equatable {
   const RecipeCategoryOverviewEvent();
@@ -11,8 +9,10 @@ abstract class RecipeCategoryOverviewEvent extends Equatable {
 
 class RCOLoadRecipeCategoryOverview extends RecipeCategoryOverviewEvent {
   final bool reopenBoxes;
+  final BuildContext randomRecipeBlocContext;
 
-  RCOLoadRecipeCategoryOverview(this.reopenBoxes);
+  RCOLoadRecipeCategoryOverview(
+      {this.reopenBoxes = false, this.randomRecipeBlocContext});
 
   @override
   List<Object> get props => [reopenBoxes];

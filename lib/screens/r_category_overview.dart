@@ -4,12 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:my_recipe_book/blocs/recipe_category_overview/recipe_category_overview_event.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
-import '../blocs/recipe_category_overview/recipe_category_overview_state.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -40,8 +38,9 @@ class RecipeCategoryOverview extends StatelessWidget {
             controller: _refreshController,
             onRefresh: () async {
               await Future.delayed(Duration(milliseconds: 200));
-              BlocProvider.of<RecipeCategoryOverviewBloc>(context)
-                  .add(RCOLoadRecipeCategoryOverview(true));
+              BlocProvider.of<RecipeCategoryOverviewBloc>(context).add(
+                  RCOLoadRecipeCategoryOverview(
+                      reopenBoxes: true, randomRecipeBlocContext: context));
               _refreshController.refreshCompleted();
             },
             child: ListView.builder(

@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:equatable/equatable.dart';
+part of 'step_images_bloc.dart';
 
 abstract class StepImagesEvent extends Equatable {
   const StepImagesEvent();

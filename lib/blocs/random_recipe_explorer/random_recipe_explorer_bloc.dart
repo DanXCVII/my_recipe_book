@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import '../../local_storage/hive.dart';
 import '../../models/recipe.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;
-import 'random_recipe_explorer_event.dart';
-import 'random_recipe_explorer_state.dart';
+
+part 'random_recipe_explorer_event.dart';
+part 'random_recipe_explorer_state.dart';
 
 class RandomRecipeExplorerBloc
     extends Bloc<RandomRecipeExplorerEvent, RandomRecipeExplorerState> {

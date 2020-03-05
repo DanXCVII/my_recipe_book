@@ -4,12 +4,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:my_recipe_book/constants/routes.dart';
 
 import './theming.dart';
 import 'blocs/animated_stepper/animated_stepper_bloc.dart';
-import 'blocs/app/app.dart';
-import 'blocs/app/app_event.dart';
+import 'blocs/app/app_bloc.dart';
 import 'blocs/category_manager/category_manager_bloc.dart';
 import 'blocs/category_overview/category_overview_bloc.dart';
 import 'blocs/favorite_recipes/favorite_recipes_bloc.dart';
@@ -21,22 +19,18 @@ import 'blocs/new_recipe/general_info/general_info_bloc.dart';
 import 'blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import 'blocs/new_recipe/nutritions/nutritions_bloc.dart';
 import 'blocs/new_recipe/step_images/step_images_bloc.dart';
-import 'blocs/new_recipe/step_images/step_images_event.dart';
 import 'blocs/new_recipe/steps/steps_bloc.dart';
 import 'blocs/nutrition_manager/nutrition_manager_bloc.dart';
 import 'blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
-import 'blocs/random_recipe_explorer/random_recipe_explorer_event.dart';
 import 'blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import 'blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
-import 'blocs/recipe_category_overview/recipe_category_overview_event.dart';
 import 'blocs/recipe_manager/recipe_manager_bloc.dart' show RecipeManagerBloc;
 import 'blocs/recipe_overview/recipe_overview_bloc.dart';
 import 'blocs/recipe_screen/recipe_screen_bloc.dart';
 import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import 'blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'blocs/splash_screen/splash_screen.dart';
-import 'blocs/splash_screen/splash_screen_event.dart';
-import 'blocs/splash_screen/splash_screen_state.dart';
+import 'blocs/splash_screen/splash_screen_bloc.dart';
+import 'constants/routes.dart';
 import 'generated/i18n.dart';
 import 'screens/SplashScreen.dart';
 import 'screens/about_me.dart';
@@ -129,13 +123,13 @@ class MyApp extends StatelessWidget {
                               create: (context) => CategoryOverviewBloc(
                                 recipeManagerBloc:
                                     BlocProvider.of<RecipeManagerBloc>(context),
-                              )..add(COLoadCategoryOverview(false)),
+                              )..add(COLoadCategoryOverview()),
                             ),
                             BlocProvider<RecipeCategoryOverviewBloc>(
                               create: (context) => RecipeCategoryOverviewBloc(
                                 recipeManagerBloc:
                                     BlocProvider.of<RecipeManagerBloc>(context),
-                              )..add(RCOLoadRecipeCategoryOverview(false)),
+                              )..add(RCOLoadRecipeCategoryOverview()),
                             ),
                             BlocProvider<FavoriteRecipesBloc>(
                                 create: (context) => FavoriteRecipesBloc(

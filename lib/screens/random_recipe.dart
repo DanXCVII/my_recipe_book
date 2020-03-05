@@ -4,8 +4,6 @@ import 'package:flutter_tindercard/flutter_tindercard.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
-import '../blocs/random_recipe_explorer/random_recipe_explorer_event.dart';
-import '../blocs/random_recipe_explorer/random_recipe_explorer_state.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
 import '../widgets/icon_info_message.dart';

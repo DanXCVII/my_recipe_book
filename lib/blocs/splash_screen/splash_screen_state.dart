@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'splash_screen_bloc.dart';
 
 abstract class SplashScreenState extends Equatable {
   const SplashScreenState();

@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+part of 'splash_screen_bloc.dart';
 
 abstract class SplashScreenEvent extends Equatable {
   const SplashScreenEvent();
@@ -15,9 +14,6 @@ class SPInitializeData extends SplashScreenEvent {
 
   @override
   List<Object> get props => [context];
-
-  @override
-  String toString() => 'SPInitializeData { context: $context }';
 }
 
 class CheckForImport extends SplashScreenEvent {

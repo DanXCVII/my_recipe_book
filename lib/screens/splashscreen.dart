@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/import_recipe/import_recipe_bloc.dart';
 import 'package:my_recipe_book/blocs/splash_screen/splash_screen_bloc.dart';
-import 'package:my_recipe_book/blocs/splash_screen/splash_screen_event.dart';
 import 'package:my_recipe_book/widgets/dialogs/import_dialog.dart';
 
 class SplashScreen extends StatefulWidget {

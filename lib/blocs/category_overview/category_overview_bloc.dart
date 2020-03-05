@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 
 import '../../local_storage/hive.dart';
 import '../../models/recipe.dart';
@@ -65,13 +67,19 @@ class CategoryOverviewBloc
     }
   }
 
-  Stream<CategoryOverviewState> _mapLoadCategoryOverviewToState(event) async* {
+  Stream<CategoryOverviewState> _mapLoadCategoryOverviewToState(
+      COLoadCategoryOverview event) async* {
     if (event.reopenBoxes) await HiveProvider().reopenBoxes();
 
     final List<Tuple2<String, String>> categoryRandomImageList =
         await _getCategoriesRandomImage();
 
     yield LoadedCategoryOverview(categoryRandomImageList);
+
+    if (event.randomRecipeBlocContext != null) {
+      BlocProvider.of<RandomRecipeExplorerBloc>(event.randomRecipeBlocContext)
+          .add(InitializeRandomRecipeExplorer());
+    }
   }
 
   Stream<CategoryOverviewState> _mapAddRecipesToState(

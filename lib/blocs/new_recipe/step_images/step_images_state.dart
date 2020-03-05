@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'step_images_bloc.dart';
 
 abstract class StepImagesState extends Equatable {
   const StepImagesState();

@@ -9,11 +9,13 @@ abstract class CategoryOverviewEvent extends Equatable {
 
 class COLoadCategoryOverview extends CategoryOverviewEvent {
   final bool reopenBoxes;
+  final BuildContext randomRecipeBlocContext;
 
-  COLoadCategoryOverview(this.reopenBoxes);
+  COLoadCategoryOverview(
+      {this.reopenBoxes = false, this.randomRecipeBlocContext});
 
   @override
-  List<Object> get props => [reopenBoxes];
+  List<Object> get props => [reopenBoxes, randomRecipeBlocContext];
 }
 
 class COAddRecipes extends CategoryOverviewEvent {
