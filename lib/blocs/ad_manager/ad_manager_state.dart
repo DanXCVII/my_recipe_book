@@ -19,3 +19,5 @@ class IsPurchased extends AdManagerState {}
 class LoadingVideo extends AdManagerState {}
 
 class NotConnected extends AdManagerState {}
+
+class FailedLoadingRewardedVideo extends AdManagerState {}

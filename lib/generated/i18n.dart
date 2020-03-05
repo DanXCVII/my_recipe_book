@@ -382,6 +382,10 @@ class I18n implements WidgetsLocalizations {
   String get no_internet_connection => "no internet connection";
   /// "could not connect to the internet and therefore not load the video."
   String get no_internet_connection_desc => "could not connect to the internet and therefore not load the video.";
+  /// "failed loading ad"
+  String get failed_loading_ad => "failed loading ad";
+  /// "solutions can be: better internet connection, tap \"watch\" again or restarting the app"
+  String get failed_loading_ad_desc => "solutions can be: better internet connection, tap \"watch\" again or restarting the app";
 }
 
 class _I18n_en_US extends I18n {
@@ -916,6 +920,12 @@ class _I18n_de_DE extends I18n {
   /// "es kann kein Werbevideo geladen werden, da keine aktive Internetverbindung vorliegt."
   @override
   String get no_internet_connection_desc => "es kann kein Werbevideo geladen werden, da keine aktive Internetverbindung vorliegt.";
+  /// "Laden fehlgeschlagen"
+  @override
+  String get failed_loading_ad => "Laden fehlgeschlagen";
+  /// "Mögliche Lösungen: Bessere Internetverbindung, erneut versuchen zu laden oder ein Neustart der App."
+  @override
+  String get failed_loading_ad_desc => "Mögliche Lösungen: Bessere Internetverbindung, erneut versuchen zu laden oder ein Neustart der App.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

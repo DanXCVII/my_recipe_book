@@ -172,5 +172,7 @@
   "pull_down_to_refresh": "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen",
   "recipes_not_in_overview": "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren.",
   "no_internet_connection": "keine Internetverbindung",
-  "no_internet_connection_desc": "es kann kein Werbevideo geladen werden, da keine aktive Internetverbindung vorliegt."
+  "no_internet_connection_desc": "es kann kein Werbevideo geladen werden, da keine aktive Internetverbindung vorliegt.",
+  "failed_loading_ad": "Laden fehlgeschlagen",
+  "failed_loading_ad_desc": "Mögliche Lösungen: Bessere Internetverbindung, erneut versuchen zu laden oder ein Neustart der App."
 }

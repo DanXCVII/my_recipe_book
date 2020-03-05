@@ -44,8 +44,11 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
         print(DateTime.now().toLocal().toString());
         add(WatchedVideo(DateTime.now()));
       } else if (event == RewardedVideoAdEvent.loaded) {
-        print('video ad loaded');
         RewardedVideoAd.instance.show();
+      } else if (event == RewardedVideoAdEvent.failedToLoad) {
+        add(_FailedLoadingRewardedVideo());
+      } else if (event == RewardedVideoAdEvent.closed) {
+        add(_InterruptedLoadingVideo());
       }
     };
   }
@@ -69,6 +72,10 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       yield* _mapPurchaseProVersionToState(event);
     } else if (event is _PurchaseSuccessfull) {
       yield* _mapPurchaseSuccessfullToState(event);
+    } else if (event is _FailedLoadingRewardedVideo) {
+      yield* _mapFailedLoadingRewardedVideoToState(event);
+    } else if (event is _InterruptedLoadingVideo) {
+      yield* _mapInterruptedLoadingVideoToState(event);
     }
   }
 
@@ -194,6 +201,23 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   Stream<AdManagerState> _mapPurchaseSuccessfullToState(
       _PurchaseSuccessfull event) async* {
     yield IsPurchased();
+  }
+
+  Stream<AdManagerState> _mapFailedLoadingRewardedVideoToState(
+      _FailedLoadingRewardedVideo event) async* {
+    yield FailedLoadingRewardedVideo();
+  }
+
+  Stream<AdManagerState> _mapInterruptedLoadingVideoToState(
+      _InterruptedLoadingVideo event) async* {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    DateTime noAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
+    if (noAdsUntil.isAfter(DateTime.now())) {
+      yield AdFreeUntil(noAdsUntil);
+    } else {
+      yield AdManagerInitial();
+    }
   }
 
   Future<void> _getProducts() async {

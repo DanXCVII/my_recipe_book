@@ -25,27 +25,11 @@ class Settings extends StatelessWidget {
           BlocListener<AdManagerBloc, AdManagerState>(
             listener: (context, state) {
               if (state is NotConnected) {
-                Flushbar flush;
-                flush = Flushbar<bool>(
-                  animationDuration: Duration(milliseconds: 300),
-                  leftBarIndicatorColor: Colors.blue[300],
-                  title: I18n.of(context).no_internet_connection,
-                  message: I18n.of(context).no_internet_connection_desc,
-                  icon: Icon(
-                    Icons.info_outline,
-                    color: Colors.blue,
-                  ),
-                  mainButton: FlatButton(
-                    onPressed: () {
-                      flush.dismiss(true); // result = true
-                    },
-                    child: Text(
-                      "OK",
-                      style: TextStyle(color: Colors.amber),
-                    ),
-                  ),
-                ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                  ..show(context).then((result) {});
+                _showInfoFlushBar(I18n.of(context).no_internet_connection,
+                    I18n.of(context).no_internet_connection_desc, context);
+              } else if (state is FailedLoadingRewardedVideo) {
+                _showInfoFlushBar(I18n.of(context).failed_loading_ad,
+                    I18n.of(context).failed_loading_ad_desc, context);
               }
             },
             child: BlocBuilder<AdManagerBloc, AdManagerState>(
@@ -74,7 +58,9 @@ class Settings extends StatelessWidget {
                                   )
                                 : state is LoadingVideo
                                     ? CircularProgressIndicator()
-                                    : null,
+                                    : state is FailedLoadingRewardedVideo
+                                        ? Icon(Icons.cancel, color: Colors.red)
+                                        : null,
                         onTap: () {
                           showDialog(
                             context: context,
@@ -307,6 +293,29 @@ class Settings extends StatelessWidget {
         default:
       }
     });
+  }
+
+  void _showInfoFlushBar(String title, String body, BuildContext context) {
+    Flushbar flush;
+    flush = Flushbar<bool>(
+      animationDuration: Duration(milliseconds: 300),
+      leftBarIndicatorColor: Colors.blue[300],
+      title: I18n.of(context).failed_loading_ad,
+      message: I18n.of(context).failed_loading_ad_desc,
+      icon: Icon(
+        Icons.info_outline,
+        color: Colors.blue,
+      ),
+      mainButton: FlatButton(
+        onPressed: () {
+          flush.dismiss(true); // result = true
+        },
+        child: Text(
+          "OK",
+          style: TextStyle(color: Colors.amber),
+        ),
+      ),
+    );
   }
 
   Future<void> _importSingleRecipe(BuildContext ctxt) async {
