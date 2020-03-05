@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
 
 import '../../local_storage/hive.dart';
 import '../../models/recipe.dart';
@@ -76,9 +77,11 @@ class CategoryOverviewBloc
 
     yield LoadedCategoryOverview(categoryRandomImageList);
 
-    if (event.randomRecipeBlocContext != null) {
-      BlocProvider.of<RandomRecipeExplorerBloc>(event.randomRecipeBlocContext)
+    if (event.categoryOverviewContext != null) {
+      BlocProvider.of<RandomRecipeExplorerBloc>(event.categoryOverviewContext)
           .add(InitializeRandomRecipeExplorer());
+      BlocProvider.of<RecipeCategoryOverviewBloc>(event.categoryOverviewContext)
+          .add(RCOLoadRecipeCategoryOverview());
     }
   }
 

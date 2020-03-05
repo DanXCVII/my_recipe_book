@@ -34,7 +34,7 @@ class CategoryGridView extends StatelessWidget {
               await Future.delayed(Duration(milliseconds: 200));
               BlocProvider.of<CategoryOverviewBloc>(context).add(
                   COLoadCategoryOverview(
-                      reopenBoxes: true, randomRecipeBlocContext: context));
+                      reopenBoxes: true, categoryOverviewContext: context));
               _refreshController.refreshCompleted();
             },
             child: GridView.extent(

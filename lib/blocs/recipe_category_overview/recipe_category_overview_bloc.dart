@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/category_overview/category_overview_bloc.dart';
 import 'package:my_recipe_book/blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 
 import '../../local_storage/hive.dart';
@@ -83,9 +84,11 @@ class RecipeCategoryOverviewBloc
 
     yield LoadedRecipeCategoryOverview(categoryRecipes);
 
-    if (event.randomRecipeBlocContext != null) {
-      BlocProvider.of<RandomRecipeExplorerBloc>(event.randomRecipeBlocContext)
+    if (event.categoryOverviewContext != null) {
+      BlocProvider.of<RandomRecipeExplorerBloc>(event.categoryOverviewContext)
           .add(InitializeRandomRecipeExplorer());
+      BlocProvider.of<CategoryOverviewBloc>(event.categoryOverviewContext)
+          .add(COLoadCategoryOverview());
     }
   }
 

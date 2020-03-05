@@ -9,10 +9,10 @@ abstract class RecipeCategoryOverviewEvent extends Equatable {
 
 class RCOLoadRecipeCategoryOverview extends RecipeCategoryOverviewEvent {
   final bool reopenBoxes;
-  final BuildContext randomRecipeBlocContext;
+  final BuildContext categoryOverviewContext;
 
   RCOLoadRecipeCategoryOverview(
-      {this.reopenBoxes = false, this.randomRecipeBlocContext});
+      {this.reopenBoxes = false, this.categoryOverviewContext});
 
   @override
   List<Object> get props => [reopenBoxes];
