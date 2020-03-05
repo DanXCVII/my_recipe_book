@@ -372,9 +372,9 @@ class _I18n_en_US extends I18n {
 class _I18n_de_DE extends I18n {
   const _I18n_de_DE();
 
-  /// "Die Daten gehörten DIR"
+  /// "Die Daten gehören DIR"
   @override
-  String get the_data_is_YOURS => "Die Daten gehörten DIR";
+  String get the_data_is_YOURS => "Die Daten gehören DIR";
   /// "Deine Daten werden nie dein Gerät verlassen, wenn die es nicht explizit forderst."
   @override
   String get data_will_never_leave_your_device => "Deine Daten werden nie dein Gerät verlassen, wenn die es nicht explizit forderst.";
