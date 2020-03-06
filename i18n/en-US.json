@@ -13,12 +13,12 @@
   "delete_recipe": "delete recipe",
   "share_recipe": "share recipe",
   "select_recipes": "select recipes",
-  "import_recipe_s": "import recipe's",
-  "export_recipe_s": "export recipe's",
+  "import_recipe_s": "import recipe/s",
+  "export_recipe_s": "share/save recipe/s",
   "remove_section": "remove section",
   "remove_ingredient": "remove ingredient",
   "remove_step": "remove step",
-  "export_zip": "export as zip",
+  "export_zip": "share/save as file",
   "export_text": "share in textform",
   "edit": "edit",
   "shoppingcart": "shoppingcart",
@@ -175,5 +175,7 @@
   "no_internet_connection": "no internet connection",
   "no_internet_connection_desc": "could not connect to the internet and therefore not load the video.",
   "failed_loading_ad": "failed loading ad",
-  "failed_loading_ad_desc": "solutions can be: better internet connection, tap \"watch\" again or restarting the app"
+  "failed_loading_ad_desc": "solutions can be: better internet connection, tap \"watch\" again or restarting the app",
+  "recipes_not_showing_up": "recipes not showing up?",
+  "recipes_not_showing_up_desc": "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page."
 }

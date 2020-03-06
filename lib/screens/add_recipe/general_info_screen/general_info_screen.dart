@@ -47,7 +47,8 @@ class GeneralInfoScreen extends StatefulWidget {
       _GeneralInfoScreenState(modifiedRecipe);
 }
 
-class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
+class _GeneralInfoScreenState extends State<GeneralInfoScreen>
+    with WidgetsBindingObserver {
   Recipe modifiedRecipe;
   TextEditingController nameController;
   final TextEditingController preperationTimeController =
@@ -58,11 +59,15 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   _GeneralInfoScreenState(this.modifiedRecipe);
-  Flushbar flush;
+  Flushbar _flush;
+
+  FocusNode _focusNode = FocusNode();
+  FocusNode _exitFocusNode;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     nameController = TextEditingController();
 
@@ -76,6 +81,16 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
     preperationTimeController.dispose();
     cookingTimeController.dispose();
     totalTimeController.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _exitFocusNode = FocusScope.of(context).focusedChild;
+      FocusScope.of(context).requestFocus(_focusNode);
+    } else if (state == AppLifecycleState.resumed) {
+      FocusScope.of(context).requestFocus(_exitFocusNode);
+    }
   }
 
   @override
@@ -341,9 +356,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   }
 
   void _showFlushInfo(String title, String body) {
-    if (flush != null && flush.isShowing()) {
+    if (_flush != null && _flush.isShowing()) {
     } else {
-      flush = Flushbar<bool>(
+      _flush = Flushbar<bool>(
         animationDuration: Duration(milliseconds: 300),
         leftBarIndicatorColor: Colors.blue[300],
         title: title,
@@ -354,7 +369,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
         ),
         mainButton: FlatButton(
           onPressed: () {
-            flush.dismiss(true); // result = true
+            _flush.dismiss(true); // result = true
           },
           child: Text(
             "OK",

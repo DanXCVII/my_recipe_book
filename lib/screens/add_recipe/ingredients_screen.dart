@@ -46,7 +46,8 @@ class IngredientsAddScreen extends StatefulWidget {
   _IngredientsAddScreenState createState() => _IngredientsAddScreenState();
 }
 
-class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
+class _IngredientsAddScreenState extends State<IngredientsAddScreen>
+    with WidgetsBindingObserver {
   final List<List<TextEditingController>> ingredientNameController = [[]];
   final List<List<TextEditingController>> ingredientAmountController = [[]];
   final List<List<TextEditingController>> ingredientUnitController = [[]];
@@ -54,13 +55,17 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
   final TextEditingController servingsController = TextEditingController();
 
   final MyVegetableWrapper selectedRecipeVegetable = MyVegetableWrapper();
+  FocusNode _focusNode = FocusNode();
+  FocusNode _exitFocusNode;
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Flushbar flush;
+  Flushbar _flush;
 
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
 
     // initialize list of controllers for the dynamic textFields with one element
     ingredientNameController[0].add(TextEditingController());
@@ -93,6 +98,16 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
       controller.dispose();
     });
     servingsController.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _exitFocusNode = FocusScope.of(context).focusedChild;
+      FocusScope.of(context).requestFocus(_focusNode);
+    } else if (state == AppLifecycleState.resumed) {
+      FocusScope.of(context).requestFocus(_exitFocusNode);
+    }
   }
 
   @override
@@ -366,9 +381,9 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
   }
 
   void _showFlushInfo(String title, String body) {
-    if (flush != null && flush.isShowing()) {
+    if (_flush != null && _flush.isShowing()) {
     } else {
-      flush = Flushbar<bool>(
+      _flush = Flushbar<bool>(
         animationDuration: Duration(milliseconds: 300),
         leftBarIndicatorColor: Colors.blue[300],
         title: title,
@@ -379,7 +394,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen> {
         ),
         mainButton: FlatButton(
           onPressed: () {
-            flush.dismiss(true); // result = true
+            _flush.dismiss(true); // result = true
           },
           child: Text(
             "OK",

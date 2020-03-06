@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../ad_related/ad.dart';
@@ -169,76 +170,61 @@ class MyHomePageState extends State<MyHomePage> {
       return null;
     } else if (currentIndex == 3 && MediaQuery.of(context).size.height < 730)
       return null;
-    return GradientAppBar(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xffAF1E1E), Color(0xff641414)],
-        ),
-        title: Text(title),
-        actions: <Widget>[
-          BlocBuilder<AdManagerBloc, AdManagerState>(builder: (context, state) {
-            if (state is IsPurchased) {
-              return IconButton(
-                icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.ingredientSearch,
-                    arguments: IngredientSearchScreenArguments(
-                        BlocProvider.of<ShoppingCartBloc>(context)),
-                  ).then((_) => Ads.hideBottomBannerAd());
-                },
-              );
-            } else {
-              return IconButton(
-                icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
-                onPressed: () {
-                  flush = Flushbar<bool>(
-                    animationDuration: Duration(milliseconds: 300),
-                    leftBarIndicatorColor: Colors.blue[300],
-                    title: I18n.of(context).pro_version,
-                    message: I18n.of(context).ingredient_filter_description,
-                    icon: Icon(
-                      Icons.info_outline,
-                      color: Colors.blue,
-                    ),
-                    mainButton: FlatButton(
-                      onPressed: () {
-                        flush.dismiss(true); // result = true
-                      },
-                      child: Text(
-                        "OK",
-                        style: TextStyle(color: Colors.amber),
-                      ),
-                    ),
-                  ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                    ..show(context).then((result) {});
-                },
-              );
-            }
-          }),
-          currentIndex == 0
-              ? IconButton(
-                  icon: Icon(
-                      recipeCategoryOverview ? Icons.grid_off : Icons.grid_on),
-                  onPressed: () {
-                    _changeMainPageOverview(recipeCategoryOverview);
-                  },
-                )
-              : null,
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                  context: context,
-                  delegate: RecipeSearch(
-                    HiveProvider().getRecipeNames(),
-                    BlocProvider.of<ShoppingCartBloc>(context),
-                  ));
-            },
+    else {
+      return GradientAppBar(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xffAF1E1E), Color(0xff641414)],
           ),
-        ]..removeWhere((item) => item == null));
+          title: Text(title),
+          actions: <Widget>[
+            currentIndex == 0
+                ? IconButton(
+                    icon: Icon(Icons.help_outline),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => InfoDialog(
+                            title: I18n.of(context).recipes_not_showing_up,
+                            body: I18n.of(context).recipes_not_showing_up_desc),
+                      );
+                    })
+                : null,
+            IconButton(
+              icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  RouteNames.ingredientSearch,
+                  arguments: IngredientSearchScreenArguments(
+                      BlocProvider.of<ShoppingCartBloc>(context)),
+                );
+              },
+            ),
+            currentIndex == 0
+                ? IconButton(
+                    icon: Icon(recipeCategoryOverview
+                        ? Icons.grid_off
+                        : Icons.grid_on),
+                    onPressed: () {
+                      _changeMainPageOverview(recipeCategoryOverview);
+                    },
+                  )
+                : null,
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                    context: context,
+                    delegate: RecipeSearch(
+                      HiveProvider().getRecipeNames(),
+                      BlocProvider.of<ShoppingCartBloc>(context),
+                    ));
+              },
+            ),
+          ]..removeWhere((item) => item == null));
+    }
   }
 
   void _changeMainPageOverview(bool rCatOverview) {

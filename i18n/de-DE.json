@@ -13,11 +13,11 @@
   "share_recipe": "Rezept teilen",
   "select_recipes": "Rezepte auswählen",
   "import_recipe_s": "Rezept/e importieren",
-  "export_recipe_s": "Rezept/e exportieren",
+  "export_recipe_s": "Rezept/e teilen/sichern",
   "remove_section": "Bereich entfernen",
   "remove_ingredient": "Zutat entfernen",
   "remove_step": "Schritt entfernen",
-  "export_zip": "als Datei exportieren",
+  "export_zip": "als Datei teilen/sichern",
   "export_text": "in Textform teilen",
   "edit": "editieren",
   "shoppingcart": "Einkaufswagen",
@@ -174,5 +174,7 @@
   "no_internet_connection": "keine Internetverbindung",
   "no_internet_connection_desc": "es kann kein Werbevideo geladen werden, da keine aktive Internetverbindung vorliegt.",
   "failed_loading_ad": "Laden fehlgeschlagen",
-  "failed_loading_ad_desc": "Mögliche Lösungen: Bessere Internetverbindung, erneut versuchen zu laden oder ein Neustart der App."
+  "failed_loading_ad_desc": "Mögliche Lösungen: Bessere Internetverbindung, erneut versuchen zu laden oder ein Neustart der App.",
+  "recipes_not_showing_up": "Fehlen Rezepte?",
+  "recipes_not_showing_up_desc": "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren. Alternativ kann die App neugestartet werden."
 }

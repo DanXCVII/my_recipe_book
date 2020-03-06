@@ -42,16 +42,22 @@ class AddRecipeNutritions extends StatefulWidget {
   _AddRecipeNutritionsState createState() => _AddRecipeNutritionsState();
 }
 
-class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
+class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
+    with WidgetsBindingObserver {
   bool isInitialized = false;
   static final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   Map<String, TextEditingController> nutritionsController = {};
   List<Key> dismissibleKeys = [];
   List<Key> listTileKeys = [];
 
+  FocusNode _focusNode = FocusNode();
+  FocusNode _exitFocusNode;
+
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -60,6 +66,16 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions> {
       nutritionsController[k].dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _exitFocusNode = FocusScope.of(context).focusedChild;
+      FocusScope.of(context).requestFocus(_focusNode);
+    } else if (state == AppLifecycleState.resumed) {
+      FocusScope.of(context).requestFocus(_exitFocusNode);
+    }
   }
 
   @override
