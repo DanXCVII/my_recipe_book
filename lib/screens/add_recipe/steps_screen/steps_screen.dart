@@ -41,18 +41,22 @@ class StepsScreen extends StatefulWidget {
   _StepsScreenState createState() => _StepsScreenState();
 }
 
-class _StepsScreenState extends State<StepsScreen> {
+class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
   final List<TextEditingController> stepsDescController = [];
   final TextEditingController notesController = TextEditingController();
 
   final MyDoubleWrapper complexity = MyDoubleWrapper(myDouble: 5.0);
-  Flushbar flush;
+  Flushbar _flush;
+  FocusNode _focusNode = FocusNode();
+  FocusNode _exitFocusNode;
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     stepsDescController.add(TextEditingController());
 
     _initializeData(widget.modifiedRecipe);
@@ -65,6 +69,16 @@ class _StepsScreenState extends State<StepsScreen> {
     });
     notesController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _exitFocusNode = FocusScope.of(context).focusedChild;
+      FocusScope.of(context).requestFocus(_focusNode);
+    } else if (state == AppLifecycleState.resumed) {
+      FocusScope.of(context).requestFocus(_exitFocusNode);
+    }
   }
 
   @override
@@ -181,9 +195,9 @@ class _StepsScreenState extends State<StepsScreen> {
   }
 
   void _showFlushInfo(String title, String body) {
-    if (flush != null && flush.isShowing()) {
+    if (_flush != null && _flush.isShowing()) {
     } else {
-      flush = Flushbar<bool>(
+      _flush = Flushbar<bool>(
         animationDuration: Duration(milliseconds: 300),
         leftBarIndicatorColor: Colors.blue[300],
         title: title,
@@ -194,7 +208,7 @@ class _StepsScreenState extends State<StepsScreen> {
         ),
         mainButton: FlatButton(
           onPressed: () {
-            flush.dismiss(true); // result = true
+            _flush.dismiss(true); // result = true
           },
           child: Text(
             "OK",

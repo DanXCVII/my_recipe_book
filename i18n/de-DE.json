@@ -13,11 +13,11 @@
   "share_recipe": "Rezept teilen",
   "select_recipes": "Rezepte auswählen",
   "import_recipe_s": "Rezept/e importieren",
-  "export_recipe_s": "Rezept/e exportieren",
+  "export_recipe_s": "Rezept/e teilen/sichern",
   "remove_section": "Bereich entfernen",
   "remove_ingredient": "Zutat entfernen",
   "remove_step": "Schritt entfernen",
-  "export_zip": "als Datei exportieren",
+  "export_zip": "als Datei teilen/sichern",
   "export_text": "in Textform teilen",
   "edit": "editieren",
   "shoppingcart": "Einkaufswagen",
@@ -161,5 +161,7 @@
   "by_last_modified": "nach Änderungsdatum",
   "import": "importiere",
   "pull_down_to_refresh": "Scrolle nach unten um die Seite zu aktualisieren und die neuen Rezepte zu sehen",
-  "recipes_not_in_overview": "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren."
+  "recipes_not_in_overview": "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren.",
+  "recipes_not_showing_up": "Fehlen Rezepte?",
+  "recipes_not_showing_up_desc": "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren. Alternativ kann die App neugestartet werden."
 }

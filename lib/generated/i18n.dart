@@ -60,18 +60,18 @@ class I18n implements WidgetsLocalizations {
   String get share_recipe => "share recipe";
   /// "select recipes"
   String get select_recipes => "select recipes";
-  /// "import recipe's"
-  String get import_recipe_s => "import recipe's";
-  /// "export recipe's"
-  String get export_recipe_s => "export recipe's";
+  /// "import recipe/s"
+  String get import_recipe_s => "import recipe/s";
+  /// "share/save recipe/s"
+  String get export_recipe_s => "share/save recipe/s";
   /// "remove section"
   String get remove_section => "remove section";
   /// "remove ingredient"
   String get remove_ingredient => "remove ingredient";
   /// "remove step"
   String get remove_step => "remove step";
-  /// "export as zip"
-  String get export_zip => "export as zip";
+  /// "share/save as file"
+  String get export_zip => "share/save as file";
   /// "share in textform"
   String get export_text => "share in textform";
   /// "edit"
@@ -360,6 +360,10 @@ class I18n implements WidgetsLocalizations {
   String get pull_down_to_refresh => "pull down to refresh page and show imported recipes";
   /// "if recipes don't show up in overview, pull down to refresh the page."
   String get recipes_not_in_overview => "if recipes don't show up in overview, pull down to refresh the page.";
+  /// "recipes not showing up?"
+  String get recipes_not_showing_up => "recipes not showing up?";
+  /// "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page."
+  String get recipes_not_showing_up_desc => "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page.";
 }
 
 class _I18n_en_US extends I18n {
@@ -414,9 +418,9 @@ class _I18n_de_DE extends I18n {
   /// "Rezept/e importieren"
   @override
   String get import_recipe_s => "Rezept/e importieren";
-  /// "Rezept/e exportieren"
+  /// "Rezept/e teilen/sichern"
   @override
-  String get export_recipe_s => "Rezept/e exportieren";
+  String get export_recipe_s => "Rezept/e teilen/sichern";
   /// "Bereich entfernen"
   @override
   String get remove_section => "Bereich entfernen";
@@ -426,9 +430,9 @@ class _I18n_de_DE extends I18n {
   /// "Schritt entfernen"
   @override
   String get remove_step => "Schritt entfernen";
-  /// "als Datei exportieren"
+  /// "als Datei teilen/sichern"
   @override
-  String get export_zip => "als Datei exportieren";
+  String get export_zip => "als Datei teilen/sichern";
   /// "in Textform teilen"
   @override
   String get export_text => "in Textform teilen";
@@ -861,6 +865,12 @@ class _I18n_de_DE extends I18n {
   /// "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren."
   @override
   String get recipes_not_in_overview => "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren.";
+  /// "Fehlen Rezepte?"
+  @override
+  String get recipes_not_showing_up => "Fehlen Rezepte?";
+  /// "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren. Alternativ kann die App neugestartet werden."
+  @override
+  String get recipes_not_showing_up_desc => "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren. Alternativ kann die App neugestartet werden.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

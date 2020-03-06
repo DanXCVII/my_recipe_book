@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/app/app_bloc.dart';
@@ -166,46 +167,61 @@ class MyHomePageState extends State<MyHomePage> {
       return null;
     } else if (currentIndex == 3 && MediaQuery.of(context).size.height < 730)
       return null;
-    return GradientAppBar(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xffAF1E1E), Color(0xff641414)],
-        ),
-        title: Text(title),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
-            onPressed: () {
-              Navigator.pushNamed(
-                context,
-                RouteNames.ingredientSearch,
-                arguments: IngredientSearchScreenArguments(
-                    BlocProvider.of<ShoppingCartBloc>(context)),
-              );
-            },
+    else {
+      return GradientAppBar(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xffAF1E1E), Color(0xff641414)],
           ),
-          currentIndex == 0
-              ? IconButton(
-                  icon: Icon(
-                      recipeCategoryOverview ? Icons.grid_off : Icons.grid_on),
-                  onPressed: () {
-                    _changeMainPageOverview(recipeCategoryOverview);
-                  },
-                )
-              : null,
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                  context: context,
-                  delegate: RecipeSearch(
-                    HiveProvider().getRecipeNames(),
-                    BlocProvider.of<ShoppingCartBloc>(context),
-                  ));
-            },
-          ),
-        ]..removeWhere((item) => item == null));
+          title: Text(title),
+          actions: <Widget>[
+            currentIndex == 0
+                ? IconButton(
+                    icon: Icon(Icons.help_outline),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => InfoDialog(
+                            title: I18n.of(context).recipes_not_showing_up,
+                            body: I18n.of(context).recipes_not_showing_up_desc),
+                      );
+                    })
+                : null,
+            IconButton(
+              icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  RouteNames.ingredientSearch,
+                  arguments: IngredientSearchScreenArguments(
+                      BlocProvider.of<ShoppingCartBloc>(context)),
+                );
+              },
+            ),
+            currentIndex == 0
+                ? IconButton(
+                    icon: Icon(recipeCategoryOverview
+                        ? Icons.grid_off
+                        : Icons.grid_on),
+                    onPressed: () {
+                      _changeMainPageOverview(recipeCategoryOverview);
+                    },
+                  )
+                : null,
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                    context: context,
+                    delegate: RecipeSearch(
+                      HiveProvider().getRecipeNames(),
+                      BlocProvider.of<ShoppingCartBloc>(context),
+                    ));
+              },
+            ),
+          ]..removeWhere((item) => item == null));
+    }
   }
 
   void _changeMainPageOverview(bool rCatOverview) {
