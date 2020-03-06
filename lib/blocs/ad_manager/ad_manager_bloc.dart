@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,8 +16,6 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   bool isInitialized = false;
   DateTime lastTimeStartedWatching =
       DateTime.now().subtract(Duration(days: 10));
-
-  bool _isPurchased = false;
 
   /// if the API is available on the device
   bool _available = true;

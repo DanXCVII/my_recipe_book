@@ -315,7 +315,7 @@ class Settings extends StatelessWidget {
           style: TextStyle(color: Colors.amber),
         ),
       ),
-    );
+    )..show(context).then((result) {});
   }
 
   Future<void> _importSingleRecipe(BuildContext ctxt) async {

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
 
 import '../blocs/ingredient_search/ingredient_search_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';

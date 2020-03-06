@@ -49,7 +49,7 @@ class GeneralInfoScreen extends StatefulWidget {
 
 class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   Recipe modifiedRecipe;
-  final TextEditingController nameController = TextEditingController();
+  TextEditingController nameController;
   final TextEditingController preperationTimeController =
       TextEditingController();
   final TextEditingController cookingTimeController = TextEditingController();
@@ -63,6 +63,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen> {
   @override
   void initState() {
     super.initState();
+
+    nameController = TextEditingController();
 
     _initializeData(modifiedRecipe);
   }
