@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:share_extend/share_extend.dart';
 
 import '../generated/i18n.dart';
@@ -32,6 +33,17 @@ class _ExportRecipesState extends State<ExportRecipes> {
       appBar: AppBar(
         title: Text(I18n.of(context).select_recipes),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (_) => InfoDialog(
+                        title: I18n.of(context).share_recipes_settings,
+                        body: I18n.of(context).share_recipes_settings_desc,
+                      ));
+            },
+          ),
           IconButton(
             icon: Icon(Icons.check),
             onPressed: () {

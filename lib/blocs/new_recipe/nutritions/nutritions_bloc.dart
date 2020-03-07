@@ -74,7 +74,6 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
           await Future.delayed(Duration(milliseconds: 100));
           newRecipe = await IO.fixImagePaths(nutritionRecipe);
           imageCache.clear();
-          // IO.deleteRecipeData('edit');
           await HiveProvider().deleteTmpEditingRecipe();
           event.recipeManagerBloc.add(RMAddRecipes([newRecipe]));
         }

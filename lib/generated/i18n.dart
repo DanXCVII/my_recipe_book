@@ -62,8 +62,8 @@ class I18n implements WidgetsLocalizations {
   String get select_recipes => "select recipes";
   /// "import recipe/s"
   String get import_recipe_s => "import recipe/s";
-  /// "share/save recipe/s"
-  String get export_recipe_s => "share/save recipe/s";
+  /// "share/backup recipe/s"
+  String get export_recipe_s => "share/backup recipe/s";
   /// "remove section"
   String get remove_section => "remove section";
   /// "remove ingredient"
@@ -390,6 +390,10 @@ class I18n implements WidgetsLocalizations {
   String get recipes_not_showing_up => "recipes not showing up?";
   /// "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page."
   String get recipes_not_showing_up_desc => "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page.";
+  /// "backup/share your recipes"
+  String get share_recipes_settings => "backup/share your recipes";
+  /// "on this screen, you can:\n- select the recipes you want to share to a friend as a single file\n- select the recipes you want to save to import on another device or just to make sure, they don't get lost."
+  String get share_recipes_settings_desc => "on this screen, you can:\n- select the recipes you want to share to a friend as a single file\n- select the recipes you want to save to import on another device or just to make sure, they don't get lost.";
 }
 
 class _I18n_en_US extends I18n {
@@ -936,6 +940,12 @@ class _I18n_de_DE extends I18n {
   /// "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren. Alternativ kann die App neugestartet werden."
   @override
   String get recipes_not_showing_up_desc => "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren. Alternativ kann die App neugestartet werden.";
+  /// "teile/sichere deine Rezepte"
+  @override
+  String get share_recipes_settings => "teile/sichere deine Rezepte";
+  /// "Hier kannst du:\n- Rezepte auswählen, die du als einzelne Datei mit deinen Freuden teilen möchtest, damit sie diese ihrer App hinzufügen können\n- Rezepte auswählen, die du sichern willst, für den Fall der Fälle, dass dein Handy verloren geht und du sich online oder auf anderen Geräten gesichert haben willst."
+  @override
+  String get share_recipes_settings_desc => "Hier kannst du:\n- Rezepte auswählen, die du als einzelne Datei mit deinen Freuden teilen möchtest, damit sie diese ihrer App hinzufügen können\n- Rezepte auswählen, die du sichern willst, für den Fall der Fälle, dass dein Handy verloren geht und du sich online oder auf anderen Geräten gesichert haben willst.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

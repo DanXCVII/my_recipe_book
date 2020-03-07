@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:my_recipe_book/constants/global_constants.dart';
 
 import '../../../helper.dart';
 import '../../../local_storage/hive.dart';
@@ -56,7 +57,9 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     yield GSavingTmpData();
 
     String imageDataType = getImageDatatype(event.recipeImage.path);
-    String recipeName = event.editingRecipe ? 'edit' : 'tmp';
+    String recipeName = event.editingRecipe
+        ? editRecipeLocalPathString
+        : newRecipeLocalPathString;
 
     await IO.deleteRecipeImageIfExists(recipeName);
     await IO.saveRecipeImage(event.recipeImage, recipeName);

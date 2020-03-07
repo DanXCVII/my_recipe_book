@@ -6,30 +6,33 @@ import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import './local_paths.dart';
+import '../constants/global_constants.dart' as Constants;
 import '../helper.dart';
 import '../local_storage/hive.dart';
 import '../models/recipe.dart';
 
 /// moves the images of the recipe to the correct image paths which is
-/// defined by recipe.name.
+/// defined by recipe.name
 /// Condition:
 /// - all paths are the full paths to the images
 /// - stepImages include pattern: [...]/$recipeName/stepImages[...]
+///
+/// also deletes all files in the recipe directory that are not referenced
+/// by the recipe
 Future<Recipe> fixImagePaths(Recipe recipe) async {
   String _underscoreNewRecipeName = stringReplaceSpaceUnderscore(recipe.name);
 
   String newRecipeImageDataType = getImageDatatype(recipe.imagePath);
 
-  String newRecipeImagePath = 'images/randomFood.jpg';
-  String newRecipeImagePreviewPath = 'images/randomFood.jpg';
+  String newRecipeImagePath = Constants.noRecipeImage;
+  String newRecipeImagePreviewPath = Constants.noRecipeImage;
 
   List<List<String>> recipeStepImages = recipe.stepImages
       .map((list) => list.map((item) => item).toList())
       .toList();
 
   // if the recipe image has changed
-  if (recipe.imagePath != 'images/randomFood.jpg' &&
-      recipe.imagePath != newRecipeImagePath) {
+  if (recipe.imagePath != Constants.noRecipeImage) {
     newRecipeImagePath = await PathProvider.pP
         .getRecipePathFull(_underscoreNewRecipeName, newRecipeImageDataType);
     newRecipeImagePreviewPath = await PathProvider.pP.getRecipePreviewPathFull(
@@ -76,6 +79,8 @@ Future<Recipe> fixImagePaths(Recipe recipe) async {
   return newRecipe;
 }
 
+/// deletes all files in the recipe dir which are not referenced by
+/// the recipe anymore
 Future<void> _cleanRecipeFiles(Recipe recipe) async {
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDirFull(recipe.name));
@@ -423,9 +428,7 @@ Future<bool> importRecipeFromTmp(Recipe importRecipe) async {
   await importRecipeDir
       .rename(await PathProvider.pP.getRecipeDirFull(importRecipe.name));
   // delete the import directory of the recipe
-  await Directory(
-          await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
-      .delete(recursive: true);
+  await importRecipeDir.delete(recursive: true);
   return true;
 }
 

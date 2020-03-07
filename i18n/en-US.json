@@ -14,7 +14,7 @@
   "share_recipe": "share recipe",
   "select_recipes": "select recipes",
   "import_recipe_s": "import recipe/s",
-  "export_recipe_s": "share/save recipe/s",
+  "export_recipe_s": "share/backup recipe/s",
   "remove_section": "remove section",
   "remove_ingredient": "remove ingredient",
   "remove_step": "remove step",
@@ -177,5 +177,7 @@
   "failed_loading_ad": "failed loading ad",
   "failed_loading_ad_desc": "solutions can be: better internet connection, tap \"watch\" again or restarting the app",
   "recipes_not_showing_up": "recipes not showing up?",
-  "recipes_not_showing_up_desc": "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page."
+  "recipes_not_showing_up_desc": "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page.",
+  "share_recipes_settings": "backup/share your recipes",
+  "share_recipes_settings_desc": "on this screen, you can:\n- select the recipes you want to share to a friend as a single file\n- select the recipes you want to save to import on another device or just to make sure, they don't get lost."
 }
