@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 
 import '../../../local_storage/hive.dart';
 import '../../../local_storage/io_operations.dart' as IO;
@@ -27,10 +28,10 @@ class ClearRecipeBloc extends Bloc<ClearRecipeEvent, ClearRecipeState> {
     Recipe clearedRecipe = Recipe(name: "");
     if (event.editingRecipe) {
       await HiveProvider().saveTmpEditingRecipe(clearedRecipe);
-      await IO.deleteRecipeData('edit');
+      await IO.deleteRecipeData(Constants.editRecipeLocalPathString);
     } else {
       await HiveProvider().saveTmpRecipe(clearedRecipe);
-      await IO.deleteRecipeData('tmp');
+      await IO.deleteRecipeData(Constants.newRecipeLocalPathString);
     }
 
     yield ClearedRecipe(clearedRecipe, event.dateTime);

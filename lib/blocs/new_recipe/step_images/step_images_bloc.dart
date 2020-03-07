@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../local_storage/local_paths.dart';
@@ -50,7 +51,9 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
       await IO.saveStepImage(
         event.stepImage,
         event.stepNumber,
-        recipeName: event.editingRecipe ? 'edit' : 'tmp',
+        recipeName: event.editingRecipe
+            ? Constants.editRecipeLocalPathString
+            : Constants.newRecipeLocalPathString,
       ),
     );
 

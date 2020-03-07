@@ -111,7 +111,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                 if (state is ClearedRecipe) {
                   setState(() {
                     modifiedRecipe = state.recipe;
-                    _initializeData(state.recipe);
+                    _emptyTextFields();
                   });
                 }
               },
@@ -319,6 +319,13 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
       cookingTimeController.text = recipe.cookingTime.toString();
     if (recipe.totalTime != null && recipe.totalTime != 0.0)
       totalTimeController.text = recipe.totalTime.toString();
+  }
+
+  void _emptyTextFields() {
+    nameController.clear();
+    preperationTimeController.clear();
+    cookingTimeController.clear();
+    totalTimeController.clear();
   }
 
   /// validates the info with the RecipeValidator() class and shows a

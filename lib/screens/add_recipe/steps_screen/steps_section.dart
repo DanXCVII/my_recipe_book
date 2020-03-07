@@ -14,7 +14,7 @@ class Steps extends StatefulWidget {
 
   Steps(
     this.stepsDecriptionController, {
-    this.editRecipeName = Constants.newEditingRecipeName,
+    this.editRecipeName = Constants.newRecipeLocalPathString,
   });
 
   @override
@@ -120,7 +120,7 @@ class _StepsState extends State<Steps> {
                                     state.stepImages[i][j],
                                     i,
                                     widget.editRecipeName ==
-                                            Constants.newEditingRecipeName
+                                            Constants.newRecipeLocalPathString
                                         ? false
                                         : true,
                                   ));
@@ -143,7 +143,7 @@ class _StepsState extends State<Steps> {
                                       newImage,
                                       i,
                                       widget.editRecipeName ==
-                                              Constants.newEditingRecipeName
+                                              Constants.newRecipeLocalPathString
                                           ? false
                                           : true,
                                     ));

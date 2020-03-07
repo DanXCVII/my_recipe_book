@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 
 import '../generated/i18n.dart';
-import '../theming.dart';
 
 class IntroScreen extends StatelessWidget {
   //making list of pages needed to pass in IntroViewsFlutter constructor.
@@ -21,9 +19,6 @@ class IntroScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MyThemeKeys _initialTheme =
-        CustomTheme.instanceOf(context).getCurrentTheme();
-
     return IntroSlider(
       // List slides
       slides: [
