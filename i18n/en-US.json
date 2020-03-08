@@ -181,5 +181,6 @@
   "share_recipes_settings": "backup/share your recipes",
   "share_recipes_settings_desc": "on this screen, you can:\n- select the recipes you want to share to a friend as a single file\n- select the recipes you want to save to import on another device or just to make sure, they don't get lost.",
   "tap_here_to_add_recipe": "here you can add a new recipe",
-  "tap_here_to_manage_categories": "and here you can manage\nyour recipe categories"
+  "tap_here_to_manage_categories": "and here you can manage\nyour recipe categories",
+  "contact_me": "contact me"
 }
