@@ -18,7 +18,7 @@ class AboutMeScreen extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [Color(0xffAF1E1E), Color(0xff641414)],
         ),
-        title: Text("about me"),
+        title: Text(I18n.of(context).about_me),
       ),
       body: Center(
         child: Column(
@@ -133,7 +133,7 @@ class AboutMeScreen extends StatelessWidget {
                                   padding: const EdgeInsets.all(12.0),
                                   child: Center(
                                     child: Text(
-                                      "contact me",
+                                      I18n.of(context).contact_me,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -150,7 +150,12 @@ class AboutMeScreen extends StatelessWidget {
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                          width: 2, color: Colors.white)),
+                                          width: 2,
+                                          color: Theme.of(context)
+                                                      .backgroundColor ==
+                                                  Colors.white
+                                              ? Colors.grey[500]
+                                              : Colors.white)),
                                   child: Icon(Icons.mail, size: 40),
                                 )
                               ],

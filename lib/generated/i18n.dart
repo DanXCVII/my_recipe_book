@@ -372,6 +372,8 @@ class I18n implements WidgetsLocalizations {
   String get tap_here_to_add_recipe => "here you can add a new recipe";
   /// "and here you can manage\nyour recipe categories"
   String get tap_here_to_manage_categories => "and here you can manage\nyour recipe categories";
+  /// "contact me"
+  String get contact_me => "contact me";
 }
 
 class _I18n_en_US extends I18n {
@@ -891,6 +893,9 @@ class _I18n_de_DE extends I18n {
   /// "und hier kannst du deine\nKategorien verwalten"
   @override
   String get tap_here_to_manage_categories => "und hier kannst du deine\nKategorien verwalten";
+  /// "kontaktiere mich"
+  @override
+  String get contact_me => "kontaktiere mich";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;
