@@ -44,18 +44,18 @@ class AddCategoryToRecipe extends GeneralInfoEvent {
       ];
 }
 
-class RemoveCategoryFromRecipe extends GeneralInfoEvent {
-  final String category;
+class RemoveCategoriesFromRecipe extends GeneralInfoEvent {
+  final List<String> categories;
   final bool editingRecipe;
 
-  RemoveCategoryFromRecipe([
-    this.category,
+  RemoveCategoriesFromRecipe([
+    this.categories,
     this.editingRecipe,
   ]);
 
   @override
   List<Object> get props => [
-        category,
+        RemoveCategoriesFromRecipe(),
         editingRecipe,
       ];
 }

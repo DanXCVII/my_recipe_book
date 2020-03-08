@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/screens/settings_screen.dart';
+import '../screens/recipe_overview.dart';
 
 import '../generated/i18n.dart';
 import '../models/enums.dart';
@@ -126,36 +128,64 @@ class _RecipeFilterState extends State<RecipeFilter> {
   }
 
   Widget _getVegetableIcon(Vegetable vegetable) {
+    switch (vegetable) {
+      case Vegetable.VEGETARIAN:
+        return _getVegetableCircleIcon(
+            Colors.green[700], MdiIcons.cheese, Colors.amber);
+
+      case Vegetable.VEGAN:
+        return _getVegetableCircleIcon(
+            Colors.orange, MdiIcons.leaf, Colors.green[700]);
+
+      case Vegetable.NON_VEGETARIAN:
+        return _getVegetableCircleIcon(
+            Colors.lightBlue[300], MdiIcons.cow, Colors.brown[800]);
+
+      default:
+        return Stack(
+          children: <Widget>[
+            _getVegetableCircleIcon(
+              Colors.orange,
+              MdiIcons.leaf,
+              Colors.green[700],
+            ),
+            ClipPath(
+              clipper: OneThirdClipperRight(),
+              child: _getVegetableCircleIcon(
+                Colors.lightBlue[300],
+                MdiIcons.cow,
+                Colors.brown[800],
+              ),
+            ),
+            ClipPath(
+              clipper: OneThirdClipperLeft(),
+              child: _getVegetableCircleIcon(
+                Colors.green[700],
+                MdiIcons.cheese,
+                Colors.amber,
+              ),
+            ),
+          ],
+        );
+    }
+  }
+
+  Widget _getVegetableCircleIcon(
+      Color backgroundColor, IconData iconData, Color iconColor) {
     return Container(
+      height: 30,
+      width: 30,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: vegetable == Vegetable.VEGETARIAN
-            ? Colors.green[700]
-            : vegetable == Vegetable.VEGAN
-                ? Colors.orange
-                : vegetable == Vegetable.NON_VEGETARIAN
-                    ? Colors.lightBlue[300]
-                    : Colors.white54,
+        color: backgroundColor,
       ),
       child: Center(
         child: Icon(
-          vegetable == Vegetable.VEGETARIAN
-              ? MdiIcons.cheese
-              : vegetable == Vegetable.VEGAN
-                  ? MdiIcons.leaf
-                  : vegetable == Vegetable.NON_VEGETARIAN
-                      ? MdiIcons.cow
-                      : Icons.all_out,
-          color: vegetable == Vegetable.VEGETARIAN
-              ? Colors.amber
-              : vegetable == Vegetable.VEGAN
-                  ? Colors.green[700]
-                  : Colors.brown[800],
+          iconData,
+          color: iconColor,
           size: 22,
         ),
       ),
-      height: 30,
-      width: 30,
     );
   }
 }

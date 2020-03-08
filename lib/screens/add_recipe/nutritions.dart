@@ -65,6 +65,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
     for (String k in nutritionsController.keys) {
       nutritionsController[k].dispose();
     }
+
+    WidgetsBinding.instance.removeObserver(this);
+
     super.dispose();
   }
 

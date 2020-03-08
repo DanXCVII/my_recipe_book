@@ -178,5 +178,7 @@
   "recipes_not_showing_up": "Fehlen Rezepte?",
   "recipes_not_showing_up_desc": "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren. Alternativ kann die App neugestartet werden.",
   "share_recipes_settings": "teile/sichere deine Rezepte",
-  "share_recipes_settings_desc": "Hier kannst du:\n- Rezepte auswählen, die du als einzelne Datei mit deinen Freuden teilen möchtest, damit sie diese ihrer App hinzufügen können\n- Rezepte auswählen, die du sichern willst, für den Fall der Fälle, dass dein Handy verloren geht und du sich online oder auf anderen Geräten gesichert haben willst."
+  "share_recipes_settings_desc": "Hier kannst du:\n- Rezepte auswählen, die du als einzelne Datei mit deinen Freuden teilen möchtest, damit sie diese ihrer App hinzufügen können\n- Rezepte auswählen, die du sichern willst, für den Fall der Fälle, dass dein Handy verloren geht und du sich online oder auf anderen Geräten gesichert haben willst.",
+  "tap_here_to_add_recipe": "Hier kannst du ein neues\nRezept hinzuzufügen",
+  "tap_here_to_manage_categories": "und hier kannst du deine\nKategorien verwalten"
 }

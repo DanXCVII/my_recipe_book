@@ -139,7 +139,7 @@ class Settings extends StatelessWidget {
                             border: Border.all(
                                 width: 1,
                                 color: Theme.of(context).textTheme.body1.color),
-                            color: Color(0xffFEF3E1),
+                            color: Colors.grey[100],
                           ),
                         ),
                         ClipPath(
@@ -173,7 +173,7 @@ class Settings extends StatelessWidget {
                         border: Border.all(
                             width: 1,
                             color: Theme.of(context).textTheme.body1.color),
-                        color: Color(0xffFEF3E1),
+                        color: Colors.grey[100],
                       ),
                     ),
                   ),

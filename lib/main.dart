@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:showcaseview/showcase_widget.dart';
 
 import './theming.dart';
 import 'ad_related/ad.dart';
@@ -124,41 +125,51 @@ class MyApp extends StatelessWidget {
                           create: (context) => AppBloc()
                             ..add(InitializeData(context,
                                 state.recipeCategoryOverview, state.showIntro)),
-                          child: MultiBlocProvider(providers: [
-                            BlocProvider<CategoryOverviewBloc>(
-                              create: (context) => CategoryOverviewBloc(
-                                recipeManagerBloc:
-                                    BlocProvider.of<RecipeManagerBloc>(context),
-                              )..add(COLoadCategoryOverview()),
+                          child: MultiBlocProvider(
+                            providers: [
+                              BlocProvider<CategoryOverviewBloc>(
+                                create: (context) => CategoryOverviewBloc(
+                                  recipeManagerBloc:
+                                      BlocProvider.of<RecipeManagerBloc>(
+                                          context),
+                                )..add(COLoadCategoryOverview()),
+                              ),
+                              BlocProvider<RecipeCategoryOverviewBloc>(
+                                create: (context) => RecipeCategoryOverviewBloc(
+                                  recipeManagerBloc:
+                                      BlocProvider.of<RecipeManagerBloc>(
+                                          context),
+                                )..add(RCOLoadRecipeCategoryOverview()),
+                              ),
+                              BlocProvider<FavoriteRecipesBloc>(
+                                  create: (context) => FavoriteRecipesBloc(
+                                        recipeManagerBloc:
+                                            BlocProvider.of<RecipeManagerBloc>(
+                                                context),
+                                      )..add(LoadFavorites())),
+                              BlocProvider<RandomRecipeExplorerBloc>(
+                                create: (context) => RandomRecipeExplorerBloc(
+                                  recipeManagerBloc:
+                                      BlocProvider.of<RecipeManagerBloc>(
+                                          context),
+                                )..add(InitializeRandomRecipeExplorer()),
+                              ),
+                              BlocProvider<ImportRecipeBloc>(
+                                  create: (context) => ImportRecipeBloc(
+                                      BlocProvider.of<RecipeManagerBloc>(
+                                          context))),
+                              BlocProvider<ShoppingCartBloc>(
+                                create: (context) => ShoppingCartBloc(
+                                    BlocProvider.of<RecipeManagerBloc>(context))
+                                  ..add(LoadShoppingCart()),
+                              ),
+                            ],
+                            child: ShowCaseWidget(
+                              builder: Builder(
+                                  builder: (context) =>
+                                      MyHomePage(showIntro: state.showIntro)),
                             ),
-                            BlocProvider<RecipeCategoryOverviewBloc>(
-                              create: (context) => RecipeCategoryOverviewBloc(
-                                recipeManagerBloc:
-                                    BlocProvider.of<RecipeManagerBloc>(context),
-                              )..add(RCOLoadRecipeCategoryOverview()),
-                            ),
-                            BlocProvider<FavoriteRecipesBloc>(
-                                create: (context) => FavoriteRecipesBloc(
-                                      recipeManagerBloc:
-                                          BlocProvider.of<RecipeManagerBloc>(
-                                              context),
-                                    )..add(LoadFavorites())),
-                            BlocProvider<RandomRecipeExplorerBloc>(
-                              create: (context) => RandomRecipeExplorerBloc(
-                                recipeManagerBloc:
-                                    BlocProvider.of<RecipeManagerBloc>(context),
-                              )..add(InitializeRandomRecipeExplorer()),
-                            ),
-                            BlocProvider<ImportRecipeBloc>(
-                                create: (context) => ImportRecipeBloc(
-                                    BlocProvider.of<RecipeManagerBloc>(
-                                        context))),
-                            BlocProvider<ShoppingCartBloc>(
-                              create: (context) => ShoppingCartBloc(
-                                  BlocProvider.of<RecipeManagerBloc>(context))
-                                ..add(LoadShoppingCart()),
-                            ),
-                          ], child: MyHomePage()),
+                          ),
                         );
                       } else {
                         return Text(state.toString());

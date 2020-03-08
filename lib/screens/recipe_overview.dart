@@ -226,3 +226,52 @@ class NoRecipeCategory extends StatelessWidget {
     );
   }
 }
+
+class OneThirdClipperRight extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path()
+      ..lineTo(size.width / 2, 0)
+      ..lineTo(size.width / 2, size.height / 2)
+      ..lineTo(size.width, size.height * 0.8)
+      ..lineTo(size.width, 0)
+      ..close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(OneThirdClipperRight oldClipper) => true;
+}
+
+class OneThirdClipperLeft extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path()
+      ..lineTo(size.width / 2, 0)
+      ..lineTo(size.width / 2, size.height / 2)
+      ..lineTo(0, size.height * 0.8)
+      ..lineTo(0, 0)
+      ..close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(OneThirdClipperLeft oldClipper) => true;
+}
+
+@override
+Path getClip(Size size) {
+  final Path path = new Path()
+    ..lineTo(size.width / 2, 0)
+    ..lineTo(size.width / 2, size.height)
+    ..lineTo(size.width, size.height)
+    ..lineTo(size.width, 0);
+  return path;
+}
+
+@override
+bool shouldReclip(CustomClipper<Path> oldClipper) {
+  return true;
+}
