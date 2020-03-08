@@ -131,29 +131,36 @@ class _RecipeFilterState extends State<RecipeFilter> {
     switch (vegetable) {
       case Vegetable.VEGETARIAN:
         return _getVegetableCircleIcon(
-            Colors.green[700], MdiIcons.cheese, Colors.amber);
+          Colors.green[700],
+          Colors.amber,
+          iconData: MdiIcons.cheese,
+        );
 
       case Vegetable.VEGAN:
         return _getVegetableCircleIcon(
-            Colors.orange, MdiIcons.leaf, Colors.green[700]);
+          Colors.orange,
+          Colors.green[700],
+          iconData: MdiIcons.leaf,
+        );
 
       case Vegetable.NON_VEGETARIAN:
         return _getVegetableCircleIcon(
-            Colors.lightBlue[300], MdiIcons.cow, Colors.brown[800]);
+          Colors.lightBlue[300],
+          Colors.brown[800],
+          iconData: MdiIcons.cow,
+        );
 
       default:
         return Stack(
           children: <Widget>[
             _getVegetableCircleIcon(
               Colors.orange,
-              MdiIcons.leaf,
               Colors.green[700],
             ),
             ClipPath(
               clipper: OneThirdClipperRight(),
               child: _getVegetableCircleIcon(
                 Colors.lightBlue[300],
-                MdiIcons.cow,
                 Colors.brown[800],
               ),
             ),
@@ -161,7 +168,6 @@ class _RecipeFilterState extends State<RecipeFilter> {
               clipper: OneThirdClipperLeft(),
               child: _getVegetableCircleIcon(
                 Colors.green[700],
-                MdiIcons.cheese,
                 Colors.amber,
               ),
             ),
@@ -170,8 +176,8 @@ class _RecipeFilterState extends State<RecipeFilter> {
     }
   }
 
-  Widget _getVegetableCircleIcon(
-      Color backgroundColor, IconData iconData, Color iconColor) {
+  Widget _getVegetableCircleIcon(Color backgroundColor, Color iconColor,
+      {IconData iconData}) {
     return Container(
       height: 30,
       width: 30,
@@ -180,11 +186,13 @@ class _RecipeFilterState extends State<RecipeFilter> {
         color: backgroundColor,
       ),
       child: Center(
-        child: Icon(
-          iconData,
-          color: iconColor,
-          size: 22,
-        ),
+        child: iconData == null
+            ? null
+            : Icon(
+                iconData,
+                color: iconColor,
+                size: 22,
+              ),
       ),
     );
   }

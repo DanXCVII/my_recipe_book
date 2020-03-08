@@ -90,7 +90,7 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                             Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                Text('buy pro version',
+                                Text(I18n.of(context).buy_pro_version,
                                     style: TextStyle(
                                       fontSize: 19,
                                       fontWeight: FontWeight.w600,
@@ -100,7 +100,7 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                                   height: 6,
                                 ),
                                 Text(
-                                  'du erhälst: Zutatenfilter, Entfernung der Werbung und \nUnterstützung zukünftiger Entwicklung',
+                                  I18n.of(context).pro_version_desc,
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: Colors.white,

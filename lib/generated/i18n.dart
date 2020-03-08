@@ -400,6 +400,10 @@ class I18n implements WidgetsLocalizations {
   String get tap_here_to_manage_categories => "and here you can manage\nyour recipe categories";
   /// "contact me"
   String get contact_me => "contact me";
+  /// "includes ingredient filter, removal of ads and support of future development"
+  String get pro_version_desc => "includes ingredient filter, removal of ads and support of future development";
+  /// "buy pro version"
+  String get buy_pro_version => "buy pro version";
 }
 
 class _I18n_en_US extends I18n {
@@ -604,9 +608,9 @@ class _I18n_de_DE extends I18n {
   /// "zufällig"
   @override
   String get explore => "zufällig";
-  /// "zufällige Rezepte"
+  /// "Zufällige Rezepte"
   @override
-  String get roll_the_dice => "zufällige Rezepte";
+  String get roll_the_dice => "Zufällige Rezepte";
   /// "theme wechseln"
   @override
   String get switch_theme => "theme wechseln";
@@ -895,9 +899,9 @@ class _I18n_de_DE extends I18n {
   /// "importiere"
   @override
   String get import => "importiere";
-  /// "Pro Version kaufen"
+  /// "Pro-Version kaufen"
   @override
-  String get purchase_pro => "Pro Version kaufen";
+  String get purchase_pro => "Pro-Version kaufen";
   /// "Werbevideo zum entfernen der Banner"
   @override
   String get video_to_remove_ads => "Werbevideo zum entfernen der Banner";
@@ -913,9 +917,9 @@ class _I18n_de_DE extends I18n {
   /// "werbefrei bis"
   @override
   String get ad_free_until => "werbefrei bis";
-  /// "Pro Version"
+  /// "Pro-Version"
   @override
-  String get pro_version => "Pro Version";
+  String get pro_version => "Pro-Version";
   /// "Kaufe die Vollversion in den Einstellungen um Zugriff zum Zutatenfilter zu bekommen"
   @override
   String get ingredient_filter_description => "Kaufe die Vollversion in den Einstellungen um Zugriff zum Zutatenfilter zu bekommen";
@@ -961,6 +965,12 @@ class _I18n_de_DE extends I18n {
   /// "kontaktiere mich"
   @override
   String get contact_me => "kontaktiere mich";
+  /// "du erhälst: Zutatenfilter, Entfernung der Werbung und\nUnterstützung zukünftiger Entwicklung"
+  @override
+  String get pro_version_desc => "du erhälst: Zutatenfilter, Entfernung der Werbung und\nUnterstützung zukünftiger Entwicklung";
+  /// "Pro-Version kaufen"
+  @override
+  String get buy_pro_version => "Pro-Version kaufen";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;
