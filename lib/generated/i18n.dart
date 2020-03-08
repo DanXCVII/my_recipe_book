@@ -368,6 +368,10 @@ class I18n implements WidgetsLocalizations {
   String get share_recipes_settings => "backup/share your recipes";
   /// "on this screen, you can:\n- select the recipes you want to share to a friend as a single file\n- select the recipes you want to save to import on another device or just to make sure, they don't get lost."
   String get share_recipes_settings_desc => "on this screen, you can:\n- select the recipes you want to share to a friend as a single file\n- select the recipes you want to save to import on another device or just to make sure, they don't get lost.";
+  /// "here you can add a new recipe"
+  String get tap_here_to_add_recipe => "here you can add a new recipe";
+  /// "and here you can manage\nyour recipe categories"
+  String get tap_here_to_manage_categories => "and here you can manage\nyour recipe categories";
 }
 
 class _I18n_en_US extends I18n {
@@ -881,6 +885,12 @@ class _I18n_de_DE extends I18n {
   /// "Hier kannst du:\n- Rezepte auswählen, die du als einzelne Datei mit deinen Freuden teilen möchtest, damit sie diese ihrer App hinzufügen können\n- Rezepte auswählen, die du sichern willst, für den Fall der Fälle, dass dein Handy verloren geht und du sich online oder auf anderen Geräten gesichert haben willst."
   @override
   String get share_recipes_settings_desc => "Hier kannst du:\n- Rezepte auswählen, die du als einzelne Datei mit deinen Freuden teilen möchtest, damit sie diese ihrer App hinzufügen können\n- Rezepte auswählen, die du sichern willst, für den Fall der Fälle, dass dein Handy verloren geht und du sich online oder auf anderen Geräten gesichert haben willst.";
+  /// "Hier kannst du ein neues\nRezept hinzuzufügen"
+  @override
+  String get tap_here_to_add_recipe => "Hier kannst du ein neues\nRezept hinzuzufügen";
+  /// "und hier kannst du deine\nKategorien verwalten"
+  @override
+  String get tap_here_to_manage_categories => "und hier kannst du deine\nKategorien verwalten";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

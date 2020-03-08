@@ -68,6 +68,8 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
       controller.dispose();
     });
     notesController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+
     super.dispose();
   }
 

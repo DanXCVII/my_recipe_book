@@ -428,7 +428,9 @@ Future<bool> importRecipeFromTmp(Recipe importRecipe) async {
   await importRecipeDir
       .rename(await PathProvider.pP.getRecipeDirFull(importRecipe.name));
   // delete the import directory of the recipe
-  await importRecipeDir.delete(recursive: true);
+  await Directory(
+          await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
+      .delete(recursive: true);
   return true;
 }
 

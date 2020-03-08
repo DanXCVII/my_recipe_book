@@ -72,6 +72,7 @@ dependencies:
   flutter_sticky_header: ^0.4.2
   url_launcher: ^5.4.2
   pull_to_refresh: ^1.5.7
+  showcaseview: ^0.1.5
 
   # share:
   #   git:

@@ -73,11 +73,14 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
 
   @override
   void dispose() {
-    super.dispose();
     nameController.dispose();
     preperationTimeController.dispose();
     cookingTimeController.dispose();
     totalTimeController.dispose();
+
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();
   }
 
   @override
@@ -110,7 +113,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
               listener: (context, state) {
                 if (state is ClearedRecipe) {
                   setState(() {
-                    modifiedRecipe = state.recipe;
+                    modifiedRecipe = state.recipe
+                        .copyWith(categories: modifiedRecipe.categories);
                     _emptyTextFields();
                   });
                 }
@@ -298,8 +302,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
               },
               onDeselect: (String chipName) {
                 BlocProvider.of<GeneralInfoBloc>(context)
-                    .add(RemoveCategoryFromRecipe(
-                  chipName,
+                    .add(RemoveCategoriesFromRecipe(
+                  [chipName],
                   widget.editingRecipeName == null ? false : true,
                 ));
               },

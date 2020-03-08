@@ -2,6 +2,7 @@ import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/ingredinets_manager/ingredients_manager_bloc.dart';
@@ -70,7 +71,12 @@ class _IngredientsManagerState extends State<IngredientsManager> {
             return _getIngredientManagerLoadingScreen();
           } else if (state is LoadedIngredientsManager) {
             return Scaffold(
-              appBar: AppBar(
+              appBar: GradientAppBar(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xffAF1E1E), Color(0xff641414)],
+                ),
                 title: Text(I18n.of(context).manage_ingredients),
                 actions: <Widget>[
                   IconButton(
@@ -88,7 +94,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                   IconButton(
                     icon: Icon(Icons.check),
                     onPressed: () {
-                      editingFinished();
+                      Navigator.pop(context);
                     },
                   ),
                 ],
@@ -190,7 +196,12 @@ class _IngredientsManagerState extends State<IngredientsManager> {
 
   Widget _getIngredientManagerLoadingScreen() {
     return Scaffold(
-        appBar: AppBar(
+        appBar: GradientAppBar(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+          ),
           title: Text(
             I18n.of(context).manage_ingredients,
           ),
@@ -237,10 +248,6 @@ class _IngredientsManagerState extends State<IngredientsManager> {
         ],
       ),
     ).then((boo) => boo);
-  }
-
-  Future<void> editingFinished() async {
-    Navigator.pop(context);
   }
 
   Widget _getIngredientListTile(String ingredientName, BuildContext context,

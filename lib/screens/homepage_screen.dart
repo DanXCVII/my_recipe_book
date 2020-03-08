@@ -8,8 +8,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/my_wrapper.dart';
 import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcase.dart';
+import 'package:showcaseview/showcase_widget.dart';
 
 import '../blocs/app/app_bloc.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
@@ -29,22 +33,30 @@ import 'settings_screen.dart';
 import 'shopping_cart_fancy.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage();
+  final bool showIntro;
+
+  MyHomePage({this.showIntro});
 
   @override
-  MyHomePageState createState() => MyHomePageState();
+  MyHomePageState createState() => MyHomePageState(showIntro: showIntro);
 }
 
 class MyHomePageState extends State<MyHomePage> {
   Future<SharedPreferences> prefs;
   Image shoppingCartImage;
+  GlobalKey _introKeyOne = GlobalKey();
+  GlobalKey _introKeyTwo = GlobalKey();
+  MyBooleanWrapper showIntro;
 
   static const platform = const MethodChannel('app.channel.shared.data');
 
   MyHomePageState({
-    Key key,
     String title,
-  });
+    bool showIntro,
+    Key key,
+  }) {
+    this.showIntro = MyBooleanWrapper(showIntro);
+  }
 
   static const List<IconData> icons = const [
     GroovinMaterialIcons.grid_large,
@@ -74,7 +86,8 @@ class MyHomePageState extends State<MyHomePage> {
                 appBar: _buildAppBar(state.selectedIndex,
                     state.recipeCategoryOverview, state.title),
                 floatingActionButton: state.selectedIndex == 0
-                    ? FloatingActionButtonMenu()
+                    ? FloatingActionButtonMenu(_introKeyOne, _introKeyTwo,
+                        showIntro: showIntro)
                     : null,
                 body: IndexedStack(
                   index: state.selectedIndex,
@@ -262,7 +275,16 @@ class MyHomePageState extends State<MyHomePage> {
 }
 
 class FloatingActionButtonMenu extends StatefulWidget {
-  FloatingActionButtonMenu({Key key}) : super(key: key);
+  final GlobalKey _introKeyOne;
+  final GlobalKey _introKeyTwo;
+  final MyBooleanWrapper showIntro;
+
+  FloatingActionButtonMenu(
+    this._introKeyOne,
+    this._introKeyTwo, {
+    this.showIntro,
+    Key key,
+  }) : super(key: key);
 
   @override
   _FloatingActionButtonMenuState createState() =>
@@ -300,31 +322,83 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
         mainAxisSize: MainAxisSize.min,
         children: isOpen
             ? [
-                _getFloatingItem(
-                  () {
-                    Navigator.pushNamed(
-                      context,
-                      RouteNames.manageCategories,
-                    );
-                  },
-                  Icon(GroovinMaterialIcons.grid_large,
-                      color: Theme.of(context).primaryColor),
-                  2,
-                ),
-                _getFloatingItem(
-                  () {
-                    Navigator.pushNamed(
-                      context,
-                      RouteNames.addRecipeGeneralInfo,
-                      arguments: GeneralInfoArguments(
-                        HiveProvider().getTmpRecipe(),
-                        BlocProvider.of<ShoppingCartBloc>(context),
+                Showcase.withWidget(
+                  key: widget._introKeyTwo,
+                  height: 50,
+                  width: 200,
+                  container: Column(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(22),
+                          gradient: LinearGradient(
+                              colors: [Colors.grey[300], Colors.white]),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(
+                              I18n.of(context).tap_here_to_manage_categories,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600)),
+                        ),
                       ),
-                    );
-                  },
-                  Icon(Icons.description,
-                      color: Theme.of(context).primaryColor),
-                  1,
+                    ],
+                  ),
+                  shapeBorder: CircleBorder(),
+                  child: _getFloatingItem(
+                    () {
+                      Navigator.pushNamed(
+                        context,
+                        RouteNames.manageCategories,
+                      );
+                    },
+                    Icon(GroovinMaterialIcons.grid_large,
+                        color: Theme.of(context).primaryColor),
+                    2,
+                  ),
+                ),
+                Showcase.withWidget(
+                  key: widget._introKeyOne,
+                  height: 50,
+                  width: 200,
+                  container: Column(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(28),
+                          gradient: LinearGradient(
+                              colors: [Colors.grey[300], Colors.white]),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(I18n.of(context).tap_here_to_add_recipe,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600)),
+                        ),
+                      ),
+                    ],
+                  ),
+                  shapeBorder: CircleBorder(),
+                  child: _getFloatingItem(
+                    () {
+                      getTemporaryDirectory().then((dir) {
+                        dir.delete(recursive: true);
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.addRecipeGeneralInfo,
+                          arguments: GeneralInfoArguments(
+                            HiveProvider().getTmpRecipe(),
+                            BlocProvider.of<ShoppingCartBloc>(context),
+                          ),
+                        );
+                      });
+                    },
+                    Icon(Icons.description,
+                        color: Theme.of(context).primaryColor),
+                    1,
+                  ),
                 ),
               ]
             : []);
@@ -348,6 +422,11 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
         onPressed: () {
           if (_controller.isDismissed) {
             setState(() {
+              if (widget.showIntro.myBool) {
+                ShowCaseWidget.of(context)
+                    .startShowCase([widget._introKeyOne, widget._introKeyTwo]);
+                widget.showIntro.myBool = false;
+              }
               isOpen = true;
               _controller.forward();
             });

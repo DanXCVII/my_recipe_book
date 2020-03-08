@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:my_recipe_book/blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 
 import '../constants/global_constants.dart' as Constants;
 
@@ -39,63 +41,72 @@ class _ImageSelectorState extends State<ImageSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return selectedImageFile == null
-        ? Container(
-            width: widget.circleSize,
-            height: widget.circleSize,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: widget.color,
+    return BlocListener<ClearRecipeBloc, ClearRecipeState>(
+      listener: (context, state) {
+        if (state is ClearedRecipe) {
+          setState(() {
+            selectedImageFile = null;
+          });
+        }
+      },
+      child: selectedImageFile == null
+          ? Container(
+              width: widget.circleSize,
+              height: widget.circleSize,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: widget.color,
+              ),
+              child: Center(
+                  child: IconButton(
+                onPressed: () {
+                  _askUser();
+                },
+                color: Colors.white,
+                icon: Icon(Icons.add_a_photo),
+                iconSize: widget.circleSize / 3,
+              )),
+            )
+          : Center(
+              child: Stack(children: <Widget>[
+                ClipOval(
+                  child: Container(
+                    child: Image.file(
+                      // widget.imageWrapper.getSelectedImage(),
+                      selectedImageFile,
+                      fit: BoxFit.cover,
+                    ),
+                    width: widget.circleSize,
+                    height: widget.circleSize,
+                  ),
+                ),
+                Opacity(
+                  opacity: 0.3,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      shape: BoxShape.circle,
+                    ),
+                    width: widget.circleSize,
+                    height: widget.circleSize,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(shape: BoxShape.circle),
+                  width: widget.circleSize,
+                  height: widget.circleSize,
+                  child: IconButton(
+                    iconSize: widget.circleSize / 3,
+                    icon: Icon(Icons.add_a_photo),
+                    color: Colors.white,
+                    onPressed: () {
+                      _askUser();
+                    },
+                  ),
+                ),
+              ]),
             ),
-            child: Center(
-                child: IconButton(
-              onPressed: () {
-                _askUser();
-              },
-              color: Colors.white,
-              icon: Icon(Icons.add_a_photo),
-              iconSize: widget.circleSize / 3,
-            )),
-          )
-        : Center(
-            child: Stack(children: <Widget>[
-              ClipOval(
-                child: Container(
-                  child: Image.file(
-                    // widget.imageWrapper.getSelectedImage(),
-                    selectedImageFile,
-                    fit: BoxFit.cover,
-                  ),
-                  width: widget.circleSize,
-                  height: widget.circleSize,
-                ),
-              ),
-              Opacity(
-                opacity: 0.3,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    shape: BoxShape.circle,
-                  ),
-                  width: widget.circleSize,
-                  height: widget.circleSize,
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(shape: BoxShape.circle),
-                width: widget.circleSize,
-                height: widget.circleSize,
-                child: IconButton(
-                  iconSize: widget.circleSize / 3,
-                  icon: Icon(Icons.add_a_photo),
-                  color: Colors.white,
-                  onPressed: () {
-                    _askUser();
-                  },
-                ),
-              ),
-            ]),
-          );
+    );
   }
 
   Future _askUser() async {

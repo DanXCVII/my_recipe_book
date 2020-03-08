@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:share_extend/share_extend.dart';
 
@@ -30,7 +31,12 @@ class _ExportRecipesState extends State<ExportRecipes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: GradientAppBar(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xffAF1E1E), Color(0xff641414)],
+        ),
         title: Text(I18n.of(context).select_recipes),
         actions: <Widget>[
           IconButton(

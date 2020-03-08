@@ -77,7 +77,6 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
 
   @override
   void dispose() {
-    super.dispose();
     ingredientNameController.forEach((list) {
       list.forEach((controller) {
         controller.dispose();
@@ -97,6 +96,10 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
       controller.dispose();
     });
     servingsController.dispose();
+
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();
   }
 
   @override
