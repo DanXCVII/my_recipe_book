@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/screens/ingredient_search_preview_screen.dart';
 import 'package:showcaseview/showcase_widget.dart';
 
 import './theming.dart';
@@ -364,21 +365,29 @@ class MyApp extends StatelessWidget {
               );
 
             case "/ingredient-search":
-              Ads.showBottomBannerAd();
               final IngredientSearchScreenArguments args = settings.arguments;
 
-              return MaterialPageRoute(
-                builder: (context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<IngredientSearchBloc>(
-                      create: (context) => IngredientSearchBloc(),
-                    ),
-                    BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc)
-                  ],
-                  child: _getAdPage(IngredientSearchScreen(), context),
-                ),
-              );
+              if (args.hasPremium) {
+                return MaterialPageRoute(
+                  builder: (context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider<IngredientSearchBloc>(
+                        create: (context) => IngredientSearchBloc(),
+                      ),
+                      BlocProvider<ShoppingCartBloc>.value(
+                          value: args.shoppingCartBloc)
+                    ],
+                    child: IngredientSearchScreen(),
+                  ),
+                );
+              } else {
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider<AdManagerBloc>.value(
+                      value: args.adManagerBloc,
+                      child: IngredinetSearchPreviewScreen()),
+                );
+              }
+              break;
 
             case "/manage-categories":
               Ads.showBottomBannerAd();
@@ -412,20 +421,6 @@ class MyApp extends StatelessWidget {
                   create: (context) =>
                       IngredientsManagerBloc()..add(LoadIngredientsManager()),
                   child: _getAdPage(IngredientsManager(), context),
-                ),
-              );
-
-            case "/intro":
-              SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-
-              return MaterialPageRoute(
-                builder: (context) => WillPopScope(
-                  onWillPop: () async {
-                    SystemChrome.setEnabledSystemUIOverlays(
-                        SystemUiOverlay.values);
-                    return true;
-                  },
-                  child: IntroScreen(),
                 ),
               );
 

@@ -210,7 +210,10 @@ class MyHomePageState extends State<MyHomePage> {
                   context,
                   RouteNames.ingredientSearch,
                   arguments: IngredientSearchScreenArguments(
-                      BlocProvider.of<ShoppingCartBloc>(context)),
+                      BlocProvider.of<ShoppingCartBloc>(context),
+                      BlocProvider.of<AdManagerBloc>(context),
+                      BlocProvider.of<AdManagerBloc>(context).state
+                          is IsPurchased),
                 );
               },
             ),

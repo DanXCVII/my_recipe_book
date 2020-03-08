@@ -122,6 +122,8 @@ flutter:
     - images/theme.png
     - images/icon.png
     - images/bannerAd.png
+    - images/ingredient_search_preview.gif
+    - images/tableVegetable.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
