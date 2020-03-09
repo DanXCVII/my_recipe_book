@@ -15,12 +15,3 @@ class SPInitializeData extends SplashScreenEvent {
   @override
   List<Object> get props => [context];
 }
-
-class CheckForImport extends SplashScreenEvent {
-  final bool newImports;
-
-  CheckForImport(this.newImports);
-
-  @override
-  List<Object> get props => [newImports];
-}

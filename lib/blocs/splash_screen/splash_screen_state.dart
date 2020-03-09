@@ -29,5 +29,3 @@ class InitializedData extends SplashScreenState {
       'Loaded State { recipeCategoryOverview : $recipeCategoryOverview, '
       'showIntro : $showIntro }';
 }
-
-class IntentImportRecipes extends SplashScreenState {}

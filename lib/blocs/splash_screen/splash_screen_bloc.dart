@@ -26,8 +26,6 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   ) async* {
     if (event is SPInitializeData) {
       yield* _mapInitializeDataToState(event);
-    } else if (event is CheckForImport) {
-      yield* _mapCheckForImportToState(event);
     }
   }
 
@@ -60,13 +58,8 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
 
     this.recipeCategoryOverview = recipeCategoryOverview;
     this.showIntro = showIntro;
-  }
 
-  Stream<SplashScreenState> _mapCheckForImportToState(
-      CheckForImport event) async* {
-    yield event.newImports
-        ? IntentImportRecipes()
-        : InitializedData(recipeCategoryOverview, showIntro);
+    yield InitializedData(recipeCategoryOverview, showIntro);
   }
 
   bool _initRecipeOverviewScreen(SharedPreferences prefs) {

@@ -86,6 +86,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         localizationsDelegates: [
           I18n.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -115,12 +116,8 @@ class MyApp extends StatelessWidget {
                     },
                     child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
                         builder: (context, state) {
-                      if (state is InitializingData ||
-                          state is IntentImportRecipes) {
-                        return BlocProvider<ImportRecipeBloc>(
-                            create: (context) => ImportRecipeBloc(
-                                BlocProvider.of<RecipeManagerBloc>(context)),
-                            child: SplashScreen());
+                      if (state is InitializingData) {
+                        return SplashScreen();
                       } else if (state is InitializedData) {
                         return BlocProvider<AppBloc>(
                           create: (context) => AppBloc()

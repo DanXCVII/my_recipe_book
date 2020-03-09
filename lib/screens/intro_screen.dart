@@ -64,17 +64,6 @@ class IntroScreen extends StatelessWidget {
           heightImage: MediaQuery.of(context).size.height / 3,
           pathImage: "images/bag.png",
         ),
-        Slide(
-          title: I18n.of(context).the_data_is_YOURS,
-          colorBegin: Color(0xff7B7B7B),
-          colorEnd: Color(0xff252525),
-          styleTitle: titleStyle,
-          description: I18n.of(context).data_will_never_leave_your_device,
-          styleDescription: descStyle,
-          pathImage: "images/shield.png",
-          widthImage: MediaQuery.of(context).size.width / 2,
-          heightImage: MediaQuery.of(context).size.height / 2.2,
-        ),
       ],
       onDonePress: () {
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
