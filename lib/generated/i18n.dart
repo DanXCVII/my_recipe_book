@@ -32,10 +32,6 @@ class I18n implements WidgetsLocalizations {
   @override
   TextDirection get textDirection => TextDirection.ltr;
 
-  /// "The data is YOURS"
-  String get the_data_is_YOURS => "The data is YOURS";
-  /// "Your data will NEVER leave your device when you don’t explicitely intent it to."
-  String get data_will_never_leave_your_device => "Your data will NEVER leave your device when you don’t explicitely intent it to.";
   /// "Choose a theme"
   String get choose_a_theme => "Choose a theme";
   /// "Swype your recipes"
@@ -386,30 +382,24 @@ class _I18n_en_US extends I18n {
 class _I18n_de_DE extends I18n {
   const _I18n_de_DE();
 
-  /// "Die Daten gehören DIR"
+  /// "Du hast die Wahl\nob hell, dunkel oder schwarz"
   @override
-  String get the_data_is_YOURS => "Die Daten gehören DIR";
-  /// "Deine Daten werden nie dein Gerät verlassen, wenn die es nicht explizit forderst."
-  @override
-  String get data_will_never_leave_your_device => "Deine Daten werden nie dein Gerät verlassen, wenn die es nicht explizit forderst.";
-  /// "Wähle ein Theme"
-  @override
-  String get choose_a_theme => "Wähle ein Theme";
+  String get choose_a_theme => "Du hast die Wahl\nob hell, dunkel oder schwarz";
   /// "Wische durch deine Rezepte"
   @override
   String get swype_your_recipes => "Wische durch deine Rezepte";
   /// "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte ;-)"
   @override
   String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte ;-)";
-  /// "exportiere als zip, zum Benutzen auf mehreren Geräten oder als Text, wenn die andere Person die App nicht besitzt."
+  /// "exportiere als zip, um die Rezpete überall verfügbar zu machen oder in Textform, wenn die andere Person die App nicht besitzt."
   @override
-  String get multiple_devices_use_export_as_zip_etc => "exportiere als zip, zum Benutzen auf mehreren Geräten oder als Text, wenn die andere Person die App nicht besitzt.";
+  String get multiple_devices_use_export_as_zip_etc => "exportiere als zip, um die Rezpete überall verfügbar zu machen oder in Textform, wenn die andere Person die App nicht besitzt.";
   /// "Dem Einkaufswagen hinzufügen"
   @override
   String get add_to_shoppingcart => "Dem Einkaufswagen hinzufügen";
-  /// "Für ein entspannteres Einkaufserlebnis kannst du die Zutaten der Rezepte deiner Einkaufsliste hinzufügen :-)"
+  /// "Für ein entspannteres Einkaufserlebnis kannst du die Zutaten der Rezepte deiner Einkaufsliste hinzufügen."
   @override
-  String get for_more_relaxed_shopping_add_to_shoppingcart => "Für ein entspannteres Einkaufserlebnis kannst du die Zutaten der Rezepte deiner Einkaufsliste hinzufügen :-)";
+  String get for_more_relaxed_shopping_add_to_shoppingcart => "Für ein entspannteres Einkaufserlebnis kannst du die Zutaten der Rezepte deiner Einkaufsliste hinzufügen.";
   /// "Rezepte"
   @override
   String get recipes => "Rezepte";
