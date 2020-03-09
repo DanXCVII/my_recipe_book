@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:device_id/device_id.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -73,6 +74,8 @@ class MyHomePageState extends State<MyHomePage> {
       'images/cuisine.jpg',
       fit: BoxFit.cover,
     );
+
+    DeviceId.getID.then((id) => print("deviceId:$id"));
   }
 
   @override

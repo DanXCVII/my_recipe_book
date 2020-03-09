@@ -193,15 +193,14 @@ class Ads {
 
   static MobileAdTargetingInfo _getMobileAdTargetingInfo() {
     return MobileAdTargetingInfo(
-      keywords: <String>[
-        'recipes',
-        'kitchen',
-        'cooking',
-      ],
-      // contentUrl: 'https://flutter.io',
-      childDirected: false,
-      testDevices: <String>[],
-    );
+        keywords: <String>[
+          'recipes',
+          'kitchen',
+          'cooking',
+        ],
+        // contentUrl: 'https://flutter.io',
+        childDirected: false,
+        testDevices: <String>["84A003142741DEE5AEED89CE56D794EB"]);
   }
 
   static void showAds(bool showAds) {

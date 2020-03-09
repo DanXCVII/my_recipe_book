@@ -73,7 +73,7 @@ dependencies:
   url_launcher: ^5.4.2
   firebase_admob: ^0.9.1+1
   in_app_purchase: ^0.3.1+1
-
+  device_id: ^0.2.0
   pull_to_refresh: ^1.5.7
   showcaseview: ^0.1.5
 

@@ -22,8 +22,11 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
         children: <Widget>[
           Container(
               width: double.infinity,
-              child:
-                  Image.asset('images/tableVegetable.jpg', fit: BoxFit.cover)),
+              height: MediaQuery.of(context).size.height - 145,
+              child: Image.asset(
+                'images/tableVegetable.jpg',
+                fit: BoxFit.cover,
+              )),
           Container(
             width: double.infinity,
             height: double.infinity,
