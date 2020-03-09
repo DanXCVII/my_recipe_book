@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import '../../../blocs/new_recipe/general_info/general_info_bloc.dart';
@@ -212,7 +212,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                       decoration: InputDecoration(
                         filled: true,
                         labelText: I18n.of(context).name + "*",
-                        icon: Icon(GroovinMaterialIcons.notebook),
+                        icon: Icon(MdiIcons.notebook),
                       ),
                     ),
                   ),

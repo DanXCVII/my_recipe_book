@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -199,7 +199,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
             child: Icon(
-              GroovinMaterialIcons.delete_sweep,
+              MdiIcons.deleteSweep,
               color: Colors.white,
             ),
           )
@@ -217,7 +217,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Icon(
-              GroovinMaterialIcons.delete_sweep,
+              MdiIcons.deleteSweep,
               color: Colors.white,
             ),
           )
@@ -259,8 +259,8 @@ class IngredientRow extends StatelessWidget {
               iconSize: 30,
               icon: Icon(
                 ingredient.checked
-                    ? GroovinMaterialIcons.check_circle_outline
-                    : GroovinMaterialIcons.circle_outline,
+                    ? MdiIcons.checkCircleOutline
+                    : MdiIcons.circleOutline,
               ),
               color: ingredient.checked ? Colors.green : Colors.grey,
               onPressed: () {

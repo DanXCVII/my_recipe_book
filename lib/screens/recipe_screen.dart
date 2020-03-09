@@ -3,10 +3,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:share/share.dart';
@@ -41,7 +39,7 @@ import 'add_recipe/general_info_screen/general_info_screen.dart';
 const double timeTextsize = 15;
 const double timeText = 17;
 const double paddingBottomTime = 5;
-const double headingSize = 20;
+const double headingSize = 19;
 const Color textColor = Colors.white;
 const String recipeScreenFontFamily = 'Questrial';
 
@@ -174,7 +172,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                                 } else {
                                   int nutritionIndex = (index / 2).round();
                                   return ListTile(
-                                    leading: Icon(GroovinMaterialIcons.gate_or,
+                                    leading: Icon(MdiIcons.gateOr,
                                         color: Colors.white),
                                     title: Text(
                                       state.recipe.nutritions[nutritionIndex]
@@ -492,7 +490,6 @@ class RecipePage extends StatelessWidget {
                           preperationTime: recipe.preperationTime,
                           cookingTime: recipe.cookingTime,
                           totalTime: recipe.totalTime,
-                          chartKey: GlobalKey<AnimatedCircularChartState>(),
                           effort: recipe.effort,
                         ),
                         SizedBox(height: 30),
@@ -650,13 +647,11 @@ class TopSectionRecipe extends StatelessWidget {
   final double preperationTime;
   final double cookingTime;
   final double totalTime;
-  final GlobalKey<AnimatedCircularChartState> chartKey;
   final int effort;
 
   const TopSectionRecipe({
     this.preperationTime,
     this.cookingTime,
-    this.chartKey,
     this.totalTime,
     this.effort,
     Key key,
@@ -1214,7 +1209,7 @@ class StepsSection extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 12, right: 12),
+                    padding: const EdgeInsets.only(left: 8, right: 8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -1443,7 +1438,7 @@ class IngredientsScreen extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 12, right: 12),
+                      padding: const EdgeInsets.only(left: 8, right: 8),
                       child: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: state.servings == null

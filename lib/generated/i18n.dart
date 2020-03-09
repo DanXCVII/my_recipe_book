@@ -415,12 +415,12 @@ class _I18n_de_DE extends I18n {
   /// "Rezepte auswählen"
   @override
   String get select_recipes => "Rezepte auswählen";
-  /// "Rezept/e importieren"
+  /// "Rezepte importieren"
   @override
-  String get import_recipe_s => "Rezept/e importieren";
-  /// "Rezept/e teilen/sichern"
+  String get import_recipe_s => "Rezepte importieren";
+  /// "Rezepte teilen/sichern"
   @override
-  String get export_recipe_s => "Rezept/e teilen/sichern";
+  String get export_recipe_s => "Rezepte teilen/sichern";
   /// "Bereich entfernen"
   @override
   String get remove_section => "Bereich entfernen";

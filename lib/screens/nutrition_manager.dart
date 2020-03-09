@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/nutrition_manager/nutrition_manager_bloc.dart';
@@ -237,7 +236,7 @@ class _NutritionManagerState extends State<NutritionManager> {
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
             child: Icon(
-              GroovinMaterialIcons.delete_sweep,
+              MdiIcons.deleteSweep,
               color: Colors.white,
             ),
           )
@@ -255,7 +254,7 @@ class _NutritionManagerState extends State<NutritionManager> {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Icon(
-              GroovinMaterialIcons.delete_sweep,
+              MdiIcons.deleteSweep,
               color: Colors.white,
             ),
           )

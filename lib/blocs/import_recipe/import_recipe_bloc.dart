@@ -62,8 +62,8 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
           importRecipes.add(recipes[recipeKeys[i]]);
         }
         if (recipeKeys.length != 1) {
-          yield ImportingRecipes(
-              0.1 + (i / recipeKeys.length * 0.9).roundToDouble());
+          yield ImportingRecipes(double.parse(
+              (0.1 + ((i / recipeKeys.length) * 0.9)).toStringAsFixed(1)));
         } else {
           if (importRecipes.isNotEmpty) {
             yield* _mapFinishImportRecipes(
@@ -117,8 +117,8 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         alreadyExisting
             .add(await HiveProvider().getRecipeByName(event.recipes[i].name));
       }
-      yield ImportingRecipes(
-          (0.1 + (i / event.recipes.length * 0.9)).roundToDouble());
+      yield ImportingRecipes(double.parse(
+          (0.1 + ((i / event.recipes.length) * 0.9)).toStringAsFixed(1)));
     }
     recipeManagerBloc.add(RMAddCategories(importCategories));
     Future.delayed(Duration(milliseconds: 100))

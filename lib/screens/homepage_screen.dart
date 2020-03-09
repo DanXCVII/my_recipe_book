@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
@@ -6,9 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/import_recipe/import_recipe_bloc.dart';
 import 'package:my_recipe_book/my_wrapper.dart';
+import 'package:my_recipe_book/widgets/dialogs/import_dialog.dart';
 import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +43,7 @@ class MyHomePage extends StatefulWidget {
   MyHomePageState createState() => MyHomePageState(showIntro: showIntro);
 }
 
-class MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   Future<SharedPreferences> prefs;
   Image shoppingCartImage;
   GlobalKey _introKeyOne = GlobalKey();
@@ -59,7 +61,7 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   static const List<IconData> icons = const [
-    GroovinMaterialIcons.grid_large,
+    MdiIcons.grid,
     Icons.description,
   ];
 
@@ -71,6 +73,34 @@ class MyHomePageState extends State<MyHomePage> {
       'images/cuisine.jpg',
       fit: BoxFit.cover,
     );
+    initializeIntent();
+
+    // Listen to lifecycle events.
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  initializeIntent() async {
+    var importZipFilePath = await getIntentPath();
+    if (importZipFilePath == null) return;
+
+    if (importZipFilePath != null) {
+      BuildContext importRecipeBlocContext = context;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => BlocProvider<ImportRecipeBloc>.value(
+            value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
+              ..add(StartImportRecipes(File(importZipFilePath.toString()),
+                  delay: Duration(milliseconds: 300))),
+            child: ImportDialog(closeAfterFinished: true)),
+      );
+    }
+  }
+
+  getIntentPath() async {
+    var sharedData = await platform.invokeMethod("getSharedText");
+    return sharedData == null ? null : sharedData;
   }
 
   @override
@@ -115,7 +145,7 @@ class MyHomePageState extends State<MyHomePage> {
                     onItemSelected: (index) => _onItemTapped(index, context),
                     items: [
                       BottomNavyBarItem(
-                          icon: Icon(GroovinMaterialIcons.notebook),
+                          icon: Icon(MdiIcons.notebook),
                           title: Text(I18n.of(context).recipes),
                           activeColor: Colors.orange,
                           inactiveColor: Colors.white),
@@ -131,7 +161,7 @@ class MyHomePageState extends State<MyHomePage> {
                           activeColor: Colors.brown[300],
                           inactiveColor: Colors.white),
                       BottomNavyBarItem(
-                        icon: Icon(GroovinMaterialIcons.dice_multiple),
+                        icon: Icon(MdiIcons.diceMultiple),
                         title: Text(I18n.of(context).explore),
                         activeColor: Colors.green,
                         inactiveColor: Colors.white,
@@ -295,7 +325,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
     with TickerProviderStateMixin {
   AnimationController _controller;
   static const List<IconData> icons = const [
-    GroovinMaterialIcons.grid_large,
+    MdiIcons.grid,
     Icons.description,
   ];
   bool isOpen = false;
@@ -353,8 +383,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                         RouteNames.manageCategories,
                       );
                     },
-                    Icon(GroovinMaterialIcons.grid_large,
-                        color: Theme.of(context).primaryColor),
+                    Icon(MdiIcons.grid, color: Theme.of(context).primaryColor),
                     2,
                   ),
                 ),
