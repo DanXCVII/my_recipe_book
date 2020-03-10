@@ -63,11 +63,14 @@ class MainActivity : FlutterActivity() {
         var out: FileOutputStream? = null
         var inn: InputStream? = null
 
+        var validImport = true;
+
         val outputFile = File(cacheDir.absolutePath + "/importRecipe.zip")
 
         try {
             outputFile.createNewFile()
         } catch (e: Exception) {
+            validImport = false;
             println(e.toString())
         }
         try {
@@ -80,17 +83,23 @@ class MainActivity : FlutterActivity() {
                 len = inn.read(buf)
             }
         } catch (e: Exception) {
+            validImport = false;
             e.printStackTrace()
         } finally {
             try {
                 out?.close()
                 inn?.close()
             } catch (e: IOException) {
+                validImport = false;
                 e.printStackTrace()
             }
         }
-        println("finished processing intent with sharedText: $sharedText");
-        processedIntent = null;
-        sharedText = outputFile.absolutePath
+        if (!validImport) {
+            sharedText = "importFailed";
+        } else {
+            println("finished processing intent with sharedText: $sharedText");
+            processedIntent = null;
+            sharedText = outputFile.absolutePath
+        }
     }
 }
