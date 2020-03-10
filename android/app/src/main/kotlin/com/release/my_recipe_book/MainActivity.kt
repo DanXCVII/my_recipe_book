@@ -14,38 +14,51 @@ import java.lang.Exception
 
 class MainActivity : FlutterActivity() {
     private var sharedText: String? = null
+    private var processedIntent: Intent? = null
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
 
-        handleShareIntent()
+        println("initializing app")
+        processedIntent = intent;
 
         MethodChannel(flutterEngine.dartExecutor, "app.channel.shared.data")
                 .setMethodCallHandler { call, result ->
                     if (call.method.contentEquals("getSharedText")) {
+                        handleShareIntent()
                         result.success(sharedText)
                         sharedText = null
                     }
                 }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent);
+        processedIntent = intent;
+    }
+
     fun handleShareIntent() {
-        val action = intent.action
-        val type = intent.type
+        val action = processedIntent?.action
+        val type = processedIntent?.type
 
         if (Intent.ACTION_VIEW == action && type != null) {
             if ("application/zip" == type) {
-                handleFile(intent)
+                val intentk = processedIntent;
+                handleFile(processedIntent)
             }
+        } else {
+            println("intent type is null or ACTION_VIEW not equal to action");
         }
     }
 
-    private fun handleFile(intent: Intent) {
-        if (intent.data == null) {
+    private fun handleFile(intent: Intent?) {
+        if (intent?.data == null) {
+            println("intent data is null");
             return
         }
+        println("processing valid intent");
 
-        val uri = intent.data
+        val uri = intent?.data
         sharedText = uri?.toString()
         var out: FileOutputStream? = null
         var inn: InputStream? = null
@@ -76,6 +89,8 @@ class MainActivity : FlutterActivity() {
                 e.printStackTrace()
             }
         }
+        println("finished processing intent with sharedText: $sharedText");
+        processedIntent = null;
         sharedText = outputFile.absolutePath
     }
 }

@@ -101,7 +101,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
               ..add(StartImportRecipes(File(importZipFilePath.toString()),
                   delay: Duration(milliseconds: 300))),
-            child: ImportDialog(closeAfterFinished: true)),
+            child: ImportDialog(closeAfterFinished: false)),
       );
     }
   }
