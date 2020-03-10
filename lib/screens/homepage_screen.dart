@@ -79,6 +79,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      initializeIntent();
+    }
+  }
+
   initializeIntent() async {
     var importZipFilePath = await getIntentPath();
     if (importZipFilePath == null) return;
@@ -93,7 +100,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
               ..add(StartImportRecipes(File(importZipFilePath.toString()),
                   delay: Duration(milliseconds: 300))),
-            child: ImportDialog(closeAfterFinished: true)),
+            child: ImportDialog(closeAfterFinished: false)),
       );
     }
   }
