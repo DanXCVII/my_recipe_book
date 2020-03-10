@@ -53,9 +53,9 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                               ),
                               child: Center(
                                 child: Container(
-                                    height: MediaQuery.of(context).size.width *
-                                            1.5 -
-                                        30,
+                                    height: (MediaQuery.of(context).size.width *
+                                            0.7) *
+                                        1.65,
                                     width: MediaQuery.of(context).size.width *
                                             0.7 -
                                         20,
@@ -160,7 +160,7 @@ class _VideoPlayerAdState extends State<VideoPlayerAd> {
     return Container(
       child: _controller.value.initialized
           ? AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
+              aspectRatio: 16 / 9,
               child: VideoPlayer(_controller),
             )
           : Container(),
