@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
+import 'package:video_player/video_player.dart';
 
 class IngredinetSearchPreviewScreen extends StatelessWidget {
   const IngredinetSearchPreviewScreen({Key key}) : super(key: key);
@@ -52,15 +53,16 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                               ),
                               child: Center(
                                 child: Container(
-                                  height:
-                                      MediaQuery.of(context).size.width * 1.5 -
-                                          30,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.7 -
-                                          20,
-                                  child: Image.asset(
-                                      "images/ingredient_search_preview.gif"),
-                                ),
+                                    height: MediaQuery.of(context).size.width *
+                                            1.5 -
+                                        30,
+                                    width: MediaQuery.of(context).size.width *
+                                            0.7 -
+                                        20,
+                                    child: VideoPlayerAd()
+                                    // Image.asset(
+                                    //     "images/ingredient_search_preview.gif"),
+                                    ),
                               )),
                         ),
                       ),
@@ -127,6 +129,41 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class VideoPlayerAd extends StatefulWidget {
+  VideoPlayerAd({Key key}) : super(key: key);
+
+  @override
+  _VideoPlayerAdState createState() => _VideoPlayerAdState();
+}
+
+class _VideoPlayerAdState extends State<VideoPlayerAd> {
+  VideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset('images/ingredient_search.mp4')
+      ..initialize().then((_) {
+        setState(() {
+          _controller.setLooping(true);
+          _controller.play();
+        });
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: _controller.value.initialized
+          ? AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: VideoPlayer(_controller),
+            )
+          : Container(),
     );
   }
 }

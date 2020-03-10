@@ -65,6 +65,7 @@ dependencies:
   firebase_admob: ^0.9.1+1
   in_app_purchase: ^0.3.1+1
   device_id: ^0.2.0
+  video_player: ^0.10.8+1 # BSD
 
 dev_dependencies:
   flutter_test:
@@ -109,6 +110,7 @@ flutter:
     - images/bannerAd.png
     - images/ingredient_search_preview.gif
     - images/tableVegetable.jpg
+    - images/ingredient_search.mp4
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
