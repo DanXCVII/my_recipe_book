@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ad_related/ad.dart';
@@ -51,6 +53,8 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       await initHive(true);
       await prefs.setBool('pro_version', false);
     } else {
+      await _initializeFirstStartData();
+
       await initHive(false);
     }
     Ads.initialize();
@@ -104,7 +108,15 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     }
   }
 
-  Future<void> _initializeFirstStartData() {
-    // TODO: Add some nutritions whatever
+  Future<void> _initializeFirstStartData() async {
+    // ByteData data = await rootBundle.load('images/allRecipes.zip');
+
+    // final buffer = data.buffer;
+    // await Directory((await getTemporaryDirectory()).path + "/lol")
+    //     .create(recursive: true);
+    // return new File(
+    //         (await getTemporaryDirectory()).path + "/allRecipes.zip")
+    //     .writeAsBytes(
+    //         buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
   }
 }
