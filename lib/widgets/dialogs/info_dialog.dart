@@ -27,7 +27,7 @@ class InfoDialog extends StatelessWidget {
               ? null
               : Colors.amber,
           onPressed: () {
-            if (onPressedOk() != null) {
+            if (onPressedOk != null) {
               Navigator.pop(context);
               onPressedOk();
             } else {
