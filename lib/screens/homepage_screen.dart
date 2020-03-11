@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcase.dart';
 import 'package:showcaseview/showcase_widget.dart';
@@ -51,6 +53,9 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   GlobalKey _introKeyOne = GlobalKey();
   GlobalKey _introKeyTwo = GlobalKey();
   MyBooleanWrapper showIntro;
+  bool _intentFailedImporting = false;
+
+  Flushbar _flush;
 
   static const platform = const MethodChannel('app.channel.shared.data');
 
@@ -87,28 +92,96 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }
   }
 
-  initializeIntent() async {
+  Future<void> initializeIntent() async {
     var importZipFilePath = await getIntentPath();
     if (importZipFilePath == null) return;
 
-    if (importZipFilePath != null) {
-      BuildContext importRecipeBlocContext = context;
+    // if error occured writing the import file
+    if (importZipFilePath == "failedFileCreation" ||
+        importZipFilePath == "failedWriting" ||
+        importZipFilePath == "failedClosing") {
+      PermissionStatus permission = await PermissionHandler()
+          .checkPermissionStatus(PermissionGroup.storage);
+      // if error occured even though the storage permission is granted
+      if (permission == PermissionStatus.granted) {
+        String error = importZipFilePath == "failedFileCreation"
+            ? "Error #1:"
+            : importZipFilePath == "failedWriting" ? "Error #2:" : "Error #3:";
+        _showFlushInfo(I18n.of(context).failed_import,
+            "$error" + I18n.of(context).failed_import_desc);
+      } // if error occured and the storage permission is not granted and not set to neverShowAgain
+      else if (permission == PermissionStatus.denied ||
+          permission == PermissionStatus.unknown) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => InfoDialog(
+            title: I18n.of(context).need_to_access_storage,
+            body: I18n.of(context).need_to_access_storage_desc,
+            onPressedOk: () async {
+              PermissionHandler().requestPermissions(
+                  [PermissionGroup.storage]).then((updatedPermissions) {
+                if (updatedPermissions[PermissionGroup.storage] ==
+                    PermissionStatus.granted) {
+                  if (_intentFailedImporting = false) {
+                    _intentFailedImporting = true;
 
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => BlocProvider<ImportRecipeBloc>.value(
-            value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
-              ..add(StartImportRecipes(File(importZipFilePath.toString()),
-                  delay: Duration(milliseconds: 300))),
-            child: ImportDialog(closeAfterFinished: false)),
-      );
+                    initializeIntent().then((_) {});
+                  }
+                }
+              });
+            },
+          ),
+        );
+      }
+    } // if import was successfull
+    else {
+      if (importZipFilePath != null) {
+        BuildContext importRecipeBlocContext = context;
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => BlocProvider<ImportRecipeBloc>.value(
+              value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
+                ..add(StartImportRecipes(File(importZipFilePath.toString()),
+                    delay: Duration(milliseconds: 300))),
+              child: ImportDialog(closeAfterFinished: false)),
+        );
+      }
+      _intentFailedImporting = false;
     }
   }
 
   getIntentPath() async {
     var sharedData = await platform.invokeMethod("getSharedText");
     return sharedData == null ? null : sharedData;
+  }
+
+  void _showFlushInfo(String title, String body) {
+    if (_flush != null && _flush.isShowing()) {
+    } else {
+      _flush = Flushbar<bool>(
+        animationDuration: Duration(milliseconds: 300),
+        leftBarIndicatorColor: Colors.blue[300],
+        title: title,
+        message: body,
+        icon: Icon(
+          Icons.info_outline,
+          color: Colors.blue,
+        ),
+        mainButton: FlatButton(
+          onPressed: () {
+            _flush.dismiss(true); // result = true
+          },
+          child: Text(
+            "OK",
+            style: TextStyle(color: Colors.amber),
+          ),
+        ),
+      ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+        ..show(context).then((result) {});
+    }
   }
 
   @override

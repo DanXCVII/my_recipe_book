@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/screens/settings_screen.dart';
-import '../screens/recipe_overview.dart';
 
 import '../generated/i18n.dart';
 import '../models/enums.dart';
+import '../screens/recipe_overview.dart';
 
 class RecipeFilter extends StatefulWidget {
   final bool showVegetableFilter;

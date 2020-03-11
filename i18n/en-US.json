@@ -146,7 +146,6 @@
   "too_many_images_for_the_steps_description": "you have added more images for the steps, than steps with a description. So images would get lost. Please fix the issue.",
   "add_ingredients_info": "add ingredients info",
   "categoy": "category",
-  "do_you_want_to_import_the_recipe": "do you want to import the recipe's?",
   "you_have_no_ingredients": "you have no ingredients",
   "recipe_for": "recipe for",
   "info": "information",
@@ -182,5 +181,9 @@
   "tap_here_to_manage_categories": "and here you can manage\nyour recipe categories",
   "contact_me": "contact me",
   "pro_version_desc": "includes ingredient filter, removal of ads and support of future development",
-  "buy_pro_version": "buy pro version"
+  "buy_pro_version": "buy pro version",
+  "failed_import": "import failed",
+  "failed_import_desc": "import failed for unknown reasons. Please switch to the settings tab and import the recipes there.",
+  "need_to_access_storage": "need to access storage",
+  "need_to_access_storage_desc": "Access to storage required for reading the file from an external location and import it. By pressing ok, you'll get a prompt asking you for that"
 }

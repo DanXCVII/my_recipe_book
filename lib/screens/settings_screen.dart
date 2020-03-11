@@ -67,8 +67,7 @@ class Settings extends StatelessWidget {
                             builder: (context) => InfoDialog(
                               title: I18n.of(context).video_to_remove_ads,
                               body: I18n.of(context).video_to_remove_ads_desc,
-                              onOk: () {
-                                Navigator.pop(context);
+                              onPressedOk: () {
                                 BlocProvider.of<AdManagerBloc>(context)
                                     .add(StartWatchingVideo(DateTime.now()));
                               },

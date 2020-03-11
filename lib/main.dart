@@ -86,7 +86,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: true,
+        debugShowCheckedModeBanner: false,
         localizationsDelegates: [
           I18n.delegate,
           GlobalMaterialLocalizations.delegate,

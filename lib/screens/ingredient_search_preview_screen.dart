@@ -154,6 +154,12 @@ class _VideoPlayerAdState extends State<VideoPlayerAd> {
         });
       });
   }
+  
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
