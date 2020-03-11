@@ -541,18 +541,22 @@ class HiveProvider {
           ..remove(oldName)
           ..add(newName));
 
-    for (var key in lazyBoxRecipes.keys) {
-      Recipe oldHiveRecipe = await lazyBoxRecipes.get(key);
+    // for (var key in lazyBoxRecipes.keys) {
+    //   Recipe oldHiveRecipe = await lazyBoxRecipes.get(key);
 
-      for (int i = 0; i < oldHiveRecipe.nutritions.length; i++) {
-        if (oldHiveRecipe.nutritions[i].name.compareTo(oldName) == 0) {
-          Recipe newHiveRecipe = oldHiveRecipe.copyWith(name: newName);
-          await lazyBoxRecipes.put(
-              getHiveKey(newHiveRecipe.name), newHiveRecipe);
-          break;
-        }
-      }
-    }
+    //   for (int i = 0; i < oldHiveRecipe.nutritions.length; i++) {
+    //     if (oldHiveRecipe.nutritions[i].name == oldName) {
+    //       Recipe newHiveRecipe = oldHiveRecipe.copyWith(
+    //           nutritions: oldHiveRecipe.nutritions
+    //               .map((item) => item.name == oldName
+    //                   ? Nutrition(name: newName, amountUnit: item.amountUnit)
+    //                   : item)
+    //               .toList());
+    //       await lazyBoxRecipes.put(key, newHiveRecipe);
+    //       break;
+    //     }
+    //   }
+    // }
   }
 
   Future<void> addNutrition(String nutritionName) async {

@@ -5,10 +5,12 @@ import '../../generated/i18n.dart';
 class InfoDialog extends StatelessWidget {
   final String title;
   final String body;
+  final Function onPressedOk;
 
   const InfoDialog({
     @required this.title,
     @required this.body,
+    this.onPressedOk,
     Key key,
   }) : super(key: key);
 
@@ -25,7 +27,12 @@ class InfoDialog extends StatelessWidget {
               ? null
               : Colors.amber,
           onPressed: () {
-            Navigator.pop(context);
+            if (onPressedOk() != null) {
+              Navigator.pop(context);
+              onPressedOk();
+            } else {
+              Navigator.pop(context);
+            }
           },
         )
       ],

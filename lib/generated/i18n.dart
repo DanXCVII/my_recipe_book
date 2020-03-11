@@ -326,8 +326,6 @@ class I18n implements WidgetsLocalizations {
   String get add_ingredients_info => "add ingredients info";
   /// "category"
   String get categoy => "category";
-  /// "do you want to import the recipe's?"
-  String get do_you_want_to_import_the_recipe => "do you want to import the recipe's?";
   /// "you have no ingredients"
   String get you_have_no_ingredients => "you have no ingredients";
   /// "recipe for"
@@ -370,6 +368,14 @@ class I18n implements WidgetsLocalizations {
   String get tap_here_to_manage_categories => "and here you can manage\nyour recipe categories";
   /// "contact me"
   String get contact_me => "contact me";
+  /// "import failed"
+  String get failed_import => "import failed";
+  /// "import failed for unknown reasons. Please switch to the settings tab and import the recipes there."
+  String get failed_import_desc => "import failed for unknown reasons. Please switch to the settings tab and import the recipes there.";
+  /// "need to access storage"
+  String get need_to_access_storage => "need to access storage";
+  /// "Access to storage required for reading the file from an external location and import it. By pressing ok, you'll get a prompt asking you for that"
+  String get need_to_access_storage_desc => "Access to storage required for reading the file from an external location and import it. By pressing ok, you'll get a prompt asking you for that";
 }
 
 class _I18n_en_US extends I18n {
@@ -820,9 +826,6 @@ class _I18n_de_DE extends I18n {
   /// "Kategorie"
   @override
   String get categoy => "Kategorie";
-  /// "Willst du das/die Rezept/e importieren?"
-  @override
-  String get do_you_want_to_import_the_recipe => "Willst du das/die Rezept/e importieren?";
   /// "Du hast noch keine Zuaten hinzugefügt"
   @override
   String get you_have_no_ingredients => "Du hast noch keine Zuaten hinzugefügt";
@@ -832,12 +835,12 @@ class _I18n_de_DE extends I18n {
   /// "Hilfe"
   @override
   String get info => "Hilfe";
-  /// "Hier kannst du die Namen der Zutaten, die dir vorgeschlagen werden ändern oder hinzufügen. Wenn du dies tust, werden die Zutaten nicht für die bereits existierenden Rezepte geändert. Es dient lediglich der Zeitersparnis beim Eintippen der Zutaten."
+  /// "Hier kannst du die Namen der Zutaten, die dir vorgeschlagen werden, ändern oder hinzufügen. Die Zutaten der bereits hinzugefügten Rezepte bleiben unverändert. Es dient lediglich der Zeitersparnis beim Eintippen der Zutaten."
   @override
-  String get ingredient_manager_description => "Hier kannst du die Namen der Zutaten, die dir vorgeschlagen werden ändern oder hinzufügen. Wenn du dies tust, werden die Zutaten nicht für die bereits existierenden Rezepte geändert. Es dient lediglich der Zeitersparnis beim Eintippen der Zutaten.";
-  /// "Hier kannst du die Namen der Nährstoffe verwalten. Beim ändern oder löschen der exisiterenden werden nicht die Nährwerte, der bereits hinzugefügten Rezepte geändert. Diese bleiben so wie sie sind, solange das Rezept nicht an sich bearbeitet wird."
+  String get ingredient_manager_description => "Hier kannst du die Namen der Zutaten, die dir vorgeschlagen werden, ändern oder hinzufügen. Die Zutaten der bereits hinzugefügten Rezepte bleiben unverändert. Es dient lediglich der Zeitersparnis beim Eintippen der Zutaten.";
+  /// "Hier kannst du die Namen der Nährstoffe verwalten. Beim Bearbeiten der exisiterenden bleiben die Nährwerte, der bereits hinzugefügten Rezepte unverändert."
   @override
-  String get nutrition_manager_description => "Hier kannst du die Namen der Nährstoffe verwalten. Beim ändern oder löschen der exisiterenden werden nicht die Nährwerte, der bereits hinzugefügten Rezepte geändert. Diese bleiben so wie sie sind, solange das Rezept nicht an sich bearbeitet wird.";
+  String get nutrition_manager_description => "Hier kannst du die Namen der Nährstoffe verwalten. Beim Bearbeiten der exisiterenden bleiben die Nährwerte, der bereits hinzugefügten Rezepte unverändert.";
   /// "Keine Rezepte passen zum angegebenen Filter"
   @override
   String get no_recipes_fit_your_filter => "Keine Rezepte passen zum angegebenen Filter";
@@ -886,6 +889,18 @@ class _I18n_de_DE extends I18n {
   /// "kontaktiere mich"
   @override
   String get contact_me => "kontaktiere mich";
+  /// "Import fehlgeschlagen"
+  @override
+  String get failed_import => "Import fehlgeschlagen";
+  /// "Import aus unbekannten Gründen fehlgeschlagen. Bitte wechsle in den Einstellungen Tab und importiere die Rezepte dort."
+  @override
+  String get failed_import_desc => "Import aus unbekannten Gründen fehlgeschlagen. Bitte wechsle in den Einstellungen Tab und importiere die Rezepte dort.";
+  /// "Zugriff auf Speicher benötigt"
+  @override
+  String get need_to_access_storage => "Zugriff auf Speicher benötigt";
+  /// "Speicherzugriff benötigt, um Datein aus externer Quelle zu lesen und importieren. Beim Tippen auf ok, wird eine Benachrichtigung aufpoppen, welche nach Vergabe der Berechtigung fragt."
+  @override
+  String get need_to_access_storage_desc => "Speicherzugriff benötigt, um Datein aus externer Quelle zu lesen und importieren. Beim Tippen auf ok, wird eine Benachrichtigung aufpoppen, welche nach Vergabe der Berechtigung fragt.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

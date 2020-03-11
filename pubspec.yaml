@@ -62,6 +62,7 @@ dependencies:
   url_launcher: ^5.4.2 # BSD
   pull_to_refresh: ^1.5.7 # MIT
   showcaseview: ^0.1.5 # BSD
+  permission_handler: ^4.4.0 # MIT
 
 dev_dependencies:
   flutter_test:

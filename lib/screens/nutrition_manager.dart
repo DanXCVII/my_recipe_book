@@ -275,6 +275,8 @@ class _NutritionManagerState extends State<NutritionManager> {
               validation: (String name) {
                 if (nutritions.contains(name)) {
                   return I18n.of(context).nutrition_already_exists;
+                } else if (name == "") {
+                  return I18n.of(context).field_must_not_be_empty;
                 } else {
                   return null;
                 }
