@@ -958,9 +958,9 @@ class _I18n_de_DE extends I18n {
   /// "kontaktiere mich"
   @override
   String get contact_me => "kontaktiere mich";
-  /// "du erhälst: Zutatenfilter, Entfernung der Werbung und\nUnterstützung zukünftiger Entwicklung"
+  /// "Zugriff auf Zutatenfilter, Entfernung der Werbung und\nUnterstützung für zukünftige Entwicklung"
   @override
-  String get pro_version_desc => "du erhälst: Zutatenfilter, Entfernung der Werbung und\nUnterstützung zukünftiger Entwicklung";
+  String get pro_version_desc => "Zugriff auf Zutatenfilter, Entfernung der Werbung und\nUnterstützung für zukünftige Entwicklung";
   /// "Pro-Version kaufen"
   @override
   String get buy_pro_version => "Pro-Version kaufen";

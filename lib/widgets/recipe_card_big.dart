@@ -197,7 +197,12 @@ class RecipeCardBig extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              recipe.preperationTime != null
+                              !(recipe.preperationTime != 0 &&
+                                      recipe.cookingTime != 0 &&
+                                      recipe.totalTime != 0)
+                                  ? Container()
+                                  : null,
+                              recipe.preperationTime != 0
                                   ? Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
@@ -213,8 +218,8 @@ class RecipeCardBig extends StatelessWidget {
                                             style: timeStyle),
                                       ],
                                     )
-                                  : Container(),
-                              recipe.cookingTime != null
+                                  : null,
+                              recipe.cookingTime != 0
                                   ? Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
@@ -230,8 +235,8 @@ class RecipeCardBig extends StatelessWidget {
                                             style: timeStyle),
                                       ],
                                     )
-                                  : Container(),
-                              recipe.totalTime != null
+                                  : null,
+                              recipe.totalTime != 0
                                   ? Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
@@ -247,8 +252,13 @@ class RecipeCardBig extends StatelessWidget {
                                             style: timeStyle),
                                       ],
                                     )
-                                  : Container(),
-                            ],
+                                  : null,
+                              !(recipe.preperationTime != 0 &&
+                                      recipe.cookingTime != 0 &&
+                                      recipe.totalTime != 0)
+                                  ? Container()
+                                  : null,
+                            ]..removeWhere((item) => item == null),
                           ),
                         ),
                         Expanded(

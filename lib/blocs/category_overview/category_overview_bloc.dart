@@ -231,9 +231,8 @@ class CategoryOverviewBloc
         bool alreadyAdded = false;
         for (Tuple2<String, String> t in categoryRandomImageList) {
           // if the current recipeCategory is already in the overview
-          if (t.item1.compareTo(category) == 0) {
+          if (t.item1 == category) {
             // add the old category to the new overviewList
-            categoryRandomImageList.add(t);
             alreadyAdded = true;
             break;
           }

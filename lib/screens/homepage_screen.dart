@@ -467,6 +467,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     },
                     Icon(MdiIcons.grid, color: Theme.of(context).primaryColor),
                     2,
+                    I18n.of(context).manage_categories,
                   ),
                 ),
                 Showcase.withWidget(
@@ -509,6 +510,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     Icon(Icons.description,
                         color: Theme.of(context).primaryColor),
                     1,
+                    I18n.of(context).add_recipe,
                   ),
                 ),
               ]
@@ -556,7 +558,8 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
     return menu;
   }
 
-  Widget _getFloatingItem(void Function() onTap, Icon icon, int index) {
+  Widget _getFloatingItem(
+      void Function() onTap, Icon icon, int index, String tooltip) {
     return Container(
       height: 70.0,
       width: 56.0,
@@ -568,6 +571,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
               curve: Curves.easeOut),
         ),
         child: FloatingActionButton(
+          tooltip: tooltip,
           heroTag: null,
           backgroundColor: Colors.white,
           mini: true,
