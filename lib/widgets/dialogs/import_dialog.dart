@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../blocs/import_recipe/import_recipe_bloc.dart';
 import '../../generated/i18n.dart';
@@ -82,28 +83,48 @@ class _ImportDialogState extends State<ImportDialog> {
           } else if (state is MultipleRecipes) {
             return Container(
               height: totalListItems > 4
-                  ? 250
-                  : totalListItems.toDouble() * 60 + 70,
+                  ? 400
+                  : totalListItems.toDouble() * 60 + 120,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Checkbox(
+                        value: listEquals(
+                            selectedRecipes, state.readyToImportRecipes),
+                        onChanged: (value) {
+                          setState(() {
+                            if (value) {
+                              selectedRecipes =
+                                  List<Recipe>.from(state.readyToImportRecipes);
+                            } else {
+                              selectedRecipes = [];
+                            }
+                          });
+                        },
+                      ),
+                      SizedBox(width: 23)
+                    ],
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Container(
                       height: totalListItems == 1
                           ? 60
-                          : totalListItems == 2 ? 120 : 180,
+                          : totalListItems == 2 ? 120 : 280,
                       width: 300,
                       child: ListView(
                         children: List.generate(
                             state.readyToImportRecipes.length == 0
                                 ? 0
-                                : state.readyToImportRecipes.length * 2 - 1,
+                                : state.readyToImportRecipes.length * 2,
                             (index) {
                           int currentRecipeIndex =
-                              index == 0 ? 0 : (index / 2).round();
+                              index == 0 ? 0 : (index / 2).round() - 1;
 
-                          return (index + 1) % 2 == 0
+                          return index % 2 == 0
                               ? Divider()
                               : ListTile(
                                   title: Text(

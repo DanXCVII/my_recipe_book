@@ -83,9 +83,11 @@ class RandomRecipeExplorerBloc
     List<Recipe> randomRecipes = [];
     for (int i = 0; i < 50; i++) {
       randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory(
-          category: event.selectedCategory == "all categories"
-              ? null
-              : event.selectedCategory));
+        category: event.selectedCategory == "all categories"
+            ? null
+            : event.selectedCategory,
+        excludedRecipe: randomRecipes.isNotEmpty ? randomRecipes.last : null,
+      ));
     }
     yield LoadedRandomRecipeExplorer(
         randomRecipes[0] == null ? [] : randomRecipes,

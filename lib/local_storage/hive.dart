@@ -493,7 +493,7 @@ class HiveProvider {
       recipeKeys = boxRecipeCategories.get(categoryKey);
     }
 
-    if (excludedRecipe != null) {
+    if (excludedRecipe != null && recipeKeys.length > 1) {
       String hiveRecipeKey = getHiveKey(excludedRecipe.name);
       recipeKeys.remove(hiveRecipeKey);
     }
