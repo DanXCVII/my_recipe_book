@@ -69,7 +69,7 @@ bool stringIsValidDouble(String text) {
   String pattern = r"^(?!0*[.,]?0+$)\d*[.,]?\d+$";
 
   RegExp regex = RegExp(pattern);
-  if (regex.hasMatch(text)) {
+  if (regex.hasMatch(text) || text == "0") {
     return true;
   } else {
     return false;

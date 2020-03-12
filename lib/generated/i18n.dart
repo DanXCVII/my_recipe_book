@@ -697,12 +697,12 @@ class _I18n_de_DE extends I18n {
   /// "von"
   @override
   String get out_of => "von";
-  /// "keine valide Nummber"
+  /// "invalide Zahl"
   @override
-  String get no_valid_number => "keine valide Nummber";
-  /// "darf nicht leer sein"
+  String get no_valid_number => "invalide Zahl";
+  /// "bitte ausfüllen"
   @override
-  String get data_required => "darf nicht leer sein";
+  String get data_required => "bitte ausfüllen";
   /// "nicht verpflichtend (zB. Zutaten Sauce)"
   @override
   String get not_required_eg_ingredients_of_sauce => "nicht verpflichtend (zB. Zutaten Sauce)";
@@ -808,9 +808,9 @@ class _I18n_de_DE extends I18n {
   /// "importiere Rezept/e"
   @override
   String get importing_recipes => "importiere Rezept/e";
-  /// "Wählre Rezept/e zum importieren aus"
+  /// "Wähle Rezepte zum importieren aus"
   @override
-  String get select_recipes_to_import => "Wählre Rezept/e zum importieren aus";
+  String get select_recipes_to_import => "Wähle Rezepte zum importieren aus";
   /// "bereit"
   @override
   String get ready => "bereit";

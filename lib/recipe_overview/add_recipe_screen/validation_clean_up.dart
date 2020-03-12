@@ -155,7 +155,7 @@ List<List<Ingredient>> getCleanIngredientData(
 
   List<List<double>> ingredientsAmount = amount
       .map((list) => list.map((amount) {
-            if (amount.text != "") {
+            if (amount.text != "" && amount.text != "0") {
               String addValue = amount.text;
               return double.parse(addValue.replaceAll(new RegExp(r','), 'e'));
             } else {

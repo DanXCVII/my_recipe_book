@@ -40,6 +40,12 @@ class _IngredientsState extends State<Ingredients> {
           child: TextFormField(
             controller: widget.servingsController,
             keyboardType: TextInputType.number,
+            validator: (value) {
+              if (stringIsValidDouble(value) == false && value != "") {
+                return I18n.of(context).no_valid_number;
+              }
+              return null;
+            },
             decoration: InputDecoration(
               filled: true,
               labelText: I18n.of(context).servings,

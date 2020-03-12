@@ -320,7 +320,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
           goBack,
-          servingsController.text == ""
+          (servingsController.text == "" || servingsController.text == "0")
               ? null
               : double.parse(servingsController.text),
           _getIngredientsList(
@@ -345,7 +345,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
           goBack,
-          servingsController.text == ""
+          (servingsController.text == "" || servingsController.text == "0")
               ? null
               : double.parse(servingsController.text),
           cleanIngredientsData,
@@ -370,10 +370,12 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
       ingredients.add([]);
       for (int j = 0; j < ingredientNamesContr[i].length; j++) {
         String ingredientName = ingredientNamesContr[i][j].text;
-        double amount = stringIsValidDouble(amountContr[i][j].text)
-            ? double.parse(
-                amountContr[i][j].text.replaceAll(new RegExp(r','), 'e'))
-            : null;
+        double amount = amountContr[i][j].text == "0"
+            ? null
+            : stringIsValidDouble(amountContr[i][j].text)
+                ? double.parse(
+                    amountContr[i][j].text.replaceAll(new RegExp(r','), 'e'))
+                : null;
         String unit = unitContr[i][j].text;
         ingredients[i]
             .add(Ingredient(name: ingredientName, amount: amount, unit: unit));
