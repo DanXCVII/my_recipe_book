@@ -184,5 +184,6 @@
   "failed_import": "Import fehlgeschlagen",
   "failed_import_desc": "Import aus unbekannten Gründen fehlgeschlagen. Bitte wechsle in den Einstellungen Tab und importiere die Rezepte dort.",
   "need_to_access_storage": "Zugriff auf Speicher benötigt",
-  "need_to_access_storage_desc": "Speicherzugriff benötigt, um Datein aus externer Quelle zu lesen und importieren. Beim Tippen auf ok, wird eine Benachrichtigung aufpoppen, welche nach Vergabe der Berechtigung fragt."
+  "need_to_access_storage_desc": "Speicherzugriff benötigt, um Datein aus externer Quelle zu lesen und importieren. Beim Tippen auf ok, wird eine Benachrichtigung aufpoppen, welche nach Vergabe der Berechtigung fragt.",
+  "select_all": "alle auswählen"
 }

@@ -56,7 +56,10 @@ class RecipeCategoryOverview extends StatelessWidget {
                   horizontalOffset: MediaQuery.of(context).size.width / 2,
                   child: FadeInAnimation(
                     child: RecipeRow(
-                      category: state.rCategoryOverview[index].item1,
+                      category:
+                          state.rCategoryOverview[index].item1 == "no category"
+                              ? I18n.of(context).no_category
+                              : state.rCategoryOverview[index].item1,
                       recipes: state.rCategoryOverview[index].item2,
                     ),
                   ),

@@ -68,9 +68,7 @@ class CategoryGridView extends StatelessWidget {
             scale: 0.8,
             child: FadeInAnimation(
               child: CategoryGridTile(
-                category: categoryTuple.item1 == "no category"
-                    ? I18n.of(context).no_category
-                    : categoryTuple.item1,
+                category: categoryTuple.item1,
                 randomCategoryImage: categoryTuple.item2,
               ),
             ),
@@ -112,7 +110,7 @@ class CategoryGridTile extends StatelessWidget {
             : Image.file(File(randomCategoryImage), fit: BoxFit.cover),
         footer: GridTileBar(
           title: Text(
-            category,
+            category == "no category" ? I18n.of(context).no_category : category,
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.black45,

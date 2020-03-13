@@ -312,7 +312,9 @@ class RecipeCardBig extends StatelessWidget {
                                           style: smallHeading),
                                       Text(
                                         _getRecipeCategoriesString(
-                                            recipe.categories),
+                                          recipe.categories,
+                                          context,
+                                        ),
                                         textScaleFactor: scaleFactor,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
@@ -349,10 +351,11 @@ class RecipeCardBig extends StatelessWidget {
     );
   }
 
-  String _getRecipeCategoriesString(List<String> categories) {
+  String _getRecipeCategoriesString(
+      List<String> categories, BuildContext context) {
     String categoryString = '';
     if (categories.isEmpty) {
-      return 'none';
+      return I18n.of(context).none;
     }
     for (String c in categories) {
       if (categories.last != c) {

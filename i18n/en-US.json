@@ -185,5 +185,6 @@
   "failed_import": "import failed",
   "failed_import_desc": "import failed for unknown reasons. Please switch to the settings tab and import the recipes there.",
   "need_to_access_storage": "need to access storage",
-  "need_to_access_storage_desc": "Access to storage required for reading the file from an external location and import it. By pressing ok, you'll get a prompt asking you for that"
+  "need_to_access_storage_desc": "Access to storage required for reading the file from an external location and import it. By pressing ok, you'll get a prompt asking you for that",
+  "select_all": "select all"
 }
