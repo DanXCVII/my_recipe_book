@@ -84,37 +84,38 @@ class _ImportDialogState extends State<ImportDialog> {
             return Wrap(
               direction: Axis.vertical,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Container(
-                      decoration: BoxDecoration(
-                        color: Color.fromRGBO(0, 0, 0, 0.2),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                        ),
+                state.readyToImportRecipes.isEmpty
+                    ? null
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Container(
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(0, 0, 0, 0.2),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                              ),
+                            ),
+                            width:
+                                MediaQuery.of(context).size.width * 0.75 - 24,
+                            child: ListTile(
+                              title: Text(I18n.of(context).select_all),
+                              trailing: Checkbox(
+                                value: listEquals(selectedRecipes,
+                                    state.readyToImportRecipes),
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value) {
+                                      selectedRecipes = List<Recipe>.from(
+                                          state.readyToImportRecipes);
+                                    } else {
+                                      selectedRecipes = [];
+                                    }
+                                  });
+                                },
+                              ),
+                            )),
                       ),
-                      width: MediaQuery.of(context).size.width * 0.75 - 24,
-                      child: ListTile(
-                        title: Text(I18n.of(context).select_all),
-                        trailing: Checkbox(
-                          value: state.readyToImportRecipes == []
-                              ? false
-                              : listEquals(
-                                  selectedRecipes, state.readyToImportRecipes),
-                          onChanged: (value) {
-                            setState(() {
-                              if (value) {
-                                selectedRecipes = List<Recipe>.from(
-                                    state.readyToImportRecipes);
-                              } else {
-                                selectedRecipes = [];
-                              }
-                            });
-                          },
-                        ),
-                      )),
-                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Container(
@@ -288,7 +289,7 @@ class _ImportDialogState extends State<ImportDialog> {
                     ],
                   ),
                 ),
-              ],
+              ]..removeWhere((item) => item == null),
             );
           } else if (state is ImportedRecipes) {
             return Wrap(
