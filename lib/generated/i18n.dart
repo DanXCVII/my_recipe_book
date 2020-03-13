@@ -376,6 +376,8 @@ class I18n implements WidgetsLocalizations {
   String get need_to_access_storage => "need to access storage";
   /// "Access to storage required for reading the file from an external location and import it. By pressing ok, you'll get a prompt asking you for that"
   String get need_to_access_storage_desc => "Access to storage required for reading the file from an external location and import it. By pressing ok, you'll get a prompt asking you for that";
+  /// "select all"
+  String get select_all => "select all";
 }
 
 class _I18n_en_US extends I18n {
@@ -901,6 +903,9 @@ class _I18n_de_DE extends I18n {
   /// "Speicherzugriff benötigt, um Datein aus externer Quelle zu lesen und importieren. Beim Tippen auf ok, wird eine Benachrichtigung aufpoppen, welche nach Vergabe der Berechtigung fragt."
   @override
   String get need_to_access_storage_desc => "Speicherzugriff benötigt, um Datein aus externer Quelle zu lesen und importieren. Beim Tippen auf ok, wird eine Benachrichtigung aufpoppen, welche nach Vergabe der Berechtigung fragt.";
+  /// "alle auswählen"
+  @override
+  String get select_all => "alle auswählen";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

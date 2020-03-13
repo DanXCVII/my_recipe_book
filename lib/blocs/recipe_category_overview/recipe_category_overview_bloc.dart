@@ -77,7 +77,8 @@ class RecipeCategoryOverviewBloc
     for (String category in categories) {
       List<Recipe> categoryRecipeList =
           await HiveProvider().getCategoryRecipes(category);
-      if (categoryRecipeList.isNotEmpty) {
+      if (category == "no category" && categoryRecipeList.isEmpty) {
+      } else {
         categoryRecipes.add(Tuple2(category, categoryRecipeList));
       }
     }
