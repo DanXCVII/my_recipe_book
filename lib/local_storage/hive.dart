@@ -237,7 +237,6 @@ class HiveProvider {
   }
 
   bool isRecipeFavorite(String recipeName) {
-    print(boxFavorites.keys.length);
     for (var key in boxFavorites.keys) {
       if (boxFavorites.get(key) == recipeName) {
         return true;

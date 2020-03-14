@@ -115,6 +115,9 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                                 if (state.ingredients.contains(name)) {
                                   return I18n.of(context)
                                       .ingredient_already_exists;
+                                } else if (name == "") {
+                                  return I18n.of(context)
+                                      .field_must_not_be_empty;
                                 } else {
                                   return null;
                                 }

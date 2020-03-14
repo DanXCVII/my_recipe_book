@@ -65,6 +65,8 @@ class _CategorySectionState extends State<CategorySection> {
                             validation: (String name) {
                               if (state.categories.contains(name)) {
                                 return I18n.of(context).category_already_exists;
+                              } else if (name == "") {
+                                return I18n.of(context).field_must_not_be_empty;
                               } else {
                                 return null;
                               }
