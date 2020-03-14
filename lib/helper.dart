@@ -37,17 +37,29 @@ List<Ingredient> flattenIngredients(List<List<Ingredient>> listList) {
 /// 60.0 => 1 h
 /// 30.0 => 30 min
 String getTimeHoursMinutes(double min) {
+  String returnString;
   if (min ~/ 60 > 0) {
-    String returnString =
-        '${(min ~/ 60).toStringAsPrecision(2).replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')}h ';
+    returnString = '${min ~/ 60}h ';
     if (min - (min ~/ 60 * 60) != 0) {
-      return returnString +=
-          '${(min - (min ~/ 60 * 60)).toStringAsPrecision(2).replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min';
+      String remainingMinutesString = (min - (min ~/ 60 * 60)).toString();
+      if (remainingMinutesString[remainingMinutesString.lastIndexOf(".") + 1] ==
+          "0") {
+        return returnString +=
+            '${remainingMinutesString.substring(0, remainingMinutesString.lastIndexOf("."))} min';
+      } else {
+        return returnString +=
+            '${remainingMinutesString.substring(0, remainingMinutesString.lastIndexOf(".") + 2)} min';
+      }
     } else {
       return returnString;
     }
   }
-  return "${min.toStringAsPrecision(2).replaceAll(RegExp(r"([.]*0)(?!.*\d)"), '')} min";
+  String minString = min.toString();
+  if (minString[minString.lastIndexOf(".") + 1] == "0") {
+    return "${minString.substring(0, minString.lastIndexOf("."))} min";
+  } else {
+    return "${minString.substring(0, minString.lastIndexOf(".") + 2)} min";
+  }
 }
 
 int getIngredientCount(List<List<Ingredient>> ingredients) {

@@ -56,6 +56,9 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
 
   Stream<ShoppingCartState> _mapCleanAddIngredientsToState(
       CleanAddIngredients event) async* {
+    for (Ingredient ingredient in event.ingredients) {
+      await HiveProvider().addIngredient(ingredient.name);
+    }
     await HiveProvider()
         .removeAndAddIngredients(event.recipeName, event.ingredients);
 

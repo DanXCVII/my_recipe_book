@@ -45,7 +45,9 @@ class CategoryManager extends StatelessWidget {
                       builder: (_) => TextFieldDialog(
                             validation: (String name) {
                               if (state.categories.contains(name)) {
-                                return 'category already exists';
+                                return I18n.of(context).category_already_exists;
+                              } else if (name == "") {
+                                return I18n.of(context).field_must_not_be_empty;
                               } else {
                                 return null;
                               }
@@ -55,7 +57,7 @@ class CategoryManager extends StatelessWidget {
                                   .recipeManagerBloc
                                   .add(RMAddCategories([name]));
                             },
-                            hintText: 'category name',
+                            hintText: I18n.of(context).categoryname,
                           ));
                 }),
             body: state.categories.length == 1
