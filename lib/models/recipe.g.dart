@@ -14,30 +14,30 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Recipe(
-      name: fields[0] as String,
-      imagePath: fields[1] as String,
-      imagePreviewPath: fields[2] as String,
-      preperationTime: fields[3] as double,
-      cookingTime: fields[4] as double,
-      totalTime: fields[5] as double,
-      servings: fields[6] as double,
-      categories: (fields[7] as List)?.cast<String>(),
-      ingredientsGlossary: (fields[8] as List)?.cast<String>(),
-      ingredients: (fields[9] as List)
-          ?.map((dynamic e) => (e as List)?.cast<Ingredient>())
-          ?.toList(),
-      vegetable: fields[10] as Vegetable,
-      steps: (fields[11] as List)?.cast<String>(),
-      stepImages: (fields[12] as List)
-          ?.map((dynamic e) => (e as List)?.cast<String>())
-          ?.toList(),
-      notes: fields[13] as String,
-      nutritions: (fields[14] as List)?.cast<Nutrition>(),
-      isFavorite: fields[15] as bool,
-      effort: fields[16] as int,
-      lastModified: fields[17] as String,
-      rating: fields[18] as int,
-    );
+        name: fields[0] as String,
+        imagePath: fields[1] as String,
+        imagePreviewPath: fields[2] as String,
+        preperationTime: fields[3] as double,
+        cookingTime: fields[4] as double,
+        totalTime: fields[5] as double,
+        servings: fields[6] as double,
+        categories: (fields[7] as List)?.cast<String>(),
+        ingredientsGlossary: (fields[8] as List)?.cast<String>(),
+        ingredients: (fields[9] as List)
+            ?.map((dynamic e) => (e as List)?.cast<Ingredient>())
+            ?.toList(),
+        vegetable: fields[10] as Vegetable,
+        steps: (fields[11] as List)?.cast<String>(),
+        stepImages: (fields[12] as List)
+            ?.map((dynamic e) => (e as List)?.cast<String>())
+            ?.toList(),
+        notes: fields[13] as String,
+        nutritions: (fields[14] as List)?.cast<Nutrition>(),
+        isFavorite: fields[15] as bool,
+        effort: fields[16] as int,
+        lastModified: fields[17] as String,
+        rating: fields[18] as int,
+        keywords: (fields[19] as List)?.cast<String>());
   }
 
   @override
@@ -81,7 +81,9 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       ..writeByte(17)
       ..write(obj.lastModified)
       ..writeByte(18)
-      ..write(obj.rating);
+      ..write(obj.rating)
+      ..writeByte(19)
+      ..write(obj.keywords);
   }
 
   @override

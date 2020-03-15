@@ -17,7 +17,7 @@ const String tmpEditingRecipeKey = '001';
 
 class BoxNames {
   static final recipes = "recipes";
-  static final categories = "categories";
+  static final keyString = "keyString";
   static final recipeName = "recipeName";
   static final tmpRecipe = "tmpRecipe";
   static final favorites = "favorites";
@@ -26,6 +26,7 @@ class BoxNames {
   static final recipeSort = "recipeSort";
   static final shoppingCart = "shoppingCart";
   static final recipeCategories = "recipeCategories";
+  static final keywords = "keywords";
   // static final recipeBubbles = "recipeBubbles";
   static final vegetarian = Vegetable.VEGETARIAN.toString();
   static final vegan = Vegetable.VEGAN.toString();
@@ -39,19 +40,16 @@ Future<void> initHive(bool firstTime) async {
   Hive.registerAdapter(CheckableIngredientAdapter());
   Hive.registerAdapter(VegetableAdapter());
   Hive.registerAdapter(NutritionAdapter());
-  Hive.registerAdapter(StringListTupleAdapter());
   Hive.registerAdapter(RecipeSortAdapter());
   Hive.registerAdapter(RSortAdapter());
   Hive.registerAdapter(RecipeAdapter());
 
   await Future.wait([
-    Hive.openBox<StringListTuple>("tuple"),
-    Hive.openBox<Ingredient>("ingredient"),
     Hive.openLazyBox<Recipe>(BoxNames.recipes),
     Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString()),
     Hive.openBox<String>(Vegetable.VEGETARIAN.toString()),
     Hive.openBox<String>(Vegetable.VEGAN.toString()),
-    Hive.openBox<String>(BoxNames.categories),
+    Hive.openBox<String>(BoxNames.keyString),
     Hive.openBox<String>(BoxNames.recipeName),
     // Hive.openBox<String>(BoxNames.recipeBubbles),
     Hive.openBox<String>(BoxNames.favorites),
@@ -61,6 +59,7 @@ Future<void> initHive(bool firstTime) async {
     Hive.openBox<List>(BoxNames.shoppingCart),
     Hive.openBox<List<String>>(BoxNames.recipeCategories),
     Hive.openBox<Recipe>(BoxNames.tmpRecipe),
+    Hive.openBox<List<String>>(BoxNames.keywords),
   ]);
 
   // initializing with the must have values
@@ -68,7 +67,7 @@ Future<void> initHive(bool firstTime) async {
     await Hive.box<Recipe>(BoxNames.tmpRecipe)
         .put(tmpRecipeKey, Recipe(name: null, vegetable: null, servings: null));
 
-    await Hive.box<String>(BoxNames.categories)
+    await Hive.box<String>(BoxNames.keyString)
         .put('no category', 'no category');
 
     await Hive.box<String>(BoxNames.recipeName).put('summary', 'summary');
@@ -99,7 +98,7 @@ class HiveProvider {
     Hive.lazyBox<Recipe>(BoxNames.recipes),
     Hive.box<String>(BoxNames.nonVegetarain),
     Hive.box<String>(BoxNames.vegan),
-    Hive.box<String>(BoxNames.categories),
+    Hive.box<String>(BoxNames.keyString),
     Hive.box<String>(BoxNames.recipeName),
     Hive.box<Recipe>(BoxNames.tmpRecipe),
     Hive.box<String>(BoxNames.favorites),
@@ -108,6 +107,7 @@ class HiveProvider {
     Hive.box<RSort>(BoxNames.recipeSort),
     Hive.box<List>(BoxNames.shoppingCart),
     Hive.box<List<String>>(BoxNames.recipeCategories),
+    Hive.box<List<String>>(BoxNames.keywords),
     // Hive.box<String>(BoxNames.recipeBubbles),
   );
 
@@ -115,7 +115,7 @@ class HiveProvider {
   Box<String> boxVegetarian;
   Box<String> boxNonVegetarian;
   Box<String> boxVegan;
-  Box<String> boxCategories;
+  Box<String> boxKeyString;
   Box<String> boxRecipeNames;
   Box<Recipe> boxTmpRecipe;
 
@@ -127,6 +127,7 @@ class HiveProvider {
   Box<RSort> boxRecipeSort;
   Box<List> boxShoppingCart;
   Box<List<String>> boxRecipeCategories;
+  Box<List<String>> boxKeywords;
 
   factory HiveProvider() {
     return _singleton;
@@ -137,7 +138,7 @@ class HiveProvider {
     this.lazyBoxRecipes,
     this.boxNonVegetarian,
     this.boxVegan,
-    this.boxCategories,
+    this.boxKeyString,
     this.boxRecipeNames,
     this.boxTmpRecipe,
     this.boxFavorites,
@@ -146,6 +147,7 @@ class HiveProvider {
     this.boxRecipeSort,
     this.boxShoppingCart,
     this.boxRecipeCategories,
+    this.boxKeywords,
     // this.boxRecipeBubbles,
   );
 
@@ -153,7 +155,7 @@ class HiveProvider {
     await boxVegetarian.close();
     await boxNonVegetarian.close();
     await boxVegan.close();
-    await boxCategories.close();
+    await boxKeyString.close();
     await boxRecipeNames.close();
     await boxTmpRecipe.close();
     await boxFavorites.close();
@@ -163,12 +165,13 @@ class HiveProvider {
     await boxShoppingCart.close();
     await boxRecipeCategories.close();
     await lazyBoxRecipes.close();
+    await boxKeywords.close();
 
     boxNonVegetarian =
         await Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString());
     boxVegetarian = await Hive.openBox<String>(Vegetable.VEGETARIAN.toString());
     boxVegan = await Hive.openBox<String>(Vegetable.VEGAN.toString());
-    boxCategories = await Hive.openBox<String>(BoxNames.categories);
+    boxKeyString = await Hive.openBox<String>(BoxNames.keyString);
     boxRecipeNames = await Hive.openBox<String>(BoxNames.recipeName);
     boxFavorites = await Hive.openBox<String>(BoxNames.favorites);
     boxIngredientNames = await Hive.openBox<String>(BoxNames.ingredientNames);
@@ -179,6 +182,7 @@ class HiveProvider {
         await Hive.openBox<List<String>>(BoxNames.recipeCategories);
     boxTmpRecipe = await Hive.openBox<Recipe>(BoxNames.tmpRecipe);
     lazyBoxRecipes = await Hive.openLazyBox<Recipe>(BoxNames.recipes);
+    boxKeywords = await Hive.openBox<List<String>>(BoxNames.keywords);
   }
 
   ////////////// single recipe related //////////////
@@ -303,7 +307,7 @@ class HiveProvider {
   Future<void> addCategory(String categoryName) async {
     String hiveCategoryKey = getHiveKey(categoryName);
 
-    await boxCategories.put(hiveCategoryKey, categoryName);
+    await boxKeyString.put(hiveCategoryKey, categoryName);
 
     List<String> categories = boxOrder.get('categories');
     boxOrder.put(
@@ -322,8 +326,8 @@ class HiveProvider {
     boxRecipeCategories.delete(hiveOldKey);
     await boxRecipeCategories.put(hiveNewKey, recipes);
 
-    boxCategories.delete(hiveOldKey);
-    boxCategories.put(hiveNewKey, newName);
+    boxKeyString.delete(hiveOldKey);
+    boxKeyString.put(hiveNewKey, newName);
 
     for (var key in lazyBoxRecipes.keys) {
       Recipe recipe = await lazyBoxRecipes.get(key);
@@ -373,7 +377,7 @@ class HiveProvider {
   List<String> getCategoryNames() {
     List<String> categories = [];
     for (String key in boxOrder.get('categories')) {
-      categories.add(boxCategories.get(key));
+      categories.add(boxKeyString.get(key));
     }
     return categories;
   }

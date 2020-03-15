@@ -13,8 +13,11 @@ part 'splash_screen_event.dart';
 part 'splash_screen_state.dart';
 
 class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
-  bool recipeCategoryOverview;
-  bool showIntro;
+  bool _recipeCategoryOverview;
+  bool _showIntro;
+
+  bool _splashScreenFinished = false;
+  bool _initialized = false;
 
   @override
   SplashScreenState get initialState => InitializingData();
@@ -25,6 +28,8 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   ) async* {
     if (event is SPInitializeData) {
       yield* _mapInitializeDataToState(event);
+    } else if (event is SPFinished) {
+      yield* _mapSPFinishedToState(event);
     }
   }
 
@@ -51,10 +56,19 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       await initHive(false);
     }
 
-    this.recipeCategoryOverview = recipeCategoryOverview;
-    this.showIntro = showIntro;
+    this._recipeCategoryOverview = recipeCategoryOverview;
+    this._showIntro = showIntro;
 
-    yield InitializedData(recipeCategoryOverview, showIntro);
+    _initialized = true;
+    if (_splashScreenFinished)
+      yield InitializedData(recipeCategoryOverview, showIntro);
+  }
+
+  Stream<SplashScreenState> _mapSPFinishedToState(SPFinished event) async* {
+    _splashScreenFinished = true;
+    if (_initialized) {
+      yield InitializedData(_recipeCategoryOverview, _showIntro);
+    }
   }
 
   bool _initRecipeOverviewScreen(SharedPreferences prefs) {

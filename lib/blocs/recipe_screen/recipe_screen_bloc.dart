@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
+import 'package:my_recipe_book/local_storage/hive.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 
 part 'recipe_screen_event.dart';
@@ -31,18 +33,31 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
   }
 
   @override
-  RecipeScreenState get initialState => RecipeScreenInfo(recipe);
+  RecipeScreenState get initialState => RecipeScreenInfo(recipe, []);
 
   @override
   Stream<RecipeScreenState> mapEventToState(
     RecipeScreenEvent event,
   ) async* {
-    if (event is HideRecipe) {
+    if (event is InitRecipeScreen) {
+      yield* _mapInitRecipeScreenToState(event);
+    } else if (event is HideRecipe) {
       yield* _mapHideRecipeToState(event);
     }
   }
 
+  Stream<RecipeScreenState> _mapInitRecipeScreenToState(
+      InitRecipeScreen event) async* {
+    List<String> categoryImages = [];
+    for (String category in recipe.categories) {
+      categoryImages.add(
+          (await HiveProvider().getRandomRecipeOfCategory(category: category))
+              .imagePreviewPath);
+    }
+    yield RecipeScreenInfo(recipe, categoryImages);
+  }
+
   Stream<RecipeScreenState> _mapHideRecipeToState(HideRecipe event) async* {
-    yield RecipeScreenInfo(Recipe(name: 'deleted recipe'));
+    yield RecipeScreenInfo(Recipe(name: 'deleted recipe'), []);
   }
 }

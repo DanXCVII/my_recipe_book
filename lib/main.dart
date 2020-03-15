@@ -96,6 +96,7 @@ class MyApp extends StatelessWidget {
           switch (settings.name) {
             case "/":
               return MaterialPageRoute(
+                settings: RouteSettings(name: "recipeRoute"),
                 builder: (context) => BlocProvider<SplashScreenBloc>(
                   create: (context) =>
                       SplashScreenBloc()..add(SPInitializeData(context)),
@@ -109,62 +110,70 @@ class MyApp extends StatelessWidget {
                     },
                     child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
                         builder: (context, state) {
-                      if (state is InitializingData) {
-                        return SplashScreen();
-                      } else if (state is InitializedData) {
-                        return BlocProvider<AppBloc>(
-                          create: (context) => AppBloc()
-                            ..add(InitializeData(context,
-                                state.recipeCategoryOverview, state.showIntro)),
-                          child: MultiBlocProvider(
-                            providers: [
-                              BlocProvider<CategoryOverviewBloc>(
-                                create: (context) => CategoryOverviewBloc(
-                                  recipeManagerBloc:
-                                      BlocProvider.of<RecipeManagerBloc>(
-                                          context),
-                                )..add(COLoadCategoryOverview()),
-                              ),
-                              BlocProvider<RecipeCategoryOverviewBloc>(
-                                create: (context) => RecipeCategoryOverviewBloc(
-                                  recipeManagerBloc:
-                                      BlocProvider.of<RecipeManagerBloc>(
-                                          context),
-                                )..add(RCOLoadRecipeCategoryOverview()),
-                              ),
-                              BlocProvider<FavoriteRecipesBloc>(
-                                  create: (context) => FavoriteRecipesBloc(
+                      return AnimatedSwitcher(
+                        duration: Duration(milliseconds: 500),
+                        child: state is InitializingData
+                            ? SplashScreen()
+                            : BlocProvider<AppBloc>(
+                                create: (context) => AppBloc()
+                                  ..add(InitializeData(
+                                      context,
+                                      (state as InitializedData)
+                                          .recipeCategoryOverview,
+                                      (state as InitializedData).showIntro)),
+                                child: MultiBlocProvider(
+                                  providers: [
+                                    BlocProvider<CategoryOverviewBloc>(
+                                      create: (context) => CategoryOverviewBloc(
                                         recipeManagerBloc:
                                             BlocProvider.of<RecipeManagerBloc>(
                                                 context),
-                                      )..add(LoadFavorites())),
-                              BlocProvider<RandomRecipeExplorerBloc>(
-                                create: (context) => RandomRecipeExplorerBloc(
-                                  recipeManagerBloc:
-                                      BlocProvider.of<RecipeManagerBloc>(
-                                          context),
-                                )..add(InitializeRandomRecipeExplorer()),
+                                      )..add(COLoadCategoryOverview()),
+                                    ),
+                                    BlocProvider<RecipeCategoryOverviewBloc>(
+                                      create: (context) =>
+                                          RecipeCategoryOverviewBloc(
+                                        recipeManagerBloc:
+                                            BlocProvider.of<RecipeManagerBloc>(
+                                                context),
+                                      )..add(RCOLoadRecipeCategoryOverview()),
+                                    ),
+                                    BlocProvider<FavoriteRecipesBloc>(
+                                        create: (context) =>
+                                            FavoriteRecipesBloc(
+                                              recipeManagerBloc: BlocProvider
+                                                  .of<RecipeManagerBloc>(
+                                                      context),
+                                            )..add(LoadFavorites())),
+                                    BlocProvider<RandomRecipeExplorerBloc>(
+                                      create: (context) =>
+                                          RandomRecipeExplorerBloc(
+                                        recipeManagerBloc:
+                                            BlocProvider.of<RecipeManagerBloc>(
+                                                context),
+                                      )..add(InitializeRandomRecipeExplorer()),
+                                    ),
+                                    BlocProvider<ImportRecipeBloc>(
+                                        create: (context) => ImportRecipeBloc(
+                                            BlocProvider.of<RecipeManagerBloc>(
+                                                context))),
+                                    BlocProvider<ShoppingCartBloc>(
+                                      create: (context) => ShoppingCartBloc(
+                                          BlocProvider.of<RecipeManagerBloc>(
+                                              context))
+                                        ..add(LoadShoppingCart()),
+                                    ),
+                                  ],
+                                  child: ShowCaseWidget(
+                                    builder: Builder(
+                                        builder: (context) => MyHomePage(
+                                            showIntro:
+                                                (state as InitializedData)
+                                                    .showIntro)),
+                                  ),
+                                ),
                               ),
-                              BlocProvider<ImportRecipeBloc>(
-                                  create: (context) => ImportRecipeBloc(
-                                      BlocProvider.of<RecipeManagerBloc>(
-                                          context))),
-                              BlocProvider<ShoppingCartBloc>(
-                                create: (context) => ShoppingCartBloc(
-                                    BlocProvider.of<RecipeManagerBloc>(context))
-                                  ..add(LoadShoppingCart()),
-                              ),
-                            ],
-                            child: ShowCaseWidget(
-                              builder: Builder(
-                                  builder: (context) =>
-                                      MyHomePage(showIntro: state.showIntro)),
-                            ),
-                          ),
-                        );
-                      } else {
-                        return Text(state.toString());
-                      }
+                      );
                     }),
                   ),
                 ),
@@ -276,6 +285,7 @@ class MyApp extends StatelessWidget {
               final RecipeGridViewArguments args = settings.arguments;
 
               return CupertinoPageRoute(
+                  settings: RouteSettings(name: "recipeRoute"),
                   builder: (BuildContext context) => MultiBlocProvider(
                         providers: [
                           BlocProvider<ShoppingCartBloc>.value(
@@ -296,6 +306,7 @@ class MyApp extends StatelessWidget {
               final RecipeGridViewArguments args = settings.arguments;
 
               return CupertinoPageRoute(
+                settings: RouteSettings(name: "recipeRoute"),
                 builder: (BuildContext context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<ShoppingCartBloc>.value(
@@ -339,6 +350,7 @@ class MyApp extends StatelessWidget {
               final IngredientSearchScreenArguments args = settings.arguments;
 
               return MaterialPageRoute(
+                settings: RouteSettings(name: "recipeRoute"),
                 builder: (context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<IngredientSearchBloc>(

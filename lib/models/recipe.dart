@@ -48,6 +48,8 @@ class Recipe extends Equatable {
   final String lastModified;
   @HiveField(18)
   final int rating;
+  @HiveField(19)
+  final List<String> keywords;
 
   Recipe({
     @required this.name,
@@ -69,6 +71,7 @@ class Recipe extends Equatable {
     this.effort,
     this.lastModified,
     this.rating,
+    this.keywords = const [],
   });
 
   @override
@@ -91,7 +94,8 @@ class Recipe extends Equatable {
         'complexity : $effort\n'
         'isFavorite : $isFavorite\n'
         'lastModified : $lastModified\n'
-        'rating: $rating');
+        'rating: $rating\n'
+        'keywords: $keywords');
   }
 
   factory Recipe.fromMap(Map<String, dynamic> json) {
@@ -131,6 +135,7 @@ class Recipe extends Equatable {
           .toList(),
       lastModified: DateTime.now().toString(),
       rating: json.containsKey('rating') ? json['rating'] : null,
+      keywords: json.containsKey('keywords') ? json['keywords'] : [],
     );
   }
 
@@ -155,48 +160,53 @@ class Recipe extends Equatable {
         'nutritions': nutritions.map((n) => n.toMap()).toList(),
         'lastModified': lastModified,
         'rating': rating,
+        'keywords': keywords,
       };
 
-  Recipe copyWith(
-      {String name,
-      String imagePath,
-      String imagePreviewPath,
-      double preperationTime,
-      double cookingTime,
-      double totalTime,
-      double servings,
-      List<String> ingredientsGlossary,
-      List<List<Ingredient>> ingredients,
-      Vegetable vegetable,
-      List<String> steps,
-      List<List<String>> stepImages,
-      String notes,
-      List<Nutrition> nutritions,
-      List<String> categories,
-      int effort,
-      bool isFavorite,
-      String lastModified,
-      int rating}) {
+  Recipe copyWith({
+    String name,
+    String imagePath,
+    String imagePreviewPath,
+    double preperationTime,
+    double cookingTime,
+    double totalTime,
+    double servings,
+    List<String> ingredientsGlossary,
+    List<List<Ingredient>> ingredients,
+    Vegetable vegetable,
+    List<String> steps,
+    List<List<String>> stepImages,
+    String notes,
+    List<Nutrition> nutritions,
+    List<String> categories,
+    int effort,
+    bool isFavorite,
+    String lastModified,
+    int rating,
+    List<String> keywords,
+  }) {
     return Recipe(
-        name: name ?? this.name,
-        imagePath: imagePath ?? this.imagePath,
-        imagePreviewPath: imagePreviewPath ?? this.imagePreviewPath,
-        preperationTime: preperationTime ?? this.preperationTime,
-        cookingTime: cookingTime ?? this.cookingTime,
-        totalTime: totalTime ?? this.totalTime,
-        servings: servings ?? this.servings,
-        ingredientsGlossary: ingredientsGlossary ?? this.ingredientsGlossary,
-        ingredients: ingredients ?? this.ingredients,
-        vegetable: vegetable ?? this.vegetable,
-        steps: steps ?? this.steps,
-        stepImages: stepImages ?? this.stepImages,
-        notes: notes ?? this.notes,
-        nutritions: nutritions ?? this.nutritions,
-        categories: categories ?? this.categories,
-        effort: effort ?? this.effort,
-        isFavorite: isFavorite ?? this.isFavorite,
-        lastModified: lastModified ?? this.lastModified,
-        rating: rating ?? this.rating);
+      name: name ?? this.name,
+      imagePath: imagePath ?? this.imagePath,
+      imagePreviewPath: imagePreviewPath ?? this.imagePreviewPath,
+      preperationTime: preperationTime ?? this.preperationTime,
+      cookingTime: cookingTime ?? this.cookingTime,
+      totalTime: totalTime ?? this.totalTime,
+      servings: servings ?? this.servings,
+      ingredientsGlossary: ingredientsGlossary ?? this.ingredientsGlossary,
+      ingredients: ingredients ?? this.ingredients,
+      vegetable: vegetable ?? this.vegetable,
+      steps: steps ?? this.steps,
+      stepImages: stepImages ?? this.stepImages,
+      notes: notes ?? this.notes,
+      nutritions: nutritions ?? this.nutritions,
+      categories: categories ?? this.categories,
+      effort: effort ?? this.effort,
+      isFavorite: isFavorite ?? this.isFavorite,
+      lastModified: lastModified ?? this.lastModified,
+      rating: rating ?? this.rating,
+      keywords: keywords ?? this.keywords,
+    );
   }
 
   @override
@@ -220,6 +230,7 @@ class Recipe extends Equatable {
         isFavorite,
         lastModified,
         rating,
+        keywords,
       ];
 }
 

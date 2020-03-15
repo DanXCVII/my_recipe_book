@@ -90,7 +90,7 @@ class _CategorySectionState extends State<CategorySection> {
                   box: Hive.box<List<String>>(BoxNames.order),
                   builder: (context, boxCategory) {
                     List<String> categories =
-                        boxCategory.get(BoxNames.categories);
+                        boxCategory.get(BoxNames.keyString);
                     return Wrap(
                       spacing: 5.0,
                       runSpacing: 3.0,

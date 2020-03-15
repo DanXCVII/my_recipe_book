@@ -63,6 +63,7 @@ dependencies:
   pull_to_refresh: ^1.5.7 # MIT
   showcaseview: ^0.1.5 # BSD
   permission_handler: ^4.4.0 # MIT
+  flutter_sequence_animation: ^3.0.1 # MIT
 
 dev_dependencies:
   flutter_test:

@@ -15,3 +15,5 @@ class SPInitializeData extends SplashScreenEvent {
   @override
   List<Object> get props => [context];
 }
+
+class SPFinished extends SplashScreenEvent {}
