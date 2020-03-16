@@ -140,6 +140,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                     recipe: state.recipe,
                     heroImageTag: widget.heroImageTag,
                     scrollController: _scrollController,
+                    categoriesFiles: state.categoryImages,
                   )
                 : Scaffold(
                     body: SlidingUpPanel(
@@ -241,6 +242,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                         recipe: state.recipe,
                         heroImageTag: widget.heroImageTag,
                         scrollController: _scrollController,
+                        categoriesFiles: state.categoryImages,
                       ),
                     ),
                   ));
@@ -291,11 +293,13 @@ class RecipePage extends StatelessWidget {
   final Recipe recipe;
   final String heroImageTag;
   final ScrollController scrollController;
+  final List<String> categoriesFiles;
 
   RecipePage({
     @required this.recipe,
     this.heroImageTag,
     this.scrollController,
+    this.categoriesFiles,
   });
 
   @override
@@ -572,7 +576,9 @@ class RecipePage extends StatelessWidget {
                       ? NotesSection(notes: recipe.notes)
                       : Container(),
                   recipe.categories.length > 0
-                      ? CategoriesSection(categories: recipe.categories)
+                      ? CategoriesSection(
+                          categories: recipe.categories,
+                          categoriesFiles: categoriesFiles)
                       : Container(),
                   recipe.nutritions.isEmpty
                       ? Container()
@@ -1155,8 +1161,12 @@ void _showPictureFullView(String image, String tag, BuildContext context) {
 
 class CategoriesSection extends StatelessWidget {
   final List<String> categories;
+  final List<String> categoriesFiles;
 
-  CategoriesSection({this.categories});
+  CategoriesSection({
+    this.categories,
+    this.categoriesFiles,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1177,37 +1187,27 @@ class CategoriesSection extends StatelessWidget {
             ),
             SizedBox(height: 25),
             Wrap(
-              children: categories.map((categoryName) {
-                return FutureBuilder<Recipe>(
-                    future: HiveProvider()
-                        .getRandomRecipeOfCategory(category: categoryName),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return CategoryCircle(
-                          categoryName: categoryName,
-                          imageName: snapshot.data == null
-                              ? Constants.noRecipeImage
-                              : snapshot.data.imagePath,
+              children: List<Widget>.generate(
+                  categories.length,
+                  (index) => categoriesFiles.isEmpty
+                      ? CircularProgressIndicator()
+                      : CategoryCircle(
+                          categoryName: categories[index],
+                          imageName: categoriesFiles[index],
                           onPressed: () {
                             Navigator.pushNamed(
                               context,
                               RouteNames.recipeCategories,
                               arguments: RecipeGridViewArguments(
-                                category: categoryName == null
+                                category: categories[index] == null
                                     ? Constants.noCategory
-                                    : categoryName,
+                                    : categories[index],
                                 shoppingCartBloc:
                                     BlocProvider.of<ShoppingCartBloc>(context),
                               ),
                             );
                           },
-                        );
-                      }
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    });
-              }).toList(),
+                        )),
               runSpacing: 10.0,
               spacing: 10.0,
             ),

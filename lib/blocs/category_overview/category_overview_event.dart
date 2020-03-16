@@ -27,16 +27,6 @@ class COAddRecipes extends CategoryOverviewEvent {
   List<Object> get props => [recipes];
 }
 
-class COUpdateRecipe extends CategoryOverviewEvent {
-  final Recipe oldRecipe;
-  final Recipe updatedRecipe;
-
-  const COUpdateRecipe(this.oldRecipe, this.updatedRecipe);
-
-  @override
-  List<Object> get props => [oldRecipe, updatedRecipe];
-}
-
 class CODeleteRecipe extends CategoryOverviewEvent {
   final Recipe recipe;
 

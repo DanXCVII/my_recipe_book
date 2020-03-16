@@ -6,9 +6,10 @@ abstract class RecipeScreenState extends Equatable {
 
 class RecipeScreenInfo extends RecipeScreenState {
   final Recipe recipe;
+  final List<String> categoryImages;
 
-  RecipeScreenInfo(this.recipe);
+  RecipeScreenInfo(this.recipe, this.categoryImages);
 
   @override
-  List<Object> get props => [recipe];
+  List<Object> get props => [recipe, categoryImages];
 }

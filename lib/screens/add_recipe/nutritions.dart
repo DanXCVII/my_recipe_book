@@ -136,20 +136,17 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                 (_) => Navigator.of(context)
                                     .popUntil((route) => route.isFirst));
                           } else {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-
-                            Navigator.pushNamed(
-                              context,
-                              RouteNames.recipeScreen,
-                              arguments: RecipeScreenArguments(
-                                BlocProvider.of<ShoppingCartBloc>(context),
-                                state.recipe,
-                                'heroImageTag',
-                                BlocProvider.of<RecipeManagerBloc>(context),
+                            Future.delayed(Duration(milliseconds: 300)).then(
+                              (_) => Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                RouteNames.recipeScreen,
+                                ModalRoute.withName('recipeRoute'),
+                                arguments: RecipeScreenArguments(
+                                  BlocProvider.of<ShoppingCartBloc>(context),
+                                  state.recipe,
+                                  'heroImageTag',
+                                  BlocProvider.of<RecipeManagerBloc>(context),
+                                ),
                               ),
                             ).then((_) => Ads.hideBottomBannerAd());
                           }
