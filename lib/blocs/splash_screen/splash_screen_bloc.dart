@@ -60,6 +60,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     this._showIntro = showIntro;
 
     _initialized = true;
+    print('initialized data');
     if (_splashScreenFinished)
       yield InitializedData(recipeCategoryOverview, showIntro);
   }

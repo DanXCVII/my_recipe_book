@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
         .addAnimatable(
             animatable: Tween<double>(begin: 1, end: 10),
             from: Duration(milliseconds: 1000),
-            to: Duration(milliseconds: 1500),
+            to: Duration(milliseconds: 1300),
             curve: Curves.easeInOutCubic,
             tag: "second")
         .animate(_controller);

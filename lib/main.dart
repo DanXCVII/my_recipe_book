@@ -88,6 +88,7 @@ class MyApp extends StatelessWidget {
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
+        color: Colors.amber,
         supportedLocales: I18n.delegate.supportedLocales,
         showPerformanceOverlay: false,
         theme: CustomTheme.of(context),
@@ -95,9 +96,10 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: (settings) {
           switch (settings.name) {
             case "/":
-              return MaterialPageRoute(
+              return PageRouteBuilder(
                 settings: RouteSettings(name: "recipeRoute"),
-                builder: (context) => BlocProvider<SplashScreenBloc>(
+                pageBuilder: (context, animation1, animation2) =>
+                    BlocProvider<SplashScreenBloc>(
                   create: (context) =>
                       SplashScreenBloc()..add(SPInitializeData(context)),
                   child: BlocListener<SplashScreenBloc, SplashScreenState>(

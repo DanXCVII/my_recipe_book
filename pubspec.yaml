@@ -64,10 +64,16 @@ dependencies:
   showcaseview: ^0.1.5 # BSD
   permission_handler: ^4.4.0 # MIT
   flutter_sequence_animation: ^3.0.1 # MIT
+  flutter_native_splash: ^0.1.9 # MIT
+
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_native_splash:
+  color: "ff6f00"
 
 flutter_icons:
   ios: true
