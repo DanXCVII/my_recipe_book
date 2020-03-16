@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
@@ -64,25 +65,49 @@ class _ExportRecipesState extends State<ExportRecipes> {
           )
         ],
       ),
-      body: ListView.builder(
-        itemCount: recipeNames.length,
-        itemBuilder: (context, index) {
-          return CheckboxListTile(
-            value: exportRecipeNames.contains(recipeNames[index]),
-            onChanged: (value) {
-              setState(() {
+      body: Column(
+        children: <Widget>[
+          Container(
+            color: Color.fromRGBO(0, 0, 0, 0.3),
+            child: CheckboxListTile(
+              value: listEquals(exportRecipeNames, recipeNames),
+              title: Text(I18n.of(context).select_all),
+              onChanged: (value) {
                 if (value) {
-                  exportRecipeNames.add(recipeNames[index]);
+                  setState(() {
+                    exportRecipeNames = List<String>.from(recipeNames);
+                  });
                 } else {
-                  exportRecipeNames.remove(recipeNames[index]);
+                  setState(() {
+                    exportRecipeNames = [];
+                  });
                 }
-              });
-            },
-            title: Text(
-              recipeNames[index],
+              },
             ),
-          );
-        },
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: recipeNames.length,
+              itemBuilder: (context, index) {
+                return CheckboxListTile(
+                  value: exportRecipeNames.contains(recipeNames[index]),
+                  onChanged: (value) {
+                    setState(() {
+                      if (value) {
+                        exportRecipeNames.add(recipeNames[index]);
+                      } else {
+                        exportRecipeNames.remove(recipeNames[index]);
+                      }
+                    });
+                  },
+                  title: Text(
+                    recipeNames[index],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

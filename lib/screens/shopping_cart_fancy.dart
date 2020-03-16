@@ -104,7 +104,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
       Color ingredBackgroundColor =
           Theme.of(context).brightness == Brightness.dark
               ? Color(0xff40392F)
-              : Color(0xffFEF3E1);
+              : Colors.grey[100];
       if (recipe.name == 'summary') {
         return _getRecipeTile(
           recipe,

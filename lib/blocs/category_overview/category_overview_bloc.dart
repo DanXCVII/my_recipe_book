@@ -27,8 +27,6 @@ class CategoryOverviewBloc
           add(COAddRecipes(rmState.recipes));
         } else if (rmState is RM.DeleteRecipeState) {
           add(CODeleteRecipe(rmState.recipe));
-        } else if (rmState is RM.UpdateRecipeState) {
-          add(COUpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
         } else if (rmState is RM.AddCategoriesState) {
           add(COAddCategory(rmState.categories));
         } else if (rmState is RM.DeleteCategoryState) {
@@ -53,8 +51,6 @@ class CategoryOverviewBloc
       yield* _mapLoadCategoryOverviewToState(event);
     } else if (event is COAddRecipes) {
       yield* _mapAddRecipesToState(event);
-    } else if (event is COUpdateRecipe) {
-      yield* _mapUpdateRecipeToState(event);
     } else if (event is CODeleteRecipe) {
       yield* _mapDeleteRecipeToState(event);
     } else if (event is COAddCategory) {
@@ -93,20 +89,6 @@ class CategoryOverviewBloc
               (state as LoadedCategoryOverview).categories, event.recipes);
 
       yield LoadedCategoryOverview(categoryRandomImageList);
-    }
-  }
-
-  Stream<CategoryOverviewState> _mapUpdateRecipeToState(
-      COUpdateRecipe event) async* {
-    if (state is LoadedCategoryOverview) {
-      final List<Tuple2<String, String>> removedRecipeCategoryOverview =
-          await _removeRecipeFromOverview(
-              (state as LoadedCategoryOverview).categories, event.oldRecipe);
-      final List<Tuple2<String, String>> updatedRecipeCategoryOverview =
-          await _addCategoryRandomImage(
-              removedRecipeCategoryOverview, [event.updatedRecipe]);
-
-      yield LoadedCategoryOverview(updatedRecipeCategoryOverview);
     }
   }
 
@@ -231,9 +213,8 @@ class CategoryOverviewBloc
         bool alreadyAdded = false;
         for (Tuple2<String, String> t in categoryRandomImageList) {
           // if the current recipeCategory is already in the overview
-          if (t.item1.compareTo(category) == 0) {
+          if (t.item1 == category) {
             // add the old category to the new overviewList
-            categoryRandomImageList.add(t);
             alreadyAdded = true;
             break;
           }
