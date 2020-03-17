@@ -203,71 +203,57 @@ class RecipeCategoryOverviewBloc
 
   List<Tuple2<String, List<Recipe>>> _addRecipesToOverview(List<Recipe> recipes,
       List<Tuple2<String, List<Recipe>>> recipeCategoryOverview) {
-    List<Tuple2<String, List<Recipe>>> recipeOverview =
-        (state as LoadedRecipeCategoryOverview).rCategoryOverview.map((tuple) {
-      // for every category in the newRecipe
-      for (Recipe recipe in recipes) {
-        for (String category in recipe.categories) {
-          // if the category equals the one in the existing recipes
-          if (tuple.item1.compareTo(category) == 0) {
-            // and if the recipes under this category are less than 8
-            if (tuple.item2.length < 8) {
-              // add the recipe to that category and return the category with the recipes
-              return Tuple2(category, tuple.item2..add(recipe));
-            }
-          }
-        }
-        // if the newRecipe is not in that category
-        return tuple;
-      }
-    }).toList();
-
-    // check every recipe category, if it is already in the overview
+    List<Tuple2<String, List<Recipe>>> newRecipeOverview =
+        List<Tuple2<String, List<Recipe>>>.from(
+            (state as LoadedRecipeCategoryOverview).rCategoryOverview);
+// check every recipe category, if it is already in the overview
     for (Recipe recipe in recipes) {
       for (String c in recipe.categories) {
         bool alreadyAdded = false;
-        for (Tuple2<String, List<Recipe>> t in recipeOverview) {
+        for (Tuple2<String, List<Recipe>> t in newRecipeOverview) {
           if (t.item1 == c) {
+            t.item2.add(recipe);
             alreadyAdded = true;
           }
         }
         // if it's not yet added
         if (!alreadyAdded) {
           // if the overview is empty
-          if (recipeOverview.length == 0) {
+          if (newRecipeOverview.length == 0) {
             // add it to the end
-            recipeOverview.add(Tuple2<String, List<Recipe>>(c, [recipe]));
+            newRecipeOverview.add(Tuple2<String, List<Recipe>>(c, [recipe]));
           }
           // if the last category of the overview is "no category"
-          else if (recipeOverview.last.item1 == "no category") {
+          else if (newRecipeOverview.last.item1 == "no category") {
             // add it to the second last position
-            recipeOverview.insert(recipeOverview.length - 1,
+            newRecipeOverview.insert(newRecipeOverview.length - 1,
                 Tuple2<String, List<Recipe>>(c, [recipe]));
           }
           // if the overview is not empty and the last category is unlike "no category"
           else {
             // add it to the end
-            recipeOverview.add(Tuple2<String, List<Recipe>>(c, [recipe]));
+            newRecipeOverview.add(Tuple2<String, List<Recipe>>(c, [recipe]));
           }
         }
       }
       // if the recipe is in no category
       if (recipe.categories.isEmpty) {
         // if the no category is already in the overview and has less then 8 recipes
-        if (recipeOverview.isNotEmpty &&
-            recipeOverview.last.item1 == "no category") {
-          if (recipeOverview.last.item2.length < 8) {
+        if (newRecipeOverview.isNotEmpty &&
+            newRecipeOverview.last.item1 == "no category") {
+          if (newRecipeOverview.last.item2.length < 8) {
             // add it to the existing no category section
-            recipeOverview.last.item2.add(recipe);
+            newRecipeOverview.last.item2.add(recipe);
           }
         } else {
           // add "no category" with the new recipe to the overview
-          recipeOverview
+          newRecipeOverview
               .add(Tuple2<String, List<Recipe>>("no category", [recipe]));
         }
       }
     }
-    return recipeOverview;
+
+    return newRecipeOverview;
   }
 
   @override

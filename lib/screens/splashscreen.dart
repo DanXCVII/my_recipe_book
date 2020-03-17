@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen>
         .animate(_controller);
 
     _controller.forward();
-    Future.delayed(Duration(milliseconds: 1400)).then(
+    Future.delayed(Duration(milliseconds: 1300)).then(
         (_) => BlocProvider.of<SplashScreenBloc>(context).add(SPFinished()));
   }
 
@@ -68,19 +68,29 @@ class _SplashScreenState extends State<SplashScreen>
                     Image.asset(
                       'images/cookingHat.png',
                       fit: BoxFit.cover,
-                      height: 250,
+                      width: MediaQuery.of(context).size.width * 0.45 > 230
+                          ? 230
+                          : MediaQuery.of(context).size.width * 0.45,
                     ),
                     SizedBox(
                       height: 10,
                     ),
                     Material(
                         color: Colors.transparent,
-                        child: Text(
-                          "My RecipeBook",
-                          style: TextStyle(
-                            fontFamily: "Righteous",
-                            color: Colors.black,
-                            fontSize: 42,
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.7 > 380
+                              ? 380
+                              : MediaQuery.of(context).size.width * 0.7,
+                          child: FittedBox(
+                            fit: BoxFit.fill,
+                            child: Text(
+                              "My RecipeBook",
+                              style: TextStyle(
+                                fontFamily: "Righteous",
+                                color: Colors.black,
+                                fontSize: 42,
+                              ),
+                            ),
                           ),
                         )),
                   ],
