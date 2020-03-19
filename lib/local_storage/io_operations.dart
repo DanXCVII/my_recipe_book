@@ -322,6 +322,8 @@ Future<void> saveImage(File image, String targetPath, int resolution) async {
         quality: quality.toInt(), percentage: 100);
         */
 
+    print(image.lengthSync());
+
     await FlutterImageCompress.compressAndGetFile(
       image.path,
       targetPath,
