@@ -88,7 +88,9 @@ class _ImportDialogState extends State<ImportDialog> {
                 state.readyToImportRecipes.isEmpty
                     ? null
                     : Container(
-                        width: 300,
+                        width: MediaQuery.of(context).size.width * 0.7 > 300
+                            ? 300
+                            : MediaQuery.of(context).size.width * 0.7,
                         decoration: BoxDecoration(
                           color: Color.fromRGBO(0, 0, 0, 0.2),
                           borderRadius: BorderRadius.only(
@@ -119,7 +121,9 @@ class _ImportDialogState extends State<ImportDialog> {
                       : totalListItems == 2
                           ? 130
                           : totalListItems == 3 ? 195 : 280,
-                  width: 300,
+                  width: MediaQuery.of(context).size.width * 0.75 > 300
+                      ? 300
+                      : MediaQuery.of(context).size.width * 0.7,
                   child: ListView(
                     children: List.generate(
                         state.readyToImportRecipes.length == 0

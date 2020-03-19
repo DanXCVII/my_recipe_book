@@ -201,10 +201,10 @@ Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
   String recipeImagePathFull =
       await PathProvider.pP.getRecipePathFull(recipeName, dataType);
 
-  await saveImage(pictureFile, recipeImagePathFull, 2000);
+  await saveImage(pictureFile, recipeImagePathFull, 1200);
   String recipeImagePreviewPathFull =
       await PathProvider.pP.getRecipePreviewPathFull(recipeName, dataType);
-  await saveImage(pictureFile, recipeImagePreviewPathFull, 300);
+  await saveImage(pictureFile, recipeImagePreviewPathFull, 500);
 }
 
 /// deletes the image of the recipe in the local storage if it exists ( not the stepImages )
@@ -294,14 +294,14 @@ Future<String> saveStepImage(File newImage, int stepNumber,
   await saveImage(
     newImage,
     stepImagePathFull,
-    2000,
+    1200,
   );
   await saveImage(
     newImage,
     await PathProvider.pP
             .getRecipeStepPreviewNumberDirFull(recipeName, stepNumber) +
         "/$newStepImagePreviewName",
-    250,
+    500,
   );
   return stepImagePathFull;
 }
@@ -322,12 +322,8 @@ Future<void> saveImage(File image, String targetPath, int resolution) async {
         quality: quality.toInt(), percentage: 100);
         */
 
-    await FlutterImageCompress.compressAndGetFile(
-      image.path,
-      targetPath,
-      minHeight: resolution,
-      minWidth: resolution,
-    );
+    await FlutterImageCompress.compressAndGetFile(image.path, targetPath,
+        minHeight: resolution, minWidth: resolution, quality: 50);
 
     print(image.path);
     print(targetPath);
