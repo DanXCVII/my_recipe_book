@@ -105,7 +105,8 @@ class Settings extends StatelessWidget {
           ListTile(
             title: Text(I18n.of(context).manage_recipe_tags),
             onTap: () {
-              Navigator.pushNamed(context, RouteNames.manageRecipeTags);
+              Navigator.pushNamed(context, RouteNames.manageRecipeTags)
+                  .then((_) => Ads.hideBottomBannerAd());
             },
           ),
           Divider(),

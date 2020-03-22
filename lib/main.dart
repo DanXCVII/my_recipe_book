@@ -446,13 +446,15 @@ class MyApp extends StatelessWidget {
               );
 
             case "/manage-recipe-tags":
+              Ads.showBottomBannerAd();
+
               return MaterialPageRoute(
                 builder: (context) => BlocProvider(
                   create: (context) => RecipeTagManagerBloc(
                     recipeManagerBloc:
                         BlocProvider.of<RecipeManagerBloc>(context),
                   )..add(InitializeRecipeTagManager()),
-                  child: RecipeTagManager(),
+                  child: _getAdPage(RecipeTagManager(), context),
                 ),
               );
 
