@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/models/string_int_tuple.dart';
+import 'package:my_recipe_book/screens/add_recipe/general_info_screen/recipe_tag_section.dart';
 
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import '../../../blocs/new_recipe/general_info/general_info_bloc.dart';
@@ -304,6 +306,23 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                 BlocProvider.of<GeneralInfoBloc>(context)
                     .add(RemoveCategoriesFromRecipe(
                   [chipName],
+                  widget.editingRecipeName == null ? false : true,
+                ));
+              },
+            ),
+            RecipeTagSection(
+              selectedRecipeTags: modifiedRecipe.tags ?? [],
+              onSelect: (StringIntTuple recipeTag) {
+                BlocProvider.of<GeneralInfoBloc>(context)
+                    .add(AddRecipeTagToRecipe(
+                  recipeTag,
+                  widget.editingRecipeName == null ? false : true,
+                ));
+              },
+              onDeselect: (StringIntTuple recipeTag) {
+                BlocProvider.of<GeneralInfoBloc>(context)
+                    .add(RemoveRecipeTagsFromRecipe(
+                  [recipeTag],
                   widget.editingRecipeName == null ? false : true,
                 ));
               },

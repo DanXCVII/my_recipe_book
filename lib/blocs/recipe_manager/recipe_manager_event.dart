@@ -87,3 +87,37 @@ class RMMoveCategory extends RecipeManagerEvent {
         time,
       ];
 }
+
+class RMAddRecipeTag extends RecipeManagerEvent {
+  final List<StringIntTuple> recipeTags;
+
+  const RMAddRecipeTag(this.recipeTags);
+
+  @override
+  List<Object> get props => [recipeTags];
+}
+
+class RMDeleteRecipeTag extends RecipeManagerEvent {
+  final StringIntTuple recipeTag;
+
+  const RMDeleteRecipeTag(this.recipeTag);
+
+  @override
+  List<Object> get props => [recipeTag];
+}
+
+class RMUpdateRecipeTag extends RecipeManagerEvent {
+  final StringIntTuple oldRecipeTag;
+  final StringIntTuple updatedRecipeTag;
+
+  const RMUpdateRecipeTag(
+    this.oldRecipeTag,
+    this.updatedRecipeTag,
+  );
+
+  @override
+  List<Object> get props => [
+        oldRecipeTag,
+        updatedRecipeTag,
+      ];
+}

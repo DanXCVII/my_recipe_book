@@ -4,6 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
+import 'package:my_recipe_book/screens/recipe_tag_manager_screen.dart';
 import 'package:showcaseview/showcase_widget.dart';
 
 import './theming.dart';
@@ -231,6 +233,14 @@ class MyApp extends StatelessWidget {
                               BlocProvider.of<RecipeManagerBloc>(context))
                         ..add(InitializeCategoryManager()),
                     ),
+                    BlocProvider<RecipeTagManagerBloc>(
+                      create: (context) => RecipeTagManagerBloc(
+                          recipeManagerBloc:
+                              BlocProvider.of<RecipeManagerBloc>(context))
+                        ..add(
+                          InitializeRecipeTagManager(),
+                        ),
+                    ),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
@@ -326,6 +336,28 @@ class MyApp extends StatelessWidget {
                 ),
               );
 
+            case "/recipe-tag-recipes-overview":
+              final RecipeGridViewArguments args = settings.arguments;
+
+              return CupertinoPageRoute(
+                settings: RouteSettings(name: "recipeRoute"),
+                builder: (BuildContext context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc),
+                    BlocProvider<RecipeOverviewBloc>(
+                      create: (context) => RecipeOverviewBloc(
+                          recipeManagerBloc:
+                              BlocProvider.of<RecipeManagerBloc>(context))
+                        ..add(
+                          LoadRecipeTagRecipeOverview(args.recipeTag),
+                        ),
+                    ),
+                  ],
+                  child: RecipeGridView(),
+                ),
+              );
+
             case "/add-recipe/nutritions":
               final AddRecipeNutritionsArguments args = settings.arguments;
 
@@ -373,6 +405,17 @@ class MyApp extends StatelessWidget {
                         BlocProvider.of<RecipeManagerBloc>(context),
                   )..add(InitializeCategoryManager()),
                   child: CategoryManager(),
+                ),
+              );
+
+            case "/manage-recipe-tags":
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) => RecipeTagManagerBloc(
+                    recipeManagerBloc:
+                        BlocProvider.of<RecipeManagerBloc>(context),
+                  )..add(InitializeRecipeTagManager()),
+                  child: RecipeTagManager(),
                 ),
               );
 

@@ -7,6 +7,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/models/string_int_tuple.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -495,8 +496,9 @@ class RecipePage extends StatelessWidget {
                           cookingTime: recipe.cookingTime,
                           totalTime: recipe.totalTime,
                           effort: recipe.effort,
+                          recipeTags: recipe.tags,
                         ),
-                        SizedBox(height: 30),
+                        SizedBox(height: 20),
                         IngredientsScreen(
                           currentRecipe: recipe,
                           animationWaitTime: MyIntWrapper(0),
@@ -654,12 +656,14 @@ class TopSectionRecipe extends StatelessWidget {
   final double cookingTime;
   final double totalTime;
   final int effort;
+  final List<StringIntTuple> recipeTags;
 
   const TopSectionRecipe({
     this.preperationTime,
     this.cookingTime,
     this.totalTime,
     this.effort,
+    this.recipeTags,
     Key key,
   }) : super(key: key);
 
@@ -677,154 +681,103 @@ class TopSectionRecipe extends StatelessWidget {
     else
       totalTimeChart = preperationTime + cookingTime;
 
-    return _showComplexTopArea(preperationTime, cookingTime, totalTime)
-        ? Padding(
-            padding: const EdgeInsets.only(left: 16.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 10,
-                  child: Column(
-                    children: <Widget>[
-                      preperationTime != 0
-                          ? Row(
-                              children: <Widget>[
-                              Container(
-                                height: 35,
-                                width: 35,
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black45,
-                                      blurRadius: 2.0,
-                                      spreadRadius: 1.0,
-                                      offset: Offset(
-                                        0,
-                                        1.0,
-                                      ),
+    return Column(
+      children: <Widget>[
+        _showComplexTopArea(preperationTime, cookingTime, totalTime)
+            ? Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 10,
+                      child: Column(
+                        children: <Widget>[
+                          preperationTime != 0
+                              ? Row(
+                                  children: <Widget>[
+                                  Container(
+                                    height: 35,
+                                    width: 35,
+                                    decoration: BoxDecoration(
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black45,
+                                          blurRadius: 2.0,
+                                          spreadRadius: 1.0,
+                                          offset: Offset(
+                                            0,
+                                            1.0,
+                                          ),
+                                        ),
+                                      ],
+                                      color: Colors.pink,
+                                      borderRadius: BorderRadius.circular(30),
                                     ),
-                                  ],
-                                  color: Colors.pink,
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: Icon(
-                                  MdiIcons.knife,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    "${I18n.of(context).prep_time}:",
-                                    style: TextStyle(
-                                      color: textColor,
-                                      fontFamily: recipeScreenFontFamily,
-                                      fontSize: 12,
+                                    child: Icon(
+                                      MdiIcons.knife,
+                                      color: Colors.black,
                                     ),
                                   ),
-                                  Text(
-                                    getTimeHoursMinutes(preperationTime),
-                                    style: TextStyle(
-                                      color: textColor,
-                                      fontFamily: recipeScreenFontFamily,
-                                      fontSize: 16,
-                                    ),
-                                  )
-                                ],
-                              )
-                            ]..removeWhere((item) => item == null))
-                          : null,
-                      SizedBox(height: 10),
-                      cookingTime != 0
-                          ? Row(
-                              children: <Widget>[
-                                Container(
-                                  height: 35,
-                                  width: 35,
-                                  decoration: BoxDecoration(
-                                    color: Colors.lightBlue,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black45,
-                                        blurRadius: 2.0,
-                                        spreadRadius: 1.0,
-                                        offset: Offset(
-                                          0,
-                                          1.0,
+                                  SizedBox(width: 10),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        "${I18n.of(context).prep_time}:",
+                                        style: TextStyle(
+                                          color: textColor,
+                                          fontFamily: recipeScreenFontFamily,
+                                          fontSize: 12,
                                         ),
                                       ),
+                                      Text(
+                                        getTimeHoursMinutes(preperationTime),
+                                        style: TextStyle(
+                                          color: textColor,
+                                          fontFamily: recipeScreenFontFamily,
+                                          fontSize: 16,
+                                        ),
+                                      )
                                     ],
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Icon(
-                                    MdiIcons.stove,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  )
+                                ]..removeWhere((item) => item == null))
+                              : null,
+                          SizedBox(height: 10),
+                          cookingTime != 0
+                              ? Row(
                                   children: <Widget>[
-                                    Text(
-                                      "${I18n.of(context).cook_time}:",
-                                      style: TextStyle(
-                                        color: textColor,
-                                        fontFamily: recipeScreenFontFamily,
-                                        fontSize: 12,
+                                    Container(
+                                      height: 35,
+                                      width: 35,
+                                      decoration: BoxDecoration(
+                                        color: Colors.lightBlue,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black45,
+                                            blurRadius: 2.0,
+                                            spreadRadius: 1.0,
+                                            offset: Offset(
+                                              0,
+                                              1.0,
+                                            ),
+                                          ),
+                                        ],
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      child: Icon(
+                                        MdiIcons.stove,
+                                        color: Colors.black,
                                       ),
                                     ),
-                                    Text(
-                                      getTimeHoursMinutes(cookingTime),
-                                      style: TextStyle(
-                                        color: textColor,
-                                        fontFamily: recipeScreenFontFamily,
-                                        fontSize: 16,
-                                      ),
-                                    )
-                                  ],
-                                )
-                              ],
-                            )
-                          : null,
-                      SizedBox(height: 10),
-                      remainingTimeChart == 0
-                          ? null
-                          : Row(
-                              children: <Widget>[
-                              Container(
-                                height: 35,
-                                width: 35,
-                                decoration: BoxDecoration(
-                                  color: Colors.yellow,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black45,
-                                      blurRadius: 2.0,
-                                      spreadRadius: 1.0,
-                                      offset: Offset(
-                                        0,
-                                        1.0,
-                                      ),
-                                    ),
-                                  ],
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: Icon(
-                                  Icons.hourglass_empty,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              remainingTimeChart != 0
-                                  ? Column(
+                                    SizedBox(width: 10),
+                                    Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
-                                          "${I18n.of(context).remaining_time}:",
+                                          "${I18n.of(context).cook_time}:",
                                           style: TextStyle(
                                             color: textColor,
                                             fontFamily: recipeScreenFontFamily,
@@ -832,8 +785,7 @@ class TopSectionRecipe extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          getTimeHoursMinutes(
-                                              remainingTimeChart),
+                                          getTimeHoursMinutes(cookingTime),
                                           style: TextStyle(
                                             color: textColor,
                                             fontFamily: recipeScreenFontFamily,
@@ -842,198 +794,299 @@ class TopSectionRecipe extends StatelessWidget {
                                         )
                                       ],
                                     )
-                                  : null
-                            ]..removeWhere((item) => item == null))
-                    ]..removeWhere((item) => item == null),
-                  ),
-                ),
-                Expanded(
-                  flex: 5,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        "${I18n.of(context).total_time}:",
-                        style: TextStyle(
-                          color: textColor,
-                          fontFamily: recipeScreenFontFamily,
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        getTimeHoursMinutes(totalTimeChart),
-                        style: TextStyle(
-                          color: textColor,
-                          fontFamily: recipeScreenFontFamily,
-                          fontSize: 16,
-                        ),
-                      ),
-                      SizedBox(height: 7),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: ClipPath(
-                          clipper: RoundTopBottomClipper(),
-                          child: TweenAnimationBuilder(
-                            duration: Duration(milliseconds: 700),
-                            curve: Curves.easeInOut,
-                            child: Stack(
-                              alignment: Alignment.bottomCenter,
-                              children: <Widget>[
-                                Container(
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black45,
-                                        blurRadius: 2.0,
-                                        spreadRadius: 1.0,
-                                        offset: Offset(
-                                          0,
-                                          1.0,
-                                        ),
-                                      ),
-                                    ],
-                                    borderRadius: BorderRadius.circular(30),
-                                    color: Colors.yellow,
-                                  ),
-                                ),
-                                Container(
-                                  height: (cookingTime + preperationTime) /
-                                      totalTimeChart *
-                                      100,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                                Container(
-                                  height:
-                                      preperationTime / totalTimeChart * 100,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    color: Colors.pink,
-                                  ),
+                                  ],
                                 )
-                              ],
+                              : null,
+                          SizedBox(height: 10),
+                          remainingTimeChart == 0
+                              ? null
+                              : Row(
+                                  children: <Widget>[
+                                  Container(
+                                    height: 35,
+                                    width: 35,
+                                    decoration: BoxDecoration(
+                                      color: Colors.yellow,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black45,
+                                          blurRadius: 2.0,
+                                          spreadRadius: 1.0,
+                                          offset: Offset(
+                                            0,
+                                            1.0,
+                                          ),
+                                        ),
+                                      ],
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Icon(
+                                      Icons.hourglass_empty,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  remainingTimeChart != 0
+                                      ? Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              "${I18n.of(context).remaining_time}:",
+                                              style: TextStyle(
+                                                color: textColor,
+                                                fontFamily:
+                                                    recipeScreenFontFamily,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                            Text(
+                                              getTimeHoursMinutes(
+                                                  remainingTimeChart),
+                                              style: TextStyle(
+                                                color: textColor,
+                                                fontFamily:
+                                                    recipeScreenFontFamily,
+                                                fontSize: 16,
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      : null
+                                ]..removeWhere((item) => item == null))
+                        ]..removeWhere((item) => item == null),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "${I18n.of(context).total_time}:",
+                            style: TextStyle(
+                              color: textColor,
+                              fontFamily: recipeScreenFontFamily,
+                              fontSize: 12,
                             ),
-                            tween: Tween<double>(begin: 10, end: 100),
-                            builder: (_, double height, myChild) => Column(
-                              children: <Widget>[
-                                Container(height: 100 - height, width: 20),
-                                Container(
-                                    width: 20, height: height, child: myChild),
-                              ],
+                          ),
+                          Text(
+                            getTimeHoursMinutes(totalTimeChart),
+                            style: TextStyle(
+                              color: textColor,
+                              fontFamily: recipeScreenFontFamily,
+                              fontSize: 16,
                             ),
+                          ),
+                          SizedBox(height: 7),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: ClipPath(
+                              clipper: RoundTopBottomClipper(),
+                              child: TweenAnimationBuilder(
+                                duration: Duration(milliseconds: 700),
+                                curve: Curves.easeInOut,
+                                child: Stack(
+                                  alignment: Alignment.bottomCenter,
+                                  children: <Widget>[
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black45,
+                                            blurRadius: 2.0,
+                                            spreadRadius: 1.0,
+                                            offset: Offset(
+                                              0,
+                                              1.0,
+                                            ),
+                                          ),
+                                        ],
+                                        borderRadius: BorderRadius.circular(30),
+                                        color: Colors.yellow,
+                                      ),
+                                    ),
+                                    Container(
+                                      height: (cookingTime + preperationTime) /
+                                          totalTimeChart *
+                                          100,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(30),
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    Container(
+                                      height: preperationTime /
+                                          totalTimeChart *
+                                          100,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(30),
+                                        color: Colors.pink,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                tween: Tween<double>(begin: 10, end: 100),
+                                builder: (_, double height, myChild) => Column(
+                                  children: <Widget>[
+                                    Container(height: 100 - height, width: 20),
+                                    Container(
+                                        width: 20,
+                                        height: height,
+                                        child: myChild),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      flex: 7,
+                      child: Column(
+                        children: <Widget>[
+                          Text(I18n.of(context).complexity + ':',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: textColor,
+                                fontFamily: recipeScreenFontFamily,
+                              )),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15.0),
+                            child: Container(
+                              height: 90,
+                              width: 90,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black45,
+                                    blurRadius: 2.0,
+                                    spreadRadius: 1.0,
+                                    offset: Offset(
+                                      0,
+                                      1.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              child: ClipOval(
+                                child: WaveWidget(
+                                  config: CustomConfig(
+                                    gradients: [
+                                      [Colors.red, Color(0xEEF44336)],
+                                      [Colors.red[800], Color(0x77E57373)],
+                                      [Colors.orange, Color(0x66FF9800)],
+                                      [Colors.yellow, Color(0x55FFEB3B)]
+                                    ],
+                                    durations: [35000, 19440, 10800, 6000],
+                                    heightPercentages: [
+                                      effort == 10 ? 0 : (9 - effort) / 10,
+                                      effort == 10 ? 0 : (9 - effort) / 10,
+                                      effort == 10 ? 0 : (9 - effort) / 10,
+                                      effort == 10 ? 0 : (9 - effort) / 10,
+                                    ],
+                                    blur: MaskFilter.blur(BlurStyle.solid, 10),
+                                    gradientBegin: Alignment.bottomLeft,
+                                    gradientEnd: Alignment.topRight,
+                                  ),
+                                  waveAmplitude: 0,
+                                  backgroundColor: Colors.blue,
+                                  size: Size(
+                                    double.infinity,
+                                    double.infinity,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              )
+            : Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Wrap(
+                  direction: Axis.horizontal,
+                  runSpacing: 10,
+                  spacing: 10,
+                  children: <Widget>[
+                    (preperationTime != null ||
+                            cookingTime != null ||
+                            totalTime != null)
+                        ? Container(
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(25)),
+                                color: Colors.grey[800]),
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
+                              child: Text(
+                                _getTimeString(
+                                  preperationTime,
+                                  cookingTime,
+                                  totalTime,
+                                  context,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontFamily: recipeScreenFontFamily,
+                                ),
+                              ),
+                            ),
+                          )
+                        : null,
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(25)),
+                          color: _getEffortColor(effort)),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
+                        child: Text(
+                          "${I18n.of(context).complexity}: $effort",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontFamily: recipeScreenFontFamily,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ]..removeWhere((item) => item == null),
                 ),
-                Expanded(
-                  flex: 7,
-                  child: Column(
-                    children: <Widget>[
-                      Text(I18n.of(context).complexity + ':',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: textColor,
-                            fontFamily: recipeScreenFontFamily,
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
-                        child: Container(
-                          height: 90,
-                          width: 90,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black45,
-                                blurRadius: 2.0,
-                                spreadRadius: 1.0,
-                                offset: Offset(
-                                  0,
-                                  1.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                          child: ClipOval(
-                            child: WaveWidget(
-                              config: CustomConfig(
-                                gradients: [
-                                  [Colors.red, Color(0xEEF44336)],
-                                  [Colors.red[800], Color(0x77E57373)],
-                                  [Colors.orange, Color(0x66FF9800)],
-                                  [Colors.yellow, Color(0x55FFEB3B)]
-                                ],
-                                durations: [35000, 19440, 10800, 6000],
-                                heightPercentages: [
-                                  effort == 10 ? 0 : (9 - effort) / 10,
-                                  effort == 10 ? 0 : (9 - effort) / 10,
-                                  effort == 10 ? 0 : (9 - effort) / 10,
-                                  effort == 10 ? 0 : (9 - effort) / 10,
-                                ],
-                                blur: MaskFilter.blur(BlurStyle.solid, 10),
-                                gradientBegin: Alignment.bottomLeft,
-                                gradientEnd: Alignment.topRight,
-                              ),
-                              waveAmplitude: 0,
-                              backgroundColor: Colors.blue,
-                              size: Size(
-                                double.infinity,
-                                double.infinity,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          )
-        : Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Wrap(
-              direction: Axis.horizontal,
-              runSpacing: 10,
-              spacing: 10,
-              children: <Widget>[
-                (preperationTime != null ||
-                        cookingTime != null ||
-                        totalTime != null)
-                    ? Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(25)),
-                            color: Colors.grey[800]),
-                        child: Padding(
-                          padding: EdgeInsets.all(9),
-                          child: Text(
-                            _getTimeString(
-                              preperationTime,
-                              cookingTime,
-                              totalTime,
-                              context,
-                            ),
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontFamily: recipeScreenFontFamily,
-                            ),
-                          ),
-                        ),
-                      )
-                    : null,
-                Container(
+              ),
+        Padding(
+          padding: const EdgeInsets.only(top: 15.0),
+          child: Wrap(
+            direction: Axis.horizontal,
+            runSpacing: 10,
+            spacing: 10,
+            children: List<Widget>.generate(
+              recipeTags.length,
+              (index) => InkWell(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.recipeTagOverview,
+                    arguments: RecipeGridViewArguments(
+                      recipeTag: recipeTags[index],
+                      shoppingCartBloc:
+                          BlocProvider.of<ShoppingCartBloc>(context),
+                    ),
+                  );
+                },
+                child: Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(25)),
-                      color: _getEffortColor(effort)),
+                      color: Color(recipeTags[index].number)),
                   child: Padding(
-                    padding: EdgeInsets.all(9),
+                    padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
                     child: Text(
-                      "${I18n.of(context).complexity}: $effort",
+                      recipeTags[index].text,
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -1042,9 +1095,12 @@ class TopSectionRecipe extends StatelessWidget {
                     ),
                   ),
                 ),
-              ]..removeWhere((item) => item == null),
+              ),
             ),
-          );
+          ),
+        )
+      ],
+    );
   }
 
   Color _getEffortColor(int effort) {
@@ -1125,7 +1181,7 @@ class CategoriesSection extends StatelessWidget {
     return Container(
       color: Color(0xff51473b),
       child: Padding(
-        padding: const EdgeInsets.only(left: 30, top: 30, bottom: 30),
+        padding: const EdgeInsets.only(left: 20, top: 30, bottom: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -1365,7 +1421,7 @@ class IngredientsScreen extends StatelessWidget {
       output.add(
         Padding(
           padding: EdgeInsets.only(
-            top: oneSection ? 5 : 30,
+            top: oneSection ? 5 : 15,
             left: 45,
             right: 12,
           ),

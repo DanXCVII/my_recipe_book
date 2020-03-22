@@ -80,6 +80,7 @@
   "alright": "alright",
   "favorites": "favorites",
   "no_recipes_under_this_category": "You have no recipes under this category",
+  "no_recipes_with_this_tag": "You have no recipes with this tag",
   "no_added_favorites_yet": "You haven't added any favorites yet",
   "recipename_taken": "recipename taken",
   "recipename_taken_description": "change the recipename to something more detailed or maybe you just forgot, that you already saved this recipe :)",
@@ -171,5 +172,12 @@
   "failed_import_desc": "import failed for unknown reasons. Please switch to the settings tab and import the recipes there.",
   "need_to_access_storage": "need to access storage",
   "need_to_access_storage_desc": "Access to storage required for reading the file from an external location and import it. By pressing ok, you'll get a prompt asking you for that",
-  "select_all": "select all"
+  "select_all": "select all",
+  "manage_recipe_tags": "manage recipe tags",
+  "recipe_tag_already_exists": "recipe tag already exists",
+  "sure_you_want_to_delete_this_recipe_tag": "Are you sure you want to delete this recipe tag:",
+  "select_recipe_tags": "select recipe tags",
+  "recipe_tag": "recipetag",
+  "delete_recipe_tag": "delete recipe tag?",
+  "you_have_no_recipe_tags": "you have no recipe tags"
 }

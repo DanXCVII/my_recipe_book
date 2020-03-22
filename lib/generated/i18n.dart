@@ -194,6 +194,8 @@ class I18n implements WidgetsLocalizations {
   String get favorites => "favorites";
   /// "You have no recipes under this category"
   String get no_recipes_under_this_category => "You have no recipes under this category";
+  /// "You have no recipes with this tag"
+  String get no_recipes_with_this_tag => "You have no recipes with this tag";
   /// "You haven't added any favorites yet"
   String get no_added_favorites_yet => "You haven't added any favorites yet";
   /// "recipename taken"
@@ -378,6 +380,20 @@ class I18n implements WidgetsLocalizations {
   String get need_to_access_storage_desc => "Access to storage required for reading the file from an external location and import it. By pressing ok, you'll get a prompt asking you for that";
   /// "select all"
   String get select_all => "select all";
+  /// "manage recipe tags"
+  String get manage_recipe_tags => "manage recipe tags";
+  /// "recipe tag already exists"
+  String get recipe_tag_already_exists => "recipe tag already exists";
+  /// "Are you sure you want to delete this recipe tag:"
+  String get sure_you_want_to_delete_this_recipe_tag => "Are you sure you want to delete this recipe tag:";
+  /// "select recipe tags"
+  String get select_recipe_tags => "select recipe tags";
+  /// "recipetag"
+  String get recipe_tag => "recipetag";
+  /// "delete recipe tag?"
+  String get delete_recipe_tag => "delete recipe tag?";
+  /// "you have no recipe tags"
+  String get you_have_no_recipe_tags => "you have no recipe tags";
 }
 
 class _I18n_en_US extends I18n {
@@ -630,15 +646,18 @@ class _I18n_de_DE extends I18n {
   /// "Du hast keine Rezepte unter dieser Kategorie"
   @override
   String get no_recipes_under_this_category => "Du hast keine Rezepte unter dieser Kategorie";
+  /// "Du hast keine Rezepte mit diesem Tag"
+  @override
+  String get no_recipes_with_this_tag => "Du hast keine Rezepte mit diesem Tag";
   /// "Du hast noch keine Favoriten hinzugefügt"
   @override
   String get no_added_favorites_yet => "Du hast noch keine Favoriten hinzugefügt";
   /// "Rezeptname vergeben"
   @override
   String get recipename_taken => "Rezeptname vergeben";
-  /// "Ändere den Rezeptnamen zu etwas mehr detailliertem oder du haste einfach nur vergessen, dass du dieses Rezept schon hinzugefügt hast :)"
+  /// "Hast du vergessen, dass du dieses Rezept schon hinzugefügt hast? Wenn nicht, füge dem Namen etwas hinzu, was das Rezept auszeichnet."
   @override
-  String get recipename_taken_description => "Ändere den Rezeptnamen zu etwas mehr detailliertem oder du haste einfach nur vergessen, dass du dieses Rezept schon hinzugefügt hast :)";
+  String get recipename_taken_description => "Hast du vergessen, dass du dieses Rezept schon hinzugefügt hast? Wenn nicht, füge dem Namen etwas hinzu, was das Rezept auszeichnet.";
   /// "Überprüfe die Zutatenliste"
   @override
   String get check_ingredients_input => "Überprüfe die Zutatenliste";
@@ -906,6 +925,27 @@ class _I18n_de_DE extends I18n {
   /// "alle auswählen"
   @override
   String get select_all => "alle auswählen";
+  /// "Tags verwalten"
+  @override
+  String get manage_recipe_tags => "Tags verwalten";
+  /// "Tag bereits vorhanden"
+  @override
+  String get recipe_tag_already_exists => "Tag bereits vorhanden";
+  /// "Bist du dir sicher, dass du den Tag löschen möchtest?"
+  @override
+  String get sure_you_want_to_delete_this_recipe_tag => "Bist du dir sicher, dass du den Tag löschen möchtest?";
+  /// "Tags auswählen"
+  @override
+  String get select_recipe_tags => "Tags auswählen";
+  /// "Schlüsselwort"
+  @override
+  String get recipe_tag => "Schlüsselwort";
+  /// "Tag löschen?"
+  @override
+  String get delete_recipe_tag => "Tag löschen?";
+  /// "Du hast keine gespeicherten Tags"
+  @override
+  String get you_have_no_recipe_tags => "Du hast keine gespeicherten Tags";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

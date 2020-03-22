@@ -32,6 +32,13 @@ class Settings extends StatelessWidget {
               }),
           Divider(),
           ListTile(
+            title: Text(I18n.of(context).manage_recipe_tags),
+            onTap: () {
+              Navigator.pushNamed(context, RouteNames.manageRecipeTags);
+            },
+          ),
+          Divider(),
+          ListTile(
             onTap: () {
               _importSingleRecipe(context).then((_) {});
             },

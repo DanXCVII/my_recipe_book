@@ -201,10 +201,10 @@ Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
   String recipeImagePathFull =
       await PathProvider.pP.getRecipePathFull(recipeName, dataType);
 
-  await saveImage(pictureFile, recipeImagePathFull, 2000);
+  await saveImage(pictureFile, recipeImagePathFull, false);
   String recipeImagePreviewPathFull =
       await PathProvider.pP.getRecipePreviewPathFull(recipeName, dataType);
-  await saveImage(pictureFile, recipeImagePreviewPathFull, 300);
+  await saveImage(pictureFile, recipeImagePreviewPathFull, true);
 }
 
 /// deletes the image of the recipe in the local storage if it exists ( not the stepImages )
@@ -294,57 +294,34 @@ Future<String> saveStepImage(File newImage, int stepNumber,
   await saveImage(
     newImage,
     stepImagePathFull,
-    2000,
+    false,
   );
   await saveImage(
     newImage,
     await PathProvider.pP
             .getRecipeStepPreviewNumberDirFull(recipeName, stepNumber) +
         "/$newStepImagePreviewName",
-    250,
+    true,
   );
   return stepImagePathFull;
 }
 
 /// saves the given image under the given targetPath in the given resolution.
-Future<void> saveImage(File image, String targetPath, int resolution) async {
+Future<void> saveImage(File image, String targetPath, bool preview) async {
   if (image != null) {
     await image.copy(targetPath);
     print('UUUUUUUUUNNNNNNNNNNNNDDDDDDDDDD');
-    /*
-    ImageProperties properties =
-        await FlutterNativeImage.getImageProperties(newImage.path);
-    double quality = resolution / (properties.height + properties.width) * 100;
-    if (quality > 100) quality = 100;
-    print(properties.height);
-    print(quality);
-    File compressedFile = await FlutterNativeImage.compressImage(newImage.path,
-        quality: quality.toInt(), percentage: 100);
-        */
 
-    print(image.lengthSync());
-
-    await FlutterImageCompress.compressAndGetFile(
-      image.path,
-      targetPath,
-      minHeight: resolution,
-      minWidth: resolution,
-    );
+    await FlutterImageCompress.compressAndGetFile(image.path, targetPath,
+        minHeight: preview ? 200 : 1000,
+        minWidth: preview ? 200 : 1000,
+        quality: preview ? 50 : 70);
 
     print(image.path);
     print(targetPath);
 
     print('GGGGGGGOOOOOOOOOOOOOOOOOOOOOOOO');
-    // compressedFile.copy(name);
     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    // print(quality);
-
-    /*
-    ImageIO.Image newImage = ImageIO.decodeImage(values[0].readAsBytesSync());
-    ImageIO.Image resizedImage =
-        ImageIO.copyResize(newImage, height: values[2]);
-    new File('${values[1]}')..writeAsBytesSync(ImageIO.encodeJpg(resizedImage));
-    */
   }
 }
 

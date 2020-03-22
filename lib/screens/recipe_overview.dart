@@ -7,6 +7,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/models/string_int_tuple.dart';
 
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -23,11 +24,13 @@ import '../widgets/search.dart';
 class RecipeGridViewArguments {
   final String category;
   final Vegetable vegetable;
+  final StringIntTuple recipeTag;
   final ShoppingCartBloc shoppingCartBloc;
 
   RecipeGridViewArguments({
     this.category,
     this.vegetable,
+    this.recipeTag,
     @required this.shoppingCartBloc,
   });
 }
@@ -42,7 +45,8 @@ class RecipeGridView extends StatelessWidget {
         if (state is LoadingRecipeOverview) {
           return Center(child: CircularProgressIndicator());
         } else if (state is LoadedRecipeOverview) {
-          String title = _getTitle(context, state.category, state.vegetable);
+          String title = _getTitle(
+              context, state.category, state.vegetable, state.recipeTag);
           // also checking for randomImage because, when filter changed, there can be no recipes visible
           // but still the category has recipes
           if (state.recipes.isNotEmpty || state.randomImage != null) {
@@ -88,7 +92,8 @@ class RecipeGridView extends StatelessWidget {
                 SliverStickyHeader(
                   sticky: false,
                   header: RecipeFilter(
-                    showVegetableFilter: state.category != null ? true : false,
+                    showVegetableFilter: state.vegetable != null ? false : true,
+                    showRecipeTagFilter: state.recipeTag == null ? true : false,
                     initialRecipeSort: state.recipeSort.sort,
                     initialAscending: state.recipeSort.ascending,
                     changeAscending: (bool ascending) =>
@@ -100,7 +105,10 @@ class RecipeGridView extends StatelessWidget {
                     ),
                     filterVegetableRecipes: (Vegetable vegetable) =>
                         BlocProvider.of<RecipeOverviewBloc>(context)
-                            .add(FilterRecipes(vegetable)),
+                            .add(FilterRecipesVegetable(vegetable)),
+                    filterRecipeTagRecipes: (List<String> recipeTag) =>
+                        BlocProvider.of<RecipeOverviewBloc>(context)
+                            .add(FilterRecipesTag(recipeTag)),
                   ),
                   sliver: SliverPadding(
                     padding: EdgeInsets.all(12),
@@ -161,7 +169,10 @@ class RecipeGridView extends StatelessWidget {
                   ),
                   title: Text(title),
                 ),
-                body: NoRecipeCategory());
+                body: NoRecipeCategory(
+                  recipeTag: state.recipeTag != null ? true : false,
+                  vegetable: state.vegetable != null ? true : false,
+                ));
           }
         } else {
           return Text(state.toString());
@@ -186,7 +197,8 @@ class RecipeGridView extends StatelessWidget {
         .toList();
   }
 
-  String _getTitle(BuildContext context, String category, Vegetable vegetable) {
+  String _getTitle(BuildContext context, String category, Vegetable vegetable,
+      StringIntTuple recipeTag) {
     if (category != null) {
       if (category == Constants.noCategory) {
         return I18n.of(context).no_category;
@@ -195,7 +207,7 @@ class RecipeGridView extends StatelessWidget {
       } else {
         return category;
       }
-    } else {
+    } else if (vegetable != null) {
       if (vegetable == Vegetable.NON_VEGETARIAN) {
         return I18n.of(context).with_meat;
       } else if (vegetable == Vegetable.VEGETARIAN) {
@@ -203,24 +215,36 @@ class RecipeGridView extends StatelessWidget {
       } else if (vegetable == Vegetable.VEGAN) {
         return I18n.of(context).vegan;
       }
+    } else {
+      return recipeTag.text;
     }
-    return "title not found";
   }
 }
 
 class NoRecipeCategory extends StatelessWidget {
-  const NoRecipeCategory({Key key}) : super(key: key);
+  final bool recipeTag;
+  final bool vegetable;
+
+  const NoRecipeCategory({
+    this.recipeTag = false,
+    this.vegetable = false,
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: IconInfoMessage(
           iconWidget: Icon(
-            MdiIcons.chefHat,
+            recipeTag
+                ? MdiIcons.tag
+                : vegetable ? MdiIcons.foodApple : MdiIcons.chefHat,
             color: Colors.white,
             size: 70.0,
           ),
-          description: I18n.of(context).no_recipes_under_this_category),
+          description: recipeTag
+              ? I18n.of(context).no_recipes_with_this_tag
+              : I18n.of(context).no_recipes_under_this_category),
     );
   }
 }

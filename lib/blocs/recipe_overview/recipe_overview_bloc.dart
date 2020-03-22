@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/models/string_int_tuple.dart';
 
 import '../../helper.dart';
 import '../../local_storage/hive.dart';
@@ -19,6 +20,9 @@ class RecipeOverviewBloc
     extends Bloc<RecipeOverviewEvent, RecipeOverviewState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
+
+  Vegetable currentVegetableFilter;
+  List<String> currentRecipeTagFilter = [];
 
   List<Recipe> unfilteredRecipes = [];
 
@@ -69,10 +73,14 @@ class RecipeOverviewBloc
       yield* _mapUpdateRecipeToState(event);
     } else if (event is UpdateFavoriteStatus) {
       yield* _mapUpdateFavoriteStatus(event);
-    } else if (event is FilterRecipes) {
+    } else if (event is FilterRecipesVegetable) {
       yield* _mapFilterRecipesToState(event);
     } else if (event is ChangeAscending) {
       yield* _mapChangeAscendingToState(event);
+    } else if (event is LoadRecipeTagRecipeOverview) {
+      yield* _mapLoadRecipeTagRecipeOverviewToState(event);
+    } else if (event is FilterRecipesTag) {
+      yield* _mapFilterRecipesTagToState(event);
     }
   }
 
@@ -110,6 +118,21 @@ class RecipeOverviewBloc
     );
   }
 
+  Stream<RecipeOverviewState> _mapLoadRecipeTagRecipeOverviewToState(
+      LoadRecipeTagRecipeOverview event) async* {
+    final List<Recipe> recipes =
+        await HiveProvider().getRecipeTagRecipes(event.recipeTag.text);
+    final String randomRecipeImage = _getRandomRecipeImage(recipes);
+    unfilteredRecipes = List<Recipe>.from(recipes);
+
+    yield LoadedRecipeOverview(
+      recipes: recipes,
+      randomImage: randomRecipeImage,
+      recipeTag: event.recipeTag,
+      recipeSort: RSort(RecipeSort.BY_NAME, true),
+    );
+  }
+
   Stream<RecipeOverviewState> _mapChangeRecipeSortToState(
       ChangeRecipeSort event) async* {
     if (state is LoadedRecipeOverview) {
@@ -130,6 +153,7 @@ class RecipeOverviewBloc
         randomImage: (state as LoadedRecipeOverview).randomImage,
         vegetable: (state as LoadedRecipeOverview).vegetable,
         category: (state as LoadedRecipeOverview).category,
+        recipeTag: (state as LoadedRecipeOverview).recipeTag,
         recipeSort: newRecipeSort,
       );
     }
@@ -147,6 +171,7 @@ class RecipeOverviewBloc
           randomImage: (state as LoadedRecipeOverview).randomImage,
           vegetable: (state as LoadedRecipeOverview).vegetable,
           category: (state as LoadedRecipeOverview).category,
+          recipeTag: (state as LoadedRecipeOverview).recipeTag,
           recipeSort: (state as LoadedRecipeOverview).recipeSort,
         );
       }
@@ -170,6 +195,7 @@ class RecipeOverviewBloc
         randomImage: _getRandomRecipeImage(sortedRecipes),
         vegetable: (state as LoadedRecipeOverview).vegetable,
         category: (state as LoadedRecipeOverview).category,
+        recipeTag: (state as LoadedRecipeOverview).recipeTag,
         recipeSort: (state as LoadedRecipeOverview).recipeSort,
       );
     }
@@ -193,6 +219,7 @@ class RecipeOverviewBloc
           randomImage: _getRandomRecipeImage(sortedRecipes),
           vegetable: (state as LoadedRecipeOverview).vegetable,
           category: (state as LoadedRecipeOverview).category,
+          recipeTag: (state as LoadedRecipeOverview).recipeTag,
           recipeSort: (state as LoadedRecipeOverview).recipeSort,
         );
       } else if (_belongsToRecipeList(event.oldRecipe) &&
@@ -321,20 +348,62 @@ class RecipeOverviewBloc
   }
 
   Stream<RecipeOverviewState> _mapFilterRecipesToState(
-      FilterRecipes event) async* {
+      FilterRecipesVegetable event) async* {
     if (state is LoadedRecipeOverview) {
+      currentVegetableFilter = event.vegetable;
+
       yield LoadedRecipeOverview(
         recipes: List<Recipe>.from(unfilteredRecipes)
           ..removeWhere((recipe) {
-            if (event.vegetable == null) {
-              return false;
-            } else {
-              return recipe.vegetable != event.vegetable;
+            for (String recipeTagName in currentRecipeTagFilter) {
+              if (recipe.tags.firstWhere((tag) => tag.text == recipeTagName,
+                      orElse: () => null) ==
+                  null) {
+                return true;
+              }
             }
+            if (currentVegetableFilter != null) {
+              if (recipe.vegetable != currentVegetableFilter) {
+                return true;
+              }
+            }
+            return false;
           }),
         randomImage: (state as LoadedRecipeOverview).randomImage,
         vegetable: (state as LoadedRecipeOverview).vegetable,
         category: (state as LoadedRecipeOverview).category,
+        recipeTag: (state as LoadedRecipeOverview).recipeTag,
+        recipeSort: (state as LoadedRecipeOverview).recipeSort,
+      );
+    }
+  }
+
+  Stream<RecipeOverviewState> _mapFilterRecipesTagToState(
+      FilterRecipesTag event) async* {
+    if (state is LoadedRecipeOverview) {
+      currentRecipeTagFilter = event.recipeTags;
+
+      yield LoadedRecipeOverview(
+        recipes: List<Recipe>.from(unfilteredRecipes)
+          ..removeWhere((recipe) {
+            for (String recipeTagName in event.recipeTags) {
+              if (recipe.tags.firstWhere((tag) => tag.text == recipeTagName,
+                      orElse: () => null) ==
+                  null) {
+                return true;
+              }
+            }
+            if (currentVegetableFilter != null) {
+              if (recipe.vegetable != currentVegetableFilter) {
+                return true;
+              }
+            }
+            return false;
+          }),
+        randomImage: (state as LoadedRecipeOverview).randomImage,
+        vegetable: (state as LoadedRecipeOverview).vegetable,
+        category: (state as LoadedRecipeOverview).category,
+        recipeTag: (state as LoadedRecipeOverview).recipeTag,
         recipeSort: (state as LoadedRecipeOverview).recipeSort,
       );
     }
@@ -361,6 +430,7 @@ class RecipeOverviewBloc
         randomImage: (state as LoadedRecipeOverview).randomImage,
         vegetable: (state as LoadedRecipeOverview).vegetable,
         category: (state as LoadedRecipeOverview).category,
+        recipeTag: (state as LoadedRecipeOverview).recipeTag,
         recipeSort: (state as LoadedRecipeOverview).recipeSort,
       );
     }

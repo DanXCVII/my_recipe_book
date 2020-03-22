@@ -14,4 +14,6 @@ class RouteNames {
   static final ingredientSearch = "/ingredient-search";
   static final aboutMe = "/about-me";
   static final intro = "/intro";
+  static final manageRecipeTags = "/manage-recipe-tags";
+  static final recipeTagOverview = "/recipe-tag-recipes-overview";
 }

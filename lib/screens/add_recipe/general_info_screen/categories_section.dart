@@ -1,13 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../../generated/i18n.dart';
-import '../../../local_storage/hive.dart';
 import '../../../widgets/dialogs/textfield_dialog.dart';
 
 class Consts {
@@ -85,27 +82,20 @@ class _CategorySectionState extends State<CategorySection> {
                 )),
             // category chips
             Container(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: WatchBoxBuilder(
-                  box: Hive.box<List<String>>(BoxNames.order),
-                  builder: (context, boxCategory) {
-                    List<String> categories = boxCategory.get('categories');
-                    return Wrap(
-                      spacing: 5.0,
-                      runSpacing: 3.0,
-                      children: categories.map((category) {
-                        return MyCategoryFilterChip(
-                          chipName: category,
-                          isSelected:
-                              widget.selectedCategories.contains(category),
-                          onSelect: widget.onSelect,
-                          onDeselect: widget.onDeselect,
-                        );
-                      }).toList()
-                        ..removeLast(),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Wrap(
+                  spacing: 5.0,
+                  runSpacing: 3.0,
+                  children: state.categories.map((category) {
+                    return MyCategoryFilterChip(
+                      chipName: category,
+                      isSelected: widget.selectedCategories.contains(category),
+                      onSelect: widget.onSelect,
+                      onDeselect: widget.onDeselect,
                     );
-                  }),
-            )
+                  }).toList()
+                    ..removeLast(),
+                ))
           ],
         );
       } else {
