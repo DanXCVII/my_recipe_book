@@ -121,7 +121,7 @@ class _ImportDialogState extends State<ImportDialog> {
                       : totalListItems == 2
                           ? 130
                           : totalListItems == 3 ? 195 : 280,
-                  width: MediaQuery.of(context).size.width * 0.75 > 300
+                  width: MediaQuery.of(context).size.width * 0.7 > 300
                       ? 300
                       : MediaQuery.of(context).size.width * 0.7,
                   child: ListView(
@@ -297,7 +297,9 @@ class _ImportDialogState extends State<ImportDialog> {
                     height: totalListItems == 1
                         ? 55
                         : totalListItems == 2 ? 110 : 165,
-                    width: 300,
+                    width: MediaQuery.of(context).size.width * 0.7 > 300
+                        ? 300
+                        : MediaQuery.of(context).size.width * 0.7,
                     child: ListView(
                       children: List.generate(
                         state.importedRecipes.length,

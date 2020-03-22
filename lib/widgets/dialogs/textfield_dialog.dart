@@ -95,7 +95,8 @@ class TextFieldDialogState extends State<TextFieldDialog> {
                     },
                   ),
                 ],
-              )
+              ),
+              SizedBox(height: 6),
             ],
           ),
         ),

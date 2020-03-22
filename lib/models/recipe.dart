@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'enums.dart';
 import 'ingredient.dart';
 import 'nutrition.dart';
+import 'string_int_tuple.dart';
 
 part 'recipe.g.dart';
 
@@ -49,7 +50,7 @@ class Recipe extends Equatable {
   @HiveField(18)
   final int rating;
   @HiveField(19)
-  final List<String> keywords;
+  final List<StringIntTuple> tags;
 
   Recipe({
     @required this.name,
@@ -71,7 +72,7 @@ class Recipe extends Equatable {
     this.effort,
     this.lastModified,
     this.rating,
-    this.keywords = const [],
+    this.tags = const [],
   });
 
   @override
@@ -95,7 +96,7 @@ class Recipe extends Equatable {
         'isFavorite : $isFavorite\n'
         'lastModified : $lastModified\n'
         'rating: $rating\n'
-        'keywords: $keywords');
+        'keywords: $tags');
   }
 
   factory Recipe.fromMap(Map<String, dynamic> json) {
@@ -135,7 +136,7 @@ class Recipe extends Equatable {
           .toList(),
       lastModified: DateTime.now().toString(),
       rating: json.containsKey('rating') ? json['rating'] : null,
-      keywords: json.containsKey('keywords') ? json['keywords'] : [],
+      tags: json.containsKey('keywords') ? json['keywords'] : [],
     );
   }
 
@@ -160,7 +161,7 @@ class Recipe extends Equatable {
         'nutritions': nutritions.map((n) => n.toMap()).toList(),
         'lastModified': lastModified,
         'rating': rating,
-        'keywords': keywords,
+        'keywords': tags,
       };
 
   Recipe copyWith({
@@ -183,7 +184,7 @@ class Recipe extends Equatable {
     bool isFavorite,
     String lastModified,
     int rating,
-    List<String> keywords,
+    List<StringIntTuple> tags,
   }) {
     return Recipe(
       name: name ?? this.name,
@@ -205,7 +206,7 @@ class Recipe extends Equatable {
       isFavorite: isFavorite ?? this.isFavorite,
       lastModified: lastModified ?? this.lastModified,
       rating: rating ?? this.rating,
-      keywords: keywords ?? this.keywords,
+      tags: tags ?? this.tags,
     );
   }
 
@@ -230,7 +231,7 @@ class Recipe extends Equatable {
         isFavorite,
         lastModified,
         rating,
-        keywords,
+        tags,
       ];
 }
 

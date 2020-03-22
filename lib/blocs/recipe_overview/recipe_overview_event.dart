@@ -16,6 +16,15 @@ class LoadVegetableRecipeOverview extends RecipeOverviewEvent {
   List<Object> get props => [vegetable];
 }
 
+class LoadRecipeTagRecipeOverview extends RecipeOverviewEvent {
+  final StringIntTuple recipeTag;
+
+  const LoadRecipeTagRecipeOverview(this.recipeTag);
+
+  @override
+  List<Object> get props => [recipeTag];
+}
+
 class LoadCategoryRecipeOverview extends RecipeOverviewEvent {
   final String category;
 
@@ -43,13 +52,24 @@ class ChangeAscending extends RecipeOverviewEvent {
   List<Object> get props => [ascending];
 }
 
-class FilterRecipes extends RecipeOverviewEvent {
+class FilterRecipesVegetable extends RecipeOverviewEvent {
   final Vegetable vegetable;
 
-  const FilterRecipes(this.vegetable);
+  const FilterRecipesVegetable(this.vegetable);
 
   @override
   List<Object> get props => [vegetable];
+}
+
+class FilterRecipesTag extends RecipeOverviewEvent {
+  final List<String> recipeTags;
+
+  const FilterRecipesTag(
+    this.recipeTags,
+  );
+
+  @override
+  List<Object> get props => [recipeTags];
 }
 
 class AddRecipes extends RecipeOverviewEvent {

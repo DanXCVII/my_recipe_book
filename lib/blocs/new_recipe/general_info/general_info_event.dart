@@ -55,6 +55,38 @@ class RemoveCategoriesFromRecipe extends GeneralInfoEvent {
 
   @override
   List<Object> get props => [
+        categories,
+        editingRecipe,
+      ];
+}
+
+class AddRecipeTagToRecipe extends GeneralInfoEvent {
+  final StringIntTuple recipeTag;
+  final bool editingRecipe;
+
+  AddRecipeTagToRecipe([
+    this.recipeTag,
+    this.editingRecipe,
+  ]);
+
+  @override
+  List<Object> get props => [
+        recipeTag,
+        editingRecipe,
+      ];
+}
+
+class RemoveRecipeTagsFromRecipe extends GeneralInfoEvent {
+  final List<StringIntTuple> recipeTags;
+  final bool editingRecipe;
+
+  RemoveRecipeTagsFromRecipe([
+    this.recipeTags,
+    this.editingRecipe,
+  ]);
+
+  @override
+  List<Object> get props => [
         RemoveCategoriesFromRecipe(),
         editingRecipe,
       ];

@@ -79,9 +79,10 @@
   "alright": "Alles klar!",
   "favorites": "Favoriten",
   "no_recipes_under_this_category": "Du hast keine Rezepte unter dieser Kategorie",
+  "no_recipes_with_this_tag": "Du hast keine Rezepte mit diesem Tag",
   "no_added_favorites_yet": "Du hast noch keine Favoriten hinzugefügt",
   "recipename_taken": "Rezeptname vergeben",
-  "recipename_taken_description": "Ändere den Rezeptnamen zu etwas mehr detailliertem oder du haste einfach nur vergessen, dass du dieses Rezept schon hinzugefügt hast :)",
+  "recipename_taken_description": "Hast du vergessen, dass du dieses Rezept schon hinzugefügt hast? Wenn nicht, füge dem Namen etwas hinzu, was das Rezept auszeichnet.",
   "check_ingredients_input": "Überprüfe die Zutatenliste",
   "check_ingredients_input_description": "Die Zutatenliste ist nicht korrekt ausgefüllt. Sie muss foldendermaßen ausgefüllt werden: \n- Jede Zutat muss einen Namen haben \n- Wenn füre eine Zutat die Einheit angegeben ist, muss auch die Menge angegeben sein",
   "check_ingredient_section_fields": "Prüfe die Zutatenliste",
@@ -185,5 +186,12 @@
   "failed_import_desc": "Import aus unbekannten Gründen fehlgeschlagen. Bitte wechsle in den Einstellungen Tab und importiere die Rezepte dort.",
   "need_to_access_storage": "Zugriff auf Speicher benötigt",
   "need_to_access_storage_desc": "Speicherzugriff benötigt, um Datein aus externer Quelle zu lesen und importieren. Beim Tippen auf ok, wird eine Benachrichtigung aufpoppen, welche nach Vergabe der Berechtigung fragt.",
-  "select_all": "alle auswählen"
+  "select_all": "alle auswählen",
+  "manage_recipe_tags": "Tags verwalten",
+  "recipe_tag_already_exists": "Tag bereits vorhanden",
+  "sure_you_want_to_delete_this_recipe_tag": "Bist du dir sicher, dass du den Tag löschen möchtest?",
+  "select_recipe_tags": "Tags auswählen",
+  "recipe_tag": "Schlüsselwort",
+  "delete_recipe_tag": "Tag löschen?",
+  "you_have_no_recipe_tags": "Du hast keine gespeicherten Tags"
 }

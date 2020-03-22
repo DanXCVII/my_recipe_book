@@ -56,10 +56,7 @@ class RecipeCategoryOverview extends StatelessWidget {
                   horizontalOffset: MediaQuery.of(context).size.width / 2,
                   child: FadeInAnimation(
                     child: RecipeRow(
-                      category:
-                          state.rCategoryOverview[index].item1 == "no category"
-                              ? I18n.of(context).no_category
-                              : state.rCategoryOverview[index].item1,
+                      category: state.rCategoryOverview[index].item1,
                       recipes: state.rCategoryOverview[index].item2,
                     ),
                   ),
@@ -96,9 +93,7 @@ class RecipeRow extends StatelessWidget {
                 RouteNames.recipeCategories,
                 arguments: RecipeGridViewArguments(
                   shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
-                  category: category == null
-                      ? I18n.of(context).no_category
-                      : category,
+                  category: category,
                 ),
               ).then((_) => Ads.hideBottomBannerAd());
             },
@@ -108,7 +103,9 @@ class RecipeRow extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    category != null ? category : I18n.of(context).no_category,
+                    category == "no category"
+                        ? I18n.of(context).no_category
+                        : category,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontWeight: FontWeight.w700,

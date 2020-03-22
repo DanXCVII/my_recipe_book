@@ -14,6 +14,7 @@ class LoadedRecipeOverview extends RecipeOverviewState {
   final String randomImage;
   final String category;
   final Vegetable vegetable;
+  final StringIntTuple recipeTag;
   final RSort recipeSort;
 
   const LoadedRecipeOverview(
@@ -21,6 +22,7 @@ class LoadedRecipeOverview extends RecipeOverviewState {
       this.randomImage,
       this.vegetable,
       this.category,
+      this.recipeTag,
       this.recipeSort});
 
   @override
@@ -29,10 +31,7 @@ class LoadedRecipeOverview extends RecipeOverviewState {
         randomImage,
         vegetable,
         category,
+        recipeTag,
         recipeSort,
       ];
-
-  @override
-  String toString() =>
-      'Loaded recipe overview { recipes: $recipes , randomImage: $randomImage , vegetable: $vegetable , category : $category , recipeSort: $recipeSort}';
 }

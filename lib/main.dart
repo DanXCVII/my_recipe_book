@@ -4,7 +4,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:my_recipe_book/screens/ingredient_search_preview_screen.dart';
 import 'package:showcaseview/showcase_widget.dart';
 
 import './theming.dart';
@@ -32,6 +31,7 @@ import 'blocs/recipe_manager/recipe_manager_bloc.dart' show RecipeManagerBloc;
 import 'blocs/recipe_overview/recipe_overview_bloc.dart';
 import 'blocs/recipe_screen/recipe_screen_bloc.dart';
 import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
+import 'blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen_bloc.dart';
 import 'constants/routes.dart';
@@ -45,11 +45,13 @@ import 'screens/add_recipe/steps_screen/steps_screen.dart';
 import 'screens/category_manager.dart';
 import 'screens/homepage_screen.dart';
 import 'screens/ingredient_search.dart';
+import 'screens/ingredient_search_preview_screen.dart';
 import 'screens/ingredients_manager.dart';
 import 'screens/intro_screen.dart';
 import 'screens/nutrition_manager.dart';
 import 'screens/recipe_overview.dart';
 import 'screens/recipe_screen.dart';
+import 'screens/recipe_tag_manager_screen.dart';
 
 void main() {
   debugPaintSizeEnabled = false;
@@ -246,6 +248,14 @@ class MyApp extends StatelessWidget {
                               BlocProvider.of<RecipeManagerBloc>(context))
                         ..add(InitializeCategoryManager()),
                     ),
+                    BlocProvider<RecipeTagManagerBloc>(
+                      create: (context) => RecipeTagManagerBloc(
+                          recipeManagerBloc:
+                              BlocProvider.of<RecipeManagerBloc>(context))
+                        ..add(
+                          InitializeRecipeTagManager(),
+                        ),
+                    ),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
@@ -350,6 +360,28 @@ class MyApp extends StatelessWidget {
                 ),
               );
 
+            case "/recipe-tag-recipes-overview":
+              final RecipeGridViewArguments args = settings.arguments;
+
+              return CupertinoPageRoute(
+                settings: RouteSettings(name: "recipeRoute"),
+                builder: (BuildContext context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc),
+                    BlocProvider<RecipeOverviewBloc>(
+                      create: (context) => RecipeOverviewBloc(
+                          recipeManagerBloc:
+                              BlocProvider.of<RecipeManagerBloc>(context))
+                        ..add(
+                          LoadRecipeTagRecipeOverview(args.recipeTag),
+                        ),
+                    ),
+                  ],
+                  child: RecipeGridView(),
+                ),
+              );
+
             case "/add-recipe/nutritions":
               final AddRecipeNutritionsArguments args = settings.arguments;
 
@@ -410,6 +442,17 @@ class MyApp extends StatelessWidget {
                         BlocProvider.of<RecipeManagerBloc>(context),
                   )..add(InitializeCategoryManager()),
                   child: _getAdPage(CategoryManager(), context),
+                ),
+              );
+
+            case "/manage-recipe-tags":
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) => RecipeTagManagerBloc(
+                    recipeManagerBloc:
+                        BlocProvider.of<RecipeManagerBloc>(context),
+                  )..add(InitializeRecipeTagManager()),
+                  child: RecipeTagManager(),
                 ),
               );
 

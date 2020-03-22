@@ -44,6 +44,11 @@ class RandomRecipeExplorerBloc
           add(DeleteCategory(rmState.category));
         } else if (rmState is RM.UpdateCategoryState) {
           add(UpdateCategory(rmState.oldCategory, rmState.updatedCategory));
+        } else if (rmState is RM.DeleteRecipeTagState) {
+          add(InitializeRandomRecipeExplorer(
+              selectedCategory:
+                  (state as LoadedRandomRecipeExplorer).categories[
+                      (state as LoadedRandomRecipeExplorer).selectedCategory]));
         }
       }
     });

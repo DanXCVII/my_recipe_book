@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/local_storage/hive.dart';
+import 'package:my_recipe_book/models/string_int_tuple.dart';
 
 import '../generated/i18n.dart';
 import '../models/enums.dart';
@@ -7,16 +9,20 @@ import '../screens/recipe_overview.dart';
 
 class RecipeFilter extends StatefulWidget {
   final bool showVegetableFilter;
+  final bool showRecipeTagFilter;
   final RecipeSort initialRecipeSort;
   final bool initialAscending;
   final Function(RecipeSort rSort) changeOrder;
   final Function(bool ascending) changeAscending;
   final Function(Vegetable vegetable) filterVegetableRecipes;
+  final Function(List<String> recipeTags) filterRecipeTagRecipes;
 
   RecipeFilter({
     this.showVegetableFilter = true,
     this.initialRecipeSort = RecipeSort.BY_NAME,
     this.initialAscending = true,
+    this.showRecipeTagFilter = false,
+    this.filterRecipeTagRecipes,
     @required this.changeOrder,
     @required this.changeAscending,
     @required this.filterVegetableRecipes,
@@ -27,13 +33,20 @@ class RecipeFilter extends StatefulWidget {
   _RecipeFilterState createState() => _RecipeFilterState();
 }
 
-class _RecipeFilterState extends State<RecipeFilter> {
+class _RecipeFilterState extends State<RecipeFilter>
+    with SingleTickerProviderStateMixin {
   RecipeSort dropdownValue;
   Vegetable vegetableFilter;
+  bool _isExpanded = false;
+  List<StringIntTuple> selectedRecipeTags = [];
+  List<StringIntTuple> recipeTags = [];
 
   @override
   void initState() {
     super.initState();
+    if (widget.showRecipeTagFilter) {
+      recipeTags = HiveProvider().getRecipeTags();
+    }
     dropdownValue = widget.initialRecipeSort;
   }
 
@@ -43,84 +56,135 @@ class _RecipeFilterState extends State<RecipeFilter> {
       color: Theme.of(context).brightness == Brightness.dark
           ? Colors.grey[800]
           : Colors.grey[300],
-      height: kToolbarHeight,
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          RotatingArrow(
-            initialAscending: widget.initialAscending,
-            onChangeDirection: widget.changeAscending,
-          ),
           Container(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: DropdownButton<RecipeSort>(
-                isExpanded: false,
-                value: dropdownValue,
-                elevation: 16,
-                // underline: Container(
-                //   height: 2,
-                //   color: Colors.amber,
-                // ),
-                onChanged: (RecipeSort newValue) {
-                  widget.changeOrder(newValue);
-                  setState(() {
-                    dropdownValue = newValue;
-                  });
-                },
-                items: <RecipeSort>[
-                  RecipeSort.BY_NAME,
-                  RecipeSort.BY_EFFORT,
-                  RecipeSort.BY_INGREDIENT_COUNT,
-                  RecipeSort.BY_LAST_MODIFIED,
-                ].map<DropdownMenuItem<RecipeSort>>((RecipeSort value) {
-                  return DropdownMenuItem<RecipeSort>(
-                    value: value,
-                    child: Text(value == RecipeSort.BY_NAME
-                        ? I18n.of(context).by_name
-                        : value == RecipeSort.BY_EFFORT
-                            ? I18n.of(context).by_effort
-                            : value == RecipeSort.BY_INGREDIENT_COUNT
-                                ? I18n.of(context).by_ingredientsamount
-                                : I18n.of(context).by_last_modified),
-                  );
-                }).toList(),
-              ),
+            height: kToolbarHeight,
+            child: Row(
+              children: <Widget>[
+                RotatingArrow(
+                  initialAscending: widget.initialAscending,
+                  onChangeDirection: widget.changeAscending,
+                ),
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: DropdownButton<RecipeSort>(
+                      isExpanded: false,
+                      value: dropdownValue,
+                      elevation: 16,
+                      // underline: Container(
+                      //   height: 2,
+                      //   color: Colors.amber,
+                      // ),
+                      onChanged: (RecipeSort newValue) {
+                        widget.changeOrder(newValue);
+                        setState(() {
+                          dropdownValue = newValue;
+                        });
+                      },
+                      items: <RecipeSort>[
+                        RecipeSort.BY_NAME,
+                        RecipeSort.BY_EFFORT,
+                        RecipeSort.BY_INGREDIENT_COUNT,
+                        RecipeSort.BY_LAST_MODIFIED,
+                      ].map<DropdownMenuItem<RecipeSort>>((RecipeSort value) {
+                        return DropdownMenuItem<RecipeSort>(
+                          value: value,
+                          child: Text(value == RecipeSort.BY_NAME
+                              ? I18n.of(context).by_name
+                              : value == RecipeSort.BY_EFFORT
+                                  ? I18n.of(context).by_effort
+                                  : value == RecipeSort.BY_INGREDIENT_COUNT
+                                      ? I18n.of(context).by_ingredientsamount
+                                      : I18n.of(context).by_last_modified),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+                Spacer(),
+                widget.showVegetableFilter
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: DropdownButton<Vegetable>(
+                          isExpanded: false,
+                          value: vegetableFilter,
+                          elevation: 16,
+                          // underline: Container(
+                          //   height: 2,
+                          //   color: Colors.amber,
+                          // ),
+                          icon: Container(),
+                          underline: Container(),
+                          onChanged: (Vegetable newValue) {
+                            setState(() {
+                              widget.filterVegetableRecipes(newValue);
+                              vegetableFilter = newValue;
+                            });
+                          },
+                          items: <Vegetable>[
+                            null,
+                            Vegetable.NON_VEGETARIAN,
+                            Vegetable.VEGAN,
+                            Vegetable.VEGETARIAN
+                          ].map<DropdownMenuItem<Vegetable>>((Vegetable value) {
+                            return DropdownMenuItem<Vegetable>(
+                              value: value,
+                              child: _getVegetableIcon(value),
+                            );
+                          }).toList(),
+                        ),
+                      )
+                    : Container(),
+                widget.showRecipeTagFilter && recipeTags.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(_isExpanded
+                            ? Icons.expand_less
+                            : Icons.expand_more),
+                        onPressed: () {
+                          setState(() {
+                            _isExpanded = !_isExpanded;
+                          });
+                        },
+                      )
+                    : Container(),
+              ],
             ),
           ),
-          Spacer(),
-          widget.showVegetableFilter
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: DropdownButton<Vegetable>(
-                    isExpanded: false,
-                    value: vegetableFilter,
-                    elevation: 16,
-                    // underline: Container(
-                    //   height: 2,
-                    //   color: Colors.amber,
-                    // ),
-                    icon: Container(),
-                    underline: Container(),
-                    onChanged: (Vegetable newValue) {
-                      setState(() {
-                        widget.filterVegetableRecipes(newValue);
-                        vegetableFilter = newValue;
-                      });
-                    },
-                    items: <Vegetable>[
-                      null,
-                      Vegetable.NON_VEGETARIAN,
-                      Vegetable.VEGAN,
-                      Vegetable.VEGETARIAN
-                    ].map<DropdownMenuItem<Vegetable>>((Vegetable value) {
-                      return DropdownMenuItem<Vegetable>(
-                        value: value,
-                        child: _getVegetableIcon(value),
-                      );
-                    }).toList(),
-                  ),
-                )
-              : Container(),
+          AnimatedSize(
+            vsync: this,
+            duration: Duration(milliseconds: 150),
+            curve: Curves.fastOutSlowIn,
+            child: _isExpanded
+                ? Container(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                    child: Wrap(
+                      spacing: 5.0,
+                      runSpacing: 3.0,
+                      children: recipeTags.map((recipeTag) {
+                        return FilterChip(
+                          label: Text(recipeTag.text),
+                          backgroundColor: Color(recipeTag.number),
+                          selected: selectedRecipeTags.contains(recipeTag),
+                          onSelected: (isSelected) {
+                            setState(() {
+                              if (isSelected) {
+                                selectedRecipeTags.add(recipeTag);
+                              } else {
+                                selectedRecipeTags.remove(recipeTag);
+                              }
+                              widget.filterRecipeTagRecipes(selectedRecipeTags
+                                  .map((tag) => tag.text)
+                                  .toList());
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ))
+                : Container(),
+          )
         ],
       ),
     );

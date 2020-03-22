@@ -100,3 +100,37 @@ class MoveCategoryState extends RecipeManagerState {
         time,
       ];
 }
+
+class AddRecipeTagsState extends RecipeManagerState {
+  final List<StringIntTuple> recipeTags;
+
+  const AddRecipeTagsState(this.recipeTags);
+
+  @override
+  List<Object> get props => [recipeTags];
+}
+
+class DeleteRecipeTagState extends RecipeManagerState {
+  final StringIntTuple recipeTag;
+
+  const DeleteRecipeTagState(this.recipeTag);
+
+  @override
+  List<Object> get props => [recipeTag];
+}
+
+class UpdateRecipeTagState extends RecipeManagerState {
+  final StringIntTuple oldRecipeTag;
+  final StringIntTuple updatedRecipeTag;
+
+  const UpdateRecipeTagState(
+    this.oldRecipeTag,
+    this.updatedRecipeTag,
+  );
+
+  @override
+  List<Object> get props => [
+        oldRecipeTag,
+        updatedRecipeTag,
+      ];
+}

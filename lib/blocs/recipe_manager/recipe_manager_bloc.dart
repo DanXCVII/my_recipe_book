@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/foundation.dart';
-import 'package:my_recipe_book/models/recipe.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../local_storage/hive.dart';
+import '../../models/recipe.dart';
+import '../../models/string_int_tuple.dart';
+
 part 'recipe_manager_event.dart';
 part 'recipe_manager_state.dart';
 
@@ -33,6 +35,12 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
       yield* _mapRemoveFavoriteToState(event);
     } else if (event is RMMoveCategory) {
       yield* _mapMoveCategoryToState(event);
+    } else if (event is RMAddRecipeTag) {
+      yield* _mapRMAddRecipeTagToState(event);
+    } else if (event is RMDeleteRecipeTag) {
+      yield* _mapRMDeleteRecipeTagToState(event);
+    } else if (event is RMUpdateRecipeTag) {
+      yield* _mapRMUpdateRecipeTagToState(event);
     }
   }
 
@@ -106,5 +114,29 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
       event.newIndex,
       event.time,
     );
+  }
+
+  Stream<RecipeManagerState> _mapRMAddRecipeTagToState(
+      RMAddRecipeTag event) async* {
+    for (StringIntTuple recipeTag in event.recipeTags) {
+      await HiveProvider().addRecipeTag(recipeTag.text, recipeTag.number);
+    }
+
+    yield AddRecipeTagsState(event.recipeTags);
+  }
+
+  Stream<RecipeManagerState> _mapRMDeleteRecipeTagToState(
+      RMDeleteRecipeTag event) async* {
+    await HiveProvider().deleteRecipeTag(event.recipeTag.text);
+
+    yield DeleteRecipeTagState(event.recipeTag);
+  }
+
+  Stream<RecipeManagerState> _mapRMUpdateRecipeTagToState(
+      RMUpdateRecipeTag event) async* {
+    await HiveProvider().updateRecipeTag(event.oldRecipeTag.text,
+        event.updatedRecipeTag.text, event.updatedRecipeTag.number);
+
+    yield UpdateRecipeTagState(event.oldRecipeTag, event.updatedRecipeTag);
   }
 }

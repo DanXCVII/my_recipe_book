@@ -68,9 +68,9 @@ dependencies:
   permission_handler: ^4.4.0 # MIT
   flutter_sequence_animation: ^3.0.1 # MIT
   flutter_native_splash: ^0.1.9 # MIT
+  flutter_colorpicker: ^0.3.2 # MIT
 
   
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

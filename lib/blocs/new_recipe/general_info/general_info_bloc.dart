@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:my_recipe_book/constants/global_constants.dart';
+import 'package:my_recipe_book/models/string_int_tuple.dart';
 
 import '../../../helper.dart';
 import '../../../local_storage/hive.dart';
@@ -34,6 +35,10 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       yield* _mapAddCategoryToRecipeToMap(event);
     } else if (event is RemoveCategoriesFromRecipe) {
       yield* _mapRemoveCategoriesFromRecipeToState(event);
+    } else if (event is AddRecipeTagToRecipe) {
+      yield* _mapAddRecipeTagToRecipeToState(event);
+    } else if (event is RemoveRecipeTagsFromRecipe) {
+      yield* _mapRemoveRecipeTagsFromRecipeToState(event);
     }
   }
 
@@ -169,6 +174,59 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       await HiveProvider().saveTmpEditingRecipe(
         HiveProvider().getTmpEditingRecipe().copyWith(
               categories: categories,
+            ),
+      );
+    }
+  }
+
+  Stream<GeneralInfoState> _mapAddRecipeTagToRecipeToState(
+      AddRecipeTagToRecipe event) async* {
+    if (!event.editingRecipe) {
+      await HiveProvider().saveTmpRecipe(
+        HiveProvider().getTmpRecipe().copyWith(
+              tags:
+                  List<StringIntTuple>.from(HiveProvider().getTmpRecipe().tags)
+                    ..add(event.recipeTag),
+            ),
+      );
+    } else {
+      await HiveProvider().saveTmpEditingRecipe(
+        HiveProvider().getTmpEditingRecipe().copyWith(
+              tags: List<StringIntTuple>.from(
+                  HiveProvider().getTmpEditingRecipe().tags)
+                ..add(event.recipeTag),
+            ),
+      );
+    }
+  }
+
+  Stream<GeneralInfoState> _mapRemoveRecipeTagsFromRecipeToState(
+      RemoveRecipeTagsFromRecipe event) async* {
+    if (!event.editingRecipe) {
+      List<StringIntTuple> recipeTags = [];
+      for (StringIntTuple category in HiveProvider().getTmpRecipe().tags) {
+        if (!event.recipeTags.contains(category)) {
+          recipeTags.add(category);
+        }
+      }
+
+      await HiveProvider().saveTmpRecipe(
+        HiveProvider().getTmpRecipe().copyWith(
+              tags: recipeTags,
+            ),
+      );
+    } else {
+      List<StringIntTuple> recipeTags = [];
+      for (StringIntTuple recipeTag
+          in HiveProvider().getTmpEditingRecipe().tags) {
+        if (!event.recipeTags.contains(recipeTag)) {
+          recipeTags.add(recipeTag);
+        }
+      }
+
+      await HiveProvider().saveTmpEditingRecipe(
+        HiveProvider().getTmpEditingRecipe().copyWith(
+              tags: recipeTags,
             ),
       );
     }
