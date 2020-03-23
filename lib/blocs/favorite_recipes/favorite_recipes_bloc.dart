@@ -17,15 +17,19 @@ class FavoriteRecipesBloc
   StreamSubscription subscription;
 
   FavoriteRecipesBloc({@required this.recipeManagerBloc}) {
-    subscription = recipeManagerBloc.listen((state) {
-      if (state is RM.AddFavoriteState) {
-        add(AddFavorite(state.recipe));
-      } else if (state is RM.RemoveFavoriteState) {
-        add(RemoveFavorite(state.recipe));
-      } else if (state is RM.DeleteRecipeState) {
-        if (state.recipe.isFavorite) {
-          add(RemoveFavorite(state.recipe));
+    subscription = recipeManagerBloc.listen((rmState) {
+      if (rmState is RM.AddFavoriteState) {
+        add(AddFavorite(rmState.recipe));
+      } else if (rmState is RM.RemoveFavoriteState) {
+        add(RemoveFavorite(rmState.recipe));
+      } else if (rmState is RM.DeleteRecipeState) {
+        if (rmState.recipe.isFavorite) {
+          add(RemoveFavorite(rmState.recipe));
         }
+      } else if (rmState is RM.DeleteRecipeTagState ||
+          rmState is RM.UpdateRecipeTagState ||
+          rmState is RM.UpdateCategoryState) {
+        add(LoadFavorites());
       }
     });
   }
