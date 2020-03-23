@@ -225,6 +225,7 @@ class HiveProvider {
         await boxRecipeTagsList.put(currentRecipeTagKey,
             boxRecipeTagsList.get(currentRecipeTagKey)..add(hiveRecipeKey));
       } else {
+        await boxRecipeTags.put(currentRecipeTagKey, recipeTag);
         await boxRecipeTagsList.put(currentRecipeTagKey, [hiveRecipeKey]);
       }
     }
