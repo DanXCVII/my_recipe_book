@@ -481,7 +481,10 @@ class HiveProvider {
       Recipe currentRecipe = await lazyBoxRecipes.get(key);
 
       if (currentRecipe.tags != null &&
-          currentRecipe.tags.contains(oldTagName)) {
+          currentRecipe.tags
+              .map((tag) => tag.text)
+              .toList()
+              .contains(oldTagName)) {
         currentRecipe.tags
           ..removeWhere((tag) => tag.text == oldTagName)
           ..add(StringIntTuple(text: newTagName, number: newColor));

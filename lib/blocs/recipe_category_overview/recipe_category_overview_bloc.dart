@@ -37,7 +37,8 @@ class RecipeCategoryOverviewBloc
           add(RCOUpdateCategory(rmState.oldCategory, rmState.updatedCategory));
         } else if (rmState is RM.MoveCategoryState) {
           add(RCOMoveCategory(rmState.oldIndex, rmState.newIndex));
-        } else if (rmState is RM.DeleteRecipeTagState) {
+        } else if (rmState is RM.DeleteRecipeTagState ||
+            rmState is RM.UpdateRecipeTagState) {
           add(RCOLoadRecipeCategoryOverview());
         }
       }
