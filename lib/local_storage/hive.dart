@@ -20,6 +20,7 @@ class BoxNames {
   static final keyString = "keyString";
   static final recipeNames = "recipeNames";
   static final tmpRecipe = "tmpRecipe";
+  static final ratings = "ratings";
   static final favorites = "favorites";
   static final ingredientNames = "ingredientNames";
   static final order = "order";
@@ -63,6 +64,7 @@ Future<void> initHive(bool firstTime) async {
     Hive.openBox<Recipe>(BoxNames.tmpRecipe),
     Hive.openBox<StringIntTuple>(BoxNames.recipeTags),
     Hive.openBox<List<String>>(BoxNames.recipeTagsList),
+    Hive.openBox<List<String>>(BoxNames.ratings),
   ]);
 
   // initializing with the must have values
@@ -77,6 +79,17 @@ Future<void> initHive(bool firstTime) async {
 
     await Hive.box<List<String>>(BoxNames.recipeCategories)
         .put('no category', List<String>());
+
+    await Hive.box<List<String>>(BoxNames.ratings).put(1, []);
+    await Hive.box<List<String>>(BoxNames.ratings).put(2, []);
+    await Hive.box<List<String>>(BoxNames.ratings).put(3, []);
+    await Hive.box<List<String>>(BoxNames.ratings).put(4, []);
+    await Hive.box<List<String>>(BoxNames.ratings).put(5, []);
+    await Hive.box<List<String>>(BoxNames.ratings).put(6, []);
+    await Hive.box<List<String>>(BoxNames.ratings).put(7, []);
+    await Hive.box<List<String>>(BoxNames.ratings).put(8, []);
+    await Hive.box<List<String>>(BoxNames.ratings).put(9, []);
+    await Hive.box<List<String>>(BoxNames.ratings).put(10, []);
 
     Box<List<String>> boxOrder = Hive.box<List<String>>(BoxNames.order);
     await boxOrder.put('categories', ['no category']);
@@ -110,6 +123,7 @@ class HiveProvider {
     Hive.box<List<String>>(BoxNames.recipeCategories),
     Hive.box<StringIntTuple>(BoxNames.recipeTags),
     Hive.box<List<String>>(BoxNames.recipeTagsList),
+    Hive.box<List<String>>(BoxNames.ratings),
     // Hive.box<String>(BoxNames.recipeBubbles),
   );
 
@@ -131,29 +145,31 @@ class HiveProvider {
   Box<List<String>> boxRecipeCategories;
   Box<StringIntTuple> boxRecipeTags;
   Box<List<String>> boxRecipeTagsList;
+  Box<List<String>> boxRatings;
 
   factory HiveProvider() {
     return _singleton;
   }
 
   HiveProvider._internal(
-    this.boxVegetarian,
-    this.lazyBoxRecipes,
-    this.boxNonVegetarian,
-    this.boxVegan,
-    this.boxKeyString,
-    this.boxRecipeNames,
-    this.boxTmpRecipe,
-    this.boxFavorites,
-    this.boxIngredientNames,
-    this.boxOrder,
-    this.boxRecipeSort,
-    this.boxShoppingCart,
-    this.boxRecipeCategories,
-    this.boxRecipeTags,
-    this.boxRecipeTagsList,
-    // this.boxRecipeBubbles,
-  );
+      this.boxVegetarian,
+      this.lazyBoxRecipes,
+      this.boxNonVegetarian,
+      this.boxVegan,
+      this.boxKeyString,
+      this.boxRecipeNames,
+      this.boxTmpRecipe,
+      this.boxFavorites,
+      this.boxIngredientNames,
+      this.boxOrder,
+      this.boxRecipeSort,
+      this.boxShoppingCart,
+      this.boxRecipeCategories,
+      this.boxRecipeTags,
+      this.boxRecipeTagsList,
+      this.boxRatings
+      // this.boxRecipeBubbles,
+      );
 
   Future<void> reopenBoxes() async {
     await boxVegetarian.close();
@@ -171,6 +187,7 @@ class HiveProvider {
     await lazyBoxRecipes.close();
     await boxRecipeTags.close();
     await boxRecipeTagsList.close();
+    await boxRatings.close();
 
     boxNonVegetarian =
         await Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString());
@@ -190,6 +207,7 @@ class HiveProvider {
     boxRecipeTagsList =
         await Hive.openBox<List<String>>(BoxNames.recipeTagsList);
     boxRecipeNames = await Hive.openBox<String>(BoxNames.recipeNames);
+    boxRatings = await Hive.openBox<List<String>>(BoxNames.ratings);
   }
 
   ////////////// single recipe related //////////////
@@ -217,6 +235,7 @@ class HiveProvider {
     Box<String> boxVegetable = _getBoxVegetable(newRecipe.vegetable);
     boxVegetable.add(hiveRecipeKey);
 
+    // add recipeTags to boxes
     List<String> recipeTagKeys =
         boxRecipeTagsList.keys.map((item) => item.toString()).toList();
     for (StringIntTuple recipeTag in newRecipe.tags) {
@@ -228,6 +247,12 @@ class HiveProvider {
         await boxRecipeTags.put(currentRecipeTagKey, recipeTag);
         await boxRecipeTagsList.put(currentRecipeTagKey, [hiveRecipeKey]);
       }
+    }
+
+    // add rating if non null
+    if (newRecipe.rating != null) {
+      boxRatings.put(newRecipe.rating,
+          boxRatings.get(newRecipe.rating)..add(hiveRecipeKey));
     }
 
     // add ingredients to ingredientNames
@@ -311,6 +336,12 @@ class HiveProvider {
           boxRecipeCategories.get('no category')..remove(hiveRecipeKey));
     }
 
+    // delete recipe from ratings
+    if (removeRecipe.rating != null) {
+      boxRatings.put(removeRecipe.rating,
+          boxRatings.get(removeRecipe.rating)..remove(hiveRecipeKey));
+    }
+
     // delete recipe from vegetable
     Box<String> boxVegetable = _getBoxVegetable(removeRecipe.vegetable);
 
@@ -338,8 +369,8 @@ class HiveProvider {
     await boxKeyString.put(hiveCategoryKey, categoryName);
 
     List<String> categories = boxOrder.get('categories');
-    boxOrder.put(
-        'categories', categories..insert(categories.length - 1, categoryName));
+    boxOrder.put('categories',
+        categories..insert(categories.length - 1, hiveCategoryKey));
 
     await boxRecipeCategories.put(hiveCategoryKey, []);
 
@@ -369,16 +400,17 @@ class HiveProvider {
       }
     }
 
-    List<String> categories = List<String>.from(boxOrder.get('categories'));
-    categories[categories.indexOf(oldName)] = newName;
+    List<String> categoryKeysOrder =
+        List<String>.from(boxOrder.get('categories'));
+    categoryKeysOrder[categoryKeysOrder.indexOf(hiveOldKey)] = hiveNewKey;
 
-    await boxOrder.put('categories', categories);
+    await boxOrder.put('categories', categoryKeysOrder);
   }
 
   Future<void> deleteCategory(String categoryName) async {
     String hiveCategoryKey = getHiveKey(categoryName);
     await boxOrder.put(
-        'categories', boxOrder.get('categories')..remove(categoryName));
+        'categories', boxOrder.get('categories')..remove(hiveCategoryKey));
     await boxRecipeCategories.delete(hiveCategoryKey);
     await boxRecipeSort.delete(hiveCategoryKey);
 
@@ -409,13 +441,13 @@ class HiveProvider {
   }
 
   Future<void> moveCategory(int oldIndex, newIndex) async {
-    List<String> categories = boxOrder.get('categories');
+    List<String> categoryKeysOrder = boxOrder.get('categories');
 
-    categories
-      ..insert(newIndex, categories[oldIndex])
+    categoryKeysOrder
+      ..insert(newIndex, categoryKeysOrder[oldIndex])
       ..removeAt(oldIndex > newIndex ? oldIndex + 1 : oldIndex);
 
-    await boxOrder.put('categories', categories);
+    await boxOrder.put('categories', categoryKeysOrder);
   }
 
   Future<void> changeSortOrder(RSort recipeSort, String category) async {
