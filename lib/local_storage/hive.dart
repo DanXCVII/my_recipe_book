@@ -438,6 +438,7 @@ class HiveProvider {
   Future<void> addRecipeTag(String tagName, int color) async {
     String hiveTagKey = getHiveKey(tagName);
 
+    await boxRecipeTagsList.put(hiveTagKey, []);
     await boxRecipeTags.put(
         hiveTagKey, StringIntTuple(text: tagName, number: color));
   }

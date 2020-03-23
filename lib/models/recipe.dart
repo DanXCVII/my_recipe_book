@@ -136,7 +136,11 @@ class Recipe extends Equatable {
           .toList(),
       lastModified: DateTime.now().toString(),
       rating: json.containsKey('rating') ? json['rating'] : null,
-      tags: json.containsKey('keywords') ? json['keywords'] : [],
+      tags: json.containsKey('keywords')
+          ? List<dynamic>.from(json['keywords'])
+              .map((n) => StringIntTuple.fromMap(n))
+              .toList()
+          : [],
     );
   }
 
@@ -161,7 +165,7 @@ class Recipe extends Equatable {
         'nutritions': nutritions.map((n) => n.toMap()).toList(),
         'lastModified': lastModified,
         'rating': rating,
-        'keywords': tags,
+        'keywords': tags.map((t) => t.toMap()).toList(),
       };
 
   Recipe copyWith({
