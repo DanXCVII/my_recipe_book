@@ -215,27 +215,8 @@ class HiveProvider {
     // add recipe to recipes
     String hiveRecipeKey = getHiveKey(newRecipe.name);
 
-    await lazyBoxRecipes.put(hiveRecipeKey, newRecipe);
-
-    await boxRecipeNames.put(hiveRecipeKey, newRecipe.name);
-
-    // add recipe to categories
-    for (String categoryName in newRecipe.categories) {
-      String hiveCategoryKey = getHiveKey(categoryName);
-      await boxRecipeCategories.put(hiveCategoryKey,
-          boxRecipeCategories.get(hiveCategoryKey)..add(hiveRecipeKey));
-    }
-    if (newRecipe.categories.isEmpty) {
-      List<String> recipeNames = boxRecipeCategories.get('no category');
-      await boxRecipeCategories.put(
-          'no category', recipeNames..add(hiveRecipeKey));
-    }
-
-    // add recipe to vegetable
-    Box<String> boxVegetable = _getBoxVegetable(newRecipe.vegetable);
-    boxVegetable.add(hiveRecipeKey);
-
     // add recipeTags to boxes
+    List<StringIntTuple> newColorRecipeTags = [];
     List<String> recipeTagKeys =
         boxRecipeTagsList.keys.map((item) => item.toString()).toList();
     for (StringIntTuple recipeTag in newRecipe.tags) {
@@ -243,20 +224,44 @@ class HiveProvider {
       if (recipeTagKeys.contains(currentRecipeTagKey)) {
         await boxRecipeTagsList.put(currentRecipeTagKey,
             boxRecipeTagsList.get(currentRecipeTagKey)..add(hiveRecipeKey));
+        newColorRecipeTags.add(boxRecipeTags.get(currentRecipeTagKey));
       } else {
         await boxRecipeTags.put(currentRecipeTagKey, recipeTag);
         await boxRecipeTagsList.put(currentRecipeTagKey, [hiveRecipeKey]);
+        newColorRecipeTags.add(recipeTag);
       }
     }
 
+    Recipe readyToImportRecipe = newRecipe.copyWith(tags: newColorRecipeTags);
+
+    await lazyBoxRecipes.put(hiveRecipeKey, readyToImportRecipe);
+
+    await boxRecipeNames.put(hiveRecipeKey, readyToImportRecipe.name);
+
+    // add recipe to categories
+    for (String categoryName in readyToImportRecipe.categories) {
+      String hiveCategoryKey = getHiveKey(categoryName);
+      await boxRecipeCategories.put(hiveCategoryKey,
+          boxRecipeCategories.get(hiveCategoryKey)..add(hiveRecipeKey));
+    }
+    if (readyToImportRecipe.categories.isEmpty) {
+      List<String> recipeNames = boxRecipeCategories.get('no category');
+      await boxRecipeCategories.put(
+          'no category', recipeNames..add(hiveRecipeKey));
+    }
+
+    // add recipe to vegetable
+    Box<String> boxVegetable = _getBoxVegetable(readyToImportRecipe.vegetable);
+    boxVegetable.add(hiveRecipeKey);
+
     // add rating if non null
-    if (newRecipe.rating != null) {
-      boxRatings.put(newRecipe.rating,
-          boxRatings.get(newRecipe.rating)..add(hiveRecipeKey));
+    if (readyToImportRecipe.rating != null) {
+      boxRatings.put(readyToImportRecipe.rating,
+          boxRatings.get(readyToImportRecipe.rating)..add(hiveRecipeKey));
     }
 
     // add ingredients to ingredientNames
-    for (List<Ingredient> l in newRecipe.ingredients) {
+    for (List<Ingredient> l in readyToImportRecipe.ingredients) {
       for (Ingredient i in l) {
         bool addIngred = true;
         for (var key in boxIngredientNames.keys) {
@@ -504,11 +509,15 @@ class HiveProvider {
     // updating boxRecipeTags
     await boxRecipeTags.put(
         newHiveTagKey, StringIntTuple(text: newTagName, number: newColor));
-    await boxRecipeTags.delete(oldHiveTagKey);
+    if (oldTagName != newTagName) {
+      await boxRecipeTags.delete(oldHiveTagKey);
+    }
     // updating boxRecipeTagsList
     await boxRecipeTagsList.put(
         newHiveTagKey, boxRecipeTagsList.get(oldHiveTagKey));
-    await boxRecipeTagsList.delete(oldHiveTagKey);
+    if (oldTagName != newTagName) {
+      await boxRecipeTagsList.delete(oldHiveTagKey);
+    }
 
     // updating recipes
     for (var key in lazyBoxRecipes.keys) {
