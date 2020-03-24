@@ -331,9 +331,13 @@ class HiveProvider {
     // delete recipe from categories
     if (removeRecipe.categories.isNotEmpty) {
       for (String categoryName in removeRecipe.categories) {
-        if (boxRecipeCategories.get(categoryName).contains(hiveRecipeKey)) {
-          await boxRecipeCategories.put(categoryName,
-              boxRecipeCategories.get(categoryName)..remove(hiveRecipeKey));
+        if (boxRecipeCategories
+            .get(getHiveKey(categoryName))
+            .contains(hiveRecipeKey)) {
+          await boxRecipeCategories.put(
+              getHiveKey(categoryName),
+              boxRecipeCategories.get(getHiveKey(categoryName))
+                ..remove(hiveRecipeKey));
         }
       }
     } else {
