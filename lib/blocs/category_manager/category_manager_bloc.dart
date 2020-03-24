@@ -15,6 +15,8 @@ class CategoryManagerBloc
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
+  List<String> selectedCategories = [];
+
   CategoryManagerBloc({@required this.recipeManagerBloc}) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedCategoryManager) {
@@ -47,6 +49,10 @@ class CategoryManagerBloc
       yield* _mapUpdateCategoryToState(event);
     } else if (event is MoveCategory) {
       yield* _mapMoveCategoryToState(event);
+    } else if (event is SelectCategory) {
+      _mapSelectCategoryToState(event);
+    } else if (event is UnselectCategory) {
+      _mapUnselectCategoryToState(event);
     }
   }
 
@@ -112,6 +118,14 @@ class CategoryManagerBloc
 
       yield LoadedCategoryManager(it2);
     }
+  }
+
+  void _mapSelectCategoryToState(SelectCategory event) {
+    selectedCategories.add(event.categoryName);
+  }
+
+  void _mapUnselectCategoryToState(UnselectCategory event) {
+    selectedCategories.remove(event.categoryName);
   }
 
   @override
