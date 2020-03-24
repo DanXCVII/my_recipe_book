@@ -7,6 +7,14 @@ import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../generated/i18n.dart';
 import '../widgets/dialogs/textfield_dialog.dart';
 
+class CategoryManagerArguments {
+  final CategoryManagerBloc categoryManagerBloc;
+
+  CategoryManagerArguments({
+    this.categoryManagerBloc,
+  });
+}
+
 class CategoryManager extends StatelessWidget {
   const CategoryManager();
 

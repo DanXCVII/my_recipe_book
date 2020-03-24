@@ -230,13 +230,15 @@ class MyApp extends StatelessWidget {
                     BlocProvider<CategoryManagerBloc>(
                       create: (context) => CategoryManagerBloc(
                           recipeManagerBloc:
-                              BlocProvider.of<RecipeManagerBloc>(context))
+                              BlocProvider.of<RecipeManagerBloc>(context),
+                          selectedCategories: args.modifiedRecipe.categories)
                         ..add(InitializeCategoryManager()),
                     ),
                     BlocProvider<RecipeTagManagerBloc>(
                       create: (context) => RecipeTagManagerBloc(
                           recipeManagerBloc:
-                              BlocProvider.of<RecipeManagerBloc>(context))
+                              BlocProvider.of<RecipeManagerBloc>(context),
+                          selectedTags: args.modifiedRecipe.tags)
                         ..add(
                           InitializeRecipeTagManager(),
                         ),
@@ -398,26 +400,50 @@ class MyApp extends StatelessWidget {
               );
 
             case "/manage-categories":
-              return MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) => CategoryManagerBloc(
-                    recipeManagerBloc:
-                        BlocProvider.of<RecipeManagerBloc>(context),
-                  )..add(InitializeCategoryManager()),
-                  child: CategoryManager(),
-                ),
-              );
+              final CategoryManagerArguments args = settings.arguments;
+
+              if (args != null) {
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider<CategoryManagerBloc>.value(
+                    value: args.categoryManagerBloc,
+                    child: CategoryManager(),
+                  ),
+                );
+              } else {
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider<CategoryManagerBloc>(
+                    create: (context) => CategoryManagerBloc(
+                      recipeManagerBloc:
+                          BlocProvider.of<RecipeManagerBloc>(context),
+                    )..add(InitializeCategoryManager()),
+                    child: CategoryManager(),
+                  ),
+                );
+              }
+              break;
 
             case "/manage-recipe-tags":
-              return MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) => RecipeTagManagerBloc(
-                    recipeManagerBloc:
-                        BlocProvider.of<RecipeManagerBloc>(context),
-                  )..add(InitializeRecipeTagManager()),
-                  child: RecipeTagManager(),
-                ),
-              );
+              final RecipeTagManagerArguments args = settings.arguments;
+
+              if (args != null) {
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider.value(
+                    value: args.recipeTagManagerBloc,
+                    child: RecipeTagManager(),
+                  ),
+                );
+              } else {
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider<RecipeTagManagerBloc>(
+                    create: (context) => RecipeTagManagerBloc(
+                      recipeManagerBloc:
+                          BlocProvider.of<RecipeManagerBloc>(context),
+                    )..add(InitializeRecipeTagManager()),
+                    child: RecipeTagManager(),
+                  ),
+                );
+              }
+              break;
 
             case "/manage-nutritions":
               return MaterialPageRoute(

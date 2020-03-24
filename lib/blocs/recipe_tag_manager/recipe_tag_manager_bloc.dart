@@ -16,7 +16,9 @@ class RecipeTagManagerBloc
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
-  RecipeTagManagerBloc({@required this.recipeManagerBloc}) {
+  List<StringIntTuple> selectedTags = [];
+
+  RecipeTagManagerBloc({@required this.recipeManagerBloc, this.selectedTags}) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedRecipeTagManager) {
         if (rmState is RM.AddRecipeTagsState) {
@@ -45,6 +47,10 @@ class RecipeTagManagerBloc
       yield* _mapDeleteRecipeTagToState(event);
     } else if (event is UpdateRecipeTag) {
       yield* _mapUpdateRecipeTagToState(event);
+    } else if (event is SelectRecipeTag) {
+      selectRecipeTag(event);
+    } else if (event is UnselectRecipeTag) {
+      unselectRecipeTag(event);
     }
   }
 
@@ -68,6 +74,8 @@ class RecipeTagManagerBloc
       yield LoadedRecipeTagManager(List<StringIntTuple>.from(
           (state as LoadedRecipeTagManager).recipeTags)
         ..addAll(event.recipeTags));
+
+      selectedTags.addAll(event.recipeTags);
     }
   }
 
@@ -77,6 +85,10 @@ class RecipeTagManagerBloc
       yield LoadedRecipeTagManager(List<StringIntTuple>.from(
           (state as LoadedRecipeTagManager).recipeTags)
         ..remove(event.recipeTag));
+
+      if (selectedTags.contains(event.recipeTag)) {
+        selectedTags.remove(event.recipeTag);
+      }
     }
   }
 
@@ -92,7 +104,20 @@ class RecipeTagManagerBloc
         }
       }).toList();
 
+      if (selectedTags.contains(event.oldRecipeTag)) {
+        selectedTags[selectedTags.indexOf(event.oldRecipeTag)] =
+            event.updatedRecipeTag;
+      }
+
       yield LoadedRecipeTagManager(recipeTags);
     }
+  }
+
+  void selectRecipeTag(SelectRecipeTag event) {
+    selectedTags.add(event.recipeTag);
+  }
+
+  void unselectRecipeTag(UnselectRecipeTag event) {
+    selectedTags.remove(event.recipeTag);
   }
 }

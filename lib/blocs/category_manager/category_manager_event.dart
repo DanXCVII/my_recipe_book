@@ -55,3 +55,21 @@ class UpdateCategory extends CategoryManagerEvent {
   @override
   List<Object> get props => [oldCategory, updatedCategory];
 }
+
+class SelectCategory extends CategoryManagerEvent {
+  final String categoryName;
+
+  const SelectCategory(this.categoryName);
+
+  @override
+  List<Object> get props => [categoryName];
+}
+
+class UnselectCategory extends CategoryManagerEvent {
+  final String categoryName;
+
+  const UnselectCategory(this.categoryName);
+
+  @override
+  List<Object> get props => [categoryName];
+}

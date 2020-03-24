@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/models/string_int_tuple.dart';
-import 'package:my_recipe_book/screens/add_recipe/general_info_screen/recipe_tag_section.dart';
+import 'package:my_recipe_book/blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 
+import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import '../../../blocs/new_recipe/general_info/general_info_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -21,6 +21,7 @@ import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
 import '../../../widgets/image_selector.dart' as IS;
 import '../ingredients_screen.dart';
 import 'categories_section.dart';
+import 'recipe_tag_section.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class GeneralInfoArguments {
@@ -293,40 +294,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                 ],
               ),
             ),
-            CategorySection(
-              selectedCategories: modifiedRecipe.categories,
-              onSelect: (String chipName) {
-                BlocProvider.of<GeneralInfoBloc>(context)
-                    .add(AddCategoryToRecipe(
-                  chipName,
-                  widget.editingRecipeName == null ? false : true,
-                ));
-              },
-              onDeselect: (String chipName) {
-                BlocProvider.of<GeneralInfoBloc>(context)
-                    .add(RemoveCategoriesFromRecipe(
-                  [chipName],
-                  widget.editingRecipeName == null ? false : true,
-                ));
-              },
-            ),
-            RecipeTagSection(
-              selectedRecipeTags: modifiedRecipe.tags ?? [],
-              onSelect: (StringIntTuple recipeTag) {
-                BlocProvider.of<GeneralInfoBloc>(context)
-                    .add(AddRecipeTagToRecipe(
-                  recipeTag,
-                  widget.editingRecipeName == null ? false : true,
-                ));
-              },
-              onDeselect: (StringIntTuple recipeTag) {
-                BlocProvider.of<GeneralInfoBloc>(context)
-                    .add(RemoveRecipeTagsFromRecipe(
-                  [recipeTag],
-                  widget.editingRecipeName == null ? false : true,
-                ));
-              },
-            ),
+            CategorySection(),
+            RecipeTagSection(),
           ]),
         ),
       ),
@@ -427,6 +396,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
           ? 0
           : double.parse(
               totalTimeController.text.replaceAll(RegExp(r','), 'e')),
+      BlocProvider.of<CategoryManagerBloc>(context).selectedCategories,
+      BlocProvider.of<RecipeTagManagerBloc>(context).selectedTags,
     ));
   }
 
