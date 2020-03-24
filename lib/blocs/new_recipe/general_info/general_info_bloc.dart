@@ -31,14 +31,6 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       yield* _mapUpdateRecipeImageToState(event);
     } else if (event is FinishedEditing) {
       yield* _mapFinishedEditingToState(event);
-    } else if (event is AddCategoryToRecipe) {
-      yield* _mapAddCategoryToRecipeToMap(event);
-    } else if (event is RemoveCategoriesFromRecipe) {
-      yield* _mapRemoveCategoriesFromRecipeToState(event);
-    } else if (event is AddRecipeTagToRecipe) {
-      yield* _mapAddRecipeTagToRecipeToState(event);
-    } else if (event is RemoveRecipeTagsFromRecipe) {
-      yield* _mapRemoveRecipeTagsFromRecipeToState(event);
     }
   }
 
@@ -108,6 +100,8 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
             preperationTime: event.preperationTime,
             cookingTime: event.cookingTime,
             totalTime: event.totalTime,
+            categories: event.categories,
+            tags: event.recipeTags,
           );
       await HiveProvider().saveTmpRecipe(newRecipe);
     } else {
@@ -116,6 +110,8 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
             preperationTime: event.preperationTime,
             cookingTime: event.cookingTime,
             totalTime: event.totalTime,
+            categories: event.categories,
+            tags: event.recipeTags,
           );
       await HiveProvider().saveTmpEditingRecipe(newRecipe);
     }
@@ -124,111 +120,6 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       yield GSavedGoBack();
     } else {
       yield GSaved(newRecipe);
-    }
-  }
-
-  Stream<GeneralInfoState> _mapAddCategoryToRecipeToMap(
-      AddCategoryToRecipe event) async* {
-    if (!event.editingRecipe) {
-      await HiveProvider().saveTmpRecipe(
-        HiveProvider().getTmpRecipe().copyWith(
-              categories:
-                  List<String>.from(HiveProvider().getTmpRecipe().categories)
-                    ..add(event.category),
-            ),
-      );
-    } else {
-      await HiveProvider().saveTmpEditingRecipe(
-        HiveProvider().getTmpEditingRecipe().copyWith(
-              categories: List<String>.from(
-                  HiveProvider().getTmpEditingRecipe().categories)
-                ..add(event.category),
-            ),
-      );
-    }
-  }
-
-  Stream<GeneralInfoState> _mapRemoveCategoriesFromRecipeToState(
-      RemoveCategoriesFromRecipe event) async* {
-    if (!event.editingRecipe) {
-      List<String> categories = [];
-      for (String category in HiveProvider().getTmpRecipe().categories) {
-        if (!event.categories.contains(category)) {
-          categories.add(category);
-        }
-      }
-
-      await HiveProvider().saveTmpRecipe(
-        HiveProvider().getTmpRecipe().copyWith(
-              categories: categories,
-            ),
-      );
-    } else {
-      List<String> categories = [];
-      for (String category in HiveProvider().getTmpEditingRecipe().categories) {
-        if (!event.categories.contains(category)) {
-          categories.add(category);
-        }
-      }
-
-      await HiveProvider().saveTmpEditingRecipe(
-        HiveProvider().getTmpEditingRecipe().copyWith(
-              categories: categories,
-            ),
-      );
-    }
-  }
-
-  Stream<GeneralInfoState> _mapAddRecipeTagToRecipeToState(
-      AddRecipeTagToRecipe event) async* {
-    if (!event.editingRecipe) {
-      await HiveProvider().saveTmpRecipe(
-        HiveProvider().getTmpRecipe().copyWith(
-              tags:
-                  List<StringIntTuple>.from(HiveProvider().getTmpRecipe().tags)
-                    ..add(event.recipeTag),
-            ),
-      );
-    } else {
-      await HiveProvider().saveTmpEditingRecipe(
-        HiveProvider().getTmpEditingRecipe().copyWith(
-              tags: List<StringIntTuple>.from(
-                  HiveProvider().getTmpEditingRecipe().tags)
-                ..add(event.recipeTag),
-            ),
-      );
-    }
-  }
-
-  Stream<GeneralInfoState> _mapRemoveRecipeTagsFromRecipeToState(
-      RemoveRecipeTagsFromRecipe event) async* {
-    if (!event.editingRecipe) {
-      List<StringIntTuple> recipeTags = [];
-      for (StringIntTuple category in HiveProvider().getTmpRecipe().tags) {
-        if (!event.recipeTags.contains(category)) {
-          recipeTags.add(category);
-        }
-      }
-
-      await HiveProvider().saveTmpRecipe(
-        HiveProvider().getTmpRecipe().copyWith(
-              tags: recipeTags,
-            ),
-      );
-    } else {
-      List<StringIntTuple> recipeTags = [];
-      for (StringIntTuple recipeTag
-          in HiveProvider().getTmpEditingRecipe().tags) {
-        if (!event.recipeTags.contains(recipeTag)) {
-          recipeTags.add(recipeTag);
-        }
-      }
-
-      await HiveProvider().saveTmpEditingRecipe(
-        HiveProvider().getTmpEditingRecipe().copyWith(
-              tags: recipeTags,
-            ),
-      );
     }
   }
 }

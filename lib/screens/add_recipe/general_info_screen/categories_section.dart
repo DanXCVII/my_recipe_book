@@ -1,11 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../../../constants/routes.dart';
 import '../../../generated/i18n.dart';
 import '../../../widgets/dialogs/textfield_dialog.dart';
+import '../../category_manager.dart';
 
 class Consts {
   Consts._();
@@ -14,16 +17,6 @@ class Consts {
 }
 
 class CategorySection extends StatefulWidget {
-  final Function(String) onSelect;
-  final Function(String) onDeselect;
-  final List<String> selectedCategories;
-
-  CategorySection({
-    this.selectedCategories = const [],
-    @required this.onSelect,
-    @required this.onDeselect,
-  });
-
   @override
   State<StatefulWidget> createState() {
     return _CategorySectionState();
@@ -42,7 +35,7 @@ class _CategorySectionState extends State<CategorySection> {
           children: <Widget>[
             // heading for the subcategory selector section
             Padding(
-                padding: const EdgeInsets.only(left: 56, right: 6, top: 8),
+                padding: const EdgeInsets.only(left: 50, right: 6, top: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -53,6 +46,7 @@ class _CategorySectionState extends State<CategorySection> {
                         fontSize: 16,
                       ),
                     ),
+                    Spacer(),
                     IconButton(
                       icon: Icon(Icons.add_circle_outline),
                       onPressed: () {
@@ -77,6 +71,19 @@ class _CategorySectionState extends State<CategorySection> {
                           ),
                         );
                       },
+                    ),
+                    IconButton(
+                      icon: Icon(MdiIcons.arrowExpand),
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.manageCategories,
+                          arguments: CategoryManagerArguments(
+                            categoryManagerBloc:
+                                BlocProvider.of<CategoryManagerBloc>(context),
+                          ),
+                        );
+                      },
                     )
                   ],
                 )),
@@ -89,9 +96,15 @@ class _CategorySectionState extends State<CategorySection> {
                   children: state.categories.map((category) {
                     return MyCategoryFilterChip(
                       chipName: category,
-                      isSelected: widget.selectedCategories.contains(category),
-                      onSelect: widget.onSelect,
-                      onDeselect: widget.onDeselect,
+                      isSelected: BlocProvider.of<CategoryManagerBloc>(context)
+                          .selectedCategories
+                          .contains(category),
+                      onSelect: (_) =>
+                          BlocProvider.of<CategoryManagerBloc>(context)
+                              .add(SelectCategory(category)),
+                      onDeselect: (_) =>
+                          BlocProvider.of<CategoryManagerBloc>(context)
+                              .add(UnselectCategory(category)),
                     );
                   }).toList()
                     ..removeLast(),

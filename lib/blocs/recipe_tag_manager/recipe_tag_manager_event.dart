@@ -42,3 +42,21 @@ class UpdateRecipeTag extends RecipeTagManagerEvent {
         updatedRecipeTag,
       ];
 }
+
+class SelectRecipeTag extends RecipeTagManagerEvent {
+  final StringIntTuple recipeTag;
+
+  const SelectRecipeTag(this.recipeTag);
+
+  @override
+  List<Object> get props => [recipeTag];
+}
+
+class UnselectRecipeTag extends RecipeTagManagerEvent {
+  final StringIntTuple recipeTag;
+
+  const UnselectRecipeTag(this.recipeTag);
+
+  @override
+  List<Object> get props => [recipeTag];
+}

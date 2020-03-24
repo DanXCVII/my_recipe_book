@@ -245,13 +245,15 @@ class MyApp extends StatelessWidget {
                     BlocProvider<CategoryManagerBloc>(
                       create: (context) => CategoryManagerBloc(
                           recipeManagerBloc:
-                              BlocProvider.of<RecipeManagerBloc>(context))
+                              BlocProvider.of<RecipeManagerBloc>(context),
+                          selectedCategories: args.modifiedRecipe.categories)
                         ..add(InitializeCategoryManager()),
                     ),
                     BlocProvider<RecipeTagManagerBloc>(
                       create: (context) => RecipeTagManagerBloc(
                           recipeManagerBloc:
-                              BlocProvider.of<RecipeManagerBloc>(context))
+                              BlocProvider.of<RecipeManagerBloc>(context),
+                          selectedTags: args.modifiedRecipe.tags)
                         ..add(
                           InitializeRecipeTagManager(),
                         ),
@@ -434,29 +436,51 @@ class MyApp extends StatelessWidget {
 
             case "/manage-categories":
               Ads.showBottomBannerAd();
+              final CategoryManagerArguments args = settings.arguments;
 
-              return MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) => CategoryManagerBloc(
-                    recipeManagerBloc:
-                        BlocProvider.of<RecipeManagerBloc>(context),
-                  )..add(InitializeCategoryManager()),
-                  child: _getAdPage(CategoryManager(), context),
-                ),
-              );
+              if (args != null) {
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider<CategoryManagerBloc>.value(
+                    value: args.categoryManagerBloc,
+                    child: _getAdPage(CategoryManager(), context),
+                  ),
+                );
+              } else {
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider<CategoryManagerBloc>(
+                    create: (context) => CategoryManagerBloc(
+                      recipeManagerBloc:
+                          BlocProvider.of<RecipeManagerBloc>(context),
+                    )..add(InitializeCategoryManager()),
+                    child: _getAdPage(CategoryManager(), context),
+                  ),
+                );
+              }
+              break;
 
             case "/manage-recipe-tags":
               Ads.showBottomBannerAd();
+              final RecipeTagManagerArguments args = settings.arguments;
 
-              return MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) => RecipeTagManagerBloc(
-                    recipeManagerBloc:
-                        BlocProvider.of<RecipeManagerBloc>(context),
-                  )..add(InitializeRecipeTagManager()),
-                  child: _getAdPage(RecipeTagManager(), context),
-                ),
-              );
+              if (args != null) {
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider.value(
+                    value: args.recipeTagManagerBloc,
+                    child: _getAdPage(RecipeTagManager(), context),
+                  ),
+                );
+              } else {
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider<RecipeTagManagerBloc>(
+                    create: (context) => RecipeTagManagerBloc(
+                      recipeManagerBloc:
+                          BlocProvider.of<RecipeManagerBloc>(context),
+                    )..add(InitializeRecipeTagManager()),
+                    child: _getAdPage(RecipeTagManager(), context),
+                  ),
+                );
+              }
+              break;
 
             case "/manage-nutritions":
               Ads.showBottomBannerAd();

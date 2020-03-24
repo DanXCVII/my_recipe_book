@@ -1,12 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
+import '../../../constants/routes.dart';
 import '../../../generated/i18n.dart';
 import '../../../models/string_int_tuple.dart';
 import '../../../widgets/dialogs/text_color_dialog.dart';
+import '../../recipe_tag_manager_screen.dart';
 
 class Consts {
   Consts._();
@@ -15,16 +18,6 @@ class Consts {
 }
 
 class RecipeTagSection extends StatefulWidget {
-  final Function(StringIntTuple) onSelect;
-  final Function(StringIntTuple) onDeselect;
-  final List<StringIntTuple> selectedRecipeTags;
-
-  RecipeTagSection({
-    this.selectedRecipeTags = const [],
-    @required this.onSelect,
-    @required this.onDeselect,
-  });
-
   @override
   State<StatefulWidget> createState() {
     return _RecipeTagSectionState();
@@ -54,6 +47,7 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                         fontSize: 16,
                       ),
                     ),
+                    Spacer(),
                     IconButton(
                       icon: Icon(Icons.add_circle_outline),
                       onPressed: () {
@@ -86,6 +80,19 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                           ),
                         );
                       },
+                    ),
+                    IconButton(
+                      icon: Icon(MdiIcons.arrowExpand),
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.manageRecipeTags,
+                          arguments: RecipeTagManagerArguments(
+                            recipeTagManagerBloc:
+                                BlocProvider.of<RecipeTagManagerBloc>(context),
+                          ),
+                        );
+                      },
                     )
                   ],
                 )),
@@ -98,9 +105,15 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                 children: state.recipeTags.map((recipeTag) {
                   return MyRecipeTagFilterChip(
                     recipeTag: recipeTag,
-                    isSelected: widget.selectedRecipeTags.contains(recipeTag),
-                    onSelect: widget.onSelect,
-                    onDeselect: widget.onDeselect,
+                    isSelected: BlocProvider.of<RecipeTagManagerBloc>(context)
+                        .selectedTags
+                        .contains(recipeTag),
+                    onSelect: (_) =>
+                        BlocProvider.of<RecipeTagManagerBloc>(context)
+                            .add(SelectRecipeTag(recipeTag)),
+                    onDeselect: (_) =>
+                        BlocProvider.of<RecipeTagManagerBloc>(context)
+                            .add(UnselectRecipeTag(recipeTag)),
                   );
                 }).toList(),
               ),

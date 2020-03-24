@@ -28,70 +28,6 @@ class UpdateRecipeImage extends GeneralInfoEvent {
   List<Object> get props => [recipeImage, editingRecipe];
 }
 
-class AddCategoryToRecipe extends GeneralInfoEvent {
-  final String category;
-  final bool editingRecipe;
-
-  AddCategoryToRecipe([
-    this.category,
-    this.editingRecipe,
-  ]);
-
-  @override
-  List<Object> get props => [
-        category,
-        editingRecipe,
-      ];
-}
-
-class RemoveCategoriesFromRecipe extends GeneralInfoEvent {
-  final List<String> categories;
-  final bool editingRecipe;
-
-  RemoveCategoriesFromRecipe([
-    this.categories,
-    this.editingRecipe,
-  ]);
-
-  @override
-  List<Object> get props => [
-        categories,
-        editingRecipe,
-      ];
-}
-
-class AddRecipeTagToRecipe extends GeneralInfoEvent {
-  final StringIntTuple recipeTag;
-  final bool editingRecipe;
-
-  AddRecipeTagToRecipe([
-    this.recipeTag,
-    this.editingRecipe,
-  ]);
-
-  @override
-  List<Object> get props => [
-        recipeTag,
-        editingRecipe,
-      ];
-}
-
-class RemoveRecipeTagsFromRecipe extends GeneralInfoEvent {
-  final List<StringIntTuple> recipeTags;
-  final bool editingRecipe;
-
-  RemoveRecipeTagsFromRecipe([
-    this.recipeTags,
-    this.editingRecipe,
-  ]);
-
-  @override
-  List<Object> get props => [
-        RemoveCategoriesFromRecipe(),
-        editingRecipe,
-      ];
-}
-
 class FinishedEditing extends GeneralInfoEvent {
   final bool editingRecipe;
   final bool goBack;
@@ -100,15 +36,18 @@ class FinishedEditing extends GeneralInfoEvent {
   final double preperationTime;
   final double cookingTime;
   final double totalTime;
+  final List<String> categories;
+  final List<StringIntTuple> recipeTags;
 
-  FinishedEditing([
-    this.editingRecipe,
-    this.goBack,
-    this.recipeName,
-    this.preperationTime,
-    this.cookingTime,
-    this.totalTime,
-  ]);
+  FinishedEditing(
+      [this.editingRecipe,
+      this.goBack,
+      this.recipeName,
+      this.preperationTime,
+      this.cookingTime,
+      this.totalTime,
+      this.categories,
+      this.recipeTags]);
 
   @override
   List<Object> get props => [
@@ -118,5 +57,7 @@ class FinishedEditing extends GeneralInfoEvent {
         preperationTime,
         cookingTime,
         totalTime,
+        categories,
+        recipeTags,
       ];
 }

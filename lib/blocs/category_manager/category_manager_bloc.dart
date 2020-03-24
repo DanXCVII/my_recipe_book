@@ -17,7 +17,8 @@ class CategoryManagerBloc
 
   List<String> selectedCategories = [];
 
-  CategoryManagerBloc({@required this.recipeManagerBloc}) {
+  CategoryManagerBloc(
+      {@required this.recipeManagerBloc, this.selectedCategories}) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedCategoryManager) {
         if (rmState is RM.AddCategoriesState) {
@@ -50,9 +51,9 @@ class CategoryManagerBloc
     } else if (event is MoveCategory) {
       yield* _mapMoveCategoryToState(event);
     } else if (event is SelectCategory) {
-      _mapSelectCategoryToState(event);
+      selectCategoryToState(event);
     } else if (event is UnselectCategory) {
-      _mapUnselectCategoryToState(event);
+      unselectCategoryToState(event);
     }
   }
 
@@ -69,6 +70,7 @@ class CategoryManagerBloc
           List.from((state as LoadedCategoryManager).categories)
             ..insertAll((state as LoadedCategoryManager).categories.length - 1,
                 event.categories);
+      selectedCategories.addAll(event.categories);
 
       yield LoadedCategoryManager(categories);
     }
@@ -80,6 +82,9 @@ class CategoryManagerBloc
       final List<String> categories =
           List<String>.from((state as LoadedCategoryManager).categories)
             ..remove(event.category);
+      if (selectedCategories.contains(event.category)) {
+        selectedCategories.remove(event.category);
+      }
 
       yield LoadedCategoryManager(categories);
     }
@@ -96,6 +101,11 @@ class CategoryManagerBloc
           return category;
         }
       }).toList();
+
+      if (selectedCategories.contains(event.oldCategory)) {
+        selectedCategories[selectedCategories.indexOf(event.oldCategory)] =
+            event.updatedCategory;
+      }
 
       yield LoadedCategoryManager(categories);
     }
@@ -120,11 +130,11 @@ class CategoryManagerBloc
     }
   }
 
-  void _mapSelectCategoryToState(SelectCategory event) {
+  void selectCategoryToState(SelectCategory event) {
     selectedCategories.add(event.categoryName);
   }
 
-  void _mapUnselectCategoryToState(UnselectCategory event) {
+  void unselectCategoryToState(UnselectCategory event) {
     selectedCategories.remove(event.categoryName);
   }
 
