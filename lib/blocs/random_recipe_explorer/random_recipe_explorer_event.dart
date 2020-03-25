@@ -15,10 +15,6 @@ class InitializeRandomRecipeExplorer extends RandomRecipeExplorerEvent {
 
   @override
   List<Object> get props => [selectedCategory];
-
-  @override
-  String toString() =>
-      'current category { selectedCategory: $selectedCategory }';
 }
 
 class ReloadRandomRecipeExplorer extends RandomRecipeExplorerEvent {}
@@ -30,9 +26,6 @@ class AddCategories extends RandomRecipeExplorerEvent {
 
   @override
   List<Object> get props => [categories];
-
-  @override
-  String toString() => 'Add Category { category: $categories }';
 }
 
 class DeleteCategory extends RandomRecipeExplorerEvent {
@@ -42,9 +35,6 @@ class DeleteCategory extends RandomRecipeExplorerEvent {
 
   @override
   List<Object> get props => [category];
-
-  @override
-  String toString() => 'Delete Category { category: $category }';
 }
 
 class DeleteRecipe extends RandomRecipeExplorerEvent {
@@ -54,9 +44,6 @@ class DeleteRecipe extends RandomRecipeExplorerEvent {
 
   @override
   List<Object> get props => [recipe];
-
-  @override
-  String toString() => 'Delete Recipe { recipe: $recipe }';
 }
 
 class UpdateRecipe extends RandomRecipeExplorerEvent {
@@ -67,24 +54,16 @@ class UpdateRecipe extends RandomRecipeExplorerEvent {
 
   @override
   List<Object> get props => [oldRecipe, updatedRecipe];
-
-  @override
-  String toString() =>
-      'Update Recipe { oldRecipe: $oldRecipe, updatedRecipe: $updatedRecipe }';
 }
 
 class UpdateCategory extends RandomRecipeExplorerEvent {
   final String oldCategory;
-  final String newCategory;
+  final String updatedCategory;
 
-  const UpdateCategory(this.oldCategory, this.newCategory);
-
-  @override
-  List<Object> get props => [oldCategory, newCategory];
+  const UpdateCategory(this.oldCategory, this.updatedCategory);
 
   @override
-  String toString() =>
-      'Update Category { oldCategory: $oldCategory , newCategory: $newCategory}';
+  List<Object> get props => [oldCategory, updatedCategory];
 }
 
 class ChangeCategory extends RandomRecipeExplorerEvent {
@@ -94,7 +73,4 @@ class ChangeCategory extends RandomRecipeExplorerEvent {
 
   @override
   List<Object> get props => [category];
-
-  @override
-  String toString() => 'Change Category { category: $category }';
 }

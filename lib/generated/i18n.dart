@@ -120,8 +120,8 @@ class I18n implements WidgetsLocalizations {
   String get name => "name";
   /// "preperation time"
   String get prep_time => "preperation time";
-  /// "cooking time"
-  String get cook_time => "cooking time";
+  /// "cook-baking time"
+  String get cook_time => "cook-baking time";
   /// "total time"
   String get total_time => "total time";
   /// "remaining time"
@@ -565,9 +565,9 @@ class _I18n_de_DE extends I18n {
   /// "Vorb..zeit"
   @override
   String get prep_time => "Vorb..zeit";
-  /// "Kochzeit"
+  /// "Koch-/Backzeit"
   @override
-  String get cook_time => "Kochzeit";
+  String get cook_time => "Koch-/Backzeit";
   /// "Gesamtzeit"
   @override
   String get total_time => "Gesamtzeit";

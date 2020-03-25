@@ -178,12 +178,25 @@ class RecipeCategoryOverviewBloc
               as LoadedRecipeCategoryOverview)
           .rCategoryOverview
           .map((tuple) {
+        String overviewItemName = tuple.item1;
         if (tuple.item1 == event.oldCategory) {
-          return Tuple2<String, List<Recipe>>(
-              event.updatedCategory, tuple.item2);
-        } else {
-          return tuple;
+          overviewItemName = event.updatedCategory;
         }
+        return Tuple2<String, List<Recipe>>(
+          overviewItemName,
+          tuple.item2
+            ..map(
+              (recipe) => recipe.copyWith(
+                categories: recipe.categories
+                    .map(
+                      (category) => category == event.oldCategory
+                          ? event.updatedCategory
+                          : category,
+                    )
+                    .toList(),
+              ),
+            ).toList(),
+        );
       }).toList())
         ..removeWhere((item) => item == null);
 
@@ -213,17 +226,14 @@ class RecipeCategoryOverviewBloc
     return (state as LoadedRecipeCategoryOverview)
         .rCategoryOverview
         .map((tuple) {
-      // iterate through the recipes in the current category
-      for (Recipe r in tuple.item2) {
-        // if the recipename of the current recipe equals the delete recipe name
-        if ((r.name).compareTo(recipe.name) == 0) {
-          // remove that recipe and return the tuple without the recipe
-          return Tuple2(tuple.item1, tuple.item2..remove(r));
-        }
-      }
-      // recipe doesn't exist in that category
-      return tuple;
-    }).toList();
+      var updatedOverviewItem = Tuple2<String, List<Recipe>>(tuple.item1,
+          tuple.item2..removeWhere((item2) => item2.name == recipe.name));
+      return updatedOverviewItem.item1 == "no category" &&
+              updatedOverviewItem.item2.isEmpty
+          ? null
+          : updatedOverviewItem;
+    }).toList()
+          ..removeWhere((item) => item == null);
   }
 
   List<Tuple2<String, List<Recipe>>> _addRecipesToOverview(List<Recipe> recipes,

@@ -373,7 +373,9 @@ class HiveProvider {
     }
 
     // delete recipe from recipes
-    await lazyBoxRecipes.delete(hiveRecipeKey);
+    if (lazyBoxRecipes.keys.toList().contains(hiveRecipeKey)) {
+      await lazyBoxRecipes.delete(hiveRecipeKey);
+    }
   }
 
   ////////////// category related //////////////

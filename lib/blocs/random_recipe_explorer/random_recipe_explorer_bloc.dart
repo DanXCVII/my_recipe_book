@@ -214,10 +214,23 @@ class RandomRecipeExplorerBloc
       final List<String> categories =
           List<String>.from((state as LoadedRandomRecipeExplorer).categories);
       int renamedCategoryIndex = categories.indexOf(event.oldCategory);
-      categories[renamedCategoryIndex] = event.newCategory;
+      categories[renamedCategoryIndex] = event.updatedCategory;
 
       yield LoadedRandomRecipeExplorer(
-        (state as LoadedRandomRecipeExplorer).randomRecipes,
+        (state as LoadedRandomRecipeExplorer)
+            .randomRecipes
+            .map(
+              (recipe) => recipe.copyWith(
+                categories: recipe.categories
+                    .map(
+                      (category) => category == event.oldCategory
+                          ? event.updatedCategory
+                          : category,
+                    )
+                    .toList(),
+              ),
+            )
+            .toList(),
         categories,
         (state as LoadedRandomRecipeExplorer).selectedCategory,
       );
