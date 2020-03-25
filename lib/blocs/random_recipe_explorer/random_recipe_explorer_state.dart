@@ -29,8 +29,4 @@ class LoadedRandomRecipeExplorer extends RandomRecipeExplorerState {
 
   @override
   List<Object> get props => [selectedCategory, categories, randomRecipes];
-
-  @override
-  String toString() =>
-      'loaded random recipes { selectedCategory: $selectedCategory, categories: $categories, recipes: $randomRecipes }';
 }
