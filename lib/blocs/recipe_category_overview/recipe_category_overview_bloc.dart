@@ -67,6 +67,8 @@ class RecipeCategoryOverviewBloc
       yield* _mapDeleteCategoryToState(event);
     } else if (event is RCOMoveCategory) {
       yield* _mapMoveCategoryToState(event);
+    } else if (event is RCOUpdateCategory) {
+      yield* _mapUpdateCategoryToState(event);
     }
   }
 
@@ -169,6 +171,26 @@ class RecipeCategoryOverviewBloc
     }
   }
 
+  Stream<RecipeCategoryOverviewState> _mapUpdateCategoryToState(
+      RCOUpdateCategory event) async* {
+    if (state is LoadedRecipeCategoryOverview) {
+      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview = ((state
+              as LoadedRecipeCategoryOverview)
+          .rCategoryOverview
+          .map((tuple) {
+        if (tuple.item1 == event.oldCategory) {
+          return Tuple2<String, List<Recipe>>(
+              event.updatedCategory, tuple.item2);
+        } else {
+          return tuple;
+        }
+      }).toList())
+        ..removeWhere((item) => item == null);
+
+      yield LoadedRecipeCategoryOverview(recipeCategoryOverview);
+    }
+  }
+
   Stream<RecipeCategoryOverviewState> _mapMoveCategoryToState(
       RCOMoveCategory event) async* {
     if (state is LoadedRecipeCategoryOverview) {
@@ -209,7 +231,7 @@ class RecipeCategoryOverviewBloc
     List<Tuple2<String, List<Recipe>>> newRecipeOverview =
         List<Tuple2<String, List<Recipe>>>.from(
             (state as LoadedRecipeCategoryOverview).rCategoryOverview);
-// check every recipe category, if it is already in the overview
+    // check every recipe category, if it is already in the overview
     for (Recipe recipe in recipes) {
       for (String c in recipe.categories) {
         bool alreadyAdded = false;

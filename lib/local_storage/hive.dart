@@ -337,18 +337,22 @@ class HiveProvider {
           await boxRecipeCategories.put(
               getHiveKey(categoryName),
               boxRecipeCategories.get(getHiveKey(categoryName))
-                ..remove(hiveRecipeKey));
+                ..removeWhere((key) => key == hiveRecipeKey));
         }
       }
     } else {
-      await boxRecipeCategories.put('no category',
-          boxRecipeCategories.get('no category')..remove(hiveRecipeKey));
+      await boxRecipeCategories.put(
+          'no category',
+          boxRecipeCategories.get('no category')
+            ..removeWhere((key) => key == hiveRecipeKey));
     }
 
     // delete recipe from ratings
     if (removeRecipe.rating != null) {
-      boxRatings.put(removeRecipe.rating,
-          boxRatings.get(removeRecipe.rating)..remove(hiveRecipeKey));
+      boxRatings.put(
+          removeRecipe.rating,
+          boxRatings.get(removeRecipe.rating)
+            ..removeWhere((key) => key == hiveRecipeKey));
     }
 
     // delete recipe from vegetable
@@ -363,7 +367,8 @@ class HiveProvider {
       String hiveRecipeTag = getHiveKey(recipeTag.text);
       await boxRecipeTagsList.put(
         hiveRecipeTag,
-        boxRecipeTagsList.get(hiveRecipeTag)..remove(hiveRecipeKey),
+        boxRecipeTagsList.get(hiveRecipeTag)
+          ..removeWhere((key) => key == hiveRecipeKey),
       );
     }
 

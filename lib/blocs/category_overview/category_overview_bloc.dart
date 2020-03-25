@@ -132,7 +132,7 @@ class CategoryOverviewBloc
       final List<Tuple2<String, String>> categoryRandomImageList =
           (state as LoadedCategoryOverview).categories.map((t) {
         if (t.item1 == event.oldCategory) {
-          return Tuple2(event.updatedCategory, t.item2);
+          return Tuple2<String, String>(event.updatedCategory, t.item2);
         } else {
           return t;
         }
@@ -176,7 +176,8 @@ class CategoryOverviewBloc
         // if there is a new randomImage
         if (newRandomImage != null) {
           // add the new randomImage to the category
-          newCategoryRandomImageList.add(Tuple2(t.item1, newRandomImage));
+          newCategoryRandomImageList
+              .add(Tuple2<String, String>(t.item1, newRandomImage));
         }
       } // if the catogry randomImage is not of the to be deleted recipe
       else {
@@ -197,7 +198,8 @@ class CategoryOverviewBloc
           await HiveProvider().getRandomRecipeOfCategory(category: category);
       String randomImage = randomRecipe == null ? null : randomRecipe.imagePath;
       if (randomImage != null) {
-        categoryRandomImageList.add(Tuple2(category, randomImage));
+        categoryRandomImageList
+            .add(Tuple2<String, String>(category, randomImage));
       }
     }
     return categoryRandomImageList;
