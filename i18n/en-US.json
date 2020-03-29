@@ -179,5 +179,12 @@
   "select_recipe_tags": "select recipe tags",
   "recipe_tag": "recipetag",
   "delete_recipe_tag": "delete recipe tag?",
-  "you_have_no_recipe_tags": "you have no recipe tags"
+  "you_have_no_recipe_tags": "you have no recipe tags",
+  "import_from_website": "import recipes from website",
+  "import_from_website_short": "import from website",
+  "failed_to_import_recipe_unknown_reason": "Failed to import recipe for an unknown reason",
+  "recipe_already_exists": "recipe with name \"{name}\" already exists",
+  "failed_to_connect_to_url": "failed to connect to given url",
+  "invalid_url": "invalid url:\ncheck the supported websites in the info section below",
+  "enter_url": "enter URL of website with recipe:"
 }

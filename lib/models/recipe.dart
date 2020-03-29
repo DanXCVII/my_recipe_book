@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
+import '../helper.dart';
 import 'enums.dart';
 import 'ingredient.dart';
 import 'nutrition.dart';
@@ -51,6 +52,8 @@ class Recipe extends Equatable {
   final int rating;
   @HiveField(19)
   final List<StringIntTuple> tags;
+  @HiveField(20)
+  final String source;
 
   Recipe({
     @required this.name,
@@ -73,6 +76,7 @@ class Recipe extends Equatable {
     this.lastModified,
     this.rating,
     this.tags = const [],
+    this.source,
   });
 
   @override
@@ -96,7 +100,8 @@ class Recipe extends Equatable {
         'isFavorite : $isFavorite\n'
         'lastModified : $lastModified\n'
         'rating: $rating\n'
-        'keywords: $tags');
+        'keywords: $tags\n'
+        'source: $source');
   }
 
   factory Recipe.fromMap(Map<String, dynamic> json) {
@@ -141,6 +146,7 @@ class Recipe extends Equatable {
               .map((n) => StringIntTuple.fromMap(n))
               .toList()
           : [],
+      source: json['source'],
     );
   }
 
@@ -166,6 +172,7 @@ class Recipe extends Equatable {
         'lastModified': lastModified,
         'rating': rating,
         'keywords': tags.map((t) => t.toMap()).toList(),
+        'source': source,
       };
 
   Recipe copyWith({
@@ -189,6 +196,7 @@ class Recipe extends Equatable {
     String lastModified,
     int rating,
     List<StringIntTuple> tags,
+    String source,
   }) {
     return Recipe(
       name: name ?? this.name,
@@ -211,6 +219,7 @@ class Recipe extends Equatable {
       lastModified: lastModified ?? this.lastModified,
       rating: rating ?? this.rating,
       tags: tags ?? this.tags,
+      source: source ?? this.source,
     );
   }
 
@@ -236,6 +245,7 @@ class Recipe extends Equatable {
         lastModified,
         rating,
         tags,
+        source,
       ];
 }
 

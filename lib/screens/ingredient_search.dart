@@ -45,6 +45,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomPadding: false,
         appBar: GradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -88,12 +89,12 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
               if (state is IngredientSearchInitial) {
                 return Container();
               } else if (state is SearchingRecipes) {
-                return ListView(children: <Widget>[
-                  Container(
+                return Center(
+                  child: Container(
                     height: MediaQuery.of(context).size.height - 350,
                     child: Center(child: CircularProgressIndicator()),
                   ),
-                ]);
+                );
               } else if (state is IngredientSearchMatches) {
                 if (state.tupleMatchesRecipe.isEmpty) {
                   return ListView(children: <Widget>[

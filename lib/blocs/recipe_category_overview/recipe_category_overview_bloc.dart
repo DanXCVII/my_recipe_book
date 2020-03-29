@@ -155,19 +155,7 @@ class RecipeCategoryOverviewBloc
   Stream<RecipeCategoryOverviewState> _mapDeleteCategoryToState(
       RCODeleteCategory event) async* {
     if (state is LoadedRecipeCategoryOverview) {
-      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview = ((state
-              as LoadedRecipeCategoryOverview)
-          .rCategoryOverview
-          .map((tuple) {
-        if (tuple.item1 == event.category) {
-          return null;
-        } else {
-          return tuple;
-        }
-      }).toList())
-        ..removeWhere((item) => item == null);
-
-      yield LoadedRecipeCategoryOverview(recipeCategoryOverview);
+      yield* _mapLoadCategoryOverviewToState(RCOLoadRecipeCategoryOverview());
     }
   }
 

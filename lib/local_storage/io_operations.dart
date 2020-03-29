@@ -33,10 +33,11 @@ Future<Recipe> fixImagePaths(Recipe recipe) async {
 
   // if the recipe image has changed
   if (recipe.imagePath != Constants.noRecipeImage) {
-    newRecipeImagePath = await PathProvider.pP
-        .getRecipePathFull(_underscoreNewRecipeName, newRecipeImageDataType);
-    newRecipeImagePreviewPath = await PathProvider.pP.getRecipePreviewPathFull(
+    newRecipeImagePath = await PathProvider.pP.getRecipeImagePathFull(
         _underscoreNewRecipeName, newRecipeImageDataType);
+    newRecipeImagePreviewPath = await PathProvider.pP
+        .getRecipeImagePreviewPathFull(
+            _underscoreNewRecipeName, newRecipeImageDataType);
 
     await File(recipe.imagePath).rename(newRecipeImagePath);
     await File(recipe.imagePreviewPath).rename(newRecipeImagePreviewPath);
@@ -152,15 +153,15 @@ Future<void> copyRecipeDataToNewPath(
         print(f.path);
         String dataType = getImageDatatype(f.path);
 
-        File oldRecipeImageFile = File(
-            await PathProvider.pP.getRecipePathFull(oldRecipeName, dataType));
-        await oldRecipeImageFile.copy(
-            await PathProvider.pP.getRecipePathFull(newRecipeName, dataType));
+        File oldRecipeImageFile = File(await PathProvider.pP
+            .getRecipeImagePathFull(oldRecipeName, dataType));
+        await oldRecipeImageFile.copy(await PathProvider.pP
+            .getRecipeImagePathFull(newRecipeName, dataType));
 
         File oldRecipePreviewImageFile = File(await PathProvider.pP
-            .getRecipePreviewPathFull(oldRecipeName, dataType));
+            .getRecipeImagePreviewPathFull(oldRecipeName, dataType));
         await oldRecipePreviewImageFile.copy(await PathProvider.pP
-            .getRecipePreviewPathFull(newRecipeName, dataType));
+            .getRecipeImagePreviewPathFull(newRecipeName, dataType));
       }
     }
   }
@@ -199,11 +200,11 @@ Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
   String dataType = getImageDatatype(pictureFile.path);
 
   String recipeImagePathFull =
-      await PathProvider.pP.getRecipePathFull(recipeName, dataType);
+      await PathProvider.pP.getRecipeImagePathFull(recipeName, dataType);
 
   await saveImage(pictureFile, recipeImagePathFull, false);
   String recipeImagePreviewPathFull =
-      await PathProvider.pP.getRecipePreviewPathFull(recipeName, dataType);
+      await PathProvider.pP.getRecipeImagePreviewPathFull(recipeName, dataType);
   await saveImage(pictureFile, recipeImagePreviewPathFull, true);
 }
 

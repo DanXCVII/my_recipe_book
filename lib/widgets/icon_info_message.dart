@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 class IconInfoMessage extends StatelessWidget {
   final Widget iconWidget;
   final String description;
+  final bool backgroundText;
+  final Color textColor;
 
   const IconInfoMessage({
     @required this.iconWidget,
     @required this.description,
+    this.backgroundText = false,
+    this.textColor,
     Key key,
   }) : super(key: key);
 
@@ -34,15 +38,30 @@ class IconInfoMessage extends StatelessWidget {
         SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text(
-            description,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-                color: Theme.of(context).backgroundColor == Colors.white
-                    ? Colors.grey[800]
-                    : Colors.white),
+          child: Container(
+            decoration: backgroundText
+                ? BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(5),
+                    ),
+                    color: Colors.black45)
+                : null,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                description,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
+                  color: textColor == null
+                      ? Theme.of(context).backgroundColor == Colors.white
+                          ? Colors.grey[800]
+                          : Colors.white
+                      : textColor,
+                ),
+              ),
+            ),
           ),
         ),
       ],

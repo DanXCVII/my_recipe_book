@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/screens/import_from_website.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/import_recipe/import_recipe_bloc.dart';
@@ -50,6 +52,15 @@ class Settings extends StatelessWidget {
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ExportRecipes()));
+            },
+          ),
+          Divider(),
+          ListTile(
+            title: Text(I18n.of(context).import_from_website),
+            onTap: () {
+              Navigator.pushNamed(context, RouteNames.importFromWebsite,
+                  arguments: ImportFromWebsiteArguments(
+                      BlocProvider.of<ShoppingCartBloc>(context)));
             },
           ),
           Divider(),

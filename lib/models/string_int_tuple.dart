@@ -31,4 +31,9 @@ class StringIntTuple extends Equatable {
         text,
         number,
       ];
+
+  @override
+  String toString() {
+    return "text: $text, number: $number";
+  }
 }

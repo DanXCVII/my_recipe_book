@@ -16,4 +16,5 @@ class RouteNames {
   static final intro = "/intro";
   static final manageRecipeTags = "/manage-recipe-tags";
   static final recipeTagOverview = "/recipe-tag-recipes-overview";
+  static final importFromWebsite = "/import-recipes-from-website";
 }
