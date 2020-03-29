@@ -1108,7 +1108,7 @@ class TopSectionRecipe extends StatelessWidget {
                 ),
               ),
         Padding(
-          padding: const EdgeInsets.only(top: 15.0),
+          padding: const EdgeInsets.only(left: 15, right: 15, top: 15.0),
           child: Wrap(
             direction: Axis.horizontal,
             runSpacing: 10,

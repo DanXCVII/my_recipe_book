@@ -4,17 +4,19 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
-import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../ad_related/ad.dart';
+import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../theming.dart';
 import '../widgets/dialogs/import_dialog.dart';
+import '../widgets/dialogs/info_dialog.dart';
 import 'export_recipes_screen.dart';
+import 'import_from_website.dart';
 
 class Settings extends StatelessWidget {
   @override
@@ -122,6 +124,15 @@ class Settings extends StatelessWidget {
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ExportRecipes()));
+            },
+          ),
+          Divider(),
+          ListTile(
+            title: Text(I18n.of(context).import_from_website),
+            onTap: () {
+              Navigator.pushNamed(context, RouteNames.importFromWebsite,
+                  arguments: ImportFromWebsiteArguments(
+                      BlocProvider.of<ShoppingCartBloc>(context)));
             },
           ),
           Divider(),

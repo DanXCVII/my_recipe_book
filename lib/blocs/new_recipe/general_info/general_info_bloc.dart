@@ -62,9 +62,9 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     await IO.saveRecipeImage(event.recipeImage, recipeName);
 
     String recipeImagePathFull =
-        await PathProvider.pP.getRecipePathFull(recipeName, imageDataType);
+        await PathProvider.pP.getRecipeImagePathFull(recipeName, imageDataType);
     String recipeImagePreviewPathFull = await PathProvider.pP
-        .getRecipePreviewPathFull(recipeName, imageDataType);
+        .getRecipeImagePreviewPathFull(recipeName, imageDataType);
 
     if (!event.editingRecipe) {
       await HiveProvider().saveTmpRecipe(

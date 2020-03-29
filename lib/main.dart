@@ -34,6 +34,7 @@ import 'blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import 'blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen_bloc.dart';
+import 'blocs/website_import/website_import_bloc.dart';
 import 'constants/routes.dart';
 import 'generated/i18n.dart';
 import 'screens/SplashScreen.dart';
@@ -44,6 +45,7 @@ import 'screens/add_recipe/nutritions.dart';
 import 'screens/add_recipe/steps_screen/steps_screen.dart';
 import 'screens/category_manager.dart';
 import 'screens/homepage_screen.dart';
+import 'screens/import_from_website.dart';
 import 'screens/ingredient_search.dart';
 import 'screens/ingredient_search_preview_screen.dart';
 import 'screens/ingredients_manager.dart';
@@ -501,6 +503,24 @@ class MyApp extends StatelessWidget {
                   create: (context) =>
                       IngredientsManagerBloc()..add(LoadIngredientsManager()),
                   child: _getAdPage(IngredientsManager(), context),
+                ),
+              );
+
+            case "/import-recipes-from-website":
+              final ImportFromWebsiteArguments args = settings.arguments;
+
+              return MaterialPageRoute(
+                builder: (context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<WebsiteImportBloc>(
+                      create: (_) => WebsiteImportBloc(
+                          BlocProvider.of<RecipeManagerBloc>(context)),
+                    ),
+                    BlocProvider<ShoppingCartBloc>.value(
+                      value: args.shoppingCartBloc,
+                    )
+                  ],
+                  child: ImportFromWebsiteScreen(),
                 ),
               );
 

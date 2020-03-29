@@ -69,6 +69,7 @@ dependencies:
   flutter_sequence_animation: ^3.0.1 # MIT
   flutter_native_splash: ^0.1.9 # MIT
   flutter_colorpicker: ^0.3.2 # MIT
+  dio: ^3.0.9 # MIT
 
   
 dev_dependencies:
@@ -117,6 +118,7 @@ flutter:
     - images/bannerAd.png
     - images/tableVegetable.jpg
     - images/ingredient_search.mp4
+    - images/salatLowRes.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

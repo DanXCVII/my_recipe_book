@@ -19,6 +19,7 @@ class CategoryManagerBloc
 
   CategoryManagerBloc(
       {@required this.recipeManagerBloc, this.selectedCategories}) {
+    if (selectedCategories == null) selectedCategories = [];
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedCategoryManager) {
         if (rmState is RM.AddCategoriesState) {

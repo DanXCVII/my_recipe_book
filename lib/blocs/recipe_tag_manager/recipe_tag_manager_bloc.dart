@@ -19,6 +19,7 @@ class RecipeTagManagerBloc
   List<StringIntTuple> selectedTags = [];
 
   RecipeTagManagerBloc({@required this.recipeManagerBloc, this.selectedTags}) {
+    if (selectedTags == null) selectedTags = [];
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedRecipeTagManager) {
         if (rmState is RM.AddRecipeTagsState) {

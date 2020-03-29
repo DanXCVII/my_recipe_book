@@ -193,5 +193,12 @@
   "select_recipe_tags": "Tags auswählen",
   "recipe_tag": "Schlüsselwort",
   "delete_recipe_tag": "Tag löschen?",
-  "you_have_no_recipe_tags": "Du hast keine gespeicherten Tags"
+  "you_have_no_recipe_tags": "Du hast keine gespeicherten Tags",
+  "import_from_website": "Rezepte von Webseite importieren",
+  "import_from_website_short": "Rezepte laden",
+  "failed_to_import_recipe_unknown_reason": "Import aus unekannten Gründen fehlgeschlagen",
+  "recipe_already_exists": "Rezept mit demselben Namen \"{name}\" bereits vorhanden",
+  "failed_to_connect_to_url": "Verbindung mit URL fehlgeschlagen",
+  "invalid_url": "ungültige URL\nChecke die unterstützten Webseiten im Infobereich unten",
+  "enter_url": "gebe URL zum Rezept an:"
 }

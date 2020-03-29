@@ -424,6 +424,20 @@ class I18n implements WidgetsLocalizations {
   String get delete_recipe_tag => "delete recipe tag?";
   /// "you have no recipe tags"
   String get you_have_no_recipe_tags => "you have no recipe tags";
+  /// "import recipes from website"
+  String get import_from_website => "import recipes from website";
+  /// "import from website"
+  String get import_from_website_short => "import from website";
+  /// "Failed to import recipe for an unknown reason"
+  String get failed_to_import_recipe_unknown_reason => "Failed to import recipe for an unknown reason";
+  /// "recipe with name \"${name}\" already exists"
+  String recipe_already_exists(String name) => "recipe with name \"${name}\" already exists";
+  /// "failed to connect to given url"
+  String get failed_to_connect_to_url => "failed to connect to given url";
+  /// "invalid url:\ncheck the supported websites in the info section below"
+  String get invalid_url => "invalid url:\ncheck the supported websites in the info section below";
+  /// "enter URL of website with recipe:"
+  String get enter_url => "enter URL of website with recipe:";
 }
 
 class _I18n_en_US extends I18n {
@@ -1021,6 +1035,27 @@ class _I18n_de_DE extends I18n {
   /// "Du hast keine gespeicherten Tags"
   @override
   String get you_have_no_recipe_tags => "Du hast keine gespeicherten Tags";
+  /// "Rezepte von Webseite importieren"
+  @override
+  String get import_from_website => "Rezepte von Webseite importieren";
+  /// "Rezepte laden"
+  @override
+  String get import_from_website_short => "Rezepte laden";
+  /// "Import aus unekannten Gründen fehlgeschlagen"
+  @override
+  String get failed_to_import_recipe_unknown_reason => "Import aus unekannten Gründen fehlgeschlagen";
+  /// "Rezept mit demselben Namen \"${name}\" bereits vorhanden"
+  @override
+  String recipe_already_exists(String name) => "Rezept mit demselben Namen \"${name}\" bereits vorhanden";
+  /// "Verbindung mit URL fehlgeschlagen"
+  @override
+  String get failed_to_connect_to_url => "Verbindung mit URL fehlgeschlagen";
+  /// "ungültige URL\nChecke die unterstützten Webseiten im Infobereich unten"
+  @override
+  String get invalid_url => "ungültige URL\nChecke die unterstützten Webseiten im Infobereich unten";
+  /// "gebe URL zum Rezept an:"
+  @override
+  String get enter_url => "gebe URL zum Rezept an:";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

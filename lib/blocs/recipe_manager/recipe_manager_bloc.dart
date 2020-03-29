@@ -20,7 +20,7 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
     RecipeManagerEvent event,
   ) async* {
     if (event is RMAddRecipes) {
-      yield* _mapAddRecipeToState(event);
+      yield* _mapAddRecipesToState(event);
     } else if (event is RMDeleteRecipe) {
       yield* _mapDeleteRecipeToState(event);
     } else if (event is RMAddCategories) {
@@ -44,7 +44,7 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
     }
   }
 
-  Stream<AddRecipesState> _mapAddRecipeToState(RMAddRecipes event) async* {
+  Stream<AddRecipesState> _mapAddRecipesToState(RMAddRecipes event) async* {
     List<Recipe> newRecipes = [];
 
     for (Recipe r in event.recipes) {

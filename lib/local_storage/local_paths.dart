@@ -105,7 +105,8 @@ class PathProvider {
     return '$imageLocalPath/$cNewRecipeName/preview/p-$cOldRecipeName' + ending;
   }
 
-  Future<String> getRecipePathFull(String recipeName, String ending) async {
+  Future<String> getRecipeImagePathFull(
+      String recipeName, String ending) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String imageLocalPath = await localPath;
@@ -121,7 +122,7 @@ class PathProvider {
 
   //////////// Paths to the PREVIEW quality pictures ////////////
 
-  Future<String> getRecipePreviewPathFull(
+  Future<String> getRecipeImagePreviewPathFull(
       String recipeName, String ending) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
