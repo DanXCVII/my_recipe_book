@@ -4,8 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
@@ -151,6 +151,7 @@ class Settings extends StatelessWidget {
           Divider(),
           ListTile(
             title: Text(I18n.of(context).switch_theme),
+            leading: Icon(MdiIcons.themeLightDark),
             trailing: Container(
               width: 130,
               height: 25,
