@@ -45,3 +45,8 @@ class AlreadyExists extends WebsiteImportState {
   @override
   List<Object> get props => [];
 }
+
+class ImportingRecipe extends WebsiteImportState {
+  @override
+  List<Object> get props => [];
+}

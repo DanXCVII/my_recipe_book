@@ -88,6 +88,7 @@ class _StepsState extends State<Steps> {
                             padding: const EdgeInsets.only(top: 8.0, right: 12),
                             child: TextFormField(
                               controller: widget.stepsDecriptionController[i],
+                              textCapitalization: TextCapitalization.sentences,
                               keyboardType: TextInputType.multiline,
                               decoration: InputDecoration(
                                 filled: true,

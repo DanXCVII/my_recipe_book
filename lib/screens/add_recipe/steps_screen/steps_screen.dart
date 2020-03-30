@@ -230,7 +230,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           goBack,
           complexity.myDouble.round(),
           notesController.text,
-          removeTrailingEmptyStrings(
+          trimRemoveTrailingEmptyStrings(
               stepsDescController.map((item) => item.text).toList()),
         ),
       );
@@ -241,7 +241,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           goBack,
           complexity.myDouble.round(),
           notesController.text,
-          removeTrailingEmptyStrings(
+          trimRemoveTrailingEmptyStrings(
               stepsDescController.map((item) => item.text).toList()),
         ),
       );

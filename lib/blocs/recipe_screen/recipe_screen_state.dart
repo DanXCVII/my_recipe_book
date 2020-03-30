@@ -13,3 +13,10 @@ class RecipeScreenInfo extends RecipeScreenState {
   @override
   List<Object> get props => [recipe, categoryImages];
 }
+
+class RecipeEditedDeleted extends RecipeScreenState {
+  RecipeEditedDeleted();
+
+  @override
+  List<Object> get props => [];
+}

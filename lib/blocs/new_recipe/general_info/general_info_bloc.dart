@@ -96,13 +96,13 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     Recipe newRecipe;
     if (!event.editingRecipe) {
       newRecipe = HiveProvider().getTmpRecipe().copyWith(
-            name: event.recipeName,
-            preperationTime: event.preperationTime,
-            cookingTime: event.cookingTime,
-            totalTime: event.totalTime,
-            categories: event.categories,
-            tags: event.recipeTags,
-          );
+          name: event.recipeName,
+          preperationTime: event.preperationTime,
+          cookingTime: event.cookingTime,
+          totalTime: event.totalTime,
+          categories: event.categories,
+          tags: event.recipeTags,
+          source: event.source);
       await HiveProvider().saveTmpRecipe(newRecipe);
     } else {
       newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
@@ -112,6 +112,7 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
             totalTime: event.totalTime,
             categories: event.categories,
             tags: event.recipeTags,
+            source: event.source,
           );
       await HiveProvider().saveTmpEditingRecipe(newRecipe);
     }

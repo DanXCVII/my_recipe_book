@@ -8,6 +8,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
+import 'package:my_recipe_book/constants/global_constants.dart';
 import 'package:my_recipe_book/local_storage/hive.dart';
 import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
 import 'package:my_recipe_book/local_storage/local_paths.dart';
@@ -43,6 +44,8 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
 
   Stream<WebsiteImportState> _mapImportRecipeToState(
       ImportRecipe event) async* {
+    yield ImportingRecipe();
+
     var response;
     try {
       response = await http.get(event.url);
@@ -69,7 +72,6 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       } else if (importRecipe.item1 == ImportState.DUPLICATE) {
         yield AlreadyExists(importRecipe.item2.name);
       } else {
-        recipeManagerBloc.add(RMAddRecipes([importRecipe.item2]));
         yield ImportedRecipe(importRecipe.item2);
         return;
       }
@@ -119,24 +121,24 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
                     amountUnit: jsonMap["nutrition"]
                         [jsonMap["nutrition"].keys.toList()[index + 1]]))
             : [],
-        tags: List<String>.from(jsonMap["keywords"])
-            .map(
-              (item) => StringIntTuple(
-                text: item.toString(),
-                number: HiveProvider().getRecipeTags().firstWhere(
-                            (tag) => tag.text == item.toString(),
-                            orElse: () => null) ==
-                        null
-                    ? 4278238420
-                    : HiveProvider()
-                        .getRecipeTags()
-                        .firstWhere(
-                          (tag) => tag.text == item.toString(),
-                        )
-                        .number,
-              ),
-            )
-            .toList(),
+        // tags: List<String>.from(jsonMap["keywords"])
+        //     .map(
+        //       (item) => StringIntTuple(
+        //         text: item.toString(),
+        //         number: HiveProvider().getRecipeTags().firstWhere(
+        //                     (tag) => tag.text == item.toString(),
+        //                     orElse: () => null) ==
+        //                 null
+        //             ? 4278238420
+        //             : HiveProvider()
+        //                 .getRecipeTags()
+        //                 .firstWhere(
+        //                   (tag) => tag.text == item.toString(),
+        //                 )
+        //                 .number,
+        //       ),
+        //     )
+        //     .toList(),
         source: url,
       );
 
@@ -147,16 +149,27 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
         jsonMap["image"],
         importRecipeImagePath,
       );
-      await IO.saveRecipeImage(File(importRecipeImagePath), jsonMap["name"]);
+      await IO.saveRecipeImage(
+          File(importRecipeImagePath), newRecipeLocalPathString);
 
+      Recipe finalRecipe = importRecipe.copyWith(
+        imagePath: await PathProvider.pP
+            .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
+        imagePreviewPath: await PathProvider.pP
+            .getRecipeImagePreviewPathFull(newRecipeLocalPathString, ".jpg"),
+      );
+
+      if (finalRecipe != null) {
+        HiveProvider().saveTmpRecipe(finalRecipe);
+      } else {
+        return Tuple2<ImportState, Recipe>(
+          ImportState.FAIL,
+          null,
+        );
+      }
       return Tuple2<ImportState, Recipe>(
         ImportState.SUCCESS,
-        importRecipe.copyWith(
-          imagePath: await PathProvider.pP
-              .getRecipeImagePathFull(jsonMap["name"], ".jpg"),
-          imagePreviewPath: await PathProvider.pP
-              .getRecipeImagePreviewPathFull(jsonMap["name"], ".jpg"),
-        ),
+        finalRecipe,
       );
     } catch (e) {
       return Tuple2<ImportState, Recipe>(ImportState.FAIL, null);
@@ -184,51 +197,76 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   /// the format must be like:
   /// with all info: "1 TL Gew\u00fcrzmischung (Garam Masala)"
   /// with no unit: "1  Gew\u00fcrzmischung (Garam Masala)"
+  /// with no amount: "evtl. Gew\u00fcrzmischung (Garam Masala)"
   /// with not unit and amount: " Gew\u00fcrzmischung (Garam Masala)"
   Ingredient _getIngredientFromChefKFormat(String ingredientInfo) {
     String name;
     double amount;
     String unit;
 
-    if (ingredientInfo.startsWith(" ")) {
-      name = ingredientInfo.substring(1);
-    } else {
-      String amountInfo =
-          ingredientInfo.substring(0, ingredientInfo.indexOf(" "));
-      if (amountInfo == "½") {
-        amount = 0.5;
-      } else if (amountInfo == "¼")
-        amount = 0.25;
-      else {
-        try {
-          double.parse(amountInfo);
-        } catch (e) {
-          print(e.toString());
-          amount = 0;
-        }
-      }
-
-      if (ingredientInfo.contains("  ")) {
-        name = ingredientInfo.substring(ingredientInfo.indexOf("  ") + 2);
+    try {
+      // with no amount: "evtl. Gew\u00fcrzmischung (Garam Masala)"
+      if (!(int.tryParse(ingredientInfo[0]) != null ||
+              ingredientInfo[0] == "½" ||
+              ingredientInfo[0] == "¼") &&
+          ingredientInfo[0] != " ") {
+        name = ingredientInfo.substring(
+            ingredientInfo.indexOf(" ") + 1, ingredientInfo.length);
       } else {
-        String ingredientInfoNoAmnt =
-            ingredientInfo.substring(ingredientInfo.indexOf(" ") + 1);
-
-        if (ingredientInfoNoAmnt.contains("EL, ") ||
-            ingredientInfoNoAmnt.contains("gr. ") ||
-            ingredientInfoNoAmnt.contains("kl. ") ||
-            ingredientInfoNoAmnt.contains("TL. ")) {
-          unit = ingredientInfoNoAmnt.substring(
-              0, ingredientInfoNoAmnt.indexOf(" ", 5));
-          name = ingredientInfoNoAmnt
-              .substring(ingredientInfoNoAmnt.indexOf(" ", 5));
+        bool hasUnitAmount = true;
+        // with not unit and amount: " Gew\u00fcrzmischung (Garam Masala)"
+        if (ingredientInfo.startsWith(" ")) {
+          name = ingredientInfo.substring(1);
         } else {
-          unit = ingredientInfoNoAmnt.substring(
-              0, ingredientInfoNoAmnt.indexOf(" "));
-          name = ingredientInfoNoAmnt
-              .substring(ingredientInfoNoAmnt.indexOf(" ") + 1);
+          if (!ingredientInfo.contains("n. B.")) {
+            String amountInfo =
+                ingredientInfo.substring(0, ingredientInfo.indexOf(" "));
+            ingredientInfo.substring(0, ingredientInfo.indexOf(" "));
+            if (amountInfo == "½") {
+              amount = 0.5;
+            } else if (amountInfo == "¼")
+              amount = 0.25;
+            else {
+              try {
+                amount = double.parse(amountInfo);
+              } catch (e) {
+                print(e.toString());
+                amount = 0;
+              }
+            }
+          } else {
+            hasUnitAmount = false;
+          }
+
+          if (ingredientInfo.contains("  ")) {
+            name = ingredientInfo.substring(ingredientInfo.indexOf("  ") + 2);
+          } else {
+            String ingredientInfoNoAmnt =
+                ingredientInfo.substring(ingredientInfo.indexOf(" ") + 1);
+
+            if (ingredientInfoNoAmnt.contains("EL, ") ||
+                ingredientInfoNoAmnt.contains("gr. ") ||
+                ingredientInfoNoAmnt.contains("kl. ") ||
+                ingredientInfoNoAmnt.contains("TL. ")) {
+              unit = hasUnitAmount
+                  ? ingredientInfoNoAmnt.substring(
+                      0, ingredientInfoNoAmnt.indexOf(" ", 5))
+                  : null;
+              name = ingredientInfoNoAmnt
+                  .substring(ingredientInfoNoAmnt.indexOf(" ", 5));
+            } else {
+              unit = hasUnitAmount
+                  ? ingredientInfoNoAmnt.substring(
+                      0, ingredientInfoNoAmnt.indexOf(" "))
+                  : null;
+              name = ingredientInfoNoAmnt
+                  .substring(ingredientInfoNoAmnt.indexOf(" ") + 1);
+            }
+          }
         }
       }
+    } catch (e) {
+      // if whatever goes wrong when parsing, catch the exception
     }
     return Ingredient(name: name, unit: unit, amount: amount);
   }
@@ -236,10 +274,11 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   List<String> _getStepsFromChefKFormat(String stepsInfo) {
     List<String> steps = [];
 
-    String cutStepInfo = stepsInfo + "\n";
-    while (cutStepInfo.contains("\n")) {
-      steps.add(cutStepInfo.substring(0, cutStepInfo.indexOf("\n")));
-      cutStepInfo = cutStepInfo.substring(cutStepInfo.indexOf("\n") + 1);
+    String cutStepInfo = stepsInfo + "\n\r\n";
+    print(stepsInfo);
+    while (cutStepInfo.contains("\n\r\n")) {
+      steps.add(cutStepInfo.substring(0, cutStepInfo.indexOf("\n\r\n")));
+      cutStepInfo = cutStepInfo.substring(cutStepInfo.indexOf("\n\r\n") + 3);
     }
 
     return steps..removeWhere((item) => item.length <= 1);
@@ -247,10 +286,10 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
 
   Vegetable _getVegetableFromChefKFormat(List<String> keywords) {
     for (String keyword in keywords) {
-      if (keyword.toLowerCase().contains("vegetarisch")) {
-        return Vegetable.VEGETARIAN;
-      } else if (keyword.toLowerCase().contains("vegan")) {
+      if (keyword.toLowerCase().contains("vegan")) {
         return Vegetable.VEGAN;
+      } else if (keyword.toLowerCase().contains("vegetarisch")) {
+        return Vegetable.VEGETARIAN;
       }
     }
 

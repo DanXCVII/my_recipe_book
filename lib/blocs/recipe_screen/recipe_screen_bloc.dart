@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/local_storage/hive.dart';
-import 'package:my_recipe_book/models/recipe.dart';
+
+import '../../local_storage/hive.dart';
+import '../../models/recipe.dart';
+import '../recipe_manager/recipe_manager_bloc.dart';
 
 part 'recipe_screen_event.dart';
 part 'recipe_screen_state.dart';
@@ -20,7 +20,8 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
     rmListener = recipeManagerBloc.listen((state) {
       if (state is DeleteRecipeState) {
         if (state.recipe == recipe) {
-          add(HideRecipe());
+          Future.delayed(Duration(milliseconds: 100))
+              .then((_) => add(HideRecipe()));
         }
       }
     });
@@ -58,6 +59,6 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
   }
 
   Stream<RecipeScreenState> _mapHideRecipeToState(HideRecipe event) async* {
-    yield RecipeScreenInfo(Recipe(name: 'deleted recipe'), []);
+    yield RecipeEditedDeleted();
   }
 }
