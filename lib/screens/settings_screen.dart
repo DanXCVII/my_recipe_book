@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:my_recipe_book/screens/import_from_website.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,32 +23,7 @@ class Settings extends StatelessWidget {
         children: <Widget>[
           Divider(),
           ListTile(
-              title: Text(I18n.of(context).manage_nutritions),
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.manageNutritions);
-              }),
-          Divider(),
-          ListTile(
-              title: Text(I18n.of(context).manage_ingredients),
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.manageIngredients);
-              }),
-          Divider(),
-          ListTile(
-            title: Text(I18n.of(context).manage_recipe_tags),
-            onTap: () {
-              Navigator.pushNamed(context, RouteNames.manageRecipeTags);
-            },
-          ),
-          Divider(),
-          ListTile(
-            onTap: () {
-              _importSingleRecipe(context).then((_) {});
-            },
-            title: Text(I18n.of(context).import_recipe_s),
-          ),
-          Divider(),
-          ListTile(
+            leading: Icon(MdiIcons.export),
             title: Text(I18n.of(context).export_recipe_s),
             onTap: () {
               Navigator.push(context,
@@ -56,11 +32,42 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+            leading: Icon(MdiIcons.import),
+            onTap: () {
+              _importSingleRecipe(context).then((_) {});
+            },
+            title: Text(I18n.of(context).import_recipe_s),
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(MdiIcons.cloudDownload),
             title: Text(I18n.of(context).import_from_website),
             onTap: () {
               Navigator.pushNamed(context, RouteNames.importFromWebsite,
                   arguments: ImportFromWebsiteArguments(
                       BlocProvider.of<ShoppingCartBloc>(context)));
+            },
+          ),
+          Divider(),
+          ListTile(
+              leading: Icon(MdiIcons.tag),
+              title: Text(I18n.of(context).manage_nutritions),
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.manageNutritions);
+              }),
+          Divider(),
+          ListTile(
+              leading: Icon(MdiIcons.fruitPineapple),
+              title: Text(I18n.of(context).manage_ingredients),
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.manageIngredients);
+              }),
+          Divider(),
+          ListTile(
+            leading: Icon(MdiIcons.tag),
+            title: Text(I18n.of(context).manage_recipe_tags),
+            onTap: () {
+              Navigator.pushNamed(context, RouteNames.manageRecipeTags);
             },
           ),
           Divider(),
@@ -163,6 +170,7 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+            leading: Icon(MdiIcons.compass),
             title: Text(I18n.of(context).view_intro),
             onTap: () {
               Navigator.of(context).pushNamed(RouteNames.intro);
@@ -170,12 +178,15 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+              leading: Icon(Icons.info),
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.aboutMe);
               },
               title: Text(I18n.of(context).about_me)),
           Divider(),
-          ListTile(title: Text(I18n.of(context).rate_app)),
+          ListTile(
+              leading: Icon(Icons.star),
+              title: Text(I18n.of(context).rate_app)),
           Divider(),
         ],
       ),
