@@ -33,13 +33,16 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   StreamSubscription _subscription;
 
   SharedPreferences _sP;
+  bool lastAdForBannerTime;
 
   AdManagerBloc() {
     RewardedVideoAd.instance.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       if (event == RewardedVideoAdEvent.rewarded) {
         print(DateTime.now().toLocal().toString());
-        add(WatchedVideo(DateTime.now()));
+        if (lastAdForBannerTime) {
+          add(WatchedVideo(DateTime.now()));
+        }
       } else if (event == RewardedVideoAdEvent.loaded) {
         RewardedVideoAd.instance.show();
       } else if (event == RewardedVideoAdEvent.failedToLoad) {
@@ -162,6 +165,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
   Stream<AdManagerState> _mapStartWatchingVideoToState(
       StartWatchingVideo event) async* {
+    lastAdForBannerTime = event.addAddFreeTime;
     bool hasInternetConnection = false;
     try {
       final result = await InternetAddress.lookup('example.com');

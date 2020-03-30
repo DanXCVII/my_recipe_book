@@ -16,8 +16,12 @@ class WatchedVideo extends AdManagerEvent {
 
 class StartWatchingVideo extends AdManagerEvent {
   final DateTime time;
+  final bool addAddFreeTime;
 
-  const StartWatchingVideo(this.time);
+  const StartWatchingVideo(
+    this.time,
+    this.addAddFreeTime,
+  );
 }
 
 class ShowAdsAgain extends AdManagerEvent {}

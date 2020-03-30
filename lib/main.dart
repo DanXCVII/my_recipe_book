@@ -518,6 +518,9 @@ class MyApp extends StatelessWidget {
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
                       value: args.shoppingCartBloc,
+                    ),
+                    BlocProvider<AdManagerBloc>.value(
+                      value: args.adManagerBloc,
                     )
                   ],
                   child: ImportFromWebsiteScreen(),

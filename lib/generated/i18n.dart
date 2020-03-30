@@ -949,9 +949,9 @@ class _I18n_de_DE extends I18n {
   /// "anzeigen"
   @override
   String get watch => "anzeigen";
-  /// "Werbevideo → +30 min werbefrei"
+  /// "Werbevideo → +30 min werbebannerfrei"
   @override
-  String get watch_video_remove_ads => "Werbevideo → +30 min werbefrei";
+  String get watch_video_remove_ads => "Werbevideo → +30 min werbebannerfrei";
   /// "werbefrei bis"
   @override
   String get ad_free_until => "werbefrei bis";

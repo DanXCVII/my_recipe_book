@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -16,8 +17,9 @@ import 'add_recipe/general_info_screen/general_info_screen.dart';
 
 class ImportFromWebsiteArguments {
   final ShoppingCartBloc shoppingCartBloc;
+  final AdManagerBloc adManagerBloc;
 
-  ImportFromWebsiteArguments(this.shoppingCartBloc);
+  ImportFromWebsiteArguments(this.shoppingCartBloc, this.adManagerBloc);
 }
 
 class ImportFromWebsiteScreen extends StatelessWidget {
@@ -72,6 +74,12 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                   listener: (context, state) {
                     if (state is ImportedRecipe) {
                       imageCache.clear();
+                      if (!(BlocProvider.of<AdManagerBloc>(context).state
+                          is IsPurchased)) {
+                        BlocProvider.of<AdManagerBloc>(context)
+                            .add(StartWatchingVideo(DateTime.now(), false));
+                      }
+
                       Navigator.pushNamed(
                         context,
                         RouteNames.addRecipeGeneralInfo,

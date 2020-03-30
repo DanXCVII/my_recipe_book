@@ -70,8 +70,8 @@ class Settings extends StatelessWidget {
                               title: I18n.of(context).video_to_remove_ads,
                               body: I18n.of(context).video_to_remove_ads_desc,
                               onPressedOk: () {
-                                BlocProvider.of<AdManagerBloc>(context)
-                                    .add(StartWatchingVideo(DateTime.now()));
+                                BlocProvider.of<AdManagerBloc>(context).add(
+                                    StartWatchingVideo(DateTime.now(), true));
                               },
                               okText: I18n.of(context).watch,
                             ),
@@ -120,19 +120,21 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            title: Text(I18n.of(context).export_recipe_s),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ExportRecipes()));
-            },
-          ),
-          Divider(),
-          ListTile(
             title: Text(I18n.of(context).import_from_website),
             onTap: () {
               Navigator.pushNamed(context, RouteNames.importFromWebsite,
                   arguments: ImportFromWebsiteArguments(
-                      BlocProvider.of<ShoppingCartBloc>(context)));
+                    BlocProvider.of<ShoppingCartBloc>(context),
+                    BlocProvider.of<AdManagerBloc>(context),
+                  )).then((_) => Ads.hideBottomBannerAd());
+            },
+          ),
+          Divider(),
+          ListTile(
+            title: Text(I18n.of(context).export_recipe_s),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ExportRecipes()));
             },
           ),
           Divider(),
