@@ -148,8 +148,8 @@ class I18n implements WidgetsLocalizations {
   String get complexity => "complexity";
   /// "effort"
   String get effort => "effort";
-  /// "select subcategories:"
-  String get select_subcategories => "select subcategories:";
+  /// "select categories:"
+  String get select_subcategories => "select categories:";
   /// "select a category"
   String get select_a_category => "select a category";
   /// "shopping"
@@ -204,8 +204,8 @@ class I18n implements WidgetsLocalizations {
   String get recipename_taken_description => "change the recipename to something more detailed or maybe you just forgot, that you already saved this recipe :)";
   /// "check your ingredients input"
   String get check_ingredients_input => "check your ingredients input";
-  /// "it seems like your ingredients information aren't filled out correctly. They must be filled in like the following: \n- every ingredient must have a name\n- every ingredient with a unit must also have an amount"
-  String get check_ingredients_input_description => "it seems like your ingredients information aren't filled out correctly. They must be filled in like the following: \n- every ingredient must have a name\n- every ingredient with a unit must also have an amount";
+  /// "please complete ingredient info. The format must be: \n- ingredients must have a name\n- ingredients with a unit must also have an amount"
+  String get check_ingredients_input_description => "please complete ingredient info. The format must be: \n- ingredients must have a name\n- ingredients with a unit must also have an amount";
   /// "check your ingredients section fields."
   String get check_ingredient_section_fields => "check your ingredients section fields.";
   /// "if you have multiple sections, you need to provide a title for each section."
@@ -408,6 +408,16 @@ class I18n implements WidgetsLocalizations {
   String get invalid_url => "invalid url:\ncheck the supported websites in the info section below";
   /// "enter URL of website with recipe:"
   String get enter_url => "enter URL of website with recipe:";
+  /// "the website, of which you want to import a recipe from, must be under the supported websites:"
+  String get website_must_be_under_the_supported_websites => "the website, of which you want to import a recipe from, must be under the supported websites:";
+  /// "recipe-url"
+  String get recipe_url => "recipe-url";
+  /// "source"
+  String get source => "source";
+  /// "recipe has been edited or deleted\ngo back to man view and view it"
+  String get recipe_edited_or_deleted => "recipe has been edited or deleted\ngo back to man view and view it";
+  /// "recipe screen"
+  String get recipe_screen => "recipe screen";
 }
 
 class _I18n_en_US extends I18n {
@@ -981,6 +991,21 @@ class _I18n_de_DE extends I18n {
   /// "gebe URL zum Rezept an:"
   @override
   String get enter_url => "gebe URL zum Rezept an:";
+  /// "Die Webseite, von welcher du importieren möchtest, muss unter den unterstüten Seiten sein:"
+  @override
+  String get website_must_be_under_the_supported_websites => "Die Webseite, von welcher du importieren möchtest, muss unter den unterstüten Seiten sein:";
+  /// "Rezept-URL"
+  @override
+  String get recipe_url => "Rezept-URL";
+  /// "Quelle"
+  @override
+  String get source => "Quelle";
+  /// "Rezept bearbeitet oder gelöscht\nGehe zurück zur Übersicht um es anzusehen"
+  @override
+  String get recipe_edited_or_deleted => "Rezept bearbeitet oder gelöscht\nGehe zurück zur Übersicht um es anzusehen";
+  /// "Rezeptansicht"
+  @override
+  String get recipe_screen => "Rezeptansicht";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

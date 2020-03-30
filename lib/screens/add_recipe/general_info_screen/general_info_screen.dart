@@ -57,6 +57,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
       TextEditingController();
   final TextEditingController cookingTimeController = TextEditingController();
   final TextEditingController totalTimeController = TextEditingController();
+  final TextEditingController sourceController = TextEditingController();
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -291,6 +292,17 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 52, top: 0, right: 12, bottom: 12),
+                    child: TextFormField(
+                      controller: sourceController,
+                      decoration: InputDecoration(
+                        filled: true,
+                        labelText: I18n.of(context).source,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -311,6 +323,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
       cookingTimeController.text = recipe.cookingTime.toString();
     if (recipe.totalTime != null && recipe.totalTime != 0.0)
       totalTimeController.text = recipe.totalTime.toString();
+    if (recipe.source != null) {
+      sourceController.text = recipe.source;
+    }
   }
 
   void _emptyTextFields() {
@@ -396,6 +411,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
           ? 0
           : double.parse(
               totalTimeController.text.replaceAll(RegExp(r','), 'e')),
+      sourceController.text,
       BlocProvider.of<CategoryManagerBloc>(context).selectedCategories,
       BlocProvider.of<RecipeTagManagerBloc>(context).selectedTags,
     ));

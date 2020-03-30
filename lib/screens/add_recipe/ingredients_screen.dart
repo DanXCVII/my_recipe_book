@@ -251,9 +251,11 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
             }
             ingredientNameController[i][j].text = recipe.ingredients[i][j].name;
             ingredientAmountController[i][j].text =
-                recipe.ingredients[i][j].amount != null
-                    ? recipe.ingredients[i][j].amount.toString()
-                    : "";
+                recipe.ingredients[i][j].amount == 0
+                    ? "0"
+                    : recipe.ingredients[i][j].amount != null
+                        ? recipe.ingredients[i][j].amount.toString()
+                        : "";
             ingredientUnitController[i][j].text = recipe.ingredients[i][j].unit;
           }
         switch (recipe.vegetable) {

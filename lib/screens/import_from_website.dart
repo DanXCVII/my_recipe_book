@@ -1,16 +1,18 @@
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'package:my_recipe_book/blocs/website_import/website_import_bloc.dart';
-import 'package:my_recipe_book/constants/routes.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
-import 'package:my_recipe_book/screens/recipe_screen.dart';
-import 'package:my_recipe_book/widgets/icon_info_message.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../blocs/website_import/website_import_bloc.dart';
+import '../constants/routes.dart';
+import '../generated/i18n.dart';
+import '../widgets/icon_info_message.dart';
+import 'add_recipe/general_info_screen/general_info_screen.dart';
 
 class ImportFromWebsiteArguments {
   final ShoppingCartBloc shoppingCartBloc;
@@ -69,14 +71,13 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                 BlocListener<WebsiteImportBloc, WebsiteImportState>(
                   listener: (context, state) {
                     if (state is ImportedRecipe) {
+                      imageCache.clear();
                       Navigator.pushNamed(
                         context,
-                        RouteNames.recipeScreen,
-                        arguments: RecipeScreenArguments(
-                          BlocProvider.of<ShoppingCartBloc>(context),
+                        RouteNames.addRecipeGeneralInfo,
+                        arguments: GeneralInfoArguments(
                           state.recipe,
-                          "",
-                          BlocProvider.of<RecipeManagerBloc>(context),
+                          BlocProvider.of<ShoppingCartBloc>(context),
                         ),
                       );
                     }
@@ -87,6 +88,18 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                         return Container();
                       } else if (state is ImportedRecipe) {
                         return Container();
+                      } else if (state is ImportingRecipe) {
+                        return Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Theme.of(context).backgroundColor ==
+                                        Colors.white
+                                    ? Colors.grey[100]
+                                    : Colors.grey[800]),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: CircularProgressIndicator(),
+                            ));
                       } else if (state is AlreadyExists) {
                         return Container(
                           width: 300,
@@ -193,7 +206,9 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
             : Colors.grey[800],
         boxShadow: [
           BoxShadow(
-            color: Colors.black45,
+            color: Theme.of(context).backgroundColor == Colors.white
+                ? Colors.black12
+                : Colors.black45,
             blurRadius: 2.0,
             spreadRadius: 1.0,
             offset: Offset(
@@ -209,14 +224,14 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              "enter URL of website with recipe:",
+              I18n.of(context).enter_url,
               style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
             ),
             SizedBox(height: 10),
             TextFormField(
               controller: _urlController,
               decoration: InputDecoration(
-                hintText: "recipe-URL",
+                hintText: I18n.of(context).recipe_url,
                 border: OutlineInputBorder(),
                 focusedBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(50)),
@@ -284,6 +299,7 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
     with SingleTickerProviderStateMixin {
   bool _isExpanded = true;
   List<String> _supportedWebsites = ["chefkoch.de"];
+  List<String> _websiteUrls = ["https://www.chefkoch.de"];
 
   @override
   Widget build(BuildContext context) {
@@ -306,8 +322,8 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
               ),
               Container(
                 width: MediaQuery.of(context).size.width - 110,
-                child: Text(
-                    "the website, of which you want to import a recipe from, must be under the supported websites:"),
+                child: Text(I18n.of(context)
+                    .website_must_be_under_the_supported_websites),
               ),
               Material(
                 color: Colors.transparent,
@@ -338,8 +354,18 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                                 index == (_supportedWebsites.length * 2 + 1)
                             ? Divider()
                             : ListTile(
-                                title: Text(
-                                  _supportedWebsites[(index / 2).round() - 1],
+                                title: RichText(
+                                  text: TextSpan(
+                                    text: _supportedWebsites[
+                                        (index / 2).round() - 1],
+                                    style: TextStyle(
+                                        color: Colors.blue, fontSize: 16),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        launch(_websiteUrls[
+                                            (index / 2).round() - 1]);
+                                      },
+                                  ),
                                 ),
                               ),
                       ),

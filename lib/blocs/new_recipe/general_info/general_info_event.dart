@@ -36,6 +36,7 @@ class FinishedEditing extends GeneralInfoEvent {
   final double preperationTime;
   final double cookingTime;
   final double totalTime;
+  final String source;
   final List<String> categories;
   final List<StringIntTuple> recipeTags;
 
@@ -46,6 +47,7 @@ class FinishedEditing extends GeneralInfoEvent {
       this.preperationTime,
       this.cookingTime,
       this.totalTime,
+      this.source,
       this.categories,
       this.recipeTags]);
 

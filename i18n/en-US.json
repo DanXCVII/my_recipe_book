@@ -57,7 +57,7 @@
   "complexity_effort": "complexity/effort",
   "complexity": "complexity",
   "effort": "effort",
-  "select_subcategories": "select subcategories:",
+  "select_subcategories": "select categories:",
   "select_a_category": "select a category",
   "basket": "shopping",
   "shopping_cart_is_empty": "Your shoppingcart is empty",
@@ -85,7 +85,7 @@
   "recipename_taken": "recipename taken",
   "recipename_taken_description": "change the recipename to something more detailed or maybe you just forgot, that you already saved this recipe :)",
   "check_ingredients_input": "check your ingredients input",
-  "check_ingredients_input_description": "it seems like your ingredients information aren't filled out correctly. They must be filled in like the following: \n- every ingredient must have a name\n- every ingredient with a unit must also have an amount",
+  "check_ingredients_input_description": "please complete ingredient info. The format must be: \n- ingredients must have a name\n- ingredients with a unit must also have an amount",
   "check_ingredient_section_fields": "check your ingredients section fields.",
   "check_ingredient_section_fields_description": "if you have multiple sections, you need to provide a title for each section.",
   "check_filled_in_information": "Check filled in information",
@@ -186,5 +186,10 @@
   "recipe_already_exists": "recipe with name \"{name}\" already exists",
   "failed_to_connect_to_url": "failed to connect to given url",
   "invalid_url": "invalid url:\ncheck the supported websites in the info section below",
-  "enter_url": "enter URL of website with recipe:"
+  "enter_url": "enter URL of website with recipe:",
+  "website_must_be_under_the_supported_websites": "the website, of which you want to import a recipe from, must be under the supported websites:",
+  "recipe_url": "recipe-url",
+  "source": "source",
+  "recipe_edited_or_deleted": "recipe has been edited or deleted\ngo back to man view and view it",
+  "recipe_screen": "recipe screen"
 }

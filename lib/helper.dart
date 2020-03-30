@@ -89,13 +89,14 @@ bool stringIsValidDouble(String text) {
   }
 }
 
-List<String> removeTrailingEmptyStrings(List<String> list) {
+List<String> trimRemoveTrailingEmptyStrings(List<String> list) {
   List<String> output = List<String>.from(list);
 
   for (int i = list.length - 1; i >= 0; i--) {
     if (list[i] == "") {
       output.removeLast();
     } else {
+      output[i] = list[i].trim();
       break;
     }
   }

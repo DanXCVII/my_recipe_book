@@ -236,7 +236,10 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                     IconButton(
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      icon: Icon(Icons.remove),
+                      icon: Icon(
+                        Icons.remove,
+                        color: Colors.white,
+                      ),
                       onPressed: () {
                         if (_controllers.length > 2)
                           setState(() {
@@ -248,7 +251,10 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                     IconButton(
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      icon: Icon(Icons.add),
+                      icon: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
                       onPressed: () {
                         setState(() {
                           if (_controllers.length < 20) {
