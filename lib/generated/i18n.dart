@@ -988,12 +988,12 @@ class _I18n_de_DE extends I18n {
   /// "ungültige URL\nChecke die unterstützten Webseiten im Infobereich unten"
   @override
   String get invalid_url => "ungültige URL\nChecke die unterstützten Webseiten im Infobereich unten";
-  /// "gebe URL zum Rezept an:"
+  /// "URL zum Rezept:"
   @override
-  String get enter_url => "gebe URL zum Rezept an:";
-  /// "Die Webseite, von welcher du importieren möchtest, muss unter den unterstüten Seiten sein:"
+  String get enter_url => "URL zum Rezept:";
+  /// "Hier ist die Liste der unterstützten Webseiten:"
   @override
-  String get website_must_be_under_the_supported_websites => "Die Webseite, von welcher du importieren möchtest, muss unter den unterstüten Seiten sein:";
+  String get website_must_be_under_the_supported_websites => "Hier ist die Liste der unterstützten Webseiten:";
   /// "Rezept-URL"
   @override
   String get recipe_url => "Rezept-URL";
