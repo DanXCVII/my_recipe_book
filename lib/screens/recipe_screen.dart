@@ -281,7 +281,6 @@ class NotesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
-        color: Color(0xff51473b),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -324,6 +323,7 @@ class RecipePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xff51473b),
       body: CustomScrollView(
         controller: scrollController,
         slivers: <Widget>[
@@ -597,7 +597,6 @@ class RecipePage extends StatelessWidget {
                 recipe.notes != "" ? NotesSection(notes: recipe.notes) : null,
                 recipe.source != null && recipe.source != ""
                     ? Container(
-                        color: Color(0xff51473b),
                         child: Center(
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -615,7 +614,15 @@ class RecipePage extends StatelessWidget {
                                           ),
                                         ),
                                         Container(
-                                          width: 300,
+                                          width: MediaQuery.of(context)
+                                                      .size
+                                                      .width >
+                                                  450
+                                              ? 350
+                                              : MediaQuery.of(context)
+                                                      .size
+                                                      .width -
+                                                  100,
                                           child: RichText(
                                               text: TextSpan(
                                             text: recipe.source,
@@ -1286,7 +1293,6 @@ class CategoriesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xff51473b),
       child: Padding(
         padding: const EdgeInsets.only(left: 20, top: 30, bottom: 30),
         child: Column(
