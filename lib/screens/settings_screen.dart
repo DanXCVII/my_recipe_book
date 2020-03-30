@@ -5,6 +5,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
@@ -43,6 +44,17 @@ class Settings extends StatelessWidget {
                   children: <Widget>[
                     Divider(),
                     ListTile(
+                        leading: Icon(
+                          MdiIcons.crown,
+                          color: Colors.amber,
+                        ),
+                        title: Text(I18n.of(context).purchase_pro),
+                        onTap: () {
+                          BlocProvider.of<AdManagerBloc>(context)
+                              .add(PurchaseProVersion());
+                        }),
+                    Divider(),
+                    ListTile(
                         title: Text(
                           I18n.of(context).watch_video_remove_ads,
                           style: Theme.of(context).textTheme.subhead,
@@ -77,13 +89,6 @@ class Settings extends StatelessWidget {
                             ),
                           );
                         }),
-                    Divider(),
-                    ListTile(
-                        title: Text(I18n.of(context).purchase_pro),
-                        onTap: () {
-                          BlocProvider.of<AdManagerBloc>(context)
-                              .add(PurchaseProVersion());
-                        })
                   ],
                 );
               }
@@ -91,28 +96,16 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-              title: Text(I18n.of(context).manage_nutritions),
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.manageNutritions)
-                    .then((_) => Ads.hideBottomBannerAd());
-              }),
-          Divider(),
-          ListTile(
-              title: Text(I18n.of(context).manage_ingredients),
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.manageIngredients)
-                    .then((_) => Ads.hideBottomBannerAd());
-              }),
-          Divider(),
-          ListTile(
-            title: Text(I18n.of(context).manage_recipe_tags),
+            leading: Icon(MdiIcons.export),
+            title: Text(I18n.of(context).export_recipe_s),
             onTap: () {
-              Navigator.pushNamed(context, RouteNames.manageRecipeTags)
-                  .then((_) => Ads.hideBottomBannerAd());
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ExportRecipes()));
             },
           ),
           Divider(),
           ListTile(
+            leading: Icon(MdiIcons.import),
             onTap: () {
               _importSingleRecipe(context).then((_) {});
             },
@@ -120,6 +113,7 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+            leading: Icon(MdiIcons.cloudDownload),
             title: Text(I18n.of(context).import_from_website),
             onTap: () {
               Navigator.pushNamed(context, RouteNames.importFromWebsite,
@@ -131,10 +125,27 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            title: Text(I18n.of(context).export_recipe_s),
+              leading: Icon(MdiIcons.nutrition),
+              title: Text(I18n.of(context).manage_nutritions),
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.manageNutritions)
+                    .then((_) => Ads.hideBottomBannerAd());
+              }),
+          Divider(),
+          ListTile(
+              leading: Icon(MdiIcons.fruitPineapple),
+              title: Text(I18n.of(context).manage_ingredients),
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.manageIngredients)
+                    .then((_) => Ads.hideBottomBannerAd());
+              }),
+          Divider(),
+          ListTile(
+            leading: Icon(MdiIcons.tag),
+            title: Text(I18n.of(context).manage_recipe_tags),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ExportRecipes()));
+              Navigator.pushNamed(context, RouteNames.manageRecipeTags)
+                  .then((_) => Ads.hideBottomBannerAd());
             },
           ),
           Divider(),
@@ -237,6 +248,7 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+            leading: Icon(MdiIcons.compass),
             title: Text(I18n.of(context).view_intro),
             onTap: () {
               Navigator.of(context).pushNamed(RouteNames.intro);
@@ -244,12 +256,15 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+              leading: Icon(Icons.info),
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.aboutMe);
               },
               title: Text(I18n.of(context).about_me)),
           Divider(),
-          ListTile(title: Text(I18n.of(context).rate_app)),
+          ListTile(
+              leading: Icon(Icons.star),
+              title: Text(I18n.of(context).rate_app)),
           Divider(),
         ],
       ),
