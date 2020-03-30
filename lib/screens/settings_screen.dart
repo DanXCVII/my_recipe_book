@@ -50,7 +50,7 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-              leading: Icon(MdiIcons.tag),
+              leading: Icon(MdiIcons.nutrition),
               title: Text(I18n.of(context).manage_nutritions),
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.manageNutritions);
@@ -72,6 +72,7 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+            leading: Icon(MdiIcons.themeLightDark),
             title: Text(I18n.of(context).switch_theme),
             trailing: Container(
               width: 130,
