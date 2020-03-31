@@ -28,6 +28,15 @@ class UpdateRecipeImage extends GeneralInfoEvent {
   List<Object> get props => [recipeImage, editingRecipe];
 }
 
+class GRemoveRecipeImage extends GeneralInfoEvent {
+  final bool editingRecipe;
+
+  GRemoveRecipeImage(this.editingRecipe);
+
+  @override
+  List<Object> get props => [editingRecipe];
+}
+
 class FinishedEditing extends GeneralInfoEvent {
   final bool editingRecipe;
   final bool goBack;

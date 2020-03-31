@@ -204,6 +204,13 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
               prefilledImage: modifiedRecipe.imagePath,
               circleSize: 120,
               color: Color(0xFF790604),
+              onCancel: () {
+                BlocProvider.of<ClearRecipeBloc>(context).add(RemoveRecipeImage(
+                    widget.editingRecipeName == null ? false : true));
+                BlocProvider.of<GeneralInfoBloc>(context).add(
+                    GRemoveRecipeImage(
+                        widget.editingRecipeName == null ? false : true));
+              },
             ),
             SizedBox(height: 30),
             Form(
@@ -352,7 +359,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
       switch (v) {
         case Validator.REQUIRED_FIELDS:
           _showFlushInfo(
-            I18n.of(context).check_ingredient_section_fields,
+            I18n.of(context).check_filled_in_information,
             I18n.of(context).check_filled_in_information_description,
           );
 

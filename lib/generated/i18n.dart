@@ -212,8 +212,8 @@ class I18n implements WidgetsLocalizations {
   String get check_ingredient_section_fields_description => "if you have multiple sections, you need to provide a title for each section.";
   /// "Check filled in information"
   String get check_filled_in_information => "Check filled in information";
-  /// "it seems, that you haven’t filled in the required fields. Please check for any red marked text fields."
-  String get check_filled_in_information_description => "it seems, that you haven’t filled in the required fields. Please check for any red marked text fields.";
+  /// "Please check for any red marked text fields. For the recipename: it shouldn't be empty and the name not too long."
+  String get check_filled_in_information_description => "Please check for any red marked text fields. For the recipename: it shouldn't be empty and the name not too long.";
   /// "you have no recipes to search through"
   String get no_recipes_to_search_through => "you have no recipes to search through";
   /// "almost done😊"
@@ -444,8 +444,8 @@ class I18n implements WidgetsLocalizations {
   String get recipe_url => "recipe-url";
   /// "source"
   String get source => "source";
-  /// "recipe has been edited or deleted\ngo back to man view and view it"
-  String get recipe_edited_or_deleted => "recipe has been edited or deleted\ngo back to man view and view it";
+  /// "recipe has been edited or deleted:\ngo back to man view and view it"
+  String get recipe_edited_or_deleted => "recipe has been edited or deleted:\ngo back to man view and view it";
   /// "recipe screen"
   String get recipe_screen => "recipe screen";
 }
@@ -649,9 +649,9 @@ class _I18n_de_DE extends I18n {
   /// "Zufällige Rezepte"
   @override
   String get roll_the_dice => "Zufällige Rezepte";
-  /// "theme wechseln"
+  /// "theme"
   @override
-  String get switch_theme => "theme wechseln";
+  String get switch_theme => "theme";
   /// "Einkaufwagenansicht ändern"
   @override
   String get switch_shopping_cart_look => "Einkaufwagenansicht ändern";
@@ -724,12 +724,12 @@ class _I18n_de_DE extends I18n {
   /// "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift tragen wie zB. (Teig)."
   @override
   String get check_ingredient_section_fields_description => "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift tragen wie zB. (Teig).";
-  /// "Prüfe eingegebene Informationen"
+  /// "Prüfe rot markierte Felder"
   @override
-  String get check_filled_in_information => "Prüfe eingegebene Informationen";
-  /// "Es scheint so, als hättest du nicht alle geforderten Felder ausgefüllt. Bitte prüfe nach rot markierten Feldern."
+  String get check_filled_in_information => "Prüfe rot markierte Felder";
+  /// "Wenn der Rezeptname betroffen ist:\n- Er darf eine gewisse Länge nicht überschreiten\n- Muss ausgefüllt werden"
   @override
-  String get check_filled_in_information_description => "Es scheint so, als hättest du nicht alle geforderten Felder ausgefüllt. Bitte prüfe nach rot markierten Feldern.";
+  String get check_filled_in_information_description => "Wenn der Rezeptname betroffen ist:\n- Er darf eine gewisse Länge nicht überschreiten\n- Muss ausgefüllt werden";
   /// "Du hast keine Rezepte zum durchsuchen"
   @override
   String get no_recipes_to_search_through => "Du hast keine Rezepte zum durchsuchen";
@@ -1060,9 +1060,9 @@ class _I18n_de_DE extends I18n {
   /// "Verbindung mit URL fehlgeschlagen"
   @override
   String get failed_to_connect_to_url => "Verbindung mit URL fehlgeschlagen";
-  /// "ungültige URL\nChecke die unterstützten Webseiten im Infobereich unten"
+  /// "ungültige URL:\nChecke die unterstützten Webseiten im Infobereich unten"
   @override
-  String get invalid_url => "ungültige URL\nChecke die unterstützten Webseiten im Infobereich unten";
+  String get invalid_url => "ungültige URL:\nChecke die unterstützten Webseiten im Infobereich unten";
   /// "URL zum Rezept:"
   @override
   String get enter_url => "URL zum Rezept:";
@@ -1075,9 +1075,9 @@ class _I18n_de_DE extends I18n {
   /// "Quelle"
   @override
   String get source => "Quelle";
-  /// "Rezept bearbeitet oder gelöscht\nGehe zurück zur Übersicht um es anzusehen"
+  /// "Rezept wurde bearbeitet oder gelöscht:\nGehe zurück zur Übersicht um es anzusehen"
   @override
-  String get recipe_edited_or_deleted => "Rezept bearbeitet oder gelöscht\nGehe zurück zur Übersicht um es anzusehen";
+  String get recipe_edited_or_deleted => "Rezept wurde bearbeitet oder gelöscht:\nGehe zurück zur Übersicht um es anzusehen";
   /// "Rezeptansicht"
   @override
   String get recipe_screen => "Rezeptansicht";

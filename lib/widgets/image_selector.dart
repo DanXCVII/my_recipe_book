@@ -13,12 +13,14 @@ class ImageSelector extends StatefulWidget {
   final double circleSize;
   final void Function(File imageFile) onNewImage;
   final Color color;
+  final Function onCancel;
 
   ImageSelector({
     @required this.prefilledImage,
     @required this.onNewImage,
     @required this.circleSize,
     @required this.color,
+    @required this.onCancel,
   });
 
   @override
@@ -41,71 +43,99 @@ class _ImageSelectorState extends State<ImageSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ClearRecipeBloc, ClearRecipeState>(
-      listener: (context, state) {
-        if (state is ClearedRecipe) {
-          setState(() {
-            selectedImageFile = null;
-          });
-        }
-      },
-      child: selectedImageFile == null
-          ? Container(
-              width: widget.circleSize,
-              height: widget.circleSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.color,
-              ),
-              child: Center(
-                  child: IconButton(
-                onPressed: () {
-                  _askUser();
-                },
-                color: Colors.white,
-                icon: Icon(Icons.add_a_photo),
-                iconSize: widget.circleSize / 3,
-              )),
-            )
-          : Center(
-              child: Stack(children: <Widget>[
-                ClipOval(
-                  child: Container(
-                    child: Image.file(
-                      // widget.imageWrapper.getSelectedImage(),
-                      selectedImageFile,
-                      fit: BoxFit.cover,
-                    ),
+    return Container(
+      height: widget.circleSize + 22,
+      child: BlocListener<ClearRecipeBloc, ClearRecipeState>(
+        listener: (context, state) {
+          if (state is ClearedRecipe || state is RemovedRecipeImage) {
+            setState(() {
+              selectedImageFile = null;
+            });
+          }
+        },
+        child: selectedImageFile == null
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
                     width: widget.circleSize,
                     height: widget.circleSize,
-                  ),
-                ),
-                Opacity(
-                  opacity: 0.3,
-                  child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.black87,
                       shape: BoxShape.circle,
+                      color: widget.color,
                     ),
-                    width: widget.circleSize,
-                    height: widget.circleSize,
+                    child: Center(
+                        child: IconButton(
+                      onPressed: () {
+                        _askUser();
+                      },
+                      color: Colors.white,
+                      icon: Icon(Icons.add_a_photo),
+                      iconSize: widget.circleSize / 3,
+                    )),
                   ),
+                ],
+              )
+            : Container(
+                width: widget.circleSize + 26,
+                child: Center(
+                  child: Stack(children: <Widget>[
+                    Center(
+                      child: ClipOval(
+                        child: Container(
+                          child: Image.file(
+                            // widget.imageWrapper.getSelectedImage(),
+                            selectedImageFile,
+                            fit: BoxFit.cover,
+                          ),
+                          width: widget.circleSize,
+                          height: widget.circleSize,
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Opacity(
+                        opacity: 0.3,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            shape: BoxShape.circle,
+                          ),
+                          width: widget.circleSize,
+                          height: widget.circleSize,
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Container(
+                        decoration: BoxDecoration(shape: BoxShape.circle),
+                        width: widget.circleSize,
+                        height: widget.circleSize,
+                        child: IconButton(
+                          iconSize: widget.circleSize / 3,
+                          icon: Icon(Icons.add_a_photo),
+                          color: Colors.white,
+                          onPressed: () {
+                            _askUser();
+                          },
+                        ),
+                      ),
+                    ),
+                    Align(
+                        alignment: Alignment.topRight,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.cancel,
+                            size: 26,
+                          ),
+                          onPressed: () {
+                            widget.onCancel();
+                          },
+                        )),
+                  ]),
                 ),
-                Container(
-                  decoration: BoxDecoration(shape: BoxShape.circle),
-                  width: widget.circleSize,
-                  height: widget.circleSize,
-                  child: IconButton(
-                    iconSize: widget.circleSize / 3,
-                    icon: Icon(Icons.add_a_photo),
-                    color: Colors.white,
-                    onPressed: () {
-                      _askUser();
-                    },
-                  ),
-                ),
-              ]),
-            ),
+              ),
+      ),
     );
   }
 

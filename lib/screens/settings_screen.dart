@@ -150,8 +150,8 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            title: Text(I18n.of(context).switch_theme),
             leading: Icon(MdiIcons.themeLightDark),
+            title: Text(I18n.of(context).switch_theme),
             trailing: Container(
               width: 130,
               height: 25,

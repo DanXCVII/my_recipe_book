@@ -31,6 +31,8 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       yield* _mapUpdateRecipeImageToState(event);
     } else if (event is FinishedEditing) {
       yield* _mapFinishedEditingToState(event);
+    } else if (event is GRemoveRecipeImage) {
+      yield* _mapGRemoveRecipeImageToState(event);
     }
   }
 
@@ -47,6 +49,29 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     }
 
     yield GCanSave();
+  }
+
+  Stream<GeneralInfoState> _mapGRemoveRecipeImageToState(
+      GRemoveRecipeImage event) async* {
+    if (!event.editingRecipe) {
+      await IO.deleteRecipeImageIfExists(newRecipeLocalPathString);
+
+      await HiveProvider().saveTmpRecipe(
+        HiveProvider().getTmpRecipe().copyWith(
+              imagePath: noRecipeImage,
+              imagePreviewPath: noRecipeImage,
+            ),
+      );
+    } else {
+      await IO.deleteRecipeImageIfExists(editRecipeLocalPathString);
+
+      await HiveProvider().saveTmpEditingRecipe(
+        HiveProvider().getTmpEditingRecipe().copyWith(
+              imagePath: noRecipeImage,
+              imagePreviewPath: noRecipeImage,
+            ),
+      );
+    }
   }
 
   Stream<GeneralInfoState> _mapUpdateRecipeImageToState(

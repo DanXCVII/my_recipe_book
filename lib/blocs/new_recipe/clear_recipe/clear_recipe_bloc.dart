@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
+import 'package:my_recipe_book/constants/global_constants.dart';
 
 import '../../../local_storage/hive.dart';
 import '../../../local_storage/io_operations.dart' as IO;
@@ -21,6 +22,8 @@ class ClearRecipeBloc extends Bloc<ClearRecipeEvent, ClearRecipeState> {
   ) async* {
     if (event is Clear) {
       yield* _mapCearToState(event);
+    } else if (event is RemoveRecipeImage) {
+      yield* _mapRemoveRecipeImageToState(event);
     }
   }
 
@@ -34,6 +37,11 @@ class ClearRecipeBloc extends Bloc<ClearRecipeEvent, ClearRecipeState> {
       await IO.deleteRecipeData(Constants.newRecipeLocalPathString);
     }
 
-    yield ClearedRecipe(clearedRecipe, event.dateTime);
+    yield ClearedRecipe(clearedRecipe);
+  }
+
+  Stream<ClearRecipeState> _mapRemoveRecipeImageToState(
+      RemoveRecipeImage event) async* {
+    yield RemovedRecipeImage();
   }
 }

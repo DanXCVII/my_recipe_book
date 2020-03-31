@@ -97,6 +97,15 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
             await HiveProvider().getRecipeByName(jsonMap["name"]));
       }
 
+      List<Nutrition> recipeNutritions = jsonMap.containsKey("nutrition")
+          ? List<Nutrition>.generate(
+              jsonMap["nutrition"].keys.length - 1,
+              (index) => Nutrition(
+                  name: jsonMap["nutrition"].keys.toList()[index + 1],
+                  amountUnit: jsonMap["nutrition"]
+                      [jsonMap["nutrition"].keys.toList()[index + 1]]))
+          : [];
+
       Recipe importRecipe = Recipe(
         name: jsonMap["name"],
         preperationTime: getMinFromChefKFormat(jsonMap["prepTime"]),
@@ -113,14 +122,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
             List<String>.from(jsonMap["keywords"])),
         steps: steps,
         stepImages: List<List<String>>.generate(steps.length, (i) => []),
-        nutritions: jsonMap.containsKey("nutrition")
-            ? List<Nutrition>.generate(
-                jsonMap["nutrition"].keys.length - 1,
-                (index) => Nutrition(
-                    name: jsonMap["nutrition"].keys.toList()[index + 1],
-                    amountUnit: jsonMap["nutrition"]
-                        [jsonMap["nutrition"].keys.toList()[index + 1]]))
-            : [],
+        nutritions: recipeNutritions,
         // tags: List<String>.from(jsonMap["keywords"])
         //     .map(
         //       (item) => StringIntTuple(
@@ -141,6 +143,13 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
         //     .toList(),
         source: url,
       );
+
+      List<String> savedNutritions = HiveProvider().getNutritions();
+      for (Nutrition n in recipeNutritions) {
+        if (!savedNutritions.contains(n.name)) {
+          await HiveProvider().addNutrition(n.name);
+        }
+      }
 
       String importRecipeImagePath =
           await PathProvider.pP.getImportDir() + "importRecipeImage.jpg";
@@ -274,11 +283,22 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   List<String> _getStepsFromChefKFormat(String stepsInfo) {
     List<String> steps = [];
 
-    String cutStepInfo = stepsInfo + "\n\r\n";
+    String cutStepInfo = stepsInfo;
     print(stepsInfo);
-    while (cutStepInfo.contains("\n\r\n")) {
-      steps.add(cutStepInfo.substring(0, cutStepInfo.indexOf("\n\r\n")));
-      cutStepInfo = cutStepInfo.substring(cutStepInfo.indexOf("\n\r\n") + 3);
+    if (cutStepInfo.contains("\n\r\n")) {
+      cutStepInfo += "\n\r\n";
+      while (cutStepInfo.contains("\n\r\n")) {
+        steps.add(cutStepInfo.substring(0, cutStepInfo.indexOf("\n\r\n")));
+        cutStepInfo = cutStepInfo.substring(cutStepInfo.indexOf("\n\r\n") + 3);
+      }
+    } else if (cutStepInfo.contains("\n\n")) {
+      cutStepInfo += "\n\n";
+      while (cutStepInfo.contains("\n\n")) {
+        steps.add(cutStepInfo.substring(0, cutStepInfo.indexOf("\n\n")));
+        cutStepInfo = cutStepInfo.substring(cutStepInfo.indexOf("\n\n") + 2);
+      }
+    } else {
+      steps.add(stepsInfo);
     }
 
     return steps..removeWhere((item) => item.length <= 1);

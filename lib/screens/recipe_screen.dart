@@ -650,7 +650,7 @@ class RecipePage extends StatelessWidget {
                         categories: recipe.categories,
                         categoriesFiles: categoriesFiles)
                     : null,
-                recipe.nutritions.isEmpty ? Container() : Container(height: 50),
+                recipe.nutritions.isEmpty ? Container() : Container(height: 70),
               ]..removeWhere((item) => item == null)),
             ),
           )
@@ -1015,7 +1015,9 @@ class TopSectionRecipe extends StatelessWidget {
                                             ),
                                           ),
                                         ],
-                                        borderRadius: BorderRadius.circular(30),
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(30),
+                                            topRight: Radius.circular(30)),
                                         color: Colors.yellow,
                                       ),
                                     ),
@@ -1024,7 +1026,9 @@ class TopSectionRecipe extends StatelessWidget {
                                           totalTimeChart *
                                           100,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(30),
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(30),
+                                            topRight: Radius.circular(30)),
                                         color: Colors.blue,
                                       ),
                                     ),
@@ -1033,7 +1037,9 @@ class TopSectionRecipe extends StatelessWidget {
                                           totalTimeChart *
                                           100,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(30),
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(30),
+                                            topRight: Radius.circular(30)),
                                         color: Colors.pink,
                                       ),
                                     )

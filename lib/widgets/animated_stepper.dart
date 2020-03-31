@@ -43,114 +43,126 @@ class AnimatedStepper extends StatelessWidget {
                         duration: Duration(milliseconds: 300),
                         color: Color.fromRGBO(
                             0, 0, 0, state.selectedStep == index ? 0.5 : 0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 5, 12, 12),
-                              child: Stack(children: <Widget>[
-                                Padding(
-                                    padding:
-                                        const EdgeInsets.only(left: 0, top: 20),
-                                    child: AnimatedContainer(
-                                      duration: Duration(milliseconds: 200),
-                                      width: 60,
-                                      height: 60,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 12, right: 16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(0, 5, 12, 12),
+                                child: Stack(children: <Widget>[
+                                  Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 0, top: 20),
+                                      child: AnimatedContainer(
+                                        duration: Duration(milliseconds: 200),
+                                        width: 60,
+                                        height: 60,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
 
-                                        gradient: RadialGradient(
-                                          center: const Alignment(
-                                              0, 0), // near the top right
-                                          radius: state.selectedStep == index
-                                              ? 0.5
-                                              : 1,
-                                          colors: [
-                                            stepsColors[index %
-                                                (stepsColors
-                                                    .length)], // yellow sun
-                                            Colors.transparent, // blue sky
-                                          ],
-                                          stops: [0.6, 1.0],
+                                          gradient: RadialGradient(
+                                            center: const Alignment(
+                                                0, 0), // near the top right
+                                            radius: state.selectedStep == index
+                                                ? 0.5
+                                                : 1,
+                                            colors: [
+                                              stepsColors[index %
+                                                  (stepsColors
+                                                      .length)], // yellow sun
+                                              Colors.transparent, // blue sky
+                                            ],
+                                            stops: [0.6, 1.0],
+                                          ),
+                                          // color: stepsColors[i % (stepsColors.length)],
                                         ),
-                                        // color: stepsColors[i % (stepsColors.length)],
-                                      ),
-                                    )),
-                                Text("${index + 1}.",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 54))
-                              ]),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () {
-                                    BlocProvider.of<AnimatedStepperBloc>(
-                                            context)
-                                        .add(ChangeStep(index));
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.only(top: 15),
-                                    width:
-                                        MediaQuery.of(context).size.width - 100,
-                                    child: Text(
-                                      steps[index],
+                                      )),
+                                  Text("${index + 1}.",
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontFamily: fontFamily,
+                                          color: Colors.white, fontSize: 54))
+                                ]),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      onTap: () {
+                                        BlocProvider.of<AnimatedStepperBloc>(
+                                                context)
+                                            .add(ChangeStep(index));
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.only(top: 15),
+                                        child: Text(
+                                          steps[index],
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontFamily: fontFamily,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 12.0),
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width - 90,
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 8.0),
-                                      child: Wrap(
-                                        runSpacing: 10,
-                                        spacing: 10,
-                                        children: List<Widget>.generate(
-                                          lowResStepImages == null
-                                              ? stepImages[index].length
-                                              : lowResStepImages[index].length,
-                                          (wrapIndex) => GestureDetector(
-                                            onTap: () {
-                                              _showStepFullView(
-                                                  stepImages,
-                                                  steps,
-                                                  index,
-                                                  wrapIndex,
-                                                  context);
-                                            },
-                                            child: Hero(
-                                              tag: "Schritt$index:$wrapIndex",
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(10)),
-                                                child: Container(
-                                                  width: 100,
-                                                  height: 80,
-                                                  child: FadeInImage(
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 100),
-                                                    placeholder: MemoryImage(
-                                                        kTransparentImage),
-                                                    image: FileImage(
-                                                      File(lowResStepImages ==
-                                                              null
-                                                          ? stepImages[index]
-                                                              [wrapIndex]
-                                                          : lowResStepImages[
-                                                                  index]
-                                                              [wrapIndex]),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 12.0),
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                90,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 8.0),
+                                          child: Wrap(
+                                            runSpacing: 10,
+                                            spacing: 10,
+                                            children: List<Widget>.generate(
+                                              lowResStepImages == null
+                                                  ? stepImages[index].length
+                                                  : lowResStepImages[index]
+                                                      .length,
+                                              (wrapIndex) => GestureDetector(
+                                                onTap: () {
+                                                  _showStepFullView(
+                                                      stepImages,
+                                                      steps,
+                                                      index,
+                                                      wrapIndex,
+                                                      context);
+                                                },
+                                                child: Hero(
+                                                  tag:
+                                                      "Schritt$index:$wrapIndex",
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                10)),
+                                                    child: Container(
+                                                      width: 100,
+                                                      height: 80,
+                                                      child: FadeInImage(
+                                                        fadeInDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    100),
+                                                        placeholder: MemoryImage(
+                                                            kTransparentImage),
+                                                        image: FileImage(
+                                                          File(lowResStepImages ==
+                                                                  null
+                                                              ? stepImages[
+                                                                      index]
+                                                                  [wrapIndex]
+                                                              : lowResStepImages[
+                                                                      index]
+                                                                  [wrapIndex]),
+                                                        ),
+                                                        fit: BoxFit.cover,
+                                                      ),
                                                     ),
-                                                    fit: BoxFit.cover,
                                                   ),
                                                 ),
                                               ),
@@ -159,11 +171,11 @@ class AnimatedStepper extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

@@ -97,17 +97,20 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                       } else if (state is ImportedRecipe) {
                         return Container();
                       } else if (state is ImportingRecipe) {
-                        return Container(
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Theme.of(context).backgroundColor ==
-                                        Colors.white
-                                    ? Colors.grey[100]
-                                    : Colors.grey[800]),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: CircularProgressIndicator(),
-                            ));
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 100.0),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Theme.of(context).backgroundColor ==
+                                          Colors.white
+                                      ? Colors.grey[100]
+                                      : Colors.grey[900]),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: CircularProgressIndicator(),
+                              )),
+                        );
                       } else if (state is AlreadyExists) {
                         return Container(
                           width: 300,
@@ -172,10 +175,12 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                   ),
                 ),
                 Spacer(),
-                RecipeWebsiteImportInfo(),
               ],
             ),
-          )
+          ),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: RecipeWebsiteImportInfo()),
         ],
       ),
     );

@@ -1,21 +1,17 @@
 part of 'clear_recipe_bloc.dart';
 
-abstract class ClearRecipeState extends Equatable {
+abstract class ClearRecipeState {
   const ClearRecipeState();
 }
 
-class InitialClearRecipeState extends ClearRecipeState {
-  @override
-  List<Object> get props => [];
-}
+class InitialClearRecipeState extends ClearRecipeState {}
 
 class ClearedRecipe extends ClearRecipeState {
   final Recipe recipe;
 
-  final DateTime dateTime;
-
-  ClearedRecipe(this.recipe, this.dateTime);
-
-  @override
-  List<Object> get props => [recipe, dateTime];
+  ClearedRecipe(
+    this.recipe,
+  );
 }
+
+class RemovedRecipeImage extends ClearRecipeState {}
