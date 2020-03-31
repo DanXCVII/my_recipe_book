@@ -356,7 +356,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
       switch (v) {
         case Validator.REQUIRED_FIELDS:
           _showFlushInfo(
-            I18n.of(context).check_ingredient_section_fields,
+            I18n.of(context).check_filled_in_information,
             I18n.of(context).check_filled_in_information_description,
           );
 

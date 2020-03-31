@@ -697,9 +697,9 @@ class _I18n_de_DE extends I18n {
   /// "Prüfe eingegebene Informationen"
   @override
   String get check_filled_in_information => "Prüfe eingegebene Informationen";
-  /// "Es scheint so, als hättest du nicht alle geforderten Felder ausgefüllt. Bitte prüfe nach rot markierten Feldern."
+  /// "Prüfe die rot markierten Felder. Wenn der Rezeptname betroffen ist:\n- Er darf eine gewisse Länge nicht überschreiten\n- Muss ausgefüllt werden"
   @override
-  String get check_filled_in_information_description => "Es scheint so, als hättest du nicht alle geforderten Felder ausgefüllt. Bitte prüfe nach rot markierten Feldern.";
+  String get check_filled_in_information_description => "Prüfe die rot markierten Felder. Wenn der Rezeptname betroffen ist:\n- Er darf eine gewisse Länge nicht überschreiten\n- Muss ausgefüllt werden";
   /// "Du hast keine Rezepte zum durchsuchen"
   @override
   String get no_recipes_to_search_through => "Du hast keine Rezepte zum durchsuchen";
