@@ -414,8 +414,8 @@ class I18n implements WidgetsLocalizations {
   String get recipe_url => "recipe-url";
   /// "source"
   String get source => "source";
-  /// "recipe has been edited or deleted\ngo back to man view and view it"
-  String get recipe_edited_or_deleted => "recipe has been edited or deleted\ngo back to man view and view it";
+  /// "recipe has been edited or deleted:\ngo back to man view and view it"
+  String get recipe_edited_or_deleted => "recipe has been edited or deleted:\ngo back to man view and view it";
   /// "recipe screen"
   String get recipe_screen => "recipe screen";
 }
@@ -619,9 +619,9 @@ class _I18n_de_DE extends I18n {
   /// "zufällige Rezepte"
   @override
   String get roll_the_dice => "zufällige Rezepte";
-  /// "theme wechseln"
+  /// "theme"
   @override
-  String get switch_theme => "theme wechseln";
+  String get switch_theme => "theme";
   /// "Einkaufwagenansicht ändern"
   @override
   String get switch_shopping_cart_look => "Einkaufwagenansicht ändern";
@@ -985,9 +985,9 @@ class _I18n_de_DE extends I18n {
   /// "Verbindung mit URL fehlgeschlagen"
   @override
   String get failed_to_connect_to_url => "Verbindung mit URL fehlgeschlagen";
-  /// "ungültige URL\nChecke die unterstützten Webseiten im Infobereich unten"
+  /// "ungültige URL:\nChecke die unterstützten Webseiten im Infobereich unten"
   @override
-  String get invalid_url => "ungültige URL\nChecke die unterstützten Webseiten im Infobereich unten";
+  String get invalid_url => "ungültige URL:\nChecke die unterstützten Webseiten im Infobereich unten";
   /// "URL zum Rezept:"
   @override
   String get enter_url => "URL zum Rezept:";
@@ -1000,9 +1000,9 @@ class _I18n_de_DE extends I18n {
   /// "Quelle"
   @override
   String get source => "Quelle";
-  /// "Rezept bearbeitet oder gelöscht\nGehe zurück zur Übersicht um es anzusehen"
+  /// "Rezept wurde bearbeitet oder gelöscht:\nGehe zurück zur Übersicht um es anzusehen"
   @override
-  String get recipe_edited_or_deleted => "Rezept bearbeitet oder gelöscht\nGehe zurück zur Übersicht um es anzusehen";
+  String get recipe_edited_or_deleted => "Rezept wurde bearbeitet oder gelöscht:\nGehe zurück zur Übersicht um es anzusehen";
   /// "Rezeptansicht"
   @override
   String get recipe_screen => "Rezeptansicht";

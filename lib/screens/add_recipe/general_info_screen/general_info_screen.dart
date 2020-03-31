@@ -201,6 +201,13 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
               prefilledImage: modifiedRecipe.imagePath,
               circleSize: 120,
               color: Color(0xFF790604),
+              onCancel: () {
+                BlocProvider.of<ClearRecipeBloc>(context).add(RemoveRecipeImage(
+                    widget.editingRecipeName == null ? false : true));
+                BlocProvider.of<GeneralInfoBloc>(context).add(
+                    GRemoveRecipeImage(
+                        widget.editingRecipeName == null ? false : true));
+              },
             ),
             SizedBox(height: 30),
             Form(

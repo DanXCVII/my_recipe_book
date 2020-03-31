@@ -190,6 +190,6 @@
   "website_must_be_under_the_supported_websites": "the website, of which you want to import a recipe from, must be under the supported websites:",
   "recipe_url": "recipe-url",
   "source": "source",
-  "recipe_edited_or_deleted": "recipe has been edited or deleted\ngo back to man view and view it",
+  "recipe_edited_or_deleted": "recipe has been edited or deleted:\ngo back to man view and view it",
   "recipe_screen": "recipe screen"
 }
