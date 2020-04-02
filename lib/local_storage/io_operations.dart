@@ -314,9 +314,9 @@ Future<void> saveImage(File image, String targetPath, bool preview) async {
     print('UUUUUUUUUNNNNNNNNNNNNDDDDDDDDDD');
 
     await FlutterImageCompress.compressAndGetFile(image.path, targetPath,
-        minHeight: preview ? 300 : 1000,
-        minWidth: preview ? 300 : 1000,
-        quality: preview ? 50 : 70);
+        minHeight: preview ? 400 : 1000,
+        minWidth: preview ? 400 : 1000,
+        quality: preview ? 60 : 70);
 
     print(image.path);
     print(targetPath);

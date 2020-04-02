@@ -107,7 +107,8 @@ class TextFieldDialogState extends State<TextFieldDialog> {
   void validateAddModifyItem() {
     if (_formKey.currentState.validate()) {
       widget.save(nameController.text);
-      Navigator.pop(context);
+      Future.delayed(Duration(milliseconds: 100))
+          .then((_) => Navigator.pop(context));
     }
   }
 }

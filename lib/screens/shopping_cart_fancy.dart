@@ -155,9 +155,12 @@ class FancyShoppingCartScreen extends StatelessWidget {
       List<CheckableIngredient> ingredients, BuildContext context) {
     return Card(
       child: ExpansionTile(
-        leading: recipe.name == Constants.summary
+        leading: recipe.name == Constants.summary || recipe.notes == "noLink"
             ? null
-            : RecipeImageHero(recipe, showAds: false),
+            : RecipeImageHero(
+                recipe,
+                showAds: false,
+              ),
         title: Text(
           recipe.name == Constants.summary
               ? I18n.of(context).summary

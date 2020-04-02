@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../ad_related/ad.dart';
 import '../../blocs/new_recipe/nutritions/nutritions_bloc.dart';
 import '../../blocs/new_recipe/nutritions/nutritions_event.dart';
 import '../../blocs/new_recipe/nutritions/nutritions_state.dart';
@@ -14,6 +15,7 @@ import '../../generated/i18n.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
 import '../../widgets/dialogs/textfield_dialog.dart';
+import '../../widgets/icon_info_message.dart';
 import '../recipe_screen.dart';
 
 /// arguments which are provided to the route, when pushing to it
@@ -136,19 +138,23 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                 (_) => Navigator.of(context)
                                     .popUntil((route) => route.isFirst));
                           } else {
-                            Future.delayed(Duration(milliseconds: 300)).then(
-                              (_) => Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                RouteNames.recipeScreen,
-                                ModalRoute.withName('recipeRoute'),
-                                arguments: RecipeScreenArguments(
-                                  BlocProvider.of<ShoppingCartBloc>(context),
-                                  state.recipe,
-                                  'heroImageTag',
-                                  BlocProvider.of<RecipeManagerBloc>(context),
-                                ),
-                              ),
-                            ).then((_) => Ads.hideBottomBannerAd());
+                            Future.delayed(Duration(milliseconds: 300))
+                                .then(
+                                  (_) => Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    RouteNames.recipeScreen,
+                                    ModalRoute.withName('recipeRoute'),
+                                    arguments: RecipeScreenArguments(
+                                      BlocProvider.of<ShoppingCartBloc>(
+                                          context),
+                                      state.recipe,
+                                      'heroImageTag',
+                                      BlocProvider.of<RecipeManagerBloc>(
+                                          context),
+                                    ),
+                                  ),
+                                )
+                                .then((_) => Ads.hideBottomBannerAd());
                           }
                         }
                       },
@@ -217,8 +223,14 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                 ),
                 body: state.nutritions.isEmpty
                     ? Center(
-                        child: Text(I18n.of(context).you_have_no_nutritions),
-                      )
+                        child: IconInfoMessage(
+                        iconWidget: Icon(
+                          MdiIcons.nutrition,
+                          color: Colors.grey[200],
+                          size: 70.0,
+                        ),
+                        description: I18n.of(context).you_have_no_nutritions,
+                      ))
                     : Form(
                         key: _formKey,
                         child: ReorderableListView(

@@ -18,8 +18,10 @@ class RecipeTagManagerBloc
 
   List<StringIntTuple> selectedTags = [];
 
-  RecipeTagManagerBloc({@required this.recipeManagerBloc, this.selectedTags}) {
-    if (selectedTags == null) selectedTags = [];
+  RecipeTagManagerBloc(
+      {@required this.recipeManagerBloc, List<StringIntTuple> selectedTags}) {
+    if (selectedTags != null)
+      this.selectedTags = List<StringIntTuple>.from(selectedTags);
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedRecipeTagManager) {
         if (rmState is RM.AddRecipeTagsState) {
@@ -72,11 +74,11 @@ class RecipeTagManagerBloc
   Stream<RecipeTagManagerState> _mapAddRecipeTagsToState(
       AddRecipeTags event) async* {
     if (state is LoadedRecipeTagManager) {
+      selectedTags.addAll(event.recipeTags);
+
       yield LoadedRecipeTagManager(List<StringIntTuple>.from(
           (state as LoadedRecipeTagManager).recipeTags)
         ..addAll(event.recipeTags));
-
-      selectedTags.addAll(event.recipeTags);
     }
   }
 

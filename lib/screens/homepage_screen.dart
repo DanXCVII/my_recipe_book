@@ -68,7 +68,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   static const List<IconData> icons = const [
-    MdiIcons.grid,
+    MdiIcons.apps,
     Icons.description,
   ];
 
@@ -407,7 +407,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
     with TickerProviderStateMixin {
   AnimationController _controller;
   static const List<IconData> icons = const [
-    MdiIcons.grid,
+    MdiIcons.apps,
     Icons.description,
   ];
   bool isOpen = false;

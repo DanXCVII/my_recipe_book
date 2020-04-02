@@ -150,6 +150,17 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+            leading: Icon(MdiIcons.apps),
+            title: Text(I18n.of(context).manage_categories),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                RouteNames.manageCategories,
+              );
+            },
+          ),
+          Divider(),
+          ListTile(
             leading: Icon(MdiIcons.themeLightDark),
             title: Text(I18n.of(context).switch_theme),
             trailing: Container(

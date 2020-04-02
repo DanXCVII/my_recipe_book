@@ -466,7 +466,8 @@ class MyApp extends StatelessWidget {
 
               if (args != null) {
                 return MaterialPageRoute(
-                  builder: (context) => BlocProvider.value(
+                  builder: (context) =>
+                      BlocProvider<RecipeTagManagerBloc>.value(
                     value: args.recipeTagManagerBloc,
                     child: _getAdPage(RecipeTagManager(), context),
                   ),

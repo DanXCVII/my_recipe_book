@@ -18,8 +18,9 @@ class CategoryManagerBloc
   List<String> selectedCategories = [];
 
   CategoryManagerBloc(
-      {@required this.recipeManagerBloc, this.selectedCategories}) {
-    if (selectedCategories == null) selectedCategories = [];
+      {@required this.recipeManagerBloc, List<String> selectedCategories}) {
+    if (selectedCategories != null)
+      this.selectedCategories = List<String>.from(selectedCategories);
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedCategoryManager) {
         if (rmState is RM.AddCategoriesState) {
@@ -67,11 +68,12 @@ class CategoryManagerBloc
   Stream<CategoryManagerState> _mapAddCategoriesToState(
       AddCategories event) async* {
     if (state is LoadedCategoryManager) {
+      selectedCategories.addAll(event.categories);
+
       final List<String> categories =
           List.from((state as LoadedCategoryManager).categories)
             ..insertAll((state as LoadedCategoryManager).categories.length - 1,
                 event.categories);
-      selectedCategories.addAll(event.categories);
 
       yield LoadedCategoryManager(categories);
     }

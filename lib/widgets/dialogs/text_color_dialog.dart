@@ -169,7 +169,8 @@ class TextColorDialogState extends State<TextColorDialog> {
   void validateAddModifyItem() {
     if (_formKey.currentState.validate()) {
       widget.save(nameController.text, selectedColor);
-      Navigator.pop(context);
+      Future.delayed(Duration(milliseconds: 100))
+          .then((_) => Navigator.pop(context));
     }
   }
 }

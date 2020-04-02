@@ -204,7 +204,7 @@ class _ShoppingCartAddDialogContentState
                               unit: ingredientUnitController.text)
                         ],
                         recipeNameController.text == ''
-                            ? I18n.of(context).summary
+                            ? "summary"
                             : recipeNameController.text),
                   );
 
