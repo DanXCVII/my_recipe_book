@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:my_recipe_book/screens/import_from_website.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/import_recipe/import_recipe_bloc.dart';
@@ -24,6 +25,18 @@ class Settings extends StatelessWidget {
           Divider(),
           ListTile(
             leading: Icon(MdiIcons.export),
+            trailing: IconButton(
+              icon: Icon(Icons.help_outline),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => InfoDialog(
+                    title: I18n.of(context).information,
+                    body: I18n.of(context).info_export_description,
+                  ),
+                );
+              },
+            ),
             title: Text(I18n.of(context).export_recipe_s),
             onTap: () {
               Navigator.push(context,

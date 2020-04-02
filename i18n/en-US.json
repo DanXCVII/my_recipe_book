@@ -90,7 +90,7 @@
   "check_ingredient_section_fields_description": "if you have multiple sections, you need to provide a title for each section.",
   "check_filled_in_information": "Check filled in information",
   "check_filled_in_information_description": "Please check for any red marked text fields. For the recipename: it shouldn't be empty and the name must not exceed 70 characters.",
-  "no_recipes_to_search_through": "you have no recipes to search through",
+  "nothing_to_search_through": "nothing to search through",
   "almost_done": "almost done😊",
   "exporting_recipe": "exporting recipe",
   "out_of": "out of",
@@ -197,5 +197,7 @@
   "next": "next",
   "back": "back",
   "skip": "skip",
-  "maximum_recipe_pin_count_exceeded": "maximum pin count of 3 exceeded"
+  "maximum_recipe_pin_count_exceeded": "maximum pin count of 3 exceeded",
+  "information": "information",
+  "info_export_description": "It's recommended to sometimes save your recipes as zip, just i case that your smartphone gets lost or the app breaks for whatever reason."
 }

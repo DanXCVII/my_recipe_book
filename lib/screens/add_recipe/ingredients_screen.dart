@@ -375,7 +375,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
             ? null
             : stringIsValidDouble(amountContr[i][j].text)
                 ? double.parse(
-                    amountContr[i][j].text.replaceAll(new RegExp(r','), 'e'))
+                    amountContr[i][j].text.replaceAll(new RegExp(r','), '.'))
                 : null;
         String unit = unitContr[i][j].text;
         ingredients[i]

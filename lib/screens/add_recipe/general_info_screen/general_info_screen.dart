@@ -409,15 +409,15 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
       preperationTimeController.text.isEmpty
           ? 0
           : double.parse(
-              preperationTimeController.text.replaceAll(RegExp(r','), 'e')),
+              preperationTimeController.text.replaceAll(RegExp(r','), '.')),
       cookingTimeController.text.isEmpty
           ? 0
           : double.parse(
-              cookingTimeController.text.replaceAll(RegExp(r','), 'e')),
+              cookingTimeController.text.replaceAll(RegExp(r','), '.')),
       totalTimeController.text.isEmpty
           ? 0
           : double.parse(
-              totalTimeController.text.replaceAll(RegExp(r','), 'e')),
+              totalTimeController.text.replaceAll(RegExp(r','), '.')),
       sourceController.text,
       BlocProvider.of<CategoryManagerBloc>(context).selectedCategories,
       BlocProvider.of<RecipeTagManagerBloc>(context).selectedTags,

@@ -360,6 +360,10 @@ Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
   }
 }
 
+Future<void> deleteImportFolder() async {
+  await Directory(await PathProvider.pP.getImportDir()).delete();
+}
+
 /// extracts the given .zip to the tmp directory and if the recipe data is valid,
 /// returns the name of the .zip with the recipe data, otherwise: name of .zip with
 /// null

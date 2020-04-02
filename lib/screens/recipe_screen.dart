@@ -719,10 +719,21 @@ class RecipePage extends StatelessWidget {
         recipeText += '====================\n';
       }
     }
+
     int i = 1;
     for (final String step in recipe.steps) {
       recipeText += '$i. $step\n';
       i++;
+    }
+    if (recipe.tags != null && recipe.tags.isNotEmpty) {
+      recipeText += '====================\tags: ';
+      for (StringIntTuple tag in recipe.tags) {
+        if (!(tag == recipe.tags.last)) {
+          recipeText += '${tag.text}, ';
+        } else {
+          recipeText += '${tag.text}';
+        }
+      }
     }
     if (recipe.notes != null && recipe.notes != '') {
       recipeText += '====================\n';

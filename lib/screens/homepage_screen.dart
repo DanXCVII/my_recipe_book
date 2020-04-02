@@ -340,6 +340,8 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     delegate: RecipeSearch(
                       HiveProvider().getRecipeNames(),
                       BlocProvider.of<ShoppingCartBloc>(context),
+                      HiveProvider().getRecipeTags(),
+                      HiveProvider().getCategoryNames()..remove('no category'),
                     ));
               },
             ),
@@ -463,7 +465,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                         RouteNames.manageCategories,
                       );
                     },
-                    Icon(MdiIcons.grid, color: Theme.of(context).primaryColor),
+                    Icon(MdiIcons.apps, color: Theme.of(context).primaryColor),
                     2,
                   ),
                 ),
