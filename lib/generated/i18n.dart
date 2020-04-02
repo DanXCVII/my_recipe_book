@@ -212,8 +212,8 @@ class I18n implements WidgetsLocalizations {
   String get check_ingredient_section_fields_description => "if you have multiple sections, you need to provide a title for each section.";
   /// "Check filled in information"
   String get check_filled_in_information => "Check filled in information";
-  /// "it seems, that you haven’t filled in the required fields. Please check for any red marked text fields."
-  String get check_filled_in_information_description => "it seems, that you haven’t filled in the required fields. Please check for any red marked text fields.";
+  /// "Please check for any red marked text fields. For the recipename: it shouldn't be empty and the name must not exceed 70 characters."
+  String get check_filled_in_information_description => "Please check for any red marked text fields. For the recipename: it shouldn't be empty and the name must not exceed 70 characters.";
   /// "you have no recipes to search through"
   String get no_recipes_to_search_through => "you have no recipes to search through";
   /// "almost done😊"
@@ -418,6 +418,18 @@ class I18n implements WidgetsLocalizations {
   String get recipe_edited_or_deleted => "recipe has been edited or deleted:\ngo back to man view and view it";
   /// "recipe screen"
   String get recipe_screen => "recipe screen";
+  /// "more coming soon..."
+  String get more_coming_soon => "more coming soon...";
+  /// "done"
+  String get done => "done";
+  /// "next"
+  String get next => "next";
+  /// "back"
+  String get back => "back";
+  /// "skip"
+  String get skip => "skip";
+  /// "maximum pin count of 3 exceeded"
+  String get maximum_recipe_pin_count_exceeded => "maximum pin count of 3 exceeded";
 }
 
 class _I18n_en_US extends I18n {
@@ -430,18 +442,21 @@ class _I18n_en_US extends I18n {
 class _I18n_de_DE extends I18n {
   const _I18n_de_DE();
 
-  /// "Du hast die Wahl\nob hell, dunkel oder schwarz"
+  /// "Unterstützte Themes"
   @override
-  String get choose_a_theme => "Du hast die Wahl\nob hell, dunkel oder schwarz";
+  String get choose_a_theme => "Unterstützte Themes";
   /// "Wische durch deine Rezepte"
   @override
   String get swype_your_recipes => "Wische durch deine Rezepte";
-  /// "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte ;-)"
+  /// "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte😉"
   @override
-  String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte ;-)";
-  /// "exportiere als zip, um die Rezpete überall verfügbar zu machen oder in Textform, wenn die andere Person die App nicht besitzt."
+  String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte😉";
+  /// "teile als Text oder Datei"
   @override
-  String get multiple_devices_use_export_as_zip_etc => "exportiere als zip, um die Rezpete überall verfügbar zu machen oder in Textform, wenn die andere Person die App nicht besitzt.";
+  String get export_as_text_or_zip => "teile als Text oder Datei";
+  /// "Teile Rezepte entweder als:\n- Datei, damit deine Freunde sie in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen"
+  @override
+  String get multiple_devices_use_export_as_zip_etc => "Teile Rezepte entweder als:\n- Datei, damit deine Freunde sie in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen";
   /// "Dem Einkaufswagen hinzufügen"
   @override
   String get add_to_shoppingcart => "Dem Einkaufswagen hinzufügen";
@@ -694,12 +709,12 @@ class _I18n_de_DE extends I18n {
   /// "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift tragen wie zB. (Teig)."
   @override
   String get check_ingredient_section_fields_description => "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift tragen wie zB. (Teig).";
-  /// "Prüfe eingegebene Informationen"
+  /// "Prüfe rot markierte Felder"
   @override
-  String get check_filled_in_information => "Prüfe eingegebene Informationen";
-  /// "Prüfe die rot markierten Felder. Wenn der Rezeptname betroffen ist:\n- Er darf eine gewisse Länge nicht überschreiten\n- Muss ausgefüllt werden"
+  String get check_filled_in_information => "Prüfe rot markierte Felder";
+  /// "Wenn der Rezeptname betroffen ist:\n- er darf nicht leer sein\n- und 70 Zeichen nicht überschreiten"
   @override
-  String get check_filled_in_information_description => "Prüfe die rot markierten Felder. Wenn der Rezeptname betroffen ist:\n- Er darf eine gewisse Länge nicht überschreiten\n- Muss ausgefüllt werden";
+  String get check_filled_in_information_description => "Wenn der Rezeptname betroffen ist:\n- er darf nicht leer sein\n- und 70 Zeichen nicht überschreiten";
   /// "Du hast keine Rezepte zum durchsuchen"
   @override
   String get no_recipes_to_search_through => "Du hast keine Rezepte zum durchsuchen";
@@ -991,9 +1006,9 @@ class _I18n_de_DE extends I18n {
   /// "URL zum Rezept:"
   @override
   String get enter_url => "URL zum Rezept:";
-  /// "Hier ist die Liste der unterstützten Webseiten:"
+  /// "Liste der unterstützten Webseiten:"
   @override
-  String get website_must_be_under_the_supported_websites => "Hier ist die Liste der unterstützten Webseiten:";
+  String get website_must_be_under_the_supported_websites => "Liste der unterstützten Webseiten:";
   /// "Rezept-URL"
   @override
   String get recipe_url => "Rezept-URL";
@@ -1006,6 +1021,24 @@ class _I18n_de_DE extends I18n {
   /// "Rezeptansicht"
   @override
   String get recipe_screen => "Rezeptansicht";
+  /// "Mehr in Kürze..."
+  @override
+  String get more_coming_soon => "Mehr in Kürze...";
+  /// "fertig"
+  @override
+  String get done => "fertig";
+  /// "weiter"
+  @override
+  String get next => "weiter";
+  /// "zurück"
+  @override
+  String get back => "zurück";
+  /// "überspringen"
+  @override
+  String get skip => "überspringen";
+  /// "Du kannst maximal 3 Rezepte anpinnen."
+  @override
+  String get maximum_recipe_pin_count_exceeded => "Du kannst maximal 3 Rezepte anpinnen.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

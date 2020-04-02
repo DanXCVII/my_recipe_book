@@ -373,7 +373,11 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                                   ),
                                 ),
                               ),
-                      ),
+                      )..add(
+                          ListTile(
+                            title: Text(I18n.of(context).more_coming_soon),
+                          ),
+                        ),
                     ),
                   )
                 : Container(),

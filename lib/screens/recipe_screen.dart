@@ -308,7 +308,21 @@ class RecipePage extends StatelessWidget {
                               : null,
                         ),
                         onPressed: () {
-                          if (isPinned) {
+                          if (isPinned == false && state.recipes.length == 3) {
+                            final scaffold = Scaffold.of(context);
+                            scaffold.hideCurrentSnackBar();
+
+                            scaffold.showSnackBar(
+                              SnackBar(
+                                content: Text(I18n.of(context)
+                                    .maximum_recipe_pin_count_exceeded),
+                                action: SnackBarAction(
+                                  label: I18n.of(context).dismiss,
+                                  onPressed: scaffold.hideCurrentSnackBar,
+                                ),
+                              ),
+                            );
+                          } else if (isPinned) {
                             BlocProvider.of<RecipeBubbleBloc>(context)
                                 .add(RemoveRecipeBubble(recipe));
                           } else {
@@ -727,9 +741,9 @@ class TopSectionRecipe extends StatelessWidget {
   final List<StringIntTuple> recipeTags;
 
   const TopSectionRecipe({
-    this.preperationTime,
-    this.cookingTime,
-    this.totalTime,
+    this.preperationTime = 0,
+    this.cookingTime = 0,
+    this.totalTime = 0,
     this.effort,
     this.recipeTags,
     Key key,
@@ -1088,9 +1102,7 @@ class TopSectionRecipe extends StatelessWidget {
                   runSpacing: 10,
                   spacing: 10,
                   children: <Widget>[
-                    (preperationTime != null ||
-                            cookingTime != null ||
-                            totalTime != null)
+                    (preperationTime != 0 || cookingTime != 0 || totalTime != 0)
                         ? Container(
                             decoration: BoxDecoration(
                                 borderRadius:

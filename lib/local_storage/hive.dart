@@ -762,13 +762,13 @@ class HiveProvider {
     for (var key in boxShoppingCart.keys) {
       Recipe recipe = key == "summary"
           ? Recipe(name: "summary")
-          : await lazyBoxRecipes.get(boxRecipeNames.get(key));
+          : await lazyBoxRecipes.get(boxKeyString.get(key));
       List<CheckableIngredient> ingredients =
           boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [];
       if (recipe != null) {
         shoppingCart.addAll({recipe: ingredients});
       } else {
-        await boxShoppingCart.delete(key);
+        shoppingCart.addAll({Recipe(name: key, notes: "noLink"): ingredients});
       }
     }
     return shoppingCart;
@@ -786,7 +786,9 @@ class HiveProvider {
   Future<void> addSingleIngredientToCart(
       String recipeName, Ingredient ingredient) async {
     await _addIngredientToRecipe('summary', ingredient);
-    await _addIngredientToRecipe(recipeName, ingredient);
+    if (recipeName != "summary") {
+      await _addIngredientToRecipe(recipeName, ingredient);
+    }
   }
 
   Future<void> addIngredient(String ingredient) async {
@@ -1083,7 +1085,7 @@ class HiveProvider {
       }
     } // if we have to add the recipe with the ingredient to cart
     else {
-      await boxRecipeNames.put(hiveRecipeKey, recipeName);
+      await boxKeyString.put(hiveRecipeKey, recipeName);
       await boxShoppingCart.put(
         hiveRecipeKey,
         [
