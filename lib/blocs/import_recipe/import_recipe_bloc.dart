@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:my_recipe_book/local_storage/local_paths.dart';
 
 import '../../local_storage/hive.dart';
 import '../../local_storage/io_operations.dart' as IO;
@@ -125,6 +126,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         .then((_) => recipeManagerBloc.add(RMAddRecipes(importRecipes)));
 
     imageCache.clear();
+
     yield ImportedRecipes(importRecipes, failedRecipes, alreadyExisting);
   }
 }

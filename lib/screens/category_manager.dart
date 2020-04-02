@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
 import '../blocs/category_manager/category_manager_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -69,8 +71,17 @@ class CategoryManager extends StatelessWidget {
                           ));
                 }),
             body: state.categories.length == 1
-                ? Center(
-                    child: Text(I18n.of(context).you_have_no_categories),
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Center(
+                        child: IconInfoMessage(
+                      iconWidget: Icon(
+                        MdiIcons.apps,
+                        color: Colors.grey[300],
+                        size: 70.0,
+                      ),
+                      description: I18n.of(context).you_have_no_categories,
+                    )),
                   )
                 : ReorderableListView(
                     onReorder: (oldIndex, newIndex) {

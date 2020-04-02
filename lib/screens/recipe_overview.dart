@@ -62,6 +62,9 @@ class RecipeGridView extends StatelessWidget {
                             delegate: RecipeSearch(
                               HiveProvider().getRecipeNames(),
                               BlocProvider.of<ShoppingCartBloc>(context),
+                              HiveProvider().getRecipeTags(),
+                              HiveProvider().getCategoryNames()
+                                ..remove('no category'),
                             ));
                       },
                     ),

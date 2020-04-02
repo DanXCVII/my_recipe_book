@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
 
+import '../ad_related/ad.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as Constants;
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../local_storage/hive.dart';
 import '../models/recipe.dart';
+import '../models/string_int_tuple.dart';
+import '../screens/recipe_overview.dart';
 import '../screens/recipe_screen.dart';
 
 class RecipeSearch extends SearchDelegate<SearchRecipe> {
   final List<String> recipeNames;
+  final List<StringIntTuple> recipeTags;
+  final List<String> categories;
   final ShoppingCartBloc shoppingCartBloc;
 
-  RecipeSearch(this.recipeNames, this.shoppingCartBloc);
+  RecipeSearch(
+    this.recipeNames,
+    this.shoppingCartBloc,
+    this.recipeTags,
+    this.categories,
+  );
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -61,42 +71,99 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
 
   @override
   Widget buildResults(BuildContext context) {
-    if (recipeNames.isEmpty) {
+    if (recipeNames.isEmpty && recipeTags.isEmpty && categories.isEmpty) {
       return Container(
           height: 70,
-          child: Center(
-              child: Text(I18n.of(context).no_recipes_to_search_through)));
+          child:
+              Center(child: Text(I18n.of(context).nothing_to_search_through)));
     }
+    List<String> resultCategories = categories
+        .where(
+            (category) => category.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    List<StringIntTuple> resultRecipeTags = recipeTags
+        .where((recipeTag) =>
+            recipeTag.text.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
     List<String> resultRecipeNames = recipeNames
         .where((recipeName) =>
             recipeName.toLowerCase().contains(query.toLowerCase()))
         .toList();
+
     return ListView.builder(
-        itemCount: resultRecipeNames.length * 2,
+        itemCount: (resultRecipeNames.length +
+                resultCategories.length +
+                resultRecipeTags.length) *
+            2,
         itemBuilder: (context, index) {
           if ((index - 1) % 2 == 0 && index != 0) {
             return Divider();
           }
-          return ListTile(
-            title: Text(resultRecipeNames[index ~/ 2]),
-            onTap: () {
-              HiveProvider()
-                  .getRecipeByName(resultRecipeNames[index ~/ 2])
-                  .then((recipe) {
-                close(context, null);
-                Navigator.pushNamed(
-                  context,
-                  RouteNames.recipeScreen,
-                  arguments: RecipeScreenArguments(
-                    shoppingCartBloc,
-                    recipe,
-                    'heroTag',
-                    BlocProvider.of<RecipeManagerBloc>(context),
+          if (index ~/ 2 < resultRecipeNames.length) {
+            return ListTile(
+              title: Text(resultRecipeNames[index ~/ 2]),
+              onTap: () {
+                HiveProvider()
+                    .getRecipeByName(resultRecipeNames[index ~/ 2])
+                    .then((recipe) {
+                  close(context, null);
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.recipeScreen,
+                    arguments: RecipeScreenArguments(
+                      shoppingCartBloc,
+                      recipe,
+                      'heroTag',
+                      BlocProvider.of<RecipeManagerBloc>(context),
+                    ),
+                  );
+                });
+              },
+            );
+          } else if (index ~/ 2 - resultRecipeNames.length <
+              resultCategories.length) {
+            int categoryIndex = index ~/ 2 - resultRecipeNames.length;
+            return ListTile(
+                leading: Icon(Icons.apps),
+                title: Text(resultCategories[categoryIndex]),
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.recipeCategories,
+                    arguments: RecipeGridViewArguments(
+                      category: categories[categoryIndex] == null
+                          ? Constants.noCategory
+                          : categories[categoryIndex],
+                      shoppingCartBloc: shoppingCartBloc,
+                    ),
+                  ).then((_) => Ads.hideBottomBannerAd());
+                });
+          } else {
+            int recipeTagIndex =
+                index ~/ 2 - resultRecipeNames.length - resultCategories.length;
+            return ListTile(
+                leading: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(resultRecipeTags[recipeTagIndex].number),
                   ),
-                ).then((_) => Ads.hideBottomBannerAd());
-              });
-            },
-          );
+                  height: 25,
+                  width: 25,
+                ),
+                title: Text(resultRecipeTags[recipeTagIndex].text),
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.recipeTagOverview,
+                    arguments: RecipeGridViewArguments(
+                      recipeTag: recipeTags[recipeTagIndex],
+                      shoppingCartBloc: shoppingCartBloc,
+                    ),
+                  ).then((_) => Ads.hideBottomBannerAd());
+                });
+          }
         });
   }
 

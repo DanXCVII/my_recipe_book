@@ -214,8 +214,8 @@ class I18n implements WidgetsLocalizations {
   String get check_filled_in_information => "Check filled in information";
   /// "Please check for any red marked text fields. For the recipename: it shouldn't be empty and the name must not exceed 70 characters."
   String get check_filled_in_information_description => "Please check for any red marked text fields. For the recipename: it shouldn't be empty and the name must not exceed 70 characters.";
-  /// "you have no recipes to search through"
-  String get no_recipes_to_search_through => "you have no recipes to search through";
+  /// "nothing to search through"
+  String get nothing_to_search_through => "nothing to search through";
   /// "almost done😊"
   String get almost_done => "almost done😊";
   /// "exporting recipe"
@@ -460,6 +460,10 @@ class I18n implements WidgetsLocalizations {
   String get skip => "skip";
   /// "maximum pin count of 3 exceeded"
   String get maximum_recipe_pin_count_exceeded => "maximum pin count of 3 exceeded";
+  /// "information"
+  String get information => "information";
+  /// "It's recommended to sometimes save your recipes as zip, just i case that your smartphone gets lost or the app breaks for whatever reason."
+  String get info_export_description => "It's recommended to sometimes save your recipes as zip, just i case that your smartphone gets lost or the app breaks for whatever reason.";
 }
 
 class _I18n_en_US extends I18n {
@@ -481,9 +485,9 @@ class _I18n_de_DE extends I18n {
   /// "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte😉"
   @override
   String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte😉";
-  /// "teile als Text oder Datei"
+  /// "Teile als Text oder Datei"
   @override
-  String get export_as_text_or_zip => "teile als Text oder Datei";
+  String get export_as_text_or_zip => "Teile als Text oder Datei";
   /// "Teile Rezepte entweder als:\n- Datei, damit deine Freunde sie in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen"
   @override
   String get multiple_devices_use_export_as_zip_etc => "Teile Rezepte entweder als:\n- Datei, damit deine Freunde sie in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen";
@@ -736,18 +740,18 @@ class _I18n_de_DE extends I18n {
   /// "Prüfe die Zutatenliste"
   @override
   String get check_ingredient_section_fields => "Prüfe die Zutatenliste";
-  /// "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift tragen wie zB. (Teig)."
+  /// "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift haben wie zB. (Teig)."
   @override
-  String get check_ingredient_section_fields_description => "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift tragen wie zB. (Teig).";
+  String get check_ingredient_section_fields_description => "Wenn du mehrere Bereiche in der Zutatenliste festgelegt hast, müssen diese eine Überschrift haben wie zB. (Teig).";
   /// "Prüfe rot markierte Felder"
   @override
   String get check_filled_in_information => "Prüfe rot markierte Felder";
   /// "Wenn der Rezeptname betroffen ist:\n- er darf nicht leer sein\n- und 70 Zeichen nicht überschreiten"
   @override
   String get check_filled_in_information_description => "Wenn der Rezeptname betroffen ist:\n- er darf nicht leer sein\n- und 70 Zeichen nicht überschreiten";
-  /// "Du hast keine Rezepte zum durchsuchen"
+  /// "Nichts zu durchsuchen"
   @override
-  String get no_recipes_to_search_through => "Du hast keine Rezepte zum durchsuchen";
+  String get nothing_to_search_through => "Nichts zu durchsuchen";
   /// "Fast fertig😊"
   @override
   String get almost_done => "Fast fertig😊";
@@ -982,9 +986,9 @@ class _I18n_de_DE extends I18n {
   /// "Werbung entfernen\nin den Einstellungen"
   @override
   String get remove_ads_upgrade_in_settings => "Werbung entfernen\nin den Einstellungen";
-  /// "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren."
+  /// "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle auf dieser nach unten um zu aktualisieren."
   @override
-  String get recipes_not_in_overview => "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle nach unten um zu aktualisieren.";
+  String get recipes_not_in_overview => "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle auf dieser nach unten um zu aktualisieren.";
   /// "keine Internetverbindung"
   @override
   String get no_internet_connection => "keine Internetverbindung";
@@ -1027,9 +1031,9 @@ class _I18n_de_DE extends I18n {
   /// "Import fehlgeschlagen"
   @override
   String get failed_import => "Import fehlgeschlagen";
-  /// "Import aus unbekannten Gründen fehlgeschlagen. Bitte wechsle in den Einstellungen Tab und importiere die Rezepte dort."
+  /// "Import aus unbekannten Gründen fehlgeschlagen. Bitte wechsle zum Tab \"Einstellungen\" und importiere die Rezepte dort."
   @override
-  String get failed_import_desc => "Import aus unbekannten Gründen fehlgeschlagen. Bitte wechsle in den Einstellungen Tab und importiere die Rezepte dort.";
+  String get failed_import_desc => "Import aus unbekannten Gründen fehlgeschlagen. Bitte wechsle zum Tab \"Einstellungen\" und importiere die Rezepte dort.";
   /// "Zugriff auf Speicher benötigt"
   @override
   String get need_to_access_storage => "Zugriff auf Speicher benötigt";
@@ -1114,6 +1118,12 @@ class _I18n_de_DE extends I18n {
   /// "Du kannst maximal 3 Rezepte anpinnen."
   @override
   String get maximum_recipe_pin_count_exceeded => "Du kannst maximal 3 Rezepte anpinnen.";
+  /// "Tipp"
+  @override
+  String get information => "Tipp";
+  /// "Es ist sinnvoll ab und zu die Rezepte zu sichern, für den Fall, dass das Handy verloren geht oder aus welchen Gründen auch immer die App nicht mehr funktioniert und neuinstalliert werden muss."
+  @override
+  String get info_export_description => "Es ist sinnvoll ab und zu die Rezepte zu sichern, für den Fall, dass das Handy verloren geht oder aus welchen Gründen auch immer die App nicht mehr funktioniert und neuinstalliert werden muss.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

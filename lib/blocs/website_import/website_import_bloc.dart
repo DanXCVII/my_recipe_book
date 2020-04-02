@@ -152,7 +152,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       }
 
       String importRecipeImagePath =
-          await PathProvider.pP.getImportDir() + "importRecipeImage.jpg";
+          await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
 
       await Dio().download(
         jsonMap["image"],
