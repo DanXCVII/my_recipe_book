@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:hyphenator/hyphenator.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
 
@@ -50,6 +51,11 @@ class RecipeGridView extends StatelessWidget {
           // also checking for randomImage because, when filter changed, there can be no recipes visible
           // but still the category has recipes
           if (state.recipes.isNotEmpty || state.randomImage != null) {
+            // TODO: Hyphenator
+            // DefaultResourceLoader r = await DefaultResourceLoader.load(
+            //     DefaultResourceLoaderLanguage.de1996);
+            // Hyphenator h = Hyphenator(resource: r);
+            // h.hyphenate("jksdajklfj");
             return Scaffold(
               body: CustomScrollView(slivers: <Widget>[
                 SliverAppBar(

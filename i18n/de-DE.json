@@ -1,7 +1,7 @@
 {
   "choose_a_theme": "Unterstützte Themes",
   "swype_your_recipes": "Wische durch deine Rezepte",
-  "if_you_cant_decide_random_recipe_explorer": "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte😉",
+  "if_you_cant_decide_random_recipe_explorer": "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen",
   "export_as_text_or_zip": "Teile als Text oder Datei",
   "multiple_devices_use_export_as_zip_etc": "Teile Rezepte entweder als:\n- Datei, damit deine Freunde sie in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen",
   "add_to_shoppingcart": "Dem Einkaufswagen hinzufügen",
@@ -118,10 +118,10 @@
   "by_ingredientsamount": "nach Zutatenmenge",
   "category_already_exists": "Kategorie schon vorhanden",
   "categoryname": "Kategoriename",
-  "ingredient_search": "Zutaten-Suche",
-  "please_enter_some_ingredients": "Gebe die Zutaten ein",
+  "professional_search": "Erweiterte-Suche",
+  "enter_some_information": "Informationen angeben",
   "no_matching_recipes": "Keine passenden Rezpete gefunden",
-  "matches": "Treffer",
+  "ingredient_matches": "Zutatentreffer",
   "delete_ingredient": "Zutat löschen",
   "manage_ingredients": "Zutaten verwalten",
   "ingredient_already_exists": "Zutat existiert bereits",
@@ -139,7 +139,7 @@
   "summary": "Zusammenfassung",
   "none": "keine",
   "saving_your_input": "speichere Daten",
-  "please_enter_a_name": "Bitte gebe einen Namen ein",
+  "please_enter_a_name": "bitte gebe einen Namen ein",
   "invalid_name": "ungültiger name",
   "add_general_info": "Allgemeine Informationen",
   "add_steps": "Füge Schritte hinzu",
@@ -198,5 +198,6 @@
   "skip": "überspringen",
   "maximum_recipe_pin_count_exceeded": "Du kannst maximal 3 Rezepte anpinnen.",
   "information": "Tipp",
-  "info_export_description": "Es ist sinnvoll ab und zu die Rezepte zu sichern, für den Fall, dass das Handy verloren geht oder aus welchen Gründen auch immer die App nicht mehr funktioniert und neuinstalliert werden muss."
+  "info_export_description": "Es ist sinnvoll ab und zu die Rezepte zu sichern, für den Fall, dass das Handy verloren geht oder aus welchen Gründen auch immer die App nicht mehr funktioniert und neuinstalliert werden muss.",
+  "tags": "Tags"
 }

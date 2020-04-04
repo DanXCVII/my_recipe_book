@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -170,7 +171,9 @@ class RecipeHozizontalList extends StatelessWidget {
                       Stack(
                         children: <Widget>[
                           Hero(
-                            tag: '$categoryName$index-image',
+                            tag: GlobalSettings().animationsEnabled()
+                                ? '$categoryName$index-image'
+                                : '$categoryName$index-image1',
                             child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.only(

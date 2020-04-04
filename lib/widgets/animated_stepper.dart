@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/animated_stepper/animated_stepper_bloc.dart';
@@ -133,8 +134,10 @@ class AnimatedStepper extends StatelessWidget {
                                                       context);
                                                 },
                                                 child: Hero(
-                                                  tag:
-                                                      "Schritt$index:$wrapIndex",
+                                                  tag: GlobalSettings()
+                                                          .animationsEnabled()
+                                                      ? "Schritt$index:$wrapIndex"
+                                                      : "Schritt$index:${wrapIndex}3",
                                                   child: ClipRRect(
                                                     borderRadius:
                                                         BorderRadius.all(

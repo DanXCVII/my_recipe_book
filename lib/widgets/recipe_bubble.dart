@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -65,7 +66,9 @@ class _RecipeBubbleState extends State<RecipeBubble> {
         );
       },
       child: Hero(
-        tag: widget.recipe.name + "##bubble#",
+        tag: GlobalSettings().animationsEnabled()
+            ? widget.recipe.name + "##bubble#"
+            : widget.recipe.name + "##bubble#4",
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,

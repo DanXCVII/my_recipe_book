@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constants/global_constants.dart' as Constants;
+import '../../constants/global_settings.dart';
 import '../../local_storage/hive.dart';
 import '../../theming.dart';
 
@@ -50,9 +52,13 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     if (!prefs.containsKey('showIntro')) {
       showIntro = true;
       prefs.setBool('showIntro', false);
+      prefs.setBool(Constants.enableAnimations, true);
+      GlobalSettings().enableAnimations(true);
       await _initializeFirstStartData();
       await initHive(true);
     } else {
+      GlobalSettings()
+          .enableAnimations(prefs.getBool(Constants.enableAnimations));
       await initHive(false);
     }
 

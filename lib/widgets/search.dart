@@ -133,9 +133,9 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                     context,
                     RouteNames.recipeCategories,
                     arguments: RecipeGridViewArguments(
-                      category: categories[categoryIndex] == null
+                      category: resultCategories[categoryIndex] == null
                           ? Constants.noCategory
-                          : categories[categoryIndex],
+                          : resultCategories[categoryIndex],
                       shoppingCartBloc: shoppingCartBloc,
                     ),
                   );
@@ -158,7 +158,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                     context,
                     RouteNames.recipeTagOverview,
                     arguments: RecipeGridViewArguments(
-                      recipeTag: recipeTags[recipeTagIndex],
+                      recipeTag: resultRecipeTags[recipeTagIndex],
                       shoppingCartBloc: shoppingCartBloc,
                     ),
                   );
