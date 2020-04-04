@@ -559,6 +559,16 @@ class HiveProvider {
   }
 
   ////////////// condition recipe getters //////////////
+  Future<List<Recipe>> getAllRecipes() async {
+    List<Recipe> allRecipes = [];
+
+    for (var key in lazyBoxRecipes.keys) {
+      allRecipes.add(await lazyBoxRecipes.get(key));
+    }
+
+    return allRecipes;
+  }
+
   Future<bool> doesRecipeExist(String recipeName) async {
     if (await lazyBoxRecipes.get(getHiveKey(recipeName)) == null) {
       return false;

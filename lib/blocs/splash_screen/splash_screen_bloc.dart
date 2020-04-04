@@ -1,14 +1,14 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ad_related/ad.dart';
+import '../../constants/global_constants.dart' as Constants;
+import '../../constants/global_settings.dart';
 import '../../local_storage/hive.dart';
 import '../../theming.dart';
 
@@ -53,13 +53,15 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
 
     if (!prefs.containsKey('showIntro')) {
       showIntro = true;
-      await prefs.setBool('showIntro', false);
+      prefs.setBool('showIntro', false);
+      prefs.setBool(Constants.enableAnimations, true);
+      GlobalSettings().enableAnimations(true);
       await _initializeFirstStartData();
       await initHive(true);
       await prefs.setBool('pro_version', false);
     } else {
-      await _initializeFirstStartData();
-
+      GlobalSettings()
+          .enableAnimations(prefs.getBool(Constants.enableAnimations));
       await initHive(false);
     }
     Ads.initialize();

@@ -10,6 +10,7 @@ import './recipe_card.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
+import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
@@ -97,7 +98,9 @@ class RecipeCardBig extends StatelessWidget {
                     fit: StackFit.expand,
                     children: <Widget>[
                       Hero(
-                        tag: heroImageTag,
+                        tag: GlobalSettings().animationsEnabled()
+                            ? heroImageTag
+                            : "${heroImageTag}5",
                         child: FadeInImage(
                           image: recipe.imagePath == Constants.noRecipeImage
                               ? AssetImage(recipe.imagePath)

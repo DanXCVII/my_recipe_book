@@ -8,6 +8,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
 import 'package:my_recipe_book/widgets/icon_info_message.dart';
 import 'package:share/share.dart';
@@ -471,7 +472,9 @@ class RecipePage extends StatelessWidget {
                           height: 270,
                           child: Stack(children: <Widget>[
                             Hero(
-                              tag: heroImageTag,
+                              tag: GlobalSettings().animationsEnabled()
+                                  ? heroImageTag
+                                  : "heroImageTag2",
                               child: Material(
                                 color: Colors.transparent,
                                 child: ClipPath(

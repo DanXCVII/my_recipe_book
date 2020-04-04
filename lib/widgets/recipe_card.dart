@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+import '../ad_related/ad.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
+import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
@@ -108,7 +109,9 @@ class RecipeCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Hero(
-                      tag: heroImageTag,
+                      tag: GlobalSettings().animationsEnabled()
+                          ? heroImageTag
+                          : "${heroImageTag}6",
                       child: Material(
                         color: Colors.transparent,
                         child: ClipRRect(

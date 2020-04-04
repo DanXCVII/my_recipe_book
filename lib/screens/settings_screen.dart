@@ -11,6 +11,8 @@ import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as Constants;
+import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../theming.dart';
@@ -164,6 +166,18 @@ class Settings extends StatelessWidget {
           ListTile(
             leading: Icon(MdiIcons.apps),
             title: Text(I18n.of(context).manage_categories),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                RouteNames.manageCategories,
+              );
+            },
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(MdiIcons.animation),
+            trailing: AnimationCheckbox(),
+            title: Text("complex animations"),
             onTap: () {
               Navigator.pushNamed(
                 context,
@@ -409,5 +423,29 @@ class CustomRightHalfClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) {
     return true;
+  }
+}
+
+class AnimationCheckbox extends StatefulWidget {
+  AnimationCheckbox({Key key}) : super(key: key);
+
+  @override
+  _AnimationCheckboxState createState() => _AnimationCheckboxState();
+}
+
+class _AnimationCheckboxState extends State<AnimationCheckbox> {
+  @override
+  Widget build(BuildContext context) {
+    return Checkbox(
+      value: GlobalSettings().animationsEnabled(),
+      onChanged: (value) {
+        SharedPreferences.getInstance().then((prefs) {
+          setState(() {
+            prefs.setBool(Constants.enableAnimations, value);
+            GlobalSettings().enableAnimations(value);
+          });
+        });
+      },
+    );
   }
 }

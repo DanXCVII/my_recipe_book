@@ -16,7 +16,7 @@ class SearchingRecipes extends IngredientSearchState {
 
 class IngredientSearchMatches extends IngredientSearchState {
   final List<Tuple2<int, Recipe>> tupleMatchesRecipe;
-  final totalIngredAmount;
+  final int totalIngredAmount;
 
   IngredientSearchMatches(this.tupleMatchesRecipe, this.totalIngredAmount);
 

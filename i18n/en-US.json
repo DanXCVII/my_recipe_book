@@ -118,10 +118,10 @@
   "by_ingredientsamount": "by ingredientsamount",
   "category_already_exists": "category already exists",
   "categoryname": "category name",
-  "ingredient_search": "ingredient search",
-  "please_enter_some_ingredients": "please enter some ingredients",
+  "professional_search": "professional search",
+  "enter_some_information": "enter some ingredients",
   "no_matching_recipes": "no matching recipes",
-  "matches": "matches",
+  "ingredient_matches": "ingredient-matches",
   "delete_ingredient": "delete ingredient",
   "manage_ingredients": "manage ingredients",
   "ingredient_already_exists": "ingredient already exists",
@@ -214,5 +214,6 @@
   "skip": "skip",
   "maximum_recipe_pin_count_exceeded": "maximum pin count of 3 exceeded",
   "information": "information",
-  "info_export_description": "It's recommended to sometimes save your recipes as zip, just i case that your smartphone gets lost or the app breaks for whatever reason."
+  "info_export_description": "It's recommended to sometimes save your recipes as zip, just i case that your smartphone gets lost or the app breaks for whatever reason.",
+  "tags": "tags"
 }

@@ -70,6 +70,7 @@ dependencies:
   flutter_native_splash: ^0.1.9 # MIT
   flutter_colorpicker: ^0.3.2 # MIT
   dio: ^3.0.9 # MIT
+  hyphenator: ^0.0.3 # BSD
 
   
 dev_dependencies:

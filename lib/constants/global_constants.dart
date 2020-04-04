@@ -4,3 +4,4 @@ const String editRecipeLocalPathString = "edit";
 const String newRecipeLocalPathString = "tmp";
 const String allCategories = "all categories";
 const String summary = "summary";
+const String enableAnimations = "enableAnimations";

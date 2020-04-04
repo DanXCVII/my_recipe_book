@@ -2,11 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
 
+import '../ad_related/ad.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
+import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_screen.dart';
@@ -66,7 +67,9 @@ class _RecipeBubbleState extends State<RecipeBubble> {
         ).then((_) => Ads.hideBottomBannerAd());
       },
       child: Hero(
-        tag: widget.recipe.name + "##bubble#",
+        tag: GlobalSettings().animationsEnabled()
+            ? widget.recipe.name + "##bubble#"
+            : widget.recipe.name + "##bubble#4",
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,

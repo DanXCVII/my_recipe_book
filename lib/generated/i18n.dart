@@ -270,14 +270,14 @@ class I18n implements WidgetsLocalizations {
   String get category_already_exists => "category already exists";
   /// "category name"
   String get categoryname => "category name";
-  /// "ingredient search"
-  String get ingredient_search => "ingredient search";
-  /// "please enter some ingredients"
-  String get please_enter_some_ingredients => "please enter some ingredients";
+  /// "professional search"
+  String get professional_search => "professional search";
+  /// "enter some ingredients"
+  String get enter_some_information => "enter some ingredients";
   /// "no matching recipes"
   String get no_matching_recipes => "no matching recipes";
-  /// "matches"
-  String get matches => "matches";
+  /// "ingredient-matches"
+  String get ingredient_matches => "ingredient-matches";
   /// "delete ingredient"
   String get delete_ingredient => "delete ingredient";
   /// "manage ingredients"
@@ -464,6 +464,8 @@ class I18n implements WidgetsLocalizations {
   String get information => "information";
   /// "It's recommended to sometimes save your recipes as zip, just i case that your smartphone gets lost or the app breaks for whatever reason."
   String get info_export_description => "It's recommended to sometimes save your recipes as zip, just i case that your smartphone gets lost or the app breaks for whatever reason.";
+  /// "tags"
+  String get tags => "tags";
 }
 
 class _I18n_en_US extends I18n {
@@ -482,9 +484,9 @@ class _I18n_de_DE extends I18n {
   /// "Wische durch deine Rezepte"
   @override
   String get swype_your_recipes => "Wische durch deine Rezepte";
-  /// "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte😉"
+  /// "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen"
   @override
-  String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen willst, wische durch zufällige deiner Rezepte😉";
+  String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen";
   /// "Teile als Text oder Datei"
   @override
   String get export_as_text_or_zip => "Teile als Text oder Datei";
@@ -833,18 +835,18 @@ class _I18n_de_DE extends I18n {
   /// "Kategoriename"
   @override
   String get categoryname => "Kategoriename";
-  /// "Zutaten-Suche"
+  /// "Erweiterte-Suche"
   @override
-  String get ingredient_search => "Zutaten-Suche";
-  /// "Gebe die Zutaten ein"
+  String get professional_search => "Erweiterte-Suche";
+  /// "Informationen angeben"
   @override
-  String get please_enter_some_ingredients => "Gebe die Zutaten ein";
+  String get enter_some_information => "Informationen angeben";
   /// "Keine passenden Rezpete gefunden"
   @override
   String get no_matching_recipes => "Keine passenden Rezpete gefunden";
-  /// "Treffer"
+  /// "Zutatentreffer"
   @override
-  String get matches => "Treffer";
+  String get ingredient_matches => "Zutatentreffer";
   /// "Zutat löschen"
   @override
   String get delete_ingredient => "Zutat löschen";
@@ -896,9 +898,9 @@ class _I18n_de_DE extends I18n {
   /// "speichere Daten"
   @override
   String get saving_your_input => "speichere Daten";
-  /// "Bitte gebe einen Namen ein"
+  /// "bitte gebe einen Namen ein"
   @override
-  String get please_enter_a_name => "Bitte gebe einen Namen ein";
+  String get please_enter_a_name => "bitte gebe einen Namen ein";
   /// "ungültiger name"
   @override
   String get invalid_name => "ungültiger name";
@@ -1124,6 +1126,9 @@ class _I18n_de_DE extends I18n {
   /// "Es ist sinnvoll ab und zu die Rezepte zu sichern, für den Fall, dass das Handy verloren geht oder aus welchen Gründen auch immer die App nicht mehr funktioniert und neuinstalliert werden muss."
   @override
   String get info_export_description => "Es ist sinnvoll ab und zu die Rezepte zu sichern, für den Fall, dass das Handy verloren geht oder aus welchen Gründen auch immer die App nicht mehr funktioniert und neuinstalliert werden muss.";
+  /// "Tags"
+  @override
+  String get tags => "Tags";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

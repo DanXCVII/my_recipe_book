@@ -17,7 +17,7 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [Color(0xffAF1E1E), Color(0xff641414)],
         ),
-        title: Text(I18n.of(context).ingredient_search),
+        title: Text(I18n.of(context).professional_search),
       ),
       body: Stack(
         children: <Widget>[
@@ -154,7 +154,7 @@ class _VideoPlayerAdState extends State<VideoPlayerAd> {
         });
       });
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
