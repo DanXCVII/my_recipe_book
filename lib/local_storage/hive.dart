@@ -232,6 +232,13 @@ class HiveProvider {
       }
     }
 
+    // add not yet added categories to boxes
+    for (String category in newRecipe.categories) {
+      if (!boxKeyString.containsKey(getHiveKey(category))) {
+        await addCategory(category);
+      }
+    }
+
     Recipe readyToImportRecipe = newRecipe.copyWith(tags: newColorRecipeTags);
 
     await lazyBoxRecipes.put(hiveRecipeKey, readyToImportRecipe);
@@ -241,8 +248,12 @@ class HiveProvider {
     // add recipe to categories
     for (String categoryName in readyToImportRecipe.categories) {
       String hiveCategoryKey = getHiveKey(categoryName);
-      await boxRecipeCategories.put(hiveCategoryKey,
-          boxRecipeCategories.get(hiveCategoryKey)..add(hiveRecipeKey));
+      await boxRecipeCategories.put(
+          hiveCategoryKey,
+          boxRecipeCategories.get(hiveCategoryKey) == null
+              ? [hiveRecipeKey]
+              : boxRecipeCategories.get(hiveCategoryKey)
+            ..add(hiveRecipeKey));
     }
     if (readyToImportRecipe.categories.isEmpty) {
       List<String> recipeNames = boxRecipeCategories.get('no category');

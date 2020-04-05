@@ -153,7 +153,8 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
               future: exportZipFile,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  ShareExtend.share(snapshot.data, "file");
+                  ShareExtend.share(snapshot.data, "file",
+                      subject: "recipes.zip");
                   myCallback(() {
                     Navigator.pop(context);
                     Navigator.pop(context);

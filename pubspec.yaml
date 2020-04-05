@@ -114,6 +114,7 @@ flutter:
     - images/theme.png
     - images/icon.png
     - images/salatLowRes.jpg
+    - assets/firstStartRecipes.zip
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

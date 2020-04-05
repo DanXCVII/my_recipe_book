@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_recipe_book/local_storage/io_operations.dart';
+import 'package:my_recipe_book/models/recipe.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants/global_constants.dart' as Constants;
@@ -54,8 +58,8 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       prefs.setBool('showIntro', false);
       prefs.setBool(Constants.enableAnimations, true);
       GlobalSettings().enableAnimations(true);
-      await _initializeFirstStartData();
       await initHive(true);
+      await _initializeFirstStartData();
     } else {
       GlobalSettings()
           .enableAnimations(prefs.getBool(Constants.enableAnimations));
@@ -110,7 +114,22 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     }
   }
 
-  Future<void> _initializeFirstStartData() {
-    // TODO: Add some nutritions whatever
+  Future<void> _initializeFirstStartData() async {
+    ByteData data = await rootBundle.load('assets/firstStartRecipes.zip');
+
+    final buffer = data.buffer;
+    File recipesFile = await File(
+            (await getTemporaryDirectory()).path + "/firstStartRecipes.zip")
+        .writeAsBytes(
+            buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+
+    Map<String, Recipe> importRecipeData =
+        await importRecipesToTmp(recipesFile);
+    for (var key in importRecipeData.keys) {
+      if (importRecipeData[key] != null) {
+        await importRecipeFromTmp(importRecipeData[key]);
+        await HiveProvider().saveRecipe(importRecipeData[key]);
+      }
+    }
   }
 }
