@@ -353,10 +353,11 @@ Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
         recipes.addAll(await importRecipeToTmp(File(f.path)));
       }
     }
-
+    await recipeZip.delete();
     return recipes;
   } else {
-    return await importRecipeToTmp(recipeZip);
+    Map<String, Recipe> importedRecipes = await importRecipeToTmp(recipeZip);
+    return importedRecipes;
   }
 }
 
@@ -391,6 +392,8 @@ Future<Map<String, Recipe>> importRecipeToTmp(File recipeZip) async {
   }
   String recipeZipName = recipeZip.path
     ..substring(recipeZip.path.lastIndexOf('/'));
+
+  await recipeZip.delete();
   return {recipeZipName: importRecipe};
 }
 
@@ -405,7 +408,6 @@ Future<bool> importRecipeFromTmp(Recipe importRecipe) async {
   String recipeDir = await PathProvider.pP.getRecipeDirFull(importRecipe.name);
   // if the directory already exists for whatever reason, ..
   if (Directory(recipeDir).existsSync()) {
-    // .. delete it
     return false;
   }
   // move the files from the tmp import recipe directory to the app

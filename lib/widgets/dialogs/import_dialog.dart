@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:flutter/foundation.dart';
 
@@ -266,12 +269,17 @@ class _ImportDialogState extends State<ImportDialog> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       FlatButton(
-                        child: Text(I18n.of(context).cancel),
-                        onPressed: () => widget.closeAfterFinished
-                            ? SystemChannels.platform
-                                .invokeMethod('SystemNavigator.pop')
-                            : Navigator.pop(context),
-                      ),
+                          child: Text(I18n.of(context).cancel),
+                          onPressed: () {
+                            getTemporaryDirectory().then((dir) {
+                              if (dir.existsSync())
+                                dir.deleteSync(recursive: true);
+                            });
+                            widget.closeAfterFinished
+                                ? SystemChannels.platform
+                                    .invokeMethod('SystemNavigator.pop')
+                                : Navigator.pop(context);
+                          }),
                       SizedBox(
                         width: 6,
                       ),

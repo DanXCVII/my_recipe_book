@@ -436,6 +436,10 @@ class I18n implements WidgetsLocalizations {
   String get info_export_description => "It's recommended to sometimes save your recipes as zip, just i case that your smartphone gets lost or the app breaks for whatever reason.";
   /// "tags"
   String get tags => "tags";
+  /// "shoppingcart help"
+  String get shopping_cart_help => "shoppingcart help";
+  /// "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction."
+  String get shopping_cart_help_desc => "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction.";
 }
 
 class _I18n_en_US extends I18n {
@@ -1051,6 +1055,12 @@ class _I18n_de_DE extends I18n {
   /// "Tags"
   @override
   String get tags => "Tags";
+  /// "Einkaufswagen Hilfe"
+  @override
+  String get shopping_cart_help => "Einkaufswagen Hilfe";
+  /// "Um Zutaten zum Einkaufswagen hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder vom Einkaufswagen zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt."
+  @override
+  String get shopping_cart_help_desc => "Um Zutaten zum Einkaufswagen hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder vom Einkaufswagen zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

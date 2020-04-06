@@ -199,5 +199,7 @@
   "maximum_recipe_pin_count_exceeded": "Du kannst maximal 3 Rezepte anpinnen.",
   "information": "Tipp",
   "info_export_description": "Es ist sinnvoll ab und zu die Rezepte zu sichern, für den Fall, dass das Handy verloren geht oder aus welchen Gründen auch immer die App nicht mehr funktioniert und neuinstalliert werden muss.",
-  "tags": "Tags"
+  "tags": "Tags",
+  "shopping_cart_help": "Einkaufswagen Hilfe",
+  "shopping_cart_help_desc": "Um Zutaten zum Einkaufswagen hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder vom Einkaufswagen zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt."
 }

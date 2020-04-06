@@ -48,6 +48,10 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
 
     recipeCategoryOverview = _initRecipeOverviewScreen(prefs);
     _initTheme(prefs, event.context);
+    Directory tmpDir = await getTemporaryDirectory();
+    if (await tmpDir.exists()) {
+      await tmpDir.delete(recursive: true);
+    }
 
     // delete cache
     // await getTemporaryDirectory()

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:share/share.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -30,6 +31,17 @@ class FancyShoppingCartScreen extends StatelessWidget {
       SliverAppBar(
         centerTitle: false,
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (_) => InfoDialog(
+                        title: I18n.of(context).shopping_cart_help,
+                        body: I18n.of(context).shopping_cart_help_desc,
+                      ));
+            },
+          ),
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
