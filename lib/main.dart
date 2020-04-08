@@ -49,7 +49,7 @@ import 'screens/ingredients_manager.dart';
 import 'screens/intro_screen.dart';
 import 'screens/nutrition_manager.dart';
 import 'screens/recipe_overview.dart';
-import 'screens/recipe_screen.dart';
+import 'screens/recipe_screen/recipe_screen.dart';
 import 'screens/recipe_tag_manager_screen.dart';
 
 void main() {

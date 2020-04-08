@@ -21,10 +21,13 @@ class ShoppingCartAddDialog extends StatelessWidget {
       ),
       elevation: 0.0,
       backgroundColor: Theme.of(context).dialogBackgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-            Consts.padding, Consts.padding, Consts.padding, 7),
-        child: ShoppingCartAddDialogContent(),
+      child: Container(
+        width: MediaQuery.of(context).size.width > 360 ? 360 : null,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+              Consts.padding, Consts.padding, Consts.padding, 7),
+          child: ShoppingCartAddDialogContent(),
+        ),
       ),
     );
   }

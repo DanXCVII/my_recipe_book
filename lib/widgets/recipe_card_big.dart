@@ -16,7 +16,7 @@ import '../helper.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_overview.dart';
-import '../screens/recipe_screen.dart';
+import '../screens/recipe_screen/recipe_screen.dart';
 
 class RecipeCardBig extends StatelessWidget {
   final Recipe recipe;
@@ -205,10 +205,7 @@ class RecipeCardBig extends StatelessWidget {
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
                                         Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              4,
+                                          width: cardWidth / 4,
                                           child: Text(
                                               I18n.of(context).prep_time,
                                               textScaleFactor: scaleFactor,
@@ -231,10 +228,7 @@ class RecipeCardBig extends StatelessWidget {
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
                                         Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              4,
+                                          width: cardWidth / 4,
                                           child: Text(
                                               I18n.of(context).cook_time,
                                               textScaleFactor: scaleFactor,

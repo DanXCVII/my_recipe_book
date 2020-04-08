@@ -17,7 +17,7 @@ import '../helper.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_overview.dart';
-import '../screens/recipe_screen.dart';
+import '../screens/recipe_screen/recipe_screen.dart';
 
 const Map<int, Color> complexityColors = {
   1: Color(0xff28E424),
@@ -166,63 +166,64 @@ class RecipeCard extends StatelessWidget {
                                     ),
                                     Container(height: 12),
                                     Row(
-                                        children:
-                                            List<Widget>.generate(5, (index) {
-                                      if (recipe.effort >= (index + 1) * 2) {
-                                        return Icon(
-                                          MdiIcons.knife,
-                                          size: 18,
-                                          color: Theme.of(context)
-                                                      .backgroundColor ==
-                                                  Colors.white
-                                              ? Colors.grey[400]
-                                              : Colors.grey[200],
-                                        );
-                                      } else {
-                                        if (recipe.effort == index * 2 + 1) {
-                                          return Stack(
-                                            children: <Widget>[
-                                              Container(
-                                                child: Icon(
-                                                  MdiIcons.knife,
-                                                  size: 18,
-                                                  color: Theme.of(context)
-                                                              .backgroundColor ==
-                                                          Colors.white
-                                                      ? Colors.grey[900]
-                                                      : Colors.black,
-                                                ),
-                                              ),
-                                              ClipPath(
-                                                clipper:
-                                                    LeftHalfVerticalClipper(),
-                                                child: ClipPath(
-                                                  child: Icon(
-                                                    MdiIcons.knife,
-                                                    size: 18,
-                                                    color: Theme.of(context)
-                                                                .backgroundColor ==
-                                                            Colors.white
-                                                        ? Colors.grey[400]
-                                                        : Colors.grey[200],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        } else {
+                                      children:
+                                          List<Widget>.generate(5, (index) {
+                                        if (recipe.effort >= (index + 1) * 2) {
                                           return Icon(
                                             MdiIcons.knife,
                                             size: 18,
                                             color: Theme.of(context)
                                                         .backgroundColor ==
                                                     Colors.white
-                                                ? Colors.grey[900]
-                                                : Colors.black,
+                                                ? Colors.grey[400]
+                                                : Colors.grey[200],
                                           );
+                                        } else {
+                                          if (recipe.effort == index * 2 + 1) {
+                                            return Stack(
+                                              children: <Widget>[
+                                                Container(
+                                                  child: Icon(
+                                                    MdiIcons.knife,
+                                                    size: 18,
+                                                    color: Theme.of(context)
+                                                                .backgroundColor ==
+                                                            Colors.white
+                                                        ? Colors.grey[900]
+                                                        : Colors.black,
+                                                  ),
+                                                ),
+                                                ClipPath(
+                                                  clipper:
+                                                      LeftHalfVerticalClipper(),
+                                                  child: ClipPath(
+                                                    child: Icon(
+                                                      MdiIcons.knife,
+                                                      size: 18,
+                                                      color: Theme.of(context)
+                                                                  .backgroundColor ==
+                                                              Colors.white
+                                                          ? Colors.grey[400]
+                                                          : Colors.grey[200],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          } else {
+                                            return Icon(
+                                              MdiIcons.knife,
+                                              size: 18,
+                                              color: Theme.of(context)
+                                                          .backgroundColor ==
+                                                      Colors.white
+                                                  ? Colors.grey[900]
+                                                  : Colors.black,
+                                            );
+                                          }
                                         }
-                                      }
-                                    }))
+                                      }),
+                                    )
                                   ],
                                 ),
                                 Spacer(),

@@ -16,7 +16,7 @@ import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
 import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_image_hero.dart';
-import 'recipe_screen.dart';
+import './recipe_screen/recipe_screen.dart';
 
 class IngredientSearchScreenArguments {
   final ShoppingCartBloc shoppingCartBloc;

@@ -69,10 +69,23 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
             ),
           ),
           Divider(),
-          Expanded(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
+          Row(
+            children: <Widget>[
+              MediaQuery.of(context).size.width > 550
+                  ? Container(
+                      height: 500,
+                      width: 300,
+                      child: ListView(
+                        children: <Widget>[],
+                      ),
+                    )
+                  : null,
+              Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ]..removeWhere((item) => item == null),
           )
         ]);
       } else if (state is LoadedRandomRecipeExplorer) {
@@ -88,31 +101,33 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
               ),
             ),
             Divider(),
-            Container(
-              height: MediaQuery.of(context).size.height > 730
-                  ? MediaQuery.of(context).size.height - 200
-                  : MediaQuery.of(context).size.height - 136,
-              child: state.randomRecipes.isEmpty
-                  ? Center(
-                      child: IconInfoMessage(
-                      iconWidget: Icon(
-                        MdiIcons.chefHat,
-                        color: Colors.white,
-                        size: 70.0,
+            Expanded(
+              child: Container(
+                height: MediaQuery.of(context).size.height > 730
+                    ? MediaQuery.of(context).size.height - 200
+                    : MediaQuery.of(context).size.height - 136,
+                child: state.randomRecipes.isEmpty
+                    ? Center(
+                        child: IconInfoMessage(
+                        iconWidget: Icon(
+                          MdiIcons.chefHat,
+                          color: Colors.white,
+                          size: 70.0,
+                        ),
+                        description:
+                            I18n.of(context).no_recipes_under_this_category,
+                      ))
+                    : TweenAnimationBuilder(
+                        tween: Tween<double>(begin: 0.1, end: 1),
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeOutQuad,
+                        child: SwypingCards(
+                          recipes: state.randomRecipes,
+                        ),
+                        builder: (_, double opacity, myChild) =>
+                            Opacity(opacity: opacity, child: myChild),
                       ),
-                      description:
-                          I18n.of(context).no_recipes_under_this_category,
-                    ))
-                  : TweenAnimationBuilder(
-                      tween: Tween<double>(begin: 0.1, end: 1),
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeOutQuad,
-                      child: SwypingCards(
-                        recipes: state.randomRecipes,
-                      ),
-                      builder: (_, double opacity, myChild) =>
-                          Opacity(opacity: opacity, child: myChild),
-                    ),
+              ),
             ),
           ],
         );
@@ -141,12 +156,16 @@ class _SwypingCardsState extends State<SwypingCards>
 
   @override
   Widget build(BuildContext context) {
+    double cardWidthSpace = MediaQuery.of(context).size.width > 550
+        ? MediaQuery.of(context).size.width - 200
+        : MediaQuery.of(context).size.width;
+
     double maxHeight = MediaQuery.of(context).size.height > 730
         ? MediaQuery.of(context).size.height - 200
         : MediaQuery.of(context).size.height - 150;
     double maxWidth = maxHeight / 1.4;
-    if (maxWidth > MediaQuery.of(context).size.width * 0.9) {
-      maxWidth = MediaQuery.of(context).size.width * 0.9;
+    if (maxWidth > cardWidthSpace * 0.9) {
+      maxWidth = cardWidthSpace * 0.9;
     }
     return Stack(children: <Widget>[
       Center(

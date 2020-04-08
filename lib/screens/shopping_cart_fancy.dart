@@ -168,40 +168,47 @@ class FancyShoppingCartScreen extends StatelessWidget {
 
   Widget _getRecipeTile(Recipe recipe, Color backgroundcolor,
       List<CheckableIngredient> ingredients, BuildContext context) {
-    return Card(
-      child: ExpansionTile(
-        leading: recipe.name == Constants.summary || recipe.notes == "noLink"
-            ? null
-            : RecipeImageHero(recipe),
-        title: Text(
-          recipe.name == Constants.summary
-              ? I18n.of(context).summary
-              : recipe.name,
-        ),
-        children: ingredients.map((ingredient) {
-          return Dismissible(
-            key: Key('${recipe.name}${ingredient.name}${ingredient.unit}'),
-            onDismissed: (_) {
-              BlocProvider.of<ShoppingCartBloc>(context).add(RemoveIngredients([
-                Ingredient(
-                    name: ingredient.name,
-                    amount: ingredient.amount,
-                    unit: ingredient.unit)
-              ], recipe));
-            },
-            background: _getPrimaryBackgroundDismissible(),
-            secondaryBackground: _getSecondaryBackgroundDismissible(),
-            child: Container(
-              decoration: BoxDecoration(
-                color: backgroundcolor,
-              ),
-              child: IngredientRow(
-                ingredient: ingredient,
-                recipe: recipe,
-              ),
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width > 400 ? 400 : null,
+        child: Card(
+          child: ExpansionTile(
+            leading:
+                recipe.name == Constants.summary || recipe.notes == "noLink"
+                    ? null
+                    : RecipeImageHero(recipe),
+            title: Text(
+              recipe.name == Constants.summary
+                  ? I18n.of(context).summary
+                  : recipe.name,
             ),
-          );
-        }).toList(),
+            children: ingredients.map((ingredient) {
+              return Dismissible(
+                key: Key('${recipe.name}${ingredient.name}${ingredient.unit}'),
+                onDismissed: (_) {
+                  BlocProvider.of<ShoppingCartBloc>(context)
+                      .add(RemoveIngredients([
+                    Ingredient(
+                        name: ingredient.name,
+                        amount: ingredient.amount,
+                        unit: ingredient.unit)
+                  ], recipe));
+                },
+                background: _getPrimaryBackgroundDismissible(),
+                secondaryBackground: _getSecondaryBackgroundDismissible(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: backgroundcolor,
+                  ),
+                  child: IngredientRow(
+                    ingredient: ingredient,
+                    recipe: recipe,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
       ),
     );
   }
@@ -286,10 +293,9 @@ class IngredientRow extends StatelessWidget {
             ),
           ),
         ),
-        Padding(
-          padding: EdgeInsets.only(left: 10),
-          child: Container(
-            width: MediaQuery.of(context).size.width - 200,
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(left: 10),
             child: Text(
               //'SpaghettiSauce von der Kuh mit ganz viel ',
               '${ingredient.name}',
@@ -304,7 +310,9 @@ class IngredientRow extends StatelessWidget {
             ),
           ),
         ),
-        Spacer(),
+        SizedBox(
+          width: 10,
+        ),
         ingredient.amount != null
             ? Container(
                 padding: EdgeInsets.all(3),

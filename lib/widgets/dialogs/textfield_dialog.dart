@@ -60,44 +60,47 @@ class TextFieldDialogState extends State<TextFieldDialog> {
       ),
       elevation: 0.0,
       backgroundColor: Theme.of(context).dialogBackgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min, // To make the card compact
-            children: <Widget>[
-              SizedBox(height: 16.0),
-              TextFormField(
-                focusNode: widget.focus,
-                controller: nameController,
-                validator: (value) {
-                  return widget.validation(value);
-                },
-                decoration: InputDecoration(
-                  filled: true,
-                  hintText: widget.hintText,
-                ),
-              ),
-              SizedBox(height: 24.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  FlatButton(
-                      child: Text(I18n.of(context).cancel),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                  FlatButton(
-                    child: Text(I18n.of(context).save),
-                    onPressed: () {
-                      validateAddModifyItem();
-                    },
+      child: Container(
+        width: MediaQuery.of(context).size.width > 360 ? 360 : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // To make the card compact
+              children: <Widget>[
+                SizedBox(height: 16.0),
+                TextFormField(
+                  focusNode: widget.focus,
+                  controller: nameController,
+                  validator: (value) {
+                    return widget.validation(value);
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: widget.hintText,
                   ),
-                ],
-              ),
-              SizedBox(height: 6),
-            ],
+                ),
+                SizedBox(height: 24.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    FlatButton(
+                        child: Text(I18n.of(context).cancel),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
+                    FlatButton(
+                      child: Text(I18n.of(context).save),
+                      onPressed: () {
+                        validateAddModifyItem();
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: 6),
+              ],
+            ),
           ),
         ),
       ),

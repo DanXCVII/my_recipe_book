@@ -16,7 +16,7 @@ import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
 import 'recipe_overview.dart';
-import 'recipe_screen.dart';
+import 'recipe_screen/recipe_screen.dart';
 
 // Builds the Rows of all the categories
 
