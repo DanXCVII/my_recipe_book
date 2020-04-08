@@ -72,29 +72,34 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
         ),
         body: Column(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color.fromRGBO(70, 70, 70, 1),
-                        Color.fromRGBO(60, 60, 60, 1)
-                      ],
+            Container(
+              width: MediaQuery.of(context).size.width > 420
+                  ? 420
+                  : MediaQuery.of(context).size.width,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color.fromRGBO(70, 70, 70, 1),
+                          Color.fromRGBO(60, 60, 60, 1)
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(25),
+                      color: Color.fromRGBO(70, 70, 70, 1),
                     ),
-                    borderRadius: BorderRadius.circular(25),
-                    color: Color.fromRGBO(70, 70, 70, 1),
-                  ),
-                  child: AnimatedSize(
-                    vsync: this,
-                    duration: Duration(milliseconds: 150),
-                    curve: Curves.fastOutSlowIn,
-                    child: _isMinimized
-                        ? _getMinimized()
-                        : !_isExpanded ? _getNonExpanded() : _getExpanded(),
+                    child: AnimatedSize(
+                      vsync: this,
+                      duration: Duration(milliseconds: 150),
+                      curve: Curves.fastOutSlowIn,
+                      child: _isMinimized
+                          ? _getMinimized()
+                          : !_isExpanded ? _getNonExpanded() : _getExpanded(),
+                    ),
                   ),
                 ),
               ),
@@ -451,111 +456,114 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
 
   Widget _getRecipeTagCategoryFilter() => Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.grey[900],
-              borderRadius: BorderRadius.all(Radius.circular(20))),
-          width: MediaQuery.of(context).size.width - 40,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Container(
-              height: 230,
-              child: ListView(
-                children: <Widget>[
-                  Wrap(
-                    spacing: 5.0,
-                    runSpacing: 1.0,
-                    children: [
-                      Vegetable.NON_VEGETARIAN,
-                      Vegetable.VEGETARIAN,
-                      Vegetable.VEGAN
-                    ].map((vegetable) {
-                      switch (vegetable) {
-                        case Vegetable.VEGETARIAN:
-                          return _getVegetableFilterChip(
-                            Colors.green[700],
-                            MdiIcons.cheese,
-                            Colors.amber,
-                            I18n.of(context).vegetarian,
-                            vegetable,
-                          );
-
-                        case Vegetable.VEGAN:
-                          return _getVegetableFilterChip(
-                            Colors.orange,
-                            MdiIcons.leaf,
-                            Colors.green[700],
-                            I18n.of(context).vegan,
-                            vegetable,
-                          );
-
-                        case Vegetable.NON_VEGETARIAN:
-                          return _getVegetableFilterChip(
-                            Colors.lightBlue[300],
-                            MdiIcons.cow,
-                            Colors.brown[800],
-                            I18n.of(context).with_meat,
-                            vegetable,
-                          );
-                      }
-                    }).toList(),
-                  ),
-                  Text(
-                    I18n.of(context).categories,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Wrap(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.all(Radius.circular(20))),
+            width: MediaQuery.of(context).size.width - 40,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Container(
+                height: 230,
+                child: ListView(
+                  children: <Widget>[
+                    Wrap(
                       spacing: 5.0,
                       runSpacing: 1.0,
-                      children: _categories.map((category) {
-                        return FilterChip(
-                          label: Text(category == Constants.noCategory
-                              ? I18n.of(context).no_category
-                              : category),
-                          selected: _selectedCategories.contains(category),
-                          onSelected: (isSelected) {
-                            setState(() {
-                              if (isSelected) {
-                                _selectedCategories.add(category);
-                              } else {
-                                _selectedCategories.remove(category);
-                              }
-                            });
-                          },
-                        );
-                      }).toList()),
-                  Text(
-                    I18n.of(context).tags,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.white,
+                      children: [
+                        Vegetable.NON_VEGETARIAN,
+                        Vegetable.VEGETARIAN,
+                        Vegetable.VEGAN
+                      ].map((vegetable) {
+                        switch (vegetable) {
+                          case Vegetable.VEGETARIAN:
+                            return _getVegetableFilterChip(
+                              Colors.green[700],
+                              MdiIcons.cheese,
+                              Colors.amber,
+                              I18n.of(context).vegetarian,
+                              vegetable,
+                            );
+
+                          case Vegetable.VEGAN:
+                            return _getVegetableFilterChip(
+                              Colors.orange,
+                              MdiIcons.leaf,
+                              Colors.green[700],
+                              I18n.of(context).vegan,
+                              vegetable,
+                            );
+
+                          case Vegetable.NON_VEGETARIAN:
+                            return _getVegetableFilterChip(
+                              Colors.lightBlue[300],
+                              MdiIcons.cow,
+                              Colors.brown[800],
+                              I18n.of(context).with_meat,
+                              vegetable,
+                            );
+                        }
+                      }).toList(),
                     ),
-                  ),
-                  Wrap(
-                      spacing: 5.0,
-                      runSpacing: 3.0,
-                      children: _recipeTags.map((recipeTag) {
-                        return FilterChip(
-                          label: Text(recipeTag.text),
-                          backgroundColor: Color(recipeTag.number),
-                          selected: _selectedRecipeTags.contains(recipeTag),
-                          onSelected: (isSelected) {
-                            setState(() {
-                              if (isSelected) {
-                                _selectedRecipeTags.add(recipeTag);
-                              } else {
-                                _selectedRecipeTags.remove(recipeTag);
-                              }
-                            });
-                          },
-                        );
-                      }).toList())
-                ],
+                    Text(
+                      I18n.of(context).categories,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Wrap(
+                        spacing: 5.0,
+                        runSpacing: 1.0,
+                        children: _categories.map((category) {
+                          return FilterChip(
+                            label: Text(category == Constants.noCategory
+                                ? I18n.of(context).no_category
+                                : category),
+                            selected: _selectedCategories.contains(category),
+                            onSelected: (isSelected) {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedCategories.add(category);
+                                } else {
+                                  _selectedCategories.remove(category);
+                                }
+                              });
+                            },
+                          );
+                        }).toList()),
+                    Text(
+                      I18n.of(context).tags,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Wrap(
+                        spacing: 5.0,
+                        runSpacing: 3.0,
+                        children: _recipeTags.map((recipeTag) {
+                          return FilterChip(
+                            label: Text(recipeTag.text),
+                            backgroundColor: Color(recipeTag.number),
+                            selected: _selectedRecipeTags.contains(recipeTag),
+                            onSelected: (isSelected) {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedRecipeTags.add(recipeTag);
+                                } else {
+                                  _selectedRecipeTags.remove(recipeTag);
+                                }
+                              });
+                            },
+                          );
+                        }).toList())
+                  ],
+                ),
               ),
             ),
           ),

@@ -47,7 +47,7 @@ class FavoriteRecipeCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return StaggeredGridView.countBuilder(
       padding: EdgeInsets.all(12),
-      crossAxisCount: 4,
+      crossAxisCount: (MediaQuery.of(context).size.width / 200).round() * 2,
       itemCount: favoriteRecipes.length,
       itemBuilder: (BuildContext context, int index) => RecipeCard(
         recipe: favoriteRecipes[index],

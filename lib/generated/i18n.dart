@@ -464,9 +464,9 @@ class _I18n_de_DE extends I18n {
   /// "Teile als Text oder Datei"
   @override
   String get export_as_text_or_zip => "Teile als Text oder Datei";
-  /// "Teile Rezepte entweder als:\n- Datei, damit deine Freunde sie in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen"
+  /// "Teile Rezepte entweder als:\n- Datei, damit sie deine Freunde in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen"
   @override
-  String get multiple_devices_use_export_as_zip_etc => "Teile Rezepte entweder als:\n- Datei, damit deine Freunde sie in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen";
+  String get multiple_devices_use_export_as_zip_etc => "Teile Rezepte entweder als:\n- Datei, damit sie deine Freunde in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen";
   /// "Dem Einkaufswagen hinzufügen"
   @override
   String get add_to_shoppingcart => "Dem Einkaufswagen hinzufügen";

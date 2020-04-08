@@ -39,7 +39,7 @@ dependencies:
   bottom_navy_bar: ^5.3.2 # Apache 2.0
   intro_slider: ^2.2.8 # MIT
   flutter_tindercard: ^0.1.8 # Apache 2.0
-  sliding_up_panel: ^1.0.0 # BSD
+  sliding_up_panel: ^1.0.1 # BSD
   autocomplete_textfield: ^1.7.3 # MIT
   hive_flutter: ^0.2.1 # Apache 2.0
   hive_generator: ^0.5.2 # Apache 2.0

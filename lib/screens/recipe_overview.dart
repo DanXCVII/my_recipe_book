@@ -77,7 +77,7 @@ class RecipeGridView extends StatelessWidget {
                   ],
                   expandedHeight: scaleFactor * 200.0,
                   floating: false,
-                  pinned: true,
+                  pinned: false,
                   flexibleSpace: FlexibleSpaceBar(
                       title: Text(title),
                       background: Container(
@@ -99,7 +99,7 @@ class RecipeGridView extends StatelessWidget {
                       )),
                 ),
                 SliverStickyHeader(
-                  sticky: false,
+                  sticky: true,
                   header: RecipeFilter(
                     showVegetableFilter: state.vegetable != null ? false : true,
                     showRecipeTagFilter: state.recipeTag == null ? true : false,
@@ -142,7 +142,10 @@ class RecipeGridView extends StatelessWidget {
                             ]),
                           )
                         : SliverStaggeredGrid.countBuilder(
-                            crossAxisCount: 4,
+                            crossAxisCount:
+                                (MediaQuery.of(context).size.width / 200)
+                                        .round() *
+                                    2,
                             itemCount: state.recipes.length,
                             itemBuilder: (BuildContext context, int index) =>
                                 RecipeCard(

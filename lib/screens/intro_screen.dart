@@ -52,7 +52,7 @@ class IntroScreen extends StatelessWidget {
           styleTitle: titleStyle,
           description: I18n.of(context).multiple_devices_use_export_as_zip_etc,
           styleDescription: descStyle,
-          heightImage: MediaQuery.of(context).size.height / 2.2,
+          widthImage: MediaQuery.of(context).size.width / 1.3,
           pathImage: "images/export.png",
           colorBegin: Color(0xff00CCF9),
           colorEnd: Color(0xff0087A5),

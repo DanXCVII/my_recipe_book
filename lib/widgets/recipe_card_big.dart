@@ -204,9 +204,18 @@ class RecipeCardBig extends StatelessWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
-                                        Text(I18n.of(context).prep_time,
-                                            textScaleFactor: scaleFactor,
-                                            style: smallHeading),
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              4,
+                                          child: Text(
+                                              I18n.of(context).prep_time,
+                                              textScaleFactor: scaleFactor,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: smallHeading),
+                                        ),
                                         SizedBox(height: 5),
                                         Text(
                                             getTimeHoursMinutes(
@@ -221,9 +230,18 @@ class RecipeCardBig extends StatelessWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
-                                        Text(I18n.of(context).cook_time,
-                                            textScaleFactor: scaleFactor,
-                                            style: smallHeading),
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              4,
+                                          child: Text(
+                                              I18n.of(context).cook_time,
+                                              textScaleFactor: scaleFactor,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: smallHeading),
+                                        ),
                                         SizedBox(height: 5),
                                         Text(
                                             getTimeHoursMinutes(
