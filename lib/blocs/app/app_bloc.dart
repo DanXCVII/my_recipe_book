@@ -23,12 +23,19 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       yield* _mapChangeViewToState(event);
     } else if (event is ChangeCategoryOverview) {
       yield* _mapChangeCategoryOverviewToState(event);
+    } else if (event is ChangeShoppingCartView) {
+      yield* _mapChangeShoppingCartView(event);
     }
   }
 
   Stream<AppState> _mapLoadingToState(InitializeData event) async* {
-    yield LoadedState(event.recipeCategoryOverview, event.showIntro, 0,
-        I18n.of(event.context).recipes);
+    yield LoadedState(
+      event.recipeCategoryOverview,
+      event.showIntro,
+      false,
+      0,
+      I18n.of(event.context).recipes,
+    );
   }
 
   Stream<AppState> _mapChangeViewToState(ChangeView event) async* {
@@ -56,6 +63,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     yield LoadedState(
       (state as LoadedState).recipeCategoryOverview,
       (state as LoadedState).showIntro,
+      (state as LoadedState).shoppingCartOpen,
       event.index,
       title,
     );
@@ -69,6 +77,18 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     yield LoadedState(
       event.recipeCategoryOverview,
       false,
+      (state as LoadedState).shoppingCartOpen,
+      (state as LoadedState).selectedIndex,
+      (state as LoadedState).title,
+    );
+  }
+
+  Stream<AppState> _mapChangeShoppingCartView(
+      ChangeShoppingCartView event) async* {
+    yield LoadedState(
+      (state as LoadedState).recipeCategoryOverview,
+      (state as LoadedState).showIntro,
+      event.open,
       (state as LoadedState).selectedIndex,
       (state as LoadedState).title,
     );

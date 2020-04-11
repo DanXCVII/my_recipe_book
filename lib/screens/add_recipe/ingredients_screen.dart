@@ -185,34 +185,40 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
           ],
         ),
         body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Form(
-                key: _formKey,
-                child: Ingredients(
-                  servingsController,
-                  ingredientNameController,
-                  ingredientAmountController,
-                  ingredientUnitController,
-                  ingredientGlossaryController,
-                  HiveProvider().getIngredientNames(),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
-                child: Text(
-                  "Kategorie:",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+          child: Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width > 430 ? 430 : null,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Form(
+                    key: _formKey,
+                    child: Ingredients(
+                      servingsController,
+                      ingredientNameController,
+                      ingredientAmountController,
+                      ingredientUnitController,
+                      ingredientGlossaryController,
+                      HiveProvider().getIngredientNames(),
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 56, top: 12, bottom: 12),
+                    child: Text(
+                      "Kategorie:",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  Vegetarian(
+                    vegetableStatus: selectedRecipeVegetable,
+                  ),
+                ],
               ),
-              Vegetarian(
-                vegetableStatus: selectedRecipeVegetable,
-              ),
-            ],
+            ),
           ),
         ),
       ),

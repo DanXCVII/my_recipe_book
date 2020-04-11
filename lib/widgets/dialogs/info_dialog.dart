@@ -22,7 +22,9 @@ class InfoDialog extends StatelessWidget {
     return AlertDialog(
       title: Text(title),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      content: Text(body),
+      content: Container(
+          width: MediaQuery.of(context).size.width > 360 ? 360 : null,
+          child: Text(body)),
       actions: <Widget>[
         FlatButton(
           child: okText == null ? Text(I18n.of(context).alright) : Text(okText),

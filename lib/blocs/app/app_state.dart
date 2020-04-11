@@ -12,21 +12,24 @@ class LoadingState extends AppState {}
 class LoadedState extends AppState {
   final bool recipeCategoryOverview;
   final bool showIntro;
+  final bool shoppingCartOpen;
   final int selectedIndex;
   final String title;
 
-  LoadedState([
+  LoadedState(
     this.recipeCategoryOverview,
     this.showIntro,
+    this.shoppingCartOpen,
     this.selectedIndex,
     this.title,
-  ]);
+  );
 
   @override
   List<Object> get props => [
         recipeCategoryOverview,
         showIntro,
         selectedIndex,
+        shoppingCartOpen,
         title,
       ];
 

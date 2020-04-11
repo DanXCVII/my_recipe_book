@@ -212,6 +212,9 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: MediaQuery.of(context).size.width > 550
+          ? 550
+          : MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
         color: Theme.of(context).backgroundColor == Colors.white
@@ -317,9 +320,16 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).backgroundColor == Colors.white
-          ? Colors.grey[100]
-          : Colors.grey[800],
+      width: MediaQuery.of(context).size.width > 450
+          ? 450
+          : MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        color: Theme.of(context).backgroundColor == Colors.white
+            ? Colors.grey[100]
+            : Colors.grey[800],
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -333,8 +343,7 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                   color: Colors.amber,
                 ),
               ),
-              Container(
-                width: MediaQuery.of(context).size.width - 110,
+              Expanded(
                 child: Text(I18n.of(context)
                     .website_must_be_under_the_supported_websites),
               ),

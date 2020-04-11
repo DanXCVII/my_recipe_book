@@ -69,68 +69,71 @@ class TextColorDialogState extends State<TextColorDialog> {
       ),
       elevation: 0.0,
       backgroundColor: Theme.of(context).dialogBackgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min, // To make the card compact
-            children: <Widget>[
-              SizedBox(height: 16.0),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      child: TextFormField(
-                        focusNode: widget.focus,
-                        controller: nameController,
-                        validator: (value) {
-                          return widget.validation(value);
-                        },
-                        decoration: InputDecoration(
-                          filled: true,
-                          hintText: widget.hintText,
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _showColorSelectDialog();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 12.0, right: 5),
+      child: Container(
+        width: MediaQuery.of(context).size.width > 360 ? 360 : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // To make the card compact
+              children: <Widget>[
+                SizedBox(height: 16.0),
+                Row(
+                  children: <Widget>[
+                    Expanded(
                       child: Container(
-                        height: 35,
-                        width: 35,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(selectedColor),
+                        child: TextFormField(
+                          focusNode: widget.focus,
+                          controller: nameController,
+                          validator: (value) {
+                            return widget.validation(value);
+                          },
+                          decoration: InputDecoration(
+                            filled: true,
+                            hintText: widget.hintText,
+                          ),
                         ),
                       ),
                     ),
-                  )
-                ],
-              ),
-              SizedBox(height: 24.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  FlatButton(
-                      child: Text(I18n.of(context).cancel),
+                    GestureDetector(
+                      onTap: () {
+                        _showColorSelectDialog();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 12.0, right: 5),
+                        child: Container(
+                          height: 35,
+                          width: 35,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(selectedColor),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 24.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    FlatButton(
+                        child: Text(I18n.of(context).cancel),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
+                    FlatButton(
+                      child: Text(I18n.of(context).save),
                       onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                  FlatButton(
-                    child: Text(I18n.of(context).save),
-                    onPressed: () {
-                      validateAddModifyItem();
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 6),
-            ],
+                        validateAddModifyItem();
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: 6),
+              ],
+            ),
           ),
         ),
       ),

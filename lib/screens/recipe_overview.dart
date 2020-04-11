@@ -77,7 +77,7 @@ class RecipeGridView extends StatelessWidget {
                   ],
                   expandedHeight: scaleFactor * 200.0,
                   floating: false,
-                  pinned: true,
+                  pinned: false,
                   flexibleSpace: FlexibleSpaceBar(
                       title: Text(title),
                       background: Container(
@@ -99,7 +99,7 @@ class RecipeGridView extends StatelessWidget {
                       )),
                 ),
                 SliverStickyHeader(
-                  sticky: false,
+                  sticky: true,
                   header: RecipeFilter(
                     showVegetableFilter: state.vegetable != null ? false : true,
                     showRecipeTagFilter: state.recipeTag == null ? true : false,
@@ -142,23 +142,29 @@ class RecipeGridView extends StatelessWidget {
                             ]),
                           )
                         : SliverStaggeredGrid.countBuilder(
-                            crossAxisCount: 4,
+                            crossAxisCount:
+                                (MediaQuery.of(context).size.width / 200)
+                                        .round() *
+                                    2,
                             itemCount: state.recipes.length,
                             itemBuilder: (BuildContext context, int index) =>
-                                RecipeCard(
-                              recipe: state.recipes[index],
-                              shadow: Theme.of(context).backgroundColor ==
-                                      Colors.white
-                                  ? Colors.grey[400]
-                                  : Colors.black,
-                              activateVegetableHero:
-                                  state.recipes[index].vegetable ==
-                                          state.vegetable
-                                      ? false
-                                      : true,
-                              heroImageTag:
-                                  "${state.category}${state.recipes[index].name}",
-                              showAds: true,
+                                LayoutBuilder(
+                              builder: (context, constraints) => RecipeCard(
+                                recipe: state.recipes[index],
+                                width: constraints.maxWidth,
+                                showAds: true,
+                                shadow: Theme.of(context).backgroundColor ==
+                                        Colors.white
+                                    ? Colors.grey[400]
+                                    : Colors.black,
+                                activateVegetableHero:
+                                    state.recipes[index].vegetable ==
+                                            state.vegetable
+                                        ? false
+                                        : true,
+                                heroImageTag:
+                                    "${state.category}${state.recipes[index].name}",
+                              ),
                             ),
                             staggeredTileBuilder: (int index) =>
                                 StaggeredTile.fit(2),
@@ -195,14 +201,18 @@ class RecipeGridView extends StatelessWidget {
       String category, Vegetable vegetable) {
     return recipes
         .map(
-          (recipe) => RecipeCard(
-            recipe: recipe,
-            shadow: Theme.of(context).backgroundColor == Colors.white
-                ? Colors.grey[400]
-                : Colors.black,
-            activateVegetableHero: recipe.vegetable == vegetable ? false : true,
-            heroImageTag: "$category${recipe.name}",
-            showAds: true,
+          (recipe) => LayoutBuilder(
+            builder: (context, constraints) => RecipeCard(
+              recipe: recipe,
+              showAds: true,
+              width: constraints.maxWidth,
+              shadow: Theme.of(context).backgroundColor == Colors.white
+                  ? Colors.grey[400]
+                  : Colors.black,
+              activateVegetableHero:
+                  recipe.vegetable == vegetable ? false : true,
+              heroImageTag: "$category${recipe.name}",
+            ),
           ),
         )
         .toList();

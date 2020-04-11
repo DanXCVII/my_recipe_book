@@ -52,6 +52,7 @@ class _RecipeFilterState extends State<RecipeFilter>
 
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size.width);
     return Container(
       color: Theme.of(context).brightness == Brightness.dark
           ? Colors.grey[800]
@@ -67,7 +68,8 @@ class _RecipeFilterState extends State<RecipeFilter>
                   initialAscending: widget.initialAscending,
                   onChangeDirection: widget.changeAscending,
                 ),
-                Container(
+                Expanded(
+                  flex: 10000,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: DropdownButton<RecipeSort>(
@@ -104,7 +106,9 @@ class _RecipeFilterState extends State<RecipeFilter>
                     ),
                   ),
                 ),
-                Spacer(),
+                Spacer(
+                  flex: 1,
+                ),
                 widget.showVegetableFilter
                     ? Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),

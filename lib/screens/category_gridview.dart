@@ -39,7 +39,7 @@ class CategoryGridView extends StatelessWidget {
               _refreshController.refreshCompleted();
             },
             child: GridView.extent(
-              maxCrossAxisExtent: 300,
+              maxCrossAxisExtent: 220,
               padding: const EdgeInsets.all(4),
               mainAxisSpacing: 4,
               crossAxisSpacing: 4,

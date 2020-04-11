@@ -51,7 +51,13 @@ class ChangeView extends AppEvent {
 
   @override
   List<Object> get props => [index, context];
+}
+
+class ChangeShoppingCartView extends AppEvent {
+  final bool open;
+
+  const ChangeShoppingCartView(this.open);
 
   @override
-  String toString() => 'Change index { index: $index, context: $context }';
+  List<Object> get props => [open];
 }

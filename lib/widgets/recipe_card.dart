@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -38,6 +39,7 @@ FontWeight itemsFW = FontWeight.w400;
 class RecipeCard extends StatelessWidget {
   final Recipe recipe;
   final Color shadow;
+  final double width;
   final String heroImageTag;
   final bool activateVegetableHero;
   final bool showAds;
@@ -45,6 +47,7 @@ class RecipeCard extends StatelessWidget {
   const RecipeCard({
     this.recipe,
     @required this.showAds,
+    @required this.width,
     @required this.shadow,
     @required this.heroImageTag,
     this.activateVegetableHero = true,
@@ -53,10 +56,11 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double deviceWidth = MediaQuery.of(context).size.width;
-    double gridTileWidth = deviceWidth / (deviceWidth / 300.floor() + 1);
     return GestureDetector(
       onTap: () {
+        if (GlobalSettings().standbyDisabled()) {
+          Wakelock.enable();
+        }
         Navigator.pushNamed(
           context,
           RouteNames.recipeScreen,
@@ -67,6 +71,7 @@ class RecipeCard extends StatelessWidget {
             BlocProvider.of<RecipeManagerBloc>(context),
           ),
         ).then((_) {
+          Wakelock.disable();
           if (!showAds) Ads.hideBottomBannerAd();
         });
       },
@@ -95,11 +100,8 @@ class RecipeCard extends StatelessWidget {
                   color: shadow,
                 ),
               ],
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(gridTileWidth / 10),
-                topRight: Radius.circular(gridTileWidth / 10),
-                bottomRight: Radius.circular(gridTileWidth / 10),
-                bottomLeft: Radius.circular(gridTileWidth / 10),
+              borderRadius: BorderRadius.all(
+                Radius.circular(20),
               ),
             ),
             child: Material(
@@ -116,8 +118,8 @@ class RecipeCard extends StatelessWidget {
                         color: Colors.transparent,
                         child: ClipRRect(
                           borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(gridTileWidth / 10),
-                            topRight: Radius.circular(gridTileWidth / 10),
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
                           ),
                           child: FadeInImage(
                             image: recipe.imagePreviewPath ==
@@ -127,156 +129,177 @@ class RecipeCard extends StatelessWidget {
                             placeholder: MemoryImage(kTransparentImage),
                             fadeInDuration: Duration(milliseconds: 250),
                             fit: BoxFit.cover,
-                            height: gridTileWidth / 1.25,
-                            width: gridTileWidth + 40,
+                            height: width - 40,
+                            width: width + 80,
                           ),
                         ),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(15, 7, 12, 12),
-                      child: Column(children: <Widget>[
-                        Container(
-                          width: gridTileWidth - 12,
-                          child: Text(
-                            "${recipe.name}",
-                            textScaleFactor: deviceWidth / 400,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 10 + gridTileWidth / 35,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 7),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  "${getTimeHoursMinutes(recipe.totalTime)} • ${getIngredientCount(recipe.ingredients)} ${I18n.of(context).ingredients}",
-                                  textScaleFactor: deviceWidth / 400,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    fontWeight: itemsFW,
-                                    fontSize: 8 + gridTileWidth / 40,
-                                    fontFamily: 'Questrial',
-                                  ),
+                            Container(
+                              width: width - 12,
+                              child: Text(
+                                "${recipe.name}",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 10 + width / 35,
                                 ),
-                                Container(height: 12),
-                                Row(
-                                    children: List<Widget>.generate(5, (index) {
-                                  if (recipe.effort >= (index + 1) * 2) {
-                                    return Icon(
-                                      MdiIcons.knife,
-                                      size: 18,
-                                      color:
-                                          Theme.of(context).backgroundColor ==
-                                                  Colors.white
-                                              ? Colors.grey[400]
-                                              : Colors.grey[200],
-                                    );
-                                  } else {
-                                    if (recipe.effort == index * 2 + 1) {
-                                      return Stack(
-                                        children: <Widget>[
-                                          Container(
-                                            child: Icon(
+                              ),
+                            ),
+                            SizedBox(height: 7),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      "${getTimeHoursMinutes(recipe.totalTime)} • ${getIngredientCount(recipe.ingredients)} ${I18n.of(context).ingredients}",
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontWeight: itemsFW,
+                                        fontSize: 11,
+                                        fontFamily: 'Questrial',
+                                      ),
+                                    ),
+                                    Container(height: 12),
+                                    Container(
+                                      width: width - 27,
+                                      height: 18,
+                                      child: Row(
+                                        children: List<Widget>.generate(5,
+                                            (index) {
+                                          if (recipe.effort >=
+                                              (index + 1) * 2) {
+                                            return Icon(
                                               MdiIcons.knife,
                                               size: 18,
                                               color: Theme.of(context)
                                                           .backgroundColor ==
                                                       Colors.white
-                                                  ? Colors.grey[900]
-                                                  : Colors.black,
-                                            ),
-                                          ),
-                                          ClipPath(
-                                            clipper: LeftHalfVerticalClipper(),
-                                            child: ClipPath(
-                                              child: Icon(
+                                                  ? Colors.grey[400]
+                                                  : Colors.grey[200],
+                                            );
+                                          } else {
+                                            if (recipe.effort ==
+                                                index * 2 + 1) {
+                                              return Stack(
+                                                children: <Widget>[
+                                                  Container(
+                                                    child: Icon(
+                                                      MdiIcons.knife,
+                                                      size: 18,
+                                                      color: Theme.of(context)
+                                                                  .backgroundColor ==
+                                                              Colors.white
+                                                          ? Colors.grey[900]
+                                                          : Colors.black,
+                                                    ),
+                                                  ),
+                                                  ClipPath(
+                                                    clipper:
+                                                        LeftHalfVerticalClipper(),
+                                                    child: ClipPath(
+                                                      child: Icon(
+                                                        MdiIcons.knife,
+                                                        size: 18,
+                                                        color: Theme.of(context)
+                                                                    .backgroundColor ==
+                                                                Colors.white
+                                                            ? Colors.grey[400]
+                                                            : Colors.grey[200],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            } else {
+                                              return Icon(
                                                 MdiIcons.knife,
                                                 size: 18,
                                                 color: Theme.of(context)
                                                             .backgroundColor ==
                                                         Colors.white
-                                                    ? Colors.grey[400]
-                                                    : Colors.grey[200],
+                                                    ? Colors.grey[900]
+                                                    : Colors.black,
+                                              );
+                                            }
+                                          }
+                                        })
+                                          ..addAll([
+                                            Spacer(),
+                                            GestureDetector(
+                                              onTap: () {
+                                                if (activateVegetableHero)
+                                                  Navigator.pushNamed(
+                                                    context,
+                                                    RouteNames.vegetableRecipes,
+                                                    arguments:
+                                                        RecipeGridViewArguments(
+                                                            shoppingCartBloc:
+                                                                BlocProvider.of<
+                                                                        ShoppingCartBloc>(
+                                                                    context),
+                                                            vegetable: recipe
+                                                                .vegetable),
+                                                  ).then((_) {
+                                                    if (!showAds)
+                                                      Ads.hideBottomBannerAd();
+                                                  });
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: recipe.vegetable ==
+                                                          Vegetable.VEGETARIAN
+                                                      ? Colors.green[700]
+                                                      : recipe.vegetable ==
+                                                              Vegetable.VEGAN
+                                                          ? Colors.orange
+                                                          : Colors
+                                                              .lightBlue[400],
+                                                ),
+                                                child: Center(
+                                                  child: Icon(
+                                                    recipe.vegetable ==
+                                                            Vegetable.VEGETARIAN
+                                                        ? MdiIcons.cheese
+                                                        : recipe.vegetable ==
+                                                                Vegetable.VEGAN
+                                                            ? MdiIcons.leaf
+                                                            : MdiIcons.cow,
+                                                    color: recipe.vegetable ==
+                                                            Vegetable.VEGETARIAN
+                                                        ? Colors.amber
+                                                        : recipe.vegetable ==
+                                                                Vegetable.VEGAN
+                                                            ? Colors.green[700]
+                                                            : Colors.brown[800],
+                                                    size: 18,
+                                                  ),
+                                                ),
+                                                height: 20,
+                                                width: 20,
                                               ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    } else {
-                                      return Icon(
-                                        MdiIcons.knife,
-                                        size: 18,
-                                        color:
-                                            Theme.of(context).backgroundColor ==
-                                                    Colors.white
-                                                ? Colors.grey[900]
-                                                : Colors.black,
-                                      );
-                                    }
-                                  }
-                                }))
+                                            )
+                                          ]),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Spacer(),
                               ],
                             ),
-                            Spacer(),
-                            GestureDetector(
-                              onTap: () {
-                                if (activateVegetableHero)
-                                  Navigator.pushNamed(
-                                    context,
-                                    RouteNames.vegetableRecipes,
-                                    arguments: RecipeGridViewArguments(
-                                        shoppingCartBloc:
-                                            BlocProvider.of<ShoppingCartBloc>(
-                                                context),
-                                        vegetable: recipe.vegetable),
-                                  ).then((_) {
-                                    if (!showAds) Ads.hideBottomBannerAd();
-                                  });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color:
-                                      recipe.vegetable == Vegetable.VEGETARIAN
-                                          ? Colors.green[700]
-                                          : recipe.vegetable == Vegetable.VEGAN
-                                              ? Colors.orange
-                                              : Colors.lightBlue[400],
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    recipe.vegetable == Vegetable.VEGETARIAN
-                                        ? MdiIcons.cheese
-                                        : recipe.vegetable == Vegetable.VEGAN
-                                            ? MdiIcons.leaf
-                                            : MdiIcons.cow,
-                                    color: recipe.vegetable ==
-                                            Vegetable.VEGETARIAN
-                                        ? Colors.amber
-                                        : recipe.vegetable == Vegetable.VEGAN
-                                            ? Colors.green[700]
-                                            : Colors.brown[800],
-                                    size: 18,
-                                  ),
-                                ),
-                                height: deviceWidth / 400 * 20,
-                                width: deviceWidth / 400 * 20,
-                              ),
-                            )
-                          ],
-                        ),
-                      ]),
+                          ]),
                     ),
                   ],
                 ),
@@ -290,8 +313,8 @@ class RecipeCard extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 3.0, right: 2),
                     child: Container(
-                      height: deviceWidth / 400 * 40,
-                      width: deviceWidth / 400 * 40,
+                      height: 37,
+                      width: 37,
                       decoration: BoxDecoration(
                           color: Color.fromRGBO(50, 50, 50, 0.7),
                           borderRadius: BorderRadius.all(

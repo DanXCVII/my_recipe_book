@@ -160,36 +160,41 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           ],
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Form(
-                key: _formKey,
-                child: widget.editingRecipeName != null
-                    ? Steps(
-                        stepsDescController,
-                        editRecipeName: widget.editingRecipeName,
-                      )
-                    : Steps(
-                        stepsDescController,
-                      ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    right: 12, top: 12, left: 18, bottom: 12),
-                child: TextField(
-                  controller: notesController,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    labelText: I18n.of(context).notes,
-                    filled: true,
-                    icon: Icon(Icons.assignment),
+          child: Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width > 430 ? 430 : null,
+              child: Column(
+                children: <Widget>[
+                  Form(
+                    key: _formKey,
+                    child: widget.editingRecipeName != null
+                        ? Steps(
+                            stepsDescController,
+                            editRecipeName: widget.editingRecipeName,
+                          )
+                        : Steps(
+                            stepsDescController,
+                          ),
                   ),
-                  minLines: 3,
-                  maxLines: 10,
-                ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        right: 12, top: 12, left: 18, bottom: 12),
+                    child: TextField(
+                      controller: notesController,
+                      textCapitalization: TextCapitalization.sentences,
+                      decoration: InputDecoration(
+                        labelText: I18n.of(context).notes,
+                        filled: true,
+                        icon: Icon(Icons.assignment),
+                      ),
+                      minLines: 3,
+                      maxLines: 10,
+                    ),
+                  ),
+                  ComplexitySection(complexity: complexity),
+                ],
               ),
-              ComplexitySection(complexity: complexity),
-            ],
+            ),
           ),
         ),
       ),

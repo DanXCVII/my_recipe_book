@@ -5,6 +5,11 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../models/enums.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
+import 'package:my_recipe_book/models/enums.dart';
+import 'package:my_recipe_book/models/tuple.dart';
+import 'package:my_recipe_book/screens/recipe_screen.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../blocs/ingredient_search/ingredient_search_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -17,7 +22,9 @@ import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
 import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_image_hero.dart';
-import 'recipe_screen.dart';
+import './recipe_screen.dart';
+
+const double showExpandedSearch = 770;
 
 class IngredientSearchScreenArguments {
   final AdManagerBloc adManagerBloc;
@@ -46,6 +53,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
   List<TextEditingController> _controllers = [];
   List<GlobalKey<AutoCompleteTextFieldState<String>>> _autoCompletionKeys = [];
 
+  bool _isInitialized = false;
+
   List<StringIntTuple> _recipeTags;
   List<String> _categories;
 
@@ -67,6 +76,15 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
 
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size.width);
+    if (!_isInitialized &&
+        MediaQuery.of(context).size.width > showExpandedSearch) {
+      setState(() {
+        _isInitialized = true;
+        _showTagCatFilter = true;
+        _isExpanded = true;
+      });
+    }
     return Scaffold(
         resizeToAvoidBottomPadding: false,
         appBar: GradientAppBar(
@@ -77,307 +95,383 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
           ),
           title: Text(I18n.of(context).professional_search),
         ),
-        body: Column(
+        body: Row(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color.fromRGBO(70, 70, 70, 1),
-                        Color.fromRGBO(60, 60, 60, 1)
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(25),
-                    color: Color.fromRGBO(70, 70, 70, 1),
-                  ),
-                  child: AnimatedSize(
-                    vsync: this,
-                    duration: Duration(milliseconds: 150),
-                    curve: Curves.fastOutSlowIn,
-                    child: _isMinimized
-                        ? _getMinimized()
-                        : !_isExpanded ? _getNonExpanded() : _getExpanded(),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(child:
-                BlocBuilder<IngredientSearchBloc, IngredientSearchState>(
-                    builder: (context, state) {
-              if (state is IngredientSearchInitial) {
-                return Container();
-              } else if (state is SearchingRecipes) {
-                return Center(
-                  child: Container(
-                    height: MediaQuery.of(context).size.height - 350,
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                );
-              } else if (state is IngredientSearchMatches) {
-                if (state.tupleMatchesRecipe.isEmpty) {
-                  return ListView(children: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.width > 420
+                  ? 450
+                  : MediaQuery.of(context).size.width,
+              child: Column(
+                  crossAxisAlignment:
+                      MediaQuery.of(context).size.width > showExpandedSearch
+                          ? CrossAxisAlignment.start
+                          : CrossAxisAlignment.center,
+                  children: <Widget>[
                     Container(
-                      height: MediaQuery.of(context).size.height - 350,
-                      child: Center(
-                        child: state.totalIngredAmount == 0
-                            ? IconInfoMessage(
-                                iconWidget: Icon(
-                                  MdiIcons.pencil,
-                                  color: Colors.white,
-                                  size: 70.0,
-                                ),
-                                description:
-                                    I18n.of(context).enter_some_information,
-                              )
-                            : IconInfoMessage(
-                                iconWidget: Icon(
-                                  Icons.search,
-                                  color: Colors.white,
-                                  size: 70.0,
-                                ),
-                                description:
-                                    I18n.of(context).no_matching_recipes,
+                      width: MediaQuery.of(context).size.width > 420
+                          ? 420
+                          : MediaQuery.of(context).size.width,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Color.fromRGBO(70, 70, 70, 1),
+                                  Color.fromRGBO(60, 60, 60, 1)
+                                ],
                               ),
+                              borderRadius: BorderRadius.circular(25),
+                              color: Color.fromRGBO(70, 70, 70, 1),
+                            ),
+                            child: AnimatedSize(
+                              vsync: this,
+                              duration: Duration(milliseconds: 150),
+                              curve: Curves.fastOutSlowIn,
+                              child: _isMinimized
+                                  ? _getMinimized()
+                                  : !_isExpanded
+                                      ? _getNonExpanded()
+                                      : LayoutBuilder(
+                                          builder: (context, constraints) =>
+                                              Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height -
+                                                100,
+                                            child: _getExpanded(
+                                                constraints.maxHeight,
+                                                constraints.maxWidth),
+                                          ),
+                                        ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ]);
-                } else {
-                  return ListView(
-                    children: List<Widget>.generate(
-                        state.tupleMatchesRecipe.length * 2, (index) {
-                      int recipeIndex = index == 0 ? 0 : (index / 2).floor();
-                      Recipe currentRecipe =
-                          state.tupleMatchesRecipe[recipeIndex].item2;
-                      return index % 2 == 1
-                          ? Divider()
-                          : ListTile(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  RouteNames.recipeScreen,
-                                  arguments: RecipeScreenArguments(
-                                    BlocProvider.of<ShoppingCartBloc>(context),
-                                    currentRecipe,
-                                    currentRecipe.name,
-                                    BlocProvider.of<RecipeManagerBloc>(context),
-                                  ),
-                                );
-                              },
-                              title: Text(state
-                                  .tupleMatchesRecipe[recipeIndex].item2.name),
-                              subtitle: state.tupleMatchesRecipe[recipeIndex]
-                                              .item1 ==
-                                          0 &&
-                                      state.totalIngredAmount == 0
-                                  ? null
-                                  : Text(
-                                      "${I18n.of(context).ingredient_matches}: ${state.tupleMatchesRecipe[recipeIndex].item1} ${I18n.of(context).out_of} ${state.totalIngredAmount}"),
-                              leading: RecipeImageHero(
-                                currentRecipe,
-                                showAds: true,
-                              ),
-                            );
-                    }),
-                  );
-                }
-              } else {
-                return Text(state.toString());
-              }
-            }))
-          ],
+                    MediaQuery.of(context).size.width > showExpandedSearch
+                        ? null
+                        : Expanded(child: _getResultWidget())
+                  ]..removeWhere((item) => item == null)),
+            ),
+            MediaQuery.of(context).size.width > showExpandedSearch
+                ? Expanded(child: _getResultWidget())
+                : null
+          ]..removeWhere((item) => item == null),
         ));
   }
 
-  Widget _getExpanded() {
-    return Column(
-      children: <Widget>[
-        _showTagCatFilter ? _getRecipeTagCategoryFilter() : Container(),
-        Padding(
-          padding: EdgeInsets.fromLTRB(20, 15, 20, 5),
+  Widget _getResultWidget() {
+    return BlocBuilder<IngredientSearchBloc, IngredientSearchState>(
+        builder: (context, state) {
+      if (state is IngredientSearchInitial) {
+        return Container();
+      } else if (state is SearchingRecipes) {
+        return Center(
           child: Container(
-            height: 180,
-            child: ListView(
-                children: List<Widget>.generate(
-              _controllers.length,
-              (index) => Padding(
-                padding: EdgeInsets.only(bottom: 10.0, top: index == 0 ? 5 : 0),
-                child: SimpleAutoCompleteTextField(
-                  key: _autoCompletionKeys[index],
-                  suggestions: HiveProvider().getIngredientNames(),
-                  controller: _controllers[index],
-                  // style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    labelText: I18n.of(context).ingredient,
-                    labelStyle: TextStyle(
-                        fontWeight: FontWeight.w500, color: Colors.grey[500]),
-                    border: OutlineInputBorder(),
-                    focusedBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
-                      borderSide: const BorderSide(
-                        color: Colors.amber,
-                        width: 2,
-                      ),
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
-                      borderSide: const BorderSide(
-                          color: Color.fromRGBO(210, 210, 210, 1), width: 2),
-                    ),
-                  ),
-                ),
-              ),
-            )),
+            height: MediaQuery.of(context).size.height - 350,
+            child: Center(child: CircularProgressIndicator()),
           ),
-        ),
-        SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.expand_less,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isExpanded = false;
-                      });
-                    },
-                  ),
-                  _getHideSearch(),
-                  _showTagCatFilter ? _getHideTagCat() : _getExpandTagCat(),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 40,
-                      width: 97,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(40),
-                          color: Colors.deepOrange[900]),
-                      child: Row(
-                        children: <Widget>[
-                          IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            icon: Icon(
-                              Icons.remove,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              if (_controllers.length > 2)
-                                setState(() {
-                                  _controllers.removeLast();
-                                  _autoCompletionKeys.removeLast();
-                                });
-                            },
-                          ),
-                          IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            icon: Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                if (_controllers.length < 20) {
-                                  _controllers.add(TextEditingController());
-                                  _autoCompletionKeys.add(GlobalKey());
-                                }
-                              });
-                            },
-                          )
-                        ],
+        );
+      } else if (state is IngredientSearchMatches) {
+        if (state.tupleMatchesRecipe.isEmpty) {
+          return ListView(children: <Widget>[
+            Container(
+              height: MediaQuery.of(context).size.height - 350,
+              child: Center(
+                child: state.totalIngredAmount == 0
+                    ? IconInfoMessage(
+                        iconWidget: Icon(
+                          MdiIcons.pencil,
+                          color: Colors.white,
+                          size: 70.0,
+                        ),
+                        description: I18n.of(context).enter_some_information,
+                      )
+                    : IconInfoMessage(
+                        iconWidget: Icon(
+                          Icons.search,
+                          color: Colors.white,
+                          size: 70.0,
+                        ),
+                        description: I18n.of(context).no_matching_recipes,
                       ),
-                    ),
-                  ),
-                ],
               ),
-              _getSearchIconButton(),
-            ],
-          ),
-        )
-      ],
+            ),
+          ]);
+        } else {
+          return _getRecipeFoundList(
+              state.tupleMatchesRecipe, state.totalIngredAmount);
+        }
+      } else {
+        return Text(state.toString());
+      }
+    });
+  }
+
+  Widget _getRecipeFoundList(
+      List<Tuple2<int, Recipe>> recipeMatches, int totalIngredientAmount) {
+    return ListView(
+      children: List<Widget>.generate(
+        recipeMatches.length * 2,
+        (index) {
+          int recipeIndex = index == 0 ? 0 : (index / 2).floor();
+          Recipe currentRecipe = recipeMatches[recipeIndex].item2;
+          return index % 2 == 1
+              ? Divider()
+              : ListTile(
+                  onTap: () {
+                    if (GlobalSettings().standbyDisabled()) {
+                      Wakelock.enable();
+                    }
+                    Navigator.pushNamed(
+                      context,
+                      RouteNames.recipeScreen,
+                      arguments: RecipeScreenArguments(
+                        BlocProvider.of<ShoppingCartBloc>(context),
+                        currentRecipe,
+                        currentRecipe.name,
+                        BlocProvider.of<RecipeManagerBloc>(context),
+                      ),
+                    ).then((_) => Wakelock.disable());
+                  },
+                  title: Text(recipeMatches[recipeIndex].item2.name),
+                  subtitle: recipeMatches[recipeIndex].item1 == 0 &&
+                          totalIngredientAmount == 0
+                      ? null
+                      : Text(
+                          "${I18n.of(context).ingredient_matches}: ${recipeMatches[recipeIndex].item1} ${I18n.of(context).out_of} $totalIngredientAmount"),
+                  leading: RecipeImageHero(
+                    currentRecipe,
+                    currentRecipe.name,
+                    showAds: true,
+                  ),
+                );
+        },
+      ),
     );
   }
 
-  Widget _getNonExpanded() {
-    return Column(
-      children: List<Widget>.generate(
-        2,
-        (index) => Padding(
-          padding: EdgeInsets.fromLTRB(20, index == 0 ? 20 : 0, 20, 10),
-          child: SimpleAutoCompleteTextField(
-            key: _autoCompletionKeys[index],
-            suggestions: HiveProvider().getIngredientNames(),
-            controller: _controllers[index],
-            style: new TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              labelText: I18n.of(context).ingredient,
-              labelStyle: TextStyle(
-                  fontWeight: FontWeight.w500, color: Colors.grey[500]),
-              border: OutlineInputBorder(),
-              focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50)),
-                borderSide: const BorderSide(
-                  color: Colors.amber,
-                  width: 2,
-                ),
-              ),
-              enabledBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50)),
-                borderSide: const BorderSide(
-                    color: Color.fromRGBO(210, 210, 210, 1), width: 2),
+  Widget _getExpanded(double maxHeight, double maxWidth) {
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        height: maxHeight - 100,
+        width: maxWidth,
+        child: ListView(
+          children: <Widget>[
+            _showTagCatFilter ? _getRecipeTagCategoryFilter() : Container(),
+            Padding(
+              padding: EdgeInsets.fromLTRB(20, 15, 20, 5),
+              child: Container(
+                height: 180,
+                child: ListView(
+                    children: List<Widget>.generate(
+                  _controllers.length,
+                  (index) => Padding(
+                    padding:
+                        EdgeInsets.only(bottom: 10.0, top: index == 0 ? 5 : 0),
+                    child: SimpleAutoCompleteTextField(
+                      key: _autoCompletionKeys[index],
+                      suggestions: HiveProvider().getIngredientNames(),
+                      controller: _controllers[index],
+                      // style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: I18n.of(context).ingredient,
+                        labelStyle: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[500]),
+                        border: OutlineInputBorder(),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                          borderSide: const BorderSide(
+                            color: Colors.amber,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                          borderSide: const BorderSide(
+                              color: Color.fromRGBO(210, 210, 210, 1),
+                              width: 2),
+                        ),
+                      ),
+                    ),
+                  ),
+                )),
               ),
             ),
-          ),
-        ),
-      )
-        ..add(
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(
-                        Icons.expand_more,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isExpanded = true;
-                        });
-                      },
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Expanded(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        MediaQuery.of(context).size.width > showExpandedSearch
+                            ? null
+                            : IconButton(
+                                icon: Icon(
+                                  Icons.expand_less,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isExpanded = false;
+                                  });
+                                },
+                              ),
+                        MediaQuery.of(context).size.width > showExpandedSearch
+                            ? null
+                            : _getHideSearch(),
+                        _showTagCatFilter &&
+                                MediaQuery.of(context).size.width >
+                                    showExpandedSearch
+                            ? null
+                            : _getHideTagCat(),
+                        MediaQuery.of(context).size.width > showExpandedSearch
+                            ? null
+                            : _getExpandTagCat(),
+                        Spacer(),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: 40,
+                            width: 97,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(40),
+                                color: Colors.deepOrange[900]),
+                            child: Row(
+                              children: <Widget>[
+                                IconButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  icon: Icon(
+                                    Icons.remove,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    if (_controllers.length > 2)
+                                      setState(() {
+                                        _controllers.removeLast();
+                                        _autoCompletionKeys.removeLast();
+                                      });
+                                  },
+                                ),
+                                IconButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  icon: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (_controllers.length < 20) {
+                                        _controllers
+                                            .add(TextEditingController());
+                                        _autoCompletionKeys.add(GlobalKey());
+                                      }
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        Spacer(),
+                      ]..removeWhere((item) => item == null),
                     ),
-                    _getHideSearch(),
-                    _showTagCatFilter ? _getHideTagCat() : _getExpandTagCat(),
+                  ),
+                  _getSearchIconButton(),
+                ],
+              ),
+            )
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _getNonExpanded() {
+    return LayoutBuilder(
+      builder: (context, constraints) => Container(
+        height: constraints.maxHeight - 50,
+        child: ListView(
+          children: List<Widget>.generate(
+            2,
+            (index) => Padding(
+              padding: EdgeInsets.fromLTRB(20, index == 0 ? 20 : 0, 20, 10),
+              child: SimpleAutoCompleteTextField(
+                key: _autoCompletionKeys[index],
+                suggestions: HiveProvider().getIngredientNames(),
+                controller: _controllers[index],
+                style: new TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: I18n.of(context).ingredient,
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.w500, color: Colors.grey[500]),
+                  border: OutlineInputBorder(),
+                  focusedBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(50)),
+                    borderSide: const BorderSide(
+                      color: Colors.amber,
+                      width: 2,
+                    ),
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(50)),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(210, 210, 210, 1), width: 2),
+                  ),
+                ),
+              ),
+            ),
+          )
+            ..add(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(
+                            Icons.expand_more,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isExpanded = true;
+                            });
+                          },
+                        ),
+                        _getHideSearch(),
+                        _showTagCatFilter
+                            ? _getHideTagCat()
+                            : _getExpandTagCat(),
+                      ],
+                    ),
+                    _getSearchIconButton()
                   ],
                 ),
-                _getSearchIconButton()
-              ],
+              ),
+            )
+            ..insert(
+              0,
+              _showTagCatFilter ? _getRecipeTagCategoryFilter() : Container(),
             ),
-          ),
-        )
-        ..insert(
-          0,
-          _showTagCatFilter ? _getRecipeTagCategoryFilter() : Container(),
         ),
+      ),
     );
   }
 
@@ -461,111 +555,114 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
 
   Widget _getRecipeTagCategoryFilter() => Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.grey[900],
-              borderRadius: BorderRadius.all(Radius.circular(20))),
-          width: MediaQuery.of(context).size.width - 40,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Container(
-              height: 230,
-              child: ListView(
-                children: <Widget>[
-                  Wrap(
-                    spacing: 5.0,
-                    runSpacing: 1.0,
-                    children: [
-                      Vegetable.NON_VEGETARIAN,
-                      Vegetable.VEGETARIAN,
-                      Vegetable.VEGAN
-                    ].map((vegetable) {
-                      switch (vegetable) {
-                        case Vegetable.VEGETARIAN:
-                          return _getVegetableFilterChip(
-                            Colors.green[700],
-                            MdiIcons.cheese,
-                            Colors.amber,
-                            I18n.of(context).vegetarian,
-                            vegetable,
-                          );
-
-                        case Vegetable.VEGAN:
-                          return _getVegetableFilterChip(
-                            Colors.orange,
-                            MdiIcons.leaf,
-                            Colors.green[700],
-                            I18n.of(context).vegan,
-                            vegetable,
-                          );
-
-                        case Vegetable.NON_VEGETARIAN:
-                          return _getVegetableFilterChip(
-                            Colors.lightBlue[300],
-                            MdiIcons.cow,
-                            Colors.brown[800],
-                            I18n.of(context).with_meat,
-                            vegetable,
-                          );
-                      }
-                    }).toList(),
-                  ),
-                  Text(
-                    I18n.of(context).categories,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Wrap(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.all(Radius.circular(20))),
+            width: MediaQuery.of(context).size.width - 40,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Container(
+                height: 230,
+                child: ListView(
+                  children: <Widget>[
+                    Wrap(
                       spacing: 5.0,
                       runSpacing: 1.0,
-                      children: _categories.map((category) {
-                        return FilterChip(
-                          label: Text(category == Constants.noCategory
-                              ? I18n.of(context).no_category
-                              : category),
-                          selected: _selectedCategories.contains(category),
-                          onSelected: (isSelected) {
-                            setState(() {
-                              if (isSelected) {
-                                _selectedCategories.add(category);
-                              } else {
-                                _selectedCategories.remove(category);
-                              }
-                            });
-                          },
-                        );
-                      }).toList()),
-                  Text(
-                    I18n.of(context).tags,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.white,
+                      children: [
+                        Vegetable.NON_VEGETARIAN,
+                        Vegetable.VEGETARIAN,
+                        Vegetable.VEGAN
+                      ].map((vegetable) {
+                        switch (vegetable) {
+                          case Vegetable.VEGETARIAN:
+                            return _getVegetableFilterChip(
+                              Colors.green[700],
+                              MdiIcons.cheese,
+                              Colors.amber,
+                              I18n.of(context).vegetarian,
+                              vegetable,
+                            );
+
+                          case Vegetable.VEGAN:
+                            return _getVegetableFilterChip(
+                              Colors.orange,
+                              MdiIcons.leaf,
+                              Colors.green[700],
+                              I18n.of(context).vegan,
+                              vegetable,
+                            );
+
+                          case Vegetable.NON_VEGETARIAN:
+                            return _getVegetableFilterChip(
+                              Colors.lightBlue[300],
+                              MdiIcons.cow,
+                              Colors.brown[800],
+                              I18n.of(context).with_meat,
+                              vegetable,
+                            );
+                        }
+                      }).toList(),
                     ),
-                  ),
-                  Wrap(
-                      spacing: 5.0,
-                      runSpacing: 3.0,
-                      children: _recipeTags.map((recipeTag) {
-                        return FilterChip(
-                          label: Text(recipeTag.text),
-                          backgroundColor: Color(recipeTag.number),
-                          selected: _selectedRecipeTags.contains(recipeTag),
-                          onSelected: (isSelected) {
-                            setState(() {
-                              if (isSelected) {
-                                _selectedRecipeTags.add(recipeTag);
-                              } else {
-                                _selectedRecipeTags.remove(recipeTag);
-                              }
-                            });
-                          },
-                        );
-                      }).toList())
-                ],
+                    Text(
+                      I18n.of(context).categories,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Wrap(
+                        spacing: 5.0,
+                        runSpacing: 1.0,
+                        children: _categories.map((category) {
+                          return FilterChip(
+                            label: Text(category == Constants.noCategory
+                                ? I18n.of(context).no_category
+                                : category),
+                            selected: _selectedCategories.contains(category),
+                            onSelected: (isSelected) {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedCategories.add(category);
+                                } else {
+                                  _selectedCategories.remove(category);
+                                }
+                              });
+                            },
+                          );
+                        }).toList()),
+                    Text(
+                      I18n.of(context).tags,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Wrap(
+                        spacing: 5.0,
+                        runSpacing: 3.0,
+                        children: _recipeTags.map((recipeTag) {
+                          return FilterChip(
+                            label: Text(recipeTag.text),
+                            backgroundColor: Color(recipeTag.number),
+                            selected: _selectedRecipeTags.contains(recipeTag),
+                            onSelected: (isSelected) {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedRecipeTags.add(recipeTag);
+                                } else {
+                                  _selectedRecipeTags.remove(recipeTag);
+                                }
+                              });
+                            },
+                          );
+                        }).toList())
+                  ],
+                ),
               ),
             ),
           ),

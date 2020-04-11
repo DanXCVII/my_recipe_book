@@ -4,19 +4,13 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/constants/global_settings.dart';
-import 'package:my_recipe_book/models/string_int_tuple.dart';
-import 'package:my_recipe_book/widgets/icon_info_message.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:wave/config.dart';
-import 'package:wave/wave.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
@@ -27,6 +21,7 @@ import '../blocs/recipe_screen/recipe_screen_bloc.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
+import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../helper.dart';
@@ -40,9 +35,16 @@ import '../models/string_int_tuple.dart';
 import '../my_wrapper.dart';
 import '../screens/recipe_overview.dart';
 import '../widgets/animated_stepper.dart';
+import '../widgets/animated_vegetable.dart';
 import '../widgets/category_circle_image.dart';
 import '../widgets/gallery_view.dart';
-import '../widgets/recipe_card.dart';
+import '../widgets/icon_info_message.dart';
+import '../widgets/recipe_info_vertical.dart';
+import '../widgets/recipe_screen/complexity_wave.dart';
+import '../widgets/recipe_screen/recipe_tag_wrap.dart';
+import '../widgets/recipe_screen/time_complexity_compressed.dart';
+import '../widgets/recipe_screen/time_info.dart';
+import '../widgets/recipe_screen/time_info_chart.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 
 const double timeTextsize = 15;
@@ -142,19 +144,32 @@ class _RecipeScreenState extends State<RecipeScreen>
             }
           },
           child: state.recipe.nutritions.isEmpty || Ads.shouldShowAds()
-              ? RecipePage(
-                  recipe: state.recipe,
-                  heroImageTag: widget.heroImageTag,
-                  scrollController: _scrollController,
-                  categoriesFiles: state.categoryImages,
+              ? Scaffold(
+                  //##
+                  appBar: MediaQuery.of(context).size.width > 550
+                      ? MyGradientAppBar(state.recipe)
+                      : null,
+                  body: RecipePage(
+                    recipe: state.recipe,
+                    heroImageTag: widget.heroImageTag,
+                    categoriesFiles: state.categoryImages,
+                  ),
                 )
               : Scaffold(
+                  appBar: MediaQuery.of(context).size.width > 550
+                      ? MyGradientAppBar(state.recipe)
+                      : null,
                   body: SlidingUpPanel(
+                    margin: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).size.width > 450
+                            ? MediaQuery.of(context).size.width - 450
+                            : 0),
                     controller: _pc,
-                    backdropColor: Colors.black,
+                    backdropColor: Color.fromRGBO(0, 0, 0, 0.5),
                     backdropEnabled: true,
                     // margin: EdgeInsets.only(left: 20, right: 20),
-                    parallaxEnabled: true,
+                    parallaxEnabled:
+                        MediaQuery.of(context).size.width > 450 ? false : true,
                     parallaxOffset: 0.5,
                     minHeight: 70,
                     borderRadius: BorderRadius.only(
@@ -280,424 +295,189 @@ class NotesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              I18n.of(context).notes,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 24,
-                fontFamily: recipeScreenFontFamily,
+    return Center(
+      child: Container(
+          width: MediaQuery.of(context).size.width > 450
+              ? 450
+              : MediaQuery.of(context).size.width,
+          padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                I18n.of(context).notes,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 24,
+                  fontFamily: recipeScreenFontFamily,
+                ),
               ),
-            ),
-            Padding(
-                padding: EdgeInsets.only(top: 20, bottom: 20),
-                child: Text(
-                  notes,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: recipeScreenFontFamily,
-                  ),
-                ))
-          ],
-        ));
+              Padding(
+                  padding: EdgeInsets.only(top: 20, bottom: 20),
+                  child: Text(
+                    notes,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontFamily: recipeScreenFontFamily,
+                    ),
+                  ))
+            ],
+          )),
+    );
   }
 }
 
-class RecipePage extends StatelessWidget {
+class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
   final Recipe recipe;
-  final String heroImageTag;
-  final ScrollController scrollController;
-  final List<String> categoriesFiles;
 
-  RecipePage({
-    @required this.recipe,
-    this.heroImageTag,
-    this.scrollController,
-    this.categoriesFiles,
-  });
+  MyGradientAppBar(
+    this.recipe, {
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xff51473b),
-      body: CustomScrollView(
-        controller: scrollController,
-        slivers: <Widget>[
-          SliverAppBar(
-            flexibleSpace: GradientAppBar(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(vegetableColor[recipe.vegetable][0]),
-                  Color(vegetableColor[recipe.vegetable][1]),
-                ],
-              ),
-              actions: <Widget>[
-                BlocBuilder<RecipeBubbleBloc, RecipeBubbleState>(
-                  builder: (context, state) {
-                    if (state is LoadedRecipeBubbles) {
-                      bool isPinned = false;
-                      if (state.recipes.contains(recipe)) {
-                        isPinned = true;
-                      }
-                      return IconButton(
-                        icon: Icon(
-                          isPinned ? MdiIcons.pin : MdiIcons.pinOutline,
-                          color: isPinned == false && state.recipes.length == 3
-                              ? Colors.grey[400]
-                              : null,
-                        ),
-                        onPressed: () {
-                          if (isPinned == false && state.recipes.length == 3) {
-                            final scaffold = Scaffold.of(context);
-                            scaffold.hideCurrentSnackBar();
-
-                            scaffold.showSnackBar(
-                              SnackBar(
-                                content: Text(I18n.of(context)
-                                    .maximum_recipe_pin_count_exceeded),
-                                action: SnackBarAction(
-                                  label: I18n.of(context).dismiss,
-                                  onPressed: scaffold.hideCurrentSnackBar,
-                                ),
-                              ),
-                            );
-                          } else if (isPinned) {
-                            BlocProvider.of<RecipeBubbleBloc>(context)
-                                .add(RemoveRecipeBubble(recipe));
-                          } else {
-                            BlocProvider.of<RecipeBubbleBloc>(context)
-                                .add(AddRecipeBubble(recipe));
-
-                            final scaffold = Scaffold.of(context);
-                            scaffold.hideCurrentSnackBar();
-
-                            scaffold.showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    I18n.of(context).recipe_pinned_to_overview),
-                                action: SnackBarAction(
-                                  label: I18n.of(context).dismiss,
-                                  onPressed: scaffold.hideCurrentSnackBar,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      );
-                    } else {
-                      return Text("unknown state");
-                    }
-                  },
-                ),
-                Favorite(recipe, addFavorite: () {
-                  BlocProvider.of<RecipeManagerBloc>(context)
-                      .add(RMAddFavorite(recipe));
-                }, removeFavorite: () {
-                  BlocProvider.of<RecipeManagerBloc>(context)
-                      .add(RMRemoveFavorite(recipe));
-                }),
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  tooltip: 'edit',
-                  onPressed: () {
-                    HiveProvider().saveTmpEditingRecipe(recipe).then(
-                          (_) => Navigator.pushNamed(
-                            context,
-                            RouteNames.addRecipeGeneralInfo,
-                            arguments: GeneralInfoArguments(
-                              recipe,
-                              BlocProvider.of<ShoppingCartBloc>(context),
-                              editingRecipeName: recipe.name,
-                            ),
-                          ).then((_) => Ads.showBottomBannerAd()),
-                        );
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  tooltip: I18n.of(context).share_recipe,
-                  onPressed: () {
-                    _showDeleteDialog(context, recipe.name);
-                  },
-                ),
-                PopupMenuButton<PopupOptions>(
-                  icon: Icon(Icons.share),
-                  onSelected: (value) => _choiceAction(value, context),
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      PopupMenuItem(
-                        value: PopupOptions.EXPORT_ZIP,
-                        child: Text(I18n.of(context).export_zip),
-                      ),
-                      PopupMenuItem(
-                        value: PopupOptions.EXPORT_TEXT,
-                        child: Text(I18n.of(context).export_text),
-                      )
-                    ];
-                  },
-                ),
-              ],
-            ),
-            floating: true,
-          ),
-          AnimationLimiter(
-            child: SliverList(
-              delegate: SliverChildListDelegate(<Widget>[
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(vegetableColor[recipe.vegetable][0]),
-                        Color(vegetableColor[recipe.vegetable][1]),
-                      ],
-                    ),
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          _showPictureFullView(
-                              recipe.imagePath, heroImageTag, context);
-                        },
-                        child: Container(
-                          height: 270,
-                          child: Stack(children: <Widget>[
-                            Hero(
-                              tag: GlobalSettings().animationsEnabled()
-                                  ? heroImageTag
-                                  : "heroImageTag2",
-                              child: Material(
-                                color: Colors.transparent,
-                                child: ClipPath(
-                                  clipper: MyClipper(),
-                                  child: Container(
-                                      height: 270,
-                                      child: recipe.imagePath ==
-                                              Constants.noRecipeImage
-                                          ? Image.asset(Constants.noRecipeImage,
-                                              width: double.infinity,
-                                              fit: BoxFit.cover)
-                                          : Image.file(File(recipe.imagePath),
-                                              width: double.infinity,
-                                              fit: BoxFit.cover)),
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    RouteNames.vegetableRecipes,
-                                    arguments: RecipeGridViewArguments(
-                                        shoppingCartBloc:
-                                            BlocProvider.of<ShoppingCartBloc>(
-                                                context),
-                                        vegetable: recipe.vegetable),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      bottom: 8.0, right: 8.0),
-                                  child: TweenAnimationBuilder(
-                                    tween: Tween<double>(begin: 0.1, end: 1),
-                                    duration: Duration(milliseconds: 700),
-                                    curve: Curves.easeOutQuad,
-                                    builder: (_, double size, myChild) =>
-                                        Container(
-                                      height: size * 65,
-                                      width: size * 65,
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(40),
-                                            topRight: Radius.circular(40),
-                                            bottomLeft: Radius.circular(40),
-                                            bottomRight: Radius.circular(15),
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black45,
-                                              blurRadius: 2.0,
-                                              spreadRadius: 1.0,
-                                              offset: Offset(
-                                                0,
-                                                1.0,
-                                              ),
-                                            ),
-                                          ],
-                                          color: _getVegetableCircleColor(
-                                              recipe.vegetable)),
-                                      child: Center(
-                                        child: Image.asset(
-                                          "images/${getRecipeTypeImage(recipe.vegetable)}.png",
-                                          height: size * 40,
-                                          width: size * 40,
-                                          fit: BoxFit.scaleDown,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                          ]),
-                        ),
-                      ),
-                      Align(
-                          alignment: Alignment.topCenter,
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                                MediaQuery.of(context).size.width * 0.15,
-                                0,
-                                MediaQuery.of(context).size.width * 0.15,
-                                0),
-                            child: Text(
-                              "${recipe.name}",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: textColor,
-                                fontSize: 30,
-                                fontFamily: recipeScreenFontFamily,
-                              ),
-                            ),
-                          )),
-                      SizedBox(height: 30),
-                      TopSectionRecipe(
-                        preperationTime: recipe.preperationTime,
-                        cookingTime: recipe.cookingTime,
-                        totalTime: recipe.totalTime,
-                        effort: recipe.effort,
-                        recipeTags: recipe.tags,
-                      ),
-                      SizedBox(height: 20),
-                      IngredientsScreen(
-                        currentRecipe: recipe,
-                        animationWaitTime: MyIntWrapper(0),
-                        addToCartIngredients: [],
-                      ),
-                      SizedBox(height: 30),
-                    ],
-                  ),
-                ),
-                FutureBuilder<List<List<String>>>(
-                  future: PathProvider.pP.getRecipeStepPreviewPathList(
-                      recipe.stepImages, recipe.name),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return StepsSection(
-                          recipe.steps, snapshot.data, recipe.stepImages);
-                    }
-                    return Container(
-                      height: 70,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  },
-                ),
-                recipe.notes != "" ||
-                        recipe.categories.isNotEmpty ||
-                        recipe.source != null
-                    ? Container(
-                        height: 20,
-                        decoration: BoxDecoration(color: Colors.black87),
-                      )
-                    : null,
-                recipe.notes != "" ? NotesSection(notes: recipe.notes) : null,
-                recipe.source != null && recipe.source != ""
-                    ? Container(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Container(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 8, 8, 8),
-                                          child: Icon(
-                                            Icons.cloud_circle,
-                                          ),
-                                        ),
-                                        Container(
-                                          width: MediaQuery.of(context)
-                                                      .size
-                                                      .width >
-                                                  450
-                                              ? 350
-                                              : MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                  100,
-                                          child: RichText(
-                                              text: TextSpan(
-                                            text: recipe.source,
-                                            style:
-                                                TextStyle(color: Colors.blue),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
-                                                launch(recipe.source);
-                                              },
-                                          )),
-                                        )
-                                      ]),
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Color(0xff212121),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
-                                )),
-                          ),
-                        ),
-                      )
-                    : null,
-                recipe.categories.length > 0
-                    ? CategoriesSection(
-                        categories: recipe.categories,
-                        categoriesFiles: categoriesFiles)
-                    : null,
-                recipe.nutritions.isEmpty ? Container() : Container(height: 70),
-              ]..removeWhere((item) => item == null)),
-            ),
-          )
+    return GradientAppBar(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomCenter,
+        colors: [
+          Color(vegetableColor[recipe.vegetable][0]),
+          Color(vegetableColor[recipe.vegetable][1]),
         ],
       ),
-    );
-  }
+      actions: <Widget>[
+        BlocBuilder<RecipeBubbleBloc, RecipeBubbleState>(
+          builder: (context, state) {
+            if (state is LoadedRecipeBubbles) {
+              bool isPinned = false;
+              if (state.recipes.contains(recipe)) {
+                isPinned = true;
+              }
+              return IconButton(
+                icon: Icon(
+                  isPinned ? MdiIcons.pin : MdiIcons.pinOutline,
+                  color: isPinned == false && state.recipes.length == 3
+                      ? Colors.grey[400]
+                      : null,
+                ),
+                onPressed: () {
+                  if (isPinned == false && state.recipes.length == 3) {
+                    final scaffold = Scaffold.of(context);
+                    scaffold.hideCurrentSnackBar();
 
-  Color _getVegetableCircleColor(Vegetable vegetable) {
-    switch (vegetable) {
-      case Vegetable.NON_VEGETARIAN:
-        return Color(0xffBF8138);
-      case Vegetable.VEGETARIAN:
-        return Color(0xff8DCF4A);
-      case Vegetable.VEGAN:
-        return Color(0xff1BC318);
-      default:
-        return null;
-    }
+                    scaffold.showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            I18n.of(context).maximum_recipe_pin_count_exceeded),
+                        action: SnackBarAction(
+                          label: I18n.of(context).dismiss,
+                          onPressed: scaffold.hideCurrentSnackBar,
+                        ),
+                      ),
+                    );
+                  } else if (isPinned) {
+                    BlocProvider.of<RecipeBubbleBloc>(context)
+                        .add(RemoveRecipeBubble(recipe));
+                  } else {
+                    BlocProvider.of<RecipeBubbleBloc>(context)
+                        .add(AddRecipeBubble(recipe));
+
+                    final scaffold = Scaffold.of(context);
+                    scaffold.hideCurrentSnackBar();
+
+                    scaffold.showSnackBar(
+                      SnackBar(
+                        content:
+                            Text(I18n.of(context).recipe_pinned_to_overview),
+                        action: SnackBarAction(
+                          label: I18n.of(context).dismiss,
+                          onPressed: scaffold.hideCurrentSnackBar,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              );
+            } else {
+              return Text("unknown state");
+            }
+          },
+        ),
+        Favorite(recipe, addFavorite: () {
+          BlocProvider.of<RecipeManagerBloc>(context)
+              .add(RMAddFavorite(recipe));
+        }, removeFavorite: () {
+          BlocProvider.of<RecipeManagerBloc>(context)
+              .add(RMRemoveFavorite(recipe));
+        }),
+        IconButton(
+          icon: Icon(Icons.edit),
+          tooltip: 'edit',
+          onPressed: () {
+            HiveProvider()
+                .saveTmpEditingRecipe(recipe)
+                .then((_) => Navigator.pushNamed(
+                      context,
+                      RouteNames.addRecipeGeneralInfo,
+                      arguments: GeneralInfoArguments(
+                        recipe,
+                        BlocProvider.of<ShoppingCartBloc>(context),
+                        editingRecipeName: recipe.name,
+                      ),
+                    ));
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.delete),
+          tooltip: I18n.of(context).share_recipe,
+          onPressed: () {
+            _showDeleteDialog(context, recipe.name);
+          },
+        ),
+        PopupMenuButton<PopupOptions>(
+          icon: Icon(Icons.share),
+          onSelected: (value) => _choiceAction(value, context),
+          itemBuilder: (BuildContext context) {
+            return [
+              PopupMenuItem(
+                value: PopupOptions.EXPORT_ZIP,
+                child: Text(I18n.of(context).export_zip),
+              ),
+              PopupMenuItem(
+                value: PopupOptions.EXPORT_TEXT,
+                child: Text(I18n.of(context).export_text),
+              )
+            ];
+          },
+        ),
+      ],
+    );
   }
 
   void _choiceAction(PopupOptions value, context) {
     if (value == PopupOptions.EXPORT_TEXT) {
       Share.share(_getRecipeAsString(recipe, context), subject: 'recipe');
     } else if (value == PopupOptions.EXPORT_ZIP) {
-      exportRecipe(recipe).then((_) {});
+      _exportRecipe(recipe).then((_) {});
     }
   }
 
-  _showDeleteDialog(BuildContext context, String recipeName) {
+  Future<bool> _exportRecipe(Recipe recipe) async {
+    String zipFilePath = await IO.saveRecipeZip(
+        await PathProvider.pP.getShareDir(), recipe.name);
+
+    ShareExtend.share(zipFilePath, "file",
+        subject: stringReplaceSpaceUnderscore(recipe.name) + ".zip");
+
+    return true;
+  }
+
+  void _showDeleteDialog(BuildContext context, String recipeName) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -733,16 +513,6 @@ class RecipePage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Future<bool> exportRecipe(Recipe recipe) async {
-    String zipFilePath = await IO.saveRecipeZip(
-        await PathProvider.pP.getShareDir(), recipe.name);
-
-    ShareExtend.share(zipFilePath, "file",
-        subject: stringReplaceSpaceUnderscore(recipe.name) + ".zip");
-
-    return true;
   }
 
   String _getRecipeAsString(Recipe recipe, BuildContext context) {
@@ -792,6 +562,322 @@ class RecipePage extends StatelessWidget {
   }
 }
 
+class RecipePage extends StatelessWidget {
+  final Recipe recipe;
+  final String heroImageTag;
+  final List<String> categoriesFiles;
+
+  RecipePage({
+    @required this.recipe,
+    this.heroImageTag,
+    this.categoriesFiles,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          MediaQuery.of(context).size.width > 550
+              ? Container(
+                  width: (MediaQuery.of(context).size.width * 0.4 > 350)
+                      ? 350
+                      : MediaQuery.of(context).size.width * 0.4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                  ),
+                  child: RecipeInfoVertical(
+                    recipe,
+                    (MediaQuery.of(context).size.width * 0.45 > 350)
+                        ? 350
+                        : MediaQuery.of(context).size.width * 0.45,
+                    categoriesFiles,
+                    heroImageTag,
+                  ),
+                )
+              : null,
+          MediaQuery.of(context).size.width > 1000
+              ? Container(
+                  height: double.infinity,
+                  width: 370,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(vegetableColor[recipe.vegetable][0]),
+                        Color(vegetableColor[recipe.vegetable][1]),
+                      ],
+                    ),
+                  ),
+                  child: ListView(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(top: 0.0),
+                        child: IngredientsScreen(
+                          currentRecipe: recipe,
+                          animationWaitTime: MyIntWrapper(0),
+                          addToCartIngredients: [],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : null,
+          MediaQuery.of(context).size.width > 1000
+              ? Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xff672B00),
+                          Color(0xff3A1900),
+                        ],
+                      ),
+                    ),
+                    child: ListView(
+                      children: <Widget>[
+                        StepsSection(
+                          recipe.steps,
+                          recipe.stepImages,
+                          recipe.name,
+                          expandHeight: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : null,
+          MediaQuery.of(context).size.width > 1000
+              ? null
+              : Expanded(
+                  child: Container(
+                    color: Color(0xff51473b),
+                    child: CustomScrollView(
+                      slivers: <Widget>[
+                        MediaQuery.of(context).size.width > 550
+                            ? null
+                            : SliverAppBar(
+                                flexibleSpace: MyGradientAppBar(recipe),
+                                floating: true,
+                              ),
+                        SliverList(
+                          delegate: SliverChildListDelegate(<Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Color(vegetableColor[recipe.vegetable][0]),
+                                    Color(vegetableColor[recipe.vegetable][1]),
+                                  ],
+                                ),
+                              ),
+                              child: Column(
+                                  children: <Widget>[
+                                MediaQuery.of(context).size.width > 550
+                                    ? null
+                                    : GestureDetector(
+                                        onTap: () {
+                                          _showPictureFullView(recipe.imagePath,
+                                              heroImageTag, context);
+                                        },
+                                        child: Container(
+                                          height: 270,
+                                          child: Stack(children: <Widget>[
+                                            Hero(
+                                              tag: GlobalSettings()
+                                                      .animationsEnabled()
+                                                  ? heroImageTag
+                                                  : "heroImageTag2",
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: ClipPath(
+                                                  clipper: MyClipper(),
+                                                  child: Container(
+                                                      height: 270,
+                                                      child: recipe.imagePath ==
+                                                              Constants
+                                                                  .noRecipeImage
+                                                          ? Image.asset(
+                                                              Constants
+                                                                  .noRecipeImage,
+                                                              width: double
+                                                                  .infinity,
+                                                              fit: BoxFit.cover)
+                                                          : Image.file(
+                                                              File(recipe
+                                                                  .imagePath),
+                                                              width: double
+                                                                  .infinity,
+                                                              fit: BoxFit
+                                                                  .cover)),
+                                                ),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 8.0, right: 8.0),
+                                                child: AnimatedVegetable(
+                                                    recipe.vegetable),
+                                              ),
+                                            )
+                                          ]),
+                                        ),
+                                      ),
+                                MediaQuery.of(context).size.width > 550
+                                    ? null
+                                    : Align(
+                                        alignment: Alignment.topCenter,
+                                        child: Padding(
+                                          padding: EdgeInsets.fromLTRB(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.15,
+                                              0,
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.15,
+                                              0),
+                                          child: Text(
+                                            "${recipe.name}",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: textColor,
+                                              fontSize: 30,
+                                              fontFamily:
+                                                  recipeScreenFontFamily,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                MediaQuery.of(context).size.width > 550
+                                    ? null
+                                    : SizedBox(height: 30),
+                                MediaQuery.of(context).size.width > 550
+                                    ? null
+                                    : Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 8.0),
+                                        child: TopSectionRecipe(
+                                          preperationTime:
+                                              recipe.preperationTime,
+                                          cookingTime: recipe.cookingTime,
+                                          totalTime: recipe.totalTime,
+                                          effort: recipe.effort,
+                                          recipeTags: recipe.tags,
+                                        ),
+                                      ),
+                                MediaQuery.of(context).size.width > 550
+                                    ? null
+                                    : SizedBox(height: 20),
+                                IngredientsScreen(
+                                  currentRecipe: recipe,
+                                  animationWaitTime: MyIntWrapper(0),
+                                  addToCartIngredients: [],
+                                ),
+                                SizedBox(height: 30),
+                              ]..removeWhere((item) => item == null)),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Color(0xff672B00),
+                                    Color(0xff3A1900),
+                                  ],
+                                ),
+                              ),
+                              child: StepsSection(
+                                recipe.steps,
+                                recipe.stepImages,
+                                recipe.name,
+                              ),
+                            ),
+                            recipe.notes != "" ||
+                                    recipe.categories.isNotEmpty ||
+                                    recipe.source != null
+                                ? Container(
+                                    height: 20,
+                                    decoration:
+                                        BoxDecoration(color: Colors.black87),
+                                  )
+                                : null,
+                            recipe.notes != ""
+                                ? NotesSection(notes: recipe.notes)
+                                : null,
+                            recipe.source != null && recipe.source != ""
+                                ? RecipeSource(recipe.source)
+                                : null,
+                            recipe.categories.length > 0
+                                ? CategoriesSection(
+                                    categories: recipe.categories,
+                                    categoriesFiles: categoriesFiles)
+                                : null,
+                            recipe.nutritions.isEmpty
+                                ? Container()
+                                : Container(height: 135),
+                          ]..removeWhere((item) => item == null)),
+                        ),
+                      ]..removeWhere((item) => item == null),
+                    ),
+                  ),
+                ),
+        ]..removeWhere((item) => item == null));
+  }
+}
+
+class RecipeSource extends StatelessWidget {
+  final String source;
+
+  const RecipeSource(this.source, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Container(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
+                  child: Icon(
+                    Icons.cloud_circle,
+                  ),
+                ),
+                Expanded(
+                  child: RichText(
+                      text: TextSpan(
+                    text: source,
+                    style: TextStyle(color: Colors.blue),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launch(source);
+                      },
+                  )),
+                )
+              ]),
+            ),
+            decoration: BoxDecoration(
+              color: Colors.black38,
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+            )),
+      ),
+    );
+  }
+}
+
 class TopSectionRecipe extends StatelessWidget {
   final double preperationTime;
   final double cookingTime;
@@ -810,507 +896,100 @@ class TopSectionRecipe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double remainingTimeChart = 0;
-    if (totalTime <= cookingTime + preperationTime)
-      remainingTimeChart = 0;
-    else
-      remainingTimeChart = totalTime - cookingTime - preperationTime;
-
-    double totalTimeChart = 0;
-    if (totalTime >= preperationTime + cookingTime)
-      totalTimeChart = totalTime;
-    else
-      totalTimeChart = preperationTime + cookingTime;
-
-    return Column(
-      children: <Widget>[
-        _showComplexTopArea(preperationTime, cookingTime, totalTime)
-            ? Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 10,
-                      child: Column(
-                        children: <Widget>[
-                          preperationTime != 0
-                              ? Row(
-                                  children: <Widget>[
-                                  Container(
-                                    height: 35,
-                                    width: 35,
-                                    decoration: BoxDecoration(
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black45,
-                                          blurRadius: 2.0,
-                                          spreadRadius: 1.0,
-                                          offset: Offset(
-                                            0,
-                                            1.0,
-                                          ),
-                                        ),
-                                      ],
-                                      color: Colors.pink,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Icon(
-                                      MdiIcons.knife,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        "${I18n.of(context).prep_time}:",
-                                        style: TextStyle(
-                                          color: textColor,
-                                          fontFamily: recipeScreenFontFamily,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                      Text(
-                                        getTimeHoursMinutes(preperationTime),
-                                        style: TextStyle(
-                                          color: textColor,
-                                          fontFamily: recipeScreenFontFamily,
-                                          fontSize: 16,
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ]..removeWhere((item) => item == null))
-                              : null,
-                          SizedBox(height: 10),
-                          cookingTime != 0
-                              ? Row(
-                                  children: <Widget>[
-                                    Container(
-                                      height: 35,
-                                      width: 35,
-                                      decoration: BoxDecoration(
-                                        color: Colors.lightBlue,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black45,
-                                            blurRadius: 2.0,
-                                            spreadRadius: 1.0,
-                                            offset: Offset(
-                                              0,
-                                              1.0,
-                                            ),
-                                          ),
-                                        ],
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Icon(
-                                        MdiIcons.stove,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "${I18n.of(context).cook_time}:",
-                                          style: TextStyle(
-                                            color: textColor,
-                                            fontFamily: recipeScreenFontFamily,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                        Text(
-                                          getTimeHoursMinutes(cookingTime),
-                                          style: TextStyle(
-                                            color: textColor,
-                                            fontFamily: recipeScreenFontFamily,
-                                            fontSize: 16,
-                                          ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                )
-                              : null,
-                          SizedBox(height: 10),
-                          remainingTimeChart == 0
-                              ? null
-                              : Row(
-                                  children: <Widget>[
-                                  Container(
-                                    height: 35,
-                                    width: 35,
-                                    decoration: BoxDecoration(
-                                      color: Colors.yellow,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black45,
-                                          blurRadius: 2.0,
-                                          spreadRadius: 1.0,
-                                          offset: Offset(
-                                            0,
-                                            1.0,
-                                          ),
-                                        ),
-                                      ],
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Icon(
-                                      Icons.hourglass_empty,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  remainingTimeChart != 0
-                                      ? Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                              "${I18n.of(context).remaining_time}:",
-                                              style: TextStyle(
-                                                color: textColor,
-                                                fontFamily:
-                                                    recipeScreenFontFamily,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            Text(
-                                              getTimeHoursMinutes(
-                                                  remainingTimeChart),
-                                              style: TextStyle(
-                                                color: textColor,
-                                                fontFamily:
-                                                    recipeScreenFontFamily,
-                                                fontSize: 16,
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      : null
-                                ]..removeWhere((item) => item == null))
-                        ]..removeWhere((item) => item == null),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "${I18n.of(context).total_time}:",
-                            style: TextStyle(
-                              color: textColor,
-                              fontFamily: recipeScreenFontFamily,
-                              fontSize: 12,
-                            ),
-                          ),
-                          Text(
-                            getTimeHoursMinutes(totalTimeChart),
-                            style: TextStyle(
-                              color: textColor,
-                              fontFamily: recipeScreenFontFamily,
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(height: 7),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: ClipPath(
-                              clipper: RoundTopBottomClipper(),
-                              child: TweenAnimationBuilder(
-                                duration: Duration(milliseconds: 700),
-                                curve: Curves.easeInOut,
-                                child: Stack(
-                                  alignment: Alignment.bottomCenter,
-                                  children: <Widget>[
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black45,
-                                            blurRadius: 2.0,
-                                            spreadRadius: 1.0,
-                                            offset: Offset(
-                                              0,
-                                              1.0,
-                                            ),
-                                          ),
-                                        ],
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(30),
-                                            topRight: Radius.circular(30)),
-                                        color: Colors.yellow,
-                                      ),
-                                    ),
-                                    Container(
-                                      height: (cookingTime + preperationTime) /
-                                          totalTimeChart *
-                                          100,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(30),
-                                            topRight: Radius.circular(30)),
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                    Container(
-                                      height: preperationTime /
-                                          totalTimeChart *
-                                          100,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(30),
-                                            topRight: Radius.circular(30)),
-                                        color: Colors.pink,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                tween: Tween<double>(begin: 10, end: 100),
-                                builder: (_, double height, myChild) => Column(
-                                  children: <Widget>[
-                                    Container(height: 100 - height, width: 20),
-                                    Container(
-                                        width: 20,
-                                        height: height,
-                                        child: myChild),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 7,
-                      child: Column(
-                        children: <Widget>[
-                          Text(I18n.of(context).complexity + ':',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: textColor,
-                                fontFamily: recipeScreenFontFamily,
-                              )),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15.0),
-                            child: Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black45,
-                                    blurRadius: 2.0,
-                                    spreadRadius: 1.0,
-                                    offset: Offset(
-                                      0,
-                                      1.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              child: ClipOval(
-                                child: WaveWidget(
-                                  config: CustomConfig(
-                                    gradients: [
-                                      [Colors.red, Color(0xEEF44336)],
-                                      [Colors.red[800], Color(0x77E57373)],
-                                      [Colors.orange, Color(0x66FF9800)],
-                                      [Colors.yellow, Color(0x55FFEB3B)]
-                                    ],
-                                    durations: [35000, 19440, 10800, 6000],
-                                    heightPercentages: [
-                                      effort == 10 ? 0 : (9 - effort) / 10,
-                                      effort == 10 ? 0 : (9 - effort) / 10,
-                                      effort == 10 ? 0 : (9 - effort) / 10,
-                                      effort == 10 ? 0 : (9 - effort) / 10,
-                                    ],
-                                    blur: MaskFilter.blur(BlurStyle.solid, 10),
-                                    gradientBegin: Alignment.bottomLeft,
-                                    gradientEnd: Alignment.topRight,
-                                  ),
-                                  waveAmplitude: 0,
-                                  backgroundColor: Colors.blue,
-                                  size: Size(
-                                    double.infinity,
-                                    double.infinity,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              )
-            : Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Wrap(
-                  direction: Axis.horizontal,
-                  runSpacing: 10,
-                  spacing: 10,
-                  children: <Widget>[
-                    (preperationTime != 0 || cookingTime != 0 || totalTime != 0)
-                        ? Container(
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(25)),
-                                color: Colors.grey[800]),
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
-                              child: Text(
-                                _getTimeString(
-                                  preperationTime,
-                                  cookingTime,
-                                  totalTime,
-                                  context,
-                                ),
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                  fontFamily: recipeScreenFontFamily,
-                                ),
-                              ),
-                            ),
-                          )
-                        : null,
-                    Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(25)),
-                          color: _getEffortColor(effort)),
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
-                        child: Text(
-                          "${I18n.of(context).complexity}: $effort",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontFamily: recipeScreenFontFamily,
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width > 450
+            ? 450
+            : MediaQuery.of(context).size.width,
+        child: Column(
+          children: <Widget>[
+            _showComplexTopArea(preperationTime, cookingTime, totalTime)
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 10,
+                          child: TimeInfo(
+                            textColor,
+                            recipeScreenFontFamily,
+                            preperationTime,
+                            totalTime,
+                            cookingTime,
                           ),
                         ),
-                      ),
+                        Expanded(
+                          flex: 5,
+                          child: TimeInfoChart(
+                            textColor,
+                            preperationTime,
+                            cookingTime,
+                            totalTime,
+                            recipeScreenFontFamily,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 7,
+                          child: ComplexityWave(
+                            textColor,
+                            recipeScreenFontFamily,
+                            effort,
+                          ),
+                        )
+                      ],
                     ),
-                  ]..removeWhere((item) => item == null),
-                ),
-              ),
-        Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15, top: 15.0),
-          child: Wrap(
-            direction: Axis.horizontal,
-            alignment: WrapAlignment.center,
-            runSpacing: 10,
-            spacing: 10,
-            children: List<Widget>.generate(
-              recipeTags.length,
-              (index) => InkWell(
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.recipeTagOverview,
-                    arguments: RecipeGridViewArguments(
-                      recipeTag: recipeTags[index],
-                      shoppingCartBloc:
-                          BlocProvider.of<ShoppingCartBloc>(context),
-                    ),
-                  );
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(25)),
-                      color: Color(recipeTags[index].number)),
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
-                    child: Text(
-                      recipeTags[index].text,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontFamily: recipeScreenFontFamily,
-                      ),
+                  )
+                : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: TimeComplexityCompressed(
+                      preperationTime,
+                      cookingTime,
+                      totalTime,
+                      effort,
+                      recipeScreenFontFamily,
                     ),
                   ),
-                ),
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15, top: 15.0),
+              child: RecipeTagWrap(
+                recipeTags,
+                recipeScreenFontFamily,
               ),
-            ),
-          ),
-        )
-      ],
+            )
+          ],
+        ),
+      ),
     );
   }
+}
 
-  Color _getEffortColor(int effort) {
-    switch (effort) {
-      case 1:
-        return Color(0xff10C800);
-      case 2:
-        return Color(0xff10C800);
-      case 3:
-        return Color(0xff70C800);
-      case 4:
-        return Color(0xff70C800);
-      case 5:
-        return Color(0xffC8C000);
-      case 6:
-        return Color(0xffC8C000);
-      case 7:
-        return Color(0xffD27910);
-      case 8:
-        return Color(0xffE08315);
-      case 9:
-        return Color(0xffB94F4F);
-      case 10:
-        return Color(0xffBD4242);
-      default:
-        return null;
-    }
-  }
+/// method which determines if the circular chart and complexity termometer should be
+/// shown or only a minimal version
+bool _showComplexTopArea(
+    double preperationTime, double cookingTime, double totalTime) {
+  int validator = 0;
 
-  String _getTimeString(double preperationTime, double cookingTime,
-      double totalTime, BuildContext context) {
-    if (totalTime != 0)
-      return "${I18n.of(context).total_time}: " + cutDouble(totalTime);
-    if (cookingTime != 0)
-      return "${I18n.of(context).cook_time}: " + cutDouble(cookingTime);
-    return "${I18n.of(context).prep_time}: " + cutDouble(preperationTime);
-  }
-
-  /// method which determines if the circular chart and complexity termometer should be
-  /// shown or only a minimal version
-  bool _showComplexTopArea(
-      double preperationTime, double cookingTime, double totalTime) {
-    int validator = 0;
-
-    if (preperationTime != 0) validator++;
-    if (cookingTime != 0) validator++;
-    if (totalTime != 0) validator++;
-    if (preperationTime == totalTime || cookingTime == totalTime) return false;
-    if (validator > 1) return true;
-    return false;
-  }
+  if (preperationTime != 0) validator++;
+  if (cookingTime != 0) validator++;
+  if (totalTime != 0) validator++;
+  if (preperationTime == totalTime || cookingTime == totalTime) return false;
+  if (validator > 1) return true;
+  return false;
 }
 
 void _showPictureFullView(String image, String tag, BuildContext context) {
   Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => GalleryPhotoView(
-          initialIndex: 0,
-          galleryImagePaths: [image],
-          descriptions: [''],
-          heroTags: [tag],
-        ),
-      ));
+    context,
+    MaterialPageRoute(
+      builder: (context) => GalleryPhotoView(
+        initialIndex: 0,
+        galleryImagePaths: [image],
+        descriptions: [''],
+        heroTags: [tag],
+      ),
+    ),
+  );
 }
 
 class CategoriesSection extends StatelessWidget {
@@ -1324,47 +1003,53 @@ class CategoriesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 20, top: 30, bottom: 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              I18n.of(context).categories,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 24,
-                fontFamily: recipeScreenFontFamily,
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width > 450
+            ? 450
+            : MediaQuery.of(context).size.width,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 30, bottom: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                I18n.of(context).categories,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 24,
+                  fontFamily: recipeScreenFontFamily,
+                ),
               ),
-            ),
-            SizedBox(height: 25),
-            Wrap(
-              children: List<Widget>.generate(
-                  categories.length,
-                  (index) => categoriesFiles.isEmpty
-                      ? CircularProgressIndicator()
-                      : CategoryCircle(
-                          categoryName: categories[index],
-                          imageName: categoriesFiles[index],
-                          onPressed: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteNames.recipeCategories,
-                              arguments: RecipeGridViewArguments(
-                                category: categories[index] == null
-                                    ? Constants.noCategory
-                                    : categories[index],
-                                shoppingCartBloc:
-                                    BlocProvider.of<ShoppingCartBloc>(context),
-                              ),
-                            );
-                          },
-                        )),
-              runSpacing: 10.0,
-              spacing: 10.0,
-            ),
-          ],
+              SizedBox(height: 25),
+              Wrap(
+                children: List<Widget>.generate(
+                    categories.length,
+                    (index) => categoriesFiles.isEmpty
+                        ? CircularProgressIndicator()
+                        : CategoryCircle(
+                            categoryName: categories[index],
+                            imageName: categoriesFiles[index],
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                RouteNames.recipeCategories,
+                                arguments: RecipeGridViewArguments(
+                                  category: categories[index] == null
+                                      ? Constants.noCategory
+                                      : categories[index],
+                                  shoppingCartBloc:
+                                      BlocProvider.of<ShoppingCartBloc>(
+                                          context),
+                                ),
+                              );
+                            },
+                          )),
+                runSpacing: 10.0,
+                spacing: 10.0,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1372,9 +1057,10 @@ class CategoriesSection extends StatelessWidget {
 }
 
 class StepsSection extends StatelessWidget {
-  final List<List<String>> stepPreviewImages;
   final List<List<String>> stepImages;
   final List<String> steps;
+  final String recipeName;
+  final bool expandHeight;
 
   final List<Color> stepsColors = [
     Color(0xff28B404),
@@ -1383,61 +1069,69 @@ class StepsSection extends StatelessWidget {
     Color(0xff8600C5),
   ];
 
-  StepsSection(this.steps, this.stepPreviewImages, this.stepImages);
+  StepsSection(
+    this.steps,
+    this.stepImages,
+    this.recipeName, {
+    this.expandHeight = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (steps.isEmpty) return Container();
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xff672B00),
-            Color(0xff3A1900),
-          ],
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-              height: 40,
-              decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.3)),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          I18n.of(context).directions,
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: headingSize,
-                            fontFamily: recipeScreenFontFamily,
+    return FutureBuilder<List<List<String>>>(
+        future: PathProvider.pP
+            .getRecipeStepPreviewPathList(stepImages, recipeName),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                    height: 40,
+                    decoration:
+                        BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.3)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 12.0),
+                          child: Text(
+                            I18n.of(context).directions,
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: headingSize,
+                              fontFamily: recipeScreenFontFamily,
+                            ),
                           ),
                         ),
-                      ],
+                      ),
+                    )),
+                SizedBox(height: 25),
+                Center(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width > 500
+                        ? 500
+                        : MediaQuery.of(context).size.width,
+                    child: AnimatedStepper(
+                      steps,
+                      stepImages: stepImages,
+                      fontFamily: recipeScreenFontFamily,
+                      lowResStepImages: snapshot.data,
                     ),
                   ),
                 ),
-              )),
-          SizedBox(height: 25),
-          AnimatedStepper(
-            steps,
-            stepImages: stepImages,
-            fontFamily: recipeScreenFontFamily,
-            lowResStepImages: stepPreviewImages,
-          ),
-          SizedBox(height: 25),
-        ],
-      ),
-    );
+                SizedBox(height: 25),
+              ],
+            );
+          } else {
+            return Container(
+              height: 200,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+        });
   }
 }
 
@@ -1498,18 +1192,21 @@ class IngredientsScreen extends StatelessWidget {
                     },
                   ),
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width - 150,
-                  child: Text(
-                    currentIngredient.name,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontFamily: recipeScreenFontFamily,
+                Expanded(
+                  child: Container(
+                    child: Text(
+                      currentIngredient.name,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontFamily: recipeScreenFontFamily,
+                      ),
                     ),
                   ),
                 ),
-                Spacer(),
+                Container(
+                  width: 12,
+                ),
                 Container(
                   width: 80,
                   child: Text(
@@ -1573,13 +1270,15 @@ class IngredientsScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text(
-                  "${currentRecipe.ingredientsGlossary.isNotEmpty ? currentRecipe.ingredientsGlossary[i] : ''}",
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 24,
-                    fontFamily: recipeScreenFontFamily,
-                  )),
+              Expanded(
+                child: Text(
+                    "${currentRecipe.ingredientsGlossary.isNotEmpty ? currentRecipe.ingredientsGlossary[i] : ''}",
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 24,
+                      fontFamily: recipeScreenFontFamily,
+                    )),
+              ),
               IconButton(
                 icon: sectionCheck[i]
                     ? Icon(Icons.shopping_cart)
@@ -1640,60 +1339,60 @@ class IngredientsScreen extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8, right: 8),
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: state.servings == null
-                            ? [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0),
-                                  child: Text(
-                                    I18n.of(context).ingredients,
+                      child: Center(
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: state.servings == null
+                              ? [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12.0),
+                                    child: Text(
+                                      I18n.of(context).ingredients,
+                                      style: TextStyle(
+                                        color: textColor,
+                                        fontSize: headingSize,
+                                        fontFamily: recipeScreenFontFamily,
+                                      ),
+                                    ),
+                                  )
+                                ]
+                              : <Widget>[
+                                  Text(
+                                    I18n.of(context).ingredients_for,
                                     style: TextStyle(
                                       color: textColor,
                                       fontSize: headingSize,
                                       fontFamily: recipeScreenFontFamily,
                                     ),
                                   ),
-                                )
-                              ]
-                            : <Widget>[
-                                Text(
-                                  I18n.of(context).ingredients_for,
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontSize: headingSize,
-                                    fontFamily: recipeScreenFontFamily,
+                                  IconButton(
+                                    icon: Icon(Icons.remove_circle_outline,
+                                        color: Colors.white),
+                                    tooltip: I18n.of(context).decrease_servings,
+                                    onPressed: () {
+                                      _decreaseServings(
+                                          state.servings, context);
+                                    },
                                   ),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.remove_circle_outline,
-                                      color: Colors.white),
-                                  tooltip: I18n.of(context).decrease_servings,
-                                  onPressed: () {
-                                    _decreaseServings(state.servings, context);
-                                  },
-                                ),
-                                Text(
-                                  '${state.servings}',
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontSize: headingSize,
-                                    fontFamily: recipeScreenFontFamily,
+                                  Text(
+                                    '${state.servings}',
+                                    style: TextStyle(
+                                      color: textColor,
+                                      fontSize: headingSize,
+                                      fontFamily: recipeScreenFontFamily,
+                                    ),
                                   ),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.add_circle_outline,
-                                      color: Colors.white),
-                                  tooltip: I18n.of(context).increase_servings,
-                                  onPressed: () {
-                                    _increaseServings(state.servings, context);
-                                  },
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text(
+                                  IconButton(
+                                    icon: Icon(Icons.add_circle_outline,
+                                        color: Colors.white),
+                                    tooltip: I18n.of(context).increase_servings,
+                                    onPressed: () {
+                                      _increaseServings(
+                                          state.servings, context);
+                                    },
+                                  ),
+                                  Text(
                                     I18n.of(context).servings,
                                     style: TextStyle(
                                       color: textColor,
@@ -1701,17 +1400,22 @@ class IngredientsScreen extends StatelessWidget {
                                       fontFamily: recipeScreenFontFamily,
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ]..addAll(
-                getIngredientsData(
-                    state.ingredients, state.sectionCheck, context),
-              ),
+            ]..add(Center(
+                child: Container(
+                  width: 400,
+                  child: Column(
+                    children: getIngredientsData(
+                        state.ingredients, state.sectionCheck, context),
+                  ),
+                ),
+              )),
           );
         } else {
           return Text(state.toString());
@@ -1852,32 +1556,4 @@ class RoundEdgeShoppingCartClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
-class RoundTopBottomClipper extends CustomClipper<Path> {
-  RoundTopBottomClipper();
-
-  @override
-  Path getClip(Size size) {
-    final path = Path()
-      ..moveTo(0, size.width / 2)
-      ..arcToPoint(
-        Offset(size.width, size.width / 2),
-        clockwise: true,
-        radius: Radius.circular(size.width / 2),
-      )
-      ..lineTo(size.width, size.height - size.width / 2)
-      ..arcToPoint(
-        Offset(0, size.height - size.width / 2),
-        clockwise: true,
-        radius: Radius.circular(size.width / 2),
-      )
-      ..lineTo(0, size.width / 2);
-
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(RoundTopBottomClipper oldClipper) => true;
 }

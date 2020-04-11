@@ -190,135 +190,141 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
           ],
         ),
         body: SingleChildScrollView(
-          child: Column(children: <Widget>[
-            // top section with the add image button
-            SizedBox(height: 30),
-            IS.ImageSelector(
-              onNewImage: (File imageFile) =>
-                  BlocProvider.of<GeneralInfoBloc>(context).add(
-                UpdateRecipeImage(
-                  imageFile,
-                  widget.editingRecipeName == null ? false : true,
-                ),
-              ),
-              prefilledImage: modifiedRecipe.imagePath,
-              circleSize: 120,
-              color: Color(0xFF790604),
-              onCancel: () {
-                BlocProvider.of<ClearRecipeBloc>(context).add(RemoveRecipeImage(
-                    widget.editingRecipeName == null ? false : true));
-                BlocProvider.of<GeneralInfoBloc>(context).add(
-                    GRemoveRecipeImage(
-                        widget.editingRecipeName == null ? false : true));
-              },
-            ),
-            SizedBox(height: 30),
-            Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: TextFormField(
-                      validator: _validateRecipeName,
-                      controller: nameController,
-                      textCapitalization: TextCapitalization.sentences,
-                      decoration: InputDecoration(
-                        filled: true,
-                        labelText: I18n.of(context).name + "*",
-                        icon: Icon(MdiIcons.notebook),
-                      ),
+          child: Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width > 430 ? 430 : null,
+              child: Column(children: <Widget>[
+                // top section with the add image button
+                SizedBox(height: 30),
+                IS.ImageSelector(
+                  onNewImage: (File imageFile) =>
+                      BlocProvider.of<GeneralInfoBloc>(context).add(
+                    UpdateRecipeImage(
+                      imageFile,
+                      widget.editingRecipeName == null ? false : true,
                     ),
                   ),
-                  // time textFields
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  prefilledImage: modifiedRecipe.imagePath,
+                  circleSize: 120,
+                  color: Color(0xFF790604),
+                  onCancel: () {
+                    BlocProvider.of<ClearRecipeBloc>(context).add(
+                        RemoveRecipeImage(
+                            widget.editingRecipeName == null ? false : true));
+                    BlocProvider.of<GeneralInfoBloc>(context).add(
+                        GRemoveRecipeImage(
+                            widget.editingRecipeName == null ? false : true));
+                  },
+                ),
+                SizedBox(height: 30),
+                Form(
+                  key: _formKey,
+                  child: Column(
                     children: <Widget>[
-                      Expanded(
-                        flex: 5,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: TextFormField(
-                            validator: (value) {
-                              if (stringIsValidDouble(value) == false &&
-                                  value != "") {
-                                return I18n.of(context).no_valid_number;
-                              }
-                              return null;
-                            },
-                            autovalidate: false,
-                            controller: preperationTimeController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              filled: true,
-                              labelText: I18n.of(context).prep_time,
-                              icon: Icon(Icons.access_time),
-                            ),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: TextFormField(
+                          validator: _validateRecipeName,
+                          controller: nameController,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            filled: true,
+                            labelText: I18n.of(context).name + "*",
+                            icon: Icon(MdiIcons.notebook),
                           ),
                         ),
                       ),
-                      Expanded(
-                        flex: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: TextFormField(
-                            validator: (value) {
-                              if (stringIsValidDouble(value) == false &&
-                                  value != "") {
-                                return I18n.of(context).no_valid_number;
-                              }
-                              return null;
-                            },
-                            autovalidate: false,
-                            controller: cookingTimeController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              filled: true,
-                              labelText: I18n.of(context).cook_time,
+                      // time textFields
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            flex: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (stringIsValidDouble(value) == false &&
+                                      value != "") {
+                                    return I18n.of(context).no_valid_number;
+                                  }
+                                  return null;
+                                },
+                                autovalidate: false,
+                                controller: preperationTimeController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  labelText: I18n.of(context).prep_time,
+                                  icon: Icon(Icons.access_time),
+                                ),
+                              ),
                             ),
+                          ),
+                          Expanded(
+                            flex: 4,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (stringIsValidDouble(value) == false &&
+                                      value != "") {
+                                    return I18n.of(context).no_valid_number;
+                                  }
+                                  return null;
+                                },
+                                autovalidate: false,
+                                controller: cookingTimeController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  labelText: I18n.of(context).cook_time,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 52, top: 12, right: 12, bottom: 12),
+                        child: TextFormField(
+                          validator: (value) {
+                            if (stringIsValidDouble(value) == false &&
+                                value != "") {
+                              return I18n.of(context).no_valid_number;
+                            }
+                            return null;
+                          },
+                          autovalidate: false,
+                          controller: totalTimeController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            helperText: I18n.of(context).in_minutes,
+                            filled: true,
+                            labelText: I18n.of(context).total_time,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 52, top: 0, right: 12, bottom: 12),
+                        child: TextFormField(
+                          controller: sourceController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            labelText: I18n.of(context).source,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 52, top: 12, right: 12, bottom: 12),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (stringIsValidDouble(value) == false &&
-                            value != "") {
-                          return I18n.of(context).no_valid_number;
-                        }
-                        return null;
-                      },
-                      autovalidate: false,
-                      controller: totalTimeController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        helperText: I18n.of(context).in_minutes,
-                        filled: true,
-                        labelText: I18n.of(context).total_time,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 52, top: 0, right: 12, bottom: 12),
-                    child: TextFormField(
-                      controller: sourceController,
-                      decoration: InputDecoration(
-                        filled: true,
-                        labelText: I18n.of(context).source,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                CategorySection(),
+                RecipeTagSection(),
+              ]),
             ),
-            CategorySection(),
-            RecipeTagSection(),
-          ]),
+          ),
         ),
       ),
     );

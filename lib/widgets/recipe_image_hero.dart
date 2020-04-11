@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -15,9 +17,11 @@ import '../screens/recipe_screen.dart';
 class RecipeImageHero extends StatelessWidget {
   final Recipe recipe;
   final bool showAds;
+  final String heroTag;
 
   const RecipeImageHero(
-    this.recipe, {
+    this.recipe,
+    this.heroTag, {
     @required this.showAds,
     Key key,
   }) : super(key: key);
@@ -26,25 +30,27 @@ class RecipeImageHero extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (GlobalSettings().standbyDisabled()) {
+          Wakelock.enable();
+        }
         Navigator.pushNamed(
           context,
           RouteNames.recipeScreen,
           arguments: RecipeScreenArguments(
             BlocProvider.of<ShoppingCartBloc>(context),
             recipe,
-            recipe.name,
+            heroTag,
             BlocProvider.of<RecipeManagerBloc>(context),
           ),
         ).then((_) {
+          Wakelock.disable();
           if (!showAds) {
             Ads.hideBottomBannerAd();
           }
         });
       },
       child: Hero(
-        tag: GlobalSettings().animationsEnabled()
-            ? recipe.name
-            : "${recipe.name}7",
+        tag: GlobalSettings().animationsEnabled() ? heroTag : "${recipe.name}7",
         child: ClipOval(
           child: Container(
             width: 30,

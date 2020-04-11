@@ -29,6 +29,8 @@ import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/recipe_bubble.dart';
 import '../widgets/search.dart';
+import '../widgets/shopping_cart_floating.dart';
+import '../widgets/vertical_side_bar.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 import 'category_gridview.dart';
 import 'favorite_screen.dart';
@@ -186,84 +188,171 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(
-      builder: (context, state) {
-        if (state is LoadingState) {
-          return _getSplashScreen();
-        } else if (state is LoadedState) {
-          return Stack(
-            children: <Widget>[
-              Scaffold(
-                appBar: _buildAppBar(state.selectedIndex,
-                    state.recipeCategoryOverview, state.title),
-                floatingActionButton: state.selectedIndex == 0
-                    ? FloatingActionButtonMenu(_introKeyOne, _introKeyTwo,
-                        showIntro: showIntro)
-                    : null,
-                body: IndexedStack(
-                  index: state.selectedIndex,
-                  children: [
-                    AnimatedSwitcher(
-                      duration: Duration(milliseconds: 200),
-                      child: state.recipeCategoryOverview == true
-                          ? RecipeCategoryOverview()
-                          : CategoryGridView(),
+    return Stack(
+        children: <Widget>[
+      BlocBuilder<AppBloc, AppState>(
+        builder: (context, state) {
+          if (state is LoadingState) {
+            return _getSplashScreen();
+          } else if (state is LoadedState) {
+            return Scaffold(
+              appBar: _buildAppBar(state.selectedIndex,
+                  state.recipeCategoryOverview, state.title),
+              floatingActionButton: state.selectedIndex == 0
+                  ? FloatingActionButtonMenu(_introKeyOne, _introKeyTwo,
+                      showIntro: showIntro)
+                  : null,
+              body: Row(
+                children: <Widget>[
+                  MediaQuery.of(context).size.width > 900
+                      ? VerticalSideBar(
+                          state.selectedIndex == 2 ? 0 : state.selectedIndex,
+                          state.shoppingCartOpen,
+                        )
+                      : null,
+                  Expanded(
+                    child: IndexedStack(
+                      index: state.selectedIndex,
+                      children: [
+                        AnimatedSwitcher(
+                          duration: Duration(milliseconds: 200),
+                          child: state.recipeCategoryOverview == true
+                              ? RecipeCategoryOverview()
+                              : CategoryGridView(),
+                        ),
+                        FavoriteScreen(),
+                        MediaQuery.of(context).size.width <= 900
+                            ? FancyShoppingCartScreen(shoppingCartImage)
+                            : Container(),
+                        SwypingCardsScreen(),
+                        Settings(),
+                      ],
                     ),
-                    FavoriteScreen(),
-                    FancyShoppingCartScreen(shoppingCartImage),
-                    SwypingCardsScreen(),
-                    Settings(),
-                  ],
-                ),
-                backgroundColor: _getBackgroundColor(state.selectedIndex),
-                bottomNavigationBar: Theme(
-                  data: Theme.of(context).copyWith(canvasColor: Colors.black87),
-                  child: BottomNavyBar(
-                    backgroundColor: Color(0xff232323),
-                    animationDuration: Duration(milliseconds: 150),
-                    selectedIndex: state.selectedIndex,
-                    showElevation: true,
-                    onItemSelected: (index) => _onItemTapped(index, context),
-                    items: [
-                      BottomNavyBarItem(
-                          icon: Icon(MdiIcons.notebook),
-                          title: Text(I18n.of(context).recipes),
-                          activeColor: Colors.orange,
-                          inactiveColor: Colors.white),
-                      BottomNavyBarItem(
-                        icon: Icon(Icons.favorite),
-                        title: Text(I18n.of(context).favorites),
-                        activeColor: Colors.pink,
-                        inactiveColor: Colors.white,
-                      ),
-                      BottomNavyBarItem(
-                          icon: Icon(Icons.shopping_basket),
-                          title: Text(I18n.of(context).basket),
-                          activeColor: Colors.brown[300],
-                          inactiveColor: Colors.white),
-                      BottomNavyBarItem(
-                        icon: Icon(MdiIcons.diceMultiple),
-                        title: Text(I18n.of(context).explore),
-                        activeColor: Colors.green,
-                        inactiveColor: Colors.white,
-                      ),
-                      BottomNavyBarItem(
-                          icon: Icon(Icons.settings),
-                          title: Text(I18n.of(context).settings),
-                          activeColor: Colors.grey[100],
-                          inactiveColor: Colors.white)
-                    ],
                   ),
-                ),
+                ]..removeWhere((item) => item == null),
               ),
-              RecipeBubbles(),
-            ],
-          );
-        } else {
-          return Text(state.toString());
-        }
-      },
-    );
+              backgroundColor: _getBackgroundColor(state.selectedIndex),
+              bottomNavigationBar: MediaQuery.of(context).size.width <= 900
+                  ? MediaQuery.of(context).size.width < 346
+                      ? BottomNavigationBar(
+                          backgroundColor: Color(0xff232323),
+                          currentIndex: state.selectedIndex,
+                          onTap: (index) => _onItemTapped(index, context),
+                          items: [
+                            BottomNavigationBarItem(
+                              icon: Icon(MdiIcons.notebook),
+                              title: Text(
+                                I18n.of(context).recipes,
+                                style: TextStyle(color: Colors.orange),
+                              ),
+                              activeIcon: Icon(
+                                MdiIcons.notebook,
+                                color: Colors.orange,
+                              ),
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.favorite),
+                              title: Text(
+                                I18n.of(context).favorites,
+                                style: TextStyle(color: Colors.pink),
+                              ),
+                              activeIcon: Icon(
+                                Icons.favorite,
+                                color: Colors.pink,
+                              ),
+                            ),
+                            BottomNavigationBarItem(
+                                icon: Icon(Icons.shopping_basket),
+                                title: Text(
+                                  I18n.of(context).basket,
+                                  style: TextStyle(color: Colors.brown[300]),
+                                ),
+                                activeIcon: Icon(
+                                  Icons.shopping_basket,
+                                  color: Colors.brown[300],
+                                )),
+                            BottomNavigationBarItem(
+                              icon: Icon(MdiIcons.diceMultiple),
+                              title: Text(
+                                I18n.of(context).explore,
+                                style: TextStyle(color: Colors.green),
+                              ),
+                              activeIcon: Icon(
+                                MdiIcons.diceMultiple,
+                                color: Colors.green,
+                              ),
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.settings),
+                              title: Text(
+                                I18n.of(context).settings,
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              activeIcon: Icon(
+                                Icons.settings,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Theme(
+                          data: Theme.of(context)
+                              .copyWith(canvasColor: Colors.black87),
+                          child: BottomNavyBar(
+                            backgroundColor: Color(0xff232323),
+                            animationDuration: Duration(milliseconds: 150),
+                            selectedIndex: state.selectedIndex,
+                            showElevation: true,
+                            onItemSelected: (index) =>
+                                _onItemTapped(index, context),
+                            items: [
+                              BottomNavyBarItem(
+                                  icon: Icon(MdiIcons.notebook),
+                                  title: Text(I18n.of(context).recipes),
+                                  activeColor: Colors.orange,
+                                  inactiveColor: Colors.white),
+                              BottomNavyBarItem(
+                                icon: Icon(Icons.favorite),
+                                title: Text(I18n.of(context).favorites),
+                                activeColor: Colors.pink,
+                                inactiveColor: Colors.white,
+                              ),
+                              BottomNavyBarItem(
+                                  icon: Icon(Icons.shopping_basket),
+                                  title: Text(I18n.of(context).basket),
+                                  activeColor: Colors.brown[300],
+                                  inactiveColor: Colors.white),
+                              BottomNavyBarItem(
+                                icon: Icon(MdiIcons.diceMultiple),
+                                title: Text(I18n.of(context).explore),
+                                activeColor: Colors.green,
+                                inactiveColor: Colors.white,
+                              ),
+                              BottomNavyBarItem(
+                                  icon: Icon(Icons.settings),
+                                  title: Text(I18n.of(context).settings),
+                                  activeColor: Colors.grey[100],
+                                  inactiveColor: Colors.white)
+                            ],
+                          ),
+                        )
+                  : null,
+            );
+          } else {
+            return Text(state.toString());
+          }
+        },
+      ),
+      RecipeBubbles(),
+      MediaQuery.of(context).size.width > 900
+          ? ShoppingCartFloating(
+              initialPosition: Offset(
+                200,
+                200,
+              ),
+            )
+          : null
+    ]..removeWhere((item) => item == null));
   }
 
   Widget _getSplashScreen() {

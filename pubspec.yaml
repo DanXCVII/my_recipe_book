@@ -30,7 +30,7 @@ dependencies:
   path_provider: ^1.6.0 # BSD
   image: ^2.1.4 # Apache 2.0
   transparent_image: ^1.0.0 # MIT
-  photo_view: ^0.9.0 # MIT
+  photo_view: ^0.9.2 # MIT
   flutter_image_compress: ^0.6.5+1 # MIT
   shared_preferences: ^0.5.6 # BSD
   archive: ^2.0.11 # Apache 2.0
@@ -38,8 +38,7 @@ dependencies:
   share_extend: ^1.1.1 # MIT
   bottom_navy_bar: ^5.3.2 # Apache 2.0
   intro_slider: ^2.2.8 # MIT
-  flutter_tindercard: ^0.1.8 # Apache 2.0
-  sliding_up_panel: ^1.0.0 # BSD
+  sliding_up_panel: ^1.0.1 # BSD
   autocomplete_textfield: ^1.7.3 # MIT
   hive_flutter: ^0.2.1 # Apache 2.0
   hive_generator: ^0.5.2 # Apache 2.0
@@ -71,6 +70,7 @@ dependencies:
   flutter_colorpicker: ^0.3.2 # MIT
   dio: ^3.0.9 # MIT
   hyphenator: ^0.0.3 # BSD
+  wakelock: ^0.1.4+1 # BSD
 
   
 dev_dependencies:

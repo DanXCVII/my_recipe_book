@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:wakelock/wakelock.dart';
 
 import './recipe_card.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -35,8 +36,7 @@ class RecipeCardBig extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double deviceHeight = MediaQuery.of(context).size.height;
-    double scaleFactor = deviceHeight / 800;
+    double scaleFactor = cardHeight / 580;
 
     TextStyle smallHeading = TextStyle(
         fontSize: 16, color: Color(0xffC75F00), fontWeight: FontWeight.w600);
@@ -52,6 +52,9 @@ class RecipeCardBig extends StatelessWidget {
     return Material(
       child: GestureDetector(
         onTap: () {
+          if (GlobalSettings().standbyDisabled()) {
+            Wakelock.enable();
+          }
           Navigator.pushNamed(
             context,
             RouteNames.recipeScreen,
@@ -61,7 +64,10 @@ class RecipeCardBig extends StatelessWidget {
               heroImageTag,
               BlocProvider.of<RecipeManagerBloc>(context),
             ),
-          ).then((_) => Ads.hideBottomBannerAd());
+          ).then((_) {
+            Wakelock.disable();
+            Ads.hideBottomBannerAd();
+          });
         },
         child: Container(
           decoration: BoxDecoration(
@@ -119,19 +125,20 @@ class RecipeCardBig extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              Container(
-                                width: cardWidth - 130,
-                                padding: EdgeInsets.all(scaleFactor * 12.0),
-                                child: Text(
-                                  recipe.name,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  textScaleFactor: scaleFactor,
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w700,
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    recipe.name,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    textScaleFactor: scaleFactor,
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -200,60 +207,71 @@ class RecipeCardBig extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              !(recipe.preperationTime != 0 &&
-                                      recipe.cookingTime != 0 &&
-                                      recipe.totalTime != 0)
-                                  ? Container()
-                                  : null,
-                              recipe.preperationTime != 0
-                                  ? Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(I18n.of(context).prep_time,
-                                            textScaleFactor: scaleFactor,
-                                            style: smallHeading),
-                                        SizedBox(height: 5),
-                                        Text(
-                                            getTimeHoursMinutes(
-                                                recipe.preperationTime),
-                                            textScaleFactor: scaleFactor,
-                                            style: timeStyle),
-                                      ],
+                              recipe.preperationTime != null
+                                  ? Expanded(
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                            Text(I18n.of(context).prep_time,
+                                                textScaleFactor: scaleFactor,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: smallHeading),
+                                            SizedBox(height: 5),
+                                            Text(
+                                                getTimeHoursMinutes(
+                                                    recipe.preperationTime),
+                                                textScaleFactor: scaleFactor,
+                                                style: timeStyle),
+                                          ],
+                                        ),
+                                      ),
                                     )
-                                  : null,
-                              recipe.cookingTime != 0
-                                  ? Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(I18n.of(context).cook_time,
-                                            textScaleFactor: scaleFactor,
-                                            style: smallHeading),
-                                        SizedBox(height: 5),
-                                        Text(
-                                            getTimeHoursMinutes(
-                                                recipe.cookingTime),
-                                            textScaleFactor: scaleFactor,
-                                            style: timeStyle),
-                                      ],
+                                  : Container(),
+                              recipe.cookingTime != null
+                                  ? Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text(I18n.of(context).cook_time,
+                                              textScaleFactor: scaleFactor,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: smallHeading),
+                                          SizedBox(height: 5),
+                                          Text(
+                                              getTimeHoursMinutes(
+                                                  recipe.cookingTime),
+                                              textScaleFactor: scaleFactor,
+                                              style: timeStyle),
+                                        ],
+                                      ),
                                     )
-                                  : null,
-                              recipe.totalTime != 0
-                                  ? Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(I18n.of(context).total_time,
-                                            textScaleFactor: scaleFactor,
-                                            style: smallHeading),
-                                        SizedBox(height: 5),
-                                        Text(
-                                            getTimeHoursMinutes(
-                                                recipe.totalTime),
-                                            textScaleFactor: scaleFactor,
-                                            style: timeStyle),
-                                      ],
+                                  : Container(),
+                              recipe.totalTime != null
+                                  ? Expanded(
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                            Text(I18n.of(context).total_time,
+                                                textScaleFactor: scaleFactor,
+                                                style: smallHeading),
+                                            SizedBox(height: 5),
+                                            Text(
+                                                getTimeHoursMinutes(
+                                                    recipe.totalTime),
+                                                textScaleFactor: scaleFactor,
+                                                style: timeStyle),
+                                          ],
+                                        ),
+                                      ),
                                     )
                                   : null,
                               !(recipe.preperationTime != 0 &&

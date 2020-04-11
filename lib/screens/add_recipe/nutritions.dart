@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
+import 'package:my_recipe_book/widgets/icon_info_message.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../../ad_related/ad.dart';
 import '../../blocs/new_recipe/nutritions/nutritions_bloc.dart';
@@ -17,6 +20,7 @@ import '../../models/recipe.dart';
 import '../../widgets/dialogs/textfield_dialog.dart';
 import '../../widgets/icon_info_message.dart';
 import '../recipe_screen.dart';
+import '../recipe_screen/recipe_screen.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class AddRecipeNutritionsArguments {
@@ -139,22 +143,25 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                     .popUntil((route) => route.isFirst));
                           } else {
                             Future.delayed(Duration(milliseconds: 300))
-                                .then(
-                                  (_) => Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    RouteNames.recipeScreen,
-                                    ModalRoute.withName('recipeRoute'),
-                                    arguments: RecipeScreenArguments(
-                                      BlocProvider.of<ShoppingCartBloc>(
-                                          context),
-                                      state.recipe,
-                                      'heroImageTag',
-                                      BlocProvider.of<RecipeManagerBloc>(
-                                          context),
-                                    ),
-                                  ),
-                                )
-                                .then((_) => Ads.hideBottomBannerAd());
+                                .then((_) {
+                              if (GlobalSettings().standbyDisabled()) {
+                                Wakelock.enable();
+                              }
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                RouteNames.recipeScreen,
+                                ModalRoute.withName('recipeRoute'),
+                                arguments: RecipeScreenArguments(
+                                  BlocProvider.of<ShoppingCartBloc>(context),
+                                  state.recipe,
+                                  'heroImageTag',
+                                  BlocProvider.of<RecipeManagerBloc>(context),
+                                ),
+                              ).then((_) {
+                                Wakelock.disable();
+                                Ads.hideBottomBannerAd();
+                              });
+                            });
                           }
                         }
                       },

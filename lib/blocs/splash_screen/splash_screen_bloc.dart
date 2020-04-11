@@ -50,6 +50,10 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     recipeCategoryOverview = _initRecipeOverviewScreen(prefs);
     _initTheme(prefs, event.context);
     await _initAds();
+    Directory tmpDir = await getTemporaryDirectory();
+    if (await tmpDir.exists()) {
+      await tmpDir.delete(recursive: true);
+    }
 
     // delete cache
     // await getTemporaryDirectory()
@@ -59,6 +63,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       showIntro = true;
       prefs.setBool('showIntro', false);
       prefs.setBool(Constants.enableAnimations, true);
+      prefs.setBool(Constants.disableStandby, true);
       GlobalSettings().enableAnimations(true);
       await initHive(true);
       await prefs.setBool('pro_version', false);
@@ -66,6 +71,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     } else {
       GlobalSettings()
           .enableAnimations(prefs.getBool(Constants.enableAnimations));
+      GlobalSettings().disableStandby(prefs.getBool(Constants.disableStandby));
       await initHive(false);
     }
     Ads.initialize();
