@@ -17,7 +17,7 @@ import '../../generated/i18n.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
 import '../../widgets/dialogs/textfield_dialog.dart';
-import '../recipe_screen/recipe_screen.dart';
+import '../recipe_screen.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class AddRecipeNutritionsArguments {
