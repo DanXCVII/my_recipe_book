@@ -68,6 +68,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     } else {
       GlobalSettings()
           .enableAnimations(prefs.getBool(Constants.enableAnimations));
+      GlobalSettings().disableStandby(prefs.getBool(Constants.disableStandby));
       await initHive(false);
     }
 
