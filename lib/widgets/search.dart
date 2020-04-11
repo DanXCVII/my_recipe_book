@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
+import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
 import 'package:my_recipe_book/screens/recipe_overview.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -109,6 +111,9 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                     .getRecipeByName(resultRecipeNames[index ~/ 2])
                     .then((recipe) {
                   close(context, null);
+                  if (GlobalSettings().standbyDisabled()) {
+                    Wakelock.enable();
+                  }
                   Navigator.pushNamed(
                     context,
                     RouteNames.recipeScreen,
@@ -118,7 +123,8 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                       'heroTag',
                       BlocProvider.of<RecipeManagerBloc>(context),
                     ),
-                  );
+                  ).then((_) => Wakelock.disable());
+                  ;
                 });
               },
             );

@@ -202,5 +202,8 @@
   "info_export_description": "It's recommended to sometimes save your recipes as zip, just i case that your smartphone gets lost or the app breaks for whatever reason.",
   "tags": "tags",
   "shopping_cart_help": "shoppingcart help",
-  "shopping_cart_help_desc": "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction."
+  "shopping_cart_help_desc": "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction.",
+  "complex_animations": "enable complex animations",
+  "keep_screen_on": "keep screen on",
+  "only_recipe_screen": "only on recipe screen"
 }

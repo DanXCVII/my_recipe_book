@@ -440,6 +440,12 @@ class I18n implements WidgetsLocalizations {
   String get shopping_cart_help => "shoppingcart help";
   /// "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction."
   String get shopping_cart_help_desc => "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction.";
+  /// "enable complex animations"
+  String get complex_animations => "enable complex animations";
+  /// "keep screen on"
+  String get keep_screen_on => "keep screen on";
+  /// "only on recipe screen"
+  String get only_recipe_screen => "only on recipe screen";
 }
 
 class _I18n_en_US extends I18n {
@@ -1061,6 +1067,15 @@ class _I18n_de_DE extends I18n {
   /// "Um Zutaten zum Einkaufswagen hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder vom Einkaufswagen zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt."
   @override
   String get shopping_cart_help_desc => "Um Zutaten zum Einkaufswagen hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder vom Einkaufswagen zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt.";
+  /// "aufwendige Animationen"
+  @override
+  String get complex_animations => "aufwendige Animationen";
+  /// "Bildschirmtimeout deaktivieren"
+  @override
+  String get keep_screen_on => "Bildschirmtimeout deaktivieren";
+  /// "nur auf Rezeptbildschirm"
+  @override
+  String get only_recipe_screen => "nur auf Rezeptbildschirm";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

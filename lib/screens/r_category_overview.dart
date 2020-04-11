@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
+import 'package:my_recipe_book/models/tuple.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -23,6 +25,8 @@ import 'recipe_screen/recipe_screen.dart';
 class RecipeCategoryOverview extends StatelessWidget {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  final RefreshController _refreshControllerTwo =
+      RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
@@ -31,41 +35,79 @@ class RecipeCategoryOverview extends StatelessWidget {
       if (state is LoadingRecipeCategoryOverviewState) {
         return Center(child: CircularProgressIndicator());
       } else if (state is LoadedRecipeCategoryOverview) {
-        return AnimationLimiter(
-          child: SmartRefresher(
-            enablePullDown: true,
-            enablePullUp: false,
-            header: WaterDropMaterialHeader(),
-            controller: _refreshController,
-            onRefresh: () async {
-              await Future.delayed(Duration(milliseconds: 200));
-              BlocProvider.of<RecipeCategoryOverviewBloc>(context).add(
-                  RCOLoadRecipeCategoryOverview(
-                      reopenBoxes: true, categoryOverviewContext: context));
-              _refreshController.refreshCompleted();
-            },
-            child: ListView.builder(
-              itemCount: state.rCategoryOverview.length,
-              itemBuilder: (context, index) =>
-                  AnimationConfiguration.staggeredList(
-                position: index,
-                duration: const Duration(milliseconds: 375),
-                child: SlideAnimation(
-                  horizontalOffset: MediaQuery.of(context).size.width / 2,
-                  child: FadeInAnimation(
-                    child: RecipeRow(
-                      category: state.rCategoryOverview[index].item1,
-                      recipes: state.rCategoryOverview[index].item2,
-                    ),
+        return MediaQuery.of(context).size.width > 1000
+            ? Row(
+                children: <Widget>[
+                  Expanded(
+                    child: _getRecipeCategoryOverviewList(
+                        context,
+                        state.rCategoryOverview.sublist(0,
+                            (state.rCategoryOverview.length / 2).floor() + 1),
+                        _refreshController),
                   ),
+                  Container(
+                    height: double.infinity,
+                    width: 10,
+                    color: Colors.black,
+                  ),
+                  Expanded(
+                    child: _getRecipeCategoryOverviewList(
+                        context,
+                        state.rCategoryOverview.sublist(
+                            (state.rCategoryOverview.length / 2).floor() + 1,
+                            state.rCategoryOverview.length),
+                        _refreshControllerTwo),
+                  ),
+                ],
+              )
+            : _getRecipeCategoryOverviewList(
+                context,
+                state.rCategoryOverview,
+                _refreshController,
+              );
+      }
+      return (Text(state.toString()));
+    });
+  }
+
+  Widget _getRecipeCategoryOverviewList(
+    BuildContext context,
+    List<Tuple2<String, List<Recipe>>> recipeCategories,
+    RefreshController refreshController,
+  ) {
+    return AnimationLimiter(
+      child: SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: false,
+        header: WaterDropMaterialHeader(),
+        controller: refreshController,
+        onRefresh: () async {
+          await Future.delayed(Duration(milliseconds: 200));
+          BlocProvider.of<RecipeCategoryOverviewBloc>(context).add(
+              RCOLoadRecipeCategoryOverview(
+                  reopenBoxes: true, categoryOverviewContext: context));
+          refreshController.refreshCompleted();
+        },
+        child: ListView.builder(
+          itemCount: MediaQuery.of(context).size.width > 1000
+              ? (recipeCategories.length / 2).round()
+              : recipeCategories.length,
+          itemBuilder: (context, index) => AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 375),
+            child: SlideAnimation(
+              horizontalOffset: MediaQuery.of(context).size.width / 2,
+              child: FadeInAnimation(
+                child: RecipeRow(
+                  category: recipeCategories[index].item1,
+                  recipes: recipeCategories[index].item2,
                 ),
               ),
             ),
           ),
-        );
-      }
-      return (Text(state.toString()));
-    });
+        ),
+      ),
+    );
   }
 }
 
@@ -287,6 +329,9 @@ class RecipeHozizontalList extends StatelessWidget {
 
   void _pushRecipeRoute(
       BuildContext context, int index, String heroImageTag, Recipe recipe) {
+    if (GlobalSettings().standbyDisabled()) {
+      Wakelock.enable();
+    }
     Navigator.pushNamed(
       context,
       RouteNames.recipeScreen,
@@ -296,6 +341,6 @@ class RecipeHozizontalList extends StatelessWidget {
         heroImageTag,
         BlocProvider.of<RecipeManagerBloc>(context),
       ),
-    );
+    ).then((_) => Wakelock.disable());
   }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -54,6 +55,9 @@ class _RecipeBubbleState extends State<RecipeBubble> {
   Widget _getRecipeBubble() {
     return GestureDetector(
       onTap: () {
+        if (GlobalSettings().standbyDisabled()) {
+          Wakelock.enable();
+        }
         Navigator.pushNamed(
           context,
           RouteNames.recipeScreen,
@@ -63,7 +67,7 @@ class _RecipeBubbleState extends State<RecipeBubble> {
             widget.recipe.name + "##bubble#",
             BlocProvider.of<RecipeManagerBloc>(context),
           ),
-        );
+        ).then((_) => Wakelock.disable());
       },
       child: Hero(
         tag: GlobalSettings().animationsEnabled()

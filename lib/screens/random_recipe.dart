@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_tindercard/flutter_tindercard.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/tinder_card.dart';
 
 import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 import '../generated/i18n.dart';
@@ -17,7 +17,7 @@ class SwypingCardsScreen extends StatefulWidget {
 }
 
 class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
-  ListView _getCategorySelector(
+  ListView _getCategorySelectorTopBar(
       List<String> categoryNames, String selectedCategory) {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
@@ -51,98 +51,148 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
     );
   }
 
+  Widget _getCategoriesSelectorSideList(
+      List<String> categoryNames, String selectedCategory) {
+    return Container(
+      height: double.infinity,
+      color: Color(0xff313131),
+      width: 300,
+      child: ListView(
+        children: List.generate(
+          categoryNames.length * 2,
+          (index) => index % 2 == 0
+              ? Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    title: Text(categoryNames[(index / 2).floor()],
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      BlocProvider.of<RandomRecipeExplorerBloc>(context).add(
+                          ChangeCategory(categoryNames[(index / 2).floor()]));
+                    },
+                  ),
+                )
+              : Divider(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RandomRecipeExplorerBloc, RandomRecipeExplorerState>(
-        builder: (context, state) {
-      if (state is LoadingRandomRecipeExplorer) {
-        return Center(child: CircularProgressIndicator());
-      } else if (state is LoadingRecipes) {
-        return Column(children: <Widget>[
-          SafeArea(
-            child: Container(
-              height: 40,
-              padding: const EdgeInsets.only(top: 8.0),
-              width: MediaQuery.of(context).size.width,
-              child: _getCategorySelector(
-                  state.categories, state.categories[state.selectedCategory]),
-            ),
-          ),
-          Divider(),
-          Row(
+    return SafeArea(
+      child: BlocBuilder<RandomRecipeExplorerBloc, RandomRecipeExplorerState>(
+          builder: (context, state) {
+        if (state is LoadingRandomRecipeExplorer) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is LoadingRecipes) {
+          return Column(
+              children: <Widget>[
+            MediaQuery.of(context).size.width <= 750
+                ? SafeArea(
+                    child: Container(
+                      height: 40,
+                      padding: const EdgeInsets.only(top: 8.0),
+                      width: MediaQuery.of(context).size.width,
+                      child: _getCategorySelectorTopBar(state.categories,
+                          state.categories[state.selectedCategory]),
+                    ),
+                  )
+                : null,
+            MediaQuery.of(context).size.width <= 750 ? Divider() : null,
+            Row(
+              children: <Widget>[
+                MediaQuery.of(context).size.width > 750
+                    ? _getCategoriesSelectorSideList(
+                        state.categories,
+                        state.categories[state.selectedCategory],
+                      )
+                    : null,
+                Expanded(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ]..removeWhere((item) => item == null),
+            )
+          ]..removeWhere((item) => item == null));
+        } else if (state is LoadedRandomRecipeExplorer) {
+          return Column(
             children: <Widget>[
-              MediaQuery.of(context).size.width > 550
-                  ? Container(
-                      height: 500,
-                      width: 300,
-                      child: ListView(
-                        children: <Widget>[],
+              MediaQuery.of(context).size.width <= 750
+                  ? SafeArea(
+                      child: Container(
+                        height: 40,
+                        padding: const EdgeInsets.only(top: 8.0),
+                        width: MediaQuery.of(context).size.width,
+                        child: _getCategorySelectorTopBar(state.categories,
+                            state.categories[state.selectedCategory]),
                       ),
                     )
                   : null,
+              MediaQuery.of(context).size.width <= 750 ? Divider() : null,
               Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(),
+                child: Row(
+                  children: <Widget>[
+                    MediaQuery.of(context).size.width > 750
+                        ? _getCategoriesSelectorSideList(
+                            state.categories,
+                            state.categories[state.selectedCategory],
+                          )
+                        : null,
+                    Expanded(
+                      child: Container(
+                        height: MediaQuery.of(context).size.height,
+                        child: state.randomRecipes.isEmpty
+                            ? Center(
+                                child: IconInfoMessage(
+                                iconWidget: Icon(
+                                  MdiIcons.chefHat,
+                                  color: Colors.white,
+                                  size: 70.0,
+                                ),
+                                description: I18n.of(context)
+                                    .no_recipes_under_this_category,
+                              ))
+                            : TweenAnimationBuilder(
+                                tween: Tween<double>(begin: 0.1, end: 1),
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeOutQuad,
+                                child: LayoutBuilder(
+                                  builder: (context, constraints) =>
+                                      SwypingCards(
+                                    maxHeigth: constraints.maxHeight,
+                                    maxWidth: constraints.maxWidth,
+                                    recipes: state.randomRecipes,
+                                  ),
+                                ),
+                                builder: (_, double opacity, myChild) =>
+                                    Opacity(opacity: opacity, child: myChild),
+                              ),
+                      ),
+                    ),
+                  ]..removeWhere((item) => item == null),
                 ),
               ),
             ]..removeWhere((item) => item == null),
-          )
-        ]);
-      } else if (state is LoadedRandomRecipeExplorer) {
-        return Column(
-          children: <Widget>[
-            SafeArea(
-              child: Container(
-                height: 40,
-                padding: const EdgeInsets.only(top: 8.0),
-                width: MediaQuery.of(context).size.width,
-                child: _getCategorySelector(
-                    state.categories, state.categories[state.selectedCategory]),
-              ),
-            ),
-            Divider(),
-            Expanded(
-              child: Container(
-                height: MediaQuery.of(context).size.height > 730
-                    ? MediaQuery.of(context).size.height - 200
-                    : MediaQuery.of(context).size.height - 136,
-                child: state.randomRecipes.isEmpty
-                    ? Center(
-                        child: IconInfoMessage(
-                        iconWidget: Icon(
-                          MdiIcons.chefHat,
-                          color: Colors.white,
-                          size: 70.0,
-                        ),
-                        description:
-                            I18n.of(context).no_recipes_under_this_category,
-                      ))
-                    : TweenAnimationBuilder(
-                        tween: Tween<double>(begin: 0.1, end: 1),
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeOutQuad,
-                        child: SwypingCards(
-                          recipes: state.randomRecipes,
-                        ),
-                        builder: (_, double opacity, myChild) =>
-                            Opacity(opacity: opacity, child: myChild),
-                      ),
-              ),
-            ),
-          ],
-        );
-      } else {
-        return Text("uncatched state $state");
-      }
-    });
+          );
+        } else {
+          return Text("uncatched state $state");
+        }
+      }),
+    );
   }
 }
 
 class SwypingCards extends StatefulWidget {
   final List<Recipe> recipes;
+  final double maxWidth;
+  final double maxHeigth;
 
   SwypingCards({
     @required this.recipes,
+    @required this.maxWidth,
+    @required this.maxHeigth,
     Key key,
   }) : super(key: key);
 
@@ -156,17 +206,15 @@ class _SwypingCardsState extends State<SwypingCards>
 
   @override
   Widget build(BuildContext context) {
-    double cardWidthSpace = MediaQuery.of(context).size.width > 550
-        ? MediaQuery.of(context).size.width - 200
-        : MediaQuery.of(context).size.width;
-
-    double maxHeight = MediaQuery.of(context).size.height > 730
-        ? MediaQuery.of(context).size.height - 200
-        : MediaQuery.of(context).size.height - 150;
-    double maxWidth = maxHeight / 1.4;
-    if (maxWidth > cardWidthSpace * 0.9) {
-      maxWidth = cardWidthSpace * 0.9;
+    double maxWidthCard;
+    double maxHeightCard = widget.maxHeigth > 650 ? 650 : widget.maxHeigth;
+    double calculatedWidth = maxHeightCard / 1.5;
+    if (calculatedWidth > widget.maxWidth) {
+      maxWidthCard = widget.maxWidth - 30;
+    } else {
+      maxWidthCard = calculatedWidth;
     }
+
     return Stack(children: <Widget>[
       Center(
           child: IconInfoMessage(
@@ -180,35 +228,38 @@ class _SwypingCardsState extends State<SwypingCards>
         ),
         description: I18n.of(context).you_made_it_to_the_end,
       )),
-      Container(
-        height: MediaQuery.of(context).size.height > 730
-            ? MediaQuery.of(context).size.height - 200
-            : MediaQuery.of(context).size.height - 50,
-        child: TinderSwapCard(
-          orientation: AmassOrientation.TOP,
-          totalNum: 50,
-          stackNum: 3,
-          animDuration: 200,
-          swipeEdge: 4.0,
-          maxWidth: maxWidth,
-          maxHeight: maxHeight,
-          minWidth: maxWidth * 0.9,
-          minHeight: maxHeight - 100,
-          cardBuilder: (context, index) => RecipeCardBig(
-            recipe: widget.recipes[index - currentSwipeIndex],
-            index: index,
-            cardWidth: maxWidth,
-            cardHeight: maxHeight,
+      Center(
+        child: Container(
+          height: maxHeightCard + 50,
+          width: maxWidthCard + 50,
+          child: TinderSwapCard(
+            orientation: AmassOrientation.TOP,
+            totalNum: 50,
+            stackNum: 3,
+            animDuration: 200,
+            swipeEdge: 4.0,
+            maxWidth: maxWidthCard,
+            maxHeight: maxHeightCard,
+            widgetWidth: maxWidthCard,
+            widgetHeight: maxHeightCard,
+            minWidth: maxWidthCard * 0.9,
+            minHeight: maxHeightCard * 0.9,
+            cardBuilder: (context, index) => RecipeCardBig(
+              recipe: widget.recipes[index - currentSwipeIndex],
+              index: index,
+              cardWidth: maxWidthCard,
+              cardHeight: maxHeightCard,
+            ),
+            cardController: CardController(),
+            swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
+              /// Get swiping card's alignment
+              if (align.x < 0) {
+                //Card is LEFT swiping
+              } else if (align.x > 0) {
+                //Card is RIGHT swiping
+              }
+            },
           ),
-          cardController: CardController(),
-          swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
-            /// Get swiping card's alignment
-            if (align.x < 0) {
-              //Card is LEFT swiping
-            } else if (align.x > 0) {
-              //Card is RIGHT swiping
-            }
-          },
         ),
       ),
     ]);

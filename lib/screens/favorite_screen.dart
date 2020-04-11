@@ -45,21 +45,29 @@ class FavoriteRecipeCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StaggeredGridView.countBuilder(
-      padding: EdgeInsets.all(12),
-      crossAxisCount: (MediaQuery.of(context).size.width / 200).round() * 2,
-      itemCount: favoriteRecipes.length,
-      itemBuilder: (BuildContext context, int index) => RecipeCard(
-        recipe: favoriteRecipes[index],
-        shadow: Theme.of(context).backgroundColor == Colors.white
-            ? Colors.grey[400]
-            : Colors.grey[900],
-        heroImageTag:
-            "${favoriteRecipes[index].imagePreviewPath}--${favoriteRecipes[index].name}",
+    return LayoutBuilder(
+          builder: (context, constraints ) => StaggeredGridView.countBuilder(
+        padding: EdgeInsets.all(12),
+        crossAxisCount:
+            ((constraints.maxWidth / 200).round() * 2) < 4
+                ? 4
+                : (constraints.maxWidth / 200).round() * 2,
+        itemCount: favoriteRecipes.length,
+        itemBuilder: (BuildContext context, int index) => LayoutBuilder(
+          builder: (context, constraints) => RecipeCard(
+            recipe: favoriteRecipes[index],
+            width: constraints.maxWidth,
+            shadow: Theme.of(context).backgroundColor == Colors.white
+                ? Colors.grey[400]
+                : Colors.grey[900],
+            heroImageTag:
+                "${favoriteRecipes[index].imagePreviewPath}--${favoriteRecipes[index].name}",
+          ),
+        ),
+        staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
+        mainAxisSpacing: 12.0,
+        crossAxisSpacing: 12.0,
       ),
-      staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
-      mainAxisSpacing: 12.0,
-      crossAxisSpacing: 12.0,
     );
   }
 }

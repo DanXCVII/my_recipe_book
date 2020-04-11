@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/constants/global_constants.dart';
+import 'package:my_recipe_book/screens/recipe_screen/recipe_screen.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/complexity_wave.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/recipe_tag_wrap.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/time_info.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/time_info_chart.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/global_settings.dart';
 import '../models/recipe.dart';
@@ -18,9 +21,13 @@ const String recipeScreenFontFamily = 'Questrial';
 class RecipeInfoVertical extends StatelessWidget {
   final Recipe recipe;
   final String heroImageTag;
+  final double width;
+  final List<String> categoriesFiles;
 
   const RecipeInfoVertical(
     this.recipe,
+    this.width,
+    this.categoriesFiles,
     this.heroImageTag, {
     Key key,
   }) : super(key: key);
@@ -44,8 +51,8 @@ class RecipeInfoVertical extends StatelessWidget {
                         recipe.imagePath, heroImageTag, context);
                   },
                   child: Container(
-                    height: 140,
-                    width: 140,
+                    height: width * 0.6,
+                    width: width * 0.6,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
@@ -61,7 +68,7 @@ class RecipeInfoVertical extends StatelessWidget {
                       alignment: Alignment.bottomRight,
                       child: AnimatedVegetable(
                         recipe.vegetable,
-                        small: true,
+                        small: width > 300 ? false : true,
                       ),
                     ),
                   ),
@@ -85,46 +92,64 @@ class RecipeInfoVertical extends StatelessWidget {
             ),
           ),
         ),
+        SizedBox(height: 12),
         Center(
           child: _showComplexTopArea(
                   recipe.preperationTime, recipe.cookingTime, recipe.totalTime)
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    TimeInfo(
-                      textColor,
-                      recipeScreenFontFamily,
-                      recipe.preperationTime,
-                      recipe.totalTime,
-                      recipe.cookingTime,
-                    ),
-                    SizedBox(height: 12),
-                    TimeInfoChart(
-                      textColor,
-                      recipe.preperationTime,
-                      recipe.cookingTime,
-                      recipe.totalTime,
-                      recipeScreenFontFamily,
-                      horizontal: true,
-                    ),
-                    SizedBox(height: 12),
-                    ComplexityWave(
-                      textColor,
-                      recipeScreenFontFamily,
-                      recipe.effort,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
-                      child: RecipeTagWrap(
-                        recipe.tags,
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                  child: Wrap(
+                    direction: Axis.horizontal,
+                    alignment: WrapAlignment.center,
+                    runSpacing: 25,
+                    spacing: 20,
+                    children: <Widget>[
+                      TimeInfo(
+                        textColor,
                         recipeScreenFontFamily,
+                        recipe.preperationTime,
+                        recipe.totalTime,
+                        recipe.cookingTime,
                       ),
-                    )
-                  ],
+                      SizedBox(height: 12),
+                      TimeInfoChart(
+                        textColor,
+                        recipe.preperationTime,
+                        recipe.cookingTime,
+                        recipe.totalTime,
+                        recipeScreenFontFamily,
+                        horizontal: false,
+                      ),
+                      SizedBox(height: 12),
+                      ComplexityWave(
+                        textColor,
+                        recipeScreenFontFamily,
+                        recipe.effort,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
+                        child: RecipeTagWrap(
+                          recipe.tags,
+                          recipeScreenFontFamily,
+                        ),
+                      )
+                    ]..removeWhere((item) => item == null),
+                  ),
                 )
               : null,
         ),
+        width >= 350 && recipe.notes != ""
+            ? NotesSection(notes: recipe.notes)
+            : null,
+        width >= 350 && recipe.source != null && recipe.source != ""
+            ? RecipeSource(recipe.source)
+            : null,
+        width >= 350 && recipe.categories.length > 0
+            ? CategoriesSection(
+                categories: recipe.categories,
+                categoriesFiles: categoriesFiles,
+              )
+            : null,
         recipe.nutritions.isNotEmpty
             ? Container(
                 height: 145,

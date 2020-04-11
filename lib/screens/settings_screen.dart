@@ -98,15 +98,16 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+            leading: Icon(MdiIcons.powerStandby),
+            trailing: DisableStandbyCheckbox(),
+            title: Text(I18n.of(context).keep_screen_on),
+            subtitle: Text(I18n.of(context).only_recipe_screen),
+          ),
+          Divider(),
+          ListTile(
             leading: Icon(MdiIcons.animation),
             trailing: AnimationCheckbox(),
-            title: Text("complex animations"),
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                RouteNames.manageCategories,
-              );
-            },
+            title: Text(I18n.of(context).complex_animations),
           ),
           Divider(),
           ListTile(
@@ -323,6 +324,30 @@ class CustomRightHalfClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) {
     return true;
+  }
+}
+
+class DisableStandbyCheckbox extends StatefulWidget {
+  DisableStandbyCheckbox({Key key}) : super(key: key);
+
+  @override
+  _DisableStandbyCheckboxState createState() => _DisableStandbyCheckboxState();
+}
+
+class _DisableStandbyCheckboxState extends State<DisableStandbyCheckbox> {
+  @override
+  Widget build(BuildContext context) {
+    return Checkbox(
+      value: GlobalSettings().standbyDisabled(),
+      onChanged: (value) {
+        SharedPreferences.getInstance().then((prefs) {
+          setState(() {
+            prefs.setBool(Constants.disableStandby, value);
+            GlobalSettings().disableStandby(value);
+          });
+        });
+      },
+    );
   }
 }
 

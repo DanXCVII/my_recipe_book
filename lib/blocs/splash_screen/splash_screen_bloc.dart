@@ -61,6 +61,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       showIntro = true;
       prefs.setBool('showIntro', false);
       prefs.setBool(Constants.enableAnimations, true);
+      prefs.setBool(Constants.disableStandby, true);
       GlobalSettings().enableAnimations(true);
       await initHive(true);
       await _initializeFirstStartData();

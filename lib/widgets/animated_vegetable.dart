@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/constants/routes.dart';
 import 'package:my_recipe_book/models/enums.dart';
 import 'package:my_recipe_book/screens/recipe_overview.dart';
@@ -31,7 +32,8 @@ class AnimatedVegetable extends StatelessWidget {
       },
       child: TweenAnimationBuilder(
         tween: Tween<double>(begin: 0.1, end: 1),
-        duration: Duration(milliseconds: 700),
+        duration: Duration(
+            milliseconds: GlobalSettings().animationsEnabled() ? 700 : 0),
         curve: Curves.easeOutQuad,
         builder: (_, double size, myChild) => Container(
           height: small ? size * 50 : size * 65,

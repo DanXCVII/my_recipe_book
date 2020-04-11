@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -37,11 +38,13 @@ FontWeight itemsFW = FontWeight.w400;
 class RecipeCard extends StatelessWidget {
   final Recipe recipe;
   final Color shadow;
+  final double width;
   final String heroImageTag;
   final bool activateVegetableHero;
 
   const RecipeCard({
     this.recipe,
+    @required this.width,
     @required this.shadow,
     @required this.heroImageTag,
     this.activateVegetableHero = true,
@@ -50,10 +53,11 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double deviceWidth = MediaQuery.of(context).size.width;
-    double gridTileWidth = deviceWidth / (deviceWidth / 200.floor() + 1);
     return GestureDetector(
       onTap: () {
+        if (GlobalSettings().standbyDisabled()) {
+          Wakelock.enable();
+        }
         Navigator.pushNamed(
           context,
           RouteNames.recipeScreen,
@@ -63,7 +67,7 @@ class RecipeCard extends StatelessWidget {
             heroImageTag,
             BlocProvider.of<RecipeManagerBloc>(context),
           ),
-        );
+        ).then((_) => Wakelock.disable());
       },
       child: Stack(
         children: <Widget>[
@@ -90,11 +94,8 @@ class RecipeCard extends StatelessWidget {
                   color: shadow,
                 ),
               ],
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(gridTileWidth / 10),
-                topRight: Radius.circular(gridTileWidth / 10),
-                bottomRight: Radius.circular(gridTileWidth / 10),
-                bottomLeft: Radius.circular(gridTileWidth / 10),
+              borderRadius: BorderRadius.all(
+                Radius.circular(20),
               ),
             ),
             child: Material(
@@ -111,8 +112,8 @@ class RecipeCard extends StatelessWidget {
                         color: Colors.transparent,
                         child: ClipRRect(
                           borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(gridTileWidth / 10),
-                            topRight: Radius.circular(gridTileWidth / 10),
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
                           ),
                           child: FadeInImage(
                             image: recipe.imagePreviewPath ==
@@ -122,8 +123,8 @@ class RecipeCard extends StatelessWidget {
                             placeholder: MemoryImage(kTransparentImage),
                             fadeInDuration: Duration(milliseconds: 250),
                             fit: BoxFit.cover,
-                            height: gridTileWidth,
-                            width: gridTileWidth + 80,
+                            height: width - 40,
+                            width: width + 80,
                           ),
                         ),
                       ),
@@ -134,7 +135,7 @@ class RecipeCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Container(
-                              width: gridTileWidth - 12,
+                              width: width - 12,
                               child: Text(
                                 "${recipe.name}",
                                 overflow: TextOverflow.ellipsis,
@@ -142,7 +143,7 @@ class RecipeCard extends StatelessWidget {
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 10 + gridTileWidth / 35,
+                                  fontSize: 10 + width / 35,
                                 ),
                               ),
                             ),
@@ -165,112 +166,128 @@ class RecipeCard extends StatelessWidget {
                                       ),
                                     ),
                                     Container(height: 12),
-                                    Row(
-                                      children:
-                                          List<Widget>.generate(5, (index) {
-                                        if (recipe.effort >= (index + 1) * 2) {
-                                          return Icon(
-                                            MdiIcons.knife,
-                                            size: 18,
-                                            color: Theme.of(context)
-                                                        .backgroundColor ==
-                                                    Colors.white
-                                                ? Colors.grey[400]
-                                                : Colors.grey[200],
-                                          );
-                                        } else {
-                                          if (recipe.effort == index * 2 + 1) {
-                                            return Stack(
-                                              children: <Widget>[
-                                                Container(
-                                                  child: Icon(
-                                                    MdiIcons.knife,
-                                                    size: 18,
-                                                    color: Theme.of(context)
-                                                                .backgroundColor ==
-                                                            Colors.white
-                                                        ? Colors.grey[900]
-                                                        : Colors.black,
-                                                  ),
-                                                ),
-                                                ClipPath(
-                                                  clipper:
-                                                      LeftHalfVerticalClipper(),
-                                                  child: ClipPath(
-                                                    child: Icon(
-                                                      MdiIcons.knife,
-                                                      size: 18,
-                                                      color: Theme.of(context)
-                                                                  .backgroundColor ==
-                                                              Colors.white
-                                                          ? Colors.grey[400]
-                                                          : Colors.grey[200],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          } else {
+                                    Container(
+                                      width: width - 27,
+                                      height: 18,
+                                      child: Row(
+                                        children: List<Widget>.generate(5,
+                                            (index) {
+                                          if (recipe.effort >=
+                                              (index + 1) * 2) {
                                             return Icon(
                                               MdiIcons.knife,
                                               size: 18,
                                               color: Theme.of(context)
                                                           .backgroundColor ==
                                                       Colors.white
-                                                  ? Colors.grey[900]
-                                                  : Colors.black,
+                                                  ? Colors.grey[400]
+                                                  : Colors.grey[200],
                                             );
+                                          } else {
+                                            if (recipe.effort ==
+                                                index * 2 + 1) {
+                                              return Stack(
+                                                children: <Widget>[
+                                                  Container(
+                                                    child: Icon(
+                                                      MdiIcons.knife,
+                                                      size: 18,
+                                                      color: Theme.of(context)
+                                                                  .backgroundColor ==
+                                                              Colors.white
+                                                          ? Colors.grey[900]
+                                                          : Colors.black,
+                                                    ),
+                                                  ),
+                                                  ClipPath(
+                                                    clipper:
+                                                        LeftHalfVerticalClipper(),
+                                                    child: ClipPath(
+                                                      child: Icon(
+                                                        MdiIcons.knife,
+                                                        size: 18,
+                                                        color: Theme.of(context)
+                                                                    .backgroundColor ==
+                                                                Colors.white
+                                                            ? Colors.grey[400]
+                                                            : Colors.grey[200],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            } else {
+                                              return Icon(
+                                                MdiIcons.knife,
+                                                size: 18,
+                                                color: Theme.of(context)
+                                                            .backgroundColor ==
+                                                        Colors.white
+                                                    ? Colors.grey[900]
+                                                    : Colors.black,
+                                              );
+                                            }
                                           }
-                                        }
-                                      }),
-                                    )
+                                        })
+                                          ..addAll([
+                                            Spacer(),
+                                            GestureDetector(
+                                              onTap: () {
+                                                if (activateVegetableHero)
+                                                  Navigator.pushNamed(
+                                                    context,
+                                                    RouteNames.vegetableRecipes,
+                                                    arguments:
+                                                        RecipeGridViewArguments(
+                                                            shoppingCartBloc:
+                                                                BlocProvider.of<
+                                                                        ShoppingCartBloc>(
+                                                                    context),
+                                                            vegetable: recipe
+                                                                .vegetable),
+                                                  );
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: recipe.vegetable ==
+                                                          Vegetable.VEGETARIAN
+                                                      ? Colors.green[700]
+                                                      : recipe.vegetable ==
+                                                              Vegetable.VEGAN
+                                                          ? Colors.orange
+                                                          : Colors
+                                                              .lightBlue[400],
+                                                ),
+                                                child: Center(
+                                                  child: Icon(
+                                                    recipe.vegetable ==
+                                                            Vegetable.VEGETARIAN
+                                                        ? MdiIcons.cheese
+                                                        : recipe.vegetable ==
+                                                                Vegetable.VEGAN
+                                                            ? MdiIcons.leaf
+                                                            : MdiIcons.cow,
+                                                    color: recipe.vegetable ==
+                                                            Vegetable.VEGETARIAN
+                                                        ? Colors.amber
+                                                        : recipe.vegetable ==
+                                                                Vegetable.VEGAN
+                                                            ? Colors.green[700]
+                                                            : Colors.brown[800],
+                                                    size: 18,
+                                                  ),
+                                                ),
+                                                height: 20,
+                                                width: 20,
+                                              ),
+                                            )
+                                          ]),
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 Spacer(),
-                                GestureDetector(
-                                  onTap: () {
-                                    if (activateVegetableHero)
-                                      Navigator.pushNamed(
-                                        context,
-                                        RouteNames.vegetableRecipes,
-                                        arguments: RecipeGridViewArguments(
-                                            shoppingCartBloc: BlocProvider.of<
-                                                ShoppingCartBloc>(context),
-                                            vegetable: recipe.vegetable),
-                                      );
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: recipe.vegetable ==
-                                              Vegetable.VEGETARIAN
-                                          ? Colors.green[700]
-                                          : recipe.vegetable == Vegetable.VEGAN
-                                              ? Colors.orange
-                                              : Colors.lightBlue[400],
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        recipe.vegetable == Vegetable.VEGETARIAN
-                                            ? MdiIcons.cheese
-                                            : recipe.vegetable ==
-                                                    Vegetable.VEGAN
-                                                ? MdiIcons.leaf
-                                                : MdiIcons.cow,
-                                        color: recipe.vegetable ==
-                                                Vegetable.VEGETARIAN
-                                            ? Colors.amber
-                                            : recipe.vegetable ==
-                                                    Vegetable.VEGAN
-                                                ? Colors.green[700]
-                                                : Colors.brown[800],
-                                        size: 18,
-                                      ),
-                                    ),
-                                    height: 20,
-                                    width: 20,
-                                  ),
-                                )
                               ],
                             ),
                           ]),

@@ -148,19 +148,22 @@ class RecipeGridView extends StatelessWidget {
                                     2,
                             itemCount: state.recipes.length,
                             itemBuilder: (BuildContext context, int index) =>
-                                RecipeCard(
-                              recipe: state.recipes[index],
-                              shadow: Theme.of(context).backgroundColor ==
-                                      Colors.white
-                                  ? Colors.grey[400]
-                                  : Colors.black,
-                              activateVegetableHero:
-                                  state.recipes[index].vegetable ==
-                                          state.vegetable
-                                      ? false
-                                      : true,
-                              heroImageTag:
-                                  "${state.category}${state.recipes[index].name}",
+                                LayoutBuilder(
+                              builder: (context, constraints) => RecipeCard(
+                                recipe: state.recipes[index],
+                                width: constraints.maxWidth,
+                                shadow: Theme.of(context).backgroundColor ==
+                                        Colors.white
+                                    ? Colors.grey[400]
+                                    : Colors.black,
+                                activateVegetableHero:
+                                    state.recipes[index].vegetable ==
+                                            state.vegetable
+                                        ? false
+                                        : true,
+                                heroImageTag:
+                                    "${state.category}${state.recipes[index].name}",
+                              ),
                             ),
                             staggeredTileBuilder: (int index) =>
                                 StaggeredTile.fit(2),
@@ -197,13 +200,17 @@ class RecipeGridView extends StatelessWidget {
       String category, Vegetable vegetable) {
     return recipes
         .map(
-          (recipe) => RecipeCard(
-            recipe: recipe,
-            shadow: Theme.of(context).backgroundColor == Colors.white
-                ? Colors.grey[400]
-                : Colors.black,
-            activateVegetableHero: recipe.vegetable == vegetable ? false : true,
-            heroImageTag: "$category${recipe.name}",
+          (recipe) => LayoutBuilder(
+            builder: (context, constraints) => RecipeCard(
+              recipe: recipe,
+              width: constraints.maxWidth,
+              shadow: Theme.of(context).backgroundColor == Colors.white
+                  ? Colors.grey[400]
+                  : Colors.black,
+              activateVegetableHero:
+                  recipe.vegetable == vegetable ? false : true,
+              heroImageTag: "$category${recipe.name}",
+            ),
           ),
         )
         .toList();

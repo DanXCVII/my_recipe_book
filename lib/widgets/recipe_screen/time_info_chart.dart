@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:my_recipe_book/screens/recipe_screen/recipe_screen.dart';
 
@@ -57,14 +58,15 @@ class TimeInfoChart extends StatelessWidget {
             clipper:
                 horizontal ? RoundRightLeftClipper() : RoundTopBottomClipper(),
             child: TweenAnimationBuilder(
-              duration: Duration(milliseconds: 700),
+              duration: Duration(
+                  milliseconds: GlobalSettings().animationsEnabled() ? 700 : 0),
               curve: Curves.easeInOut,
               child: Stack(
                 alignment:
                     horizontal ? Alignment.centerLeft : Alignment.bottomCenter,
                 children: <Widget>[
                   Container(
-                    height: 20,
+                    height: horizontal ? 20 : null,
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
