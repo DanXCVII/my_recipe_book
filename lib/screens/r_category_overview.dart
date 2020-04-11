@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/models/tuple.dart';
+import 'package:my_recipe_book/screens/recipe_screen.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wakelock/wakelock.dart';
@@ -18,7 +19,7 @@ import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../models/recipe.dart';
 import 'recipe_overview.dart';
-import 'recipe_screen/recipe_screen.dart';
+import 'recipe_screen.dart';
 
 // Builds the Rows of all the categories
 

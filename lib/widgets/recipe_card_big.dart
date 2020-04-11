@@ -17,7 +17,7 @@ import '../helper.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_overview.dart';
-import '../screens/recipe_screen/recipe_screen.dart';
+import '../screens/recipe_screen.dart';
 
 class RecipeCardBig extends StatelessWidget {
   final Recipe recipe;

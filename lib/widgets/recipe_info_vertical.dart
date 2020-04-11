@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/constants/global_constants.dart';
-import 'package:my_recipe_book/screens/recipe_screen/recipe_screen.dart';
+import 'package:my_recipe_book/screens/recipe_screen.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/complexity_wave.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/recipe_tag_wrap.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/time_info.dart';

@@ -18,7 +18,7 @@ import '../helper.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_overview.dart';
-import '../screens/recipe_screen/recipe_screen.dart';
+import '../screens/recipe_screen.dart';
 
 const Map<int, Color> complexityColors = {
   1: Color(0xff28E424),

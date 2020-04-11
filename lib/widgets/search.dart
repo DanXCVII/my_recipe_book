@@ -13,7 +13,7 @@ import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../local_storage/hive.dart';
 import '../models/recipe.dart';
-import '../screens/recipe_screen/recipe_screen.dart';
+import '../screens/recipe_screen.dart';
 
 class RecipeSearch extends SearchDelegate<SearchRecipe> {
   final List<String> recipeNames;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
-import 'package:my_recipe_book/screens/recipe_screen/recipe_screen.dart';
 
 import '../../helper.dart';
 

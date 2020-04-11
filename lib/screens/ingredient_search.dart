@@ -6,6 +6,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/models/enums.dart';
 import 'package:my_recipe_book/models/tuple.dart';
+import 'package:my_recipe_book/screens/recipe_screen.dart';
 import 'package:wakelock/wakelock.dart';
 
 import '../blocs/ingredient_search/ingredient_search_bloc.dart';
@@ -19,7 +20,7 @@ import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
 import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_image_hero.dart';
-import './recipe_screen/recipe_screen.dart';
+import './recipe_screen.dart';
 
 const double showExpandedSearch = 770;
 

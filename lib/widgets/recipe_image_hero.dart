@@ -10,7 +10,7 @@ import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../constants/routes.dart';
 import '../models/recipe.dart';
-import '../screens/recipe_screen/recipe_screen.dart';
+import '../screens/recipe_screen.dart';
 
 class RecipeImageHero extends StatelessWidget {
   final Recipe recipe;
