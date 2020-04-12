@@ -97,7 +97,7 @@ class RecipeInfoVertical extends StatelessWidget {
           child: _showComplexTopArea(
                   recipe.preperationTime, recipe.cookingTime, recipe.totalTime)
               ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: Wrap(
                     direction: Axis.horizontal,
                     alignment: WrapAlignment.center,

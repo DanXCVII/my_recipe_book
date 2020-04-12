@@ -783,13 +783,15 @@ class HiveProvider {
     for (var key in boxShoppingCart.keys) {
       Recipe recipe = key == "summary"
           ? Recipe(name: "summary")
-          : await lazyBoxRecipes.get(boxKeyString.get(key));
+          : await lazyBoxRecipes.get(key);
       List<CheckableIngredient> ingredients =
           boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [];
       if (recipe != null) {
         shoppingCart.addAll({recipe: ingredients});
       } else {
-        shoppingCart.addAll({Recipe(name: key, notes: "noLink"): ingredients});
+        shoppingCart.addAll({
+          Recipe(name: boxKeyString.get(key), notes: "noLink"): ingredients
+        });
       }
     }
     return shoppingCart;

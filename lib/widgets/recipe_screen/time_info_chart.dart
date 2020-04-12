@@ -32,7 +32,7 @@ class TimeInfoChart extends StatelessWidget {
       totalTimeChart = preperationTime + cookingTime;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Text(
           "${I18n.of(context).total_time}:",

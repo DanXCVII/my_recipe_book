@@ -32,11 +32,12 @@ class FancyShoppingCartScreen extends StatelessWidget {
             icon: Icon(Icons.help_outline),
             onPressed: () {
               showDialog(
-                  context: context,
-                  builder: (_) => InfoDialog(
-                        title: I18n.of(context).shopping_cart_help,
-                        body: I18n.of(context).shopping_cart_help_desc,
-                      ));
+                context: context,
+                builder: (_) => InfoDialog(
+                  title: I18n.of(context).shopping_cart_help,
+                  body: I18n.of(context).shopping_cart_help_desc,
+                ),
+              );
             },
           ),
           IconButton(

@@ -68,47 +68,42 @@ class _RecipeFilterState extends State<RecipeFilter>
                   initialAscending: widget.initialAscending,
                   onChangeDirection: widget.changeAscending,
                 ),
-                Expanded(
-                  flex: 10000,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: DropdownButton<RecipeSort>(
-                      isExpanded: false,
-                      value: dropdownValue,
-                      elevation: 16,
-                      // underline: Container(
-                      //   height: 2,
-                      //   color: Colors.amber,
-                      // ),
-                      onChanged: (RecipeSort newValue) {
-                        widget.changeOrder(newValue);
-                        setState(() {
-                          dropdownValue = newValue;
-                        });
-                      },
-                      items: <RecipeSort>[
-                        RecipeSort.BY_NAME,
-                        RecipeSort.BY_EFFORT,
-                        RecipeSort.BY_INGREDIENT_COUNT,
-                        RecipeSort.BY_LAST_MODIFIED,
-                      ].map<DropdownMenuItem<RecipeSort>>((RecipeSort value) {
-                        return DropdownMenuItem<RecipeSort>(
-                          value: value,
-                          child: Text(value == RecipeSort.BY_NAME
-                              ? I18n.of(context).by_name
-                              : value == RecipeSort.BY_EFFORT
-                                  ? I18n.of(context).by_effort
-                                  : value == RecipeSort.BY_INGREDIENT_COUNT
-                                      ? I18n.of(context).by_ingredientsamount
-                                      : I18n.of(context).by_last_modified),
-                        );
-                      }).toList(),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: DropdownButton<RecipeSort>(
+                    isExpanded: false,
+                    value: dropdownValue,
+                    elevation: 16,
+                    // underline: Container(
+                    //   height: 2,
+                    //   color: Colors.amber,
+                    // ),
+                    onChanged: (RecipeSort newValue) {
+                      widget.changeOrder(newValue);
+                      setState(() {
+                        dropdownValue = newValue;
+                      });
+                    },
+                    items: <RecipeSort>[
+                      RecipeSort.BY_NAME,
+                      RecipeSort.BY_EFFORT,
+                      RecipeSort.BY_INGREDIENT_COUNT,
+                      RecipeSort.BY_LAST_MODIFIED,
+                    ].map<DropdownMenuItem<RecipeSort>>((RecipeSort value) {
+                      return DropdownMenuItem<RecipeSort>(
+                        value: value,
+                        child: Text(value == RecipeSort.BY_NAME
+                            ? I18n.of(context).by_name
+                            : value == RecipeSort.BY_EFFORT
+                                ? I18n.of(context).by_effort
+                                : value == RecipeSort.BY_INGREDIENT_COUNT
+                                    ? I18n.of(context).by_ingredientsamount
+                                    : I18n.of(context).by_last_modified),
+                      );
+                    }).toList(),
                   ),
                 ),
-                Spacer(
-                  flex: 1,
-                ),
+                Spacer(),
                 widget.showVegetableFilter
                     ? Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),

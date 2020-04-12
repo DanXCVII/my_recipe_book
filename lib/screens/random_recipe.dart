@@ -62,9 +62,17 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
           categoryNames.length * 2,
           (index) => index % 2 == 0
               ? Material(
-                  color: Colors.transparent,
+                  color: selectedCategory == categoryNames[(index / 2).floor()]
+                      ? Colors.grey
+                      : Colors.transparent,
                   child: ListTile(
-                    title: Text(categoryNames[(index / 2).floor()],
+                    title: Text(
+                        categoryNames[(index / 2).floor()] == "no category"
+                            ? I18n.of(context).no_category
+                            : categoryNames[(index / 2).floor()] ==
+                                    "all categories"
+                                ? I18n.of(context).all_categories
+                                : categoryNames[(index / 2).floor()],
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
                       BlocProvider.of<RandomRecipeExplorerBloc>(context).add(
