@@ -42,8 +42,8 @@ class RecipeCategoryOverview extends StatelessWidget {
                   Expanded(
                     child: _getRecipeCategoryOverviewList(
                         context,
-                        state.rCategoryOverview.sublist(0,
-                            (state.rCategoryOverview.length / 2).floor() + 1),
+                        state.rCategoryOverview.sublist(
+                            0, (state.rCategoryOverview.length / 2).floor()),
                         _refreshController),
                   ),
                   Container(
@@ -55,7 +55,7 @@ class RecipeCategoryOverview extends StatelessWidget {
                     child: _getRecipeCategoryOverviewList(
                         context,
                         state.rCategoryOverview.sublist(
-                            (state.rCategoryOverview.length / 2).floor() + 1,
+                            (state.rCategoryOverview.length / 2).floor(),
                             state.rCategoryOverview.length),
                         _refreshControllerTwo),
                   ),
@@ -90,9 +90,7 @@ class RecipeCategoryOverview extends StatelessWidget {
           refreshController.refreshCompleted();
         },
         child: ListView.builder(
-          itemCount: MediaQuery.of(context).size.width > 1000
-              ? (recipeCategories.length / 2).round()
-              : recipeCategories.length,
+          itemCount: recipeCategories.length,
           itemBuilder: (context, index) => AnimationConfiguration.staggeredList(
             position: index,
             duration: const Duration(milliseconds: 375),

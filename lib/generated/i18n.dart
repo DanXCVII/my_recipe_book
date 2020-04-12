@@ -644,9 +644,9 @@ class _I18n_de_DE extends I18n {
   /// "Dein Einkaufswagen ist leer"
   @override
   String get shopping_cart_is_empty => "Dein Einkaufswagen ist leer";
-  /// "zufällig"
+  /// "Zufällig"
   @override
-  String get explore => "zufällig";
+  String get explore => "Zufällig";
   /// "zufällige Rezepte"
   @override
   String get roll_the_dice => "zufällige Rezepte";

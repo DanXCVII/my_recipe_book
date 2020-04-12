@@ -34,34 +34,39 @@ class ShoppingList extends StatelessWidget {
         Theme.of(context).brightness == Brightness.dark
             ? Color(0xff40392F)
             : Colors.grey[100];
-    return ListView(
-      children: recipes.map((recipe) {
-        if (recipe.name == 'summary') {
-          return ShoppingCartListTile(
-            recipe,
-            ingredBackgroundColor,
-            ingredients[recipe],
-          );
-        } else {
-          return Dismissible(
-            key: Key('$recipe'),
-            onDismissed: (_) {
-              List<Ingredient> removeIngreds = ingredients[recipe]
-                  .map((ingred) => ingred.getIngredient())
-                  .toList();
-              BlocProvider.of<ShoppingCartBloc>(context)
-                  .add(RemoveIngredients(removeIngreds, recipe));
-            },
-            background: PrimaryBackgroundDismissable(),
-            secondaryBackground: SecondaryBackgroundDismissible(),
-            child: ShoppingCartListTile(
+
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      child: ListView(
+        children: recipes.map((recipe) {
+          if (recipe.name == Constants.summary) {
+            return ShoppingCartListTile(
               recipe,
               ingredBackgroundColor,
               ingredients[recipe],
-            ),
-          );
-        }
-      }).toList(),
+            );
+          } else {
+            return Dismissible(
+              key: Key('$recipe'),
+              onDismissed: (_) {
+                List<Ingredient> removeIngreds = ingredients[recipe]
+                    .map((ingred) => ingred.getIngredient())
+                    .toList();
+                BlocProvider.of<ShoppingCartBloc>(context)
+                    .add(RemoveIngredients(removeIngreds, recipe));
+              },
+              background: PrimaryBackgroundDismissable(),
+              secondaryBackground: SecondaryBackgroundDismissible(),
+              child: ShoppingCartListTile(
+                recipe,
+                ingredBackgroundColor,
+                ingredients[recipe],
+              ),
+            );
+          }
+        }).toList(),
+      ),
     );
   }
 

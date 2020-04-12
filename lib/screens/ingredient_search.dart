@@ -131,9 +131,15 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                                           builder: (context, constraints) =>
                                               Container(
                                             height: MediaQuery.of(context)
-                                                    .size
-                                                    .height -
-                                                100,
+                                                            .size
+                                                            .height -
+                                                        100 >
+                                                    650
+                                                ? 550
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .height -
+                                                    100,
                                             child: _getExpanded(
                                                 constraints.maxHeight,
                                                 constraints.maxWidth),
@@ -246,7 +252,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
   Widget _getExpanded(double maxHeight, double maxWidth) {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
-        height: maxHeight - 100,
+        height: maxHeight - 100 > 500 ? 500 : maxHeight - 100,
         width: maxWidth,
         child: ListView(
           children: <Widget>[
