@@ -20,7 +20,6 @@ import '../../models/recipe.dart';
 import '../../widgets/dialogs/textfield_dialog.dart';
 import '../../widgets/icon_info_message.dart';
 import '../recipe_screen.dart';
-import '../recipe_screen/recipe_screen.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class AddRecipeNutritionsArguments {
