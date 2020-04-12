@@ -88,6 +88,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
           title: Text(I18n.of(context).professional_search),
         ),
         body: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
               width: MediaQuery.of(context).size.width > 420
@@ -128,23 +129,30 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                                   : !_isExpanded
                                       ? _getNonExpanded()
                                       : LayoutBuilder(
-                                          builder: (context, constraints) =>
-                                              Container(
-                                            height: MediaQuery.of(context)
+                                          builder: (context, constraints) {
+                                          double height;
+                                          if (_showTagCatFilter) {
+                                            height = MediaQuery.of(context)
                                                             .size
                                                             .height -
                                                         100 >
-                                                    650
+                                                    550
                                                 ? 550
                                                 : MediaQuery.of(context)
                                                         .size
                                                         .height -
-                                                    100,
+                                                    100;
+                                          } else {
+                                            height = 275;
+                                          }
+
+                                          return Container(
+                                            height: height,
                                             child: _getExpanded(
                                                 constraints.maxHeight,
                                                 constraints.maxWidth),
-                                          ),
-                                        ),
+                                          );
+                                        }),
                             ),
                           ),
                         ),
@@ -250,153 +258,154 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
   }
 
   Widget _getExpanded(double maxHeight, double maxWidth) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Container(
-        height: maxHeight - 100 > 500 ? 500 : maxHeight - 100,
-        width: maxWidth,
-        child: ListView(
-          children: <Widget>[
-            _showTagCatFilter ? _getRecipeTagCategoryFilter() : Container(),
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 15, 20, 5),
-              child: Container(
-                height: 180,
-                child: ListView(
-                    children: List<Widget>.generate(
-                  _controllers.length,
-                  (index) => Padding(
-                    padding:
-                        EdgeInsets.only(bottom: 10.0, top: index == 0 ? 5 : 0),
-                    child: SimpleAutoCompleteTextField(
-                      key: _autoCompletionKeys[index],
-                      suggestions: HiveProvider().getIngredientNames(),
-                      controller: _controllers[index],
-                      // style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: I18n.of(context).ingredient,
-                        labelStyle: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[500]),
-                        border: OutlineInputBorder(),
-                        focusedBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                          borderSide: const BorderSide(
-                            color: Colors.amber,
-                            width: 2,
-                          ),
+    double height;
+    if (_showTagCatFilter) {
+      height = maxHeight - 100 > 500 ? 500 : maxHeight - 100;
+    }
+    return Container(
+      height: height,
+      width: maxWidth,
+      child: ListView(
+        children: <Widget>[
+          _showTagCatFilter ? _getRecipeTagCategoryFilter() : Container(),
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, 15, 20, 5),
+            child: Container(
+              height: 180,
+              child: ListView(
+                  children: List<Widget>.generate(
+                _controllers.length,
+                (index) => Padding(
+                  padding:
+                      EdgeInsets.only(bottom: 10.0, top: index == 0 ? 5 : 0),
+                  child: SimpleAutoCompleteTextField(
+                    key: _autoCompletionKeys[index],
+                    suggestions: HiveProvider().getIngredientNames(),
+                    controller: _controllers[index],
+                    // style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: I18n.of(context).ingredient,
+                      labelStyle: TextStyle(
+                          fontWeight: FontWeight.w500, color: Colors.grey[500]),
+                      border: OutlineInputBorder(),
+                      focusedBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        borderSide: const BorderSide(
+                          color: Colors.amber,
+                          width: 2,
                         ),
-                        enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                          borderSide: const BorderSide(
-                              color: Color.fromRGBO(210, 210, 210, 1),
-                              width: 2),
-                        ),
+                      ),
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        borderSide: const BorderSide(
+                            color: Color.fromRGBO(210, 210, 210, 1), width: 2),
                       ),
                     ),
                   ),
-                )),
-              ),
+                ),
+              )),
             ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        MediaQuery.of(context).size.width > showExpandedSearch
-                            ? null
-                            : IconButton(
+          ),
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Expanded(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      MediaQuery.of(context).size.width > showExpandedSearch
+                          ? null
+                          : IconButton(
+                              icon: Icon(
+                                Icons.expand_less,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isExpanded = false;
+                                });
+                              },
+                            ),
+                      MediaQuery.of(context).size.width > showExpandedSearch
+                          ? null
+                          : _getHideSearch(),
+                      _showTagCatFilter &&
+                              MediaQuery.of(context).size.width <=
+                                  showExpandedSearch
+                          ? _getHideTagCat()
+                          : null,
+                      !_showTagCatFilter &&
+                              MediaQuery.of(context).size.width <=
+                                  showExpandedSearch
+                          ? _getExpandTagCat()
+                          : null,
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          height: 40,
+                          width: 97,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                              color: Colors.deepOrange[900]),
+                          child: Row(
+                            children: <Widget>[
+                              IconButton(
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
                                 icon: Icon(
-                                  Icons.expand_less,
+                                  Icons.remove,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  if (_controllers.length > 2)
+                                    setState(() {
+                                      _controllers.removeLast();
+                                      _autoCompletionKeys.removeLast();
+                                    });
+                                },
+                              ),
+                              IconButton(
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                icon: Icon(
+                                  Icons.add,
                                   color: Colors.white,
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    _isExpanded = false;
+                                    if (_controllers.length < 20) {
+                                      _controllers.add(TextEditingController());
+                                      _autoCompletionKeys.add(GlobalKey());
+                                    }
                                   });
                                 },
-                              ),
-                        MediaQuery.of(context).size.width > showExpandedSearch
-                            ? null
-                            : _getHideSearch(),
-                        _showTagCatFilter &&
-                                MediaQuery.of(context).size.width >
-                                    showExpandedSearch
-                            ? null
-                            : _getHideTagCat(),
-                        MediaQuery.of(context).size.width > showExpandedSearch
-                            ? null
-                            : _getExpandTagCat(),
-                        Spacer(),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            height: 40,
-                            width: 97,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(40),
-                                color: Colors.deepOrange[900]),
-                            child: Row(
-                              children: <Widget>[
-                                IconButton(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  icon: Icon(
-                                    Icons.remove,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () {
-                                    if (_controllers.length > 2)
-                                      setState(() {
-                                        _controllers.removeLast();
-                                        _autoCompletionKeys.removeLast();
-                                      });
-                                  },
-                                ),
-                                IconButton(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  icon: Icon(
-                                    Icons.add,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      if (_controllers.length < 20) {
-                                        _controllers
-                                            .add(TextEditingController());
-                                        _autoCompletionKeys.add(GlobalKey());
-                                      }
-                                    });
-                                  },
-                                )
-                              ],
-                            ),
+                              )
+                            ],
                           ),
                         ),
-                        Spacer(),
-                      ]..removeWhere((item) => item == null),
-                    ),
+                      ),
+                      Spacer(),
+                    ]..removeWhere((item) => item == null),
                   ),
-                  _getSearchIconButton(),
-                ],
-              ),
-            )
-          ],
-        ),
-      );
-    });
+                ),
+                _getSearchIconButton(),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Widget _getNonExpanded() {
     return LayoutBuilder(
       builder: (context, constraints) => Container(
-        height: constraints.maxHeight - 50,
+        height: _showTagCatFilter ? 500 : 220,
         child: ListView(
           children: List<Widget>.generate(
             2,
@@ -431,32 +440,35 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
             ..add(
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            Icons.expand_more,
-                            color: Colors.white,
+                child: Container(
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(
+                              Icons.expand_more,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isExpanded = true;
+                              });
+                            },
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _isExpanded = true;
-                            });
-                          },
-                        ),
-                        _getHideSearch(),
-                        _showTagCatFilter
-                            ? _getHideTagCat()
-                            : _getExpandTagCat(),
-                      ],
-                    ),
-                    _getSearchIconButton()
-                  ],
+                          _getHideSearch(),
+                          _showTagCatFilter
+                              ? _getHideTagCat()
+                              : _getExpandTagCat(),
+                        ],
+                      ),
+                      _getSearchIconButton()
+                    ],
+                  ),
                 ),
               ),
             )
