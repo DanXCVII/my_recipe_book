@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
@@ -113,6 +114,18 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
           ),
           title: Text(I18n.of(context).add_general_info),
           actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.info_outline),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) => InfoDialog(
+                          title: I18n.of(context).info,
+                          body: I18n.of(context)
+                              .general_info_changes_will_be_saved,
+                        ));
+              },
+            ),
             BlocListener<ClearRecipeBloc, ClearRecipeState>(
               listener: (context, state) {
                 if (state is ClearedRecipe) {

@@ -152,7 +152,7 @@ class RecipeInfoVertical extends StatelessWidget {
             : null,
         recipe.nutritions.isNotEmpty
             ? Container(
-                height: 145,
+                height: 100,
               )
             : null,
       ]..removeWhere((item) => item == null),

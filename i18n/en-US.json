@@ -205,5 +205,6 @@
   "shopping_cart_help_desc": "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction.",
   "complex_animations": "enable complex animations",
   "keep_screen_on": "keep screen on",
-  "only_recipe_screen": "only on recipe screen"
+  "only_recipe_screen": "only on recipe screen",
+  "general_info_changes_will_be_saved": "The changes you made, when adding a recipe are saved, when you go back and forth. So don't worry if you mistyped an information on one screen."
 }

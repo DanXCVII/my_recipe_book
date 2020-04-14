@@ -225,16 +225,21 @@ class _SwypingCardsState extends State<SwypingCards>
 
     return Stack(children: <Widget>[
       Center(
+          child: Container(
+        width: maxWidthCard,
+        child: Center(
           child: IconInfoMessage(
-        iconWidget: IconButton(
-          icon: Icon(Icons.refresh),
-          iconSize: 70,
-          onPressed: () {
-            BlocProvider.of<RandomRecipeExplorerBloc>(context)
-                .add(ReloadRandomRecipeExplorer());
-          },
+            iconWidget: IconButton(
+              icon: Icon(Icons.refresh),
+              iconSize: 70,
+              onPressed: () {
+                BlocProvider.of<RandomRecipeExplorerBloc>(context)
+                    .add(ReloadRandomRecipeExplorer());
+              },
+            ),
+            description: I18n.of(context).you_made_it_to_the_end,
+          ),
         ),
-        description: I18n.of(context).you_made_it_to_the_end,
       )),
       Center(
         child: Container(
