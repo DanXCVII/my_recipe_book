@@ -306,8 +306,16 @@ class RecipeWebsiteImportInfo extends StatefulWidget {
 class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
     with SingleTickerProviderStateMixin {
   bool _isExpanded = true;
-  List<String> _supportedWebsites = ["chefkoch.de"];
-  List<String> _websiteUrls = ["https://www.chefkoch.de"];
+  List<String> _supportedWebsites = [
+    "chefkoch.de",
+    "kochbar.de",
+    "elavegan.de",
+  ];
+  List<String> _websiteUrls = [
+    "https://www.chefkoch.de",
+    "https://www.kochbar.de/",
+    "https://elavegan.com/de/",
+  ];
 
   @override
   Widget build(BuildContext context) {

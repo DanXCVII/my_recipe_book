@@ -50,8 +50,9 @@ class ComplexityWave extends StatelessWidget {
                   effort.toString(),
                   style: TextStyle(
                       fontSize: 60,
+                      color: Colors.grey[100],
                       fontWeight: FontWeight.w600,
-                      fontFamily: "Questrial"),
+                      fontFamily: "Questrial",),
                 ),
               )),
         )
