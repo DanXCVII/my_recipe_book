@@ -406,6 +406,7 @@ class RecipeCardBig extends StatelessWidget {
         leftIngredientColumn.children.add(Text(
           flatIngredients[i].name,
           maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           textScaleFactor: scaleFactor,
           style: ingredientsStyle,
         ));
