@@ -138,8 +138,18 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                         } else if (state is NSaved) {
                           if (widget.editingRecipeName == null) {
                             Future.delayed(Duration(milliseconds: 300)).then(
-                                (_) => Navigator.of(context)
-                                    .popUntil((route) => route.isFirst));
+                              (_) =>
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                RouteNames.recipeScreen,
+                                (route) => route.isFirst,
+                                arguments: RecipeScreenArguments(
+                                  BlocProvider.of<ShoppingCartBloc>(context),
+                                  state.recipe,
+                                  'heroImageTag',
+                                  BlocProvider.of<RecipeManagerBloc>(context),
+                                ),
+                              ),
+                            );
                           } else {
                             Future.delayed(Duration(milliseconds: 300))
                                 .then((_) {

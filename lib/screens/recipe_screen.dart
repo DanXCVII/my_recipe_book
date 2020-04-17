@@ -143,7 +143,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                       ).then((_) => Ads.hideBottomBannerAd()));
             }
           },
-          child: state.recipe.nutritions.isEmpty || Ads.shouldShowAds()
+          child: state.recipe.nutritions.isEmpty
               ? Scaffold(
                   //##
                   appBar: MediaQuery.of(context).size.width > 550
@@ -162,7 +162,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                   body: SlidingUpPanel(
                     margin: EdgeInsets.symmetric(
                         horizontal: MediaQuery.of(context).size.width > 450
-                            ? MediaQuery.of(context).size.width - 450
+                            ? (MediaQuery.of(context).size.width - 450) / 2
                             : 0),
                     controller: _pc,
                     backdropColor: Color.fromRGBO(0, 0, 0, 0.5),
@@ -210,22 +210,24 @@ class _RecipeScreenState extends State<RecipeScreen>
                                         Radius.circular(12.0))),
                               ),
                             ),
-                            SizedBox(height: 10),
-                            GestureDetector(
-                              onTap: () {
-                                _pc.animatePanelToPosition(1);
-                              },
-                              child: Text(
-                                I18n.of(context).nutritions,
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white),
-                              ),
-                            ),
                             Container(height: 10),
+                            Text(
+                              I18n.of(context).nutritions,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
+                            ),
                             Container(
-                              height: 435,
+                              height: MediaQuery.of(context).size.height -
+                                          kToolbarHeight -
+                                          88 >
+                                      422
+                                  ? 422
+                                  : MediaQuery.of(context).size.height -
+                                      kToolbarHeight -
+                                      (Ads.shouldShowAds() ? 50 : 0) -
+                                      88,
                               child: ListView.builder(
                                 itemCount: state.recipe.nutritions.length * 2,
                                 itemBuilder: (context, index) {
@@ -252,7 +254,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                                   }
                                 },
                               ),
-                            )
+                            ),
                           ]),
                     ),
                     body: RecipePage(
@@ -643,6 +645,7 @@ class RecipePage extends StatelessWidget {
                           recipe.steps,
                           recipe.stepImages,
                           recipe.name,
+                          recipe.nutritions.isNotEmpty,
                           expandHeight: true,
                         ),
                       ],
@@ -801,31 +804,37 @@ class RecipePage extends StatelessWidget {
                                 recipe.steps,
                                 recipe.stepImages,
                                 recipe.name,
+                                recipe.nutritions.isNotEmpty,
                               ),
                             ),
-                            recipe.notes != "" ||
-                                    recipe.categories.isNotEmpty ||
-                                    recipe.source != null
+                            (recipe.notes != "" ||
+                                        recipe.categories.isNotEmpty ||
+                                        recipe.source != null) &&
+                                    MediaQuery.of(context).size.width <= 550
                                 ? Container(
                                     height: 20,
                                     decoration:
                                         BoxDecoration(color: Colors.black87),
                                   )
                                 : null,
-                            recipe.notes != ""
+                            recipe.notes != "" &&
+                                    MediaQuery.of(context).size.width <= 550
                                 ? NotesSection(notes: recipe.notes)
                                 : null,
-                            recipe.source != null && recipe.source != ""
+                            recipe.source != null &&
+                                    recipe.source != "" &&
+                                    MediaQuery.of(context).size.width <= 550
                                 ? RecipeSource(recipe.source)
                                 : null,
-                            recipe.categories.length > 0
+                            recipe.categories.length > 0 &&
+                                    MediaQuery.of(context).size.width <= 550
                                 ? CategoriesSection(
                                     categories: recipe.categories,
                                     categoriesFiles: categoriesFiles)
                                 : null,
                             recipe.nutritions.isEmpty
                                 ? Container()
-                                : Container(height: 135),
+                                : Container(height: 50),
                           ]..removeWhere((item) => item == null)),
                         ),
                       ]..removeWhere((item) => item == null),
@@ -910,7 +919,7 @@ class TopSectionRecipe extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Expanded(
-                          flex: 10,
+                          flex: 7,
                           child: TimeInfo(
                             textColor,
                             recipeScreenFontFamily,
@@ -1061,6 +1070,7 @@ class StepsSection extends StatelessWidget {
   final List<String> steps;
   final String recipeName;
   final bool expandHeight;
+  final bool hasNutritions;
 
   final List<Color> stepsColors = [
     Color(0xff28B404),
@@ -1072,7 +1082,8 @@ class StepsSection extends StatelessWidget {
   StepsSection(
     this.steps,
     this.stepImages,
-    this.recipeName, {
+    this.recipeName,
+    this.hasNutritions, {
     this.expandHeight = false,
   });
 
@@ -1123,6 +1134,7 @@ class StepsSection extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 25),
+                !hasNutritions ? Container() : Container(height: 80),
               ],
             );
           } else {
@@ -1172,16 +1184,16 @@ class IngredientsScreen extends StatelessWidget {
                         dotLastColor: Colors.green[900]),
                     animationDuration: Duration(milliseconds: 500),
                     isLiked: currentIngredient.checked,
-                    likeBuilder: (bool isFavorite) {
+                    likeBuilder: (bool isChecked) {
                       return Icon(
-                        isFavorite
+                        isChecked
                             ? Icons.check_circle
                             : Icons.add_circle_outline,
-                        color: isFavorite ? Colors.green : Colors.white,
+                        color: isChecked ? Colors.green : Colors.white,
                       );
                     },
-                    onTap: (bool isFavorite) async {
-                      if (!isFavorite) {
+                    onTap: (bool isChecked) async {
+                      if (!isChecked) {
                         _pressIngredient(currentIngredient, context);
                         return true;
                       } else {

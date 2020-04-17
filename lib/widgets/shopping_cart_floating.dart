@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/app/app_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -71,7 +72,9 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
                         return Text(state.toString());
                       }
                     })
-                  : Container(),
+                  : Container(
+                      height: 550,
+                    ),
             ),
             feedback: Material(
               color: Colors.transparent,
@@ -89,52 +92,97 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
 
   Widget _getShoppingCartContent(
           Map<Recipe, List<CheckableIngredient>> shoppingCart) =>
-      Container(
-        decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                offset: Offset(1, 1),
-                blurRadius: 2,
-                spreadRadius: 1,
-                color: Theme.of(context).backgroundColor == Colors.white
-                    ? Colors.grey[400]
-                    : Colors.black,
+      Stack(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(top: 32),
+            child: Container(
+              decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(1, 1),
+                      blurRadius: 2,
+                      spreadRadius: 1,
+                      color: Theme.of(context).backgroundColor == Colors.white
+                          ? Colors.grey[400]
+                          : Colors.black,
+                    ),
+                  ],
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  color: Theme.of(context).backgroundColor == Colors.white
+                      ? Colors.grey[200]
+                      : Colors.grey[800]),
+              height: MediaQuery.of(context).size.height > 500
+                  ? 500
+                  : MediaQuery.of(context).size.height,
+              width: 400,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Stack(
+                  children: <Widget>[
+                    ShoppingList(
+                      shoppingCart,
+                      roundBorders: true,
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: FloatingActionButton(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        child: Icon(
+                          Icons.add_shopping_cart,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => BlocProvider.value(
+                              value: BlocProvider.of<ShoppingCartBloc>(context),
+                              child: ShoppingCartAddDialog(),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ],
-            borderRadius: BorderRadius.all(Radius.circular(30)),
-            color: Theme.of(context).backgroundColor == Colors.white
-                ? Colors.grey[200]
-                : Colors.grey[800]),
-        height: MediaQuery.of(context).size.height > 500
-            ? 500
-            : MediaQuery.of(context).size.height,
-        width: 400,
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Stack(
-            children: <Widget>[
-              ShoppingList(shoppingCart),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: FloatingActionButton(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: Icon(
-                    Icons.add_shopping_cart,
-                    color: Colors.white,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 383, top: 25),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).backgroundColor == Colors.white
+                      ? Colors.grey[900]
+                      : Colors.grey[200],
+                  shape: BoxShape.circle),
+              width: 25,
+              height: 25,
+            ),
+          ),
+          Container(
+            width: 430,
+            height: 60,
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.cancel,
+                    color: Theme.of(context).backgroundColor == Colors.white
+                        ? Colors.grey[400]
+                        : Colors.grey[900],
+                    size: 36,
                   ),
                   onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => BlocProvider.value(
-                        value: BlocProvider.of<ShoppingCartBloc>(context),
-                        child: ShoppingCartAddDialog(),
-                      ),
-                    );
+                    BlocProvider.of<AppBloc>(context)
+                      ..add(ChangeShoppingCartView(false));
                   },
                 ),
-              )
-            ],
+              ),
+            ),
           ),
-        ),
+        ],
       );
 }

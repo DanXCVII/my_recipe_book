@@ -55,6 +55,10 @@ class IngredientSearchBloc
           }
         }
       }
+      if (event.vegetable != null) {
+        filteredRecipes.removeWhere(
+            (tuple) => !(tuple.item2.vegetable == event.vegetable));
+      }
     } else {
       List<Recipe> allRecipes = await HiveProvider().getAllRecipes();
       if (event.recipeTags.isNotEmpty ||
@@ -65,7 +69,6 @@ class IngredientSearchBloc
           if (event.categories.length == 1 &&
               event.categories[0] == Constants.noCategory &&
               recipe.categories.isEmpty) {
-            addRecipe = true;
           } else {
             for (String category in event.categories) {
               if (!recipe.categories.contains(category)) {
@@ -78,8 +81,8 @@ class IngredientSearchBloc
               addRecipe = false;
             }
           }
-          if (event.vegetable != null && event.vegetable == recipe.vegetable) {
-            addRecipe = true;
+          if (event.vegetable != null && event.vegetable != recipe.vegetable) {
+            addRecipe = false;
           }
           if (addRecipe) {
             return Tuple2<int, Recipe>(0, recipe);

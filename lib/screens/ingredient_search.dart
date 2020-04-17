@@ -100,7 +100,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
           children: <Widget>[
             Container(
               width: MediaQuery.of(context).size.width > 420
-                  ? 450
+                  ? 420
                   : MediaQuery.of(context).size.width,
               child: Column(
                   crossAxisAlignment:

@@ -103,7 +103,7 @@ class RecipeScreenIngredientsBloc
       AddToCart event) async* {
     if (state is LoadedRecipeIngredients) {
       await HiveProvider()
-          .removeAndAddIngredients(event.recipeName, event.ingredients);
+          .addMulitpleIngredientsToCart(event.recipeName, event.ingredients);
 
       List<Ingredient> checkedIngredients = event.ingredients;
 
@@ -113,7 +113,6 @@ class RecipeScreenIngredientsBloc
               .map((list) => list.map((item) {
                     for (Ingredient i in checkedIngredients) {
                       if (i == item.getIngredient()) {
-                        checkedIngredients.remove(i);
                         return item.copyWith(checked: true);
                       }
                     }

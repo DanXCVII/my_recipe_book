@@ -19,6 +19,7 @@ import '../../../helper.dart';
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
+import '../../../widgets/dialogs/info_dialog.dart';
 import '../../../widgets/image_selector.dart' as IS;
 import '../ingredients_screen.dart';
 import 'categories_section.dart';
@@ -116,6 +117,18 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
           ),
           title: Text(I18n.of(context).add_general_info),
           actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.info_outline),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) => InfoDialog(
+                          title: I18n.of(context).info,
+                          body: I18n.of(context)
+                              .general_info_changes_will_be_saved,
+                        ));
+              },
+            ),
             BlocListener<ClearRecipeBloc, ClearRecipeState>(
               listener: (context, state) {
                 if (state is ClearedRecipe) {

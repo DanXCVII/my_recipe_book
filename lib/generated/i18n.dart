@@ -476,6 +476,8 @@ class I18n implements WidgetsLocalizations {
   String get keep_screen_on => "keep screen on";
   /// "only on recipe screen"
   String get only_recipe_screen => "only on recipe screen";
+  /// "The changes you made, when adding a recipe are saved, when you go back and forth. So don't worry if you mistyped an information on one screen."
+  String get general_info_changes_will_be_saved => "The changes you made, when adding a recipe are saved, when you go back and forth. So don't worry if you mistyped an information on one screen.";
 }
 
 class _I18n_en_US extends I18n {
@@ -1154,6 +1156,9 @@ class _I18n_de_DE extends I18n {
   /// "nur auf Rezeptbildschirm"
   @override
   String get only_recipe_screen => "nur auf Rezeptbildschirm";
+  /// "Die Änderungen beim Rezept hinzufügen oder bearbeiten werden gespeichert, wenn man vor oder zurück geht. Mache dir also keine Sorgen, wenn du eine Information falsch eingetippt hast. Beim zurückgehen gehen die Daten nicht verloren."
+  @override
+  String get general_info_changes_will_be_saved => "Die Änderungen beim Rezept hinzufügen oder bearbeiten werden gespeichert, wenn man vor oder zurück geht. Mache dir also keine Sorgen, wenn du eine Information falsch eingetippt hast. Beim zurückgehen gehen die Daten nicht verloren.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

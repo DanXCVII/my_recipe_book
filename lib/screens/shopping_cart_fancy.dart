@@ -119,27 +119,37 @@ class FancyShoppingCartScreen extends StatelessWidget {
               ? Color(0xff40392F)
               : Colors.grey[100];
       if (recipe.name == 'summary') {
-        return ShoppingCartListTile(
-          recipe,
-          ingredBackgroundColor,
-          ingredients[recipe],
+        return Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width > 400 ? 400 : null,
+            child: ShoppingCartListTile(
+              recipe,
+              ingredBackgroundColor,
+              ingredients[recipe],
+            ),
+          ),
         );
       } else {
-        return Dismissible(
-          key: Key('$recipe'),
-          onDismissed: (_) {
-            List<Ingredient> removeIngreds = ingredients[recipe]
-                .map((ingred) => ingred.getIngredient())
-                .toList();
-            BlocProvider.of<ShoppingCartBloc>(context)
-                .add(RemoveIngredients(removeIngreds, recipe));
-          },
-          background: PrimaryBackgroundDismissable(),
-          secondaryBackground: SecondaryBackgroundDismissible(),
-          child: ShoppingCartListTile(
-            recipe,
-            ingredBackgroundColor,
-            ingredients[recipe],
+        return Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width > 400 ? 400 : null,
+            child: Dismissible(
+              key: Key('$recipe'),
+              onDismissed: (_) {
+                List<Ingredient> removeIngreds = ingredients[recipe]
+                    .map((ingred) => ingred.getIngredient())
+                    .toList();
+                BlocProvider.of<ShoppingCartBloc>(context)
+                    .add(RemoveIngredients(removeIngreds, recipe));
+              },
+              background: PrimaryBackgroundDismissable(),
+              secondaryBackground: SecondaryBackgroundDismissible(),
+              child: ShoppingCartListTile(
+                recipe,
+                ingredBackgroundColor,
+                ingredients[recipe],
+              ),
+            ),
           ),
         );
       }

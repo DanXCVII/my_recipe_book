@@ -12,9 +12,15 @@ import 'icon_info_message.dart';
 import 'recipe_image_hero.dart';
 
 class ShoppingList extends StatelessWidget {
+  final bool roundBorders;
+
   final Map<Recipe, List<CheckableIngredient>> ingredients;
 
-  const ShoppingList(this.ingredients, {Key key}) : super(key: key);
+  const ShoppingList(
+    this.ingredients, {
+    this.roundBorders = false,
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +51,7 @@ class ShoppingList extends StatelessWidget {
               recipe,
               ingredBackgroundColor,
               ingredients[recipe],
+              roundBorders: roundBorders,
             );
           } else {
             return Dismissible(
@@ -62,6 +69,7 @@ class ShoppingList extends StatelessWidget {
                 recipe,
                 ingredBackgroundColor,
                 ingredients[recipe],
+                roundBorders: roundBorders,
               ),
             );
           }
@@ -92,20 +100,27 @@ class ShoppingCartListTile extends StatelessWidget {
   final List<CheckableIngredient> ingredients;
   final Color ingredientTextColor;
   final Color backgroundColor;
+  final bool roundBorders;
 
   const ShoppingCartListTile(
     this.recipe,
     this.backgroundColor,
     this.ingredients, {
     this.ingredientTextColor,
+    this.roundBorders = false,
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width > 400 ? 400 : null,
+    return Theme(
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: roundBorders
+              ? BorderRadius.circular(15.0)
+              : BorderRadius.circular(3.0),
+        ),
         child: ExpansionTile(
           leading: recipe.name == Constants.summary || recipe.notes == "noLink"
               ? null
@@ -131,88 +146,109 @@ class ShoppingCartListTile extends StatelessWidget {
                       unit: ingredient.unit)
                 ], recipe));
               },
-              background: PrimaryBackgroundDismissable(),
-              secondaryBackground: SecondaryBackgroundDismissible(),
-              child: Container(
-                  decoration: BoxDecoration(
-                    color: backgroundColor,
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(),
-                        child: Center(
-                          child: IconButton(
-                            highlightColor: Colors.transparent,
-                            splashColor: Colors.transparent,
-                            iconSize: 30,
-                            icon: Icon(
-                              ingredient.checked
-                                  ? MdiIcons.checkCircleOutline
-                                  : MdiIcons.circleOutline,
-                            ),
-                            color:
-                                ingredient.checked ? Colors.green : Colors.grey,
-                            onPressed: () {
-                              BlocProvider.of<ShoppingCartBloc>(context)
-                                  .add(CheckIngredients([ingredient], recipe));
-                            },
-                          ),
-                        ),
+              background: PrimaryBackgroundDismissable(
+                roundBottomBorder: ingredients.last == ingredient,
+              ),
+              secondaryBackground: SecondaryBackgroundDismissible(
+                roundBottomBorder: ingredients.last == ingredient,
+              ),
+              child: InkWell(
+                onTap: () {
+                  BlocProvider.of<ShoppingCartBloc>(context)
+                      .add(CheckIngredients([ingredient], recipe));
+                },
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            ingredients.last == ingredient && roundBorders
+                                ? BorderRadius.only(
+                                    bottomRight: Radius.circular(15),
+                                    bottomLeft: Radius.circular(15))
+                                : BorderRadius.zero,
+                        color: backgroundColor,
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text(
-                            //'SpaghettiSauce von der Kuh mit ganz viel ',
-                            '${ingredient.name}',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 18,
-                              decoration: ingredient.checked
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                              color: (ingredientTextColor == null)
-                                  ? Theme.of(context).textTheme.body1.color
-                                  : ingredientTextColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      ingredient.amount != null
-                          ? Container(
-                              padding: EdgeInsets.all(3),
-                              height: 50,
-                              width: 99,
-                              decoration: BoxDecoration(),
-                              child: Center(
-                                child: Text(
-                                  '${cutDouble(ingredient.amount)} ${ingredient.unit == null ? "" : ingredient.unit}',
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      decoration: ingredient.checked
-                                          ? TextDecoration.lineThrough
-                                          : null,
-                                      color: (ingredientTextColor == null)
-                                          ? Theme.of(context)
-                                              .textTheme
-                                              .body1
-                                              .color
-                                          : ingredientTextColor),
-                                  maxLines: 2,
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(),
+                            child: Center(
+                              child: IconButton(
+                                highlightColor: Colors.transparent,
+                                splashColor: Colors.transparent,
+                                iconSize: 30,
+                                icon: Icon(
+                                  ingredient.checked
+                                      ? MdiIcons.checkCircleOutline
+                                      : MdiIcons.circleOutline,
                                 ),
-                              ))
-                          : null
-                    ]..removeWhere((item) => item == null),
-                  )),
+                                color: ingredient.checked
+                                    ? Colors.green
+                                    : Colors.grey,
+                                onPressed: () {
+                                  BlocProvider.of<ShoppingCartBloc>(context)
+                                      .add(CheckIngredients(
+                                          [ingredient], recipe));
+                                },
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Text(
+                                //'SpaghettiSauce von der Kuh mit ganz viel ',
+                                '${ingredient.name}',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  decoration: ingredient.checked
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  color: (ingredientTextColor == null)
+                                      ? Theme.of(context).textTheme.body1.color
+                                      : ingredientTextColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          ingredient.amount != null
+                              ? Container(
+                                  padding: EdgeInsets.all(3),
+                                  height: 50,
+                                  width: 99,
+                                  decoration: BoxDecoration(),
+                                  child: Center(
+                                    child: Text(
+                                      '${cutDouble(ingredient.amount)} ${ingredient.unit == null ? "" : ingredient.unit}',
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          decoration: ingredient.checked
+                                              ? TextDecoration.lineThrough
+                                              : null,
+                                          color: (ingredientTextColor == null)
+                                              ? Theme.of(context)
+                                                  .textTheme
+                                                  .body1
+                                                  .color
+                                              : ingredientTextColor),
+                                      maxLines: 2,
+                                    ),
+                                  ))
+                              : null
+                        ]..removeWhere((item) => item == null),
+                      )),
+                ),
+              ),
             );
           }).toList(),
         ),
@@ -222,12 +258,22 @@ class ShoppingCartListTile extends StatelessWidget {
 }
 
 class PrimaryBackgroundDismissable extends StatelessWidget {
-  const PrimaryBackgroundDismissable({Key key}) : super(key: key);
+  final bool roundBottomBorder;
+
+  const PrimaryBackgroundDismissable({
+    this.roundBottomBorder = false,
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.red,
+      decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.only(
+            bottomLeft: roundBottomBorder ? Radius.circular(15) : Radius.zero,
+            bottomRight: roundBottomBorder ? Radius.circular(15) : Radius.zero,
+          )),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -244,20 +290,20 @@ class PrimaryBackgroundDismissable extends StatelessWidget {
   }
 }
 
-class SecondaryBackgroundDismissible extends StatefulWidget {
-  SecondaryBackgroundDismissible({Key key}) : super(key: key);
+class SecondaryBackgroundDismissible extends StatelessWidget {
+  final bool roundBottomBorder;
 
-  @override
-  _SecondaryBackgroundDismissibleState createState() =>
-      _SecondaryBackgroundDismissibleState();
-}
+  const SecondaryBackgroundDismissible({this.roundBottomBorder = false});
 
-class _SecondaryBackgroundDismissibleState
-    extends State<SecondaryBackgroundDismissible> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.red,
+      decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.only(
+            bottomLeft: roundBottomBorder ? Radius.circular(15) : Radius.zero,
+            bottomRight: roundBottomBorder ? Radius.circular(15) : Radius.zero,
+          )),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
@@ -270,95 +316,6 @@ class _SecondaryBackgroundDismissibleState
           )
         ],
       ),
-    );
-  }
-}
-
-class IngredientRow extends StatelessWidget {
-  final CheckableIngredient ingredient;
-  final Recipe recipe;
-  final Color textColor;
-  final bool showBorder;
-
-  IngredientRow({
-    Key key,
-    this.textColor,
-    this.showBorder = false,
-    @required this.recipe,
-    @required this.ingredient,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    Color ingredientTextColor = textColor;
-    if (textColor == null)
-      ingredientTextColor = Theme.of(context).textTheme.body1.color;
-    return Row(
-      children: <Widget>[
-        Container(
-          height: 50,
-          width: 50,
-          decoration: BoxDecoration(),
-          child: Center(
-            child: IconButton(
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              iconSize: 30,
-              icon: Icon(
-                ingredient.checked
-                    ? MdiIcons.checkCircleOutline
-                    : MdiIcons.circleOutline,
-              ),
-              color: ingredient.checked ? Colors.green : Colors.grey,
-              onPressed: () {
-                BlocProvider.of<ShoppingCartBloc>(context)
-                    .add(CheckIngredients([ingredient], recipe));
-              },
-            ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(left: 10),
-            child: Text(
-              //'SpaghettiSauce von der Kuh mit ganz viel ',
-              '${ingredient.name}',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 18,
-                decoration:
-                    ingredient.checked ? TextDecoration.lineThrough : null,
-                color: ingredientTextColor,
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 10,
-        ),
-        ingredient.amount != null
-            ? Container(
-                padding: EdgeInsets.all(3),
-                height: 50,
-                width: 99,
-                decoration: BoxDecoration(),
-                child: Center(
-                  child: Text(
-                    '${cutDouble(ingredient.amount)} ${ingredient.unit == null ? "" : ingredient.unit}',
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 18,
-                        decoration: ingredient.checked
-                            ? TextDecoration.lineThrough
-                            : null,
-                        color: ingredientTextColor),
-                    maxLines: 2,
-                  ),
-                ))
-            : null
-      ]..removeWhere((item) => item == null),
     );
   }
 }
