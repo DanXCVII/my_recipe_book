@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -87,7 +88,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                           state.recipe,
                           BlocProvider.of<ShoppingCartBloc>(context),
                         ),
-                      );
+                      ).then((_) => Ads.hideBottomBannerAd());
                     }
                   },
                   child: BlocBuilder<WebsiteImportBloc, WebsiteImportState>(

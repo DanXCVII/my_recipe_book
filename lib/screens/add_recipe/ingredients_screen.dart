@@ -163,6 +163,8 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                       icon: Icon(Icons.arrow_forward),
                       color: Colors.white,
                       onPressed: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
+
                         _finishedEditingIngredients();
                       },
                     );
@@ -397,6 +399,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
     if (_flush != null && _flush.isShowing()) {
     } else {
       _flush = Flushbar<bool>(
+        margin: EdgeInsets.only(bottom: Ads.shouldShowAds() ? Ads.adHeight : 0),
         animationDuration: Duration(milliseconds: 300),
         leftBarIndicatorColor: Colors.blue[300],
         title: title,

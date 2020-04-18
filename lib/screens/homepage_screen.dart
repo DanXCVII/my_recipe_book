@@ -351,7 +351,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 200,
               ),
             )
-          : null
+          : null,
     ]..removeWhere((item) => item == null));
   }
 
@@ -595,7 +595,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                             HiveProvider().getTmpRecipe(),
                             BlocProvider.of<ShoppingCartBloc>(context),
                           ),
-                        );
+                        ).then((_) => Ads.hideBottomBannerAd());
                       });
                     },
                     Icon(Icons.description,

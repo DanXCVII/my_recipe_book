@@ -186,6 +186,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                               icon: Icon(Icons.check),
                               color: Colors.white,
                               onPressed: () {
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
+
                                 _finishedEditingNutritions(false);
                               },
                             );

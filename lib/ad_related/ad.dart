@@ -14,6 +14,7 @@ class Ads {
   static BannerAd _bottomBannerAd;
   static BannerAd _topBannerAd;
   static bool _wideBottomBannerAd = false;
+  static double adHeight;
 
   static void initialize() {
     FirebaseAdMob.instance.initialize(appId: getAdAppId());

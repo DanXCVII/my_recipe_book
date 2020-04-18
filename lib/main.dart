@@ -86,7 +86,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: true,
+        debugShowCheckedModeBanner: false,
         localizationsDelegates: [
           I18n.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -229,7 +229,7 @@ class MyApp extends StatelessWidget {
             case "/add-recipe/general-info":
               final GeneralInfoArguments args = settings.arguments;
 
-              Ads.hideBottomBannerAd();
+              Ads.showBottomBannerAd();
 
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
@@ -259,10 +259,12 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
-                  child: GeneralInfoScreen(
-                    modifiedRecipe: args.modifiedRecipe,
-                    editingRecipeName: args.editingRecipeName,
-                  ),
+                  child: _getAdPage(
+                      GeneralInfoScreen(
+                        modifiedRecipe: args.modifiedRecipe,
+                        editingRecipeName: args.editingRecipeName,
+                      ),
+                      context),
                 ),
               );
 
@@ -559,11 +561,11 @@ class MyApp extends StatelessWidget {
             children: <Widget>[
               Expanded(child: page),
               Container(
-                height: 50,
+                height: Ads.adHeight,
                 child: Stack(
                   children: <Widget>[
                     Container(
-                      height: 50,
+                      height: Ads.adHeight,
                       width: double.infinity,
                       color: Colors.brown,
                       child: Image.asset(

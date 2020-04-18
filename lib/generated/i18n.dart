@@ -1084,9 +1084,9 @@ class _I18n_de_DE extends I18n {
   /// "Rezepte laden"
   @override
   String get import_from_website_short => "Rezepte laden";
-  /// "Import aus unekannten Gründen fehlgeschlagen"
+  /// "Import aus unbekannten Gründen fehlgeschlagen"
   @override
-  String get failed_to_import_recipe_unknown_reason => "Import aus unekannten Gründen fehlgeschlagen";
+  String get failed_to_import_recipe_unknown_reason => "Import aus unbekannten Gründen fehlgeschlagen";
   /// "Rezept mit demselben Namen \"${name}\" bereits vorhanden"
   @override
   String recipe_already_exists(String name) => "Rezept mit demselben Namen \"${name}\" bereits vorhanden";

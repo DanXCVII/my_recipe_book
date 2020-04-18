@@ -372,6 +372,7 @@ class Settings extends StatelessWidget {
   void _showInfoFlushBar(String title, String body, BuildContext context) {
     Flushbar flush;
     flush = Flushbar<bool>(
+      margin: EdgeInsets.only(bottom: Ads.shouldShowAds() ? Ads.adHeight : 0),
       animationDuration: Duration(milliseconds: 300),
       leftBarIndicatorColor: Colors.blue[300],
       title: I18n.of(context).failed_loading_ad,

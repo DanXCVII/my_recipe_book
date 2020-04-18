@@ -163,7 +163,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                       BlocProvider.of<ShoppingCartBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
-                  ).then((_) => Ads.hideBottomBannerAd());
+                  );
                 } else if (state is GSavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
@@ -181,6 +181,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                       icon: Icon(Icons.arrow_forward),
                       color: Colors.white,
                       onPressed: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
+
                         _finishedEditingGeneralInfo();
                       },
                     );
@@ -399,6 +401,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
     if (_flush != null && _flush.isShowing()) {
     } else {
       _flush = Flushbar<bool>(
+        margin: EdgeInsets.only(bottom: Ads.shouldShowAds() ? Ads.adHeight : 0),
         animationDuration: Duration(milliseconds: 300),
         leftBarIndicatorColor: Colors.blue[300],
         title: title,

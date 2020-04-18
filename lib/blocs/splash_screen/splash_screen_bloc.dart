@@ -76,6 +76,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     }
     Ads.initialize();
     Ads.setBottomBannerAd();
+    Ads.adHeight = MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
 
     this._recipeCategoryOverview = recipeCategoryOverview;
     this._showIntro = showIntro;

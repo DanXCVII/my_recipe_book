@@ -226,7 +226,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                                   ? 422
                                   : MediaQuery.of(context).size.height -
                                       kToolbarHeight -
-                                      (Ads.shouldShowAds() ? 50 : 0) -
+                                      (Ads.shouldShowAds() ? Ads.adHeight : 0) -
                                       88,
                               child: ListView.builder(
                                 itemCount: state.recipe.nutritions.length * 2,

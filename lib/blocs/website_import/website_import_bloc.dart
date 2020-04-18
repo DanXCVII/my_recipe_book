@@ -66,6 +66,9 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
         importRecipe = await getRecipeFromElaVeganData(httpWebsite, event.url);
       } else if (event.url.contains("kochbar.de")) {
         importRecipe = await getRecipeFromKochBData(httpWebsite, event.url);
+      } else if (event.url.contains("allrecipes.com")) {
+        importRecipe =
+            await getRecipeFromAllRecipesData(httpWebsite, event.url);
       } else {
         yield InvalidUrl();
         return;
@@ -82,6 +85,90 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     } else {
       yield FailedToConnect();
     }
+  }
+
+  Future<Tuple2<ImportState, Recipe>> getRecipeFromAllRecipesData(
+      String websiteData, String url) async {
+    try {
+      String httpRecipeContent = websiteData.substring(
+          websiteData.indexOf("<h1 id=\"recipe-main-content\""),
+          websiteData.indexOf("see-full-nutrition"));
+
+      String recipeName = httpRecipeContent.substring(
+          httpRecipeContent.indexOf(">"), httpRecipeContent.indexOf("<", 3));
+      if (HiveProvider().getRecipeNames().contains(recipeName)) {
+        return Tuple2<ImportState, Recipe>(ImportState.DUPLICATE,
+            await HiveProvider().getRecipeByName(recipeName));
+      }
+
+      List<String> steps = _getStepsFromAllRecipes(httpRecipeContent);
+      List<Nutrition> recipeNutritions = [];
+      if (httpRecipeContent.contains("nutrition-summary-facts")) {
+        recipeNutritions = _getNutritionsFromAllRecipes(httpRecipeContent);
+      }
+      List<List<Ingredient>> ingredients = [
+        _getIngredientStringFromAllRecipes(httpRecipeContent)
+            .map((item) => _getIngredientFromElaVFormat(item))
+            .toList()
+              ..removeWhere((item) => item == null)
+      ];
+      List<double> times = _getTimesFromHttpData(httpRecipeContent);
+
+      Recipe importRecipe = Recipe(
+        name: recipeName,
+        lastModified: DateTime.now().toIso8601String(),
+        servings: null,
+        preperationTime: times[0],
+        cookingTime: times[1],
+        totalTime: times[2],
+        steps: steps,
+        stepImages: List<List<String>>.generate(steps.length, (i) => []),
+        nutritions: recipeNutritions,
+        vegetable: Vegetable.NON_VEGETARIAN,
+        ingredients: ingredients,
+        source: url,
+      );
+
+      List<String> savedNutritions = HiveProvider().getNutritions();
+      for (Nutrition n in recipeNutritions) {
+        if (!savedNutritions.contains(n.name)) {
+          await HiveProvider().addNutrition(n.name);
+        }
+      }
+
+      String importRecipeImagePath =
+          await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
+
+      await Dio().download(
+        _getRecipeImageString(httpRecipeContent),
+        importRecipeImagePath,
+      );
+      await IO.saveRecipeImage(
+          File(importRecipeImagePath), newRecipeLocalPathString);
+
+      Recipe finalRecipe = importRecipe.copyWith(
+        imagePath: await PathProvider.pP
+            .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
+        imagePreviewPath: await PathProvider.pP
+            .getRecipeImagePreviewPathFull(newRecipeLocalPathString, ".jpg"),
+      );
+
+      if (finalRecipe != null) {
+        HiveProvider().saveTmpRecipe(finalRecipe);
+      } else {
+        return Tuple2<ImportState, Recipe>(
+          ImportState.FAIL,
+          null,
+        );
+      }
+      return Tuple2<ImportState, Recipe>(
+        ImportState.SUCCESS,
+        finalRecipe,
+      );
+    } catch (e) {
+      return Tuple2<ImportState, Recipe>(ImportState.FAIL, null);
+    }
+    return Tuple2<ImportState, Recipe>(ImportState.FAIL, null);
   }
 
   Future<Tuple2<ImportState, Recipe>> getRecipeFromElaVeganData(
@@ -110,10 +197,9 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       Recipe importRecipe = Recipe(
         name: jsonMap["name"],
         lastModified: DateTime.now().toIso8601String(),
-        servings: double.parse(jsonMap["recipeYield"]),
-        preperationTime: getMinFromElaVFormat(jsonMap["prepTime"]),
-        cookingTime: getMinFromElaVFormat(jsonMap["cookTime"]),
-        totalTime: getMinFromElaVFormat(jsonMap["totalTime"]),
+        preperationTime: _getMinFromElaVFormat(jsonMap["prepTime"]),
+        cookingTime: _getMinFromElaVFormat(jsonMap["cookTime"]),
+        totalTime: _getMinFromElaVFormat(jsonMap["totalTime"]),
         steps: steps,
         stepImages: List<List<String>>.generate(steps.length, (i) => []),
         nutritions: recipeNutritions,
@@ -285,9 +371,9 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
         lastModified: DateTime.now().toIso8601String(),
         servings: double.tryParse(jsonMap["recipeYield"]
             .substring(0, jsonMap["recipeYield"].indexOf(" "))),
-        preperationTime: getMinFromElaVFormat(jsonMap["prepTime"]),
-        cookingTime: getMinFromElaVFormat(jsonMap["cookTime"]),
-        totalTime: getMinFromElaVFormat(jsonMap["totalTime"]),
+        preperationTime: _getMinFromElaVFormat(jsonMap["prepTime"]),
+        cookingTime: _getMinFromElaVFormat(jsonMap["cookTime"]),
+        totalTime: _getMinFromElaVFormat(jsonMap["totalTime"]),
         steps: steps,
         stepImages: List<List<String>>.generate(steps.length, (i) => []),
         nutritions: recipeNutritions,
@@ -477,7 +563,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
 
   /// the format must be like "PT15M" where
   /// the total minutes are between PT and M (if null, returns null)
-  double getMinFromElaVFormat(String numberString) {
+  double _getMinFromElaVFormat(String numberString) {
     return numberString == null
         ? null
         : double.tryParse(numberString.substring(2, numberString.indexOf("M")));
@@ -525,13 +611,13 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       } else {
         name = ingredientInfo;
       }
-    } catch (e) {
-      // if whatever goes wrong when parsing, catch the exception
-    }
+    } catch (e) {}
 
     return Ingredient(name: name, unit: unit, amount: amount);
   }
 
+  /// removes the keys with @type, removes the substring Content and
+  /// everything with value == null
   /// example:
   /// "nutrition": {
   ///   "@type": "NutritionInformation",
@@ -543,7 +629,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   /// }
   List<Nutrition> _getElaVNutritions(Map<String, dynamic> nutritionData) {
     return nutritionData.keys
-        .map((key) => key == "@type"
+        .map((key) => key == "@type" || nutritionData[key] == null
             ? null
             : Nutrition(
                 name: key.replaceAll("Content", ""),
@@ -551,5 +637,84 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
               ))
         .toList()
           ..removeWhere((item) => item == null);
+  }
+
+  List<String> _getStepsFromAllRecipes(String httpData) {
+    List<String> steps = [];
+    String iteratedHttpData =
+        httpData.substring(httpData.indexOf("directions__list--item\">"));
+    while (iteratedHttpData.contains("directions__list--item\">")) {
+      steps.add(iteratedHttpData.substring(
+        iteratedHttpData.indexOf("directions__list--item\">") + 25,
+        iteratedHttpData.indexOf("</span>"),
+      ));
+      iteratedHttpData = iteratedHttpData.substring(
+          iteratedHttpData.indexOf("directions__list--item\">") + 10);
+    }
+    return steps;
+  }
+
+  List<Nutrition> _getNutritionsFromAllRecipes(String httpData) {
+    List<Nutrition> nutritions = [];
+    try {
+      String iteratedHttpData = httpData;
+      while (iteratedHttpData.contains("span itemprop=\"")) {
+        nutritions.add(Nutrition(
+          name: iteratedHttpData.substring(
+            iteratedHttpData.indexOf("span itemprop=\"") + 16,
+            iteratedHttpData.indexOf(
+                "\"", iteratedHttpData.indexOf("span itemprop=\"") + 17),
+          ),
+          amountUnit: iteratedHttpData.substring(
+            iteratedHttpData.indexOf(
+                    "\">", iteratedHttpData.indexOf("span itemprop=\"")) +
+                3,
+            iteratedHttpData.indexOf(
+                "<span", iteratedHttpData.indexOf("span itemprop=\"") + 17),
+          ),
+        ));
+        iteratedHttpData = iteratedHttpData
+            .substring(iteratedHttpData.indexOf("span itemprop=\"") + 17);
+      }
+    } catch (e) {}
+    return nutritions;
+  }
+
+  List<String> _getIngredientStringFromAllRecipes(String httpData) {
+    List<String> ingredients = [];
+
+    String cutRecipeData =
+        httpData.substring(httpData.indexOf("recipeIngredient"));
+    while (cutRecipeData.contains("recipeIngredient")) {
+      ingredients.add(cutRecipeData.substring(
+        cutRecipeData.indexOf("cutRecipeData") + 15,
+        cutRecipeData.indexOf("</span>"),
+      ));
+      cutRecipeData =
+          cutRecipeData.substring(cutRecipeData.indexOf("recipeIngredient"), 5);
+    }
+  }
+
+  List<double> _getTimesFromHttpData(String httpData) {
+    List<double> times = [
+      _getMinFromElaVFormat(httpData.substring(
+        httpData.indexOf("prepTime\" datetime=\"") + 21,
+        httpData.indexOf("><span aria") - 1,
+      )),
+      _getMinFromElaVFormat(httpData.substring(
+        httpData.indexOf("cookTime\" datetime=\"") + 21,
+        httpData.indexOf("><span aria") - 1,
+      )),
+      _getMinFromElaVFormat(httpData.substring(
+        httpData.indexOf("totalTime\" datetime=\"") + 22,
+        httpData.indexOf("><span aria") - 1,
+      )),
+    ];
+  }
+
+  String _getRecipeImageString(String httpData) {
+    String halfCut =
+        httpData.substring(0, httpData.indexOf("jpg, null', Recipe") + 3);
+    return halfCut.substring(halfCut.lastIndexOf(""));
   }
 }
