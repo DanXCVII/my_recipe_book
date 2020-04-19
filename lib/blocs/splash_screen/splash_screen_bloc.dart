@@ -124,8 +124,9 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     ByteData data = await rootBundle.load('assets/firstStartRecipes.zip');
 
     final buffer = data.buffer;
+    await Directory((await getTemporaryDirectory()).path).create(recursive:true);
     File recipesFile = await File(
-            (await getTemporaryDirectory()).path + "/firstStartRecipes.zip")
+            (await getTemporaryDirectory()).path + "/assetRecipes.zip")
         .writeAsBytes(
             buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
 

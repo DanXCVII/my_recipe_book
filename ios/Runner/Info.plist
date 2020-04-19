@@ -43,6 +43,9 @@
 	<false/>
 	<key>UIStatusBarHidden</key>
 	<true/>
-
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs to access your photos to add images to your recipes</string>
+	<key>NSCameraUsageDescription</key>
+    <string>This app needs to access your camera to add a photo to your recipes</string>
 </dict>
 </plist>

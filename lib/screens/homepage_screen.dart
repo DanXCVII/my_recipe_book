@@ -155,8 +155,9 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   getIntentPath() async {
+    if(Platform.isAndroid){
     var sharedData = await platform.invokeMethod("getSharedText");
-    return sharedData == null ? null : sharedData;
+    return sharedData == null ? null : sharedData; }
   }
 
   void _showFlushInfo(String title, String body) {
