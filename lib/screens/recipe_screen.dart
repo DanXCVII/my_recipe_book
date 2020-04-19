@@ -631,7 +631,21 @@ class RecipePage extends StatelessWidget {
               ? null
               : Expanded(
                   child: Container(
-                    color: Color(0xff51473b),
+                    decoration: BoxDecoration(
+                      color: MediaQuery.of(context).size.width > 550
+                          ? null
+                          : Color(0xff51473b),
+                      gradient: MediaQuery.of(context).size.width > 550
+                          ? LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color(0xff672B00),
+                                Color(0xff3A1900),
+                              ],
+                            )
+                          : null,
+                    ),
                     child: CustomScrollView(
                       slivers: <Widget>[
                         MediaQuery.of(context).size.width > 550
@@ -765,14 +779,17 @@ class RecipePage extends StatelessWidget {
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(0xff672B00),
-                                    Color(0xff3A1900),
-                                  ],
-                                ),
+                                gradient:
+                                    MediaQuery.of(context).size.width <= 550
+                                        ? LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Color(0xff672B00),
+                                              Color(0xff3A1900),
+                                            ],
+                                          )
+                                        : null,
                               ),
                               child: StepsSection(
                                 recipe.steps,

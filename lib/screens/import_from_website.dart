@@ -307,14 +307,16 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
     with SingleTickerProviderStateMixin {
   bool _isExpanded = true;
   List<String> _supportedWebsites = [
-    "chefkoch.de",
-    "kochbar.de",
-    "elavegan.de",
+    "DE: chefkoch.de",
+    "DE: kochbar.de",
+    "DE: elavegan.de",
+    "EN: allrecipes.com"
   ];
   List<String> _websiteUrls = [
     "https://www.chefkoch.de",
     "https://www.kochbar.de/",
     "https://elavegan.com/de/",
+    "https://www.allrecipes.com/",
   ];
 
   @override
@@ -368,7 +370,7 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
             curve: Curves.fastOutSlowIn,
             child: _isExpanded
                 ? Container(
-                    height: 150,
+                    height: 250,
                     child: ListView(
                       children: List<Widget>.generate(
                         _supportedWebsites.length * 2 + 1,
