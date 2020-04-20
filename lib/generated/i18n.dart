@@ -640,9 +640,9 @@ class _I18n_de_DE extends I18n {
   /// "Kategorie auswählen"
   @override
   String get select_a_category => "Kategorie auswählen";
-  /// "einkaufen"
+  /// "Einkaufen"
   @override
-  String get basket => "einkaufen";
+  String get basket => "Einkaufen";
   /// "Dein Einkaufswagen ist leer"
   @override
   String get shopping_cart_is_empty => "Dein Einkaufswagen ist leer";

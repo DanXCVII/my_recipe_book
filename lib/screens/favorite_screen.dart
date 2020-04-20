@@ -46,20 +46,16 @@ class FavoriteRecipeCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-          builder: (context, constraints ) => StaggeredGridView.countBuilder(
+      builder: (context, constraints) => StaggeredGridView.countBuilder(
         padding: EdgeInsets.all(12),
-        crossAxisCount:
-            ((constraints.maxWidth / 200).round() * 2) < 4
-                ? 4
-                : (constraints.maxWidth / 200).round() * 2,
+        crossAxisCount: ((constraints.maxWidth / 200).round() * 2) < 4
+            ? 4
+            : (constraints.maxWidth / 200).round() * 2,
         itemCount: favoriteRecipes.length,
         itemBuilder: (BuildContext context, int index) => LayoutBuilder(
           builder: (context, constraints) => RecipeCard(
             recipe: favoriteRecipes[index],
             width: constraints.maxWidth,
-            shadow: Theme.of(context).backgroundColor == Colors.white
-                ? Colors.grey[400]
-                : Colors.grey[900],
             heroImageTag:
                 "${favoriteRecipes[index].imagePreviewPath}--${favoriteRecipes[index].name}",
           ),

@@ -203,7 +203,8 @@ class RecipeCardBig extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              recipe.preperationTime != null
+                              recipe.preperationTime != null &&
+                                      recipe.preperationTime != 0
                                   ? Expanded(
                                       child: Align(
                                         alignment: Alignment.centerLeft,
@@ -227,7 +228,8 @@ class RecipeCardBig extends StatelessWidget {
                                       ),
                                     )
                                   : Container(),
-                              recipe.cookingTime != null
+                              recipe.cookingTime != null &&
+                                      recipe.cookingTime != 0
                                   ? Expanded(
                                       child: Column(
                                         crossAxisAlignment:
@@ -248,7 +250,7 @@ class RecipeCardBig extends StatelessWidget {
                                       ),
                                     )
                                   : Container(),
-                              recipe.totalTime != null
+                              recipe.totalTime != null && recipe.totalTime != 0
                                   ? Expanded(
                                       child: Align(
                                         alignment: Alignment.centerRight,

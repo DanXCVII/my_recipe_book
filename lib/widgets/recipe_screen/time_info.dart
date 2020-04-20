@@ -49,7 +49,10 @@ class TimeInfo extends StatelessWidget {
                           ),
                         ),
                       ],
-                      color: Colors.pink,
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.pink, Colors.pink[800]]),
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Icon(
@@ -91,7 +94,10 @@ class TimeInfo extends StatelessWidget {
                     height: 35,
                     width: 35,
                     decoration: BoxDecoration(
-                      color: Colors.lightBlue,
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.lightBlue, Colors.lightBlue[800]]),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black45,
@@ -146,7 +152,10 @@ class TimeInfo extends StatelessWidget {
                     height: 35,
                     width: 35,
                     decoration: BoxDecoration(
-                      color: Colors.yellow,
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.yellow, Colors.yellow[800]]),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black45,

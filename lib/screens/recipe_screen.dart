@@ -492,15 +492,23 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
   }
 
   String _getRecipeAsString(Recipe recipe, BuildContext context) {
-    String recipeText = '${I18n.of(context).recipe_name}: ${recipe.name}\n'
-            '====================\n'
-            '${I18n.of(context).prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n'
-            '${I18n.of(context).cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n'
-            '${I18n.of(context).total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
-            '====================\n' +
-        (recipe.servings == null
-            ? I18n.of(context).ingredients + ":"
-            : '${I18n.of(context).ingredients_for} ${recipe.servings} ${I18n.of(context).servings}:\n');
+    String recipeText = '${I18n.of(context).recipe_name}: ${recipe.name}\n';
+    if (recipe.preperationTime != 0 ||
+        recipe.cookingTime != 0 ||
+        recipe.totalTime != 0) recipeText += '====================\n';
+    if (recipe.preperationTime != 0)
+      recipeText +=
+          '${I18n.of(context).prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n';
+    if (recipe.cookingTime != 0)
+      recipeText +=
+          '${I18n.of(context).cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n';
+    if (recipe.totalTime != 0)
+      recipeText +=
+          '${I18n.of(context).total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
+                  '====================\n' +
+              (recipe.servings == null
+                  ? I18n.of(context).ingredients + ":"
+                  : '${I18n.of(context).ingredients_for} ${recipe.servings} ${I18n.of(context).servings}:\n');
     if (recipe.ingredientsGlossary.isNotEmpty) {
       for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
         recipeText +=
@@ -512,6 +520,13 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
         }
         recipeText += '====================\n';
       }
+    } else if (recipe.ingredients.first.isNotEmpty) {
+      for (int j = 0; j < recipe.ingredients.first.length; j++) {
+        recipeText += '${recipe.ingredients.first[j].name} '
+            '${recipe.ingredients.first[j].amount ?? ""} '
+            '${recipe.ingredients.first[j].unit ?? ""}\n';
+      }
+      recipeText += '====================\n';
     }
 
     int i = 1;

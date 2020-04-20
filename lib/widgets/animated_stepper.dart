@@ -62,18 +62,31 @@ class AnimatedStepper extends StatelessWidget {
                                         height: 60,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              offset: Offset(2, 2),
+                                              blurRadius: 3,
+                                              spreadRadius: 1,
+                                              color: Colors.black26,
+                                            ),
+                                          ],
 
                                           gradient: RadialGradient(
                                             center: const Alignment(
                                                 0, 0), // near the top right
                                             radius: state.selectedStep == index
                                                 ? 0.5
-                                                : 1,
+                                                : 0.6,
                                             colors: [
                                               stepsColors[index %
                                                   (stepsColors
                                                       .length)], // yellow sun
-                                              Colors.transparent, // blue sky
+                                              state.selectedStep == index
+                                                  ? Colors.transparent
+                                                  : stepsColors[index %
+                                                          (stepsColors.length)]
+                                                      .withOpacity(
+                                                          0.5), // blue sky
                                             ],
                                             stops: [0.6, 1.0],
                                           ),
