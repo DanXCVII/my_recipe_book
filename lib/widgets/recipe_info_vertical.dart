@@ -91,7 +91,7 @@ class RecipeInfoVertical extends StatelessWidget {
           child: _showComplexTopArea(
                   recipe.preperationTime, recipe.cookingTime, recipe.totalTime)
               ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                   child: Wrap(
                     direction: Axis.horizontal,
                     alignment: WrapAlignment.center,
@@ -126,7 +126,7 @@ class RecipeInfoVertical extends StatelessWidget {
                           recipe.tags,
                           recipeScreenFontFamily,
                         ),
-                      )
+                      ),
                     ]..removeWhere((item) => item == null),
                   ),
                 )

@@ -150,9 +150,16 @@ class _NutritionManagerState extends State<NutritionManager> {
                             secondaryBackground:
                                 _getSecondaryBackgroundDismissible(),
                             onDismissed: (_) {
-                              nutritionsController.remove(currentNutrition);
-                              BlocProvider.of<NutritionManagerBloc>(context)
-                                  .add(DeleteNutrition(currentNutrition));
+                              setState(() {
+                                dismissibleKeys =
+                                    List<Key>.from(dismissibleKeys)
+                                      ..removeAt(i);
+                                listTileKeys = List<Key>.from(listTileKeys)
+                                  ..removeAt(i);
+                                nutritionsController.remove(currentNutrition);
+                                BlocProvider.of<NutritionManagerBloc>(context)
+                                    .add(DeleteNutrition(currentNutrition));
+                              });
                             },
                             child: _getNutritionListTile(currentNutrition,
                                 context, listTileKeys[i], state.nutritions),

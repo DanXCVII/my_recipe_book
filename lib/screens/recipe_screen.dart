@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,6 +33,7 @@ import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
 import '../my_wrapper.dart';
+import '../pdf_share.dart';
 import '../screens/recipe_overview.dart';
 import '../widgets/animated_stepper.dart';
 import '../widgets/animated_vegetable.dart';
@@ -58,7 +61,8 @@ const Map<Vegetable, List<int>> vegetableColor = {
   Vegetable.VEGAN: [0xff144E00, 0xff0F3800]
 };
 
-enum PopupOptions { EXPORT_ZIP, EXPORT_TEXT }
+enum PopupOptionsMore { DELETE, SHARE, PRINT }
+enum PopupOptionsShare { EXPORT_ZIP, EXPORT_TEXT, EXPORT_PDF }
 
 class RecipeScreenArguments {
   final ShoppingCartBloc shoppingCartBloc;
@@ -409,26 +413,35 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                     ));
           },
         ),
-        IconButton(
-          icon: Icon(Icons.delete),
-          tooltip: I18n.of(context).share_recipe,
-          onPressed: () {
-            _showDeleteDialog(context, recipe.name);
-          },
-        ),
-        PopupMenuButton<PopupOptions>(
-          icon: Icon(Icons.share),
-          onSelected: (value) => _choiceAction(value, context),
+        PopupMenuButton<PopupOptionsMore>(
+          icon: Icon(Icons.more_vert),
+          onSelected: (value) => _choiceActionMore(value, context),
           itemBuilder: (BuildContext context) {
             return [
               PopupMenuItem(
-                value: PopupOptions.EXPORT_ZIP,
-                child: Text(I18n.of(context).export_zip),
+                value: PopupOptionsMore.DELETE,
+                child: Row(children: [
+                  Icon(Icons.delete),
+                  SizedBox(width: 10),
+                  Text(I18n.of(context).delete_recipe)
+                ]),
               ),
               PopupMenuItem(
-                value: PopupOptions.EXPORT_TEXT,
-                child: Text(I18n.of(context).export_text),
-              )
+                value: PopupOptionsMore.SHARE,
+                child: Row(children: [
+                  Icon(Icons.share),
+                  SizedBox(width: 10),
+                  Text(I18n.of(context).share_recipe)
+                ]),
+              ),
+              PopupMenuItem(
+                value: PopupOptionsMore.PRINT,
+                child: Row(children: [
+                  Icon(Icons.print),
+                  SizedBox(width: 10),
+                  Text(I18n.of(context).print_recipe)
+                ]),
+              ),
             ];
           },
         ),
@@ -436,11 +449,57 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     );
   }
 
-  void _choiceAction(PopupOptions value, context) {
-    if (value == PopupOptions.EXPORT_TEXT) {
+  void _choiceActionMore(PopupOptionsMore value, context) async {
+    if (value == PopupOptionsMore.DELETE) {
+      _showDeleteDialog(context, recipe.name);
+    } else if (value == PopupOptionsMore.PRINT) {
+      getRecipePdf(recipe, context).then((pdf) =>
+          Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf));
+    } else if (value == PopupOptionsMore.SHARE) {
+      await showMenu<PopupOptionsShare>(
+        context: context,
+        position: RelativeRect.fromLTRB(1000, 25, 0, 0),
+        items: [
+          PopupMenuItem(
+            value: PopupOptionsShare.EXPORT_TEXT,
+            child: ListTile(
+                onTap: () {
+                  _choiceActionShare(PopupOptionsShare.EXPORT_TEXT, context);
+                },
+                title: Text(I18n.of(context).export_text)),
+          ),
+          PopupMenuItem(
+            value: PopupOptionsShare.EXPORT_ZIP,
+            child: ListTile(
+              onTap: () {
+                _choiceActionShare(PopupOptionsShare.EXPORT_ZIP, context);
+              },
+              title: Text(I18n.of(context).export_zip),
+            ),
+          ),
+          PopupMenuItem(
+            value: PopupOptionsShare.EXPORT_PDF,
+            child: ListTile(
+              onTap: () {
+                _choiceActionShare(PopupOptionsShare.EXPORT_PDF, context);
+              },
+              title: Text(I18n.of(context).export_pdf),
+            ),
+          ),
+        ],
+        elevation: 8.0,
+      );
+    }
+  }
+
+  void _choiceActionShare(PopupOptionsShare value, context) {
+    if (value == PopupOptionsShare.EXPORT_TEXT) {
       Share.share(_getRecipeAsString(recipe, context), subject: 'recipe');
-    } else if (value == PopupOptions.EXPORT_ZIP) {
+    } else if (value == PopupOptionsShare.EXPORT_ZIP) {
       _exportRecipe(recipe).then((_) {});
+    } else if (value == PopupOptionsShare.EXPORT_PDF) {
+      getRecipePdf(recipe, context)
+          .then((pdf) => Printing.sharePdf(bytes: pdf, filename: 'recipe.pdf'));
     }
   }
 

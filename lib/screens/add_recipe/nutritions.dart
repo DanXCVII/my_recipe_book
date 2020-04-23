@@ -47,7 +47,7 @@ class AddRecipeNutritions extends StatefulWidget {
 
 class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
     with WidgetsBindingObserver {
-  bool isInitialized = false;
+  bool _isInitialized = false;
   static final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   Map<String, TextEditingController> nutritionsController = {};
   List<Key> dismissibleKeys = [];
@@ -94,18 +94,17 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
       child: BlocListener<NutritionManagerBloc, NutritionManagerState>(
         listener: (context, state) {
           if (state is LoadedNutritionManager) {
-            if (!isInitialized) {
+            if (!_isInitialized) {
               _initializeData(state.nutritions);
+              setState(() {
+                _isInitialized = true;
+              });
             } else {
               if (state.nutritions.length > listTileKeys.length) {
                 nutritionsController
                     .addAll({state.nutritions.last: TextEditingController()});
                 listTileKeys.add(Key(state.nutritions.last));
                 dismissibleKeys.add(Key('D-${state.nutritions.last}'));
-              } else if (state.nutritions.length < listTileKeys.length) {
-                nutritionsController.remove(state.nutritions.last);
-                listTileKeys.removeLast();
-                dismissibleKeys.removeLast();
               }
             }
           }
@@ -251,8 +250,28 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           },
                           children: List<Widget>.generate(
                             state.nutritions.length,
-                            (i) => _getNutritionListTile(state.nutritions[i],
-                                context, listTileKeys[i], state.nutritions),
+                            (i) => Dismissible(
+                              key: dismissibleKeys[i],
+                              background: _getPrimaryBackgroundDismissible(),
+                              secondaryBackground:
+                                  _getSecondaryBackgroundDismissible(),
+                              onDismissed: (_) {
+                                setState(() {
+                                  dismissibleKeys =
+                                      List<Key>.from(dismissibleKeys)
+                                        ..removeAt(i);
+                                  listTileKeys = List<Key>.from(listTileKeys)
+                                    ..removeAt(i);
+                                  nutritionsController
+                                      .remove(state.nutritions[i]);
+                                  BlocProvider.of<NutritionManagerBloc>(context)
+                                      .add(
+                                          DeleteNutrition(state.nutritions[i]));
+                                });
+                              },
+                              child: _getNutritionListTile(state.nutritions[i],
+                                  context, listTileKeys[i], state.nutritions),
+                            ),
                           ),
                         ),
                       ),
@@ -262,6 +281,42 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
             }
           },
         ),
+      ),
+    );
+  }
+
+  Widget _getPrimaryBackgroundDismissible() {
+    return Container(
+      color: Colors.red,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Icon(
+              MdiIcons.deleteSweep,
+              color: Colors.white,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _getSecondaryBackgroundDismissible() {
+    return Container(
+      color: Colors.red,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Icon(
+              MdiIcons.deleteSweep,
+              color: Colors.white,
+            ),
+          )
+        ],
       ),
     );
   }

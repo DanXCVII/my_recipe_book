@@ -17,6 +17,7 @@
   "remove_ingredient": "remove ingredient",
   "remove_step": "remove step",
   "export_zip": "share/save as file",
+  "export_pdf": "share as pdf",
   "export_text": "share in textform",
   "edit": "edit",
   "shoppingcart": "shoppingcart",
@@ -189,7 +190,7 @@
   "enter_url": "enter URL of website with recipe:",
   "website_must_be_under_the_supported_websites": "the website, of which you want to import a recipe from, must be under the supported websites:",
   "recipe_url": "recipe-url",
-  "source": "source",
+  "source": "source/URL",
   "recipe_edited_or_deleted": "recipe has been edited or deleted:\ngo back to man view and view it",
   "recipe_screen": "recipe screen",
   "more_coming_soon": "more coming soon...",
@@ -207,5 +208,11 @@
   "keep_screen_on": "keep screen on",
   "only_recipe_screen": "only on recipe screen",
   "general_info_changes_will_be_saved": "The changes you made, when adding a recipe are saved, when you go back and forth. So don't worry if you mistyped an information on one screen.",
-  "steps_intro": "Tap on a step to select it so that you know, what you have to do next"
+  "steps_intro": "Tap on a step to select it so that you know, what you have to do next",
+  "general_infos": "general infos",
+  "preperation_time": "preperation time",
+  "for_persons": "for \"{number}\" persons",
+  "for_word": "for",
+  "persons": "persons",
+  "print_recipe": "print recipe"
 }
