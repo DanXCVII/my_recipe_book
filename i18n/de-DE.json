@@ -205,5 +205,6 @@
   "complex_animations": "aufwendige Animationen",
   "keep_screen_on": "Bildschirmtimeout deaktivieren",
   "only_recipe_screen": "nur auf Rezeptbildschirm",
-  "general_info_changes_will_be_saved": "Die Änderungen beim Rezept hinzufügen oder bearbeiten werden gespeichert, wenn man vor oder zurück geht. Mache dir also keine Sorgen, wenn du eine Information falsch eingetippt hast. Beim zurückgehen gehen die Daten nicht verloren."
+  "general_info_changes_will_be_saved": "Die Änderungen beim Rezept hinzufügen oder bearbeiten werden gespeichert, wenn man vor oder zurück geht. Mache dir also keine Sorgen, wenn du eine Information falsch eingetippt hast. Beim zurückgehen gehen die Daten nicht verloren.",
+  "steps_intro": "Tippe auf einen Schritt um ihn auszuwählen, damit du weißt, was du als nächstes machen musst."
 }

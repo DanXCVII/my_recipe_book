@@ -9,6 +9,7 @@ import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -704,7 +705,7 @@ class RecipePage extends StatelessWidget {
                                                 child: ClipPath(
                                                   clipper: MyClipper(),
                                                   child: Container(
-                                                      height: 270,
+                                                      height: 250,
                                                       child: recipe.imagePath ==
                                                               Constants
                                                                   .noRecipeImage
@@ -1125,7 +1126,8 @@ class StepsSection extends StatelessWidget {
                         ),
                       ),
                     )),
-                SizedBox(height: 25),
+                SizedBox(height: 15),
+                GlobalSettings().showStepsIntro() ? StepsIntro() : null,
                 Center(
                   child: Container(
                     width: MediaQuery.of(context).size.width > 500
@@ -1141,7 +1143,7 @@ class StepsSection extends StatelessWidget {
                 ),
                 SizedBox(height: 25),
                 !hasNutritions ? Container() : Container(height: 80),
-              ],
+              ]..removeWhere((item) => item == null),
             );
           } else {
             return Container(
@@ -1150,6 +1152,65 @@ class StepsSection extends StatelessWidget {
             );
           }
         });
+  }
+}
+
+class StepsIntro extends StatefulWidget {
+  StepsIntro({Key key}) : super(key: key);
+
+  @override
+  _StepsIntroState createState() => _StepsIntroState();
+}
+
+class _StepsIntroState extends State<StepsIntro> {
+  bool show = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return show
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.brown,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        I18n.of(context).steps_intro,
+                        style: TextStyle(
+                          fontFamily: recipeScreenFontFamily,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(50)),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: IconButton(
+                        icon: Icon(Icons.check),
+                        onPressed: () {
+                          SharedPreferences.getInstance().then(
+                            (prefs) => setState(() {
+                              prefs.setBool("showStepsIntro", false);
+                              GlobalSettings().hasSeenStepIntro(true);
+                              show = false;
+                            }),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        : Container();
   }
 }
 
@@ -1495,9 +1556,11 @@ class MyClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = new Path();
-    path.lineTo(0.0, 200);
-    path.quadraticBezierTo(size.width / 4, 250, size.width / 2, 250);
-    path.quadraticBezierTo(size.width / 4 * 3, 250, size.width, 200);
+    path.lineTo(0.0, size.height * 0.8);
+    path.quadraticBezierTo(
+        size.width / 4, size.height, size.width / 2, size.height);
+    path.quadraticBezierTo(
+        size.width / 4 * 3, size.height, size.width, size.height * 0.8);
     path.lineTo(size.width, 0);
     path.lineTo(0, 0);
     path.close();

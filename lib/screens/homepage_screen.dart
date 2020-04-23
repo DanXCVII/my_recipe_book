@@ -742,7 +742,7 @@ class BottomNavyBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-            colors: [Colors.black54, Colors.grey[900]],
+            colors: [Colors.black87, Colors.grey[900]],
             begin: Alignment.topCenter,
             end: Alignment.bottomRight),
         boxShadow: [
@@ -822,8 +822,8 @@ class _ItemWidget extends StatelessWidget {
         gradient: LinearGradient(
           colors: isSelected
               ? [
-                  item.activeColor.withOpacity(0.6),
-                  item.activeColor.withOpacity(0.9)
+                  item.activeColor,
+                  item.activeColor.withOpacity(0.8),
                 ]
               : [Colors.transparent, Colors.transparent],
         ),

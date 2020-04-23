@@ -65,20 +65,20 @@ class _StepsState extends State<Steps> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 17.0),
-                          child: ClipPath(
-                            clipper: CustomIngredientsClipper(),
-                            child: Container(
-                              width: 26,
-                              height: 26,
-                              child: Center(
-                                child: Text(
-                                  "${i + 1}",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
-                              ),
+                          child: Container(
+                            width: 26,
+                            height: 26,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
                               color: Color(0xFF790604),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "${i + 1}",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
                             ),
                           ),
                         ),
