@@ -403,11 +403,13 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
       ),
       leading: Icon(Icons.reorder),
       trailing: Container(
-        width: MediaQuery.of(context).size.width / 3 > 50
-            ? 50
-            : MediaQuery.of(context).size.width / 3,
+        width: 80,
         child: TextFormField(
           controller: nutritionsController[nutritionName],
+          decoration: InputDecoration(
+            filled: true,
+            hintText: I18n.of(context).amnt,
+          ),
         ),
       ),
     );
