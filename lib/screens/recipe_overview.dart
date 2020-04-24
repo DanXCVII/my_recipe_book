@@ -56,6 +56,7 @@ class RecipeGridView extends StatelessWidget {
             //     DefaultResourceLoaderLanguage.de1996);
             // Hyphenator h = Hyphenator(resource: r);
             // h.hyphenate("jksdajklfj");
+
             return Scaffold(
               body: CustomScrollView(slivers: <Widget>[
                 SliverAppBar(
@@ -99,7 +100,7 @@ class RecipeGridView extends StatelessWidget {
                       )),
                 ),
                 SliverStickyHeader(
-                  sticky: true,
+                  sticky: false,
                   header: RecipeFilter(
                     showVegetableFilter: state.vegetable != null ? false : true,
                     showRecipeTagFilter: state.recipeTag == null ? true : false,
@@ -153,10 +154,6 @@ class RecipeGridView extends StatelessWidget {
                                 recipe: state.recipes[index],
                                 width: constraints.maxWidth,
                                 showAds: true,
-                                shadow: Theme.of(context).backgroundColor ==
-                                        Colors.white
-                                    ? Colors.grey[400]
-                                    : Colors.black,
                                 activateVegetableHero:
                                     state.recipes[index].vegetable ==
                                             state.vegetable
@@ -206,9 +203,6 @@ class RecipeGridView extends StatelessWidget {
               recipe: recipe,
               showAds: true,
               width: constraints.maxWidth,
-              shadow: Theme.of(context).backgroundColor == Colors.white
-                  ? Colors.grey[400]
-                  : Colors.black,
               activateVegetableHero:
                   recipe.vegetable == vegetable ? false : true,
               heroImageTag: "$category${recipe.name}",

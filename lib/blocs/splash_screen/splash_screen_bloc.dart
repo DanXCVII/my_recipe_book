@@ -62,6 +62,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     if (!prefs.containsKey('showIntro')) {
       showIntro = true;
       prefs.setBool('showIntro', false);
+      prefs.setBool('showStepsIntro', true);
       prefs.setBool(Constants.enableAnimations, true);
       prefs.setBool(Constants.disableStandby, true);
       GlobalSettings().enableAnimations(true);
@@ -71,6 +72,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     } else {
       GlobalSettings()
           .enableAnimations(prefs.getBool(Constants.enableAnimations));
+      GlobalSettings().hasSeenStepIntro(!prefs.getBool('showStepsIntro'));
       GlobalSettings().disableStandby(prefs.getBool(Constants.disableStandby));
       await initHive(false);
     }
@@ -139,10 +141,12 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     ByteData data = await rootBundle.load('assets/firstStartRecipes.zip');
 
     final buffer = data.buffer;
-    File recipesFile = await File(
-            (await getTemporaryDirectory()).path + "/firstStartRecipes.zip")
-        .writeAsBytes(
-            buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    await Directory((await getTemporaryDirectory()).path)
+        .create(recursive: true);
+    File recipesFile =
+        await File((await getTemporaryDirectory()).path + "/assetRecipes.zip")
+            .writeAsBytes(
+                buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
 
     Map<String, Recipe> importRecipeData =
         await importRecipesToTmp(recipesFile);

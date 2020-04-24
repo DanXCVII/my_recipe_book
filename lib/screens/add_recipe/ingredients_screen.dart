@@ -189,7 +189,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
         body: SingleChildScrollView(
           child: Center(
             child: Container(
-              width: MediaQuery.of(context).size.width > 430 ? 430 : null,
+              width: MediaQuery.of(context).size.width > 500 ? 500 : null,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[

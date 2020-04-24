@@ -68,6 +68,8 @@ class I18n implements WidgetsLocalizations {
   String get remove_step => "remove step";
   /// "share/save as file"
   String get export_zip => "share/save as file";
+  /// "share as pdf"
+  String get export_pdf => "share as pdf";
   /// "share in textform"
   String get export_text => "share in textform";
   /// "edit"
@@ -442,8 +444,8 @@ class I18n implements WidgetsLocalizations {
   String get website_must_be_under_the_supported_websites => "the website, of which you want to import a recipe from, must be under the supported websites:";
   /// "recipe-url"
   String get recipe_url => "recipe-url";
-  /// "source"
-  String get source => "source";
+  /// "source/URL"
+  String get source => "source/URL";
   /// "recipe has been edited or deleted:\ngo back to man view and view it"
   String get recipe_edited_or_deleted => "recipe has been edited or deleted:\ngo back to man view and view it";
   /// "recipe screen"
@@ -478,6 +480,20 @@ class I18n implements WidgetsLocalizations {
   String get only_recipe_screen => "only on recipe screen";
   /// "The changes you made, when adding a recipe are saved, when you go back and forth. So don't worry if you mistyped an information on one screen."
   String get general_info_changes_will_be_saved => "The changes you made, when adding a recipe are saved, when you go back and forth. So don't worry if you mistyped an information on one screen.";
+  /// "Tap on a step to select it so that you know, what you have to do next"
+  String get steps_intro => "Tap on a step to select it so that you know, what you have to do next";
+  /// "general infos"
+  String get general_infos => "general infos";
+  /// "preperation time"
+  String get preperation_time => "preperation time";
+  /// "for \"${number}\" persons"
+  String for_persons(String number) => "for \"${number}\" persons";
+  /// "for"
+  String get for_word => "for";
+  /// "persons"
+  String get persons => "persons";
+  /// "print recipe"
+  String get print_recipe => "print recipe";
 }
 
 class _I18n_en_US extends I18n {
@@ -544,6 +560,9 @@ class _I18n_de_DE extends I18n {
   /// "als Datei teilen/sichern"
   @override
   String get export_zip => "als Datei teilen/sichern";
+  /// "als pdf teilen"
+  @override
+  String get export_pdf => "als pdf teilen";
   /// "in Textform teilen"
   @override
   String get export_text => "in Textform teilen";
@@ -592,9 +611,9 @@ class _I18n_de_DE extends I18n {
   /// "Portionen verringern"
   @override
   String get decrease_servings => "Portionen verringern";
-  /// "Schritte"
+  /// "Zubereitung"
   @override
-  String get directions => "Schritte";
+  String get directions => "Zubereitung";
   /// "Notizen"
   @override
   String get notes => "Notizen";
@@ -670,9 +689,9 @@ class _I18n_de_DE extends I18n {
   /// "Kategorie auswählen"
   @override
   String get select_a_category => "Kategorie auswählen";
-  /// "einkaufen"
+  /// "Einkaufen"
   @override
-  String get basket => "einkaufen";
+  String get basket => "Einkaufen";
   /// "Dein Einkaufswagen ist leer"
   @override
   String get shopping_cart_is_empty => "Dein Einkaufswagen ist leer";
@@ -916,9 +935,9 @@ class _I18n_de_DE extends I18n {
   /// "ungültiger name"
   @override
   String get invalid_name => "ungültiger name";
-  /// "Allgemeine Informationen"
+  /// "Allgemeine Infos"
   @override
-  String get add_general_info => "Allgemeine Informationen";
+  String get add_general_info => "Allgemeine Infos";
   /// "Füge Schritte hinzu"
   @override
   String get add_steps => "Füge Schritte hinzu";
@@ -1105,9 +1124,9 @@ class _I18n_de_DE extends I18n {
   /// "Rezept-URL"
   @override
   String get recipe_url => "Rezept-URL";
-  /// "Quelle"
+  /// "Quelle/URL"
   @override
-  String get source => "Quelle";
+  String get source => "Quelle/URL";
   /// "Rezept wurde bearbeitet oder gelöscht:\nGehe zurück zur Übersicht um es anzusehen"
   @override
   String get recipe_edited_or_deleted => "Rezept wurde bearbeitet oder gelöscht:\nGehe zurück zur Übersicht um es anzusehen";
@@ -1159,6 +1178,24 @@ class _I18n_de_DE extends I18n {
   /// "Die Änderungen beim Rezept hinzufügen oder bearbeiten werden gespeichert, wenn man vor oder zurück geht. Mache dir also keine Sorgen, wenn du eine Information falsch eingetippt hast. Beim zurückgehen gehen die Daten nicht verloren."
   @override
   String get general_info_changes_will_be_saved => "Die Änderungen beim Rezept hinzufügen oder bearbeiten werden gespeichert, wenn man vor oder zurück geht. Mache dir also keine Sorgen, wenn du eine Information falsch eingetippt hast. Beim zurückgehen gehen die Daten nicht verloren.";
+  /// "Tippe auf einen Schritt um ihn auszuwählen, damit du weißt, was du als nächstes machen musst."
+  @override
+  String get steps_intro => "Tippe auf einen Schritt um ihn auszuwählen, damit du weißt, was du als nächstes machen musst.";
+  /// "Allgemeine Infos"
+  @override
+  String get general_infos => "Allgemeine Infos";
+  /// "Vorbereitungszeit"
+  @override
+  String get preperation_time => "Vorbereitungszeit";
+  /// "Für"
+  @override
+  String get for_word => "Für";
+  /// "Personen"
+  @override
+  String get persons => "Personen";
+  /// "Rezept drucken"
+  @override
+  String get print_recipe => "Rezept drucken";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

@@ -71,6 +71,8 @@ dependencies:
   dio: ^3.0.9 # MIT
   hyphenator: ^0.0.3 # BSD
   wakelock: ^0.1.4+1 # BSD
+  pdf: ^1.6.1 # Apache 2.0
+  printing: ^3.3.1 # Apache 2.0
 
   
 dev_dependencies:
@@ -120,6 +122,11 @@ flutter:
     - images/ingredient_search.mp4
     - images/salatLowRes.jpg
     - assets/firstStartRecipes.zip
+    - images/foodBlur0.jpg
+    - images/foodBlur1.jpg
+    - images/foodBlur2.jpg
+    - images/foodBlur3.jpg
+    - images/iconIosStyle.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -148,5 +155,12 @@ flutter:
     - family: Righteous
       fonts:
         - asset: fonts/Righteous-Regular.ttf
+    - family: Quando
+      fonts:
+        - asset: fonts/Quando-Regular.ttf
+    - family: Lato
+      fonts:
+        - asset: fonts/Lato-Regular.ttf
+        - asset: fonts/Lato-Bold.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

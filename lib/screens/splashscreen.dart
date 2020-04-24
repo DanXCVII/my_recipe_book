@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen>
         .animate(_controller);
 
     _controller.forward();
-    Future.delayed(Duration(milliseconds: 1300)).then(
+    Future.delayed(Duration(milliseconds: 1200)).then(
         (_) => BlocProvider.of<SplashScreenBloc>(context).add(SPFinished()));
   }
 

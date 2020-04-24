@@ -57,9 +57,6 @@ class FavoriteRecipeCards extends StatelessWidget {
             recipe: favoriteRecipes[index],
             showAds: false,
             width: constraints.maxWidth,
-            shadow: Theme.of(context).backgroundColor == Colors.white
-                ? Colors.grey[400]
-                : Colors.grey[900],
             heroImageTag:
                 "${favoriteRecipes[index].imagePreviewPath}--${favoriteRecipes[index].name}",
           ),

@@ -53,80 +53,95 @@ class TimeInfoChart extends StatelessWidget {
         SizedBox(height: 7),
         Padding(
           padding: EdgeInsets.only(left: horizontal ? 0 : 8.0),
-          child: ClipPath(
-            clipper:
-                horizontal ? RoundRightLeftClipper() : RoundTopBottomClipper(),
-            child: TweenAnimationBuilder(
-              duration: Duration(
-                  milliseconds: GlobalSettings().animationsEnabled() ? 700 : 0),
-              curve: Curves.easeInOut,
-              child: Stack(
-                alignment:
-                    horizontal ? Alignment.centerLeft : Alignment.bottomCenter,
-                children: <Widget>[
-                  Container(
-                    height: horizontal ? 20 : null,
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black45,
-                          blurRadius: 2.0,
-                          spreadRadius: 1.0,
-                          offset: Offset(
-                            0,
-                            1.0,
-                          ),
-                        ),
-                      ],
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(horizontal ? 0 : 30),
-                          topRight: Radius.circular(30),
-                          bottomRight: Radius.circular(horizontal ? 30 : 0)),
-                      color: Colors.yellow,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(2, 2),
+                  blurRadius: 3,
+                  spreadRadius: 1,
+                  color: Colors.black26,
+                ),
+              ],
+            ),
+            child: ClipPath(
+              clipper: horizontal
+                  ? RoundRightLeftClipper()
+                  : RoundTopBottomClipper(),
+              child: TweenAnimationBuilder(
+                duration: Duration(
+                    milliseconds:
+                        GlobalSettings().animationsEnabled() ? 700 : 0),
+                curve: Curves.easeInOut,
+                child: Stack(
+                  alignment: horizontal
+                      ? Alignment.centerLeft
+                      : Alignment.bottomCenter,
+                  children: <Widget>[
+                    Container(
+                      height: horizontal ? 20 : null,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.yellow, Colors.yellow[800]]),
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(horizontal ? 0 : 30),
+                            topRight: Radius.circular(30),
+                            bottomRight: Radius.circular(horizontal ? 30 : 0)),
+                        color: Colors.yellow,
+                      ),
                     ),
-                  ),
-                  Container(
-                    height: horizontal
-                        ? 20
-                        : (cookingTime + preperationTime) /
-                            totalTimeChart *
-                            100,
-                    width: horizontal
-                        ? (cookingTime + preperationTime) / totalTimeChart * 100
-                        : null,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(horizontal ? 0 : 30),
-                          topRight: Radius.circular(30),
-                          bottomRight: Radius.circular(horizontal ? 30 : 0)),
-                      color: Colors.blue,
+                    Container(
+                      height: horizontal
+                          ? 20
+                          : (cookingTime + preperationTime) /
+                              totalTimeChart *
+                              100,
+                      width: horizontal
+                          ? (cookingTime + preperationTime) /
+                              totalTimeChart *
+                              100
+                          : null,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.blue, Colors.blue[800]]),
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(horizontal ? 0 : 30),
+                            topRight: Radius.circular(30),
+                            bottomRight: Radius.circular(horizontal ? 30 : 0)),
+                      ),
                     ),
-                  ),
-                  Container(
-                    height: horizontal ? 20 : preperationTime / totalTime * 100,
-                    width:
-                        horizontal ? preperationTime / totalTime * 100 : null,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(horizontal ? 0 : 30),
-                          topRight: Radius.circular(30),
-                          bottomRight: Radius.circular(horizontal ? 30 : 0)),
-                      color: Colors.pink,
-                    ),
-                  )
-                ],
-              ),
-              tween: Tween<double>(begin: 10, end: 100),
-              builder: (_, double animatedSize, myChild) => Column(
-                children: <Widget>[
-                  Container(
-                      height: horizontal ? null : 100 - animatedSize,
-                      width: horizontal ? 100 - animatedSize : 20),
-                  Container(
-                      width: horizontal ? animatedSize : 20,
-                      height: horizontal ? null : animatedSize,
-                      child: myChild),
-                ],
+                    Container(
+                      height:
+                          horizontal ? 20 : preperationTime / totalTime * 100,
+                      width:
+                          horizontal ? preperationTime / totalTime * 100 : null,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(horizontal ? 0 : 30),
+                            topRight: Radius.circular(30),
+                            bottomRight: Radius.circular(horizontal ? 30 : 0)),
+                        color: Colors.pink,
+                      ),
+                    )
+                  ],
+                ),
+                tween: Tween<double>(begin: 10, end: 100),
+                builder: (_, double animatedSize, myChild) => Column(
+                  children: <Widget>[
+                    Container(
+                        height: horizontal ? null : 100 - animatedSize,
+                        width: horizontal ? 100 - animatedSize : 20),
+                    Container(
+                        width: horizontal ? animatedSize : 20,
+                        height: horizontal ? null : animatedSize,
+                        child: myChild),
+                  ],
+                ),
               ),
             ),
           ),

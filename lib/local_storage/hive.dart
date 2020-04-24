@@ -661,8 +661,9 @@ class HiveProvider {
     String categoryKey = getHiveKey(category);
 
     List<Recipe> recipes = [];
-    for (var key in boxRecipeCategories.get(categoryKey)) {
-      recipes.add(await lazyBoxRecipes.get(key));
+    List<dynamic> keys = boxRecipeCategories.get(categoryKey);
+    for (var recipeKey in boxRecipeCategories.get(categoryKey)) {
+      recipes.add(await lazyBoxRecipes.get(recipeKey));
     }
     return recipes;
   }
@@ -676,7 +677,7 @@ class HiveProvider {
     } else {
       String categoryKey = getHiveKey(category);
 
-      recipeKeys = boxRecipeCategories.get(categoryKey);
+      recipeKeys = List<String>.from(boxRecipeCategories.get(categoryKey));
     }
 
     if (excludedRecipe != null && recipeKeys.length > 1) {

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/constants/global_constants.dart';
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 import 'package:my_recipe_book/screens/recipe_screen.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/complexity_wave.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/recipe_tag_wrap.dart';
@@ -36,45 +36,39 @@ class RecipeInfoVertical extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
-        Center(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 22, 0, 12),
-            child: Hero(
-              tag: GlobalSettings().animationsEnabled()
-                  ? heroImageTag
-                  : "heroImageTag2",
-              child: Material(
-                color: Colors.transparent,
-                child: GestureDetector(
-                  onTap: () {
-                    _showPictureFullView(
-                        recipe.imagePath, heroImageTag, context);
-                  },
-                  child: Container(
-                    height: width * 0.6,
-                    width: width * 0.6,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: recipe.imagePath == noRecipeImage
-                            ? AssetImage(noRecipeImage)
-                            : FileImage(
-                                File(recipe.imagePath),
-                              ),
-                      ),
-                    ),
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: AnimatedVegetable(
-                        recipe.vegetable,
-                        small: width > 300 ? false : true,
-                      ),
-                    ),
+        GestureDetector(
+          onTap: () {
+            _showPictureFullView(recipe.imagePath, heroImageTag, context);
+          },
+          child: Container(
+            height: 200,
+            child: Stack(children: <Widget>[
+              Hero(
+                tag: GlobalSettings().animationsEnabled()
+                    ? heroImageTag
+                    : "heroImageTag2",
+                child: Material(
+                  color: Colors.transparent,
+                  child: ClipPath(
+                    clipper: MyClipper(),
+                    child: Container(
+                        height: 200,
+                        child: recipe.imagePath == Constants.noRecipeImage
+                            ? Image.asset(Constants.noRecipeImage,
+                                width: double.infinity, fit: BoxFit.cover)
+                            : Image.file(File(recipe.imagePath),
+                                width: double.infinity, fit: BoxFit.cover)),
                   ),
                 ),
               ),
-            ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0, right: 8.0),
+                  child: AnimatedVegetable(recipe.vegetable),
+                ),
+              )
+            ]),
           ),
         ),
         Center(
@@ -97,7 +91,7 @@ class RecipeInfoVertical extends StatelessWidget {
           child: _showComplexTopArea(
                   recipe.preperationTime, recipe.cookingTime, recipe.totalTime)
               ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                   child: Wrap(
                     direction: Axis.horizontal,
                     alignment: WrapAlignment.center,
@@ -132,7 +126,7 @@ class RecipeInfoVertical extends StatelessWidget {
                           recipe.tags,
                           recipeScreenFontFamily,
                         ),
-                      )
+                      ),
                     ]..removeWhere((item) => item == null),
                   ),
                 )

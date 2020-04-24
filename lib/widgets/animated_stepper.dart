@@ -52,38 +52,51 @@ class AnimatedStepper extends StatelessWidget {
                               Padding(
                                 padding:
                                     const EdgeInsets.fromLTRB(0, 5, 12, 12),
-                                child: Stack(children: <Widget>[
-                                  Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 0, top: 20),
-                                      child: AnimatedContainer(
-                                        duration: Duration(milliseconds: 200),
-                                        width: 60,
-                                        height: 60,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-
-                                          gradient: RadialGradient(
-                                            center: const Alignment(
-                                                0, 0), // near the top right
-                                            radius: state.selectedStep == index
-                                                ? 0.5
-                                                : 1,
-                                            colors: [
-                                              stepsColors[index %
-                                                  (stepsColors
-                                                      .length)], // yellow sun
-                                              Colors.transparent, // blue sky
-                                            ],
-                                            stops: [0.6, 1.0],
+                                child: Padding(
+                                    padding:
+                                        const EdgeInsets.only(left: 0, top: 20),
+                                    child: AnimatedContainer(
+                                      duration: Duration(milliseconds: 200),
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            offset: Offset(2, 2),
+                                            blurRadius: 3,
+                                            spreadRadius: 1,
+                                            color: Colors.black26,
                                           ),
-                                          // color: stepsColors[i % (stepsColors.length)],
+                                        ],
+
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: state.selectedStep == index
+                                              ? [
+                                                  Color(0xffBE4400),
+                                                  Color(0xffFF7A00)
+                                                ]
+                                              : [
+                                                  Color(0xff933500),
+                                                  Color(0xff933500)
+                                                      .withOpacity(0.3)
+                                                ],
                                         ),
-                                      )),
-                                  Text("${index + 1}.",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 54))
-                                ]),
+                                        // color: stepsColors[i % (stepsColors.length)],
+                                      ),
+                                      child: Center(
+                                        child: Text("${index + 1}.",
+                                            style: TextStyle(
+                                              color: state.selectedStep == index
+                                                  ? Color(0xff4F3D00)
+                                                  : Colors.amber,
+                                              fontSize: index > 8 ? 32 : 42,
+                                              fontFamily: "Quando",
+                                            )),
+                                      ),
+                                    )),
                               ),
                               Expanded(
                                 child: Column(

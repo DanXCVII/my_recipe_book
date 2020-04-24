@@ -27,7 +27,53 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
         index++;
         if (index % 2 == 0) {
           String currentCategory = categoryNames[(index / 2).floor() - 1];
-
+          // return Container(
+          //   height: 20.0,
+          //   child: RaisedButton(
+          //     elevation: 0,
+          //     color: Colors.grey[200],
+          //     onPressed: () {
+          //       BlocProvider.of<RandomRecipeExplorerBloc>(context)
+          //           .add(ChangeCategory(currentCategory));
+          //     },
+          //     shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(80.0)),
+          //     padding: EdgeInsets.all(0.0),
+          //     child: Ink(
+          //       height: 50,
+          //       decoration: BoxDecoration(
+          //         borderRadius: BorderRadius.circular(30.0),
+          //         gradient: currentCategory == selectedCategory
+          //             ? LinearGradient(
+          //                 colors: [Colors.brown, Colors.brown[900]],
+          //                 begin: Alignment.centerLeft,
+          //                 end: Alignment.centerRight,
+          //               )
+          //             : null,
+          //       ),
+          //       child: Container(
+          //         constraints: BoxConstraints(maxHeight: 50.0, minWidth: 100),
+          //         alignment: Alignment.center,
+          //         child: Padding(
+          //           padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          //           child: Text(
+          //             currentCategory == "no category"
+          //                 ? I18n.of(context).no_category
+          //                 : currentCategory == "all categories"
+          //                     ? I18n.of(context).all_categories
+          //                     : currentCategory,
+          //             textAlign: TextAlign.center,
+          //             style: TextStyle(
+          //               color: currentCategory == selectedCategory
+          //                   ? Colors.amber
+          //                   : null,
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // );
           return FlatButton(
             color: currentCategory == selectedCategory ? Colors.brown : null,
             shape:

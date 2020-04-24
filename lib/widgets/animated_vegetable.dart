@@ -31,13 +31,13 @@ class AnimatedVegetable extends StatelessWidget {
         );
       },
       child: TweenAnimationBuilder(
-        tween: Tween<double>(begin: 0.1, end: 1),
+        tween: Tween<double>(begin: -3, end: 1),
         duration: Duration(
-            milliseconds: GlobalSettings().animationsEnabled() ? 700 : 0),
+            milliseconds: GlobalSettings().animationsEnabled() ? 500 : 0),
         curve: Curves.easeOutQuad,
         builder: (_, double size, myChild) => Container(
-          height: small ? size * 50 : size * 65,
-          width: small ? size * 50 : size * 65,
+          height: size < 0 ? 0 : small ? size * 50 : size * 65,
+          width: size < 0 ? 0 : small ? size * 50 : size * 65,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(40),

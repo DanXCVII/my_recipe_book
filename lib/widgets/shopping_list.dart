@@ -147,10 +147,12 @@ class ShoppingCartListTile extends StatelessWidget {
                 ], recipe));
               },
               background: PrimaryBackgroundDismissable(
-                roundBottomBorder: ingredients.last == ingredient,
+                roundBottomBorder:
+                    ingredients.last == ingredient && roundBorders,
               ),
               secondaryBackground: SecondaryBackgroundDismissible(
-                roundBottomBorder: ingredients.last == ingredient,
+                roundBottomBorder:
+                    ingredients.last == ingredient && roundBorders,
               ),
               child: InkWell(
                 onTap: () {

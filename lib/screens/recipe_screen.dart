@@ -7,8 +7,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -33,6 +36,7 @@ import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
 import '../my_wrapper.dart';
+import '../pdf_share.dart';
 import '../screens/recipe_overview.dart';
 import '../widgets/animated_stepper.dart';
 import '../widgets/animated_vegetable.dart';
@@ -60,7 +64,8 @@ const Map<Vegetable, List<int>> vegetableColor = {
   Vegetable.VEGAN: [0xff144E00, 0xff0F3800]
 };
 
-enum PopupOptions { EXPORT_ZIP, EXPORT_TEXT }
+enum PopupOptionsMore { DELETE, SHARE, PRINT }
+enum PopupOptionsShare { EXPORT_ZIP, EXPORT_TEXT, EXPORT_PDF }
 
 class RecipeScreenArguments {
   final ShoppingCartBloc shoppingCartBloc;
@@ -171,7 +176,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                     parallaxEnabled:
                         MediaQuery.of(context).size.width > 450 ? false : true,
                     parallaxOffset: 0.5,
-                    minHeight: 70,
+                    minHeight: 25,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(25),
                       topRight: Radius.circular(25),
@@ -434,26 +439,35 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                     ));
           },
         ),
-        IconButton(
-          icon: Icon(Icons.delete),
-          tooltip: I18n.of(context).share_recipe,
-          onPressed: () {
-            _showDeleteDialog(context, recipe.name);
-          },
-        ),
-        PopupMenuButton<PopupOptions>(
-          icon: Icon(Icons.share),
-          onSelected: (value) => _choiceAction(value, context),
+        PopupMenuButton<PopupOptionsMore>(
+          icon: Icon(Icons.more_vert),
+          onSelected: (value) => _choiceActionMore(value, context),
           itemBuilder: (BuildContext context) {
             return [
               PopupMenuItem(
-                value: PopupOptions.EXPORT_ZIP,
-                child: Text(I18n.of(context).export_zip),
+                value: PopupOptionsMore.DELETE,
+                child: Row(children: [
+                  Icon(Icons.delete),
+                  SizedBox(width: 10),
+                  Text(I18n.of(context).delete_recipe)
+                ]),
               ),
               PopupMenuItem(
-                value: PopupOptions.EXPORT_TEXT,
-                child: Text(I18n.of(context).export_text),
-              )
+                value: PopupOptionsMore.SHARE,
+                child: Row(children: [
+                  Icon(Icons.share),
+                  SizedBox(width: 10),
+                  Text(I18n.of(context).share_recipe)
+                ]),
+              ),
+              PopupMenuItem(
+                value: PopupOptionsMore.PRINT,
+                child: Row(children: [
+                  Icon(Icons.print),
+                  SizedBox(width: 10),
+                  Text(I18n.of(context).print_recipe)
+                ]),
+              ),
             ];
           },
         ),
@@ -461,11 +475,57 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     );
   }
 
-  void _choiceAction(PopupOptions value, context) {
-    if (value == PopupOptions.EXPORT_TEXT) {
+  void _choiceActionMore(PopupOptionsMore value, context) async {
+    if (value == PopupOptionsMore.DELETE) {
+      _showDeleteDialog(context, recipe.name);
+    } else if (value == PopupOptionsMore.PRINT) {
+      getRecipePdf(recipe, context).then((pdf) =>
+          Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf));
+    } else if (value == PopupOptionsMore.SHARE) {
+      await showMenu<PopupOptionsShare>(
+        context: context,
+        position: RelativeRect.fromLTRB(1000, 25, 0, 0),
+        items: [
+          PopupMenuItem(
+            value: PopupOptionsShare.EXPORT_TEXT,
+            child: ListTile(
+                onTap: () {
+                  _choiceActionShare(PopupOptionsShare.EXPORT_TEXT, context);
+                },
+                title: Text(I18n.of(context).export_text)),
+          ),
+          PopupMenuItem(
+            value: PopupOptionsShare.EXPORT_ZIP,
+            child: ListTile(
+              onTap: () {
+                _choiceActionShare(PopupOptionsShare.EXPORT_ZIP, context);
+              },
+              title: Text(I18n.of(context).export_zip),
+            ),
+          ),
+          PopupMenuItem(
+            value: PopupOptionsShare.EXPORT_PDF,
+            child: ListTile(
+              onTap: () {
+                _choiceActionShare(PopupOptionsShare.EXPORT_PDF, context);
+              },
+              title: Text(I18n.of(context).export_pdf),
+            ),
+          ),
+        ],
+        elevation: 8.0,
+      );
+    }
+  }
+
+  void _choiceActionShare(PopupOptionsShare value, context) {
+    if (value == PopupOptionsShare.EXPORT_TEXT) {
       Share.share(_getRecipeAsString(recipe, context), subject: 'recipe');
-    } else if (value == PopupOptions.EXPORT_ZIP) {
+    } else if (value == PopupOptionsShare.EXPORT_ZIP) {
       _exportRecipe(recipe).then((_) {});
+    } else if (value == PopupOptionsShare.EXPORT_PDF) {
+      getRecipePdf(recipe, context)
+          .then((pdf) => Printing.sharePdf(bytes: pdf, filename: 'recipe.pdf'));
     }
   }
 
@@ -518,15 +578,23 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
   }
 
   String _getRecipeAsString(Recipe recipe, BuildContext context) {
-    String recipeText = '${I18n.of(context).recipe_name}: ${recipe.name}\n'
-            '====================\n'
-            '${I18n.of(context).prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n'
-            '${I18n.of(context).cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n'
-            '${I18n.of(context).total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
-            '====================\n' +
-        (recipe.servings == null
-            ? I18n.of(context).ingredients + ":"
-            : '${I18n.of(context).ingredients_for} ${recipe.servings} ${I18n.of(context).servings}:\n');
+    String recipeText = '${I18n.of(context).recipe_name}: ${recipe.name}\n';
+    if (recipe.preperationTime != 0 ||
+        recipe.cookingTime != 0 ||
+        recipe.totalTime != 0) recipeText += '====================\n';
+    if (recipe.preperationTime != 0)
+      recipeText +=
+          '${I18n.of(context).prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n';
+    if (recipe.cookingTime != 0)
+      recipeText +=
+          '${I18n.of(context).cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n';
+    if (recipe.totalTime != 0)
+      recipeText +=
+          '${I18n.of(context).total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
+                  '====================\n' +
+              (recipe.servings == null
+                  ? I18n.of(context).ingredients + ":"
+                  : '${I18n.of(context).ingredients_for} ${recipe.servings} ${I18n.of(context).servings}:\n');
     if (recipe.ingredientsGlossary.isNotEmpty) {
       for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
         recipeText +=
@@ -538,6 +606,13 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
         }
         recipeText += '====================\n';
       }
+    } else if (recipe.ingredients.first.isNotEmpty) {
+      for (int j = 0; j < recipe.ingredients.first.length; j++) {
+        recipeText += '${recipe.ingredients.first[j].name} '
+            '${recipe.ingredients.first[j].amount ?? ""} '
+            '${recipe.ingredients.first[j].unit ?? ""}\n';
+      }
+      recipeText += '====================\n';
     }
 
     int i = 1;
@@ -657,7 +732,21 @@ class RecipePage extends StatelessWidget {
               ? null
               : Expanded(
                   child: Container(
-                    color: Color(0xff51473b),
+                    decoration: BoxDecoration(
+                      color: MediaQuery.of(context).size.width > 550
+                          ? null
+                          : Color(0xff51473b),
+                      gradient: MediaQuery.of(context).size.width > 550
+                          ? LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color(0xff672B00),
+                                Color(0xff3A1900),
+                              ],
+                            )
+                          : null,
+                    ),
                     child: CustomScrollView(
                       slivers: <Widget>[
                         MediaQuery.of(context).size.width > 550
@@ -701,7 +790,7 @@ class RecipePage extends StatelessWidget {
                                                 child: ClipPath(
                                                   clipper: MyClipper(),
                                                   child: Container(
-                                                      height: 270,
+                                                      height: 250,
                                                       child: recipe.imagePath ==
                                                               Constants
                                                                   .noRecipeImage
@@ -791,14 +880,17 @@ class RecipePage extends StatelessWidget {
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(0xff672B00),
-                                    Color(0xff3A1900),
-                                  ],
-                                ),
+                                gradient:
+                                    MediaQuery.of(context).size.width <= 550
+                                        ? LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Color(0xff672B00),
+                                              Color(0xff3A1900),
+                                            ],
+                                          )
+                                        : null,
                               ),
                               child: StepsSection(
                                 recipe.steps,
@@ -1119,7 +1211,8 @@ class StepsSection extends StatelessWidget {
                         ),
                       ),
                     )),
-                SizedBox(height: 25),
+                SizedBox(height: 15),
+                GlobalSettings().showStepsIntro() ? StepsIntro() : null,
                 Center(
                   child: Container(
                     width: MediaQuery.of(context).size.width > 500
@@ -1134,8 +1227,10 @@ class StepsSection extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 25),
-                !hasNutritions ? Container() : Container(height: 80),
-              ],
+                !hasNutritions && MediaQuery.of(context).size.width <= 550
+                    ? Container()
+                    : Container(height: 80),
+              ]..removeWhere((item) => item == null),
             );
           } else {
             return Container(
@@ -1144,6 +1239,65 @@ class StepsSection extends StatelessWidget {
             );
           }
         });
+  }
+}
+
+class StepsIntro extends StatefulWidget {
+  StepsIntro({Key key}) : super(key: key);
+
+  @override
+  _StepsIntroState createState() => _StepsIntroState();
+}
+
+class _StepsIntroState extends State<StepsIntro> {
+  bool show = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return show
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.brown,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        I18n.of(context).steps_intro,
+                        style: TextStyle(
+                          fontFamily: recipeScreenFontFamily,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(50)),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: IconButton(
+                        icon: Icon(Icons.check),
+                        onPressed: () {
+                          SharedPreferences.getInstance().then(
+                            (prefs) => setState(() {
+                              prefs.setBool("showStepsIntro", false);
+                              GlobalSettings().hasSeenStepIntro(true);
+                              show = false;
+                            }),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        : Container();
   }
 }
 
@@ -1489,9 +1643,11 @@ class MyClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = new Path();
-    path.lineTo(0.0, 200);
-    path.quadraticBezierTo(size.width / 4, 250, size.width / 2, 250);
-    path.quadraticBezierTo(size.width / 4 * 3, 250, size.width, 200);
+    path.lineTo(0.0, size.height * 0.8);
+    path.quadraticBezierTo(
+        size.width / 4, size.height, size.width / 2, size.height);
+    path.quadraticBezierTo(
+        size.width / 4 * 3, size.height, size.width, size.height * 0.8);
     path.lineTo(size.width, 0);
     path.lineTo(0, 0);
     path.close();

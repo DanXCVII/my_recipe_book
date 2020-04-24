@@ -27,13 +27,10 @@ class CategoryCircle extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black38,
-              blurRadius: 2.0,
-              spreadRadius: 1.0,
-              offset: Offset(
-                0,
-                1.0,
-              ),
+              offset: Offset(2, 2),
+              blurRadius: 3,
+              spreadRadius: 1,
+              color: Colors.black26,
             ),
           ],
         ),

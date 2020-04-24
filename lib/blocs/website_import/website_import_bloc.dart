@@ -7,18 +7,17 @@ import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/constants/global_constants.dart';
-import 'package:my_recipe_book/local_storage/hive.dart';
-import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
-import 'package:my_recipe_book/local_storage/local_paths.dart';
-import 'package:my_recipe_book/models/tuple.dart';
 
+import '../../constants/global_constants.dart';
+import '../../local_storage/hive.dart';
+import '../../local_storage/io_operations.dart' as IO;
+import '../../local_storage/local_paths.dart';
 import '../../models/enums.dart';
 import '../../models/ingredient.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
-import '../../models/string_int_tuple.dart';
+import '../../models/tuple.dart';
+import '../recipe_manager/recipe_manager_bloc.dart';
 
 part 'website_import_event.dart';
 part 'website_import_state.dart';
@@ -90,68 +89,147 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   Future<Tuple2<ImportState, Recipe>> getRecipeFromAllRecipesData(
       String websiteData, String url) async {
     try {
-      String httpRecipeContent = websiteData.substring(
-          websiteData.indexOf("<h1 id=\"recipe-main-content\""),
-          websiteData.indexOf("see-full-nutrition"));
+      Recipe finalRecipe;
+      if (websiteData.contains("<script type=\"application/ld+json\">")) {
+        String halfCut = websiteData.substring(
+            websiteData.indexOf("<script type=\"application/ld+json\">") + 35);
+        String recipeJsonString =
+            halfCut.substring(0, halfCut.indexOf("</script>"));
+        List<dynamic> jsonList = await json.decode(recipeJsonString);
+        Map<String, dynamic> jsonMap = jsonList.last;
 
-      String recipeName = httpRecipeContent.substring(
-          httpRecipeContent.indexOf(">"), httpRecipeContent.indexOf("<", 3));
-      if (HiveProvider().getRecipeNames().contains(recipeName)) {
-        return Tuple2<ImportState, Recipe>(ImportState.DUPLICATE,
-            await HiveProvider().getRecipeByName(recipeName));
-      }
-
-      List<String> steps = _getStepsFromAllRecipes(httpRecipeContent);
-      List<Nutrition> recipeNutritions = [];
-      if (httpRecipeContent.contains("nutrition-summary-facts")) {
-        recipeNutritions = _getNutritionsFromAllRecipes(httpRecipeContent);
-      }
-      List<List<Ingredient>> ingredients = [
-        _getIngredientStringFromAllRecipes(httpRecipeContent)
-            .map((item) => _getIngredientFromElaVFormat(item))
-            .toList()
-              ..removeWhere((item) => item == null)
-      ];
-      List<double> times = _getTimesFromHttpData(httpRecipeContent);
-
-      Recipe importRecipe = Recipe(
-        name: recipeName,
-        lastModified: DateTime.now().toIso8601String(),
-        servings: null,
-        preperationTime: times[0],
-        cookingTime: times[1],
-        totalTime: times[2],
-        steps: steps,
-        stepImages: List<List<String>>.generate(steps.length, (i) => []),
-        nutritions: recipeNutritions,
-        vegetable: Vegetable.NON_VEGETARIAN,
-        ingredients: ingredients,
-        source: url,
-      );
-
-      List<String> savedNutritions = HiveProvider().getNutritions();
-      for (Nutrition n in recipeNutritions) {
-        if (!savedNutritions.contains(n.name)) {
-          await HiveProvider().addNutrition(n.name);
+        if (HiveProvider().getRecipeNames().contains(jsonMap["name"])) {
+          return Tuple2<ImportState, Recipe>(ImportState.DUPLICATE,
+              await HiveProvider().getRecipeByName(jsonMap["name"]));
         }
+
+        List<String> steps =
+            List<dynamic>.from(jsonMap["recipeInstructions"]).map((map) {
+          return map["text"].toString();
+        }).toList();
+        List<Nutrition> recipeNutritions =
+            _getElaVNutritions(jsonMap["nutrition"]);
+
+        Recipe importRecipe = Recipe(
+          name: jsonMap["name"],
+          lastModified: DateTime.now().toIso8601String(),
+          preperationTime: _getMinFromElaVFormat(jsonMap["prepTime"]),
+          cookingTime: _getMinFromElaVFormat(jsonMap["cookTime"]),
+          totalTime: _getMinFromElaVFormat(jsonMap["totalTime"]),
+          steps: steps,
+          stepImages: List<List<String>>.generate(steps.length, (i) => []),
+          nutritions: recipeNutritions,
+          vegetable: websiteData.toLowerCase().contains("vegan")
+              ? Vegetable.VEGAN
+              : websiteData.toLowerCase().contains("vegetarian")
+                  ? Vegetable.VEGETARIAN
+                  : Vegetable.NON_VEGETARIAN,
+          ingredients: [
+            jsonMap["recipeIngredient"]
+                .map<Ingredient>(
+                    (item) => _getIngredientFromStandardFormat(item))
+                .toList()
+          ],
+          source: url,
+        );
+
+        List<String> savedNutritions = HiveProvider().getNutritions();
+        for (Nutrition n in recipeNutritions) {
+          if (!savedNutritions.contains(n.name)) {
+            await HiveProvider().addNutrition(n.name);
+          }
+        }
+
+        String importRecipeImagePath =
+            await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
+
+        await Dio().download(
+          jsonMap["image"]["url"],
+          importRecipeImagePath,
+        );
+        await IO.saveRecipeImage(
+            File(importRecipeImagePath), newRecipeLocalPathString);
+
+        finalRecipe = importRecipe.copyWith(
+          imagePath: await PathProvider.pP
+              .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
+          imagePreviewPath: await PathProvider.pP
+              .getRecipeImagePreviewPathFull(newRecipeLocalPathString, ".jpg"),
+        );
+      } else {
+        String httpRecipeContent = websiteData.substring(
+            websiteData.indexOf("<h1 id=\"recipe-main-content\""),
+            websiteData.indexOf("see-full-nutrition"));
+
+        String recipeName = httpRecipeContent.substring(
+            httpRecipeContent.indexOf(">") + 1,
+            httpRecipeContent.indexOf("<", 3));
+        if (HiveProvider().getRecipeNames().contains(recipeName)) {
+          return Tuple2<ImportState, Recipe>(ImportState.DUPLICATE,
+              await HiveProvider().getRecipeByName(recipeName));
+        }
+
+        List<String> steps = _getStepsFromAllRecipes(httpRecipeContent);
+        List<Nutrition> recipeNutritions = [];
+        if (httpRecipeContent.contains("nutrition-summary-facts")) {
+          recipeNutritions = _getNutritionsFromAllRecipes(httpRecipeContent
+              .substring(httpRecipeContent.indexOf("nutrition-summary-facts")));
+        }
+        List<List<Ingredient>> ingredients = [
+          _getIngredientStringFromAllRecipes(httpRecipeContent)
+              .map((item) => _getIngredientFromElaVFormat(item))
+              .toList()
+                ..removeWhere((item) => item == null)
+        ];
+        List<double> times = _getTimesFromHttpData(
+          httpRecipeContent.substring(
+            httpRecipeContent.indexOf("<time itemprop=\"prepTime\""),
+            httpRecipeContent.indexOf(
+              "recipeInstructions",
+              httpRecipeContent.indexOf("<time itemprop=\"prepTime\""),
+            ),
+          ),
+        );
+
+        Recipe importRecipe = Recipe(
+          name: recipeName,
+          lastModified: DateTime.now().toIso8601String(),
+          servings: null,
+          preperationTime: times[0],
+          cookingTime: times[1],
+          totalTime: times[2],
+          steps: steps,
+          stepImages: List<List<String>>.generate(steps.length, (i) => []),
+          nutritions: recipeNutritions,
+          vegetable: Vegetable.NON_VEGETARIAN,
+          ingredients: ingredients,
+          source: url,
+        );
+
+        List<String> savedNutritions = HiveProvider().getNutritions();
+        for (Nutrition n in recipeNutritions) {
+          if (!savedNutritions.contains(n.name)) {
+            await HiveProvider().addNutrition(n.name);
+          }
+        }
+
+        String importRecipeImagePath =
+            await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
+
+        await Dio().download(
+          _getRecipeImageString(httpRecipeContent),
+          importRecipeImagePath,
+        );
+        await IO.saveRecipeImage(
+            File(importRecipeImagePath), newRecipeLocalPathString);
+
+        finalRecipe = importRecipe.copyWith(
+          imagePath: await PathProvider.pP
+              .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
+          imagePreviewPath: await PathProvider.pP
+              .getRecipeImagePreviewPathFull(newRecipeLocalPathString, ".jpg"),
+        );
       }
-
-      String importRecipeImagePath =
-          await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
-
-      await Dio().download(
-        _getRecipeImageString(httpRecipeContent),
-        importRecipeImagePath,
-      );
-      await IO.saveRecipeImage(
-          File(importRecipeImagePath), newRecipeLocalPathString);
-
-      Recipe finalRecipe = importRecipe.copyWith(
-        imagePath: await PathProvider.pP
-            .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
-        imagePreviewPath: await PathProvider.pP
-            .getRecipeImagePreviewPathFull(newRecipeLocalPathString, ".jpg"),
-      );
 
       if (finalRecipe != null) {
         HiveProvider().saveTmpRecipe(finalRecipe);
@@ -461,6 +539,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       // with no amount: "evtl. Gew\u00fcrzmischung (Garam Masala)"
       if (!(int.tryParse(ingredientInfo[0]) != null ||
               ingredientInfo[0] == "½" ||
+              ingredientInfo[0] == "⅓" ||
               ingredientInfo[0] == "¼") &&
           ingredientInfo[0] != " ") {
         name = ingredientInfo.substring(
@@ -477,6 +556,8 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
             ingredientInfo.substring(0, ingredientInfo.indexOf(" "));
             if (amountInfo == "½") {
               amount = 0.5;
+            } else if (amountInfo == "⅓") {
+              amount = 0.33;
             } else if (amountInfo == "¼")
               amount = 0.25;
             else {
@@ -564,9 +645,14 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   /// the format must be like "PT15M" where
   /// the total minutes are between PT and M (if null, returns null)
   double _getMinFromElaVFormat(String numberString) {
-    return numberString == null
+    double number = numberString == null
         ? null
-        : double.tryParse(numberString.substring(2, numberString.indexOf("M")));
+        : double.tryParse(numberString.substring(2, numberString.length - 1));
+    if (numberString[numberString.length - 1] == "H") {
+      return number * 60;
+    } else {
+      return number;
+    }
   }
 
   /// the format must be like:
@@ -646,7 +732,10 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     while (iteratedHttpData.contains("directions__list--item\">")) {
       steps.add(iteratedHttpData.substring(
         iteratedHttpData.indexOf("directions__list--item\">") + 25,
-        iteratedHttpData.indexOf("</span>"),
+        iteratedHttpData.indexOf(
+          "</span>",
+          iteratedHttpData.indexOf("directions__list--item\">"),
+        ),
       ));
       iteratedHttpData = iteratedHttpData.substring(
           iteratedHttpData.indexOf("directions__list--item\">") + 10);
@@ -661,14 +750,14 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       while (iteratedHttpData.contains("span itemprop=\"")) {
         nutritions.add(Nutrition(
           name: iteratedHttpData.substring(
-            iteratedHttpData.indexOf("span itemprop=\"") + 16,
+            iteratedHttpData.indexOf("span itemprop=\"") + 15,
             iteratedHttpData.indexOf(
                 "\"", iteratedHttpData.indexOf("span itemprop=\"") + 17),
           ),
           amountUnit: iteratedHttpData.substring(
             iteratedHttpData.indexOf(
                     "\">", iteratedHttpData.indexOf("span itemprop=\"")) +
-                3,
+                2,
             iteratedHttpData.indexOf(
                 "<span", iteratedHttpData.indexOf("span itemprop=\"") + 17),
           ),
@@ -677,37 +766,65 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
             .substring(iteratedHttpData.indexOf("span itemprop=\"") + 17);
       }
     } catch (e) {}
-    return nutritions;
+    return nutritions
+        .map((item) => Nutrition(
+              name: item.name.replaceAll("Content", ""),
+              amountUnit: item.amountUnit,
+            ))
+        .toList();
   }
 
   List<String> _getIngredientStringFromAllRecipes(String httpData) {
     List<String> ingredients = [];
 
     String cutRecipeData =
-        httpData.substring(httpData.indexOf("recipeIngredient"));
-    while (cutRecipeData.contains("recipeIngredient")) {
+        httpData.substring(httpData.indexOf("recipeIngredient\">"));
+    while (cutRecipeData.contains("recipeIngredient\">")) {
       ingredients.add(cutRecipeData.substring(
-        cutRecipeData.indexOf("cutRecipeData") + 15,
+        cutRecipeData.indexOf("recipeIngredient\">") + 18,
         cutRecipeData.indexOf("</span>"),
       ));
-      cutRecipeData =
-          cutRecipeData.substring(cutRecipeData.indexOf("recipeIngredient"), 5);
+      if (cutRecipeData.contains("recipeIngredient\">", 5)) {
+        cutRecipeData = cutRecipeData
+            .substring(cutRecipeData.indexOf("recipeIngredient\">", 5));
+      } else {
+        break;
+      }
     }
+
+    return ingredients;
   }
 
+  ///<ul class="prepTime">
+  ///     <li class="prepTime__item"><span class="svg-icon--recipe-page--time_stats_gr svg-icon--recipe-page--time_stats_gr-dims"></span></li>
+  ///     <li class="prepTime__item" aria-label="Prep time: 15 Minutes">
+  ///         <p class="prepTime__item--type" aria-hidden="true">Prep</p><time itemprop="prepTime" datetime="PT15M"><span aria-hidden="true"><span class="prepTime__item--time">15</span> m</span></time>
+  ///     </li>
+  ///                 <li class="prepTime__item" aria-label="Cook time: 45 Minutes">
+  ///             <p class="prepTime__item--type" aria-hidden="true">Cook</p><time itemprop="cookTime" datetime="PT45M"><span aria-hidden="true"><span class="prepTime__item--time">45</span> m</span></time>
+  ///         </li>
+  ///                 <li class="prepTime__item" aria-label="Ready in 1 Hour ">
+  ///             <p class="prepTime__item--type" aria-hidden="true">Ready In</p><time itemprop="totalTime" datetime="PT1H"><span aria-hidden="true"><span class="prepTime__item--time">1</span> h</span></time>
+  ///         </li>
+  /// </ul>
   List<double> _getTimesFromHttpData(String httpData) {
-    List<double> times = [
+    return [
       _getMinFromElaVFormat(httpData.substring(
-        httpData.indexOf("prepTime\" datetime=\"") + 21,
+        httpData.indexOf("prepTime\" datetime=\"") + 20,
         httpData.indexOf("><span aria") - 1,
       )),
       _getMinFromElaVFormat(httpData.substring(
-        httpData.indexOf("cookTime\" datetime=\"") + 21,
-        httpData.indexOf("><span aria") - 1,
-      )),
+          httpData.indexOf("cookTime\" datetime=\"") + 20,
+          httpData.indexOf(
+                "><span aria",
+                httpData.indexOf("cookTime\" datetime=\"") + 20,
+              ) -
+              1)),
       _getMinFromElaVFormat(httpData.substring(
-        httpData.indexOf("totalTime\" datetime=\"") + 22,
-        httpData.indexOf("><span aria") - 1,
+        httpData.indexOf("totalTime\" datetime=\"") + 21,
+        httpData.indexOf(
+                "><span aria", httpData.indexOf("totalTime\" datetime=\"")) -
+            1,
       )),
     ];
   }
@@ -715,6 +832,68 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   String _getRecipeImageString(String httpData) {
     String halfCut =
         httpData.substring(0, httpData.indexOf("jpg, null', Recipe") + 3);
-    return halfCut.substring(halfCut.lastIndexOf(""));
+    return halfCut.substring(halfCut.lastIndexOf("'") + 1);
+  }
+
+  /// the first substring, if it is a number of ½ is seen as amount,
+  /// the second substring after " " is seen as unit (if there are 3 substrings in total)
+  /// the third substring is seen as name
+  /// numbers can also be like: ½
+  /// the format must be like:
+  /// with all info: "1 1/2 TL Gew\u00fcrzmischung (Garam Masala)"
+  /// with no unit: "1 Gew\u00fcrzmischung (Garam Masala)"
+  /// with no amount: "evtl. Gew\u00fcrzmischung (Garam Masala)"
+  /// with not unit and amount: "Gew\u00fcrzmischung (Garam Masala)"
+  Ingredient _getIngredientFromStandardFormat(String ingredientInfo) {
+    String name;
+    double amount;
+    String unit;
+
+    String ingredientInfoAmount =
+        ingredientInfo.substring(0, ingredientInfo.indexOf(" "));
+    String nameUnitInfo;
+
+    try {
+      if (double.tryParse(ingredientInfoAmount[0]) != null ||
+          ingredientInfoAmount[0] == "½" ||
+          ingredientInfoAmount[0] == "⅓" ||
+          ingredientInfoAmount[0] == "¼") {
+        if (ingredientInfoAmount.contains("/")) {
+          double firstNumber = double.parse(ingredientInfoAmount.substring(
+              0, ingredientInfoAmount.indexOf("/")));
+          double secondNumber = double.parse(ingredientInfoAmount
+              .substring(ingredientInfoAmount.indexOf("/") + 1));
+          amount = firstNumber / secondNumber;
+        }
+        if (amount == null) {
+          if (ingredientInfoAmount[0] == "½") {
+            amount = 0.5;
+          } else if (ingredientInfo[0] == "⅓") {
+            amount = 0.33;
+          } else if (ingredientInfoAmount[0] == "¼") {
+            amount = 0.25;
+          }
+        }
+        if (amount == null) {
+          amount = double.tryParse(ingredientInfoAmount);
+        }
+        if (amount == null) {
+          nameUnitInfo = ingredientInfo;
+        } else {
+          nameUnitInfo =
+              ingredientInfo.substring(ingredientInfo.indexOf(" ") + 1);
+        }
+        if (!nameUnitInfo.contains(" ")) {
+          name = nameUnitInfo.substring(1);
+        } else {
+          unit = nameUnitInfo.substring(0, nameUnitInfo.indexOf(" "));
+          name = nameUnitInfo.substring(nameUnitInfo.indexOf(" ") + 1);
+        }
+      } else {
+        name = ingredientInfo;
+      }
+    } catch (e) {}
+
+    return Ingredient(name: name, unit: unit, amount: amount);
   }
 }
