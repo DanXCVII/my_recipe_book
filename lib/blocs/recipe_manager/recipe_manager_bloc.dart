@@ -87,7 +87,8 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
 
   Stream<UpdateCategoryState> _mapUpdateCategoryToState(
       RMUpdateCategory event) async* {
-    HiveProvider().renameCategory(event.oldCategory, event.updatedCategory);
+    await HiveProvider()
+        .renameCategory(event.oldCategory, event.updatedCategory);
 
     yield UpdateCategoryState(event.oldCategory, event.updatedCategory);
   }

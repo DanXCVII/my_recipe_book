@@ -365,8 +365,11 @@ class MyApp extends StatelessWidget {
                 builder: (context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<NutritionManagerBloc>(
-                        create: (context) => NutritionManagerBloc()
-                          ..add(LoadNutritionManager())),
+                      create: (context) => NutritionManagerBloc()
+                        ..add(
+                          LoadNutritionManager(args.editingRecipeName),
+                        ),
+                    ),
                     BlocProvider<NutritionsBloc>(
                       create: (context) => NutritionsBloc(),
                     ),

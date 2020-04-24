@@ -7,7 +7,14 @@ abstract class NutritionManagerEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadNutritionManager extends NutritionManagerEvent {}
+class LoadNutritionManager extends NutritionManagerEvent {
+  final String modifiedRecipe;
+
+  LoadNutritionManager([this.modifiedRecipe]);
+
+  @override
+  List<Object> get props => [modifiedRecipe];
+}
 
 class AddNutrition extends NutritionManagerEvent {
   final String nutrition;

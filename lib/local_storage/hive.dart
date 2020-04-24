@@ -409,11 +409,11 @@ class HiveProvider {
     String hiveOldKey = getHiveKey(oldName);
 
     List<String> recipes = boxRecipeCategories.get(hiveOldKey);
-    boxRecipeCategories.delete(hiveOldKey);
+    await boxRecipeCategories.delete(hiveOldKey);
     await boxRecipeCategories.put(hiveNewKey, recipes);
 
-    boxKeyString.delete(hiveOldKey);
-    boxKeyString.put(hiveNewKey, newName);
+    await boxKeyString.delete(hiveOldKey);
+    await boxKeyString.put(hiveNewKey, newName);
 
     for (var key in lazyBoxRecipes.keys) {
       Recipe recipe = await lazyBoxRecipes.get(key);
@@ -746,9 +746,12 @@ class HiveProvider {
     // }
   }
 
+  /// adds the nutrition to hive if not already existing
   Future<void> addNutrition(String nutritionName) async {
-    await boxOrder.put(
-        'nutritions', boxOrder.get('nutritions')..add(nutritionName));
+    if (!boxOrder.get('nutritions').contains(nutritionName)) {
+      await boxOrder.put(
+          'nutritions', boxOrder.get('nutritions')..add(nutritionName));
+    }
   }
 
   List<String> getNutritions() {
@@ -760,13 +763,15 @@ class HiveProvider {
   Future<void> moveNutrition(int oldIndex, newIndex) async {
     List<String> nutritions = boxOrder.get('nutritions');
 
-    String moveNutrition = nutritions[oldIndex];
+    if (oldIndex < nutritions.length && newIndex < nutritions.length) {
+      String moveNutrition = nutritions[oldIndex];
 
-    if (newIndex > oldIndex) newIndex -= 1;
-    nutritions[oldIndex] = nutritions[newIndex];
-    nutritions[newIndex] = moveNutrition;
+      if (newIndex > oldIndex) newIndex -= 1;
+      nutritions[oldIndex] = nutritions[newIndex];
+      nutritions[newIndex] = moveNutrition;
 
-    await boxOrder.put('nutritions', nutritions);
+      await boxOrder.put('nutritions', nutritions);
+    }
   }
 
   Future<void> deleteNutrition(String nutritionName) async {

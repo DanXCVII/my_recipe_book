@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/clipper.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:share/share.dart';
@@ -53,7 +54,7 @@ const double timeText = 17;
 const double paddingBottomTime = 5;
 const double headingSize = 19;
 const Color textColor = Colors.white;
-const String recipeScreenFontFamily = 'Questrial';
+const String recipeScreenFontFamily = 'Roboto';
 
 const Map<Vegetable, List<int>> vegetableColor = {
   Vegetable.NON_VEGETARIAN: [0xff520808, 0xff400303],
@@ -100,7 +101,8 @@ class _RecipeScreenState extends State<RecipeScreen>
 
   @override
   void dispose() {
-    if (_pc.isAttached) _pc.close();
+    // if (_pc.isAttached) _pc.close();
+
     super.dispose();
   }
 
@@ -126,10 +128,15 @@ class _RecipeScreenState extends State<RecipeScreen>
                     ? MyGradientAppBar(state.recipe)
                     : null,
                 body: SlidingUpPanel(
-                  margin: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width > 450
-                          ? (MediaQuery.of(context).size.width - 450) / 2
-                          : 0),
+                  renderPanelSheet: false,
+                  margin: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width > 450
+                        ? (MediaQuery.of(context).size.width - 450) / 2
+                        : 0,
+                    right: MediaQuery.of(context).size.width > 450
+                        ? (MediaQuery.of(context).size.width - 450) / 2
+                        : 0,
+                  ),
                   controller: _pc,
                   backdropColor: Color.fromRGBO(0, 0, 0, 0.5),
                   backdropEnabled: true,
@@ -137,7 +144,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                   parallaxEnabled:
                       MediaQuery.of(context).size.width > 450 ? false : true,
                   parallaxOffset: 0.5,
-                  minHeight: 70,
+                  minHeight: 50,
                   maxHeight:
                       MediaQuery.of(context).size.height - kToolbarHeight - 30 >
                               450
@@ -149,93 +156,118 @@ class _RecipeScreenState extends State<RecipeScreen>
                     topLeft: Radius.circular(25),
                     topRight: Radius.circular(25),
                   ),
-
-                  panel: Container(
-                    width: 200,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xff7E4400),
-                          Color(0xffCFAC53),
-                        ],
-                        begin: FractionalOffset.topLeft,
-                        end: FractionalOffset.bottomRight,
-                        stops: [0.0, 1.0],
+                  color: Colors.transparent,
+                  panel: ClipPath(
+                    clipper: NutritionDraggableClipper(),
+                    child: Container(
+                      width: 50,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xff7E4400),
+                            Color(0xffCFAC53),
+                          ],
+                          begin: FractionalOffset.topLeft,
+                          end: FractionalOffset.bottomRight,
+                          stops: [0.0, 1.0],
+                        ),
                       ),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(24),
-                        topRight: Radius.circular(24),
+                      child: Stack(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(top: 50),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  SizedBox(height: 20),
+                                  GestureDetector(
+                                    onTap: () {
+                                      _pc.animatePanelToPosition(1);
+                                    },
+                                    child: Text(
+                                      I18n.of(context).nutritions,
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                  Container(height: 10),
+                                  Container(
+                                    height: MediaQuery.of(context).size.height -
+                                                kToolbarHeight -
+                                                88 >
+                                            377
+                                        ? 377
+                                        : MediaQuery.of(context).size.height -
+                                            kToolbarHeight -
+                                            133,
+                                    child: ListView.builder(
+                                      itemCount:
+                                          state.recipe.nutritions.length * 2,
+                                      itemBuilder: (context, index) {
+                                        if ((index - 1) % 2 == 0) {
+                                          return Divider();
+                                        } else {
+                                          int nutritionIndex =
+                                              (index / 2).round();
+                                          return ListTile(
+                                            leading: Icon(MdiIcons.gateOr,
+                                                color: Colors.white),
+                                            title: Text(
+                                              state
+                                                  .recipe
+                                                  .nutritions[nutritionIndex]
+                                                  .name,
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white),
+                                            ),
+                                            trailing: Text(
+                                              state
+                                                  .recipe
+                                                  .nutritions[nutritionIndex]
+                                                  .amountUnit,
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  )
+                                ]),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2.0, right: 40),
+                            child: Align(
+                              alignment: Alignment.topRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _pc.animatePanelToPosition(1);
+                                },
+                                child: Container(
+                                  color: Colors.transparent,
+                                  width: 80,
+                                  height: 50,
+                                  child: Center(
+                                    child: Container(
+                                      width: 15,
+                                      height: 15,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey[300],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: () {
-                              _pc.animatePanelToPosition(1);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                              width: 30,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(12.0))),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: () {
-                              _pc.animatePanelToPosition(1);
-                            },
-                            child: Text(
-                              I18n.of(context).nutritions,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white),
-                            ),
-                          ),
-                          Container(height: 10),
-                          Container(
-                            height: MediaQuery.of(context).size.height -
-                                        kToolbarHeight -
-                                        88 >
-                                    422
-                                ? 422
-                                : MediaQuery.of(context).size.height -
-                                    kToolbarHeight -
-                                    88,
-                            child: ListView.builder(
-                              itemCount: state.recipe.nutritions.length * 2,
-                              itemBuilder: (context, index) {
-                                if ((index - 1) % 2 == 0) {
-                                  return Divider();
-                                } else {
-                                  int nutritionIndex = (index / 2).round();
-                                  return ListTile(
-                                    leading: Icon(MdiIcons.gateOr,
-                                        color: Colors.white),
-                                    title: Text(
-                                      state.recipe.nutritions[nutritionIndex]
-                                          .name,
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ),
-                                    trailing: Text(
-                                      state.recipe.nutritions[nutritionIndex]
-                                          .amountUnit,
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          )
-                        ]),
                   ),
                   body: RecipePage(
                     recipe: state.recipe,
@@ -1201,7 +1233,9 @@ class StepsSection extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 25),
-                !hasNutritions ? Container() : Container(height: 80),
+                hasNutritions && MediaQuery.of(context).size.width > 550
+                    ? Container(height: 80)
+                    : Container(),
               ]..removeWhere((item) => item == null),
             );
           } else {

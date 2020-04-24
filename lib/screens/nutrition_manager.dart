@@ -141,11 +141,10 @@ class _NutritionManagerState extends State<NutritionManager> {
                           BlocProvider.of<NutritionManagerBloc>(context)
                               .add(MoveNutrition(oldIndex, newIndex));
                         },
-                        children: state.nutritions.map((currentNutrition) {
-                          i++;
-
-                          return Dismissible(
-                            key: dismissibleKeys[i],
+                        children: List.generate(
+                          state.nutritions.length,
+                          (index) => Dismissible(
+                            key: dismissibleKeys[index],
                             background: _getPrimaryBackgroundDismissible(),
                             secondaryBackground:
                                 _getSecondaryBackgroundDismissible(),
@@ -153,18 +152,23 @@ class _NutritionManagerState extends State<NutritionManager> {
                               setState(() {
                                 dismissibleKeys =
                                     List<Key>.from(dismissibleKeys)
-                                      ..removeAt(i);
+                                      ..removeAt(index);
                                 listTileKeys = List<Key>.from(listTileKeys)
-                                  ..removeAt(i);
-                                nutritionsController.remove(currentNutrition);
+                                  ..removeAt(index);
+                                nutritionsController
+                                    .remove(state.nutritions[index]);
                                 BlocProvider.of<NutritionManagerBloc>(context)
-                                    .add(DeleteNutrition(currentNutrition));
+                                    .add(DeleteNutrition(
+                                        state.nutritions[index]));
                               });
                             },
-                            child: _getNutritionListTile(currentNutrition,
-                                context, listTileKeys[i], state.nutritions),
-                          );
-                        }).toList(),
+                            child: _getNutritionListTile(
+                                state.nutritions[index],
+                                context,
+                                listTileKeys[index],
+                                state.nutritions),
+                          ),
+                        ).toList(),
                       ),
                     ),
             );

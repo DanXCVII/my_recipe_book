@@ -388,6 +388,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                 }
               },
               save: (String name) {
+                nutritionsController
+                    .addAll({name: nutritionsController[nutritionName]});
+                nutritionsController.remove(nutritionName);
                 BlocProvider.of<NutritionManagerBloc>(context)
                     .add(UpdateNutrition(nutritionName, name));
               },

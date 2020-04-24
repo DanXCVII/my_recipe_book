@@ -10,14 +10,11 @@ import 'package:printing/printing.dart';
 
 import 'generated/i18n.dart';
 import 'helper.dart';
-import 'local_storage/hive.dart';
 import 'models/recipe.dart';
 import 'models/string_int_tuple.dart';
 
 Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
   final pw.Document doc = pw.Document();
-
-  recipe = await HiveProvider().getRecipeByName("Kartoffelpuffer");
 
   ByteData righteousData = await rootBundle.load("fonts/Righteous-Regular.ttf");
   final righteousBuffer = righteousData.buffer;
