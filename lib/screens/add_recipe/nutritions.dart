@@ -136,19 +136,23 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           Navigator.pop(context);
                         } else if (state is NSaved) {
                           if (widget.editingRecipeName == null) {
-                            Future.delayed(Duration(milliseconds: 300)).then(
-                              (_) =>
-                                  Navigator.of(context).pushNamedAndRemoveUntil(
-                                RouteNames.recipeScreen,
-                                (route) => route.isFirst,
-                                arguments: RecipeScreenArguments(
-                                  BlocProvider.of<ShoppingCartBloc>(context),
-                                  state.recipe,
-                                  'heroImageTag',
-                                  BlocProvider.of<RecipeManagerBloc>(context),
-                                ),
-                              ),
-                            );
+                            Future.delayed(Duration(milliseconds: 300))
+                                .then((_) {
+                              Navigator.of(context)
+                                  .pushNamedAndRemoveUntil(
+                                    RouteNames.recipeScreen,
+                                    (route) => route.isFirst,
+                                    arguments: RecipeScreenArguments(
+                                      BlocProvider.of<ShoppingCartBloc>(
+                                          context),
+                                      state.recipe,
+                                      'heroImageTag',
+                                      BlocProvider.of<RecipeManagerBloc>(
+                                          context),
+                                    ),
+                                  )
+                                  .then((_) => Ads.hideBottomBannerAd());
+                            });
                           } else {
                             Future.delayed(Duration(milliseconds: 300))
                                 .then((_) {
@@ -396,6 +400,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                 }
               },
               save: (String name) {
+                nutritionsController
+                    .addAll({name: nutritionsController[nutritionName]});
+                nutritionsController.remove(nutritionName);
                 BlocProvider.of<NutritionManagerBloc>(context)
                     .add(UpdateNutrition(nutritionName, name));
               },

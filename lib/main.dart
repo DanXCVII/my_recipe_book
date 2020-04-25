@@ -387,24 +387,29 @@ class MyApp extends StatelessWidget {
             case "/add-recipe/nutritions":
               final AddRecipeNutritionsArguments args = settings.arguments;
 
-              Ads.hideBottomBannerAd();
+              Ads.showBottomBannerAd();
 
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<NutritionManagerBloc>(
-                        create: (context) => NutritionManagerBloc()
-                          ..add(LoadNutritionManager())),
+                      create: (context) => NutritionManagerBloc()
+                        ..add(
+                          LoadNutritionManager(args.editingRecipeName),
+                        ),
+                    ),
                     BlocProvider<NutritionsBloc>(
                       create: (context) => NutritionsBloc(),
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
-                  child: AddRecipeNutritions(
-                    modifiedRecipe: args.modifiedRecipe,
-                    editingRecipeName: args.editingRecipeName,
-                  ),
+                  child: _getAdPage(
+                      AddRecipeNutritions(
+                        modifiedRecipe: args.modifiedRecipe,
+                        editingRecipeName: args.editingRecipeName,
+                      ),
+                      context),
                 ),
               );
 

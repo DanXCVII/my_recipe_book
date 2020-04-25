@@ -173,17 +173,18 @@ class RecipeCategoryOverviewBloc
         return Tuple2<String, List<Recipe>>(
           overviewItemName,
           tuple.item2
-            ..map(
-              (recipe) => recipe.copyWith(
-                categories: recipe.categories
-                    .map(
-                      (category) => category == event.oldCategory
-                          ? event.updatedCategory
-                          : category,
-                    )
-                    .toList(),
-              ),
-            ).toList(),
+              .map(
+                (recipe) => recipe.copyWith(
+                  categories: recipe.categories
+                      .map(
+                        (category) => category == event.oldCategory
+                            ? event.updatedCategory
+                            : category,
+                      )
+                      .toList(),
+                ),
+              )
+              .toList(),
         );
       }).toList())
         ..removeWhere((item) => item == null);

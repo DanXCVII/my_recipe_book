@@ -116,7 +116,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                       BlocProvider.of<ShoppingCartBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
-                  );
+                  ).then((_) => Ads.hideBottomBannerAd());
                 } else if (state is SSavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);

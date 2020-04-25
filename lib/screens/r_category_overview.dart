@@ -268,7 +268,7 @@ class RecipeImageItemBig extends StatelessWidget {
                         ? Constants.noCategory
                         : categoryName,
                   ),
-                );
+                ).then((_) => Ads.hideBottomBannerAd());
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -425,7 +425,10 @@ class RecipeImageItemBig extends StatelessWidget {
         heroImageTag,
         BlocProvider.of<RecipeManagerBloc>(context),
       ),
-    ).then((_) => Wakelock.disable());
+    ).then((_) {
+      Wakelock.disable();
+      Ads.hideBottomBannerAd();
+    });
   }
 }
 
@@ -461,7 +464,7 @@ class RecipeImageItemSmall extends StatelessWidget {
                       ? Constants.noCategory
                       : categoryName,
                 ),
-              );
+              ).then((_) => Ads.hideBottomBannerAd());
             },
             child: Container(
               height: 90,

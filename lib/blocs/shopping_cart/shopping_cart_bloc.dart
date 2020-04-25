@@ -21,6 +21,11 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
       if (state is LoadedShoppingCart) {
         if (rmState is RM.DeleteRecipeState) {
           add(RemoveIngredients(null, rmState.recipe));
+        } else if (rmState is RM.UpdateCategoryState ||
+            rmState is RM.DeleteCategoryState ||
+            rmState is RM.UpdateRecipeTagState ||
+            rmState is RM.DeleteRecipeTagState) {
+          add(LoadShoppingCart());
         }
       }
     });

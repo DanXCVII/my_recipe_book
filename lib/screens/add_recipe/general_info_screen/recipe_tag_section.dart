@@ -92,7 +92,7 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                             recipeTagManagerBloc:
                                 BlocProvider.of<RecipeTagManagerBloc>(context),
                           ),
-                        ).then((_) => Ads.hideBottomBannerAd());
+                        );
                       },
                     )
                   ],

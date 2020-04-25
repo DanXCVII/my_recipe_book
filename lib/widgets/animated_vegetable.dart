@@ -73,7 +73,7 @@ class AnimatedVegetable extends StatelessWidget {
   Color _getVegetableCircleColor(Vegetable vegetable) {
     switch (vegetable) {
       case Vegetable.NON_VEGETARIAN:
-        return Color(0xffBF8138);
+        return Color(0xffAB5C00);
       case Vegetable.VEGETARIAN:
         return Color(0xff569912);
       case Vegetable.VEGAN:

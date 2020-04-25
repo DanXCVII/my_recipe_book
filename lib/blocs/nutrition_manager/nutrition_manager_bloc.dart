@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:my_recipe_book/models/nutrition.dart';
 
 import '../../local_storage/hive.dart';
 
@@ -10,6 +11,8 @@ part 'nutrition_manager_state.dart';
 
 class NutritionManagerBloc
     extends Bloc<NutritionManagerEvent, NutritionManagerState> {
+  List<String> modifiedRecipeNutritions = [];
+
   @override
   NutritionManagerState get initialState => InitialNutritionManagerState();
 
@@ -18,7 +21,7 @@ class NutritionManagerBloc
     NutritionManagerEvent event,
   ) async* {
     if (event is LoadNutritionManager) {
-      yield* _mapLoadingNutritionManagerToState();
+      yield* _mapLoadingNutritionManagerToState(event);
     } else if (event is AddNutrition) {
       yield* _mapAddNutritionToState(event);
     } else if (event is DeleteNutrition) {
@@ -30,10 +33,31 @@ class NutritionManagerBloc
     }
   }
 
-  Stream<NutritionManagerState> _mapLoadingNutritionManagerToState() async* {
-    final List<String> nutritions = HiveProvider().getNutritions();
+  Stream<NutritionManagerState> _mapLoadingNutritionManagerToState(
+      LoadNutritionManager event) async* {
+    final List<String> nutritions =
+        List<String>.from(HiveProvider().getNutritions());
 
-    yield LoadedNutritionManager(nutritions);
+    if (event.modifiedRecipe != null) {
+      List<String> editingRecipeNutritions =
+          (await HiveProvider().getRecipeByName(event.modifiedRecipe))
+              .nutritions
+              .map((n) => n.name)
+              .toList();
+
+      if (editingRecipeNutritions != null) {
+        for (String nutrition in editingRecipeNutritions) {
+          if (!nutritions.contains(nutrition)) {
+            modifiedRecipeNutritions.add(nutrition);
+          }
+        }
+      }
+    }
+
+    List<String> allNutritions = List<String>.from(nutritions)
+      ..addAll(modifiedRecipeNutritions);
+
+    yield LoadedNutritionManager(allNutritions);
   }
 
   Stream<NutritionManagerState> _mapAddNutritionToState(
@@ -52,7 +76,9 @@ class NutritionManagerBloc
   Stream<NutritionManagerState> _mapDeleteNutritionToState(
       DeleteNutrition event) async* {
     if (state is LoadedNutritionManager) {
-      await HiveProvider().deleteNutrition(event.nutrition);
+      if (!modifiedRecipeNutritions.contains(event.nutrition)) {
+        await HiveProvider().deleteNutrition(event.nutrition);
+      }
       final List<String> nutritions =
           List<String>.from((state as LoadedNutritionManager).nutritions)
             ..remove(event.nutrition);
@@ -64,8 +90,13 @@ class NutritionManagerBloc
   Stream<NutritionManagerState> _mapUpdateNutritionToState(
       UpdateNutrition event) async* {
     if (state is LoadedNutritionManager) {
-      await HiveProvider()
-          .renameNutrition(event.oldNutrition, event.updatedNutrition);
+      if (modifiedRecipeNutritions.contains(event.oldNutrition)) {
+        modifiedRecipeNutritions.remove(event.oldNutrition);
+        await HiveProvider().addNutrition(event.updatedNutrition);
+      } else {
+        await HiveProvider()
+            .renameNutrition(event.oldNutrition, event.updatedNutrition);
+      }
       final List<String> nutritions = (state as LoadedNutritionManager)
           .nutritions
           .map((nutrition) => nutrition == event.oldNutrition
@@ -81,9 +112,18 @@ class NutritionManagerBloc
       MoveNutrition event) async* {
     if (state is LoadedNutritionManager) {
       await HiveProvider().moveNutrition(event.oldIndex, event.newIndex);
-      final List<String> nutritions = HiveProvider().getNutritions();
 
-      yield LoadedNutritionManager(nutritions);
+      List<String> newNutritionList =
+          List<String>.from((state as LoadedNutritionManager).nutritions);
+
+      String moveNutrition = newNutritionList[event.oldIndex];
+      int newIndex = event.newIndex;
+
+      if (event.newIndex > event.oldIndex) newIndex -= 1;
+      newNutritionList[event.oldIndex] = newNutritionList[newIndex];
+      newNutritionList[newIndex] = moveNutrition;
+
+      yield LoadedNutritionManager(newNutritionList);
     }
   }
 }

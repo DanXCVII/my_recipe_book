@@ -83,7 +83,7 @@ class _CategorySectionState extends State<CategorySection> {
                             categoryManagerBloc:
                                 BlocProvider.of<CategoryManagerBloc>(context),
                           ),
-                        ).then((_) => Ads.hideBottomBannerAd());
+                        );
                       },
                     )
                   ],

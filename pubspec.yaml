@@ -38,7 +38,7 @@ dependencies:
   share_extend: ^1.1.1 # MIT
   bottom_navy_bar: ^5.3.2 # Apache 2.0
   intro_slider: ^2.2.8 # MIT
-  sliding_up_panel: ^1.0.1 # BSD
+  sliding_up_panel: ^1.0.2 # BSD
   autocomplete_textfield: ^1.7.3 # MIT
   hive_flutter: ^0.2.1 # Apache 2.0
   hive_generator: ^0.5.2 # Apache 2.0
