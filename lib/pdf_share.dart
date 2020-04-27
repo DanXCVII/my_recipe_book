@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_recipe_book/constants/global_constants.dart';
 import 'package:my_recipe_book/models/enums.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -170,19 +171,25 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
             pw.Wrap(
               direction: pw.Axis.horizontal,
               children: [
-                pw.Container(
-                  height: 190,
-                  width: 190,
-                  child: pw.Image(
-                    PdfImage.file(
-                      doc.document,
-                      bytes: File(recipe.imagePath).readAsBytesSync(),
-                    ),
-                    fit: pw.BoxFit.cover,
-                  ),
-                ),
+                recipe.imagePath != noRecipeImage
+                    ? pw.Container(
+                        height: 190,
+                        width: 190,
+                        child: pw.Image(
+                          PdfImage.file(
+                            doc.document,
+                            bytes: File(recipe.imagePath).readAsBytesSync(),
+                          ),
+                          fit: pw.BoxFit.cover,
+                        ),
+                      )
+                    : null,
                 pw.Padding(
-                  padding: pw.EdgeInsets.only(left: 15),
+                  padding: pw.EdgeInsets.only(
+                    left: recipe.imagePath != noRecipeImage ? 15 : 0,
+                    top: recipe.imagePath != noRecipeImage ? 0 : 10,
+                    bottom: recipe.imagePath != noRecipeImage ? 0 : 10,
+                  ),
                   child: pw.Container(
                     width: 220,
                     child: pw.Column(
@@ -385,24 +392,28 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                           recipe.source != "" && recipe.source != null
                               ? pw.Padding(
                                   padding: pw.EdgeInsets.only(top: 8),
-                                  child: pw.RichText(
-                                    text: pw.TextSpan(
-                                      children: [
-                                        pw.TextSpan(
-                                          text: I18n.of(bContext).source + ": ",
-                                          style: pw.TextStyle(
-                                              font: latoTtf,
-                                              color: PdfColors.grey700,
-                                              fontSize: 11),
-                                        ),
-                                        pw.TextSpan(
-                                          text: recipe.source,
-                                          style: pw.TextStyle(
-                                              font: latoBTtf,
-                                              fontSize: 11,
-                                              fontWeight: pw.FontWeight.bold),
-                                        )
-                                      ],
+                                  child: pw.Container(
+                                    width: 240,
+                                    child: pw.RichText(
+                                      text: pw.TextSpan(
+                                        children: [
+                                          pw.TextSpan(
+                                            text:
+                                                I18n.of(bContext).source + ": ",
+                                            style: pw.TextStyle(
+                                                font: latoTtf,
+                                                color: PdfColors.grey700,
+                                                fontSize: 11),
+                                          ),
+                                          pw.TextSpan(
+                                            text: recipe.source,
+                                            style: pw.TextStyle(
+                                                font: latoBTtf,
+                                                fontSize: 11,
+                                                fontWeight: pw.FontWeight.bold),
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 )

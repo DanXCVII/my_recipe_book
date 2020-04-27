@@ -68,8 +68,8 @@ class I18n implements WidgetsLocalizations {
   String get remove_step => "remove step";
   /// "share/save as file"
   String get export_zip => "share/save as file";
-  /// "share as pdf"
-  String get export_pdf => "share as pdf";
+  /// "share as PDF"
+  String get export_pdf => "share as PDF";
   /// "share in textform"
   String get export_text => "share in textform";
   /// "edit"
@@ -530,9 +530,9 @@ class _I18n_de_DE extends I18n {
   /// "als Datei teilen/sichern"
   @override
   String get export_zip => "als Datei teilen/sichern";
-  /// "als pdf teilen"
+  /// "als PDF teilen"
   @override
-  String get export_pdf => "als pdf teilen";
+  String get export_pdf => "als PDF teilen";
   /// "in Textform teilen"
   @override
   String get export_text => "in Textform teilen";
