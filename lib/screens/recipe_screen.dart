@@ -453,7 +453,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
               PopupMenuItem(
                 value: PopupOptionsMore.DELETE,
                 child: Row(children: [
-                  Icon(Icons.delete),
+                  Icon(Icons.delete,
+                      color: Theme.of(context).backgroundColor == Colors.white
+                          ? Colors.grey
+                          : Colors.white),
                   SizedBox(width: 10),
                   Text(I18n.of(context).delete_recipe)
                 ]),
@@ -461,7 +464,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
               PopupMenuItem(
                 value: PopupOptionsMore.SHARE,
                 child: Row(children: [
-                  Icon(Icons.share),
+                  Icon(Icons.share,
+                      color: Theme.of(context).backgroundColor == Colors.white
+                          ? Colors.grey
+                          : Colors.white),
                   SizedBox(width: 10),
                   Text(I18n.of(context).share_recipe)
                 ]),
@@ -469,7 +475,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
               PopupMenuItem(
                 value: PopupOptionsMore.PRINT,
                 child: Row(children: [
-                  Icon(Icons.print),
+                  Icon(Icons.print,
+                      color: Theme.of(context).backgroundColor == Colors.white
+                          ? Colors.grey
+                          : Colors.white),
                   SizedBox(width: 10),
                   Text(I18n.of(context).print_recipe)
                 ]),

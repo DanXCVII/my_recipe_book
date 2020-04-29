@@ -359,6 +359,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
     preperationTimeController.clear();
     cookingTimeController.clear();
     totalTimeController.clear();
+    sourceController.clear();
   }
 
   /// validates the info with the RecipeValidator() class and shows a

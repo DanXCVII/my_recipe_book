@@ -70,6 +70,7 @@ dependencies:
   wakelock: ^0.1.4+1 # BSD
   pdf: ^1.6.1 # Apache 2.0
   printing: ^3.3.1 # Apache 2.0
+  buy_me_a_coffee_widget: ^1.0.0 # MIT
 
   
 dev_dependencies:

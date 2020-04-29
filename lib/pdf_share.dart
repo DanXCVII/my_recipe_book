@@ -64,20 +64,23 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
   }
 
   List<pw.Widget> stepWidgets = [
-    pw.Padding(
-      padding: pw.EdgeInsets.only(top: 8),
-      child: pw.Row(children: [
-        pw.Text(
-          I18n.of(bContext).directions,
-          style: pw.TextStyle(
-            font: quandoTtf,
-            color: PdfColors.red900,
-            fontSize: 16,
-          ),
-        ),
-      ]),
-    ),
-  ]..addAll(List.generate(
+    recipe.steps.isNotEmpty
+        ? pw.Padding(
+            padding: pw.EdgeInsets.only(top: 8),
+            child: pw.Row(children: [
+              pw.Text(
+                I18n.of(bContext).directions,
+                style: pw.TextStyle(
+                  font: quandoTtf,
+                  color: PdfColors.red900,
+                  fontSize: 16,
+                ),
+              ),
+            ]),
+          )
+        : null,
+  ]
+    ..addAll(List.generate(
       recipe.steps.length,
       (index) => pw.Padding(
         padding: pw.EdgeInsets.only(top: 8),
@@ -98,7 +101,8 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
           ]..removeWhere((item) => item == null),
         ),
       ),
-    ));
+    ))
+    ..removeWhere((item) => item == null);
 
   doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
@@ -191,7 +195,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                     bottom: recipe.imagePath != noRecipeImage ? 0 : 10,
                   ),
                   child: pw.Container(
-                    width: 220,
+                    width: 270,
                     child: pw.Column(
                         mainAxisSize: pw.MainAxisSize.min,
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -392,28 +396,25 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                           recipe.source != "" && recipe.source != null
                               ? pw.Padding(
                                   padding: pw.EdgeInsets.only(top: 8),
-                                  child: pw.Container(
-                                    width: 240,
-                                    child: pw.RichText(
-                                      text: pw.TextSpan(
-                                        children: [
-                                          pw.TextSpan(
-                                            text:
-                                                I18n.of(bContext).source + ": ",
-                                            style: pw.TextStyle(
-                                                font: latoTtf,
-                                                color: PdfColors.grey700,
-                                                fontSize: 11),
+                                  child: pw.RichText(
+                                    text: pw.TextSpan(
+                                      children: [
+                                        pw.TextSpan(
+                                          text: I18n.of(bContext).source + ": ",
+                                          style: pw.TextStyle(
+                                              font: latoTtf,
+                                              color: PdfColors.grey700,
+                                              fontSize: 11),
+                                        ),
+                                        pw.TextSpan(
+                                          text: recipe.source,
+                                          style: pw.TextStyle(
+                                            font: latoTtf,
+                                            fontSize: 11,
+                                            color: PdfColors.blue,
                                           ),
-                                          pw.TextSpan(
-                                            text: recipe.source,
-                                            style: pw.TextStyle(
-                                                font: latoBTtf,
-                                                fontSize: 11,
-                                                fontWeight: pw.FontWeight.bold),
-                                          )
-                                        ],
-                                      ),
+                                        )
+                                      ],
                                     ),
                                   ),
                                 )

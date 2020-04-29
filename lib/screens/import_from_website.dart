@@ -346,20 +346,24 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                 ),
               ),
               Expanded(
-                child: Text(I18n.of(context)
-                    .website_must_be_under_the_supported_websites),
+                child: Text(I18n.of(context).supported_websites),
               ),
-              Material(
-                color: Colors.transparent,
-                child: IconButton(
-                  icon: Icon(_isExpanded
-                      ? Icons.keyboard_arrow_down
-                      : Icons.keyboard_arrow_up),
-                  onPressed: () {
-                    setState(() {
-                      _isExpanded = !_isExpanded;
-                    });
-                  },
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: IconButton(
+                      icon: Icon(_isExpanded
+                          ? Icons.keyboard_arrow_down
+                          : Icons.keyboard_arrow_up),
+                      onPressed: () {
+                        setState(() {
+                          _isExpanded = !_isExpanded;
+                        });
+                      },
+                    ),
+                  ),
                 ),
               )
             ],
@@ -392,9 +396,15 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                                   ),
                                 ),
                               ),
-                      )..add(
+                      )..insert(
+                          0,
                           ListTile(
-                            title: Text(I18n.of(context).more_coming_soon),
+                            title: Text(
+                              I18n.of(context).standardized_format,
+                              style: TextStyle(
+                                fontSize: 11,
+                              ),
+                            ),
                           ),
                         ),
                     ),

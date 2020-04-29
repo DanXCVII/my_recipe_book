@@ -205,7 +205,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                     padding:
                         const EdgeInsets.only(left: 56, top: 12, bottom: 12),
                     child: Text(
-                      "Kategorie:",
+                      I18n.of(context).category + ":",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

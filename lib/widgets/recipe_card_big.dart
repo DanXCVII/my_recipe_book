@@ -132,7 +132,7 @@ class RecipeCardBig extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     textScaleFactor: scaleFactor,
                                     style: TextStyle(
-                                      fontSize: 28,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),

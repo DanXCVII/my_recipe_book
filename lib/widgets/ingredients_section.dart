@@ -88,7 +88,14 @@ class _IngredientsState extends State<Ingredients> {
                     padding: const EdgeInsets.only(right: 12),
                     child: OutlineButton.icon(
                       icon: Icon(Icons.remove_circle),
-                      label: Text(I18n.of(context).remove_section),
+                      label: Container(
+                        padding: MediaQuery.of(context).size.width < 412
+                            ? EdgeInsets.symmetric(vertical: 8)
+                            : null,
+                        width:
+                            MediaQuery.of(context).size.width < 412 ? 80 : null,
+                        child: Text(I18n.of(context).remove_section),
+                      ),
                       onPressed: () {
                         updateAndRemoveController();
                       },
@@ -100,7 +107,13 @@ class _IngredientsState extends State<Ingredients> {
                 : null,
             OutlineButton.icon(
               icon: Icon(Icons.add_circle),
-              label: Text(I18n.of(context).add_section),
+              label: Container(
+                padding: MediaQuery.of(context).size.width < 412
+                    ? EdgeInsets.symmetric(vertical: 8)
+                    : null,
+                width: MediaQuery.of(context).size.width < 412 ? 80 : null,
+                child: Text(I18n.of(context).add_section),
+              ),
               onPressed: () {
                 updateAndAddController();
               },
@@ -208,63 +221,87 @@ class _IngredientSectionState extends State<IngredientSection> {
           List.generate(
             widget.ingredientNameController[widget.sectionNumber].length,
             (i) => Padding(
-              padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12, 12),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 40),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 9,
-                      child: SimpleAutoCompleteTextField(
-                        key: keys[widget.sectionNumber][i],
-                        controller: widget
-                            .ingredientNameController[widget.sectionNumber][i],
-                        suggestions: widget.ingredientNames,
-                        decoration: InputDecoration(
-                          hintText: I18n.of(context).name,
-                          filled: true,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: TextFormField(
-                          validator: (value) {
-                            if (stringIsValidDouble(value) == false &&
-                                value != "")
-                              return I18n.of(context).no_valid_number;
-                            return null;
+              padding: EdgeInsets.fromLTRB(
+                widget.ingredientNameController[widget.sectionNumber].length > 1
+                    ? 4
+                    : 52,
+                12.0,
+                12,
+                12,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  widget.ingredientNameController[widget.sectionNumber].length >
+                          1
+                      ? IconButton(
+                          icon: Icon(Icons.remove_circle),
+                          onPressed: () {
+                            setState(() {
+                              widget.ingredientNameController[
+                                      widget.sectionNumber]
+                                  .removeAt(i);
+                              widget.ingredientAmountController[
+                                      widget.sectionNumber]
+                                  .removeAt(i);
+                              widget.ingredientUnitController[
+                                      widget.sectionNumber]
+                                  .removeAt(i);
+                              keys[widget.sectionNumber].removeAt(i);
+                            });
                           },
-                          autovalidate: false,
-                          controller: widget.ingredientAmountController[
-                              widget.sectionNumber][i],
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            filled: true,
-                            hintText: I18n.of(context).amnt,
-                          ),
+                        )
+                      : null,
+                  Expanded(
+                    flex: 9,
+                    child: SimpleAutoCompleteTextField(
+                      key: keys[widget.sectionNumber][i],
+                      controller: widget
+                          .ingredientNameController[widget.sectionNumber][i],
+                      suggestions: widget.ingredientNames,
+                      decoration: InputDecoration(
+                        hintText: I18n.of(context).name,
+                        filled: true,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: TextFormField(
+                        validator: (value) {
+                          if (stringIsValidDouble(value) == false &&
+                              value != "")
+                            return I18n.of(context).no_valid_number;
+                          return null;
+                        },
+                        autovalidate: false,
+                        controller: widget.ingredientAmountController[
+                            widget.sectionNumber][i],
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          filled: true,
+                          hintText: I18n.of(context).amnt,
                         ),
                       ),
                     ),
-                    Expanded(
-                      flex: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: TextFormField(
-                          controller: widget.ingredientUnitController[
-                              widget.sectionNumber][i],
-                          decoration: InputDecoration(
-                            filled: true,
-                            hintText: I18n.of(context).unit,
-                          ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: TextFormField(
+                        controller: widget
+                            .ingredientUnitController[widget.sectionNumber][i],
+                        decoration: InputDecoration(
+                          filled: true,
+                          hintText: I18n.of(context).unit,
                         ),
                       ),
                     ),
-                  ].where((c) => c != null).toList(),
-                ),
+                  ),
+                ]..removeWhere((c) => c == null),
               ),
             ),
           ),
@@ -273,30 +310,6 @@ class _IngredientSectionState extends State<IngredientSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              widget.ingredientNameController[widget.sectionNumber].length > 1
-                  ? Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: OutlineButton.icon(
-                          icon: Icon(Icons.remove_circle_outline),
-                          label: Text(I18n.of(context).remove_ingredient),
-                          onPressed: () {
-                            setState(() {
-                              widget.ingredientNameController[
-                                      widget.sectionNumber]
-                                  .removeLast();
-                              widget.ingredientAmountController[
-                                      widget.sectionNumber]
-                                  .removeLast();
-                              widget.ingredientUnitController[
-                                      widget.sectionNumber]
-                                  .removeLast();
-                              keys[widget.sectionNumber].removeLast();
-                            });
-                          },
-                          shape: RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(30.0))),
-                    )
-                  : null,
               OutlineButton.icon(
                   icon: Icon(Icons.add_circle_outline),
                   label: Text(I18n.of(context).add_ingredient),

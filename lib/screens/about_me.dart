@@ -1,3 +1,4 @@
+import 'package:buy_me_a_coffee_widget/buy_me_a_coffee_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -166,6 +167,43 @@ class AboutMeScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+            Container(
+              height: 60,
+            ),
+            Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(1, 1),
+                      blurRadius: 1,
+                      spreadRadius: 0.5,
+                      color: Colors.black26,
+                    ),
+                  ],
+                  color: Theme.of(context).backgroundColor == Colors.white
+                      ? Colors.white
+                      : Colors.grey[800],
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(30),
+                  ),
+                ),
+                width: 300,
+                child: Center(
+                  child: Text(
+                    "If you want to show some 💖 and support future development😊",
+                    textAlign: TextAlign.center,
+                  ),
+                )),
+            SizedBox(
+              height: 12,
+            ),
+            Container(
+              width: 250.0,
+              child: BuyMeACoffeeWidget(
+                sponsorID: "DanielDev",
               ),
             ),
             Spacer(),
