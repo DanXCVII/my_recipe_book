@@ -10,6 +10,7 @@ import '../constants/global_constants.dart' as Constants;
 import '../util/helper.dart';
 import '../local_storage/hive.dart';
 import '../models/recipe.dart';
+import '../util/recipe_extractor.dart';
 
 /// moves the images of the recipe to the correct image paths which is
 /// defined by recipe.name
@@ -195,12 +196,13 @@ Future<void> renameRecipeData(String oldRecipeName, String newRecipeName,
 }
 
 /// saves the image in high and low quality in the local storage under the
-/// recipe directory
-Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
+/// recipe directory or in the target dir under the recipe structure
+Future<void> saveRecipeImage(File pictureFile, String recipeName,
+    {String targetDir}) async {
   String dataType = getImageDatatype(pictureFile.path);
 
-  String recipeImagePathFull =
-      await PathProvider.pP.getRecipeImagePathFull(recipeName, dataType);
+  String recipeImagePathFull = await PathProvider.pP
+      .getRecipeImagePathFull(recipeName, dataType, targetDir: targetDir);
 
   await saveImage(pictureFile, recipeImagePathFull, false);
   String recipeImagePreviewPathFull =
@@ -263,13 +265,13 @@ Future<String> saveRecipeZip(String targetDir, String recipeName) async {
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDirFull(recipeName));
 
-  File jsonFile = File(PathProvider.pP.getShareJsonPath(recipeName, targetDir));
+  File jsonFile = File(PathProvider.pP.getJsonPath(recipeName, targetDir));
   Map<String, dynamic> jsonMap = exportRecipe.toMap();
   String json = jsonEncode(jsonMap);
   await jsonFile.writeAsString(json);
 
   var encoder = ZipFileEncoder();
-  String zipFilePath = PathProvider.pP.getShareZipFile(recipeName, targetDir);
+  String zipFilePath = PathProvider.pP.getZipFilePath(recipeName, targetDir);
   encoder.create(zipFilePath);
   encoder.addFile(jsonFile);
   if (recipeDir.existsSync()) {
@@ -279,6 +281,28 @@ Future<String> saveRecipeZip(String targetDir, String recipeName) async {
 
   jsonFile.deleteSync();
   return zipFilePath;
+}
+
+Future<List<String>> extractMRBzipGetNames(File recipeZipMrb) async {
+  await Directory(await PathProvider.pP.getImportDir()).delete(recursive: true);
+  Directory importDir = Directory(await PathProvider.pP.getImportDir());
+  // extract selected zip and save it to the importDir
+  await exstractZip(recipeZipMrb, importDir.path);
+  List importFiles = importDir.listSync(recursive: true);
+
+  bool importMulitiple = false;
+
+  for (FileSystemEntity f in importFiles) {
+    if (f.path.endsWith('.xml')) {
+      List<String> recipeNames =
+          getRecipeNamesFromMRB((f as File).readAsStringSync());
+    }
+  }
+  return [];
+}
+
+Future<void> importMRBzip(List<String> recipeNames) async {
+  // TODO:
 }
 
 /// saves the stepImage in high and low quality in the local storage under the given
