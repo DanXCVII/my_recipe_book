@@ -9,10 +9,10 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-import 'generated/i18n.dart';
+import '../generated/i18n.dart';
 import 'helper.dart';
-import 'models/recipe.dart';
-import 'models/string_int_tuple.dart';
+import '../models/recipe.dart';
+import '../models/string_int_tuple.dart';
 
 Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
   final pw.Document doc = pw.Document();

@@ -13,7 +13,7 @@ import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
-import '../helper.dart';
+import '../util/helper.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_overview.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
-import '../../helper.dart';
+import '../../util/helper.dart';
 
 class TimeInfoChart extends StatelessWidget {
   final Color textColor;

@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:my_recipe_book/constants/global_constants.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
 
-import '../../../helper.dart';
+import '../../../util/helper.dart';
 import '../../../local_storage/hive.dart';
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../local_storage/local_paths.dart';

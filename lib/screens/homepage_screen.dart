@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/import_recipe/import_recipe_bloc.dart';
-import 'package:my_recipe_book/my_wrapper.dart';
+import 'package:my_recipe_book/util/my_wrapper.dart';
 import 'package:my_recipe_book/widgets/dialogs/import_dialog.dart';
 import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:my_recipe_book/widgets/shopping_cart_floating.dart';

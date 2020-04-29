@@ -14,7 +14,7 @@ import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
-import '../helper.dart';
+import '../util/helper.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_overview.dart';

@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-import '../helper.dart';
+import '../util/helper.dart';
 import 'enums.dart';
 import 'ingredient.dart';
 import 'nutrition.dart';

@@ -1,4 +1,4 @@
-import 'models/enums.dart';
+import '../models/enums.dart';
 
 class MyImageWrapper {
   String selectedImage;

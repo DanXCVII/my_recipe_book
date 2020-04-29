@@ -7,7 +7,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import './local_paths.dart';
 import '../constants/global_constants.dart' as Constants;
-import '../helper.dart';
+import '../util/helper.dart';
 import '../local_storage/hive.dart';
 import '../models/recipe.dart';
 
@@ -446,5 +446,7 @@ Future<void> exstractZip(File encode, String destination) async {
     }
   }
 }
+
+// ----------------------------------------------------------------
 
 /////////// DEPRECATED?? /////////////////

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
-import '../../helper.dart';
+import '../../util/helper.dart';
 
 class TimeComplexityCompressed extends StatelessWidget {
   final double preperationTime;

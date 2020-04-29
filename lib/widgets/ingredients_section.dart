@@ -2,7 +2,7 @@ import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import "package:flutter/material.dart";
 
 import '../generated/i18n.dart';
-import '../helper.dart';
+import '../util/helper.dart';
 
 class Ingredients extends StatefulWidget {
   final List<List<TextEditingController>> ingredientNameController;

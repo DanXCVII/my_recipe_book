@@ -7,18 +7,18 @@ import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/constants/global_constants.dart';
-import 'package:my_recipe_book/local_storage/hive.dart';
-import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
-import 'package:my_recipe_book/local_storage/local_paths.dart';
-import 'package:my_recipe_book/models/tuple.dart';
 
+import '../../constants/global_constants.dart';
+import '../../local_storage/hive.dart';
+import '../../local_storage/io_operations.dart' as IO;
+import '../../local_storage/local_paths.dart';
 import '../../models/enums.dart';
 import '../../models/ingredient.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
-import '../../models/string_int_tuple.dart';
+import '../../models/tuple.dart';
+import '../../util/recipe_extractor.dart';
+import '../recipe_manager/recipe_manager_bloc.dart';
 
 part 'website_import_event.dart';
 part 'website_import_state.dart';
@@ -112,7 +112,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       }
       List<List<Ingredient>> ingredients = [
         _getIngredientStringFromAllRecipes(httpRecipeContent)
-            .map((item) => _getIngredientFromString(item))
+            .map((item) => getIngredientFromString(item))
             .toList()
               ..removeWhere((item) => item == null)
       ];
@@ -411,92 +411,6 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     return steps;
   }
 
-  /// trys to get the number value out of the string and otherwise
-  /// returns null
-  double _getNumberOfString(String numberInfo) {
-    bool failed = false;
-
-    try {
-      if (numberInfo.contains("/")) {
-        double firstNumber =
-            double.parse(numberInfo.substring(0, numberInfo.indexOf("/")));
-        double secondNumber =
-            double.parse(numberInfo.substring(numberInfo.indexOf("/") + 1));
-        return firstNumber / secondNumber;
-      }
-    } catch (e) {
-      failed = true;
-    }
-    if (failed) {
-      if (numberInfo == "½") {
-        return 0.5;
-      } else if (numberInfo == "⅓") {
-        return 0.33;
-      } else if (numberInfo == "¼") {
-        return 0.25;
-      }
-    }
-    return double.tryParse(numberInfo);
-  }
-
-  /// ingredient info can have form of:
-  /// 1 1/2 g Butter
-  /// 2  Eier
-  /// 4 Eier
-  /// ½ Schachtel Tomaten
-  ///  Gew\u00fcrzmischung
-  /// Wasser
-  Ingredient _getIngredientFromString(String ingredientInfo) {
-    double amount;
-    String unit;
-    String name;
-
-    try {
-      if (ingredientInfo.startsWith(" ")) {
-        return Ingredient(name: ingredientInfo.substring(1));
-      } else if (!ingredientInfo.contains(" ")) {
-        return Ingredient(name: ingredientInfo);
-      } else if (_getNumberOfString(
-              ingredientInfo.substring(0, ingredientInfo.indexOf(" "))) !=
-          null) {
-        amount = _getNumberOfString(
-            ingredientInfo.substring(0, ingredientInfo.indexOf(" ")));
-
-        if (ingredientInfo.contains(" ", ingredientInfo.indexOf(" ") + 1)) {
-          String remainingIngredInfo =
-              ingredientInfo.substring(ingredientInfo.indexOf(" ") + 1);
-          if (remainingIngredInfo.startsWith(" ")) {
-            return Ingredient(
-                name: remainingIngredInfo.substring(
-                    1, remainingIngredInfo.length),
-                amount: amount);
-          }
-
-          String secondSubString = remainingIngredInfo.substring(
-              0, remainingIngredInfo.indexOf(" "));
-          if (_getNumberOfString(secondSubString) != null) {
-            amount += _getNumberOfString(secondSubString);
-            if (remainingIngredInfo[remainingIngredInfo.indexOf(" ") + 1] ==
-                " ") {
-              return Ingredient(
-                name: remainingIngredInfo
-                    .substring(remainingIngredInfo.indexOf(" ") + 2),
-                amount: amount,
-              );
-            }
-          } else {
-            unit = secondSubString;
-          }
-          name = remainingIngredInfo
-              .substring(remainingIngredInfo.indexOf(" ") + 1);
-        } else {
-          name = ingredientInfo.substring(ingredientInfo.indexOf(" ") + 1);
-        }
-      }
-    } catch (e) {}
-    return Ingredient(name: name, amount: amount, unit: unit);
-  }
-
   /// checks all the ld+json string in the httpData and if one contains the recipe
   /// data, returns the Map
   Future<Map<String, dynamic>> _tryGetRecipeRecipeMap(String httpData) async {
@@ -664,7 +578,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     List<Ingredient> ingredients = [];
     try {
       for (String ingredientString in recipeMap["recipeIngredient"]) {
-        ingredients.add(_getIngredientFromString(ingredientString));
+        ingredients.add(getIngredientFromString(ingredientString));
       }
     } catch (e) {
       print("failed importing ingredients");

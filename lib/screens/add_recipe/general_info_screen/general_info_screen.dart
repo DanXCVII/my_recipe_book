@@ -15,7 +15,7 @@ import '../../../blocs/new_recipe/general_info/general_info_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
 import '../../../generated/i18n.dart';
-import '../../../helper.dart';
+import '../../../util/helper.dart';
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';

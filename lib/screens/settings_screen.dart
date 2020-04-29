@@ -22,7 +22,7 @@ import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
-import '../helper.dart';
+import '../util/helper.dart';
 import '../theming.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/dialogs/info_dialog.dart';

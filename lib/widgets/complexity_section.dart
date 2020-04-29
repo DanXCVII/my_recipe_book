@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../generated/i18n.dart';
-import '../my_wrapper.dart';
+import '../util/my_wrapper.dart';
 
 class ComplexitySection extends StatefulWidget {
   final MyDoubleWrapper complexity;
