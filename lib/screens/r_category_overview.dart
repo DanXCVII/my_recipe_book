@@ -46,7 +46,7 @@ class RecipeCategoryOverview extends StatelessWidget {
                     child: _getRecipeCategoryOverviewList(
                         context,
                         state.rCategoryOverview.sublist(
-                            0, (state.rCategoryOverview.length / 2).floor()),
+                            0, (state.rCategoryOverview.length / 2).round()),
                         _refreshController),
                   ),
                   Container(
@@ -58,7 +58,7 @@ class RecipeCategoryOverview extends StatelessWidget {
                     child: _getRecipeCategoryOverviewList(
                         context,
                         state.rCategoryOverview.sublist(
-                            (state.rCategoryOverview.length / 2).floor(),
+                            (state.rCategoryOverview.length / 2).round(),
                             state.rCategoryOverview.length),
                         _refreshControllerTwo),
                   ),

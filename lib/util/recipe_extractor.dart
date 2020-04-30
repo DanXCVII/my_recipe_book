@@ -92,6 +92,7 @@ List<Tuple2<Recipe, String>> getRecipeData(
       recipeData.add(recipe);
     }
   }
+  return recipeData;
 }
 
 Tuple2<Recipe, String> getRecipeFromMRB(String xmlData) {
@@ -140,12 +141,39 @@ List<Ingredient> getIngredientsFromMRB(String xmlData) {
   return ingredients;
 }
 
+String getSourceFromMRB(String xmlData) {
+  if (xmlData.contains("<url>")) {
+    return xmlData.substring(
+        xmlData.indexOf("<url>") + 5, xmlData.indexOf("</url>"));
+  } else {
+    return null;
+  }
+}
+
+List<String> getCategoriesFromMRB(String xmlData) {
+  List<String> categories;
+
+  String iteratedXmlData = xmlData;
+
+  while (iteratedXmlData.contains('<category>')) {
+    categories.add(
+      iteratedXmlData.substring(iteratedXmlData.indexOf("<category>") + 10,
+          iteratedXmlData.indexOf("</category>")),
+    );
+    iteratedXmlData =
+        iteratedXmlData.substring(iteratedXmlData.indexOf("</category>"));
+  }
+  return categories;
+}
+
 String getRecipeNameFromMRB(String xmlData) {
   if (xmlData.contains("<title>")) {
     return xmlData.substring(
       xmlData.indexOf("<title>") + 7,
       xmlData.indexOf("</title>"),
     );
+  } else {
+    return null;
   }
 }
 

@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:my_recipe_book/models/tuple.dart';
 
 import './local_paths.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -255,7 +256,7 @@ Future<void> deleteStepImage(
 String getStepImageName(String selectedImagePath) {
   Random random = new Random();
   String dataType = getImageDatatype(selectedImagePath);
-  return random.nextInt(10000).toString() + dataType;
+  return random.nextInt(1000000).toString() + dataType;
 }
 
 Future<String> saveRecipeZip(String targetDir, String recipeName) async {
@@ -283,6 +284,8 @@ Future<String> saveRecipeZip(String targetDir, String recipeName) async {
   return zipFilePath;
 }
 
+/// extracts the mrb zip to the import dir and returns the recipeNames of all
+/// recipes in there. If the xml is not found, it returns null.
 Future<List<String>> extractMRBzipGetNames(File recipeZipMrb) async {
   await Directory(await PathProvider.pP.getImportDir()).delete(recursive: true);
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
@@ -294,15 +297,45 @@ Future<List<String>> extractMRBzipGetNames(File recipeZipMrb) async {
 
   for (FileSystemEntity f in importFiles) {
     if (f.path.endsWith('.xml')) {
-      List<String> recipeNames =
-          getRecipeNamesFromMRB((f as File).readAsStringSync());
+      return getRecipeNamesFromMRB((f as File).readAsStringSync());
     }
   }
-  return [];
+  return null;
 }
 
-Future<void> importMRBzip(List<String> recipeNames) async {
-  // TODO:
+Future<Recipe> importMRBrecipeFromTmp(String recipeName) async {
+  Directory importDir = Directory(await PathProvider.pP.getImportDir());
+
+  List importFiles = importDir.listSync(recursive: true);
+
+  for (FileSystemEntity f in importFiles) {
+    if (f.path.endsWith('.xml')) {
+      String xmlData = (f as File).readAsStringSync();
+      String recipeXML = xmlData.substring(
+          xmlData.indexOf("</recipe>"), xmlData.indexOf("recipeName"));
+      recipeXML = xmlData.substring(recipeXML.lastIndexOf("<recipe>") + 8);
+      Tuple2<Recipe, String> recipeData = getRecipeFromMRB(xmlData);
+
+      Recipe finalRecipe = recipeData.item1;
+      File recipeImageFile =
+          File(importDir.path + "images/${recipeData.item2}");
+
+      if (recipeImageFile.existsSync()) {
+        await saveRecipeImage(
+            File(importDir.path + "images/${recipeData.item2}"), recipeName);
+
+        finalRecipe = finalRecipe.copyWith(
+          imagePath: await PathProvider.pP.getRecipeImagePathFull(
+              recipeName, getImageDatatype(recipeData.item2)),
+          imagePreviewPath: await PathProvider.pP.getRecipeImagePreviewPathFull(
+              recipeName, getImageDatatype(recipeData.item2)),
+        );
+      }
+
+      return finalRecipe;
+    }
+  }
+  return null;
 }
 
 /// saves the stepImage in high and low quality in the local storage under the given

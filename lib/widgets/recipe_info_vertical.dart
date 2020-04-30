@@ -41,7 +41,7 @@ class RecipeInfoVertical extends StatelessWidget {
             _showPictureFullView(recipe.imagePath, heroImageTag, context);
           },
           child: Container(
-            height: 200,
+            height: 250,
             child: Stack(children: <Widget>[
               Hero(
                 tag: GlobalSettings().animationsEnabled()
@@ -52,7 +52,7 @@ class RecipeInfoVertical extends StatelessWidget {
                   child: ClipPath(
                     clipper: MyClipper(),
                     child: Container(
-                        height: 200,
+                        height: 250,
                         child: recipe.imagePath == Constants.noRecipeImage
                             ? Image.asset(Constants.noRecipeImage,
                                 width: double.infinity, fit: BoxFit.cover)

@@ -110,13 +110,27 @@ class _RecipeFilterState extends State<RecipeFilter>
                       ].map<DropdownMenuItem<RecipeSort>>((RecipeSort value) {
                         return DropdownMenuItem<RecipeSort>(
                           value: value,
-                          child: Text(value == RecipeSort.BY_NAME
-                              ? I18n.of(context).by_name
-                              : value == RecipeSort.BY_EFFORT
-                                  ? I18n.of(context).by_effort
-                                  : value == RecipeSort.BY_INGREDIENT_COUNT
-                                      ? I18n.of(context).by_ingredientsamount
-                                      : I18n.of(context).by_last_modified),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width - 206 < 170
+                                ? MediaQuery.of(context).size.width - 206
+                                : 170,
+                            child: Text(
+                              value == RecipeSort.BY_NAME
+                                  ? I18n.of(context).by_name
+                                  : value == RecipeSort.BY_EFFORT
+                                      ? I18n.of(context).by_effort
+                                      : value == RecipeSort.BY_INGREDIENT_COUNT
+                                          ? I18n.of(context)
+                                              .by_ingredientsamount
+                                          : I18n.of(context).by_last_modified,
+                              style: TextStyle(
+                                  fontSize:
+                                      MediaQuery.of(context).size.width - 206 <
+                                              170
+                                          ? 12
+                                          : 15),
+                            ),
+                          ),
                         );
                       }).toList(),
                     ),

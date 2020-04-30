@@ -854,11 +854,11 @@ class RecipePage extends StatelessWidget {
                                                   0.15,
                                               0),
                                           child: Text(
-                                            "${recipe.name}",
+                                            recipe.name,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               color: textColor,
-                                              fontSize: 30,
+                                              fontSize: 27,
                                               fontFamily:
                                                   recipeScreenFontFamily,
                                             ),
@@ -870,9 +870,7 @@ class RecipePage extends StatelessWidget {
                                     : SizedBox(height: 30),
                                 MediaQuery.of(context).size.width > 550
                                     ? null
-                                    : Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 8.0),
+                                    : Center(
                                         child: TopSectionRecipe(
                                           preperationTime:
                                               recipe.preperationTime,
@@ -1573,12 +1571,16 @@ class IngredientsScreen extends StatelessWidget {
                                           state.servings, context);
                                     },
                                   ),
-                                  Text(
-                                    I18n.of(context).servings,
-                                    style: TextStyle(
-                                      color: textColor,
-                                      fontSize: headingSize,
-                                      fontFamily: recipeScreenFontFamily,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Text(
+                                      I18n.of(context).servings,
+                                      style: TextStyle(
+                                        color: textColor,
+                                        fontSize: headingSize,
+                                        fontFamily: recipeScreenFontFamily,
+                                      ),
                                     ),
                                   ),
                                 ],

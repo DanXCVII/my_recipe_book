@@ -154,7 +154,7 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   ShareExtend.share(snapshot.data, "file",
-                      subject: "mrb-recipes.mrb");
+                      subject: "mrb-recipes.zip");
                   myCallback(() {
                     Navigator.pop(context);
                     Navigator.pop(context);
