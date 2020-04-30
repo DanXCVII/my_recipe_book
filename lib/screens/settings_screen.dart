@@ -306,7 +306,8 @@ class Settings extends StatelessWidget {
   Future<void> _importSingleRecipe(BuildContext ctxt) async {
     // Let the user select the .zip file
     String _path = await FilePicker.getFilePath(
-        type: FileType.CUSTOM, fileExtension: 'zip');
+      type: FileType.any,
+    );
 
     if (_path == null) return;
 

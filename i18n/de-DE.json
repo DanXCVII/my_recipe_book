@@ -214,5 +214,6 @@
   "preperation_time": "Vorbereitungszeit",
   "for_word": "Für",
   "persons": "Personen",
-  "print_recipe": "Rezept drucken"
+  "print_recipe": "Rezept drucken",
+  "import_recipe_description": "Unterstüzte Formate:\n - .zip (Rezeptedatei der App)\n- .mcp"
 }

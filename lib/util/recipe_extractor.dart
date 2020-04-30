@@ -57,6 +57,8 @@ Ingredient getIngredientFromString(String ingredientInfo) {
       } else {
         name = ingredientInfo.substring(ingredientInfo.indexOf(" ") + 1);
       }
+    } else {
+      name = ingredientInfo;
     }
   } catch (e) {}
   return Ingredient(name: name, amount: amount, unit: unit);
@@ -83,7 +85,7 @@ List<Tuple2<Recipe, String>> getRecipeData(
 
   String iteratedXmlData = xmlData;
 
-  while (iteratedXmlData.contains("<Recipe>")) {
+  while (iteratedXmlData.contains("<recipe>")) {
     Tuple2<Recipe, String> recipe = getRecipeFromMRB(
       iteratedXmlData.substring(iteratedXmlData.indexOf("<recipe>") + 8,
           iteratedXmlData.indexOf("</recipe>")),
@@ -93,6 +95,19 @@ List<Tuple2<Recipe, String>> getRecipeData(
     }
   }
   return recipeData;
+}
+
+Tuple2<Recipe, String> getSpecifiedRecipeFromMRB(
+    String xmlData, String recipeName) {
+  int recipeStartIndex = 0;
+  if (xmlData.indexOf("<recipe>") < xmlData.indexOf(recipeName)) {
+    String helpString = xmlData.substring(0, xmlData.indexOf(recipeName));
+    recipeStartIndex = helpString.lastIndexOf("<recipe>");
+  }
+
+  String recipeXML = xmlData.substring(recipeStartIndex,
+      xmlData.indexOf("</recipe>", xmlData.indexOf(recipeName)));
+  return getRecipeFromMRB(recipeXML);
 }
 
 Tuple2<Recipe, String> getRecipeFromMRB(String xmlData) {
@@ -109,10 +124,12 @@ Tuple2<Recipe, String> getRecipeFromMRB(String xmlData) {
         ingredients: [ingredients],
         steps: steps,
         stepImages: List<List<String>>.generate(steps.length, (i) => []),
+        effort: 5,
         lastModified: DateTime.now().toIso8601String(),
         preperationTime: times["prepTime"],
         cookingTime: times["cookTime"],
         totalTime: times["totalTime"],
+        nutritions: getNutritionsFromMRB(xmlData),
       ),
       getImageNameFromMRB(xmlData),
     );
@@ -179,9 +196,9 @@ String getRecipeNameFromMRB(String xmlData) {
 
 List<String> getStepsFromMRB(String xmlData) {
   List<String> steps = [];
-  if (xmlData.contains("<recipeText>")) {
+  if (xmlData.contains("<recipetext>")) {
     String iteratedStepsData = xmlData.substring(
-        xmlData.indexOf("<recipeText>"), xmlData.indexOf("</recipeText>"));
+        xmlData.indexOf("<recipetext>"), xmlData.indexOf("</recipetext>"));
     while (iteratedStepsData.contains("<li>")) {
       String recipeStep = iteratedStepsData.substring(
           iteratedStepsData.indexOf("<li>") + 4,
@@ -194,15 +211,17 @@ List<String> getStepsFromMRB(String xmlData) {
     }
   }
 
-  return steps;
+  return steps..removeWhere((i) => i == "" || i == null);
 }
 
 String getImageNameFromMRB(String xmlData) {
   if (xmlData.contains("<imagepath>")) {
-    String recipeImageName = (xmlData.substring(
-            xmlData.indexOf("<imagepath>") + 11,
-            xmlData.indexOf("</imagepath>")))
-        .trim();
+    String recipeImageNamePart =
+        (xmlData.substring(0, xmlData.indexOf("</imagepath>"))).trim();
+    String recipeImageName = recipeImageNamePart.substring(
+        recipeImageNamePart.contains("/")
+            ? recipeImageNamePart.lastIndexOf("/") + 1
+            : recipeImageNamePart.indexOf("<imagepath>") + 11);
     return recipeImageName == "" ? null : recipeImageName;
   } else {
     return null;
@@ -240,13 +259,15 @@ Map<String, double> getTimesFromMRB(String xmlData) {
       )),
     );
   }
+
+  return times;
 }
 
 List<Nutrition> getNutritionsFromMRB(String xmlData) {
   List<Nutrition> nutritions = [];
   if (xmlData.contains("<nutrition>")) {
     String iteratedStepsData = xmlData.substring(
-        xmlData.indexOf("<recipeText>"), xmlData.indexOf("</recipeText>"));
+        xmlData.indexOf("<nutrition>"), xmlData.indexOf("</nutrition>"));
     while (iteratedStepsData.contains("<li>")) {
       String nutritionString = iteratedStepsData.substring(
           iteratedStepsData.indexOf("<li>") + 4,

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
 import 'package:my_recipe_book/local_storage/local_paths.dart';
 
 import '../../local_storage/hive.dart';
@@ -80,8 +81,13 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
       }
 
       yield MultipleRecipes(importRecipes, failedZips, alreadyExisting);
-    } else if (event.importZipFile.path.endsWith("mrb")) {
-      fileEndingLastImport = "mrb";
+    } else if (event.importZipFile.path.endsWith("mcb")) {
+      // if (await HiveProvider()
+      //         .getRecipeByName("Vegane Gemüsepfanne mit Reis") !=
+      //     null)
+      //   await HiveProvider().deleteRecipe("Vegane Gemüsepfanne mit Reis");
+
+      fileEndingLastImport = "mcb";
       if (event.delay != null) await Future.delayed(event.delay);
 
       yield ImportingRecipes(0.5);
@@ -155,7 +161,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
           .then((_) => recipeManagerBloc.add(RMAddRecipes(importRecipes)));
 
       imageCache.clear();
-    } else if (fileEndingLastImport == "mrb") {
+    } else if (fileEndingLastImport == "mcb") {
       yield ImportingRecipes(0.1);
 
       for (int i = 0; i < event.recipes.length; i++) {
@@ -196,6 +202,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
 
       imageCache.clear();
     }
+    await IO.clearCache();
 
     yield ImportedRecipes(importRecipes, failedRecipes, alreadyExisting);
   }

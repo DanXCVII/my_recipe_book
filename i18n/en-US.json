@@ -217,5 +217,6 @@
   "for_persons": "for \"{number}\" persons",
   "for_word": "for",
   "persons": "persons",
-  "print_recipe": "print recipe"
+  "print_recipe": "print recipe",
+  "import_recipe_description": "supported formats:\n - .zip (file of this app)\n- .mcp"
 }

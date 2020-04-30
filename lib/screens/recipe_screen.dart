@@ -1084,9 +1084,9 @@ bool _showComplexTopArea(
     double preperationTime, double cookingTime, double totalTime) {
   int validator = 0;
 
-  if (preperationTime != 0) validator++;
-  if (cookingTime != 0) validator++;
-  if (totalTime != 0) validator++;
+  if (preperationTime != 0 && preperationTime != null) validator++;
+  if (cookingTime != 0 && cookingTime != null) validator++;
+  if (totalTime != 0 && totalTime != null) validator++;
   if (preperationTime == totalTime || cookingTime == totalTime) return false;
   if (validator > 1) return true;
   return false;
@@ -1389,7 +1389,7 @@ class IngredientsScreen extends StatelessWidget {
                 Container(
                   width: 80,
                   child: Text(
-                    "${currentIngredient.amount == null ? "" : cutDouble(currentIngredient.amount)} "
+                    "${currentIngredient.amount == null ? "" : (currentIngredient.amount)} "
                     "${currentIngredient.unit == null ? "" : currentIngredient.unit}",
                     textAlign: TextAlign.end,
                     style: TextStyle(

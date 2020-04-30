@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/local_storage/io_operations.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:flutter/foundation.dart';
@@ -276,10 +277,8 @@ class _ImportDialogState extends State<ImportDialog> {
                         FlatButton(
                             child: Text(I18n.of(context).cancel),
                             onPressed: () {
-                              getTemporaryDirectory().then((dir) {
-                                if (dir.existsSync())
-                                  dir.deleteSync(recursive: true);
-                              });
+                              clearCache().then((_) {});
+
                               widget.closeAfterFinished
                                   ? SystemChannels.platform
                                       .invokeMethod('SystemNavigator.pop')

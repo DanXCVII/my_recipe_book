@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:my_recipe_book/models/tuple.dart';
+import 'package:path_provider/path_provider.dart';
 
 import './local_paths.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -311,10 +312,9 @@ Future<Recipe> importMRBrecipeFromTmp(String recipeName) async {
   for (FileSystemEntity f in importFiles) {
     if (f.path.endsWith('.xml')) {
       String xmlData = (f as File).readAsStringSync();
-      String recipeXML = xmlData.substring(
-          xmlData.indexOf("</recipe>"), xmlData.indexOf("recipeName"));
-      recipeXML = xmlData.substring(recipeXML.lastIndexOf("<recipe>") + 8);
-      Tuple2<Recipe, String> recipeData = getRecipeFromMRB(xmlData);
+
+      Tuple2<Recipe, String> recipeData =
+          getSpecifiedRecipeFromMRB(xmlData, recipeName);
 
       Recipe finalRecipe = recipeData.item1;
       File recipeImageFile =
@@ -420,6 +420,12 @@ Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
 
 Future<void> deleteImportFolder() async {
   await Directory(await PathProvider.pP.getImportDir()).delete();
+}
+
+Future<void> clearCache() async {
+  for (FileSystemEntity f in (await getTemporaryDirectory()).listSync()) {
+    await f.delete(recursive: true);
+  }
 }
 
 /// extracts the given .zip to the tmp directory and if the recipe data is valid,

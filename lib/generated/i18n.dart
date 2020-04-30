@@ -470,6 +470,8 @@ class I18n implements WidgetsLocalizations {
   String get persons => "persons";
   /// "print recipe"
   String get print_recipe => "print recipe";
+  /// "supported formats:\n - .zip (file of this app)\n- .mcp"
+  String get import_recipe_description => "supported formats:\n - .zip (file of this app)\n- .mcp";
 }
 
 class _I18n_en_US extends I18n {
@@ -1130,6 +1132,9 @@ class _I18n_de_DE extends I18n {
   /// "Rezept drucken"
   @override
   String get print_recipe => "Rezept drucken";
+  /// "Unterstüzte Formate:\n - .zip (Rezeptedatei der App)\n- .mcp"
+  @override
+  String get import_recipe_description => "Unterstüzte Formate:\n - .zip (Rezeptedatei der App)\n- .mcp";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;
