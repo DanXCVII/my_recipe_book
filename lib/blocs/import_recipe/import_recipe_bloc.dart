@@ -47,40 +47,55 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
       List<String> failedZips = [];
       List<Recipe> alreadyExisting = [];
 
-      Map<String, Recipe> recipes =
-          await IO.importRecipesToTmp(event.importZipFile);
-      yield ImportingRecipes(0.1);
+      bool failedImporting = false;
+      Map<String, Recipe> recipes;
+      try {
+        recipes = await IO.importRecipesToTmp(event.importZipFile);
+        if (recipes == null) failedImporting = true;
+      } catch (e) {
+        failedImporting = true;
+      }
 
-      List<String> recipeKeys = recipes.keys.toList();
-      for (int i = 0; i < recipeKeys.length; i++) {
-        // await Future.delayed(Duration(seconds: 1));
-        if (recipes[recipeKeys[i]] == null) {
-          failedZips.add(recipeKeys[i].toString());
-        } else {
-          // if a recipe with the same name isn't already saved to hive
-          if (await HiveProvider()
-                  .getRecipeByName(recipes[recipeKeys[i]].name) !=
-              null) {
-            // if the recipe is already saved in hive, add it to the alreadyExisting list
-            alreadyExisting.add(await HiveProvider()
-                .getRecipeByName(recipes[recipeKeys[i]].name));
+      if (!failedImporting) {
+        yield ImportingRecipes(0.1);
+
+        List<String> recipeKeys = recipes.keys.toList();
+        for (int i = 0; i < recipeKeys.length; i++) {
+          // await Future.delayed(Duration(seconds: 1));
+          if (recipes[recipeKeys[i]] == null) {
+            failedZips.add(recipeKeys[i].toString());
           } else {
-            importRecipes.add(recipes[recipeKeys[i]]);
-          }
-          if (recipeKeys.length != 1) {
-            yield ImportingRecipes(double.parse(
-                (0.1 + ((i / recipeKeys.length) * 0.9)).toStringAsFixed(1)));
-          } else {
-            if (importRecipes.isNotEmpty) {
-              yield* _mapFinishImportRecipes(
-                  FinishImportRecipes([recipes[recipeKeys[i]]]));
-              return;
+            // if a recipe with the same name isn't already saved to hive
+            if (await HiveProvider()
+                    .getRecipeByName(recipes[recipeKeys[i]].name) !=
+                null) {
+              // if the recipe is already saved in hive, add it to the alreadyExisting list
+              alreadyExisting.add(await HiveProvider()
+                  .getRecipeByName(recipes[recipeKeys[i]].name));
+            } else {
+              importRecipes.add(recipes[recipeKeys[i]]);
+            }
+            if (recipeKeys.length != 1) {
+              yield ImportingRecipes(double.parse(
+                  (0.1 + ((i / recipeKeys.length) * 0.9)).toStringAsFixed(1)));
+            } else {
+              if (importRecipes.isNotEmpty) {
+                yield* _mapFinishImportRecipes(
+                    FinishImportRecipes([recipes[recipeKeys[i]]]));
+                return;
+              }
             }
           }
         }
-      }
 
-      yield MultipleRecipes(importRecipes, failedZips, alreadyExisting);
+        yield MultipleRecipes(importRecipes, failedZips, alreadyExisting);
+      } else {
+        await IO.clearCache();
+        yield InvalidFile(
+          event.importZipFile.path
+              .substring(event.importZipFile.path.lastIndexOf("/") + 1),
+        );
+      }
     } else if (event.importZipFile.path.endsWith("mcb")) {
       // if (await HiveProvider()
       //         .getRecipeByName("Vegane Gemüsepfanne mit Reis") !=
@@ -92,22 +107,39 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
 
       yield ImportingRecipes(0.5);
 
-      List<String> recipeNames =
-          await IO.extractMRBzipGetNames(event.importZipFile);
-
-      List<Recipe> importRecipes = [];
-      List<Recipe> alreadyExisting = [];
-
-      for (String recipeName in recipeNames) {
-        Recipe hiveRecipe = await HiveProvider().getRecipeByName(recipeName);
-        if (hiveRecipe != null) {
-          alreadyExisting.add(hiveRecipe);
-        } else {
-          importRecipes.add(Recipe(name: recipeName));
-        }
+      bool failedImporting = false;
+      List<String> recipeNames;
+      try {
+        recipeNames = await IO.extractMRBzipGetNames(event.importZipFile);
+        if (recipeNames == null) failedImporting = true;
+      } catch (e) {
+        failedImporting = true;
       }
+      if (!failedImporting) {
+        List<Recipe> importRecipes = [];
+        List<Recipe> alreadyExisting = [];
 
-      yield MultipleRecipes(importRecipes, [], alreadyExisting);
+        for (String recipeName in recipeNames) {
+          Recipe hiveRecipe = await HiveProvider().getRecipeByName(recipeName);
+          if (hiveRecipe != null) {
+            alreadyExisting.add(hiveRecipe);
+          } else {
+            importRecipes.add(Recipe(name: recipeName));
+          }
+        }
+
+        yield MultipleRecipes(importRecipes, [], alreadyExisting);
+      } else {
+        await IO.clearCache();
+        yield InvalidFile(
+          event.importZipFile.path
+              .substring(event.importZipFile.path.lastIndexOf("/") + 1),
+        );
+      }
+    } else {
+      await IO.clearCache();
+      yield InvalidDataType(event.importZipFile.path
+          .substring(event.importZipFile.path.lastIndexOf(".")));
     }
   }
 

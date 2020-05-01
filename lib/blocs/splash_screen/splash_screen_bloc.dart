@@ -56,6 +56,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
 
     if (!prefs.containsKey('showIntro')) {
       showIntro = true;
+      GlobalSettings().thisIsFirstStart(true);
       prefs.setBool('showIntro', false);
       prefs.setBool('showStepsIntro', true);
       prefs.setBool(Constants.enableAnimations, true);

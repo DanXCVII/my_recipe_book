@@ -472,9 +472,11 @@ class MyApp extends StatelessWidget {
                 builder: (context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<WebsiteImportBloc>(
-                      create: (_) => WebsiteImportBloc(
-                          BlocProvider.of<RecipeManagerBloc>(context)),
-                    ),
+                        create: (_) => WebsiteImportBloc(
+                            BlocProvider.of<RecipeManagerBloc>(context))
+                          ..add(args.initialWebsite == null
+                              ? null
+                              : ImportRecipe(args.initialWebsite))),
                     BlocProvider<ShoppingCartBloc>.value(
                       value: args.shoppingCartBloc,
                     )

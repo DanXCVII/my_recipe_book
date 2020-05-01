@@ -16,8 +16,12 @@ import 'add_recipe/general_info_screen/general_info_screen.dart';
 
 class ImportFromWebsiteArguments {
   final ShoppingCartBloc shoppingCartBloc;
+  final String initialWebsite;
 
-  ImportFromWebsiteArguments(this.shoppingCartBloc);
+  ImportFromWebsiteArguments(
+    this.shoppingCartBloc, {
+    this.initialWebsite,
+  });
 }
 
 class ImportFromWebsiteScreen extends StatelessWidget {

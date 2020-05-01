@@ -1,7 +1,7 @@
 {
   "choose_a_theme": "Choose a theme",
   "swype_your_recipes": "Swype your recipes",
-  "if_you_cant_decide_random_recipe_explorer": "If you can’t decide what recipe to cook, use random recipe explorer ;-)",
+  "if_you_cant_decide_random_recipe_explorer": "If you can’t decide what recipe to cook, use random recipe explorer.",
   "export_as_text_or_zip": "EXPORT as text or zip",
   "multiple_devices_use_export_as_zip_etc": "export as zip for using them on multiple devices, OR as text OR as pdf document",
   "add_to_shoppingcart": "Add to shoppingcart",
@@ -218,5 +218,11 @@
   "for_word": "for",
   "persons": "persons",
   "print_recipe": "print recipe",
-  "import_recipe_description": "supported formats:\n - .zip (file of this app)\n- .mcp"
+  "import_recipe_description": "supported formats:\n- .zip (file of this app)\n- .mcp",
+  "invalid_file": "invalid file",
+  "file_not_supported": "the file is not supported {fileName}.",
+  "invalid_datatype": "invalid datatype",
+  "datatype_not_supported": "the datatype of the selected file \"{datatype}\" is not supported\nsupported formats: \".zip\", \".mcb\"",
+  "first_start_recipes": "Start-Rezepte",
+  "first_start_recipes_desc": "A few example recipes in german are already in this app.\nOf course you can delete them."
 }

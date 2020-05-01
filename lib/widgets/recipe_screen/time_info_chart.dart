@@ -26,6 +26,7 @@ class TimeInfoChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double totalTimeChart = 0;
+
     if (totalTime >= preperationTime + cookingTime)
       totalTimeChart = totalTime;
     else
@@ -43,7 +44,7 @@ class TimeInfoChart extends StatelessWidget {
           ),
         ),
         Text(
-          getTimeHoursMinutes(totalTime),
+          getTimeHoursMinutes(totalTimeChart),
           style: TextStyle(
             color: textColor,
             fontFamily: fontFamily,
@@ -116,10 +117,12 @@ class TimeInfoChart extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      height:
-                          horizontal ? 20 : preperationTime / totalTime * 100,
-                      width:
-                          horizontal ? preperationTime / totalTime * 100 : null,
+                      height: horizontal
+                          ? 20
+                          : preperationTime / totalTimeChart * 100,
+                      width: horizontal
+                          ? preperationTime / totalTimeChart * 100
+                          : null,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(horizontal ? 0 : 30),

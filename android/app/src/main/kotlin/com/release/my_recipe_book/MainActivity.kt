@@ -41,6 +41,12 @@ class MainActivity : FlutterActivity() {
         val action = processedIntent?.action
         val type = processedIntent?.type
 
+        if (Intent.ACTION_SEND == action && type != null) {
+            if ("text/plain" == type) {
+                sharedText = intent.getStringExtra("getSharedText");
+            }
+        }
+
         if (Intent.ACTION_VIEW == action && type != null) {
             if ("application/zip" == type) {
                 val intentk = processedIntent;

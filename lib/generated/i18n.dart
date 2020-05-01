@@ -36,8 +36,8 @@ class I18n implements WidgetsLocalizations {
   String get choose_a_theme => "Choose a theme";
   /// "Swype your recipes"
   String get swype_your_recipes => "Swype your recipes";
-  /// "If you can’t decide what recipe to cook, use random recipe explorer ;-)"
-  String get if_you_cant_decide_random_recipe_explorer => "If you can’t decide what recipe to cook, use random recipe explorer ;-)";
+  /// "If you can’t decide what recipe to cook, use random recipe explorer."
+  String get if_you_cant_decide_random_recipe_explorer => "If you can’t decide what recipe to cook, use random recipe explorer.";
   /// "EXPORT as text or zip"
   String get export_as_text_or_zip => "EXPORT as text or zip";
   /// "export as zip for using them on multiple devices, OR as text OR as pdf document"
@@ -470,8 +470,20 @@ class I18n implements WidgetsLocalizations {
   String get persons => "persons";
   /// "print recipe"
   String get print_recipe => "print recipe";
-  /// "supported formats:\n - .zip (file of this app)\n- .mcp"
-  String get import_recipe_description => "supported formats:\n - .zip (file of this app)\n- .mcp";
+  /// "supported formats:\n- .zip (file of this app)\n- .mcp"
+  String get import_recipe_description => "supported formats:\n- .zip (file of this app)\n- .mcp";
+  /// "invalid file"
+  String get invalid_file => "invalid file";
+  /// "the file is not supported ${fileName}."
+  String file_not_supported(String fileName) => "the file is not supported ${fileName}.";
+  /// "invalid datatype"
+  String get invalid_datatype => "invalid datatype";
+  /// "the datatype of the selected file \"${datatype}\" is not supported\nsupported formats: \".zip\", \".mcb\""
+  String datatype_not_supported(String datatype) => "the datatype of the selected file \"${datatype}\" is not supported\nsupported formats: \".zip\", \".mcb\"";
+  /// "Start-Rezepte"
+  String get first_start_recipes => "Start-Rezepte";
+  /// "A few example recipes in german are already in this app.\nOf course you can delete them."
+  String get first_start_recipes_desc => "A few example recipes in german are already in this app.\nOf course you can delete them.";
 }
 
 class _I18n_en_US extends I18n {
@@ -490,9 +502,9 @@ class _I18n_de_DE extends I18n {
   /// "Wische durch deine Rezepte"
   @override
   String get swype_your_recipes => "Wische durch deine Rezepte";
-  /// "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen"
+  /// "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen."
   @override
-  String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen";
+  String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen.";
   /// "Teile als Text oder Datei"
   @override
   String get export_as_text_or_zip => "Teile als Text oder Datei";
@@ -1132,9 +1144,27 @@ class _I18n_de_DE extends I18n {
   /// "Rezept drucken"
   @override
   String get print_recipe => "Rezept drucken";
-  /// "Unterstüzte Formate:\n - .zip (Rezeptedatei der App)\n- .mcp"
+  /// "Unterstüzte Formate:\n- .zip (Rezeptedatei der App)\n- .mcp"
   @override
-  String get import_recipe_description => "Unterstüzte Formate:\n - .zip (Rezeptedatei der App)\n- .mcp";
+  String get import_recipe_description => "Unterstüzte Formate:\n- .zip (Rezeptedatei der App)\n- .mcp";
+  /// "Ungültige Datei"
+  @override
+  String get invalid_file => "Ungültige Datei";
+  /// "Die ausgewählte Datei wird nicht unterstützt."
+  @override
+  String file_not_supported(String fileName) => "Die ausgewählte Datei wird nicht unterstützt.";
+  /// "Ungültiger Datentyp"
+  @override
+  String get invalid_datatype => "Ungültiger Datentyp";
+  /// "Der ausgewählte Datentyp \"${datatype}\" wird nicht unterstützt.\nUnterstützte Formate: \".zip\", \".mcb\""
+  @override
+  String datatype_not_supported(String datatype) => "Der ausgewählte Datentyp \"${datatype}\" wird nicht unterstützt.\nUnterstützte Formate: \".zip\", \".mcb\"";
+  /// "Start-Rezepte"
+  @override
+  String get first_start_recipes => "Start-Rezepte";
+  /// "Es sind ein paar Beispielrezepte eingetragen.\nDiese können natürlich auch gelöscht werden."
+  @override
+  String get first_start_recipes_desc => "Es sind ein paar Beispielrezepte eingetragen.\nDiese können natürlich auch gelöscht werden.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

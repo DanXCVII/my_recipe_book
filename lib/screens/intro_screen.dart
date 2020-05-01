@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
 
 import '../generated/i18n.dart';
 
@@ -69,7 +70,20 @@ class IntroScreen extends StatelessWidget {
           heightImage: MediaQuery.of(context).size.height / 3,
           pathImage: "images/bag.png",
         ),
-      ],
+        GlobalSettings().isFirstStart()
+            ? Slide(
+                title: I18n.of(context).first_start_recipes,
+                colorBegin: Color(0xff009EF8),
+                colorEnd: Color(0xff0054B6),
+                styleTitle: titleStyle,
+                description: I18n.of(context).first_start_recipes_desc,
+                styleDescription: descStyle,
+                widthImage: MediaQuery.of(context).size.width / 2,
+                heightImage: MediaQuery.of(context).size.height / 3,
+                pathImage: "images/finishFlag.png",
+              )
+            : null,
+      ]..removeWhere((item) => item == null),
       onDonePress: () {
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
         Navigator.pop(context);

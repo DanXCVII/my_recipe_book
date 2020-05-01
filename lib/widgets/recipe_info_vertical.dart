@@ -108,9 +108,9 @@ class RecipeInfoVertical extends StatelessWidget {
                       SizedBox(height: 12),
                       TimeInfoChart(
                         textColor,
-                        recipe.preperationTime,
-                        recipe.cookingTime,
-                        recipe.totalTime,
+                        recipe.preperationTime ?? 0,
+                        recipe.cookingTime ?? 0,
+                        recipe.totalTime ?? 0,
                         recipeScreenFontFamily,
                         horizontal: false,
                       ),

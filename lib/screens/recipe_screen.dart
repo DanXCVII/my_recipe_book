@@ -146,12 +146,12 @@ class _RecipeScreenState extends State<RecipeScreen>
                   parallaxOffset: 0.5,
                   minHeight: 50,
                   maxHeight:
-                      MediaQuery.of(context).size.height - kToolbarHeight - 30 >
+                      MediaQuery.of(context).size.height - kToolbarHeight - 27 >
                               450
-                          ? 480
+                          ? 483
                           : MediaQuery.of(context).size.height -
                               kToolbarHeight -
-                              30,
+                              27,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(25),
                     topRight: Radius.circular(25),
@@ -1037,9 +1037,9 @@ class TopSectionRecipe extends StatelessWidget {
                           flex: 5,
                           child: TimeInfoChart(
                             textColor,
-                            preperationTime,
-                            cookingTime,
-                            totalTime,
+                            preperationTime ?? 0,
+                            cookingTime ?? 0,
+                            totalTime ?? 0,
                             recipeScreenFontFamily,
                           ),
                         ),

@@ -232,6 +232,10 @@ class HiveProvider {
       }
     }
 
+    for (Nutrition n in newRecipe.nutritions) {
+      await addNutrition(n.name);
+    }
+
     // add not yet added categories to boxes
     for (String category in newRecipe.categories) {
       if (!boxKeyString.containsKey(getHiveKey(category))) {

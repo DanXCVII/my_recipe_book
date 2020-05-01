@@ -1,7 +1,7 @@
 {
   "choose_a_theme": "Unterstützte Themes",
   "swype_your_recipes": "Wische durch deine Rezepte",
-  "if_you_cant_decide_random_recipe_explorer": "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen",
+  "if_you_cant_decide_random_recipe_explorer": "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen.",
   "export_as_text_or_zip": "Teile als Text oder Datei",
   "multiple_devices_use_export_as_zip_etc": "Teile Rezepte entweder als:\n- Datei, damit du sie auf anderen Geräten in der App hinzufügen kannst\n- in Textform oder\n- als PDF Dokument",
   "add_to_shoppingcart": "Dem Einkaufswagen hinzufügen",
@@ -215,5 +215,11 @@
   "for_word": "Für",
   "persons": "Personen",
   "print_recipe": "Rezept drucken",
-  "import_recipe_description": "Unterstüzte Formate:\n - .zip (Rezeptedatei der App)\n- .mcp"
+  "import_recipe_description": "Unterstüzte Formate:\n- .zip (Rezeptedatei der App)\n- .mcp",
+  "invalid_file": "Ungültige Datei",
+  "file_not_supported": "Die ausgewählte Datei wird nicht unterstützt.",
+  "invalid_datatype": "Ungültiger Datentyp",
+  "datatype_not_supported": "Der ausgewählte Datentyp \"{datatype}\" wird nicht unterstützt.\nUnterstützte Formate: \".zip\", \".mcb\"",
+  "first_start_recipes": "Start-Rezepte",
+  "first_start_recipes_desc": "Es sind ein paar Beispielrezepte eingetragen.\nDiese können natürlich auch gelöscht werden."
 }
