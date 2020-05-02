@@ -36,12 +36,12 @@ class I18n implements WidgetsLocalizations {
   String get choose_a_theme => "Choose a theme";
   /// "Swype your recipes"
   String get swype_your_recipes => "Swype your recipes";
-  /// "If you can’t decide what recipe to cook, use random recipe explorer ;-)"
-  String get if_you_cant_decide_random_recipe_explorer => "If you can’t decide what recipe to cook, use random recipe explorer ;-)";
+  /// "If you can’t decide what recipe to cook, use random recipe explorer."
+  String get if_you_cant_decide_random_recipe_explorer => "If you can’t decide what recipe to cook, use random recipe explorer.";
   /// "EXPORT as text or zip"
   String get export_as_text_or_zip => "EXPORT as text or zip";
-  /// "export as zip for using them on multiple devices, OR as text for people who sadly don’t have the app installed."
-  String get multiple_devices_use_export_as_zip_etc => "export as zip for using them on multiple devices, OR as text for people who sadly don’t have the app installed.";
+  /// "export as zip for using them on multiple devices, OR as text OR as pdf document"
+  String get multiple_devices_use_export_as_zip_etc => "export as zip for using them on multiple devices, OR as text OR as pdf document";
   /// "Add to shoppingcart"
   String get add_to_shoppingcart => "Add to shoppingcart";
   /// "you can add the ingredients of your recipe to your shoppingcart for more relaxed shopping."
@@ -68,8 +68,8 @@ class I18n implements WidgetsLocalizations {
   String get remove_step => "remove step";
   /// "share/save as file"
   String get export_zip => "share/save as file";
-  /// "share as pdf"
-  String get export_pdf => "share as pdf";
+  /// "share as PDF"
+  String get export_pdf => "share as PDF";
   /// "share in textform"
   String get export_text => "share in textform";
   /// "edit"
@@ -272,6 +272,8 @@ class I18n implements WidgetsLocalizations {
   String get category_already_exists => "category already exists";
   /// "category name"
   String get categoryname => "category name";
+  /// "category:"
+  String get category => "category:";
   /// "professional search"
   String get professional_search => "professional search";
   /// "enter some ingredients"
@@ -374,8 +376,6 @@ class I18n implements WidgetsLocalizations {
   String get pull_down_to_refresh => "pull down to refresh page and show imported recipes";
   /// "remove ads\nupgrade in settings"
   String get remove_ads_upgrade_in_settings => "remove ads\nupgrade in settings";
-  /// "if recipes don't show up in overview, pull down to refresh the page."
-  String get recipes_not_in_overview => "if recipes don't show up in overview, pull down to refresh the page.";
   /// "no internet connection"
   String get no_internet_connection => "no internet connection";
   /// "could not connect to the internet and therefore not load the video."
@@ -384,10 +384,12 @@ class I18n implements WidgetsLocalizations {
   String get failed_loading_ad => "failed loading ad";
   /// "solutions can be: better internet connection, tap \"watch\" again or restarting the app"
   String get failed_loading_ad_desc => "solutions can be: better internet connection, tap \"watch\" again or restarting the app";
+  /// "if recipes don't show up in overview, pull down to refresh the page or go to another tab and back."
+  String get recipes_not_in_overview => "if recipes don't show up in overview, pull down to refresh the page or go to another tab and back.";
   /// "recipes not showing up?"
   String get recipes_not_showing_up => "recipes not showing up?";
-  /// "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page."
-  String get recipes_not_showing_up_desc => "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page.";
+  /// "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page or go to another tab and back."
+  String get recipes_not_showing_up_desc => "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page or go to another tab and back.";
   /// "backup/share your recipes"
   String get share_recipes_settings => "backup/share your recipes";
   /// "on this screen, you can:\n- select the recipes you want to share to a friend as a single file\n- select the recipes you want to save to import on another device or just to make sure, they don't get lost."
@@ -436,12 +438,16 @@ class I18n implements WidgetsLocalizations {
   String recipe_already_exists(String name) => "recipe with name \"${name}\" already exists";
   /// "failed to connect to given url"
   String get failed_to_connect_to_url => "failed to connect to given url";
-  /// "invalid url:\ncheck the supported websites in the info section below"
-  String get invalid_url => "invalid url:\ncheck the supported websites in the info section below";
+  /// "invalid url:\ncheck the info about supported websites in the infopanel below"
+  String get invalid_url => "invalid url:\ncheck the info about supported websites in the infopanel below";
   /// "enter URL of website with recipe:"
   String get enter_url => "enter URL of website with recipe:";
-  /// "the website, of which you want to import a recipe from, must be under the supported websites:"
-  String get website_must_be_under_the_supported_websites => "the website, of which you want to import a recipe from, must be under the supported websites:";
+  /// "Some of the supported websites:"
+  String get supported_websites => "Some of the supported websites:";
+  /// "Import failed. Page seems not yet supported"
+  String get failed_import_not_supported => "Import failed. Page seems not yet supported";
+  /// "All websites are supported which contain a standardized format. Thet's why only a part of the supported websites are listed here. In practise most websites shoulb be supported."
+  String get standardized_format => "All websites are supported which contain a standardized format. Thet's why only a part of the supported websites are listed here. In practise most websites shoulb be supported.";
   /// "recipe-url"
   String get recipe_url => "recipe-url";
   /// "source/URL"
@@ -494,6 +500,20 @@ class I18n implements WidgetsLocalizations {
   String get persons => "persons";
   /// "print recipe"
   String get print_recipe => "print recipe";
+  /// "supported formats:\n- .zip (file of this app)\n- .mcp"
+  String get import_recipe_description => "supported formats:\n- .zip (file of this app)\n- .mcp";
+  /// "invalid file"
+  String get invalid_file => "invalid file";
+  /// "the file is not supported ${fileName}."
+  String file_not_supported(String fileName) => "the file is not supported ${fileName}.";
+  /// "invalid datatype"
+  String get invalid_datatype => "invalid datatype";
+  /// "the datatype of the selected file \"${datatype}\" is not supported\nsupported formats: \".zip\", \".mcb\""
+  String datatype_not_supported(String datatype) => "the datatype of the selected file \"${datatype}\" is not supported\nsupported formats: \".zip\", \".mcb\"";
+  /// "Start-Rezepte"
+  String get first_start_recipes => "Start-Rezepte";
+  /// "A few example recipes in german are already in this app.\nOf course you can delete them."
+  String get first_start_recipes_desc => "A few example recipes in german are already in this app.\nOf course you can delete them.";
 }
 
 class _I18n_en_US extends I18n {
@@ -512,15 +532,15 @@ class _I18n_de_DE extends I18n {
   /// "Wische durch deine Rezepte"
   @override
   String get swype_your_recipes => "Wische durch deine Rezepte";
-  /// "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen"
+  /// "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen."
   @override
-  String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen";
+  String get if_you_cant_decide_random_recipe_explorer => "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen.";
   /// "Teile als Text oder Datei"
   @override
   String get export_as_text_or_zip => "Teile als Text oder Datei";
-  /// "Teile Rezepte entweder als:\n- Datei, damit sie deine Freunde in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen"
+  /// "Teile Rezepte entweder als:\n- Datei, damit du sie auf anderen Geräten in der App hinzufügen kannst\n- in Textform oder\n- als PDF Dokument"
   @override
-  String get multiple_devices_use_export_as_zip_etc => "Teile Rezepte entweder als:\n- Datei, damit sie deine Freunde in der App hinzufügen können oder\n- in Textform, wenn sie die App nicht besitzen";
+  String get multiple_devices_use_export_as_zip_etc => "Teile Rezepte entweder als:\n- Datei, damit du sie auf anderen Geräten in der App hinzufügen kannst\n- in Textform oder\n- als PDF Dokument";
   /// "Dem Einkaufswagen hinzufügen"
   @override
   String get add_to_shoppingcart => "Dem Einkaufswagen hinzufügen";
@@ -560,9 +580,9 @@ class _I18n_de_DE extends I18n {
   /// "als Datei teilen/sichern"
   @override
   String get export_zip => "als Datei teilen/sichern";
-  /// "als pdf teilen"
+  /// "als PDF teilen"
   @override
-  String get export_pdf => "als pdf teilen";
+  String get export_pdf => "als PDF teilen";
   /// "in Textform teilen"
   @override
   String get export_text => "in Textform teilen";
@@ -866,6 +886,9 @@ class _I18n_de_DE extends I18n {
   /// "Kategoriename"
   @override
   String get categoryname => "Kategoriename";
+  /// "Kategorie"
+  @override
+  String get category => "Kategorie";
   /// "Erweiterte-Suche"
   @override
   String get professional_search => "Erweiterte-Suche";
@@ -1019,9 +1042,6 @@ class _I18n_de_DE extends I18n {
   /// "Werbung entfernen\nin den Einstellungen"
   @override
   String get remove_ads_upgrade_in_settings => "Werbung entfernen\nin den Einstellungen";
-  /// "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle auf dieser nach unten um zu aktualisieren."
-  @override
-  String get recipes_not_in_overview => "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle auf dieser nach unten um zu aktualisieren.";
   /// "keine Internetverbindung"
   @override
   String get no_internet_connection => "keine Internetverbindung";
@@ -1034,12 +1054,15 @@ class _I18n_de_DE extends I18n {
   /// "Mögliche Lösungen: Bessere Internetverbindung, erneut versuchen zu laden oder ein Neustart der App."
   @override
   String get failed_loading_ad_desc => "Mögliche Lösungen: Bessere Internetverbindung, erneut versuchen zu laden oder ein Neustart der App.";
+  /// "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle auf dieser nach unten um zu aktualisieren oder wechsle die Ansichten."
+  @override
+  String get recipes_not_in_overview => "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle auf dieser nach unten um zu aktualisieren oder wechsle die Ansichten.";
   /// "Fehlen Rezepte?"
   @override
   String get recipes_not_showing_up => "Fehlen Rezepte?";
-  /// "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren. Alternativ kann die App neugestartet werden."
+  /// "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren oder die Ansicht wechseln. Alternativ kann die App neugestartet werden."
   @override
-  String get recipes_not_showing_up_desc => "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren. Alternativ kann die App neugestartet werden.";
+  String get recipes_not_showing_up_desc => "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren oder die Ansicht wechseln. Alternativ kann die App neugestartet werden.";
   /// "teile/sichere deine Rezepte"
   @override
   String get share_recipes_settings => "teile/sichere deine Rezepte";
@@ -1112,15 +1135,21 @@ class _I18n_de_DE extends I18n {
   /// "Verbindung mit URL fehlgeschlagen"
   @override
   String get failed_to_connect_to_url => "Verbindung mit URL fehlgeschlagen";
-  /// "ungültige URL:\nChecke die unterstützten Webseiten im Infobereich unten"
+  /// "ungültige URL:\nChecke die Info über unterstützte Webseiten im Infopanel unten"
   @override
-  String get invalid_url => "ungültige URL:\nChecke die unterstützten Webseiten im Infobereich unten";
+  String get invalid_url => "ungültige URL:\nChecke die Info über unterstützte Webseiten im Infopanel unten";
   /// "URL zum Rezept:"
   @override
   String get enter_url => "URL zum Rezept:";
-  /// "Liste der unterstützten Webseiten:"
+  /// "Teil der unterstützten Webseiten:"
   @override
-  String get website_must_be_under_the_supported_websites => "Liste der unterstützten Webseiten:";
+  String get supported_websites => "Teil der unterstützten Webseiten:";
+  /// "Import fehlgeschlagen. Webseite scheinbar noch nicht unterstützt."
+  @override
+  String get failed_import_not_supported => "Import fehlgeschlagen. Webseite scheinbar noch nicht unterstützt.";
+  /// "Es werden alle Webseiten unterstützt, die ein standardisiertes Format enthalten. Deshalb ist hier nur ein Teil der unterstützten Websites aufgeführt. In der Praxis sollten die meisten Websites unterstützt werden."
+  @override
+  String get standardized_format => "Es werden alle Webseiten unterstützt, die ein standardisiertes Format enthalten. Deshalb ist hier nur ein Teil der unterstützten Websites aufgeführt. In der Praxis sollten die meisten Websites unterstützt werden.";
   /// "Rezept-URL"
   @override
   String get recipe_url => "Rezept-URL";
@@ -1196,6 +1225,27 @@ class _I18n_de_DE extends I18n {
   /// "Rezept drucken"
   @override
   String get print_recipe => "Rezept drucken";
+  /// "Unterstüzte Formate:\n- .zip (Rezeptedatei der App)\n- .mcp"
+  @override
+  String get import_recipe_description => "Unterstüzte Formate:\n- .zip (Rezeptedatei der App)\n- .mcp";
+  /// "Ungültige Datei"
+  @override
+  String get invalid_file => "Ungültige Datei";
+  /// "Die ausgewählte Datei wird nicht unterstützt."
+  @override
+  String file_not_supported(String fileName) => "Die ausgewählte Datei wird nicht unterstützt.";
+  /// "Ungültiger Datentyp"
+  @override
+  String get invalid_datatype => "Ungültiger Datentyp";
+  /// "Der ausgewählte Datentyp \"${datatype}\" wird nicht unterstützt.\nUnterstützte Formate: \".zip\", \".mcb\""
+  @override
+  String datatype_not_supported(String datatype) => "Der ausgewählte Datentyp \"${datatype}\" wird nicht unterstützt.\nUnterstützte Formate: \".zip\", \".mcb\"";
+  /// "Start-Rezepte"
+  @override
+  String get first_start_recipes => "Start-Rezepte";
+  /// "Es sind ein paar Beispielrezepte eingetragen.\nDiese können natürlich auch gelöscht werden."
+  @override
+  String get first_start_recipes_desc => "Es sind ein paar Beispielrezepte eingetragen.\nDiese können natürlich auch gelöscht werden.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

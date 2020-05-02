@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
-import '../../helper.dart';
+import '../../util/helper.dart';
 
 class TimeInfo extends StatelessWidget {
   final double preperationTime;

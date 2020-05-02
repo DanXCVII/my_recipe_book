@@ -5,7 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_recipe_book/local_storage/io_operations.dart';
+import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,10 +50,8 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     recipeCategoryOverview = _initRecipeOverviewScreen(prefs);
     _initTheme(prefs, event.context);
     await _initAds();
-    Directory tmpDir = await getTemporaryDirectory();
-    if (await tmpDir.exists()) {
-      await tmpDir.delete(recursive: true);
-    }
+
+    await IO.clearCache();
 
     // delete cache
     // await getTemporaryDirectory()
@@ -61,6 +59,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
 
     if (!prefs.containsKey('showIntro')) {
       showIntro = true;
+      GlobalSettings().thisIsFirstStart(true);
       prefs.setBool('showIntro', false);
       prefs.setBool('showStepsIntro', true);
       prefs.setBool(Constants.enableAnimations, true);
@@ -149,10 +148,10 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
                 buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
 
     Map<String, Recipe> importRecipeData =
-        await importRecipesToTmp(recipesFile);
+        await IO.importRecipesToTmp(recipesFile);
     for (var key in importRecipeData.keys) {
       if (importRecipeData[key] != null) {
-        await importRecipeFromTmp(importRecipeData[key]);
+        await IO.importRecipeFromTmp(importRecipeData[key]);
         await HiveProvider().saveRecipe(importRecipeData[key]);
       }
     }

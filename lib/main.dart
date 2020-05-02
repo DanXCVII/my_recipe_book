@@ -194,6 +194,7 @@ class MyApp extends StatelessWidget {
               Ads.showBottomBannerAd();
 
               return MaterialPageRoute(
+                settings: RouteSettings(name: "recipe-screen"),
                 builder: (context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<RecipeScreenBloc>(
@@ -218,7 +219,7 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
-                  child: _getAdPage(
+                  child: Ads().getAdPage(
                       RecipeScreen(
                         heroImageTag: args.heroImageTag,
                         initialScrollOffset: args.initialScrollOffset,
@@ -259,7 +260,7 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
-                  child: _getAdPage(
+                  child: Ads().getAdPage(
                       GeneralInfoScreen(
                         modifiedRecipe: args.modifiedRecipe,
                         editingRecipeName: args.editingRecipeName,
@@ -281,7 +282,7 @@ class MyApp extends StatelessWidget {
                       BlocProvider<ShoppingCartBloc>.value(
                           value: args.shoppingCartBloc)
                     ],
-                    child: _getAdPage(
+                    child: Ads().getAdPage(
                         IngredientsAddScreen(
                           modifiedRecipe: args.modifiedRecipe,
                           editingRecipeName: args.editingRecipeName,
@@ -335,7 +336,7 @@ class MyApp extends StatelessWidget {
                               ),
                           ),
                         ],
-                        child: _getAdPage(RecipeGridView(), context),
+                        child: Ads().getAdPage(RecipeGridView(), context),
                       ));
 
             case "/vegetable-recipes-oveview":
@@ -358,7 +359,7 @@ class MyApp extends StatelessWidget {
                         ),
                     ),
                   ],
-                  child: _getAdPage(RecipeGridView(), context),
+                  child: Ads().getAdPage(RecipeGridView(), context),
                 ),
               );
 
@@ -404,7 +405,7 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
-                  child: _getAdPage(
+                  child: Ads().getAdPage(
                       AddRecipeNutritions(
                         modifiedRecipe: args.modifiedRecipe,
                         editingRecipeName: args.editingRecipeName,
@@ -447,7 +448,7 @@ class MyApp extends StatelessWidget {
                 return MaterialPageRoute(
                   builder: (context) => BlocProvider<CategoryManagerBloc>.value(
                     value: args.categoryManagerBloc,
-                    child: _getAdPage(CategoryManager(), context),
+                    child: Ads().getAdPage(CategoryManager(), context),
                   ),
                 );
               } else {
@@ -457,7 +458,7 @@ class MyApp extends StatelessWidget {
                       recipeManagerBloc:
                           BlocProvider.of<RecipeManagerBloc>(context),
                     )..add(InitializeCategoryManager()),
-                    child: _getAdPage(CategoryManager(), context),
+                    child: Ads().getAdPage(CategoryManager(), context),
                   ),
                 );
               }
@@ -472,7 +473,7 @@ class MyApp extends StatelessWidget {
                   builder: (context) =>
                       BlocProvider<RecipeTagManagerBloc>.value(
                     value: args.recipeTagManagerBloc,
-                    child: _getAdPage(RecipeTagManager(), context),
+                    child: Ads().getAdPage(RecipeTagManager(), context),
                   ),
                 );
               } else {
@@ -482,7 +483,7 @@ class MyApp extends StatelessWidget {
                       recipeManagerBloc:
                           BlocProvider.of<RecipeManagerBloc>(context),
                     )..add(InitializeRecipeTagManager()),
-                    child: _getAdPage(RecipeTagManager(), context),
+                    child: Ads().getAdPage(RecipeTagManager(), context),
                   ),
                 );
               }
@@ -495,7 +496,7 @@ class MyApp extends StatelessWidget {
                 builder: (context) => BlocProvider<NutritionManagerBloc>(
                   create: (context) =>
                       NutritionManagerBloc()..add(LoadNutritionManager()),
-                  child: _getAdPage(NutritionManager(), context),
+                  child: Ads().getAdPage(NutritionManager(), context),
                 ),
               );
 
@@ -506,7 +507,7 @@ class MyApp extends StatelessWidget {
                 builder: (context) => BlocProvider<IngredientsManagerBloc>(
                   create: (context) =>
                       IngredientsManagerBloc()..add(LoadIngredientsManager()),
-                  child: _getAdPage(IngredientsManager(), context),
+                  child: Ads().getAdPage(IngredientsManager(), context),
                 ),
               );
 
@@ -517,9 +518,11 @@ class MyApp extends StatelessWidget {
                 builder: (context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<WebsiteImportBloc>(
-                      create: (_) => WebsiteImportBloc(
-                          BlocProvider.of<RecipeManagerBloc>(context)),
-                    ),
+                        create: (_) => WebsiteImportBloc(
+                            BlocProvider.of<RecipeManagerBloc>(context))
+                          ..add(args.initialWebsite == null
+                              ? null
+                              : ImportRecipe(args.initialWebsite))),
                     BlocProvider<ShoppingCartBloc>.value(
                       value: args.shoppingCartBloc,
                     ),
@@ -527,7 +530,9 @@ class MyApp extends StatelessWidget {
                       value: args.adManagerBloc,
                     )
                   ],
-                  child: ImportFromWebsiteScreen(),
+                  child: ImportFromWebsiteScreen(
+                    initialWebsite: args.initialWebsite ?? "",
+                  ),
                 ),
               );
 
@@ -558,40 +563,5 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
-  }
-
-  Widget _getAdPage(Widget page, BuildContext context) {
-    return Ads.shouldShowAds()
-        ? Column(
-            children: <Widget>[
-              Expanded(child: page),
-              Container(
-                height: Ads.adHeight,
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      height: Ads.adHeight,
-                      width: double.infinity,
-                      color: Colors.brown,
-                      child: Image.asset(
-                        "images/bannerAd.png",
-                      ),
-                    ),
-                    Material(
-                      type: MaterialType.transparency,
-                      child: Center(
-                        child: Text(
-                          I18n.of(context).remove_ads_upgrade_in_settings,
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          )
-        : page;
   }
 }

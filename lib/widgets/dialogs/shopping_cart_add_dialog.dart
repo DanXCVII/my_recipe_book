@@ -5,7 +5,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../generated/i18n.dart';
-import '../../helper.dart';
+import '../../util/helper.dart';
 import '../../local_storage/hive.dart';
 import '../../models/ingredient.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';

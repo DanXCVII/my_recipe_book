@@ -154,7 +154,7 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   ShareExtend.share(snapshot.data, "file",
-                      subject: "recipes.zip");
+                      subject: "mrb-recipes.zip");
                   myCallback(() {
                     Navigator.pop(context);
                     Navigator.pop(context);
@@ -200,7 +200,7 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
     var exportFiles = Directory(exportMultiDir).listSync();
     var encoder = ZipFileEncoder();
     String finalZipFilePath =
-        PathProvider.pP.getShareZipFile('multi', exportMultiDir);
+        PathProvider.pP.getZipFilePath('mrb-recipes', exportMultiDir);
     encoder.create(finalZipFilePath);
     for (FileSystemEntity f in exportFiles) {
       encoder.addFile(f);

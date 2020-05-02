@@ -4,12 +4,15 @@ import 'dart:math';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:my_recipe_book/models/tuple.dart';
+import 'package:path_provider/path_provider.dart';
 
 import './local_paths.dart';
 import '../constants/global_constants.dart' as Constants;
-import '../helper.dart';
+import '../util/helper.dart';
 import '../local_storage/hive.dart';
 import '../models/recipe.dart';
+import '../util/recipe_extractor.dart';
 
 /// moves the images of the recipe to the correct image paths which is
 /// defined by recipe.name
@@ -195,12 +198,13 @@ Future<void> renameRecipeData(String oldRecipeName, String newRecipeName,
 }
 
 /// saves the image in high and low quality in the local storage under the
-/// recipe directory
-Future<void> saveRecipeImage(File pictureFile, String recipeName) async {
+/// recipe directory or in the target dir under the recipe structure
+Future<void> saveRecipeImage(File pictureFile, String recipeName,
+    {String targetDir}) async {
   String dataType = getImageDatatype(pictureFile.path);
 
-  String recipeImagePathFull =
-      await PathProvider.pP.getRecipeImagePathFull(recipeName, dataType);
+  String recipeImagePathFull = await PathProvider.pP
+      .getRecipeImagePathFull(recipeName, dataType, targetDir: targetDir);
 
   await saveImage(pictureFile, recipeImagePathFull, false);
   String recipeImagePreviewPathFull =
@@ -253,7 +257,7 @@ Future<void> deleteStepImage(
 String getStepImageName(String selectedImagePath) {
   Random random = new Random();
   String dataType = getImageDatatype(selectedImagePath);
-  return random.nextInt(10000).toString() + dataType;
+  return random.nextInt(1000000).toString() + dataType;
 }
 
 Future<String> saveRecipeZip(String targetDir, String recipeName) async {
@@ -263,13 +267,13 @@ Future<String> saveRecipeZip(String targetDir, String recipeName) async {
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDirFull(recipeName));
 
-  File jsonFile = File(PathProvider.pP.getShareJsonPath(recipeName, targetDir));
+  File jsonFile = File(PathProvider.pP.getJsonPath(recipeName, targetDir));
   Map<String, dynamic> jsonMap = exportRecipe.toMap();
   String json = jsonEncode(jsonMap);
   await jsonFile.writeAsString(json);
 
   var encoder = ZipFileEncoder();
-  String zipFilePath = PathProvider.pP.getShareZipFile(recipeName, targetDir);
+  String zipFilePath = PathProvider.pP.getZipFilePath(recipeName, targetDir);
   encoder.create(zipFilePath);
   encoder.addFile(jsonFile);
   if (recipeDir.existsSync()) {
@@ -279,6 +283,59 @@ Future<String> saveRecipeZip(String targetDir, String recipeName) async {
 
   jsonFile.deleteSync();
   return zipFilePath;
+}
+
+/// extracts the mrb zip to the import dir and returns the recipeNames of all
+/// recipes in there. If the xml is not found, it returns null.
+Future<List<String>> extractMRBzipGetNames(File recipeZipMrb) async {
+  await clearCache();
+  Directory importDir = Directory(await PathProvider.pP.getImportDir());
+  // extract selected zip and save it to the importDir
+  await exstractZip(recipeZipMrb, importDir.path);
+  List importFiles = importDir.listSync(recursive: true);
+
+  bool importMulitiple = false;
+
+  for (FileSystemEntity f in importFiles) {
+    if (f.path.endsWith('.xml')) {
+      return getRecipeNamesFromMRB((f as File).readAsStringSync());
+    }
+  }
+  return null;
+}
+
+Future<Recipe> importMRBrecipeFromTmp(String recipeName) async {
+  Directory importDir = Directory(await PathProvider.pP.getImportDir());
+
+  List importFiles = importDir.listSync(recursive: true);
+
+  for (FileSystemEntity f in importFiles) {
+    if (f.path.endsWith('.xml')) {
+      String xmlData = (f as File).readAsStringSync();
+
+      Tuple2<Recipe, String> recipeData =
+          getSpecifiedRecipeFromMRB(xmlData, recipeName);
+
+      Recipe finalRecipe = recipeData.item1;
+      File recipeImageFile =
+          File(importDir.path + "images/${recipeData.item2}");
+
+      if (recipeImageFile.existsSync()) {
+        await saveRecipeImage(
+            File(importDir.path + "images/${recipeData.item2}"), recipeName);
+
+        finalRecipe = finalRecipe.copyWith(
+          imagePath: await PathProvider.pP.getRecipeImagePathFull(
+              recipeName, getImageDatatype(recipeData.item2)),
+          imagePreviewPath: await PathProvider.pP.getRecipeImagePreviewPathFull(
+              recipeName, getImageDatatype(recipeData.item2)),
+        );
+      }
+
+      return finalRecipe;
+    }
+  }
+  return null;
 }
 
 /// saves the stepImage in high and low quality in the local storage under the given
@@ -291,6 +348,15 @@ Future<String> saveStepImage(File newImage, int stepNumber,
   String stepImagePathFull =
       await PathProvider.pP.getRecipeStepNumberDirFull(recipeName, stepNumber) +
           "/$newStepImageName";
+
+  while (File(stepImagePathFull).existsSync()) {
+    newStepImageName = getStepImageName(newImage.path);
+    newStepImagePreviewName = 'p-' + newStepImageName;
+
+    stepImagePathFull = await PathProvider.pP
+            .getRecipeStepNumberDirFull(recipeName, stepNumber) +
+        "/$newStepImageName";
+  }
 
   await saveImage(
     newImage,
@@ -363,6 +429,12 @@ Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
 
 Future<void> deleteImportFolder() async {
   await Directory(await PathProvider.pP.getImportDir()).delete();
+}
+
+Future<void> clearCache() async {
+  for (FileSystemEntity f in (await getTemporaryDirectory()).listSync()) {
+    await f.delete(recursive: true);
+  }
 }
 
 /// extracts the given .zip to the tmp directory and if the recipe data is valid,
@@ -446,5 +518,7 @@ Future<void> exstractZip(File encode, String destination) async {
     }
   }
 }
+
+// ----------------------------------------------------------------
 
 /////////// DEPRECATED?? /////////////////

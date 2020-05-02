@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -225,14 +226,18 @@ class AnimatedStepper extends StatelessWidget {
     imageIndex += imageNumber;
 
     Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => GalleryPhotoView(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Ads().getAdPage(
+          GalleryPhotoView(
             initialIndex: imageIndex,
             galleryImagePaths: flatStepImages,
             descriptions: imageDescription,
             heroTags: heroTags,
           ),
-        ));
+          context,
+        ),
+      ),
+    );
   }
 }

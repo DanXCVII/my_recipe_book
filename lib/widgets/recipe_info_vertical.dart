@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 import 'package:my_recipe_book/screens/recipe_screen.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/complexity_wave.dart';
@@ -41,7 +42,7 @@ class RecipeInfoVertical extends StatelessWidget {
             _showPictureFullView(recipe.imagePath, heroImageTag, context);
           },
           child: Container(
-            height: 200,
+            height: 250,
             child: Stack(children: <Widget>[
               Hero(
                 tag: GlobalSettings().animationsEnabled()
@@ -52,7 +53,7 @@ class RecipeInfoVertical extends StatelessWidget {
                   child: ClipPath(
                     clipper: MyClipper(),
                     child: Container(
-                        height: 200,
+                        height: 250,
                         child: recipe.imagePath == Constants.noRecipeImage
                             ? Image.asset(Constants.noRecipeImage,
                                 width: double.infinity, fit: BoxFit.cover)
@@ -108,9 +109,9 @@ class RecipeInfoVertical extends StatelessWidget {
                       SizedBox(height: 12),
                       TimeInfoChart(
                         textColor,
-                        recipe.preperationTime,
-                        recipe.cookingTime,
-                        recipe.totalTime,
+                        recipe.preperationTime ?? 0,
+                        recipe.cookingTime ?? 0,
+                        recipe.totalTime ?? 0,
                         recipeScreenFontFamily,
                         horizontal: false,
                       ),
@@ -157,11 +158,14 @@ class RecipeInfoVertical extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => GalleryPhotoView(
-          initialIndex: 0,
-          galleryImagePaths: [image],
-          descriptions: [''],
-          heroTags: [tag],
+        builder: (context) => Ads().getAdPage(
+          GalleryPhotoView(
+            initialIndex: 0,
+            galleryImagePaths: [image],
+            descriptions: [''],
+            heroTags: [tag],
+          ),
+          context,
         ),
       ),
     );

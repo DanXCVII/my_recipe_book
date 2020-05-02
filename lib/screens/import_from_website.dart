@@ -19,12 +19,22 @@ import 'add_recipe/general_info_screen/general_info_screen.dart';
 class ImportFromWebsiteArguments {
   final ShoppingCartBloc shoppingCartBloc;
   final AdManagerBloc adManagerBloc;
+  final String initialWebsite;
 
-  ImportFromWebsiteArguments(this.shoppingCartBloc, this.adManagerBloc);
+  ImportFromWebsiteArguments(
+    this.shoppingCartBloc,
+    this.adManagerBloc, {
+    this.initialWebsite,
+  });
 }
 
 class ImportFromWebsiteScreen extends StatelessWidget {
-  const ImportFromWebsiteScreen({Key key}) : super(key: key);
+  final String initialWebsite;
+
+  const ImportFromWebsiteScreen({
+    this.initialWebsite = "",
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +78,9 @@ class ImportFromWebsiteScreen extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: WebsiteSearch(),
+                  child: WebsiteSearch(
+                    initialWebsite: initialWebsite,
+                  ),
                 ),
                 Spacer(),
                 BlocListener<WebsiteImportBloc, WebsiteImportState>(
@@ -189,7 +201,12 @@ class ImportFromWebsiteScreen extends StatelessWidget {
 }
 
 class WebsiteSearch extends StatefulWidget {
-  WebsiteSearch({Key key}) : super(key: key);
+  final String initialWebsite;
+
+  WebsiteSearch({
+    this.initialWebsite = "",
+    Key key,
+  }) : super(key: key);
 
   @override
   _WebsiteSearchState createState() => _WebsiteSearchState();
@@ -202,6 +219,7 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
   void initState() {
     super.initState();
     _urlController = TextEditingController();
+    _urlController.text = widget.initialWebsite;
   }
 
   @override
@@ -314,7 +332,7 @@ class RecipeWebsiteImportInfo extends StatefulWidget {
 
 class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
     with SingleTickerProviderStateMixin {
-  bool _isExpanded = true;
+  bool _isExpanded = false;
   List<String> _supportedWebsites = [
     "DE: chefkoch.de",
     "DE: kochbar.de",
@@ -355,20 +373,24 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                 ),
               ),
               Expanded(
-                child: Text(I18n.of(context)
-                    .website_must_be_under_the_supported_websites),
+                child: Text(I18n.of(context).supported_websites),
               ),
-              Material(
-                color: Colors.transparent,
-                child: IconButton(
-                  icon: Icon(_isExpanded
-                      ? Icons.keyboard_arrow_down
-                      : Icons.keyboard_arrow_up),
-                  onPressed: () {
-                    setState(() {
-                      _isExpanded = !_isExpanded;
-                    });
-                  },
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: IconButton(
+                      icon: Icon(_isExpanded
+                          ? Icons.keyboard_arrow_down
+                          : Icons.keyboard_arrow_up),
+                      onPressed: () {
+                        setState(() {
+                          _isExpanded = !_isExpanded;
+                        });
+                      },
+                    ),
+                  ),
                 ),
               )
             ],
@@ -401,9 +423,15 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                                   ),
                                 ),
                               ),
-                      )..add(
+                      )..insert(
+                          0,
                           ListTile(
-                            title: Text(I18n.of(context).more_coming_soon),
+                            title: Text(
+                              I18n.of(context).standardized_format,
+                              style: TextStyle(
+                                fontSize: 11,
+                              ),
+                            ),
                           ),
                         ),
                     ),

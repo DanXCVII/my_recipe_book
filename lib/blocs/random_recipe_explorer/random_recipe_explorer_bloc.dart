@@ -38,6 +38,12 @@ class RandomRecipeExplorerBloc
           add(DeleteRecipe(rmState.recipe));
         } else if (rmState is RM.UpdateRecipeState) {
           add(UpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
+        } else if (rmState is RM.AddFavoriteState) {
+          add(UpdateRecipe(
+              rmState.recipe.copyWith(isFavorite: false), rmState.recipe));
+        } else if (rmState is RM.RemoveFavoriteState) {
+          add(UpdateRecipe(
+              rmState.recipe.copyWith(isFavorite: true), rmState.recipe));
         } else if (rmState is RM.AddCategoriesState) {
           add(AddCategories(rmState.categories));
         } else if (rmState is RM.DeleteCategoryState) {

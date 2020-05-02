@@ -1,5 +1,5 @@
-import 'models/enums.dart';
-import 'models/ingredient.dart';
+import '../models/enums.dart';
+import '../models/ingredient.dart';
 
 String cutDouble(double number) {
   if (number == number.floor().toDouble()) {
@@ -101,4 +101,32 @@ List<String> trimRemoveTrailingEmptyStrings(List<String> list) {
     }
   }
   return output;
+}
+
+/// trys to get the number value out of the string and otherwise
+/// returns null
+double getNumberOfString(String numberInfo) {
+  bool failed = false;
+
+  try {
+    if (numberInfo.contains("/")) {
+      double firstNumber =
+          double.parse(numberInfo.substring(0, numberInfo.indexOf("/")));
+      double secondNumber =
+          double.parse(numberInfo.substring(numberInfo.indexOf("/") + 1));
+      return firstNumber / secondNumber;
+    }
+  } catch (e) {
+    failed = true;
+  }
+  if (failed) {
+    if (numberInfo == "½") {
+      return 0.5;
+    } else if (numberInfo == "⅓") {
+      return 0.33;
+    } else if (numberInfo == "¼") {
+      return 0.25;
+    }
+  }
+  return double.tryParse(numberInfo);
 }

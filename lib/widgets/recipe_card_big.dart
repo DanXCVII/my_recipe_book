@@ -14,7 +14,7 @@ import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
-import '../helper.dart';
+import '../util/helper.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_overview.dart';
@@ -136,7 +136,7 @@ class RecipeCardBig extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     textScaleFactor: scaleFactor,
                                     style: TextStyle(
-                                      fontSize: 28,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),

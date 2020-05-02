@@ -9,12 +9,12 @@ import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../constants/routes.dart';
 import '../../generated/i18n.dart';
-import '../../helper.dart';
+import '../../util/helper.dart';
 import '../../local_storage/hive.dart';
 import '../../models/enums.dart';
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
-import '../../my_wrapper.dart';
+import '../../util/my_wrapper.dart';
 import '../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
 import '../../widgets/ingredients_section.dart';
 import '../../widgets/vegetarian_section.dart';
@@ -208,7 +208,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                     padding:
                         const EdgeInsets.only(left: 56, top: 12, bottom: 12),
                     child: Text(
-                      "Kategorie:",
+                      I18n.of(context).category + ":",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

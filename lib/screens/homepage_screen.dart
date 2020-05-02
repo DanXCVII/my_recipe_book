@@ -8,6 +8,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/import_recipe/import_recipe_bloc.dart';
+import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
+import 'package:my_recipe_book/screens/import_from_website.dart';
+import 'package:my_recipe_book/util/my_wrapper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,13 +21,11 @@ import 'package:showcaseview/showcase_widget.dart';
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/app/app_bloc.dart';
-import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../local_storage/hive.dart';
-import '../my_wrapper.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/recipe_bubble.dart';
@@ -94,20 +96,20 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Future<void> initializeIntent() async {
-    var importZipFilePath = await getIntentPath();
-    if (importZipFilePath == null) return;
+    var intentSharedText = await getIntentData();
+    if (intentSharedText == null) return;
 
     // if error occured writing the import file
-    if (importZipFilePath == "failedFileCreation" ||
-        importZipFilePath == "failedWriting" ||
-        importZipFilePath == "failedClosing") {
+    if (intentSharedText == "failedFileCreation" ||
+        intentSharedText == "failedWriting" ||
+        intentSharedText == "failedClosing") {
       PermissionStatus permission = await PermissionHandler()
           .checkPermissionStatus(PermissionGroup.storage);
       // if error occured even though the storage permission is granted
       if (permission == PermissionStatus.granted) {
-        String error = importZipFilePath == "failedFileCreation"
+        String error = intentSharedText == "failedFileCreation"
             ? "Error #1:"
-            : importZipFilePath == "failedWriting" ? "Error #2:" : "Error #3:";
+            : intentSharedText == "failedWriting" ? "Error #2:" : "Error #3:";
         _showFlushInfo(I18n.of(context).failed_import,
             "$error" + I18n.of(context).failed_import_desc);
       } // if error occured and the storage permission is not granted and not set to neverShowAgain
@@ -136,25 +138,35 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         );
       }
     } // if import was successfull
-    else {
-      if (importZipFilePath != null) {
-        BuildContext importRecipeBlocContext = context;
+    else if (File(intentSharedText.toString()).existsSync() &&
+        intentSharedText != null) {
+      BuildContext importRecipeBlocContext = context;
 
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => BlocProvider<ImportRecipeBloc>.value(
-              value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
-                ..add(StartImportRecipes(File(importZipFilePath.toString()),
-                    delay: Duration(milliseconds: 300))),
-              child: ImportDialog(closeAfterFinished: false)),
-        );
-      }
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => BlocProvider<ImportRecipeBloc>.value(
+            value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
+              ..add(StartImportRecipes(File(intentSharedText.toString()),
+                  delay: Duration(milliseconds: 300))),
+            child: ImportDialog(closeAfterFinished: false)),
+      );
+    } else if (intentSharedText != null) {
+      Ads.showBottomBannerAd();
+      Navigator.pushNamed(
+        context,
+        RouteNames.importFromWebsite,
+        arguments: ImportFromWebsiteArguments(
+            BlocProvider.of<ShoppingCartBloc>(context),
+            BlocProvider.of<AdManagerBloc>(context),
+            initialWebsite: intentSharedText.toString()),
+      ).then((_) => Ads.hideBottomBannerAd());
+    } else {
       _intentFailedImporting = false;
     }
   }
 
-  getIntentPath() async {
+  getIntentData() async {
     if (Platform.isAndroid) {
       var sharedData = await platform.invokeMethod("getSharedText");
       return sharedData == null ? null : sharedData;
@@ -588,7 +600,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                   child: _getFloatingItem(
                     () {
                       getTemporaryDirectory().then((dir) {
-                        dir.delete(recursive: true);
+                        IO.clearCache();
                         Navigator.pushNamed(
                           context,
                           RouteNames.addRecipeGeneralInfo,

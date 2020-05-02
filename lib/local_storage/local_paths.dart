@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
-import '../helper.dart';
+import '../util/helper.dart';
 import '../models/recipe.dart';
 
 /// Path to::
@@ -105,13 +105,16 @@ class PathProvider {
     return '$imageLocalPath/$cNewRecipeName/preview/p-$cOldRecipeName' + ending;
   }
 
-  Future<String> getRecipeImagePathFull(
-      String recipeName, String ending) async {
+  Future<String> getRecipeImagePathFull(String recipeName, String ending,
+      {String targetDir}) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String imageLocalPath = await localPath;
-    await Directory('$imageLocalPath/$cRecipeName').create(recursive: true);
-    return '$imageLocalPath/$cRecipeName/$cRecipeName' + ending;
+    await Directory(
+            '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName')
+        .create(recursive: true);
+    return '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName/$cRecipeName' +
+        ending;
   }
 
   String getRecipePath(String recipeName, String ending) {
@@ -122,14 +125,16 @@ class PathProvider {
 
   //////////// Paths to the PREVIEW quality pictures ////////////
 
-  Future<String> getRecipeImagePreviewPathFull(
-      String recipeName, String ending) async {
+  Future<String> getRecipeImagePreviewPathFull(String recipeName, String ending,
+      {String targetDir}) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String imageLocalPath = await localPath;
-    await Directory('$imageLocalPath/$cRecipeName/preview')
+    await Directory(
+            '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName/preview')
         .create(recursive: true);
-    return '$imageLocalPath/$cRecipeName/preview/p-$cRecipeName' + ending;
+    return '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName/preview/p-$cRecipeName' +
+        ending;
   }
 
   String getRecipePreviewPath(String recipeName, String ending) {
@@ -208,13 +213,13 @@ class PathProvider {
     return '${tmpDir.path}/share/multi';
   }
 
-  String getShareZipFile(String recipeName, String fullTargetDir) {
+  String getZipFilePath(String recipeName, String fullTargetDir) {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '$fullTargetDir/$cRecipeName.zip';
   }
 
-  String getShareJsonPath(String recipeName, String fullTargetDir) {
+  String getJsonPath(String recipeName, String fullTargetDir) {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '$fullTargetDir/$cRecipeName.json';

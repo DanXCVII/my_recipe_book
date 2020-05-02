@@ -15,7 +15,7 @@ import '../../../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
 import '../../../generated/i18n.dart';
-import '../../../helper.dart';
+import '../../../util/helper.dart';
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
@@ -364,6 +364,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
     preperationTimeController.clear();
     cookingTimeController.clear();
     totalTimeController.clear();
+    sourceController.clear();
   }
 
   /// validates the info with the RecipeValidator() class and shows a

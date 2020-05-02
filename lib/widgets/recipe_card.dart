@@ -15,7 +15,7 @@ import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
-import '../helper.dart';
+import '../util/helper.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_overview.dart';
@@ -159,7 +159,10 @@ class RecipeCard extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    "${getTimeHoursMinutes(recipe.totalTime)} • ${getIngredientCount(recipe.ingredients)} ${I18n.of(context).ingredients}",
+                                    recipe.totalTime != null
+                                        ? "${getTimeHoursMinutes(recipe.totalTime)} • "
+                                        : "" +
+                                            ("${getIngredientCount(recipe.ingredients)} ${I18n.of(context).ingredients}"),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                     style: TextStyle(

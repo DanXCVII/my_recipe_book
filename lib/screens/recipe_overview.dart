@@ -76,7 +76,8 @@ class RecipeGridView extends StatelessWidget {
                       },
                     ),
                   ],
-                  expandedHeight: scaleFactor * 200.0,
+                  expandedHeight:
+                      scaleFactor * 200.0 < 180 ? 180 : scaleFactor * 200.0,
                   floating: false,
                   pinned: false,
                   flexibleSpace: FlexibleSpaceBar(

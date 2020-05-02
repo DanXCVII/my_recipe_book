@@ -3,15 +3,16 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_recipe_book/constants/global_constants.dart';
 import 'package:my_recipe_book/models/enums.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-import 'generated/i18n.dart';
+import '../generated/i18n.dart';
 import 'helper.dart';
-import 'models/recipe.dart';
-import 'models/string_int_tuple.dart';
+import '../models/recipe.dart';
+import '../models/string_int_tuple.dart';
 
 Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
   final pw.Document doc = pw.Document();
@@ -63,20 +64,23 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
   }
 
   List<pw.Widget> stepWidgets = [
-    pw.Padding(
-      padding: pw.EdgeInsets.only(top: 8),
-      child: pw.Row(children: [
-        pw.Text(
-          I18n.of(bContext).directions,
-          style: pw.TextStyle(
-            font: quandoTtf,
-            color: PdfColors.red900,
-            fontSize: 16,
-          ),
-        ),
-      ]),
-    ),
-  ]..addAll(List.generate(
+    recipe.steps.isNotEmpty
+        ? pw.Padding(
+            padding: pw.EdgeInsets.only(top: 8),
+            child: pw.Row(children: [
+              pw.Text(
+                I18n.of(bContext).directions,
+                style: pw.TextStyle(
+                  font: quandoTtf,
+                  color: PdfColors.red900,
+                  fontSize: 16,
+                ),
+              ),
+            ]),
+          )
+        : null,
+  ]
+    ..addAll(List.generate(
       recipe.steps.length,
       (index) => pw.Padding(
         padding: pw.EdgeInsets.only(top: 8),
@@ -97,7 +101,8 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
           ]..removeWhere((item) => item == null),
         ),
       ),
-    ));
+    ))
+    ..removeWhere((item) => item == null);
 
   doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
@@ -170,21 +175,27 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
             pw.Wrap(
               direction: pw.Axis.horizontal,
               children: [
-                pw.Container(
-                  height: 190,
-                  width: 190,
-                  child: pw.Image(
-                    PdfImage.file(
-                      doc.document,
-                      bytes: File(recipe.imagePath).readAsBytesSync(),
-                    ),
-                    fit: pw.BoxFit.cover,
-                  ),
-                ),
+                recipe.imagePath != noRecipeImage
+                    ? pw.Container(
+                        height: 190,
+                        width: 190,
+                        child: pw.Image(
+                          PdfImage.file(
+                            doc.document,
+                            bytes: File(recipe.imagePath).readAsBytesSync(),
+                          ),
+                          fit: pw.BoxFit.cover,
+                        ),
+                      )
+                    : null,
                 pw.Padding(
-                  padding: pw.EdgeInsets.only(left: 15),
+                  padding: pw.EdgeInsets.only(
+                    left: recipe.imagePath != noRecipeImage ? 15 : 0,
+                    top: recipe.imagePath != noRecipeImage ? 0 : 10,
+                    bottom: recipe.imagePath != noRecipeImage ? 0 : 10,
+                  ),
                   child: pw.Container(
-                    width: 220,
+                    width: 270,
                     child: pw.Column(
                         mainAxisSize: pw.MainAxisSize.min,
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -398,9 +409,10 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                         pw.TextSpan(
                                           text: recipe.source,
                                           style: pw.TextStyle(
-                                              font: latoBTtf,
-                                              fontSize: 11,
-                                              fontWeight: pw.FontWeight.bold),
+                                            font: latoTtf,
+                                            fontSize: 11,
+                                            color: PdfColors.blue,
+                                          ),
                                         )
                                       ],
                                     ),

@@ -28,7 +28,7 @@ import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
-import '../helper.dart';
+import '../util/helper.dart';
 import '../local_storage/hive.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
@@ -36,8 +36,8 @@ import '../models/enums.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
-import '../my_wrapper.dart';
-import '../pdf_share.dart';
+import '../util/my_wrapper.dart';
+import '../util/pdf_share.dart';
 import '../screens/recipe_overview.dart';
 import '../widgets/animated_stepper.dart';
 import '../widgets/animated_vegetable.dart';
@@ -131,23 +131,25 @@ class _RecipeScreenState extends State<RecipeScreen>
       if (state is RecipeScreenInfo) {
         return BlocListener<AdManagerBloc, AdManagerState>(
           listener: (context, adState) {
-            if (adState is ShowAds) {
-              Navigator.pop(context);
-              Future.delayed(Duration(milliseconds: 50))
-                  .then((_) => Navigator.pushNamed(
-                        context,
-                        RouteNames.recipeScreen,
-                        arguments: RecipeScreenArguments(
-                            BlocProvider.of<ShoppingCartBloc>(context),
-                            state.recipe,
-                            "",
-                            BlocProvider.of<RecipeManagerBloc>(context),
-                            initialScrollOffset: _scrollController.offset,
-                            initialSelectedStep:
-                                (BlocProvider.of<AnimatedStepperBloc>(context)
-                                        .state as SelectedStep)
-                                    .selectedStep),
-                      ).then((_) => Ads.hideBottomBannerAd()));
+            if (adState is ShowAds && ModalRoute.of(context).isCurrent) {
+              Navigator.popAndPushNamed(
+                context,
+                RouteNames.recipeScreen,
+                arguments: RecipeScreenArguments(
+                    BlocProvider.of<ShoppingCartBloc>(context),
+                    state.recipe,
+                    "",
+                    BlocProvider.of<RecipeManagerBloc>(context),
+                    initialScrollOffset: _scrollController.hasClients
+                        ? _scrollController?.offset
+                        : null,
+                    initialSelectedStep:
+                        (BlocProvider.of<AnimatedStepperBloc>(context).state
+                                as SelectedStep)
+                            .selectedStep),
+              ).then((_) => Ads.hideBottomBannerAd());
+              Future.delayed(Duration(seconds: 3))
+                  .then((_) => Ads.showBottomBannerAd());
             }
           },
           child: state.recipe.nutritions.isEmpty
@@ -159,6 +161,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                   body: RecipePage(
                     recipe: state.recipe,
                     heroImageTag: widget.heroImageTag,
+                    scrollController: _scrollController,
                     categoriesFiles: state.categoryImages,
                   ),
                 )
@@ -315,6 +318,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                     body: RecipePage(
                       recipe: state.recipe,
                       heroImageTag: widget.heroImageTag,
+                      scrollController: _scrollController,
                       categoriesFiles: state.categoryImages,
                     ),
                   ),
@@ -497,7 +501,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
               PopupMenuItem(
                 value: PopupOptionsMore.DELETE,
                 child: Row(children: [
-                  Icon(Icons.delete),
+                  Icon(Icons.delete,
+                      color: Theme.of(context).backgroundColor == Colors.white
+                          ? Colors.grey
+                          : Colors.white),
                   SizedBox(width: 10),
                   Text(I18n.of(context).delete_recipe)
                 ]),
@@ -505,7 +512,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
               PopupMenuItem(
                 value: PopupOptionsMore.SHARE,
                 child: Row(children: [
-                  Icon(Icons.share),
+                  Icon(Icons.share,
+                      color: Theme.of(context).backgroundColor == Colors.white
+                          ? Colors.grey
+                          : Colors.white),
                   SizedBox(width: 10),
                   Text(I18n.of(context).share_recipe)
                 ]),
@@ -513,7 +523,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
               PopupMenuItem(
                 value: PopupOptionsMore.PRINT,
                 child: Row(children: [
-                  Icon(Icons.print),
+                  Icon(Icons.print,
+                      color: Theme.of(context).backgroundColor == Colors.white
+                          ? Colors.grey
+                          : Colors.white),
                   SizedBox(width: 10),
                   Text(I18n.of(context).print_recipe)
                 ]),
@@ -693,11 +706,13 @@ class RecipePage extends StatelessWidget {
   final Recipe recipe;
   final String heroImageTag;
   final List<String> categoriesFiles;
+  final ScrollController scrollController;
 
   RecipePage({
     @required this.recipe,
     this.heroImageTag,
     this.categoriesFiles,
+    this.scrollController,
   });
 
   @override
@@ -798,6 +813,7 @@ class RecipePage extends StatelessWidget {
                           : null,
                     ),
                     child: CustomScrollView(
+                      controller: scrollController,
                       slivers: <Widget>[
                         MediaQuery.of(context).size.width > 550
                             ? null
@@ -889,11 +905,11 @@ class RecipePage extends StatelessWidget {
                                                   0.15,
                                               0),
                                           child: Text(
-                                            "${recipe.name}",
+                                            recipe.name,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               color: textColor,
-                                              fontSize: 30,
+                                              fontSize: 27,
                                               fontFamily:
                                                   recipeScreenFontFamily,
                                             ),
@@ -905,9 +921,7 @@ class RecipePage extends StatelessWidget {
                                     : SizedBox(height: 30),
                                 MediaQuery.of(context).size.width > 550
                                     ? null
-                                    : Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 8.0),
+                                    : Center(
                                         child: TopSectionRecipe(
                                           preperationTime:
                                               recipe.preperationTime,
@@ -984,6 +998,23 @@ class RecipePage extends StatelessWidget {
                   ),
                 ),
         ]..removeWhere((item) => item == null));
+  }
+
+  void _showPictureFullView(String image, String tag, BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Ads().getAdPage(
+          GalleryPhotoView(
+            initialIndex: 0,
+            galleryImagePaths: [image],
+            descriptions: [''],
+            heroTags: [tag],
+          ),
+          context,
+        ),
+      ),
+    );
   }
 }
 
@@ -1074,9 +1105,9 @@ class TopSectionRecipe extends StatelessWidget {
                           flex: 5,
                           child: TimeInfoChart(
                             textColor,
-                            preperationTime,
-                            cookingTime,
-                            totalTime,
+                            preperationTime ?? 0,
+                            cookingTime ?? 0,
+                            totalTime ?? 0,
                             recipeScreenFontFamily,
                           ),
                         ),
@@ -1121,26 +1152,12 @@ bool _showComplexTopArea(
     double preperationTime, double cookingTime, double totalTime) {
   int validator = 0;
 
-  if (preperationTime != 0) validator++;
-  if (cookingTime != 0) validator++;
-  if (totalTime != 0) validator++;
+  if (preperationTime != 0 && preperationTime != null) validator++;
+  if (cookingTime != 0 && cookingTime != null) validator++;
+  if (totalTime != 0 && totalTime != null) validator++;
   if (preperationTime == totalTime || cookingTime == totalTime) return false;
   if (validator > 1) return true;
   return false;
-}
-
-void _showPictureFullView(String image, String tag, BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => GalleryPhotoView(
-        initialIndex: 0,
-        galleryImagePaths: [image],
-        descriptions: [''],
-        heroTags: [tag],
-      ),
-    ),
-  );
 }
 
 class CategoriesSection extends StatelessWidget {
@@ -1426,7 +1443,7 @@ class IngredientsScreen extends StatelessWidget {
                 Container(
                   width: 80,
                   child: Text(
-                    "${currentIngredient.amount == null ? "" : cutDouble(currentIngredient.amount)} "
+                    "${currentIngredient.amount == null ? "" : (currentIngredient.amount)} "
                     "${currentIngredient.unit == null ? "" : currentIngredient.unit}",
                     textAlign: TextAlign.end,
                     style: TextStyle(
@@ -1608,12 +1625,16 @@ class IngredientsScreen extends StatelessWidget {
                                           state.servings, context);
                                     },
                                   ),
-                                  Text(
-                                    I18n.of(context).servings,
-                                    style: TextStyle(
-                                      color: textColor,
-                                      fontSize: headingSize,
-                                      fontFamily: recipeScreenFontFamily,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Text(
+                                      I18n.of(context).servings,
+                                      style: TextStyle(
+                                        color: textColor,
+                                        fontSize: headingSize,
+                                        fontFamily: recipeScreenFontFamily,
+                                      ),
                                     ),
                                   ),
                                 ],

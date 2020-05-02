@@ -18,6 +18,24 @@ class ImportingRecipes extends ImportRecipeState {
   List<Object> get props => [percentageDone];
 }
 
+class InvalidFile extends ImportRecipeState {
+  final String fileName;
+
+  InvalidFile(this.fileName);
+
+  @override
+  List<Object> get props => [fileName];
+}
+
+class InvalidDataType extends ImportRecipeState {
+  final String fileExtension;
+
+  InvalidDataType(this.fileExtension);
+
+  @override
+  List<Object> get props => [fileExtension];
+}
+
 class MultipleRecipes extends ImportRecipeState {
   // successfully imported recipes
   final List<Recipe> readyToImportRecipes;

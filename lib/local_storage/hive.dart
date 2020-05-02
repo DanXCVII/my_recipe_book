@@ -232,6 +232,10 @@ class HiveProvider {
       }
     }
 
+    for (Nutrition n in newRecipe.nutritions) {
+      await addNutrition(n.name);
+    }
+
     // add not yet added categories to boxes
     for (String category in newRecipe.categories) {
       if (!boxKeyString.containsKey(getHiveKey(category))) {
@@ -263,11 +267,11 @@ class HiveProvider {
 
     // add recipe to vegetable
     Box<String> boxVegetable = _getBoxVegetable(readyToImportRecipe.vegetable);
-    boxVegetable.add(hiveRecipeKey);
+    await boxVegetable.add(hiveRecipeKey);
 
     // add rating if non null
     if (readyToImportRecipe.rating != null) {
-      boxRatings.put(readyToImportRecipe.rating,
+      await boxRatings.put(readyToImportRecipe.rating,
           boxRatings.get(readyToImportRecipe.rating)..add(hiveRecipeKey));
     }
 

@@ -46,7 +46,7 @@ class RecipeCategoryOverview extends StatelessWidget {
                     child: _getRecipeCategoryOverviewList(
                         context,
                         state.rCategoryOverview.sublist(
-                            0, (state.rCategoryOverview.length / 2).floor()),
+                            0, (state.rCategoryOverview.length / 2).round()),
                         _refreshController),
                   ),
                   Container(
@@ -58,7 +58,7 @@ class RecipeCategoryOverview extends StatelessWidget {
                     child: _getRecipeCategoryOverviewList(
                         context,
                         state.rCategoryOverview.sublist(
-                            (state.rCategoryOverview.length / 2).floor(),
+                            (state.rCategoryOverview.length / 2).round(),
                             state.rCategoryOverview.length),
                         _refreshControllerTwo),
                   ),
@@ -198,7 +198,7 @@ class RecipeHozizontalList extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
-        height: 110, // 130 small
+        height: 113, // 130 small
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: recipes.length + 1,
@@ -254,85 +254,103 @@ class RecipeImageItemBig extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return showMore
-        ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  RouteNames.recipeCategories,
-                  arguments: RecipeGridViewArguments(
-                    shoppingCartBloc:
-                        BlocProvider.of<ShoppingCartBloc>(context),
-                    category: categoryName == null
-                        ? Constants.noCategory
-                        : categoryName,
-                  ),
-                ).then((_) => Ads.hideBottomBannerAd());
-              },
-              child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      height: 110,
-                      width: 170,
-                      child: FadeInImage(
-                        image: AssetImage("images/foodBlur${index % 4}.jpg"),
-                        fadeInDuration: const Duration(milliseconds: 250),
-                        placeholder: MemoryImage(kTransparentImage),
-                        height: 110,
-                        width: 170,
-                        fit: BoxFit.cover,
-                      ),
+        ? Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.recipeCategories,
+                    arguments: RecipeGridViewArguments(
+                      shoppingCartBloc:
+                          BlocProvider.of<ShoppingCartBloc>(context),
+                      category: categoryName == null
+                          ? Constants.noCategory
+                          : categoryName,
                     ),
-                    Container(
-                      height: 110,
-                      width: 170,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(15),
-                        ),
-                        child: Container(
+                  ).then((_) => Ads.hideBottomBannerAd());
+                },
+                child: Container(
+                  height: 110,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 1,
+                        spreadRadius: 0.5,
+                        color: Colors.black26,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          height: 110,
                           width: 170,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          )),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+                          child: FadeInImage(
+                            image:
+                                AssetImage("images/foodBlur${index % 4}.jpg"),
+                            fadeInDuration: const Duration(milliseconds: 250),
+                            placeholder: MemoryImage(kTransparentImage),
+                            height: 110,
+                            width: 170,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Container(
+                          height: 110,
+                          width: 170,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15),
+                            ),
                             child: Container(
-                              color: Colors.black.withOpacity(0.3),
-                              child: Center(
+                              width: 170,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              )),
+                              child: BackdropFilter(
+                                filter:
+                                    ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
                                 child: Container(
-                                  height: 50,
+                                  color: Colors.black.withOpacity(0.3),
                                   child: Center(
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                                      child: Text(
-                                        "show overview",
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 16,
-                                            color: Colors.grey[300]),
+                                    child: Container(
+                                      height: 50,
+                                      child: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              8, 8, 8, 8),
+                                          child: Text(
+                                            "show overview",
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16,
+                                                color: Colors.grey[300]),
+                                          ),
+                                        ),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.3),
                                       ),
                                     ),
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.3),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -345,22 +363,38 @@ class RecipeImageItemBig extends StatelessWidget {
               },
               child: Stack(
                 children: <Widget>[
-                  ClipRRect(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(15),
+                  Container(
+                    height: 110,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(1, 1),
+                          blurRadius: 1,
+                          spreadRadius: 0.5,
+                          color: Colors.black26,
+                        ),
+                      ],
                     ),
-                    child: Hero(
-                      tag: heroImageTag,
-                      child: FadeInImage(
-                        image:
-                            recipe.imagePreviewPath == Constants.noRecipeImage
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15),
+                      ),
+                      child: Hero(
+                        tag: heroImageTag,
+                        child: Container(
+                          child: FadeInImage(
+                            image: recipe.imagePreviewPath ==
+                                    Constants.noRecipeImage
                                 ? AssetImage(Constants.noRecipeImage)
                                 : FileImage(File(recipe.imagePreviewPath)),
-                        fadeInDuration: const Duration(milliseconds: 250),
-                        placeholder: MemoryImage(kTransparentImage),
-                        height: 110,
-                        width: 170,
-                        fit: BoxFit.cover,
+                            fadeInDuration: const Duration(milliseconds: 250),
+                            placeholder: MemoryImage(kTransparentImage),
+                            height: 110,
+                            width: 170,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                     ),
                   ),

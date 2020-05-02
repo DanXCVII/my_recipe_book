@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 import 'ad_id.dart';
 
@@ -210,5 +211,40 @@ class Ads {
 
   static bool shouldShowAds() {
     return _showAds;
+  }
+
+  Widget getAdPage(Widget page, BuildContext context) {
+    return Ads.shouldShowAds()
+        ? Column(
+            children: <Widget>[
+              Expanded(child: page),
+              Container(
+                height: Ads.adHeight,
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      height: Ads.adHeight,
+                      width: double.infinity,
+                      color: Colors.brown,
+                      child: Image.asset(
+                        "images/bannerAd.png",
+                      ),
+                    ),
+                    Material(
+                      type: MaterialType.transparency,
+                      child: Center(
+                        child: Text(
+                          I18n.of(context).remove_ads_upgrade_in_settings,
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          )
+        : page;
   }
 }

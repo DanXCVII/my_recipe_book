@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flushbar/flushbar.dart';
+import 'package:flushbar/flushbar_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/local_storage/io_operations.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:flutter/foundation.dart';
@@ -29,6 +31,8 @@ class _ImportDialogState extends State<ImportDialog> {
   int totalListItems = 0;
   List<Recipe> selectedRecipes = [];
 
+  Flushbar _flush;
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -47,8 +51,7 @@ class _ImportDialogState extends State<ImportDialog> {
               setState(() {
                 importStatus = ImportStatus.Loading;
               });
-            }
-            if (state is ImportedRecipes) {
+            } else if (state is ImportedRecipes) {
               setState(() {
                 importStatus = ImportStatus.Finished;
                 totalListItems = state.importedRecipes.length +
@@ -276,10 +279,8 @@ class _ImportDialogState extends State<ImportDialog> {
                         FlatButton(
                             child: Text(I18n.of(context).cancel),
                             onPressed: () {
-                              getTemporaryDirectory().then((dir) {
-                                if (dir.existsSync())
-                                  dir.deleteSync(recursive: true);
-                              });
+                              clearCache().then((_) {});
+
                               widget.closeAfterFinished
                                   ? SystemChannels.platform
                                       .invokeMethod('SystemNavigator.pop')
@@ -402,7 +403,10 @@ class _ImportDialogState extends State<ImportDialog> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
                           FlatButton(
-                              child: Text("ok"),
+                              child: Text(
+                                "ok",
+                                style: TextStyle(color: Colors.amber),
+                              ),
                               onPressed: () {
                                 if (widget.closeAfterFinished) {
                                   SystemChannels.platform
@@ -438,6 +442,12 @@ class _ImportDialogState extends State<ImportDialog> {
                   ),
                 ],
               );
+            } else if (state is InvalidDataType) {
+              return _getShowInfoStringWidget(
+                  I18n.of(context).datatype_not_supported(state.fileExtension));
+            } else if (state is InvalidFile) {
+              return _getShowInfoStringWidget(
+                  I18n.of(context).file_not_supported(state.fileName));
             } else {
               return Text(state.toString());
             }
@@ -445,5 +455,57 @@ class _ImportDialogState extends State<ImportDialog> {
         ),
       ),
     );
+  }
+
+  Widget _getShowInfoStringWidget(String description) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            child: Text(description),
+          ),
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              FlatButton(
+                child: Text("ok", style: TextStyle(color: Colors.amber)),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showFlushInfo(String title, String body) {
+    if (_flush != null && _flush.isShowing()) {
+    } else {
+      _flush = Flushbar<bool>(
+        animationDuration: Duration(milliseconds: 300),
+        leftBarIndicatorColor: Colors.blue[300],
+        title: title,
+        message: body,
+        icon: Icon(
+          Icons.info_outline,
+          color: Colors.blue,
+        ),
+        mainButton: FlatButton(
+          onPressed: () {
+            _flush.dismiss(true); // result = true
+          },
+          child: Text(
+            "OK",
+            style: TextStyle(color: Colors.amber),
+          ),
+        ),
+      ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+        ..show(context).then((result) {});
+    }
   }
 }
