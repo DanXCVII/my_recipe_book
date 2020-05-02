@@ -223,6 +223,11 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           }
                         },
                         save: (String name) {
+                          nutritionsController.addAll(
+                              {name: TextEditingController()});
+                          listTileKeys.add(Key(name));
+                          dismissibleKeys
+                              .add(Key('D-$name'));
                           BlocProvider.of<NutritionManagerBloc>(context)
                               .add(AddNutrition(name));
                         },

@@ -44,7 +44,7 @@
   "in_minutes": "in minutes",
   "name": "name",
   "prep_time": "preperation time",
-  "cook_time": "cook-baking time",
+  "cook_time": "cook/bake. time",
   "total_time": "total time",
   "remaining_time": "remaining time",
   "section_name": "section name",

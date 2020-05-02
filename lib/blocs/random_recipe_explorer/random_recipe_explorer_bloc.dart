@@ -138,14 +138,21 @@ class RandomRecipeExplorerBloc
         }
 
         yield LoadedRandomRecipeExplorer(
-            randomRecipes[0] == null ? [] : randomRecipes,
-            categories,
-            selectedIndex);
+          randomRecipes[0] == null ? [] : randomRecipes,
+          List<String>.from(categories)..remove(event.category),
+          selectedIndex,
+        );
       } else if (categories.indexOf(event.category) < selectedIndex) {
         yield LoadedRandomRecipeExplorer(
           (state as LoadedRandomRecipeExplorer).randomRecipes,
-          categories,
+          List<String>.from(categories)..remove(event.category),
           selectedIndex - 1,
+        );
+      } else {
+        yield LoadedRandomRecipeExplorer(
+          (state as LoadedRandomRecipeExplorer).randomRecipes,
+          List<String>.from(categories)..remove(event.category),
+          (state as LoadedRandomRecipeExplorer).selectedCategory,
         );
       }
     }

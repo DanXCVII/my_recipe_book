@@ -122,8 +122,8 @@ class I18n implements WidgetsLocalizations {
   String get name => "name";
   /// "preperation time"
   String get prep_time => "preperation time";
-  /// "cook-baking time"
-  String get cook_time => "cook-baking time";
+  /// "cook/bake. time"
+  String get cook_time => "cook/bake. time";
   /// "total time"
   String get total_time => "total time";
   /// "remaining time"
@@ -414,8 +414,8 @@ class I18n implements WidgetsLocalizations {
   String get enter_url => "enter URL of website with recipe:";
   /// "Some of the supported websites:"
   String get supported_websites => "Some of the supported websites:";
-  /// "Import failed. Website seems not yet supported"
-  String get failed_import_not_supported => "Import failed. Website seems not yet supported";
+  /// "Import failed. Page seems not yet supported"
+  String get failed_import_not_supported => "Import failed. Page seems not yet supported";
   /// "All websites are supported which contain a standardized format. Thet's why only a part of the supported websites are listed here. In practise most websites shoulb be supported."
   String get standardized_format => "All websites are supported which contain a standardized format. Thet's why only a part of the supported websites are listed here. In practise most websites shoulb be supported.";
   /// "recipe-url"

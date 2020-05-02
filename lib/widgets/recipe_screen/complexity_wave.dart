@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
-import 'package:wave/config.dart';
-import 'package:wave/wave.dart';
+
+import '../../generated/i18n.dart';
 
 class ComplexityWave extends StatelessWidget {
   final Color textColor;
@@ -28,8 +27,8 @@ class ComplexityWave extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 15.0),
           child: Container(
-              height: 90,
-              width: 90,
+              height: 80,
+              width: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(width: 4),
@@ -49,10 +48,11 @@ class ComplexityWave extends StatelessWidget {
                 child: Text(
                   effort.toString(),
                   style: TextStyle(
-                      fontSize: 60,
-                      color: Colors.grey[100],
-                      fontWeight: FontWeight.w600,
-                      fontFamily: "Questrial",),
+                    fontSize: 60,
+                    color: Colors.grey[100],
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Questrial",
+                  ),
                 ),
               )),
         )
