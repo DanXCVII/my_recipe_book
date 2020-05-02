@@ -25,7 +25,12 @@ class ImportFromWebsiteArguments {
 }
 
 class ImportFromWebsiteScreen extends StatelessWidget {
-  const ImportFromWebsiteScreen({Key key}) : super(key: key);
+  final String initialWebsite;
+
+  const ImportFromWebsiteScreen({
+    this.initialWebsite = "",
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +74,9 @@ class ImportFromWebsiteScreen extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: WebsiteSearch(),
+                  child: WebsiteSearch(
+                    initialWebsite: initialWebsite,
+                  ),
                 ),
                 Spacer(),
                 BlocListener<WebsiteImportBloc, WebsiteImportState>(
@@ -184,7 +191,12 @@ class ImportFromWebsiteScreen extends StatelessWidget {
 }
 
 class WebsiteSearch extends StatefulWidget {
-  WebsiteSearch({Key key}) : super(key: key);
+  final String initialWebsite;
+
+  WebsiteSearch({
+    this.initialWebsite = "",
+    Key key,
+  }) : super(key: key);
 
   @override
   _WebsiteSearchState createState() => _WebsiteSearchState();
@@ -197,6 +209,7 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
   void initState() {
     super.initState();
     _urlController = TextEditingController();
+    _urlController.text = widget.initialWebsite;
   }
 
   @override
@@ -309,7 +322,7 @@ class RecipeWebsiteImportInfo extends StatefulWidget {
 
 class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
     with SingleTickerProviderStateMixin {
-  bool _isExpanded = true;
+  bool _isExpanded = false;
   List<String> _supportedWebsites = [
     "DE: chefkoch.de",
     "DE: kochbar.de",

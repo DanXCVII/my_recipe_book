@@ -408,8 +408,8 @@ class I18n implements WidgetsLocalizations {
   String recipe_already_exists(String name) => "recipe with name \"${name}\" already exists";
   /// "failed to connect to given url"
   String get failed_to_connect_to_url => "failed to connect to given url";
-  /// "invalid url:\ncheck the supported websites in the info section below"
-  String get invalid_url => "invalid url:\ncheck the supported websites in the info section below";
+  /// "invalid url:\ncheck the info about supported websites in the infopanel below"
+  String get invalid_url => "invalid url:\ncheck the info about supported websites in the infopanel below";
   /// "enter URL of website with recipe:"
   String get enter_url => "enter URL of website with recipe:";
   /// "Some of the supported websites:"
@@ -1054,9 +1054,9 @@ class _I18n_de_DE extends I18n {
   /// "Verbindung mit URL fehlgeschlagen"
   @override
   String get failed_to_connect_to_url => "Verbindung mit URL fehlgeschlagen";
-  /// "ungültige URL:\nChecke die unterstützten Webseiten im Infobereich unten"
+  /// "ungültige URL:\nChecke die Info über unterstützte Webseiten im Infopanel unten"
   @override
-  String get invalid_url => "ungültige URL:\nChecke die unterstützten Webseiten im Infobereich unten";
+  String get invalid_url => "ungültige URL:\nChecke die Info über unterstützte Webseiten im Infopanel unten";
   /// "URL zum Rezept:"
   @override
   String get enter_url => "URL zum Rezept:";

@@ -43,11 +43,11 @@ class MainActivity : FlutterActivity() {
 
         if (Intent.ACTION_SEND == action && type != null) {
             if ("text/plain" == type) {
-                sharedText = intent.getStringExtra("getSharedText");
+                println("shared text will be saved..");
+                sharedText = processedIntent?.getStringExtra(Intent.EXTRA_TEXT);
+                processedIntent = null;
             }
-        }
-
-        if (Intent.ACTION_VIEW == action && type != null) {
+        } else if (Intent.ACTION_VIEW == action && type != null) {
             if ("application/zip" == type) {
                 val intentk = processedIntent;
                 handleFile(processedIntent)

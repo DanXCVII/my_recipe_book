@@ -481,7 +481,9 @@ class MyApp extends StatelessWidget {
                       value: args.shoppingCartBloc,
                     )
                   ],
-                  child: ImportFromWebsiteScreen(),
+                  child: ImportFromWebsiteScreen(
+                    initialWebsite: args.initialWebsite ?? "",
+                  ),
                 ),
               );
 
