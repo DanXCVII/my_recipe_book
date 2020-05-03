@@ -8,10 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/import_recipe/import_recipe_bloc.dart';
-import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
-import 'package:my_recipe_book/screens/import_from_website.dart';
-import 'package:my_recipe_book/util/my_wrapper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,13 +17,22 @@ import 'package:showcaseview/showcase_widget.dart';
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/app/app_bloc.dart';
+import '../blocs/import_recipe/import_recipe_bloc.dart';
+import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../local_storage/hive.dart';
+import '../local_storage/io_operations.dart' as IO;
+import '../local_storage/io_operations.dart' as IO;
+import '../util/my_wrapper.dart';
+import '../util/my_wrapper.dart';
+import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/dialogs/info_dialog.dart';
+import '../widgets/dialogs/info_dialog.dart';
+import '../widgets/dialogs/shopping_cart_add_dialog.dart';
 import '../widgets/recipe_bubble.dart';
 import '../widgets/search.dart';
 import '../widgets/shopping_cart_floating.dart';
@@ -35,6 +40,8 @@ import '../widgets/vertical_side_bar.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 import 'category_gridview.dart';
 import 'favorite_screen.dart';
+import 'import_from_website.dart';
+import 'import_from_website.dart';
 import 'ingredient_search.dart';
 import 'r_category_overview.dart';
 import 'random_recipe.dart';
@@ -211,9 +218,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             return Scaffold(
               appBar: _buildAppBar(state.selectedIndex,
                   state.recipeCategoryOverview, state.title),
-              floatingActionButton: state.selectedIndex == 0
-                  ? FloatingActionButtonMenu(_introKeyOne, _introKeyTwo,
-                      showIntro: showIntro)
+              floatingActionButton: state.selectedIndex == 0 ||
+                      state.selectedIndex == 2
+                  ? FloatingActionButtonMenu(
+                      _introKeyOne,
+                      _introKeyTwo,
+                      showIntro: showIntro,
+                      shoppingCartAdd: state.selectedIndex == 2 ? true : false,
+                    )
                   : null,
               body: Row(
                 children: <Widget>[
@@ -494,10 +506,12 @@ class FloatingActionButtonMenu extends StatefulWidget {
   final GlobalKey _introKeyOne;
   final GlobalKey _introKeyTwo;
   final MyBooleanWrapper showIntro;
+  final bool shoppingCartAdd;
 
   FloatingActionButtonMenu(
     this._introKeyOne,
     this._introKeyTwo, {
+    this.shoppingCartAdd = false,
     this.showIntro,
     Key key,
   }) : super(key: key);
@@ -623,19 +637,32 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
       FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         heroTag: null,
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (BuildContext context, Widget child) {
-            return Transform(
-              transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
-              alignment: FractionalOffset.center,
-              child: Icon(
-                _controller.isDismissed ? Icons.add : Icons.close,
-                color: Colors.white,
+        child: widget.shoppingCartAdd
+            ? IconButton(
+                icon: Icon(Icons.add_shopping_cart, color: Colors.white),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => BlocProvider.value(
+                      value: BlocProvider.of<ShoppingCartBloc>(context),
+                      child: ShoppingCartAddDialog(),
+                    ),
+                  );
+                },
+              )
+            : AnimatedBuilder(
+                animation: _controller,
+                builder: (BuildContext context, Widget child) {
+                  return Transform(
+                    transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
+                    alignment: FractionalOffset.center,
+                    child: Icon(
+                      _controller.isDismissed ? Icons.add : Icons.close,
+                      color: Colors.white,
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
         onPressed: () {
           if (_controller.isDismissed) {
             setState(() {

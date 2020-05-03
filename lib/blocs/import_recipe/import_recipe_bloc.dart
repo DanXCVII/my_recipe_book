@@ -178,6 +178,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
             importCategories.addAll(newCategories);
             importRecipes.add(event.recipes[i]);
           } else {
+            await IO.deleteRecipeData(event.recipes[i]?.name);
             failedRecipes.add(event.recipes[i]);
           }
         } else {

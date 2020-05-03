@@ -551,28 +551,29 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
         items: [
           PopupMenuItem(
             value: PopupOptionsShare.EXPORT_TEXT,
-            child: ListTile(
-                onTap: () {
-                  _choiceActionShare(PopupOptionsShare.EXPORT_TEXT, context);
-                },
-                title: Text(I18n.of(context).export_text)),
+            child: getMenuListItem(
+              I18n.of(context).export_text,
+              Icon(MdiIcons.formatColorText),
+              PopupOptionsShare.EXPORT_TEXT,
+              context,
+            ),
           ),
           PopupMenuItem(
             value: PopupOptionsShare.EXPORT_ZIP,
-            child: ListTile(
-              onTap: () {
-                _choiceActionShare(PopupOptionsShare.EXPORT_ZIP, context);
-              },
-              title: Text(I18n.of(context).export_zip),
+            child: getMenuListItem(
+              I18n.of(context).export_zip,
+              Icon(MdiIcons.package),
+              PopupOptionsShare.EXPORT_ZIP,
+              context,
             ),
           ),
           PopupMenuItem(
             value: PopupOptionsShare.EXPORT_PDF,
-            child: ListTile(
-              onTap: () {
-                _choiceActionShare(PopupOptionsShare.EXPORT_PDF, context);
-              },
-              title: Text(I18n.of(context).export_pdf),
+            child: getMenuListItem(
+              I18n.of(context).export_pdf,
+              Icon(MdiIcons.fileDocument),
+              PopupOptionsShare.EXPORT_PDF,
+              context,
             ),
           ),
         ],
@@ -581,14 +582,42 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     }
   }
 
+  Widget getMenuListItem(
+    String description,
+    Icon leadingIcon,
+    PopupOptionsShare option,
+    BuildContext context,
+  ) {
+    return InkWell(
+      highlightColor: Colors.transparent,
+      onTap: () {
+        _choiceActionShare(option, context);
+      },
+      child: Container(
+          height: 60,
+          width: 250,
+          child: Center(
+            child: Row(
+              children: <Widget>[
+                leadingIcon,
+                SizedBox(width: 12),
+                Text(description),
+              ],
+            ),
+          )),
+    );
+  }
+
   void _choiceActionShare(PopupOptionsShare value, context) {
     if (value == PopupOptionsShare.EXPORT_TEXT) {
-      Share.share(_getRecipeAsString(recipe, context), subject: 'recipe');
+      Share.share(_getRecipeAsString(recipe, context),
+          subject: stringReplaceSpaceUnderscore(recipe.name));
     } else if (value == PopupOptionsShare.EXPORT_ZIP) {
       _exportRecipe(recipe).then((_) {});
     } else if (value == PopupOptionsShare.EXPORT_PDF) {
-      getRecipePdf(recipe, context)
-          .then((pdf) => Printing.sharePdf(bytes: pdf, filename: 'recipe.pdf'));
+      getRecipePdf(recipe, context).then((pdf) => Printing.sharePdf(
+          bytes: pdf,
+          filename: '${stringReplaceSpaceUnderscore(recipe.name)}.pdf'));
     }
   }
 
@@ -671,8 +700,8 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
       }
     } else if (recipe.ingredients.first.isNotEmpty) {
       for (int j = 0; j < recipe.ingredients.first.length; j++) {
-        recipeText += '${recipe.ingredients.first[j].name} '
-            '${recipe.ingredients.first[j].amount ?? ""} '
+        recipeText += '${recipe.ingredients.first[j].amount} '
+            '${recipe.ingredients.first[j].unit ?? ""} '
             '${recipe.ingredients.first[j].unit ?? ""}\n';
       }
       recipeText += '====================\n';
@@ -696,6 +725,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     if (recipe.notes != null && recipe.notes != '') {
       recipeText += '====================\n';
       recipeText += '${I18n.of(context).notes}: ${recipe.notes}\n';
+    }
+    if (recipe.source != null && recipe.source != '') {
+      recipeText += '====================\n';
+      recipeText += '${I18n.of(context).source}: ${recipe.source}\n';
     }
 
     return recipeText;
@@ -1086,41 +1119,33 @@ class TopSectionRecipe extends StatelessWidget {
         child: Column(
           children: <Widget>[
             _showComplexTopArea(preperationTime, cookingTime, totalTime)
-                ? Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          flex: 7,
-                          child: TimeInfo(
-                            textColor,
-                            recipeScreenFontFamily,
-                            preperationTime,
-                            totalTime,
-                            cookingTime,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 5,
-                          child: TimeInfoChart(
-                            textColor,
-                            preperationTime ?? 0,
-                            cookingTime ?? 0,
-                            totalTime ?? 0,
-                            recipeScreenFontFamily,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 7,
-                          child: ComplexityWave(
-                            textColor,
-                            recipeScreenFontFamily,
-                            effort,
-                          ),
-                        )
-                      ],
-                    ),
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Spacer(),
+                      TimeInfo(
+                        textColor,
+                        recipeScreenFontFamily,
+                        preperationTime,
+                        totalTime,
+                        cookingTime,
+                      ),
+                      Spacer(),
+                      TimeInfoChart(
+                        textColor,
+                        preperationTime ?? 0,
+                        cookingTime ?? 0,
+                        totalTime ?? 0,
+                        recipeScreenFontFamily,
+                      ),
+                      Spacer(),
+                      ComplexityWave(
+                        textColor,
+                        recipeScreenFontFamily,
+                        effort,
+                      ),
+                      Spacer(),
+                    ],
                   )
                 : Padding(
                     padding: EdgeInsets.symmetric(horizontal: 15),
@@ -1443,7 +1468,7 @@ class IngredientsScreen extends StatelessWidget {
                 Container(
                   width: 80,
                   child: Text(
-                    "${currentIngredient.amount == null ? "" : (currentIngredient.amount)} "
+                    "${currentIngredient.amount == null ? "" : (cutDouble(currentIngredient.amount))} "
                     "${currentIngredient.unit == null ? "" : currentIngredient.unit}",
                     textAlign: TextAlign.end,
                     style: TextStyle(

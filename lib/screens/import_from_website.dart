@@ -5,14 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
-import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../ad_related/ad.dart';
+import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../blocs/website_import/website_import_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
+import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/icon_info_message.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 
@@ -48,6 +49,18 @@ class ImportFromWebsiteScreen extends StatelessWidget {
         ),
         title: Text(I18n.of(context).import_from_website_short),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => InfoDialog(
+                  title: I18n.of(context).info,
+                  body: I18n.of(context).website_import_info,
+                ),
+              );
+            },
+          ),
           IconButton(
               icon: Icon(Icons.check),
               onPressed: () {

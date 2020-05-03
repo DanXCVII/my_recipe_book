@@ -44,7 +44,7 @@
   "in_minutes": "in minutes",
   "name": "name",
   "prep_time": "preperation time",
-  "cook_time": "cook-baking time",
+  "cook_time": "cook/bake. time",
   "total_time": "total time",
   "remaining_time": "remaining time",
   "section_name": "section name",
@@ -239,5 +239,6 @@
   "invalid_datatype": "invalid datatype",
   "datatype_not_supported": "the datatype of the selected file \"{datatype}\" is not supported\nsupported formats: \".zip\", \".mcb\"",
   "first_start_recipes": "Start-Rezepte",
-  "first_start_recipes_desc": "A few example recipes in german are already in this app.\nOf course you can delete them."
+  "first_start_recipes_desc": "A few example recipes in german are already in this app.\nOf course you can delete them.",
+  "website_import_info": "To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link."
 }

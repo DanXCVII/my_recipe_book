@@ -665,7 +665,6 @@ class HiveProvider {
     String categoryKey = getHiveKey(category);
 
     List<Recipe> recipes = [];
-    List<dynamic> keys = boxRecipeCategories.get(categoryKey);
     for (var recipeKey in boxRecipeCategories.get(categoryKey)) {
       recipes.add(await lazyBoxRecipes.get(recipeKey));
     }

@@ -120,7 +120,8 @@ String getRecipeNameOfStepImagePath(String fullImagePath) {
   return recipeName;
 }
 
-/// deletes the directory of the recipe under which the images are stored
+/// deletes the directory of the recipe under which the images are stored,
+/// if it exists
 Future<void> deleteRecipeData(String recipeName) async {
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDirFull(recipeName));

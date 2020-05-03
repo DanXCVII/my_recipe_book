@@ -122,8 +122,8 @@ class I18n implements WidgetsLocalizations {
   String get name => "name";
   /// "preperation time"
   String get prep_time => "preperation time";
-  /// "cook-baking time"
-  String get cook_time => "cook-baking time";
+  /// "cook/bake. time"
+  String get cook_time => "cook/bake. time";
   /// "total time"
   String get total_time => "total time";
   /// "remaining time"
@@ -514,6 +514,8 @@ class I18n implements WidgetsLocalizations {
   String get first_start_recipes => "Start-Rezepte";
   /// "A few example recipes in german are already in this app.\nOf course you can delete them."
   String get first_start_recipes_desc => "A few example recipes in german are already in this app.\nOf course you can delete them.";
+  /// "To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link."
+  String get website_import_info => "To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link.";
 }
 
 class _I18n_en_US extends I18n {
@@ -1246,6 +1248,9 @@ class _I18n_de_DE extends I18n {
   /// "Es sind ein paar Beispielrezepte eingetragen.\nDiese können natürlich auch gelöscht werden."
   @override
   String get first_start_recipes_desc => "Es sind ein paar Beispielrezepte eingetragen.\nDiese können natürlich auch gelöscht werden.";
+  /// "Um Rezepte schneller aus dem Internet zu importieren und den Link nicht kopieren zu müssen, nutze die \"Teilenfunktion\" des Webbrowsers deiner Wahl und wähle dort die App aus."
+  @override
+  String get website_import_info => "Um Rezepte schneller aus dem Internet zu importieren und den Link nicht kopieren zu müssen, nutze die \"Teilenfunktion\" des Webbrowsers deiner Wahl und wähle dort die App aus.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;
