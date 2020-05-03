@@ -126,7 +126,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   [PermissionGroup.storage]).then((updatedPermissions) {
                 if (updatedPermissions[PermissionGroup.storage] ==
                     PermissionStatus.granted) {
-                  if (_intentFailedImporting = false) {
+                  if (_intentFailedImporting == false) {
                     _intentFailedImporting = true;
 
                     initializeIntent().then((_) {});

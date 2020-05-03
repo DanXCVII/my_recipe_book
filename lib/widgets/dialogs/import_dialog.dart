@@ -27,8 +27,6 @@ class _ImportDialogState extends State<ImportDialog> {
   int totalListItems = 0;
   List<Recipe> selectedRecipes = [];
 
-  Flushbar _flush;
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -477,31 +475,5 @@ class _ImportDialogState extends State<ImportDialog> {
         ],
       ),
     );
-  }
-
-  void _showFlushInfo(String title, String body) {
-    if (_flush != null && _flush.isShowing()) {
-    } else {
-      _flush = Flushbar<bool>(
-        animationDuration: Duration(milliseconds: 300),
-        leftBarIndicatorColor: Colors.blue[300],
-        title: title,
-        message: body,
-        icon: Icon(
-          Icons.info_outline,
-          color: Colors.blue,
-        ),
-        mainButton: FlatButton(
-          onPressed: () {
-            _flush.dismiss(true); // result = true
-          },
-          child: Text(
-            "OK",
-            style: TextStyle(color: Colors.amber),
-          ),
-        ),
-      ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-        ..show(context).then((result) {});
-    }
   }
 }

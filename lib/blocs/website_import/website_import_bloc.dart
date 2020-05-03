@@ -178,7 +178,6 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     } catch (e) {
       return Tuple2<ImportState, Recipe>(ImportState.FAIL, null);
     }
-    return Tuple2<ImportState, Recipe>(ImportState.FAIL, null);
   }
 
   /// accepts the format
@@ -469,6 +468,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     } catch (e) {
       foundRecipeMap = false;
     }
+    print("foundRecipeMap: $foundRecipeMap");
     return null;
   }
 

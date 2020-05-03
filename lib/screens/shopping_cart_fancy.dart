@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/util/helper.dart';
 import 'package:share/share.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -9,8 +8,8 @@ import '../generated/i18n.dart';
 import '../local_storage/hive.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
+import '../util/helper.dart';
 import '../widgets/dialogs/info_dialog.dart';
-import '../widgets/dialogs/shopping_cart_add_dialog.dart';
 import '../widgets/icon_info_message.dart';
 import '../widgets/search.dart';
 import '../widgets/shopping_list.dart';
