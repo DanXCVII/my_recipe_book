@@ -609,6 +609,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                               I18n.of(context).with_meat,
                               vegetable,
                             );
+                          default:
+                            return null;
                         }
                       }).toList(),
                     ),

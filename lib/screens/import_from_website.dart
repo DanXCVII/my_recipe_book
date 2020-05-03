@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -44,6 +45,18 @@ class ImportFromWebsiteScreen extends StatelessWidget {
         ),
         title: Text(I18n.of(context).import_from_website_short),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => InfoDialog(
+                  title: I18n.of(context).info,
+                  body: I18n.of(context).website_import_info,
+                ),
+              );
+            },
+          ),
           IconButton(
               icon: Icon(Icons.check),
               onPressed: () {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/util/helper.dart';
+import 'package:share/share.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -24,76 +26,96 @@ class FancyShoppingCartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double scaleFactor = MediaQuery.of(context).size.height / 800;
-    return CustomScrollView(slivers: <Widget>[
-      SliverAppBar(
-        centerTitle: false,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.help_outline),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) => InfoDialog(
-                  title: I18n.of(context).shopping_cart_help,
-                  body: I18n.of(context).shopping_cart_help_desc,
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                  context: context,
-                  delegate: RecipeSearch(
-                    HiveProvider().getRecipeNames(),
-                    BlocProvider.of<ShoppingCartBloc>(context),
-                    HiveProvider().getRecipeTags(),
-                    HiveProvider().getCategoryNames()..remove('no category'),
-                  ));
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) => BlocProvider.value(
-                  value: BlocProvider.of<ShoppingCartBloc>(context),
-                  child: ShoppingCartAddDialog(),
-                ),
-              );
-            },
-          ),
-        ],
-        expandedHeight: scaleFactor * 200.0,
-        floating: false,
-        pinned: true,
-        flexibleSpace: FlexibleSpaceBar(
+    return BlocBuilder<ShoppingCartBloc, ShoppingCartState>(
+        builder: (context, state) {
+      return CustomScrollView(slivers: <Widget>[
+        SliverAppBar(
           centerTitle: false,
-          title: Text(I18n.of(context).shoppingcart),
-          background: shoppingCartImage,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.help_outline),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => InfoDialog(
+                    title: I18n.of(context).shopping_cart_help,
+                    body: I18n.of(context).shopping_cart_help_desc,
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.share),
+              onPressed: () {
+                if (state is LoadedShoppingCart) {
+                  String shoppingCartString =
+                      _getShoppingCartAsString(state.shoppingCart, context);
+                  if (shoppingCartString != "") {
+                    Share.share(shoppingCartString,
+                        subject: I18n.of(context).shopping_list);
+                  }
+                }
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                    context: context,
+                    delegate: RecipeSearch(
+                      HiveProvider().getRecipeNames(),
+                      BlocProvider.of<ShoppingCartBloc>(context),
+                      HiveProvider().getRecipeTags(),
+                      HiveProvider().getCategoryNames()..remove('no category'),
+                    ));
+              },
+            ),
+          ],
+          expandedHeight: scaleFactor * 200.0,
+          floating: false,
+          pinned: true,
+          flexibleSpace: FlexibleSpaceBar(
+            centerTitle: false,
+            title: Text(I18n.of(context).shoppingcart),
+            background: shoppingCartImage,
+          ),
         ),
-      ),
-      SliverPadding(
-        padding: EdgeInsets.all(12),
-        sliver: BlocBuilder<ShoppingCartBloc, ShoppingCartState>(
-            builder: (context, state) {
-          if (state is LoadingShoppingCart) {
-            return SliverList(
-                delegate: SliverChildListDelegate(
-                    [Center(child: CircularProgressIndicator())]));
-          } else if (state is LoadedShoppingCart) {
-            return SliverList(
-              delegate: SliverChildListDelegate(getRecipeShoppingList(
-                  state.shoppingCart, context, scaleFactor)),
-            );
-          } else {
-            return Text(state.toString());
-          }
-        }),
-      ),
-    ]);
+        SliverPadding(
+            padding: EdgeInsets.all(12),
+            sliver: (state is LoadingShoppingCart)
+                ? SliverList(
+                    delegate: SliverChildListDelegate(
+                        [Center(child: CircularProgressIndicator())]))
+                : (state is LoadedShoppingCart)
+                    ? SliverList(
+                        delegate: SliverChildListDelegate(getRecipeShoppingList(
+                            state.shoppingCart, context, scaleFactor)),
+                      )
+                    : Text(state.toString())),
+      ]);
+    });
+  }
+
+  String _getShoppingCartAsString(
+      Map<Recipe, List<CheckableIngredient>> shoppingCart,
+      BuildContext context) {
+    String shoppingCartString = "";
+
+    for (Recipe key in shoppingCart.keys) {
+      if (key.name == Constants.summary && shoppingCart[key].isNotEmpty) {
+        shoppingCartString += ("${I18n.of(context).shopping_list}:\n");
+        for (CheckableIngredient ingredient in shoppingCart[key]) {
+          shoppingCartString += "${ingredient.checked ? "✅ " : ""}";
+          shoppingCartString += ingredient.amount != null
+              ? "${cutDouble(ingredient.amount)} "
+              : "";
+          shoppingCartString +=
+              ingredient.unit != "" ? "${ingredient.unit} " : "";
+          shoppingCartString += "${ingredient.name}\n";
+        }
+      }
+    }
+    return shoppingCartString;
   }
 
   List<Widget> getRecipeShoppingList(

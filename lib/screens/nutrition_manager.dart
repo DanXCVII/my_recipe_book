@@ -64,8 +64,6 @@ class _NutritionManagerState extends State<NutritionManager> {
           if (state is LoadingNutritionManager) {
             return _getNutritionManagerLoadingScreen();
           } else if (state is LoadedNutritionManager) {
-            int i = -1;
-
             return Scaffold(
               appBar: GradientAppBar(
                 gradient: LinearGradient(

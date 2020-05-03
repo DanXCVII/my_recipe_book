@@ -562,12 +562,14 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
 
   void _choiceActionShare(PopupOptionsShare value, context) {
     if (value == PopupOptionsShare.EXPORT_TEXT) {
-      Share.share(_getRecipeAsString(recipe, context), subject: 'recipe');
+      Share.share(_getRecipeAsString(recipe, context),
+          subject: stringReplaceSpaceUnderscore(recipe.name));
     } else if (value == PopupOptionsShare.EXPORT_ZIP) {
       _exportRecipe(recipe).then((_) {});
     } else if (value == PopupOptionsShare.EXPORT_PDF) {
-      getRecipePdf(recipe, context)
-          .then((pdf) => Printing.sharePdf(bytes: pdf, filename: 'recipe.pdf'));
+      getRecipePdf(recipe, context).then((pdf) => Printing.sharePdf(
+          bytes: pdf,
+          filename: '${stringReplaceSpaceUnderscore(recipe.name)}.pdf'));
     }
   }
 
@@ -650,8 +652,8 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
       }
     } else if (recipe.ingredients.first.isNotEmpty) {
       for (int j = 0; j < recipe.ingredients.first.length; j++) {
-        recipeText += '${recipe.ingredients.first[j].name} '
-            '${recipe.ingredients.first[j].amount ?? ""} '
+        recipeText += '${recipe.ingredients.first[j].amount} '
+            '${recipe.ingredients.first[j].unit ?? ""} '
             '${recipe.ingredients.first[j].unit ?? ""}\n';
       }
       recipeText += '====================\n';
@@ -675,6 +677,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     if (recipe.notes != null && recipe.notes != '') {
       recipeText += '====================\n';
       recipeText += '${I18n.of(context).notes}: ${recipe.notes}\n';
+    }
+    if (recipe.source != null && recipe.source != '') {
+      recipeText += '====================\n';
+      recipeText += '${I18n.of(context).source}: ${recipe.source}\n';
     }
 
     return recipeText;

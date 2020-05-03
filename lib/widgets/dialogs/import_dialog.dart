@@ -1,18 +1,14 @@
-import 'dart:io';
-
 import 'package:flushbar/flushbar.dart';
-import 'package:flushbar/flushbar_route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/local_storage/io_operations.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:flutter/foundation.dart';
 
 import '../../blocs/import_recipe/import_recipe_bloc.dart';
 import '../../generated/i18n.dart';
+import '../../local_storage/io_operations.dart';
 import '../../models/recipe.dart';
 
 enum ImportStatus { Loading, Selection, Finished }

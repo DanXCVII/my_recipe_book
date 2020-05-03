@@ -6,9 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:hyphenator/hyphenator.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/models/string_int_tuple.dart';
 
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -17,6 +15,7 @@ import '../generated/i18n.dart';
 import '../local_storage/hive.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
+import '../models/string_int_tuple.dart';
 import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_card.dart';
 import '../widgets/recipe_filter_bar.dart';
@@ -228,6 +227,8 @@ class RecipeGridView extends StatelessWidget {
         return I18n.of(context).vegetarian;
       } else if (vegetable == Vegetable.VEGAN) {
         return I18n.of(context).vegan;
+      } else {
+        return null;
       }
     } else {
       return recipeTag.text;
