@@ -209,15 +209,33 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             return Scaffold(
               appBar: _buildAppBar(state.selectedIndex,
                   state.recipeCategoryOverview, state.title),
-              floatingActionButton: state.selectedIndex == 0 ||
-                      state.selectedIndex == 2
+              floatingActionButton: state.selectedIndex == 0
                   ? FloatingActionButtonMenu(
                       _introKeyOne,
                       _introKeyTwo,
                       showIntro: showIntro,
                       shoppingCartAdd: state.selectedIndex == 2 ? true : false,
                     )
-                  : null,
+                  : state.selectedIndex == 2
+                      ? FloatingActionButton(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: IconButton(
+                            icon: Icon(Icons.add_shopping_cart,
+                                color: Colors.white),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => BlocProvider.value(
+                                  value: BlocProvider.of<ShoppingCartBloc>(
+                                      context),
+                                  child: ShoppingCartAddDialog(),
+                                ),
+                              );
+                            },
+                          ),
+                          onPressed: () {},
+                        )
+                      : null,
               body: Row(
                 children: <Widget>[
                   MediaQuery.of(context).size.width > 900
@@ -625,32 +643,19 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
       FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         heroTag: null,
-        child: widget.shoppingCartAdd
-            ? IconButton(
-                icon: Icon(Icons.add_shopping_cart, color: Colors.white),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => BlocProvider.value(
-                      value: BlocProvider.of<ShoppingCartBloc>(context),
-                      child: ShoppingCartAddDialog(),
-                    ),
-                  );
-                },
-              )
-            : AnimatedBuilder(
-                animation: _controller,
-                builder: (BuildContext context, Widget child) {
-                  return Transform(
-                    transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
-                    alignment: FractionalOffset.center,
-                    child: Icon(
-                      _controller.isDismissed ? Icons.add : Icons.close,
-                      color: Colors.white,
-                    ),
-                  );
-                },
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (BuildContext context, Widget child) {
+            return Transform(
+              transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
+              alignment: FractionalOffset.center,
+              child: Icon(
+                _controller.isDismissed ? Icons.add : Icons.close,
+                color: Colors.white,
               ),
+            );
+          },
+        ),
         onPressed: () {
           if (_controller.isDismissed) {
             setState(() {

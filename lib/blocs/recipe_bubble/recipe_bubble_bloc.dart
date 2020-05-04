@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:my_recipe_book/local_storage/hive.dart';
 
 import '../../models/recipe.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;
@@ -19,10 +20,24 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
       if (state is LoadedRecipeBubbles) {
         if (rmState is RM.DeleteRecipeState) {
           if ((state as LoadedRecipeBubbles).recipes.contains(rmState.recipe)) {
-            add(RemoveRecipeBubble(rmState.recipe));
+            add(RemoveRecipeBubble([rmState.recipe]));
           }
+        } else if (rmState is RM.UpdateRecipeState) {
+          if ((state as LoadedRecipeBubbles)
+              .recipes
+              .contains(rmState.oldRecipe)) {
+            add(RemoveRecipeBubble([rmState.oldRecipe]));
+          }
+        } else if (rmState is RM.UpdateCategoryState ||
+            rmState is RM.DeleteCategoryState ||
+            rmState is RM.UpdateRecipeTagState ||
+            rmState is RM.DeleteRecipeTagState) {
+          add(ReloadRecipeBubbles());
         }
       }
+
+      // TODO: Change category name
+      // TODO: edited recipe
     });
   }
 
@@ -43,6 +58,8 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
       yield* _mapAddRecipeBubbleToState(event);
     } else if (event is RemoveRecipeBubble) {
       yield* _mapRemoveRecipeBubbleToState(event);
+    } else if (event is ReloadRecipeBubbles) {
+      yield* _mapReloadRecipeBubblesToState();
     }
   }
 
@@ -51,7 +68,7 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
     if ((state as LoadedRecipeBubbles).recipes.length < 3) {
       List<Recipe> recipes =
           List<Recipe>.from((state as LoadedRecipeBubbles).recipes)
-            ..add(event.recipe);
+            ..addAll(event.recipes);
 
       yield LoadedRecipeBubbles(recipes);
     }
@@ -59,10 +76,28 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
 
   Stream<RecipeBubbleState> _mapRemoveRecipeBubbleToState(
       RemoveRecipeBubble event) async* {
-    List<Recipe> recipes =
-        List<Recipe>.from((state as LoadedRecipeBubbles).recipes)
-          ..remove(event.recipe);
+    if (state is LoadedRecipeBubbles) {
+      List<Recipe> newRecipeList =
+          List<Recipe>.from((state as LoadedRecipeBubbles).recipes);
 
-    yield LoadedRecipeBubbles(recipes);
+      for (Recipe r in (state as LoadedRecipeBubbles).recipes) {
+        newRecipeList.remove(r);
+      }
+
+      yield LoadedRecipeBubbles(newRecipeList);
+    }
+  }
+
+  Stream<RecipeBubbleState> _mapReloadRecipeBubblesToState() async* {
+    if (state is LoadedRecipeBubbles) {
+      List<Recipe> newRecipeList = [];
+
+      for (int i = 0; i < (state as LoadedRecipeBubbles).recipes.length; i++) {
+        newRecipeList.add(await HiveProvider()
+            .getRecipeByName((state as LoadedRecipeBubbles).recipes[i].name));
+      }
+
+      yield LoadedRecipeBubbles(newRecipeList);
+    }
   }
 }

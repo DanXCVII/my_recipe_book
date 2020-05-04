@@ -395,10 +395,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                     );
                   } else if (isPinned) {
                     BlocProvider.of<RecipeBubbleBloc>(context)
-                        .add(RemoveRecipeBubble(recipe));
+                        .add(RemoveRecipeBubble([recipe]));
                   } else {
                     BlocProvider.of<RecipeBubbleBloc>(context)
-                        .add(AddRecipeBubble(recipe));
+                        .add(AddRecipeBubble([recipe]));
 
                     final scaffold = Scaffold.of(context);
                     scaffold.hideCurrentSnackBar();
