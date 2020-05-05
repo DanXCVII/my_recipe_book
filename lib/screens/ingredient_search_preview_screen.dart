@@ -14,7 +14,14 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
             MediaQuery.of(context).size.height - kToolbarHeight - 60
         ? MediaQuery.of(context).size.width * 0.7 * 1.155
         : MediaQuery.of(context).size.width * 0.7 * 1.155;
-    double height = width * 1.155;
+    width > 250 ? width = 250 : width = width;
+    double height = width * 1.9;
+    print(MediaQuery.of(context).size.width);
+
+    if (MediaQuery.of(context).size.width > 700) {
+      width = MediaQuery.of(context).size.width * 0.7;
+      height = width * 0.8;
+    }
 
     return Scaffold(
       appBar: GradientAppBar(
@@ -45,7 +52,14 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                 child: ListView(
                   children: <Widget>[
                     Container(
-                      height: height + 60,
+                      height: MediaQuery.of(context).size.height -
+                                  kToolbarHeight -
+                                  70 >
+                              height + 60
+                          ? MediaQuery.of(context).size.height -
+                              kToolbarHeight -
+                              70
+                          : height + 60,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
@@ -54,14 +68,22 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                               width: width,
                               decoration: BoxDecoration(
                                 color: Color(0xff161616),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
+                                borderRadius: BorderRadius.all(Radius.circular(
+                                    MediaQuery.of(context).size.width > 700
+                                        ? 30
+                                        : 40)),
                               ),
                               child: Center(
                                 child: Container(
-                                    height: height - 30,
+                                    height:
+                                        MediaQuery.of(context).size.width > 700
+                                            ? height - 20
+                                            : height - 80,
                                     width: width - 20,
-                                    child: VideoPlayerAd()
+                                    child: width > 300
+                                        ? Image.asset(
+                                            "images/tabletIngredientSearch.png")
+                                        : VideoPlayerAd()
                                     // Image.asset(
                                     //     "images/ingredient_search_preview.gif"),
                                     ),
@@ -89,32 +111,36 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                         child: Row(
                           children: <Widget>[
                             Padding(
-                              padding: const EdgeInsets.only(left: 22.0),
+                              padding:
+                                  const EdgeInsets.only(left: 22.0, right: 22),
                               child: Icon(Icons.shopping_cart,
                                   color: Colors.white),
                             ),
                             Spacer(),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Text(I18n.of(context).buy_pro_version,
-                                    style: TextStyle(
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    )),
-                                SizedBox(
-                                  height: 6,
-                                ),
-                                Text(
-                                  I18n.of(context).pro_version_desc,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.white,
+                            Container(
+                              width: MediaQuery.of(context).size.width - 107,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Text(I18n.of(context).buy_pro_version,
+                                      style: TextStyle(
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      )),
+                                  SizedBox(
+                                    height: 6,
                                   ),
-                                  textAlign: TextAlign.center,
-                                )
-                              ],
+                                  Text(
+                                    I18n.of(context).pro_version_desc,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  )
+                                ],
+                              ),
                             ),
                             Spacer(),
                             Container(
