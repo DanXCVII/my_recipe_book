@@ -207,7 +207,10 @@ class RecipeCardBig extends StatelessWidget {
                                       recipe.preperationTime != 0
                                   ? Expanded(
                                       child: Align(
-                                        alignment: Alignment.centerLeft,
+                                        alignment: recipe.cookingTime != null &&
+                                                recipe.cookingTime != 0
+                                            ? Alignment.centerLeft
+                                            : Alignment.center,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
@@ -253,7 +256,13 @@ class RecipeCardBig extends StatelessWidget {
                               recipe.totalTime != null && recipe.totalTime != 0
                                   ? Expanded(
                                       child: Align(
-                                        alignment: Alignment.centerRight,
+                                        alignment: recipe.preperationTime !=
+                                                    null &&
+                                                recipe.preperationTime != 0 &&
+                                                recipe.cookingTime != null &&
+                                                recipe.cookingTime != 0
+                                            ? Alignment.centerRight
+                                            : Alignment.center,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,

@@ -80,7 +80,7 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
       List<Recipe> newRecipeList =
           List<Recipe>.from((state as LoadedRecipeBubbles).recipes);
 
-      for (Recipe r in (state as LoadedRecipeBubbles).recipes) {
+      for (Recipe r in event.recipes) {
         newRecipeList.remove(r);
       }
 

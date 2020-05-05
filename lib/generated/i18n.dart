@@ -412,8 +412,8 @@ class I18n implements WidgetsLocalizations {
   String get invalid_url => "invalid url:\ncheck the info about supported websites in the infopanel below";
   /// "enter URL of website with recipe:"
   String get enter_url => "enter URL of website with recipe:";
-  /// "Some of the supported websites:"
-  String get supported_websites => "Some of the supported websites:";
+  /// "info about supported websites:"
+  String get supported_websites => "info about supported websites:";
   /// "Import failed. Page seems not yet supported"
   String get failed_import_not_supported => "Import failed. Page seems not yet supported";
   /// "All websites are supported which contain a standardized format. Thet's why only a part of the supported websites are listed here. In practise most websites shoulb be supported."
@@ -675,9 +675,9 @@ class _I18n_de_DE extends I18n {
   /// "Aufwand"
   @override
   String get effort => "Aufwand";
-  /// "Unterkategorien auswählen"
+  /// "Kategorien auswählen"
   @override
-  String get select_subcategories => "Unterkategorien auswählen";
+  String get select_subcategories => "Kategorien auswählen";
   /// "Kategorie auswählen"
   @override
   String get select_a_category => "Kategorie auswählen";
@@ -1062,15 +1062,15 @@ class _I18n_de_DE extends I18n {
   /// "URL zum Rezept:"
   @override
   String get enter_url => "URL zum Rezept:";
-  /// "Teil der unterstützten Webseiten:"
+  /// "Info über unterstützten Webseiten:"
   @override
-  String get supported_websites => "Teil der unterstützten Webseiten:";
+  String get supported_websites => "Info über unterstützten Webseiten:";
   /// "Import fehlgeschlagen. Webseite scheinbar noch nicht unterstützt."
   @override
   String get failed_import_not_supported => "Import fehlgeschlagen. Webseite scheinbar noch nicht unterstützt.";
-  /// "Es werden alle Webseiten unterstützt, die ein standardisiertes Format enthalten. Deshalb ist hier nur ein Teil der unterstützten Websites aufgeführt. In der Praxis sollten die meisten Websites unterstützt werden."
+  /// "Es werden alle Webseiten unterstützt, die ein standardisiertes Format enthalten. Deshalb ist hier nur ein Teil der unterstützten Webseiten aufgeführt. In der Praxis sollten die meisten Websites unterstützt werden."
   @override
-  String get standardized_format => "Es werden alle Webseiten unterstützt, die ein standardisiertes Format enthalten. Deshalb ist hier nur ein Teil der unterstützten Websites aufgeführt. In der Praxis sollten die meisten Websites unterstützt werden.";
+  String get standardized_format => "Es werden alle Webseiten unterstützt, die ein standardisiertes Format enthalten. Deshalb ist hier nur ein Teil der unterstützten Webseiten aufgeführt. In der Praxis sollten die meisten Websites unterstützt werden.";
   /// "Rezept-URL"
   @override
   String get recipe_url => "Rezept-URL";

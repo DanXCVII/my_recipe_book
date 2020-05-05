@@ -165,7 +165,12 @@ class _StepsState extends State<Steps> {
                               padding: const EdgeInsets.only(right: 12),
                               child: OutlineButton.icon(
                                 icon: Icon(Icons.remove_circle),
-                                label: Text(I18n.of(context).remove_step),
+                                label: Container(
+                                  width: MediaQuery.of(context).size.width < 412
+                                      ? 80
+                                      : null,
+                                  child: Text(I18n.of(context).remove_step),
+                                ),
                                 onPressed: () {
                                   _removeStep(widget.editRecipeName);
                                 },
@@ -177,7 +182,12 @@ class _StepsState extends State<Steps> {
                           : null,
                       OutlineButton.icon(
                         icon: Icon(Icons.add_circle),
-                        label: Text(I18n.of(context).add_step),
+                        label: Container(
+                          width: MediaQuery.of(context).size.width < 412
+                              ? 80
+                              : null,
+                          child: Text(I18n.of(context).add_step),
+                        ),
                         onPressed: () {
                           _addStep(widget.editRecipeName);
                         },
