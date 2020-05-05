@@ -35,9 +35,6 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
           add(ReloadRecipeBubbles());
         }
       }
-
-      // TODO: Change category name
-      // TODO: edited recipe
     });
   }
 

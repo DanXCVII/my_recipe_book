@@ -324,7 +324,7 @@ class RecipeImageItemBig extends StatelessWidget {
                                           padding: const EdgeInsets.fromLTRB(
                                               8, 8, 8, 8),
                                           child: Text(
-                                            "show overview",
+                                            I18n.of(context).show_overview,
                                             textAlign: TextAlign.center,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,

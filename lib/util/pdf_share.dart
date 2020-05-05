@@ -407,7 +407,6 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                           ),
                           recipe.source != "" && recipe.source != null
                               ? pw.Padding(
-                                  // TODO: Wrap in Container for avoiding overflow
                                   padding: pw.EdgeInsets.only(top: 8),
                                   child: pw.Row(
                                     crossAxisAlignment:
