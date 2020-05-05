@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
-import 'package:my_recipe_book/constants/global_constants.dart';
 
+import '../../../constants/global_constants.dart' as Constants;
 import '../../../local_storage/hive.dart';
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../models/recipe.dart';

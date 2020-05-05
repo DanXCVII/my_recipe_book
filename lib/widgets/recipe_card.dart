@@ -253,7 +253,6 @@ class RecipeCard extends StatelessWidget {
                                                   if (!showAds)
                                                     Ads.hideBottomBannerAd();
                                                 });
-                                              ;
                                             },
                                             child: Container(
                                               decoration: BoxDecoration(

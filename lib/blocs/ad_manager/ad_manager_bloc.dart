@@ -258,6 +258,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
   @override
   Future<void> close() {
+    _subscription.cancel();
     _periodicSub.cancel();
     return super.close();
   }

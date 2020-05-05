@@ -1,4 +1,3 @@
-import '../models/enums.dart';
 import '../models/ingredient.dart';
 
 String cutDouble(double number) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/app/app_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';

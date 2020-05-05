@@ -318,7 +318,6 @@ double getFirstFullNumber(String text) {
   bool foundDot = false;
   bool foundNumber = false;
   int startIndex;
-  int endIndex;
 
   for (int i = 0; i < text.length; i++) {
     if (startIndex == null && double.tryParse(text[i]) != null) {

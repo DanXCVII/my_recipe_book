@@ -65,8 +65,7 @@ class RecipeTagManagerBloc
 
   Stream<RecipeTagManagerState> _mapInitializeRecipeTagManagerToState(
       InitializeRecipeTagManager event) async* {
-    final List<StringIntTuple> recipeTags =
-        await HiveProvider().getRecipeTags();
+    final List<StringIntTuple> recipeTags = HiveProvider().getRecipeTags();
 
     yield LoadedRecipeTagManager(recipeTags);
   }

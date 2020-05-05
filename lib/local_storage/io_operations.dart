@@ -295,8 +295,6 @@ Future<List<String>> extractMRBzipGetNames(File recipeZipMrb) async {
   await exstractZip(recipeZipMrb, importDir.path);
   List importFiles = importDir.listSync(recursive: true);
 
-  bool importMulitiple = false;
-
   for (FileSystemEntity f in importFiles) {
     if (f.path.endsWith('.xml')) {
       return getRecipeNamesFromMRB((f as File).readAsStringSync());

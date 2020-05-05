@@ -113,7 +113,8 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
         },
         child: BlocBuilder<NutritionManagerBloc, NutritionManagerState>(
           builder: (context, state) {
-            if (state is LoadingNutritionManager) {
+            if (state is LoadingNutritionManager ||
+                state is InitialNutritionManagerState) {
               return _getNutritionManagerLoadingScreen();
             } else if (state is LoadedNutritionManager) {
               return Scaffold(
@@ -235,11 +236,10 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           }
                         },
                         save: (String name) {
-                          nutritionsController.addAll(
-                              {name: TextEditingController()});
+                          nutritionsController
+                              .addAll({name: TextEditingController()});
                           listTileKeys.add(Key(name));
-                          dismissibleKeys
-                              .add(Key('D-$name'));
+                          dismissibleKeys.add(Key('D-$name'));
                           BlocProvider.of<NutritionManagerBloc>(context)
                               .add(AddNutrition(name));
                         },

@@ -1,23 +1,19 @@
 part of 'recipe_bubble_bloc.dart';
 
-abstract class RecipeBubbleEvent extends Equatable {
+abstract class RecipeBubbleEvent {
   const RecipeBubbleEvent();
 }
 
 class AddRecipeBubble extends RecipeBubbleEvent {
-  final Recipe recipe;
+  final List<Recipe> recipes;
 
-  const AddRecipeBubble(this.recipe);
-
-  @override
-  List<Object> get props => [recipe];
+  const AddRecipeBubble(this.recipes);
 }
 
 class RemoveRecipeBubble extends RecipeBubbleEvent {
-  final Recipe recipe;
+  final List<Recipe> recipes;
 
-  RemoveRecipeBubble(this.recipe);
-
-  @override
-  List<Object> get props => [recipe];
+  RemoveRecipeBubble(this.recipes);
 }
+
+class ReloadRecipeBubbles extends RecipeBubbleEvent {}

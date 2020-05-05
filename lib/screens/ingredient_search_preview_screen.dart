@@ -10,6 +10,12 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width * 0.7 * 1.155 >
+            MediaQuery.of(context).size.height - kToolbarHeight - 60
+        ? MediaQuery.of(context).size.width * 0.7 * 1.155
+        : MediaQuery.of(context).size.width * 0.7 * 1.155;
+    double height = width * 1.155;
+
     return Scaffold(
       appBar: GradientAppBar(
         gradient: LinearGradient(
@@ -39,13 +45,13 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                 child: ListView(
                   children: <Widget>[
                     Container(
-                      height: MediaQuery.of(context).size.width * 1.4 + 60,
+                      height: height + 60,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Container(
-                              height: MediaQuery.of(context).size.width * 1.4,
-                              width: MediaQuery.of(context).size.width * 0.7,
+                              height: height,
+                              width: width,
                               decoration: BoxDecoration(
                                 color: Color(0xff161616),
                                 borderRadius:
@@ -53,12 +59,8 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                               ),
                               child: Center(
                                 child: Container(
-                                    height: (MediaQuery.of(context).size.width *
-                                            0.7) *
-                                        1.65,
-                                    width: MediaQuery.of(context).size.width *
-                                            0.7 -
-                                        20,
+                                    height: height - 30,
+                                    width: width - 20,
                                     child: VideoPlayerAd()
                                     // Image.asset(
                                     //     "images/ingredient_search_preview.gif"),

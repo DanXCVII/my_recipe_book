@@ -204,7 +204,7 @@
   "failed_to_connect_to_url": "failed to connect to given url",
   "invalid_url": "invalid url:\ncheck the info about supported websites in the infopanel below",
   "enter_url": "enter URL of website with recipe:",
-  "supported_websites": "Some of the supported websites:",
+  "supported_websites": "info about supported websites:",
   "failed_import_not_supported": "Import failed. Page seems not yet supported",
   "standardized_format": "All websites are supported which contain a standardized format. Thet's why only a part of the supported websites are listed here. In practise most websites shoulb be supported.",
   "recipe_url": "recipe-url",

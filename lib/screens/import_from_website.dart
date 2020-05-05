@@ -196,6 +196,8 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                             textColor: Colors.white,
                           ),
                         );
+                      } else {
+                        return Text(state.toString());
                       }
                     },
                   ),

@@ -56,6 +56,8 @@ class RandomRecipeExplorerBloc
               selectedCategory:
                   (state as LoadedRandomRecipeExplorer).categories[
                       (state as LoadedRandomRecipeExplorer).selectedCategory]));
+        } else if (rmState is RM.MoveCategoryState) {
+          add(MoveCategory(rmState.oldIndex, rmState.newIndex));
         }
       }
     });
@@ -84,6 +86,8 @@ class RandomRecipeExplorerBloc
       yield* _mapUpdateRecipeToState(event);
     } else if (event is ChangeCategory) {
       yield* _mapChangeCategoryToState(event);
+    } else if (event is MoveCategory) {
+      _mapMoveCategoryToState(event);
     }
   }
 
@@ -271,6 +275,27 @@ class RandomRecipeExplorerBloc
         randomRecipes[0] == null ? null : randomRecipes,
         categories,
         selectedCategory,
+      );
+    }
+  }
+
+  Stream<RandomRecipeExplorerState> _mapMoveCategoryToState(
+      MoveCategory event) async* {
+    if (state is LoadedRandomRecipeExplorer) {
+      List<String> oldCategoryRandomImageList =
+          (state as LoadedRandomRecipeExplorer).categories;
+      // verify if working
+      List<String> newCategoryRandomImageList = oldCategoryRandomImageList
+        ..insert(
+            event.newIndex + 1, oldCategoryRandomImageList[event.oldIndex + 1])
+        ..removeAt(event.oldIndex > event.newIndex
+            ? event.oldIndex + 2
+            : event.oldIndex + 1);
+
+      yield LoadedRandomRecipeExplorer(
+        (state as LoadedRandomRecipeExplorer).randomRecipes,
+        newCategoryRandomImageList,
+        (state as LoadedRandomRecipeExplorer).selectedCategory,
       );
     }
   }

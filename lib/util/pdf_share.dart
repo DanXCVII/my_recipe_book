@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_recipe_book/constants/global_constants.dart';
+import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 import 'package:my_recipe_book/models/enums.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -61,6 +61,17 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
     } else {
       tagsString += ", ${tag.text}";
     }
+  }
+
+  String source = "";
+  int sourceCutIndex = recipe.imagePath != Constants.noRecipeImage ? 33 : 65;
+  for (int i = 0; i < recipe.source.length / sourceCutIndex; i++) {
+    source += recipe.source.substring(
+        i * sourceCutIndex,
+        (i + 1) * sourceCutIndex > recipe.source.length
+            ? recipe.source.length
+            : (i + 1) * sourceCutIndex);
+    source += "\n";
   }
 
   List<pw.Widget> stepWidgets = [
@@ -175,7 +186,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
             pw.Wrap(
               direction: pw.Axis.horizontal,
               children: [
-                recipe.imagePath != noRecipeImage
+                recipe.imagePath != Constants.noRecipeImage
                     ? pw.Container(
                         height: 190,
                         width: 190,
@@ -190,9 +201,10 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                     : null,
                 pw.Padding(
                   padding: pw.EdgeInsets.only(
-                    left: recipe.imagePath != noRecipeImage ? 15 : 0,
-                    top: recipe.imagePath != noRecipeImage ? 0 : 10,
-                    bottom: recipe.imagePath != noRecipeImage ? 0 : 10,
+                    left: recipe.imagePath != Constants.noRecipeImage ? 15 : 0,
+                    top: recipe.imagePath != Constants.noRecipeImage ? 0 : 10,
+                    bottom:
+                        recipe.imagePath != Constants.noRecipeImage ? 0 : 10,
                   ),
                   child: pw.Container(
                     width: 270,
@@ -395,27 +407,28 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                           ),
                           recipe.source != "" && recipe.source != null
                               ? pw.Padding(
+                                  // TODO: Wrap in Container for avoiding overflow
                                   padding: pw.EdgeInsets.only(top: 8),
-                                  child: pw.RichText(
-                                    text: pw.TextSpan(
-                                      children: [
-                                        pw.TextSpan(
-                                          text: I18n.of(bContext).source + ": ",
-                                          style: pw.TextStyle(
-                                              font: latoTtf,
-                                              color: PdfColors.grey700,
-                                              fontSize: 11),
-                                        ),
-                                        pw.TextSpan(
-                                          text: recipe.source,
-                                          style: pw.TextStyle(
+                                  child: pw.Row(
+                                    crossAxisAlignment:
+                                        pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.Text(
+                                        I18n.of(bContext).source + ": ",
+                                        style: pw.TextStyle(
                                             font: latoTtf,
-                                            fontSize: 11,
-                                            color: PdfColors.blue,
-                                          ),
-                                        )
-                                      ],
-                                    ),
+                                            color: PdfColors.grey700,
+                                            fontSize: 11),
+                                      ),
+                                      pw.Text(
+                                        source,
+                                        style: pw.TextStyle(
+                                          font: latoTtf,
+                                          fontSize: 11,
+                                          color: PdfColors.blue,
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 )
                               : null,
