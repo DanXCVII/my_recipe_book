@@ -221,8 +221,6 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    listTileKeys.add(Key('${listTileKeys.length}'));
-                    dismissibleKeys.add(Key('D-${dismissibleKeys.length}'));
                     showDialog(
                       context: context,
                       builder: (_) => TextFieldDialog(
@@ -266,13 +264,15 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                 .add(MoveNutrition(oldIndex, newIndex));
                           },
                           children: List<Widget>.generate(
-                            state.nutritions.length,
+                            dismissibleKeys.length,
                             (i) => Dismissible(
                               key: dismissibleKeys[i],
                               background: _getPrimaryBackgroundDismissible(),
                               secondaryBackground:
                                   _getSecondaryBackgroundDismissible(),
                               onDismissed: (_) {
+                                BlocProvider.of<NutritionManagerBloc>(context)
+                                    .add(DeleteNutrition(state.nutritions[i]));
                                 setState(() {
                                   dismissibleKeys =
                                       (List<Key>.from(dismissibleKeys))
@@ -281,9 +281,6 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                     ..removeAt(i);
                                   nutritionsController
                                       .remove(state.nutritions[i]);
-                                  BlocProvider.of<NutritionManagerBloc>(context)
-                                      .add(
-                                          DeleteNutrition(state.nutritions[i]));
                                 });
                               },
                               child: _getNutritionListTile(state.nutritions[i],
