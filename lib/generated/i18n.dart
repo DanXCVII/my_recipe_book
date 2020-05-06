@@ -60,12 +60,12 @@ class I18n implements WidgetsLocalizations {
   String get import_recipe_s => "import recipe/s";
   /// "share/backup recipe/s"
   String get export_recipe_s => "share/backup recipe/s";
-  /// "remove section"
-  String get remove_section => "remove section";
-  /// "remove ingredient"
-  String get remove_ingredient => "remove ingredient";
-  /// "remove step"
-  String get remove_step => "remove step";
+  /// "remove ${newLine}section"
+  String remove_section(String newLine) => "remove ${newLine}section";
+  /// "remove ${newLine}ingredient"
+  String remove_ingredient(String newLine) => "remove ${newLine}ingredient";
+  /// "remove ${newLine}step"
+  String remove_step(String newLine) => "remove ${newLine}step";
   /// "share/save as file"
   String get export_zip => "share/save as file";
   /// "share as PDF"
@@ -88,14 +88,14 @@ class I18n implements WidgetsLocalizations {
   String get add_recipe => "add recipe";
   /// "add favorites"
   String get add_favorites => "add favorites";
-  /// "add section"
-  String get add_section => "add section";
-  /// "add ingredient"
-  String get add_ingredient => "add ingredient";
+  /// "add ${newLine}section"
+  String add_section(String newLine) => "add ${newLine}section";
+  /// "add ${newLine}ingredient"
+  String add_ingredient(String newLine) => "add ${newLine}ingredient";
   /// "your"
   String get your => "your";
-  /// "add step"
-  String get add_step => "add step";
+  /// "add ${newLine}step"
+  String add_step(String newLine) => "add ${newLine}step";
   /// "add nutritions"
   String get add_nutritions => "add nutritions";
   /// "increase servings"
@@ -542,15 +542,15 @@ class _I18n_de_DE extends I18n {
   /// "Rezepte teilen/sichern"
   @override
   String get export_recipe_s => "Rezepte teilen/sichern";
-  /// "Bereich entfernen"
+  /// "Bereich ${newLine}entfernen"
   @override
-  String get remove_section => "Bereich entfernen";
-  /// "Zutat entfernen"
+  String remove_section(String newLine) => "Bereich ${newLine}entfernen";
+  /// "Zutat ${newLine}entfernen"
   @override
-  String get remove_ingredient => "Zutat entfernen";
-  /// "Schritt entfernen"
+  String remove_ingredient(String newLine) => "Zutat ${newLine}entfernen";
+  /// "Schritt ${newLine}entfernen"
   @override
-  String get remove_step => "Schritt entfernen";
+  String remove_step(String newLine) => "Schritt ${newLine}entfernen";
   /// "als Datei teilen/sichern"
   @override
   String get export_zip => "als Datei teilen/sichern";
@@ -584,18 +584,18 @@ class _I18n_de_DE extends I18n {
   /// "Favoriten hinzufügen"
   @override
   String get add_favorites => "Favoriten hinzufügen";
-  /// "Bereich hinzufügen"
+  /// "Bereich ${newLine}hinzufügen"
   @override
-  String get add_section => "Bereich hinzufügen";
-  /// "Zutat hinzufügen"
+  String add_section(String newLine) => "Bereich ${newLine}hinzufügen";
+  /// "Zutat ${newLine}hinzufügen"
   @override
-  String get add_ingredient => "Zutat hinzufügen";
+  String add_ingredient(String newLine) => "Zutat ${newLine}hinzufügen";
   /// "Deine"
   @override
   String get your => "Deine";
-  /// "Schritt hinzufügen"
+  /// "Schritt ${newLine}hinzufügen"
   @override
-  String get add_step => "Schritt hinzufügen";
+  String add_step(String newLine) => "Schritt ${newLine}hinzufügen";
   /// "Nährwerte hinzufügen"
   @override
   String get add_nutritions => "Nährwerte hinzufügen";

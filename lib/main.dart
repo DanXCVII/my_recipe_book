@@ -53,7 +53,6 @@ import 'screens/recipe_screen.dart';
 import 'screens/recipe_tag_manager_screen.dart';
 
 void main() {
-  debugPaintSizeEnabled = false;
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
 
   runApp(
@@ -65,7 +64,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  final appTitle = 'Drawer Demo';
   static bool initialized = false;
 
   MyApp();

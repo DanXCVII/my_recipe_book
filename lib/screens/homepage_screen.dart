@@ -10,6 +10,7 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:rate_my_app/rate_my_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcase.dart';
 import 'package:showcaseview/showcase_widget.dart';
@@ -39,6 +40,16 @@ import 'r_category_overview.dart';
 import 'random_recipe.dart';
 import 'settings_screen.dart';
 import 'shopping_cart_fancy.dart';
+
+RateMyApp _rateMyApp = RateMyApp(
+  preferencesPrefix: 'rateMyApp_',
+  minDays: 0,
+  minLaunches: 0,
+  remindDays: 3,
+  remindLaunches: 10,
+  googlePlayIdentifier: 'com.release.my_recipe_book',
+  // appStoreIdentifier: '1491556149',
+);
 
 class MyHomePage extends StatefulWidget {
   final bool showIntro;
@@ -86,6 +97,39 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     // Listen to lifecycle events.
     WidgetsBinding.instance.addObserver(this);
+
+    _rateMyApp.init().then((_) {
+      if (_rateMyApp.shouldOpenDialog) {
+        _rateMyApp.showRateDialog(
+          context,
+          title: 'Rate this app', // The dialog title.
+          message:
+              'If you like this app, please take a little bit of your time to review it !\nIt really helps us and it shouldn\'t take you more than one minute.', // The dialog message.
+          rateButton: 'RATE', // The dialog "rate" button text.
+          noButton: 'NO THANKS', // The dialog "no" button text.
+          laterButton: 'MAYBE LATER', // The dialog "later" button text.
+          listener: (button) {
+            // The button click listener (useful if you want to cancel the click event).
+            switch (button) {
+              case RateMyAppDialogButton.rate:
+                print('Clicked on "Rate".');
+                break;
+              case RateMyAppDialogButton.later:
+                print('Clicked on "Later".');
+                break;
+              case RateMyAppDialogButton.no:
+                print('Clicked on "No".');
+                break;
+            }
+
+            return true; // Return false if you want to cancel the click event.
+          },
+          // dialogStyle: DialogStyle(),
+          onDismissed: () =>
+              _rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed),
+        );
+      }
+    });
   }
 
   @override

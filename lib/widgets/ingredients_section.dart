@@ -94,7 +94,13 @@ class _IngredientsState extends State<Ingredients> {
                             : null,
                         width:
                             MediaQuery.of(context).size.width < 412 ? 80 : null,
-                        child: Text(I18n.of(context).remove_section),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(I18n.of(context).remove_section(
+                              MediaQuery.of(context).size.width < 412
+                                  ? "\n"
+                                  : "")),
+                        ),
                       ),
                       onPressed: () {
                         updateAndRemoveController();
@@ -107,13 +113,8 @@ class _IngredientsState extends State<Ingredients> {
                 : null,
             OutlineButton.icon(
               icon: Icon(Icons.add_circle),
-              label: Container(
-                padding: MediaQuery.of(context).size.width < 412
-                    ? EdgeInsets.symmetric(vertical: 8)
-                    : null,
-                width: MediaQuery.of(context).size.width < 412 ? 80 : null,
-                child: Text(I18n.of(context).add_section),
-              ),
+              label: Text(I18n.of(context).add_section(
+                  MediaQuery.of(context).size.width < 412 ? "\n" : "")),
               onPressed: () {
                 updateAndAddController();
               },
@@ -312,7 +313,11 @@ class _IngredientSectionState extends State<IngredientSection> {
             children: <Widget>[
               OutlineButton.icon(
                   icon: Icon(Icons.add_circle_outline),
-                  label: Text(I18n.of(context).add_ingredient),
+                  label: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(I18n.of(context).add_ingredient(
+                        MediaQuery.of(context).size.width < 412 ? "\n" : "")),
+                  ),
                   onPressed: () {
                     setState(() {
                       widget.ingredientNameController[widget.sectionNumber]
