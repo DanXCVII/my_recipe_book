@@ -149,9 +149,9 @@ class _NutritionManagerState extends State<NutritionManager> {
                             onDismissed: (_) {
                               setState(() {
                                 dismissibleKeys =
-                                    List<Key>.from(dismissibleKeys)
+                                    (List<Key>.from(dismissibleKeys))
                                       ..removeAt(index);
-                                listTileKeys = List<Key>.from(listTileKeys)
+                                listTileKeys = (List<Key>.from(listTileKeys))
                                   ..removeAt(index);
                                 nutritionsController
                                     .remove(state.nutritions[index]);

@@ -74,6 +74,7 @@ dependencies:
   pdf: ^1.6.1 # Apache 2.0
   printing: ^3.3.1 # Apache 2.0
   buy_me_a_coffee_widget: ^1.0.0 # MIT
+  rate_my_app: ^0.6.0+2 # MIT
 
 dev_dependencies:
   flutter_test:

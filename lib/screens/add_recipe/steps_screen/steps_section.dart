@@ -165,11 +165,13 @@ class _StepsState extends State<Steps> {
                               padding: const EdgeInsets.only(right: 12),
                               child: OutlineButton.icon(
                                 icon: Icon(Icons.remove_circle),
-                                label: Container(
-                                  width: MediaQuery.of(context).size.width < 412
-                                      ? 80
-                                      : null,
-                                  child: Text(I18n.of(context).remove_step),
+                                label: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(I18n.of(context).remove_step(
+                                      MediaQuery.of(context).size.width < 412
+                                          ? "\n"
+                                          : "")),
                                 ),
                                 onPressed: () {
                                   _removeStep(widget.editRecipeName);
@@ -182,11 +184,12 @@ class _StepsState extends State<Steps> {
                           : null,
                       OutlineButton.icon(
                         icon: Icon(Icons.add_circle),
-                        label: Container(
-                          width: MediaQuery.of(context).size.width < 412
-                              ? 80
-                              : null,
-                          child: Text(I18n.of(context).add_step),
+                        label: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(I18n.of(context).add_step(
+                              MediaQuery.of(context).size.width < 412
+                                  ? "\n"
+                                  : "")),
                         ),
                         onPressed: () {
                           _addStep(widget.editRecipeName);

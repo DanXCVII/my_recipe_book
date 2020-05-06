@@ -56,7 +56,6 @@ import 'screens/recipe_screen.dart';
 import 'screens/recipe_tag_manager_screen.dart';
 
 void main() {
-  debugPaintSizeEnabled = false;
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
 
   runApp(

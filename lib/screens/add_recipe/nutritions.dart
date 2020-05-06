@@ -275,9 +275,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                               onDismissed: (_) {
                                 setState(() {
                                   dismissibleKeys =
-                                      List<Key>.from(dismissibleKeys)
+                                      (List<Key>.from(dismissibleKeys))
                                         ..removeAt(i);
-                                  listTileKeys = List<Key>.from(listTileKeys)
+                                  listTileKeys = (List<Key>.from(listTileKeys))
                                     ..removeAt(i);
                                   nutritionsController
                                       .remove(state.nutritions[i]);
