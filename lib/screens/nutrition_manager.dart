@@ -100,8 +100,6 @@ class _NutritionManagerState extends State<NutritionManager> {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    listTileKeys.add(Key('${listTileKeys.length}'));
-                    dismissibleKeys.add(Key('D-${dismissibleKeys.length}'));
                     showDialog(
                       context: context,
                       builder: (_) => TextFieldDialog(
@@ -117,6 +115,10 @@ class _NutritionManagerState extends State<NutritionManager> {
                         save: (String name) {
                           BlocProvider.of<NutritionManagerBloc>(context)
                               .add(AddNutrition(name));
+                          nutritionsController
+                              .addAll({name: TextEditingController()});
+                          dismissibleKeys.add(Key('D-$name'));
+                          listTileKeys.add(Key(name));
                         },
                         hintText: I18n.of(context).nutrition,
                       ),
@@ -140,7 +142,7 @@ class _NutritionManagerState extends State<NutritionManager> {
                               .add(MoveNutrition(oldIndex, newIndex));
                         },
                         children: List.generate(
-                          state.nutritions.length,
+                          dismissibleKeys.length,
                           (index) => Dismissible(
                             key: dismissibleKeys[index],
                             background: _getPrimaryBackgroundDismissible(),
