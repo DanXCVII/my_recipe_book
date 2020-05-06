@@ -36,13 +36,6 @@ class RecipeTagManager extends StatelessWidget {
                 colors: [Color(0xffAF1E1E), Color(0xff641414)],
               ),
               title: Text(I18n.of(context).manage_recipe_tags),
-              actions: <Widget>[
-                IconButton(
-                    icon: Icon(Icons.check),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    })
-              ],
             ),
             floatingActionButton: FloatingActionButton(
                 backgroundColor: Color(0xFF790604),

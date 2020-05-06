@@ -91,12 +91,6 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                       );
                     },
                   ),
-                  IconButton(
-                    icon: Icon(Icons.check),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
                 ],
               ),
               floatingActionButton: FloatingActionButton(

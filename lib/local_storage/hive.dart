@@ -724,29 +724,28 @@ class HiveProvider {
   ////////////// nutrition related //////////////
   Future<void> renameNutrition(String oldName, String newName) async {
     List<String> nutritions = boxOrder.get('nutritions');
+    if (nutritions.contains(oldName)) {
+      nutritions[nutritions.indexOf(oldName)] = newName;
 
-    await boxOrder.put(
-        'nutritions',
-        nutritions
-          ..remove(oldName)
-          ..add(newName));
+      await boxOrder.put('nutritions', nutritions);
 
-    // for (var key in lazyBoxRecipes.keys) {
-    //   Recipe oldHiveRecipe = await lazyBoxRecipes.get(key);
+      // for (var key in lazyBoxRecipes.keys) {
+      //   Recipe oldHiveRecipe = await lazyBoxRecipes.get(key);
 
-    //   for (int i = 0; i < oldHiveRecipe.nutritions.length; i++) {
-    //     if (oldHiveRecipe.nutritions[i].name == oldName) {
-    //       Recipe newHiveRecipe = oldHiveRecipe.copyWith(
-    //           nutritions: oldHiveRecipe.nutritions
-    //               .map((item) => item.name == oldName
-    //                   ? Nutrition(name: newName, amountUnit: item.amountUnit)
-    //                   : item)
-    //               .toList());
-    //       await lazyBoxRecipes.put(key, newHiveRecipe);
-    //       break;
-    //     }
-    //   }
-    // }
+      //   for (int i = 0; i < oldHiveRecipe.nutritions.length; i++) {
+      //     if (oldHiveRecipe.nutritions[i].name == oldName) {
+      //       Recipe newHiveRecipe = oldHiveRecipe.copyWith(
+      //           nutritions: oldHiveRecipe.nutritions
+      //               .map((item) => item.name == oldName
+      //                   ? Nutrition(name: newName, amountUnit: item.amountUnit)
+      //                   : item)
+      //               .toList());
+      //       await lazyBoxRecipes.put(key, newHiveRecipe);
+      //       break;
+      //     }
+      //   }
+      // }
+    }
   }
 
   /// adds the nutrition to hive if not already existing

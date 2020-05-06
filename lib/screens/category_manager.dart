@@ -151,13 +151,6 @@ class CategoryManager extends StatelessWidget {
           colors: [Color(0xffAF1E1E), Color(0xff641414)],
         ),
         title: Text(I18n.of(context).manage_categories),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.check),
-              onPressed: () {
-                Navigator.pop(context);
-              })
-        ],
       ),
       body: Center(
         child: CircularProgressIndicator(),

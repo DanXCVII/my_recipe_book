@@ -45,8 +45,8 @@ import 'shopping_cart_fancy.dart';
 
 RateMyApp _rateMyApp = RateMyApp(
   preferencesPrefix: 'rateMyApp_',
-  minDays: 0,
-  minLaunches: 0,
+  minDays: 7,
+  minLaunches: 10,
   remindDays: 3,
   remindLaunches: 5,
   googlePlayIdentifier: 'com.release.my_recipe_book',
