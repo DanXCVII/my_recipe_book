@@ -86,11 +86,19 @@ class RecipeOverviewBloc
 
   Stream<RecipeOverviewState> _mapLoadCategoryRecipeOverviewToState(
       LoadCategoryRecipeOverview event) async* {
-    final List<Recipe> recipes =
-        await HiveProvider().getCategoryRecipes(event.category);
-    final String randomRecipeImage = _getRandomRecipeImage(recipes);
+    final String randomRecipeImage = (await HiveProvider()
+            .getRandomRecipeOfCategory(category: event.category))
+        .imagePreviewPath;
+
+    yield LoadingRecipes(
+      randomImage: randomRecipeImage,
+      category: event.category,
+    );
+
     final RSort categorySort =
         await HiveProvider().getSortOrder(event.category);
+    final List<Recipe> recipes =
+        await HiveProvider().getCategoryRecipes(event.category);
     final List<Recipe> sortedRecipes = sortRecipes(categorySort, recipes);
 
     unfilteredRecipes = List<Recipe>.from(sortedRecipes);
@@ -105,9 +113,18 @@ class RecipeOverviewBloc
 
   Stream<RecipeOverviewState> _mapLoadVegetableRecipeOverviewToState(
       LoadVegetableRecipeOverview event) async* {
+    final String randomRecipeImage =
+        (await HiveProvider().getRandomRecipeOfVegetable(event.vegetable))
+            .imagePreviewPath;
+
+    yield LoadingRecipes(
+      randomImage: randomRecipeImage,
+      vegetable: event.vegetable,
+    );
+
     final List<Recipe> recipes =
         await HiveProvider().getVegetableRecipes(event.vegetable);
-    final String randomRecipeImage = _getRandomRecipeImage(recipes);
+
     unfilteredRecipes = List<Recipe>.from(recipes);
 
     yield LoadedRecipeOverview(
@@ -120,9 +137,18 @@ class RecipeOverviewBloc
 
   Stream<RecipeOverviewState> _mapLoadRecipeTagRecipeOverviewToState(
       LoadRecipeTagRecipeOverview event) async* {
+    final String randomRecipeImage =
+        (await HiveProvider().getRandomRecipeOfRecipeTag(event.recipeTag.text))
+            .imagePreviewPath;
+    print(randomRecipeImage);
+    print(event.recipeTag);
+    yield LoadingRecipes(
+      randomImage: randomRecipeImage,
+      recipeTag: event.recipeTag,
+    );
+
     final List<Recipe> recipes =
         await HiveProvider().getRecipeTagRecipes(event.recipeTag.text);
-    final String randomRecipeImage = _getRandomRecipeImage(recipes);
     unfilteredRecipes = List<Recipe>.from(recipes);
 
     yield LoadedRecipeOverview(

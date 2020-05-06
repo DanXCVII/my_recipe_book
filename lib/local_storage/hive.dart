@@ -683,6 +683,46 @@ class HiveProvider {
       recipeKeys = List<String>.from(boxRecipeCategories.get(categoryKey));
     }
 
+    return await getRandomRecipeFromKeyList(recipeKeys,
+        excludedRecipe: excludedRecipe);
+  }
+
+  Future<Recipe> getRandomRecipeOfVegetable(Vegetable vegetable,
+      {Recipe excludedRecipe}) async {
+    List<String> recipeKeys = [];
+
+    if (vegetable == null) {
+      recipeKeys = lazyBoxRecipes.keys.map((key) => key as String).toList();
+    } else {
+      Box<String> boxVegetable = _getBoxVegetable(vegetable);
+
+      for (var key in boxVegetable.keys) {
+        recipeKeys.add(boxVegetable.get(key));
+      }
+    }
+
+    return await getRandomRecipeFromKeyList(recipeKeys,
+        excludedRecipe: excludedRecipe);
+  }
+
+  Future<Recipe> getRandomRecipeOfRecipeTag(String recipeTag,
+      {Recipe excludedRecipe}) async {
+    List<String> recipeKeys;
+
+    if (recipeTag == null) {
+      recipeKeys = lazyBoxRecipes.keys.map((key) => key as String).toList();
+    } else {
+      String recipeTagKey = getHiveKey(recipeTag);
+
+      recipeKeys = List<String>.from(boxRecipeTagsList.get(recipeTagKey));
+    }
+
+    return await getRandomRecipeFromKeyList(recipeKeys,
+        excludedRecipe: excludedRecipe);
+  }
+
+  Future<Recipe> getRandomRecipeFromKeyList(List<String> recipeKeys,
+      {Recipe excludedRecipe}) async {
     if (excludedRecipe != null && recipeKeys.length > 1) {
       String hiveRecipeKey = getHiveKey(excludedRecipe.name);
       recipeKeys.remove(hiveRecipeKey);

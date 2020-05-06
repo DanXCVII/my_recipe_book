@@ -365,6 +365,8 @@ class MyApp extends StatelessWidget {
             case "/recipe-tag-recipes-overview":
               final RecipeGridViewArguments args = settings.arguments;
 
+              Ads.showBottomBannerAd();
+
               return CupertinoPageRoute(
                 settings: RouteSettings(name: "recipeRoute"),
                 builder: (BuildContext context) => MultiBlocProvider(
@@ -380,7 +382,7 @@ class MyApp extends StatelessWidget {
                         ),
                     ),
                   ],
-                  child: RecipeGridView(),
+                  child: Ads().getAdPage(RecipeGridView(), context),
                 ),
               );
 

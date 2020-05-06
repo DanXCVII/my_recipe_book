@@ -34,7 +34,7 @@ class RecipeTagWrap extends StatelessWidget {
                 recipeTag: recipeTags[index],
                 shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
               ),
-            );
+            ); // Not hiding the banner ad because it's shown on the recipe screen
           },
           child: Container(
             decoration: BoxDecoration(

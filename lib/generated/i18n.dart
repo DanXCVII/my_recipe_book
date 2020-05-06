@@ -518,6 +518,10 @@ class I18n implements WidgetsLocalizations {
   String get website_import_info => "To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link.";
   /// "show overview"
   String get show_overview => "show overview";
+  /// "Rate this app"
+  String get rate_this_app => "Rate this app";
+  /// "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute."
+  String get rate_this_app_desc => "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute.";
 }
 
 class _I18n_en_US extends I18n {
