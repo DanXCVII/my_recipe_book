@@ -44,6 +44,72 @@ class RecipeGridView extends StatelessWidget {
       builder: (context, state) {
         if (state is LoadingRecipeOverview) {
           return Center(child: CircularProgressIndicator());
+        } else if (state is LoadingRecipes) {
+          String title = _getTitle(
+              context, state.category, state.vegetable, state.recipeTag);
+
+          if (state.randomImage != null) {
+            return Scaffold(
+              body: CustomScrollView(
+                slivers: <Widget>[
+                  SliverAppBar(
+                    actions: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.search),
+                        onPressed: () {
+                          showSearch(
+                              context: context,
+                              delegate: RecipeSearch(
+                                HiveProvider().getRecipeNames(),
+                                BlocProvider.of<ShoppingCartBloc>(context),
+                                HiveProvider().getRecipeTags(),
+                                HiveProvider().getCategoryNames()
+                                  ..remove('no category'),
+                              ));
+                        },
+                      ),
+                    ],
+                    expandedHeight:
+                        scaleFactor * 200.0 < 180 ? 180 : scaleFactor * 200.0,
+                    floating: false,
+                    pinned: false,
+                    flexibleSpace: FlexibleSpaceBar(
+                      title: Text(title),
+                      background: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: state.randomImage == Constants.noRecipeImage
+                                ? AssetImage(state.randomImage)
+                                : FileImage(File(state.randomImage)),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.0)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (_, index) => Container(
+                        height: MediaQuery.of(context).size.height / 2,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            );
+          } else {
+            return Container();
+          }
         } else if (state is LoadedRecipeOverview) {
           String title = _getTitle(
               context, state.category, state.vegetable, state.recipeTag);

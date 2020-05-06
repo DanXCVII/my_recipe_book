@@ -683,6 +683,46 @@ class HiveProvider {
       recipeKeys = List<String>.from(boxRecipeCategories.get(categoryKey));
     }
 
+    return await getRandomRecipeFromKeyList(recipeKeys,
+        excludedRecipe: excludedRecipe);
+  }
+
+  Future<Recipe> getRandomRecipeOfVegetable(Vegetable vegetable,
+      {Recipe excludedRecipe}) async {
+    List<String> recipeKeys = [];
+
+    if (vegetable == null) {
+      recipeKeys = lazyBoxRecipes.keys.map((key) => key as String).toList();
+    } else {
+      Box<String> boxVegetable = _getBoxVegetable(vegetable);
+
+      for (var key in boxVegetable.keys) {
+        recipeKeys.add(boxVegetable.get(key));
+      }
+    }
+
+    return await getRandomRecipeFromKeyList(recipeKeys,
+        excludedRecipe: excludedRecipe);
+  }
+
+  Future<Recipe> getRandomRecipeOfRecipeTag(String recipeTag,
+      {Recipe excludedRecipe}) async {
+    List<String> recipeKeys;
+
+    if (recipeTag == null) {
+      recipeKeys = lazyBoxRecipes.keys.map((key) => key as String).toList();
+    } else {
+      String recipeTagKey = getHiveKey(recipeTag);
+
+      recipeKeys = List<String>.from(boxRecipeTagsList.get(recipeTagKey));
+    }
+
+    return await getRandomRecipeFromKeyList(recipeKeys,
+        excludedRecipe: excludedRecipe);
+  }
+
+  Future<Recipe> getRandomRecipeFromKeyList(List<String> recipeKeys,
+      {Recipe excludedRecipe}) async {
     if (excludedRecipe != null && recipeKeys.length > 1) {
       String hiveRecipeKey = getHiveKey(excludedRecipe.name);
       recipeKeys.remove(hiveRecipeKey);
@@ -723,29 +763,29 @@ class HiveProvider {
 
   ////////////// nutrition related //////////////
   Future<void> renameNutrition(String oldName, String newName) async {
-   List<String> nutritions = boxOrder.get('nutritions');
+    List<String> nutritions = boxOrder.get('nutritions');
     if (nutritions.contains(oldName)) {
       nutritions[nutritions.indexOf(oldName)] = newName;
 
       await boxOrder.put('nutritions', nutritions);
-}
 
-    // for (var key in lazyBoxRecipes.keys) {
-    //   Recipe oldHiveRecipe = await lazyBoxRecipes.get(key);
+      // for (var key in lazyBoxRecipes.keys) {
+      //   Recipe oldHiveRecipe = await lazyBoxRecipes.get(key);
 
-    //   for (int i = 0; i < oldHiveRecipe.nutritions.length; i++) {
-    //     if (oldHiveRecipe.nutritions[i].name == oldName) {
-    //       Recipe newHiveRecipe = oldHiveRecipe.copyWith(
-    //           nutritions: oldHiveRecipe.nutritions
-    //               .map((item) => item.name == oldName
-    //                   ? Nutrition(name: newName, amountUnit: item.amountUnit)
-    //                   : item)
-    //               .toList());
-    //       await lazyBoxRecipes.put(key, newHiveRecipe);
-    //       break;
-    //     }
-    //   }
-    // }
+      //   for (int i = 0; i < oldHiveRecipe.nutritions.length; i++) {
+      //     if (oldHiveRecipe.nutritions[i].name == oldName) {
+      //       Recipe newHiveRecipe = oldHiveRecipe.copyWith(
+      //           nutritions: oldHiveRecipe.nutritions
+      //               .map((item) => item.name == oldName
+      //                   ? Nutrition(name: newName, amountUnit: item.amountUnit)
+      //                   : item)
+      //               .toList());
+      //       await lazyBoxRecipes.put(key, newHiveRecipe);
+      //       break;
+      //     }
+      //   }
+      // }
+    }
   }
 
   /// adds the nutrition to hive if not already existing
