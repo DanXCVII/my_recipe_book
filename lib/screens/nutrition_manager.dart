@@ -85,12 +85,6 @@ class _NutritionManagerState extends State<NutritionManager> {
                       );
                     },
                   ),
-                  IconButton(
-                    icon: Icon(Icons.check),
-                    onPressed: () {
-                      editingFinished();
-                    },
-                  ),
                 ],
               ),
               floatingActionButton: FloatingActionButton(

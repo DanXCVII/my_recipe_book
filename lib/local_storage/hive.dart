@@ -723,13 +723,12 @@ class HiveProvider {
 
   ////////////// nutrition related //////////////
   Future<void> renameNutrition(String oldName, String newName) async {
-    List<String> nutritions = boxOrder.get('nutritions');
+   List<String> nutritions = boxOrder.get('nutritions');
+    if (nutritions.contains(oldName)) {
+      nutritions[nutritions.indexOf(oldName)] = newName;
 
-    await boxOrder.put(
-        'nutritions',
-        nutritions
-          ..remove(oldName)
-          ..add(newName));
+      await boxOrder.put('nutritions', nutritions);
+}
 
     // for (var key in lazyBoxRecipes.keys) {
     //   Recipe oldHiveRecipe = await lazyBoxRecipes.get(key);
