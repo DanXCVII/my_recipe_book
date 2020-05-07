@@ -53,6 +53,8 @@ class Recipe extends Equatable {
   final List<StringIntTuple> tags;
   @HiveField(20)
   final String source;
+  @HiveField(21)
+  final String servingName;
 
   Recipe({
     @required this.name,
@@ -62,6 +64,7 @@ class Recipe extends Equatable {
     this.cookingTime = 0,
     this.totalTime = 0,
     this.servings,
+    this.servingName,
     this.categories = const [],
     this.ingredientsGlossary = const [],
     this.ingredients = const [[]],
@@ -87,6 +90,7 @@ class Recipe extends Equatable {
         'cookingTime : $cookingTime\n'
         'totalTime : $totalTime\n'
         'servings : $servings\n'
+        'servingName: $servingName\n'
         'ingredientsGlossary : ${ingredientsGlossary.toString()}\n'
         'ingredients : ${ingredients.toString()}\n'
         'vegetable : ${vegetable.toString()}\n'
@@ -122,6 +126,7 @@ class Recipe extends Equatable {
       totalTime: json['totalTime'],
       effort: json['complexity'],
       servings: json['servings'],
+      servingName: json.containsKey('servingName') ? json['servingName'] : null,
       categories: List<String>.from(json['categories']),
       ingredientsGlossary: List<String>.from(json['ingredientsGlossary']),
       stepImages: List<List<dynamic>>.from(json['stepImages'])
@@ -157,6 +162,7 @@ class Recipe extends Equatable {
         'cookingTime': cookingTime,
         'totalTime': totalTime,
         'servings': servings,
+        'servingName': servingName,
         'complexity': effort,
         'categories': categories,
         'ingredientsGlossary': ingredientsGlossary,
@@ -182,6 +188,7 @@ class Recipe extends Equatable {
     double cookingTime,
     double totalTime,
     double servings,
+    String servingName,
     List<String> ingredientsGlossary,
     List<List<Ingredient>> ingredients,
     Vegetable vegetable,
@@ -205,6 +212,7 @@ class Recipe extends Equatable {
       cookingTime: cookingTime ?? this.cookingTime,
       totalTime: totalTime ?? this.totalTime,
       servings: servings ?? this.servings,
+      servingName: servingName ?? this.servingName,
       ingredientsGlossary: ingredientsGlossary ?? this.ingredientsGlossary,
       ingredients: ingredients ?? this.ingredients,
       vegetable: vegetable ?? this.vegetable,
@@ -231,6 +239,7 @@ class Recipe extends Equatable {
         cookingTime,
         totalTime,
         servings,
+        servingName,
         ingredientsGlossary,
         ingredients,
         vegetable,

@@ -526,6 +526,10 @@ class I18n implements WidgetsLocalizations {
   String get rate_this_app_desc => "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute.";
   /// "and many more!"
   String get and_many_more => "and many more!";
+  /// "amount"
+  String get amount => "amount";
+  /// "Fix the issues with the red marked text fields"
+  String get check_red_fields_desc => "Fix the issues with the red marked text fields";
 }
 
 class _I18n_en_US extends I18n {
@@ -1270,6 +1274,12 @@ class _I18n_de_DE extends I18n {
   /// "und viele weitere!"
   @override
   String get and_many_more => "und viele weitere!";
+  /// "Menge"
+  @override
+  String get amount => "Menge";
+  /// "Behebe die Fehler der rot markierten Felder"
+  @override
+  String get check_red_fields_desc => "Behebe die Fehler der rot markierten Felder";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

@@ -14,6 +14,7 @@ class FinishedEditing extends IngredientsEvent {
   final bool goBack;
 
   final double servings;
+  final String servingName;
   final List<List<Ingredient>> ingredients;
   final List<String> ingredientsGlossary;
   final Vegetable vegetable;
@@ -22,6 +23,7 @@ class FinishedEditing extends IngredientsEvent {
     this.editingRecipe,
     this.goBack,
     this.servings,
+    this.servingName,
     this.ingredients,
     this.ingredientsGlossary,
     this.vegetable,
@@ -32,6 +34,7 @@ class FinishedEditing extends IngredientsEvent {
         editingRecipe,
         goBack,
         servings,
+        servingName,
         ingredients,
         ingredientsGlossary,
         vegetable,

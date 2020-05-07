@@ -38,7 +38,7 @@ class _ImportDialogState extends State<ImportDialog> {
               : I18n.of(context).select_recipes_to_import),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       content: Container(
-        width: MediaQuery.of(context).size.width > 360 ? 360 : null,
+        width: MediaQuery.of(context).size.width > 305 ? 305 : null,
         child: BlocListener<ImportRecipeBloc, ImportRecipeState>(
           listener: (context, state) {
             if (state is ImportingRecipes) {
@@ -91,9 +91,9 @@ class _ImportDialogState extends State<ImportDialog> {
                   state.readyToImportRecipes.isEmpty
                       ? null
                       : Container(
-                          width: MediaQuery.of(context).size.width * 0.7 > 300
+                          width: MediaQuery.of(context).size.width * 0.77 > 300
                               ? 300
-                              : MediaQuery.of(context).size.width * 0.7,
+                              : MediaQuery.of(context).size.width * 0.77,
                           decoration: BoxDecoration(
                             color: Color.fromRGBO(0, 0, 0, 0.2),
                             borderRadius: BorderRadius.only(
@@ -124,9 +124,9 @@ class _ImportDialogState extends State<ImportDialog> {
                         : totalListItems == 2
                             ? 130
                             : totalListItems == 3 ? 195 : 280,
-                    width: MediaQuery.of(context).size.width * 0.7 > 300
+                    width: MediaQuery.of(context).size.width * 0.77 > 300
                         ? 300
-                        : MediaQuery.of(context).size.width * 0.7,
+                        : MediaQuery.of(context).size.width * 0.77,
                     child: ListView(
                       children: List.generate(
                           state.readyToImportRecipes.length == 0
@@ -228,7 +228,9 @@ class _ImportDialogState extends State<ImportDialog> {
                   SizedBox(height: 6),
                   Container(
                     height: 20,
-                    width: MediaQuery.of(context).size.width * 0.75,
+                    width: MediaQuery.of(context).size.width * 0.7 > 300
+                        ? 300
+                        : MediaQuery.of(context).size.width * 0.7,
                     child: Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -265,7 +267,9 @@ class _ImportDialogState extends State<ImportDialog> {
                     ),
                   ),
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.75,
+                    width: MediaQuery.of(context).size.width * 0.7 > 300
+                        ? 300
+                        : MediaQuery.of(context).size.width * 0.7,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -355,7 +359,9 @@ class _ImportDialogState extends State<ImportDialog> {
                   ),
                   Container(
                     height: 20,
-                    width: MediaQuery.of(context).size.width * 0.75,
+                    width: MediaQuery.of(context).size.width * 0.7 > 300
+                        ? 300
+                        : MediaQuery.of(context).size.width * 0.7,
                     child: Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -392,7 +398,9 @@ class _ImportDialogState extends State<ImportDialog> {
                     ),
                   ),
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.75,
+                    width: MediaQuery.of(context).size.width * 0.7 > 300
+                        ? 300
+                        : MediaQuery.of(context).size.width * 0.7,
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
