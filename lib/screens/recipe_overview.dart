@@ -46,12 +46,9 @@ class RecipeGridView extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         } else if (state is LoadingRecipes) {
           String title = _getTitle(
-              context,
-              (state as LoadingRecipes).category,
-              (state as LoadingRecipes).vegetable,
-              (state as LoadingRecipes).recipeTag);
+              context, state.category, state.vegetable, state.recipeTag);
 
-          if ((state as LoadingRecipes).randomImage != null) {
+          if (state.randomImage != null) {
             return Scaffold(
               body: CustomScrollView(
                 slivers: <Widget>[
