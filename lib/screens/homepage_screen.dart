@@ -263,21 +263,18 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   : state.selectedIndex == 2
                       ? FloatingActionButton(
                           backgroundColor: Theme.of(context).primaryColor,
-                          child: IconButton(
-                            icon: Icon(Icons.add_shopping_cart,
-                                color: Colors.white),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (_) => BlocProvider.value(
-                                  value: BlocProvider.of<ShoppingCartBloc>(
-                                      context),
-                                  child: ShoppingCartAddDialog(),
-                                ),
-                              );
-                            },
-                          ),
-                          onPressed: () {},
+                          child: Icon(Icons.add_shopping_cart,
+                              color: Colors.white),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => BlocProvider.value(
+                                value:
+                                    BlocProvider.of<ShoppingCartBloc>(context),
+                                child: ShoppingCartAddDialog(),
+                              ),
+                            );
+                          },
                         )
                       : null,
               body: Row(
