@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sequence_animation/flutter_sequence_animation.dart';
 import 'package:my_recipe_book/blocs/splash_screen/splash_screen_bloc.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key key}) : super(key: key);
@@ -84,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen>
                           child: FittedBox(
                             fit: BoxFit.fill,
                             child: Text(
-                              "My RecipeBook",
+                              I18n.of(context).my_recipe_book,
                               style: TextStyle(
                                 fontFamily: "Righteous",
                                 color: Colors.black,

@@ -1,4 +1,5 @@
 {
+  "my_recipe_book": "My RecipeBook",
   "choose_a_theme": "Choose a theme",
   "swype_your_recipes": "Swype your recipes",
   "if_you_cant_decide_random_recipe_explorer": "If you can’t decide what recipe to cook, use random recipe explorer.",
@@ -43,8 +44,8 @@
   "servings": "servings",
   "in_minutes": "in minutes",
   "name": "name",
-  "prep_time": "preperation time",
-  "cook_time": "cook/bake. time",
+  "prep_time": "prep. time",
+  "cook_time": "cook. time",
   "total_time": "total time",
   "remaining_time": "remaining time",
   "section_name": "section name",
@@ -123,7 +124,7 @@
   "professional_search": "professional search",
   "enter_some_information": "enter some ingredients",
   "no_matching_recipes": "no matching recipes",
-  "ingredient_matches": "ingredient-matches",
+  "ingredient_matches": "matching ingredients",
   "delete_ingredient": "delete ingredient",
   "manage_ingredients": "manage ingredients",
   "ingredient_already_exists": "ingredient already exists",
@@ -228,5 +229,6 @@
   "website_import_info": "To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link.",
   "show_overview": "show overview",
   "rate_this_app": "Rate this app",
-  "rate_this_app_desc": "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute."
+  "rate_this_app_desc": "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute.",
+  "and_many_more": "and many more!"
 }

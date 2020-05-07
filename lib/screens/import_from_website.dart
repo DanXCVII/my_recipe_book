@@ -340,14 +340,18 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
   bool _isExpanded = false;
   List<String> _supportedWebsites = [
     "DE: chefkoch.de",
+    "DE: lecker.de",
     "DE: kochbar.de",
-    "DE: elavegan.de",
-    "EN: allrecipes.com"
+    "DE: essen-und-trinken.de",
+    "DE: eatsmarter.de",
+    "EN: allrecipes.com",
   ];
   List<String> _websiteUrls = [
     "https://www.chefkoch.de",
+    "https://www.lecker.de",
     "https://www.kochbar.de/",
-    "https://elavegan.com/de/",
+    "https://www.essen-und-trinken.de/",
+    "https://eatsmarter.de/",
     "https://www.allrecipes.com/",
   ];
 
@@ -428,7 +432,8 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                                   ),
                                 ),
                               ),
-                      )..insert(
+                      )
+                        ..insert(
                           0,
                           ListTile(
                             title: Text(
@@ -438,7 +443,9 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                               ),
                             ),
                           ),
-                        ),
+                        )
+                        ..add(ListTile(
+                            title: Text(I18n.of(context).and_many_more))),
                     ),
                   )
                 : Container(),
