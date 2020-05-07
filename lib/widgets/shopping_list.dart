@@ -73,7 +73,8 @@ class ShoppingList extends StatelessWidget {
               ),
             );
           }
-        }).toList(),
+        }).toList()
+          ..add(Center(child: Container(height: 60))),
       ),
     );
   }

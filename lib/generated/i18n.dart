@@ -549,9 +549,9 @@ class _I18n_de_DE extends I18n {
   /// "Teile Rezepte entweder als:\n- Datei, damit du sie auf anderen Geräten in der App hinzufügen kannst\n- in Textform oder\n- als PDF Dokument"
   @override
   String get multiple_devices_use_export_as_zip_etc => "Teile Rezepte entweder als:\n- Datei, damit du sie auf anderen Geräten in der App hinzufügen kannst\n- in Textform oder\n- als PDF Dokument";
-  /// "Dem Einkaufswagen hinzufügen"
+  /// "Der Einkaufsliste hinzufügen"
   @override
-  String get add_to_shoppingcart => "Dem Einkaufswagen hinzufügen";
+  String get add_to_shoppingcart => "Der Einkaufsliste hinzufügen";
   /// "Für ein entspannteres Einkaufserlebnis kannst du die Zutaten der Rezepte deiner Einkaufsliste hinzufügen."
   @override
   String get for_more_relaxed_shopping_add_to_shoppingcart => "Für ein entspannteres Einkaufserlebnis kannst du die Zutaten der Rezepte deiner Einkaufsliste hinzufügen.";
@@ -597,9 +597,9 @@ class _I18n_de_DE extends I18n {
   /// "editieren"
   @override
   String get edit => "editieren";
-  /// "Einkaufswagen"
+  /// "Einkaufsliste"
   @override
-  String get shoppingcart => "Einkaufswagen";
+  String get shoppingcart => "Einkaufsliste";
   /// "Einkaufsliste"
   @override
   String get shopping_list => "Einkaufsliste";
@@ -720,9 +720,9 @@ class _I18n_de_DE extends I18n {
   /// "Einkaufen"
   @override
   String get basket => "Einkaufen";
-  /// "Dein Einkaufswagen ist leer"
+  /// "Deine Einkaufsliste ist leer"
   @override
-  String get shopping_cart_is_empty => "Dein Einkaufswagen ist leer";
+  String get shopping_cart_is_empty => "Deine Einkaufsliste ist leer";
   /// "Zufällig"
   @override
   String get explore => "Zufällig";
@@ -1197,12 +1197,12 @@ class _I18n_de_DE extends I18n {
   /// "Tags"
   @override
   String get tags => "Tags";
-  /// "Einkaufswagen Hilfe"
+  /// "Einkaufsliste Hilfe"
   @override
-  String get shopping_cart_help => "Einkaufswagen Hilfe";
-  /// "Um Zutaten zum Einkaufswagen hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder vom Einkaufswagen zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt."
+  String get shopping_cart_help => "Einkaufsliste Hilfe";
+  /// "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt."
   @override
-  String get shopping_cart_help_desc => "Um Zutaten zum Einkaufswagen hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder vom Einkaufswagen zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt.";
+  String get shopping_cart_help_desc => "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt.";
   /// "aufwendige Animationen"
   @override
   String get complex_animations => "aufwendige Animationen";
