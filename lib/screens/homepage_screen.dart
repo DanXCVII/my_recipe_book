@@ -45,8 +45,8 @@ RateMyApp _rateMyApp = RateMyApp(
   preferencesPrefix: 'rateMyApp_',
   minDays: 0,
   minLaunches: 0,
-  remindDays: 3,
-  remindLaunches: 5,
+  remindDays: 2,
+  remindLaunches: 2,
   googlePlayIdentifier: 'com.release.my_recipe_book',
   // appStoreIdentifier: '1491556149',
 );
