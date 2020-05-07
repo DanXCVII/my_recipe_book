@@ -122,10 +122,10 @@ class I18n implements WidgetsLocalizations {
   String get in_minutes => "in minutes";
   /// "name"
   String get name => "name";
-  /// "preperation time"
-  String get prep_time => "preperation time";
-  /// "cook/bake. time"
-  String get cook_time => "cook/bake. time";
+  /// "prep. time"
+  String get prep_time => "prep. time";
+  /// "cook. time"
+  String get cook_time => "cook. time";
   /// "total time"
   String get total_time => "total time";
   /// "remaining time"
@@ -282,8 +282,8 @@ class I18n implements WidgetsLocalizations {
   String get enter_some_information => "enter some ingredients";
   /// "no matching recipes"
   String get no_matching_recipes => "no matching recipes";
-  /// "ingredient-matches"
-  String get ingredient_matches => "ingredient-matches";
+  /// "matching ingredients"
+  String get ingredient_matches => "matching ingredients";
   /// "delete ingredient"
   String get delete_ingredient => "delete ingredient";
   /// "manage ingredients"

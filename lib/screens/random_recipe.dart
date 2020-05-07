@@ -154,20 +154,22 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                   )
                 : null,
             MediaQuery.of(context).size.width <= 750 ? Divider() : null,
-            Row(
-              children: <Widget>[
-                MediaQuery.of(context).size.width > 750
-                    ? _getCategoriesSelectorSideList(
-                        state.categories,
-                        state.categories[state.selectedCategory],
-                      )
-                    : null,
-                Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(),
+            Expanded(
+              child: Row(
+                children: <Widget>[
+                  MediaQuery.of(context).size.width > 750
+                      ? _getCategoriesSelectorSideList(
+                          state.categories,
+                          state.categories[state.selectedCategory],
+                        )
+                      : null,
+                  Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
-                ),
-              ]..removeWhere((item) => item == null),
+                ]..removeWhere((item) => item == null),
+              ),
             )
           ]..removeWhere((item) => item == null));
         } else if (state is LoadedRandomRecipeExplorer) {
