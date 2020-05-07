@@ -370,8 +370,11 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                         ),
                                         pw.TextSpan(
                                           text: recipe.servings.toString() +
-                                              " " +
-                                              I18n.of(bContext).persons,
+                                                      " " +
+                                                      recipe.servingName !=
+                                                  null
+                                              ? recipe.servingName
+                                              : I18n.of(bContext).persons,
                                           style: pw.TextStyle(
                                               font: latoBTtf,
                                               fontSize: 11,

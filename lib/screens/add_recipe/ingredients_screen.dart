@@ -52,6 +52,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
   final List<List<TextEditingController>> ingredientUnitController = [[]];
   final List<TextEditingController> ingredientGlossaryController = [];
   final TextEditingController servingsController = TextEditingController();
+  final TextEditingController servingsNameController = TextEditingController();
 
   final MyVegetableWrapper selectedRecipeVegetable = MyVegetableWrapper();
   FocusNode _focusNode = FocusNode();
@@ -194,6 +195,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                     key: _formKey,
                     child: Ingredients(
                       servingsController,
+                      servingsNameController,
                       ingredientNameController,
                       ingredientAmountController,
                       ingredientUnitController,
@@ -231,6 +233,10 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
       selectedRecipeVegetable.setVegetableStatus(recipe.vegetable);
     } else {
       selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
+    }
+
+    if (recipe.servingName != null) {
+      servingsNameController.text = recipe.servingName;
     }
 
     if (recipe.servings != null)
@@ -294,7 +300,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
       case Validator.REQUIRED_FIELDS:
         _showFlushInfo(
           I18n.of(context).check_filled_in_information,
-          I18n.of(context).check_filled_in_information_description,
+          I18n.of(context).check_red_fields_desc,
         );
 
         break;
@@ -330,6 +336,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
           (servingsController.text == "" || servingsController.text == "0")
               ? null
               : double.parse(servingsController.text),
+          servingsNameController.text,
           _getIngredientsList(
             ingredientNameController,
             ingredientAmountController,
@@ -355,6 +362,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
           (servingsController.text == "" || servingsController.text == "0")
               ? null
               : double.parse(servingsController.text),
+          servingsNameController.text,
           cleanIngredientsData,
           glossary,
           selectedRecipeVegetable.vegetableStatus,

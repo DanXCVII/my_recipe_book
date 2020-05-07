@@ -121,6 +121,7 @@ Tuple2<Recipe, String> getRecipeFromMRB(String xmlData) {
       Recipe(
         name: recipeName,
         servings: getServingsFromMRB(xmlData),
+        servingName: "servings",
         ingredients: [ingredients],
         steps: steps,
         stepImages: List<List<String>>.generate(steps.length, (i) => []),

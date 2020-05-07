@@ -1600,7 +1600,8 @@ class IngredientsScreen extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 8.0),
                                     child: Text(
-                                      I18n.of(context).servings,
+                                      currentRecipe.servingName ??
+                                          I18n.of(context).servings,
                                       style: TextStyle(
                                         color: textColor,
                                         fontSize: headingSize,

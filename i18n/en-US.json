@@ -230,5 +230,7 @@
   "show_overview": "show overview",
   "rate_this_app": "Rate this app",
   "rate_this_app_desc": "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute.",
-  "and_many_more": "and many more!"
+  "and_many_more": "and many more!",
+  "amount": "amount",
+  "check_red_fields_desc": "Fix the issues with the red marked text fields"
 }

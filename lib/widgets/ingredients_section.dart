@@ -12,14 +12,17 @@ class Ingredients extends StatefulWidget {
   final List<String> ingredientNames;
 
   final TextEditingController servingsController;
+  final TextEditingController servingsNameController;
 
   Ingredients(
-      this.servingsController,
-      this.ingredientNameController,
-      this.ingredientAmountController,
-      this.ingredientUnitController,
-      this.ingredientGlossary,
-      this.ingredientNames);
+    this.servingsController,
+    this.servingsNameController,
+    this.ingredientNameController,
+    this.ingredientAmountController,
+    this.ingredientUnitController,
+    this.ingredientGlossary,
+    this.ingredientNames,
+  );
 
   @override
   State<StatefulWidget> createState() {
@@ -28,29 +31,63 @@ class Ingredients extends StatefulWidget {
 }
 
 class _IngredientsState extends State<Ingredients> {
+  bool initializedServingsNameController = false;
+
   @override
   Widget build(BuildContext context) {
+    if (!initializedServingsNameController &&
+        widget.servingsNameController.text == "") {
+      widget.servingsNameController.text = I18n.of(context).servings;
+      initializedServingsNameController = true;
+    }
+
     // Column with all the data of the ingredients inside like heading, textFields etc.
     Column sections = new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
           padding:
-              const EdgeInsets.only(left: 12, top: 22, bottom: 12, right: 200),
-          child: TextFormField(
-            controller: widget.servingsController,
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (stringIsValidDouble(value) == false && value != "") {
-                return I18n.of(context).no_valid_number;
-              }
-              return null;
-            },
-            decoration: InputDecoration(
-              filled: true,
-              labelText: I18n.of(context).servings,
-              icon: Icon(Icons.local_dining),
-            ),
+              const EdgeInsets.only(left: 12, top: 22, bottom: 12, right: 50),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                flex: 2,
+                child: TextFormField(
+                  controller: widget.servingsController,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (stringIsValidDouble(value) == false && value != "") {
+                      return I18n.of(context).no_valid_number;
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    labelText: I18n.of(context).amount,
+                    icon: Icon(Icons.local_dining),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 6,
+              ),
+              Expanded(
+                flex: 3,
+                child: TextFormField(
+                  controller: widget.servingsNameController,
+                  validator: (value) {
+                    if (value == "") {
+                      return I18n.of(context).field_must_not_be_empty;
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    labelText: I18n.of(context).servings,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         Padding(
@@ -113,8 +150,11 @@ class _IngredientsState extends State<Ingredients> {
                 : null,
             OutlineButton.icon(
               icon: Icon(Icons.add_circle),
-              label: Text(I18n.of(context).add_section(
-                  MediaQuery.of(context).size.width < 412 ? "\n" : "")),
+              label: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(I18n.of(context).add_section(
+                    MediaQuery.of(context).size.width < 412 ? "\n" : "")),
+              ),
               onPressed: () {
                 updateAndAddController();
               },
