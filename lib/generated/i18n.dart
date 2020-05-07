@@ -32,6 +32,8 @@ class I18n implements WidgetsLocalizations {
   @override
   TextDirection get textDirection => TextDirection.ltr;
 
+  /// "My RecipeBook"
+  String get my_recipe_book => "My RecipeBook";
   /// "Choose a theme"
   String get choose_a_theme => "Choose a theme";
   /// "Swype your recipes"
@@ -522,6 +524,8 @@ class I18n implements WidgetsLocalizations {
   String get rate_this_app => "Rate this app";
   /// "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute."
   String get rate_this_app_desc => "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute.";
+  /// "and many more!"
+  String get and_many_more => "and many more!";
 }
 
 class _I18n_en_US extends I18n {
@@ -534,6 +538,9 @@ class _I18n_en_US extends I18n {
 class _I18n_de_DE extends I18n {
   const _I18n_de_DE();
 
+  /// "Mein Kochbuch"
+  @override
+  String get my_recipe_book => "Mein Kochbuch";
   /// "Unterstützte Themes"
   @override
   String get choose_a_theme => "Unterstützte Themes";
@@ -1260,6 +1267,9 @@ class _I18n_de_DE extends I18n {
   /// "zur Übersicht"
   @override
   String get show_overview => "zur Übersicht";
+  /// "und viele weitere!"
+  @override
+  String get and_many_more => "und viele weitere!";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

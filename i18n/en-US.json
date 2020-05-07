@@ -1,4 +1,5 @@
 {
+  "my_recipe_book": "My RecipeBook",
   "choose_a_theme": "Choose a theme",
   "swype_your_recipes": "Swype your recipes",
   "if_you_cant_decide_random_recipe_explorer": "If you can’t decide what recipe to cook, use random recipe explorer.",
@@ -243,5 +244,6 @@
   "website_import_info": "To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link.",
   "show_overview": "show overview",
   "rate_this_app": "Rate this app",
-  "rate_this_app_desc": "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute."
+  "rate_this_app_desc": "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute.",
+  "and_many_more": "and many more!"
 }

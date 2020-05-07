@@ -486,16 +486,28 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     };
 
     if (recipeMapData.containsKey("prepTime")) {
-      times["prepTime"] =
-          _getTimeInMinutesFromXQueryString(recipeMapData["prepTime"]);
+      try {
+        times["prepTime"] =
+            _getTimeInMinutesFromXQueryString(recipeMapData["prepTime"]);
+      } catch (e) {
+        times["prepTime"] = 0;
+      }
     }
     if (recipeMapData.containsKey("cookTime")) {
-      times["cookTime"] =
-          _getTimeInMinutesFromXQueryString(recipeMapData["cookTime"]);
+      try {
+        times["cookTime"] =
+            _getTimeInMinutesFromXQueryString(recipeMapData["cookTime"]);
+      } catch (e) {
+        times["cookTime"] = 0;
+      }
     }
     if (recipeMapData.containsKey("totalTime")) {
-      times["totalTime"] =
-          _getTimeInMinutesFromXQueryString(recipeMapData["totalTime"]);
+      try {
+        times["totalTime"] =
+            _getTimeInMinutesFromXQueryString(recipeMapData["totalTime"]);
+      } catch (e) {
+        times["totalTime"] = 0;
+      }
     }
 
     return times;

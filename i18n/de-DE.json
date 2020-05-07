@@ -1,4 +1,5 @@
 {
+  "my_recipe_book": "Mein Kochbuch",
   "choose_a_theme": "Unterstützte Themes",
   "swype_your_recipes": "Wische durch deine Rezepte",
   "if_you_cant_decide_random_recipe_explorer": "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen.",
@@ -242,5 +243,6 @@
   "website_import_info": "Um Rezepte schneller aus dem Internet zu importieren und den Link nicht kopieren zu müssen, nutze die \"Teilenfunktion\" des Webbrowsers deiner Wahl und wähle dort die App aus.",
   "show_overview": "zur Übersicht",
   "like_this_app": "App bewerten",
-  "like_this_app_desc": "Wenn dir diese App gefällt, würde ich mich über eine Bewertung von dir freuen!\nEs hilft mir sehr und sollte nicht länger als eine Minute dauern."
+  "like_this_app_desc": "Wenn dir diese App gefällt, würde ich mich über eine Bewertung von dir freuen!\nEs hilft mir sehr und sollte nicht länger als eine Minute dauern.",
+  "and_many_more": "und viele weitere!"
 }
