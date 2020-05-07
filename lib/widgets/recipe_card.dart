@@ -158,17 +158,20 @@ class RecipeCard extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
-                                    (recipe.totalTime != null
-                                            ? "${getTimeHoursMinutes(recipe.totalTime)} • "
-                                            : "") +
-                                        ("${getIngredientCount(recipe.ingredients)} ${I18n.of(context).ingredients}"),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontWeight: itemsFW,
-                                      fontSize: 11,
-                                      fontFamily: 'Questrial',
+                                  Container(
+                                    width: width - 27,
+                                    child: Text(
+                                      (recipe.totalTime != null
+                                              ? "${getTimeHoursMinutes(recipe.totalTime)} • "
+                                              : "") +
+                                          ("${getIngredientCount(recipe.ingredients)} ${I18n.of(context).ingredients}"),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      style: TextStyle(
+                                        fontWeight: itemsFW,
+                                        fontSize: 11,
+                                        fontFamily: 'Questrial',
+                                      ),
                                     ),
                                   ),
                                   Container(height: 12),
