@@ -44,9 +44,7 @@ class RecipeImageHero extends StatelessWidget {
           ),
         ).then((_) {
           Wakelock.disable();
-          if (!showAds) {
-            Ads.hideBottomBannerAd();
-          }
+          Ads.hideBottomBannerAd();
         });
       },
       child: Hero(

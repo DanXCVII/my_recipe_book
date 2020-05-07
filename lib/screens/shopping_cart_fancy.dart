@@ -174,7 +174,8 @@ class FancyShoppingCartScreen extends StatelessWidget {
           ),
         );
       }
-    }).toList();
+    }).toList()
+      ..add(Center(child: Container(height: 60)));
   }
 
   Widget displayNothingAdded(BuildContext context, double scaleFactor) {
