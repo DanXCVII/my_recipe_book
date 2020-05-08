@@ -171,17 +171,14 @@
   "pro_version": "pro version",
   "ingredient_filter_description": "purchase pro version in settings to get access to ingredient filter",
   "pull_down_to_refresh": "pull down to refresh page and show imported recipes",
-<<<<<<< HEAD
   "remove_ads_upgrade_in_settings": "remove ads\nupgrade in settings",
   "no_internet_connection": "no internet connection",
   "no_internet_connection_desc": "could not connect to the internet and therefore not load the video.",
   "failed_loading_ad": "failed loading ad",
   "failed_loading_ad_desc": "solutions can be: better internet connection, tap \"watch\" again or restarting the app",
   "recipes_not_in_overview": "if recipes don't show up in overview, pull down to refresh the page or go to another tab and back.",
-=======
->>>>>>> master
   "recipes_not_showing_up": "recipes not showing up?",
-  "recipes_not_showing_up_desc": "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page or go to another tab and back.",
+  "recipes_not_showing_up_desc": "if recipes are missing, scroll down to refresh.",
   "share_recipes_settings": "backup/share your recipes",
   "share_recipes_settings_desc": "on this screen, you can:\n- select the recipes you want to share to a friend as a single file\n- select the recipes you want to save to import on another device or just to make sure, they don't get lost.",
   "tap_here_to_add_recipe": "here you can add a new recipe",
