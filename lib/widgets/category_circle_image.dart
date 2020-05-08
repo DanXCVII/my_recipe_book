@@ -70,7 +70,6 @@ class CategoryCircle extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontFamily: 'Questrial',
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
