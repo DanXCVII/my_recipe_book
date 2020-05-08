@@ -362,8 +362,8 @@ class I18n implements WidgetsLocalizations {
   String get pull_down_to_refresh => "pull down to refresh page and show imported recipes";
   /// "recipes not showing up?"
   String get recipes_not_showing_up => "recipes not showing up?";
-  /// "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page or go to another tab and back."
-  String get recipes_not_showing_up_desc => "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page or go to another tab and back.";
+  /// "if recipes are missing, scroll down to refresh."
+  String get recipes_not_showing_up_desc => "if recipes are missing, scroll down to refresh.";
   /// "backup/share your recipes"
   String get share_recipes_settings => "backup/share your recipes";
   /// "on this screen, you can:\n- select the recipes you want to share to a friend as a single file\n- select the recipes you want to save to import on another device or just to make sure, they don't get lost."
@@ -1002,9 +1002,9 @@ class _I18n_de_DE extends I18n {
   /// "Fehlen Rezepte?"
   @override
   String get recipes_not_showing_up => "Fehlen Rezepte?";
-  /// "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren oder die Ansicht wechseln. Alternativ kann die App neugestartet werden."
+  /// "Wenn Rezepte nicht angezeigt werden, scrolle nach unten, um zu aktualisieren."
   @override
-  String get recipes_not_showing_up_desc => "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren oder die Ansicht wechseln. Alternativ kann die App neugestartet werden.";
+  String get recipes_not_showing_up_desc => "Wenn Rezepte nicht angezeigt werden, scrolle nach unten, um zu aktualisieren.";
   /// "teile/sichere deine Rezepte"
   @override
   String get share_recipes_settings => "teile/sichere deine Rezepte";
