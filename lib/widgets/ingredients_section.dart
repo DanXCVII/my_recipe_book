@@ -117,52 +117,53 @@ class _IngredientsState extends State<Ingredients> {
     }
     // Add remove and add section button
     sections.children.add(
-      Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            widget.ingredientGlossary.length > 1
-                ? Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: OutlineButton.icon(
-                      icon: Icon(Icons.remove_circle),
-                      label: Container(
-                        padding: MediaQuery.of(context).size.width < 412
-                            ? EdgeInsets.symmetric(vertical: 8)
-                            : null,
-                        width:
-                            MediaQuery.of(context).size.width < 412 ? 80 : null,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(I18n.of(context).remove_section(
-                              MediaQuery.of(context).size.width < 412
-                                  ? "\n"
-                                  : "")),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              widget.ingredientGlossary.length > 1
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: OutlineButton.icon(
+                        icon: Icon(Icons.remove_circle),
+                        label: Container(
+                          width: MediaQuery.of(context).size.width < 412
+                              ? 80
+                              : null,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(I18n.of(context).remove_section(
+                                MediaQuery.of(context).size.width < 412
+                                    ? "\n"
+                                    : "")),
+                          ),
+                        ),
+                        onPressed: () {
+                          updateAndRemoveController();
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0),
                         ),
                       ),
-                      onPressed: () {
-                        updateAndRemoveController();
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(30.0),
-                      ),
-                    ),
-                  )
-                : null,
-            OutlineButton.icon(
-              icon: Icon(Icons.add_circle),
-              label: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(I18n.of(context).add_section(
-                    MediaQuery.of(context).size.width < 412 ? "\n" : "")),
+                    )
+                  : null,
+              OutlineButton.icon(
+                icon: Icon(Icons.add_circle),
+                label: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(I18n.of(context).add_section(
+                      MediaQuery.of(context).size.width < 412 ? "\n" : "")),
+                ),
+                onPressed: () {
+                  updateAndAddController();
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(30.0),
+                ),
               ),
-              onPressed: () {
-                updateAndAddController();
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(30.0),
-              ),
-            ),
-          ].where((c) => c != null).toList()),
+            ].where((c) => c != null).toList()),
+      ),
     );
     return sections;
   }

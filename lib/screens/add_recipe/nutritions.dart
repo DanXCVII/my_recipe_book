@@ -118,6 +118,8 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
               return _getNutritionManagerLoadingScreen();
             } else if (state is LoadedNutritionManager) {
               return Scaffold(
+                resizeToAvoidBottomInset: false,
+                resizeToAvoidBottomPadding: false,
                 appBar: GradientAppBar(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
@@ -137,7 +139,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           Navigator.pop(context);
                         } else if (state is NSaved) {
                           if (widget.editingRecipeName == null) {
-                            Future.delayed(Duration(milliseconds: 300))
+                            Future.delayed(Duration(milliseconds: 200))
                                 .then((_) {
                               Navigator.of(context)
                                   .pushNamedAndRemoveUntil(
@@ -350,6 +352,8 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
 
   Widget _getNutritionManagerLoadingScreen() {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomPadding: false,
         appBar: GradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,

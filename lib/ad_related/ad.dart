@@ -141,6 +141,7 @@ class Ads {
           _reloaded++;
           if (_reloaded == 10) {
             _reloaded = 0;
+            return;
           }
           hideBottomBannerAd();
         }

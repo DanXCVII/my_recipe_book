@@ -92,6 +92,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
         return false;
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: GradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
