@@ -40,8 +40,7 @@ dependencies:
   intro_slider: ^2.2.9 # MIT
   sliding_up_panel: ^1.0.2 # BSD
   autocomplete_textfield: ^1.7.3 # MIT
-  hive_flutter: ^0.2.1 # Apache 2.0
-  hive_generator: ^0.5.2 # Apache 2.0
+  hive: ^1.4.1+1 # Apache 2.0
   build_runner: ^1.7.1 # BSD
   flutter_bloc: ^4.0.0 # MIT
   equatable: ^1.0.1 # MIT
