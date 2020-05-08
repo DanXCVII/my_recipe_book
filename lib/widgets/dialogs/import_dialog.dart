@@ -404,29 +404,6 @@ class _ImportDialogState extends State<ImportDialog> {
                                   } else {
                                     if (state.importedRecipes.length > 0) {
                                       Navigator.pop(context);
-                                      Flushbar flush;
-                                      flush = Flushbar<bool>(
-                                        animationDuration:
-                                            Duration(milliseconds: 300),
-                                        leftBarIndicatorColor: Colors.blue[300],
-                                        message: I18n.of(context)
-                                            .recipes_not_in_overview,
-                                        icon: Icon(
-                                          Icons.info_outline,
-                                          color: Colors.blue,
-                                        ),
-                                        mainButton: FlatButton(
-                                          onPressed: () {
-                                            flush
-                                                .dismiss(true); // result = true
-                                          },
-                                          child: Text(
-                                            "OK",
-                                            style:
-                                                TextStyle(color: Colors.amber),
-                                          ),
-                                        ),
-                                      )..show(context).then((r) {});
                                     }
                                   }
                                 }),
