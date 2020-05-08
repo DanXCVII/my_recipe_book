@@ -60,7 +60,7 @@ dependencies:
   url_launcher: ^5.4.2 # BSD
   pull_to_refresh: ^1.5.7 # MIT
   showcaseview: ^0.1.5 # BSD
-  firebase_admob: ^0.9.3+2
+  firebase_admob: ^0.9.3+2 # BSD
   in_app_purchase: ^0.3.1+1
   video_player: ^0.10.10 # BSD
   permission_handler: ^4.4.0 # MIT
