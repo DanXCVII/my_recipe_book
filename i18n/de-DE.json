@@ -162,7 +162,6 @@
   "field_must_not_be_empty": "Textfeld darf nicht leer sein",
   "by_last_modified": "nach Änderungsdatum",
   "import": "importiere",
-  "recipes_not_in_overview": "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle auf dieser nach unten um zu aktualisieren oder wechsle die Ansichten.",
   "recipes_not_showing_up": "Fehlen Rezepte?",
   "recipes_not_showing_up_desc": "Wenn du Rezepte importiert hast, werden sie erst angezeigt, wenn du nach unten scrollst um die Ansicht zu aktualisieren oder die Ansicht wechseln. Alternativ kann die App neugestartet werden.",
   "share_recipes_settings": "teile/sichere deine Rezepte",

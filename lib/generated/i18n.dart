@@ -360,8 +360,6 @@ class I18n implements WidgetsLocalizations {
   String get import => "import";
   /// "pull down to refresh page and show imported recipes"
   String get pull_down_to_refresh => "pull down to refresh page and show imported recipes";
-  /// "if recipes don't show up in overview, pull down to refresh the page or go to another tab and back."
-  String get recipes_not_in_overview => "if recipes don't show up in overview, pull down to refresh the page or go to another tab and back.";
   /// "recipes not showing up?"
   String get recipes_not_showing_up => "recipes not showing up?";
   /// "if you imported recipes or if for whatever reason recipes don't show up, pull down to refresh the page or go to another tab and back."
@@ -1001,9 +999,6 @@ class _I18n_de_DE extends I18n {
   /// "importiere"
   @override
   String get import => "importiere";
-  /// "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle auf dieser nach unten um zu aktualisieren oder wechsle die Ansichten."
-  @override
-  String get recipes_not_in_overview => "Wenn die neuen Rezepte nicht in der Hauptansicht angezeigt werden, scrolle auf dieser nach unten um zu aktualisieren oder wechsle die Ansichten.";
   /// "Fehlen Rezepte?"
   @override
   String get recipes_not_showing_up => "Fehlen Rezepte?";
