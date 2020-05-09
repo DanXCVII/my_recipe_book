@@ -35,7 +35,7 @@ class RandomRecipeExplorerBloc
             }
           }
         } else if (rmState is RM.DeleteRecipeState) {
-          add(DeleteRecipe(rmState.recipe));
+          add(ReloadRandomRecipeExplorer());
         } else if (rmState is RM.UpdateRecipeState) {
           add(UpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
         } else if (rmState is RM.AddFavoriteState) {

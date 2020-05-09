@@ -102,8 +102,10 @@ class RecipeCategoryOverviewBloc
       RCOAddRecipes event) async* {
     if (state is LoadedRecipeCategoryOverview) {
       final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview =
-          _addRecipesToOverview(event.recipes,
-              (state as LoadedRecipeCategoryOverview).rCategoryOverview);
+          _addRecipesToOverview(
+              event.recipes,
+              List<Tuple2<String, List<Recipe>>>.from(
+                  (state as LoadedRecipeCategoryOverview).rCategoryOverview));
 
       yield LoadedRecipeCategoryOverview(recipeCategoryOverview);
     }
@@ -113,8 +115,10 @@ class RecipeCategoryOverviewBloc
       RCODeleteRecipe event) async* {
     if (state is LoadedRecipeCategoryOverview) {
       final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview =
-          _removeRecipeFromOverview(event.recipe,
-              (state as LoadedRecipeCategoryOverview).rCategoryOverview);
+          _removeRecipeFromOverview(
+              event.recipe,
+              List<Tuple2<String, List<Recipe>>>.from(
+                  (state as LoadedRecipeCategoryOverview).rCategoryOverview));
 
       yield LoadedRecipeCategoryOverview(recipeCategoryOverview);
     }
@@ -124,11 +128,14 @@ class RecipeCategoryOverviewBloc
       RCOUpdateRecipe event) async* {
     if (state is LoadedRecipeCategoryOverview) {
       final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVone =
-          _removeRecipeFromOverview(event.oldRecipe,
-              (state as LoadedRecipeCategoryOverview).rCategoryOverview);
+          _removeRecipeFromOverview(
+              event.oldRecipe,
+              List<Tuple2<String, List<Recipe>>>.from(
+                  (state as LoadedRecipeCategoryOverview).rCategoryOverview));
       final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVtwo =
-          _addRecipesToOverview(
-              [event.updatedRecipe], recipeCategoryOverviewVone);
+          _addRecipesToOverview([
+        event.updatedRecipe
+      ], List<Tuple2<String, List<Recipe>>>.from(recipeCategoryOverviewVone));
 
       yield LoadedRecipeCategoryOverview(recipeCategoryOverviewVtwo);
     }
@@ -212,9 +219,7 @@ class RecipeCategoryOverviewBloc
 
   List<Tuple2<String, List<Recipe>>> _removeRecipeFromOverview(Recipe recipe,
       List<Tuple2<String, List<Recipe>>> recipeCategoryOverview) {
-    return (state as LoadedRecipeCategoryOverview)
-        .rCategoryOverview
-        .map((tuple) {
+    return recipeCategoryOverview.map((tuple) {
       var updatedOverviewItem = Tuple2<String, List<Recipe>>(tuple.item1,
           tuple.item2..removeWhere((item2) => item2.name == recipe.name));
       return updatedOverviewItem.item1 == "no category" &&
@@ -222,19 +227,16 @@ class RecipeCategoryOverviewBloc
           ? null
           : updatedOverviewItem;
     }).toList()
-          ..removeWhere((item) => item == null);
+      ..removeWhere((item) => item == null);
   }
 
   List<Tuple2<String, List<Recipe>>> _addRecipesToOverview(List<Recipe> recipes,
       List<Tuple2<String, List<Recipe>>> recipeCategoryOverview) {
-    List<Tuple2<String, List<Recipe>>> newRecipeOverview =
-        List<Tuple2<String, List<Recipe>>>.from(
-            (state as LoadedRecipeCategoryOverview).rCategoryOverview);
     // check every recipe category, if it is already in the overview
     for (Recipe recipe in recipes) {
       for (String c in recipe.categories) {
         bool alreadyAdded = false;
-        for (Tuple2<String, List<Recipe>> t in newRecipeOverview) {
+        for (Tuple2<String, List<Recipe>> t in recipeCategoryOverview) {
           if (t.item1 == c) {
             t.item2.add(recipe);
             alreadyAdded = true;
@@ -243,41 +245,43 @@ class RecipeCategoryOverviewBloc
         // if it's not yet added
         if (!alreadyAdded) {
           // if the overview is empty
-          if (newRecipeOverview.length == 0) {
+          if (recipeCategoryOverview.length == 0) {
             // add it to the end
-            newRecipeOverview.add(Tuple2<String, List<Recipe>>(c, [recipe]));
+            recipeCategoryOverview
+                .add(Tuple2<String, List<Recipe>>(c, [recipe]));
           }
           // if the last category of the overview is "no category"
-          else if (newRecipeOverview.last.item1 == "no category") {
+          else if (recipeCategoryOverview.last.item1 == "no category") {
             // add it to the second last position
-            newRecipeOverview.insert(newRecipeOverview.length - 1,
+            recipeCategoryOverview.insert(recipeCategoryOverview.length - 1,
                 Tuple2<String, List<Recipe>>(c, [recipe]));
           }
           // if the overview is not empty and the last category is unlike "no category"
           else {
             // add it to the end
-            newRecipeOverview.add(Tuple2<String, List<Recipe>>(c, [recipe]));
+            recipeCategoryOverview
+                .add(Tuple2<String, List<Recipe>>(c, [recipe]));
           }
         }
       }
       // if the recipe is in no category
       if (recipe.categories.isEmpty) {
         // if the no category is already in the overview and has less then 8 recipes
-        if (newRecipeOverview.isNotEmpty &&
-            newRecipeOverview.last.item1 == "no category") {
-          if (newRecipeOverview.last.item2.length < 8) {
+        if (recipeCategoryOverview.isNotEmpty &&
+            recipeCategoryOverview.last.item1 == "no category") {
+          if (recipeCategoryOverview.last.item2.length < 8) {
             // add it to the existing no category section
-            newRecipeOverview.last.item2.add(recipe);
+            recipeCategoryOverview.last.item2.add(recipe);
           }
         } else {
           // add "no category" with the new recipe to the overview
-          newRecipeOverview
+          recipeCategoryOverview
               .add(Tuple2<String, List<Recipe>>("no category", [recipe]));
         }
       }
     }
 
-    return newRecipeOverview;
+    return recipeCategoryOverview;
   }
 
   @override

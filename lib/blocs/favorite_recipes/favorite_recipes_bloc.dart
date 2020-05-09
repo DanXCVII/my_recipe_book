@@ -61,7 +61,7 @@ class FavoriteRecipesBloc
       AddFavorite event) async* {
     if (state is LoadedFavorites) {
       final recipes = List<Recipe>.from(
-          (state as LoadedFavorites).recipes..add(event.recipe));
+          (state as LoadedFavorites).recipes)..add(event.recipe);
 
       yield LoadedFavorites(recipes);
     }
@@ -70,8 +70,8 @@ class FavoriteRecipesBloc
   Stream<FavoriteRecipesState> _mapRemoveFavoriteToState(
       RemoveFavorite event) async* {
     if (state is LoadedFavorites) {
-      final recipes = List<Recipe>.from((state as LoadedFavorites).recipes
-        ..removeWhere((recipe) => event.recipe.name == recipe.name));
+      final recipes = List<Recipe>.from((state as LoadedFavorites).recipes)
+        ..removeWhere((recipe) => event.recipe.name == recipe.name);
 
       yield LoadedFavorites(recipes);
     }
