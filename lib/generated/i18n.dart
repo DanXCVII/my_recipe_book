@@ -354,6 +354,10 @@ class I18n implements WidgetsLocalizations {
   String get recipe_pinned_to_overview => "recipe pinned to overview";
   /// "field must not be empty"
   String get field_must_not_be_empty => "field must not be empty";
+  /// "Checkout this app"
+  String get share_this_app_title => "Checkout this app";
+  /// "I now manage my recipes with the App My RecipeBook ${link}"
+  String share_this_app_desc(String link) => "I now manage my recipes with the App My RecipeBook ${link}";
   /// "by last modified"
   String get by_last_modified => "by last modified";
   /// "import"
@@ -993,6 +997,12 @@ class _I18n_de_DE extends I18n {
   /// "Textfeld darf nicht leer sein"
   @override
   String get field_must_not_be_empty => "Textfeld darf nicht leer sein";
+  /// "Neuigkeiten"
+  @override
+  String get share_this_app_title => "Neuigkeiten";
+  /// "Ich verwalte meine Rezepte jetzt mit der App My RecipeBook ${link}"
+  @override
+  String share_this_app_desc(String link) => "Ich verwalte meine Rezepte jetzt mit der App My RecipeBook ${link}";
   /// "nach Änderungsdatum"
   @override
   String get by_last_modified => "nach Änderungsdatum";

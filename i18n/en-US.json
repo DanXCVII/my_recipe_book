@@ -160,6 +160,8 @@
   "share_this_app": "share this app",
   "recipe_pinned_to_overview": "recipe pinned to overview",
   "field_must_not_be_empty": "field must not be empty",
+  "share_this_app_title": "Checkout this app",
+  "share_this_app_desc": "I now manage my recipes with the App My RecipeBook {link}",
   "by_last_modified": "by last modified",
   "import": "import",
   "pull_down_to_refresh": "pull down to refresh page and show imported recipes",

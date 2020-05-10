@@ -159,6 +159,8 @@
   "disclaimer_description": "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook.",
   "share_this_app": "teile diese App",
   "recipe_pinned_to_overview": "Rezept an Hauptansicht angepinnt",
+  "share_this_app_title": "Neuigkeiten",
+  "share_this_app_desc": "Ich verwalte meine Rezepte jetzt mit der App My RecipeBook {link}",
   "field_must_not_be_empty": "Textfeld darf nicht leer sein",
   "by_last_modified": "nach Änderungsdatum",
   "import": "importiere",
