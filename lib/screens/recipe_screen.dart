@@ -686,15 +686,15 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                   '====================\n' +
               (recipe.servings == null
                   ? I18n.of(context).ingredients + ":"
-                  : '${I18n.of(context).ingredients_for} ${recipe.servings} ${I18n.of(context).servings}:\n');
+                  : '${I18n.of(context).ingredients_for} ${recipe.servings} ${recipe.servingName ?? I18n.of(context).servings}:\n');
     if (recipe.ingredientsGlossary.isNotEmpty) {
       for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
         recipeText +=
             '${I18n.of(context).ingredients}: ${recipe.ingredientsGlossary[i]}:\n';
         for (int j = 0; j < recipe.ingredients[i].length; j++) {
-          recipeText += '${recipe.ingredients[i][j].name} '
-              '${recipe.ingredients[i][j].amount ?? ""} '
-              '${recipe.ingredients[i][j].unit ?? ""}\n';
+          recipeText += '${recipe.ingredients[i][j].amount ?? ""} '
+              '${recipe.ingredients[i][j].unit ?? ""} '
+              '${recipe.ingredients[i][j].name}\n';
         }
         recipeText += '====================\n';
       }
@@ -713,7 +713,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
       i++;
     }
     if (recipe.tags != null && recipe.tags.isNotEmpty) {
-      recipeText += '====================\tags: ';
+      recipeText += '====================\n${I18n.of(context).tags}: ';
       for (StringIntTuple tag in recipe.tags) {
         if (!(tag == recipe.tags.last)) {
           recipeText += '${tag.text}, ';

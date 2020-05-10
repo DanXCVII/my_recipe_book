@@ -441,6 +441,7 @@ Future<void> clearCache() async {
 /// returns the name of the .zip with the recipe data, otherwise: name of .zip with
 /// null
 /// the json which contains the recipe object will be deleted afterwards
+/// TODO: internationalization: rename the recipe name specific files
 Future<Map<String, Recipe>> importRecipeToTmp(File recipeZip) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir

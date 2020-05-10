@@ -122,8 +122,8 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
         return false;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: Ads.shouldShowAds() ? false : true,
+        resizeToAvoidBottomPadding: Ads.shouldShowAds() ? false : true,
         appBar: GradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,

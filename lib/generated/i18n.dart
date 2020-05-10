@@ -350,6 +350,10 @@ class I18n implements WidgetsLocalizations {
   String get disclaimer_description => "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook.";
   /// "share this app"
   String get share_this_app => "share this app";
+  /// "check out this!"
+  String get share_this_app_title => "check out this!";
+  /// "I now manage my recipes with the App My RecipeBook ${link}"
+  String share_this_app_desc(String link) => "I now manage my recipes with the App My RecipeBook ${link}";
   /// "recipe pinned to overview"
   String get recipe_pinned_to_overview => "recipe pinned to overview";
   /// "field must not be empty"
@@ -478,8 +482,8 @@ class I18n implements WidgetsLocalizations {
   String get tags => "tags";
   /// "shoppingcart help"
   String get shopping_cart_help => "shoppingcart help";
-  /// "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction."
-  String get shopping_cart_help_desc => "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction.";
+  /// "To add ingredients to your shopping cart, press the + icon at the bottom right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction."
+  String get shopping_cart_help_desc => "To add ingredients to your shopping cart, press the + icon at the bottom right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction.";
   /// "enable complex animations"
   String get complex_animations => "enable complex animations";
   /// "keep screen on"
@@ -1019,6 +1023,12 @@ class _I18n_de_DE extends I18n {
   /// "teile diese App"
   @override
   String get share_this_app => "teile diese App";
+  /// "Neuigkeiten"
+  @override
+  String get share_this_app_title => "Neuigkeiten";
+  /// "Ich verwalte meine Rezepte jetzt mit der App My RecipeBook ${link}"
+  @override
+  String share_this_app_desc(String link) => "Ich verwalte meine Rezepte jetzt mit der App My RecipeBook ${link}";
   /// "Rezept an Hauptansicht angepinnt"
   @override
   String get recipe_pinned_to_overview => "Rezept an Hauptansicht angepinnt";
@@ -1211,9 +1221,9 @@ class _I18n_de_DE extends I18n {
   /// "Einkaufsliste Hilfe"
   @override
   String get shopping_cart_help => "Einkaufsliste Hilfe";
-  /// "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt."
+  /// "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon unten rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt."
   @override
-  String get shopping_cart_help_desc => "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt.";
+  String get shopping_cart_help_desc => "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon unten rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt.";
   /// "aufwendige Animationen"
   @override
   String get complex_animations => "aufwendige Animationen";

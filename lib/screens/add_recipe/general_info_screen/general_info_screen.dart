@@ -109,7 +109,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
         return false;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: Ads.shouldShowAds() ? false : true,
         appBar: GradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,

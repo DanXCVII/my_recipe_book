@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
@@ -314,6 +315,10 @@ class Settings extends StatelessWidget {
               title: Text(I18n.of(context).about_me)),
           Divider(),
           ListTile(
+              onTap: () {
+                launch(
+                    "http://play.google.com/store/apps/details?id=com.release.my_recipe_book");
+              },
               leading: Icon(Icons.star),
               title: Text(I18n.of(context).rate_app)),
           Divider(),
