@@ -350,8 +350,8 @@ class I18n implements WidgetsLocalizations {
   String get disclaimer_description => "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook.";
   /// "share this app"
   String get share_this_app => "share this app";
-  /// "check out this!"
-  String get share_this_app_title => "check out this!";
+  /// "Check out this!"
+  String get share_this_app_title => "Check out this!";
   /// "I now manage my recipes with the App My RecipeBook ${link}"
   String share_this_app_desc(String link) => "I now manage my recipes with the App My RecipeBook ${link}";
   /// "recipe pinned to overview"
