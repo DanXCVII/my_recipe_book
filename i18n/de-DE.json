@@ -204,7 +204,7 @@
   "info_export_description": "Es ist sinnvoll ab und zu die Rezepte zu sichern, für den Fall, dass das Handy verloren geht oder aus welchen Gründen auch immer die App nicht mehr funktioniert und neuinstalliert werden muss.",
   "tags": "Tags",
   "shopping_cart_help": "Einkaufsliste Hilfe",
-  "shopping_cart_help_desc": "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt.",
+  "shopping_cart_help_desc": "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon unten rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt.",
   "complex_animations": "aufwendige Animationen",
   "keep_screen_on": "Bildschirmtimeout deaktivieren",
   "only_recipe_screen": "nur auf Rezeptbildschirm",

@@ -644,9 +644,9 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
         recipeText +=
             '${I18n.of(context).ingredients}: ${recipe.ingredientsGlossary[i]}:\n';
         for (int j = 0; j < recipe.ingredients[i].length; j++) {
-          recipeText += '${recipe.ingredients[i][j].name} '
-              '${recipe.ingredients[i][j].amount ?? ""} '
-              '${recipe.ingredients[i][j].unit ?? ""}\n';
+          recipeText += '${recipe.ingredients[i][j].amount ?? ""} '
+              '${recipe.ingredients[i][j].unit ?? ""} '
+              '${recipe.ingredients[i][j].name}\n';
         }
         recipeText += '====================\n';
       }

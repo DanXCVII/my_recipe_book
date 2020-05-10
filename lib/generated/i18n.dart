@@ -446,8 +446,8 @@ class I18n implements WidgetsLocalizations {
   String get tags => "tags";
   /// "shoppingcart help"
   String get shopping_cart_help => "shoppingcart help";
-  /// "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction."
-  String get shopping_cart_help_desc => "To add ingredients to your shopping cart, press the + icon at the top right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction.";
+  /// "To add ingredients to your shopping cart, press the + icon at the bottom right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction."
+  String get shopping_cart_help_desc => "To add ingredients to your shopping cart, press the + icon at the bottom right. To remove ingredients from your cart, swype them left or right. You can also delete all ingredients of one recipe by swyping the recipe in one direction.";
   /// "enable complex animations"
   String get complex_animations => "enable complex animations";
   /// "keep screen on"
@@ -1125,9 +1125,9 @@ class _I18n_de_DE extends I18n {
   /// "Einkaufsliste Hilfe"
   @override
   String get shopping_cart_help => "Einkaufsliste Hilfe";
-  /// "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt."
+  /// "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon unten rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt."
   @override
-  String get shopping_cart_help_desc => "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon oben rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt.";
+  String get shopping_cart_help_desc => "Um Zutaten zur Einkaufsliste hinzuzufügen, tippe auf das + Icon unten rechts. Um sie wieder von der Liste zu entfernen, die jeweilige Zutat nach links oder rechts wischen. Du kannst auch alle Zutaten eines Rezeptes löschen, indem du das jeweilige Rezept in eine Richtung wischt.";
   /// "aufwendige Animationen"
   @override
   String get complex_animations => "aufwendige Animationen";

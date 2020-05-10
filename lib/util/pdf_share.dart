@@ -374,7 +374,8 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                                       recipe.servingName !=
                                                   null
                                               ? recipe.servingName
-                                              : I18n.of(bContext).persons,
+                                              : recipe.servingName ??
+                                                  I18n.of(bContext).persons,
                                           style: pw.TextStyle(
                                               font: latoBTtf,
                                               fontSize: 11,
