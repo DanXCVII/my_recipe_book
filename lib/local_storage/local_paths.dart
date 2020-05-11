@@ -233,7 +233,7 @@ class PathProvider {
     String imagePreviewPath = "images/randomFood.jpg";
     List<List<String>> stepImages = [[]];
 
-    String removeString = (await getApplicationDocumentsDirectory()).path;
+    String removeString = (await getApplicationDocumentsDirectory()).path + "/";
     if (recipe.imagePath != "images/randomFood.jpg") {
       imagePath = recipe.imagePath.replaceFirst(removeString, '');
       imagePreviewPath = recipe.imagePreviewPath.replaceFirst(removeString, '');

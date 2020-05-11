@@ -86,9 +86,10 @@ class RecipeOverviewBloc
 
   Stream<RecipeOverviewState> _mapLoadCategoryRecipeOverviewToState(
       LoadCategoryRecipeOverview event) async* {
-    final String randomRecipeImage = (await HiveProvider()
-            .getRandomRecipeOfCategory(category: event.category))
-        .imagePreviewPath;
+    final Recipe randomRecipe = (await HiveProvider()
+        .getRandomRecipeOfCategory(category: event.category));
+    final String randomRecipeImage =
+        randomRecipe != null ? randomRecipe.imagePreviewPath : null;
 
     yield LoadingRecipes(
       randomImage: randomRecipeImage,
@@ -113,9 +114,10 @@ class RecipeOverviewBloc
 
   Stream<RecipeOverviewState> _mapLoadVegetableRecipeOverviewToState(
       LoadVegetableRecipeOverview event) async* {
+    final Recipe randomRecipe =
+        await HiveProvider().getRandomRecipeOfVegetable(event.vegetable);
     final String randomRecipeImage =
-        (await HiveProvider().getRandomRecipeOfVegetable(event.vegetable))
-            .imagePreviewPath;
+        randomRecipe != null ? randomRecipe.imagePreviewPath : null;
 
     yield LoadingRecipes(
       randomImage: randomRecipeImage,
@@ -137,9 +139,11 @@ class RecipeOverviewBloc
 
   Stream<RecipeOverviewState> _mapLoadRecipeTagRecipeOverviewToState(
       LoadRecipeTagRecipeOverview event) async* {
+    final Recipe randomRecipe =
+        await HiveProvider().getRandomRecipeOfRecipeTag(event.recipeTag.text);
     final String randomRecipeImage =
-        (await HiveProvider().getRandomRecipeOfRecipeTag(event.recipeTag.text))
-            .imagePreviewPath;
+        randomRecipe != null ? randomRecipe.imagePreviewPath : null;
+
     print(randomRecipeImage);
     print(event.recipeTag);
     yield LoadingRecipes(
@@ -189,8 +193,9 @@ class RecipeOverviewBloc
       DeleteRecipe event) async* {
     if (state is LoadedRecipeOverview) {
       if (_belongsToRecipeList(event.recipe)) {
-        final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes
-          ..removeWhere((recipe) => event.recipe == recipe);
+        final List<Recipe> recipes =
+            List<Recipe>.from((state as LoadedRecipeOverview).recipes)
+              ..removeWhere((recipe) => event.recipe == recipe);
 
         yield LoadedRecipeOverview(
           recipes: recipes,
