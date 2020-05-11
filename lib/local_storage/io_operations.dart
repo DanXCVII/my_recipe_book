@@ -441,32 +441,153 @@ Future<void> clearCache() async {
 /// returns the name of the .zip with the recipe data, otherwise: name of .zip with
 /// null
 /// the json which contains the recipe object will be deleted afterwards
-Future<Map<String, Recipe>> importRecipeToTmp(File recipeZip) async {
+Future<Map<String, Recipe>> importRecipeToTmp(File recipeZip,
+    {String locale}) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
   await exstractZip(recipeZip, importDir.path);
   List importFiles = importDir.listSync(recursive: true);
 
   Recipe importRecipe;
+  Recipe imagePathRecipe;
   // loop through the import files
   for (FileSystemEntity file in importFiles) {
     // stop if json found
     if (file.path.endsWith('.json')) {
       try {
-        importRecipe = await getRecipeFromJson(file);
+        if (locale == null) {
+          importRecipe = await getRecipeFromJson(file);
+        } else if (file.path.contains("$locale.json")) {
+          importRecipe = await getRecipeFromJson(file);
+        } else if (file.path.endsWith("DE.json")) {
+          imagePathRecipe = await getRecipeFromJson(file);
+        }
       } catch (e) {
         // if json doesn't contain a valid recipe
         importRecipe = null;
       }
-      await file.delete();
+      if (locale == null) {
+        await file.delete();
+      }
       break;
     }
   }
+  if (locale != null) {
+    await File((await PathProvider.pP.getImportDir()) +
+            imagePathRecipe.imagePath.substring(1))
+        .rename((await PathProvider.pP.getImportDir()) +
+            importRecipe.imagePath.substring(1));
+    await File((await PathProvider.pP.getImportDir()) +
+            imagePathRecipe.imagePreviewPath.substring(1))
+        .rename((await PathProvider.pP.getImportDir()) +
+            importRecipe.imagePreviewPath.substring(1));
+    await Directory(await PathProvider.pP.getImportDir() +
+            imagePathRecipe.imagePath
+                .substring(1, imagePathRecipe.imagePath.indexOf("/", 2)))
+        .rename(await PathProvider.pP.getImportDir() +
+            importRecipe.imagePath
+                .substring(1, importRecipe.imagePath.indexOf("/", 2)));
+  }
+
   String recipeZipName = recipeZip.path
     ..substring(recipeZip.path.lastIndexOf('/'));
 
   await recipeZip.delete();
   return {recipeZipName: importRecipe};
+}
+
+Future<List<Recipe>> importFirstStartRecipes(
+    File recipeZip, String locale) async {
+  Directory importDir = Directory(await PathProvider.pP.getImportDir());
+  // extract selected zip and save it to the importDir
+  await exstractZip(recipeZip, importDir.path);
+  await recipeZip.delete();
+
+  List importFiles = importDir.listSync(recursive: true);
+
+  List<Recipe> importRecipes = [];
+
+  // loop through the import files
+  for (FileSystemEntity file in importFiles) {
+    // stop if json found
+    if (file.path.endsWith('DE.json')) {
+      try {
+        Recipe imagePathRecipe = await getRecipeFromJson(file);
+
+        Recipe importRecipe = await getRecipeFromJson(File(
+            file.path.substring(0, file.path.length - 6) + locale + ".json"));
+        String recipeFileName = file.path.substring(
+            file.path.lastIndexOf("/") + 1, file.path.lastIndexOf("-"));
+        String newRecipeFileName = importRecipe.imagePreviewPath
+            .substring(1, importRecipe.imagePreviewPath.indexOf("/", 1));
+
+        await File((await PathProvider.pP.getImportDir()) +
+                imagePathRecipe.imagePath.substring(1))
+            .rename((await PathProvider.pP.getImportDir()) +
+                importRecipe.imagePath.substring(1));
+        await File((await PathProvider.pP.getImportDir()) +
+                imagePathRecipe.imagePreviewPath.substring(1))
+            .rename((await PathProvider.pP.getImportDir()) +
+                importRecipe.imagePreviewPath.substring(1));
+
+        await Directory(
+                await PathProvider.pP.getImportDir() + newRecipeFileName)
+            .rename(
+                (await PathProvider.pP.getRecipeDirFull(importRecipe.name)) +
+                    newRecipeFileName);
+
+        await _deleteFilesInDir(importDir, recipeFileName);
+
+        importRecipes.add(
+          importRecipe.copyWith(
+            imagePath: importRecipe.imagePath != Constants.noRecipeImage
+                ? PathProvider.pP.getRecipeImagePathFull(
+                    importRecipe.name,
+                    importRecipe.imagePath
+                        .substring(importRecipe.imagePath.lastIndexOf(".")))
+                : Constants.noRecipeImage,
+            imagePreviewPath: importRecipe.imagePath != Constants.noRecipeImage
+                ? PathProvider.pP.getRecipeImagePreviewPathFull(
+                    importRecipe.name,
+                    importRecipe.imagePath
+                        .substring(importRecipe.imagePath.lastIndexOf(".")))
+                : Constants.noRecipeImage,
+            stepImages: importRecipe.stepImages
+                .map(
+                  (list) => List.generate(
+                    list.length,
+                    (index) =>
+                        PathProvider.pP
+                            .getRecipeStepNumberDir(importRecipe.name, index) +
+                        list[index].substring(list[index].lastIndexOf("/")),
+                  ).toList(),
+                )
+                .toList(),
+          ),
+        );
+      } catch (e) {
+        print("error importing first start recipes");
+      }
+    }
+  }
+
+  return importRecipes;
+}
+
+Future<void> _deleteFilesInDir(
+  Directory dir,
+  String containsString, {
+  String ending = "",
+}) async {
+  List importFiles = dir.listSync(recursive: true);
+
+  // loop through the import files
+  for (FileSystemEntity file in importFiles) {
+    // stop if json found
+    if (file.path.endsWith(ending) && file.path.contains(containsString)) {
+      await file.delete();
+    }
+  }
 }
 
 /// moves the recipe data from the tmp directory to the app directory
@@ -518,7 +639,3 @@ Future<void> exstractZip(File encode, String destination) async {
     }
   }
 }
-
-// ----------------------------------------------------------------
-
-/////////// DEPRECATED?? /////////////////
