@@ -490,9 +490,9 @@ Future<List<Recipe>> importFirstStartRecipes(
     if (file.path.endsWith('DE.json')) {
       try {
         Recipe imagePathRecipe = await getRecipeFromJson(file);
-
         Recipe importRecipe = await getRecipeFromJson(File(
-            file.path.substring(0, file.path.length - 6) + locale + ".json"));
+            file.path.substring(0, file.path.length - 7) + locale + ".json"));
+
         String recipeFileName = file.path.substring(
             file.path.lastIndexOf("/") + 1, file.path.lastIndexOf("-"));
         String newRecipeFileName = importRecipe.imagePreviewPath
@@ -526,10 +526,10 @@ Future<List<Recipe>> importFirstStartRecipes(
             imagePreviewPath: importRecipe.imagePath != Constants.noRecipeImage
                 ? PathProvider.pP.getRecipeImagePreviewPathFull(
                     importRecipe.name,
-                    importRecipe.imagePath
+                    imagePathRecipe.imagePath
                         .substring(importRecipe.imagePath.lastIndexOf(".")))
                 : Constants.noRecipeImage,
-            stepImages: importRecipe.stepImages
+            stepImages: imagePathRecipe.stepImages
                 .map(
                   (list) => List.generate(
                     list.length,
