@@ -606,12 +606,12 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
             color: Colors.red[600],
             onPressed: () {
               if (recipe != null) {
+                Navigator.pop(context);
+                Navigator.pop(context);
                 BlocProvider.of<RecipeManagerBloc>(context)
                     .add(RMDeleteRecipe(recipe.name, deleteFiles: true));
                 Future.delayed(Duration(milliseconds: 60)).then((_) async {
                   await IO.deleteRecipeData(recipe.name);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
                 });
               }
             },

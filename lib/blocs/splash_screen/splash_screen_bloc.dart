@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants/global_constants.dart' as Constants;
+import '../../generated/i18n.dart';
 import '../../constants/global_settings.dart';
 import '../../local_storage/hive.dart';
 import '../../theming.dart';
@@ -63,7 +64,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       prefs.setBool(Constants.disableStandby, true);
       GlobalSettings().enableAnimations(true);
       await initHive(true);
-      await _initializeFirstStartData();
+      await _initializeFirstStartData(event.context);
     } else {
       GlobalSettings()
           .enableAnimations(prefs.getBool(Constants.enableAnimations));
@@ -120,7 +121,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     }
   }
 
-  Future<void> _initializeFirstStartData() async {
+  Future<void> _initializeFirstStartData(BuildContext context) async {
     ByteData data = await rootBundle.load('assets/firstStartRecipes.zip');
 
     final buffer = data.buffer;
@@ -131,13 +132,10 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
             .writeAsBytes(
                 buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
 
-    Map<String, Recipe> importRecipeData =
-        await IO.importRecipesToTmp(recipesFile);
-    for (var key in importRecipeData.keys) {
-      if (importRecipeData[key] != null) {
-        await IO.importRecipeFromTmp(importRecipeData[key]);
-        await HiveProvider().saveRecipe(importRecipeData[key]);
-      }
+    List<Recipe> importRecipeData = await IO.importFirstStartRecipes(
+        recipesFile, I18n.of(context).two_char_locale);
+    for (Recipe r in importRecipeData) {
+      await HiveProvider().saveRecipe(r);
     }
   }
 }
