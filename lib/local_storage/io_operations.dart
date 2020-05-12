@@ -475,7 +475,8 @@ Future<Map<String, Recipe>> importRecipeToTmp(File recipeZip,
 
 Future<List<Recipe>> importFirstStartRecipes(
     File recipeZip, String locale) async {
-  Directory importDir = Directory(await PathProvider.pP.getImportDir());
+  String importPath = await PathProvider.pP.getImportDir();
+  Directory importDir = Directory(importPath);
   // extract selected zip and save it to the importDir
   await exstractZip(recipeZip, importDir.path);
   await recipeZip.delete();
@@ -488,63 +489,76 @@ Future<List<Recipe>> importFirstStartRecipes(
   for (FileSystemEntity file in importFiles) {
     // stop if json found
     if (file.path.endsWith('DE.json')) {
-      try {
-        Recipe imagePathRecipe = await getRecipeFromJson(file);
-        Recipe importRecipe = await getRecipeFromJson(File(
-            file.path.substring(0, file.path.length - 7) + locale + ".json"));
+      Recipe imagePathRecipe =
+          Recipe.fromMap(jsonDecode(await (file as File).readAsString()));
+      Recipe importRecipe = Recipe.fromMap(jsonDecode(await File(
+              file.path.substring(0, file.path.length - 7) + locale + ".json")
+          .readAsString()));
 
-        String recipeFileName = file.path.substring(
-            file.path.lastIndexOf("/") + 1, file.path.lastIndexOf("-"));
-        String newRecipeFileName = importRecipe.imagePreviewPath
-            .substring(1, importRecipe.imagePreviewPath.indexOf("/", 1));
+      String recipeFileName = file.path.substring(
+          file.path.lastIndexOf("/") + 1, file.path.lastIndexOf("-"));
+      String newRecipeFileName = importRecipe.imagePreviewPath
+          .substring(1, importRecipe.imagePreviewPath.indexOf("/", 1));
 
-        await File((await PathProvider.pP.getImportDir()) +
-                imagePathRecipe.imagePath.substring(1))
-            .rename((await PathProvider.pP.getImportDir()) +
-                importRecipe.imagePath.substring(1));
-        await File((await PathProvider.pP.getImportDir()) +
-                imagePathRecipe.imagePreviewPath.substring(1))
-            .rename((await PathProvider.pP.getImportDir()) +
-                importRecipe.imagePreviewPath.substring(1));
+      if (locale != "DE") {
+        await Directory((importPath) +
+                importRecipe.imagePreviewPath.substring(
+                    1, importRecipe.imagePreviewPath.lastIndexOf("/")))
+            .create(recursive: true);
 
-        await Directory(
-                await PathProvider.pP.getImportDir() + newRecipeFileName)
-            .rename(
-                (await PathProvider.pP.getRecipeDirFull(importRecipe.name)) +
-                    newRecipeFileName);
+        await File((importPath) + imagePathRecipe.imagePath.substring(1))
+            .rename((importPath) + importRecipe.imagePath.substring(1));
+        await File((importPath) + imagePathRecipe.imagePreviewPath.substring(1))
+            .rename((importPath) + importRecipe.imagePreviewPath.substring(1));
 
-        await _deleteFilesInDir(importDir, recipeFileName);
-
-        importRecipes.add(
-          importRecipe.copyWith(
-            imagePath: importRecipe.imagePath != Constants.noRecipeImage
-                ? PathProvider.pP.getRecipeImagePathFull(
-                    importRecipe.name,
-                    importRecipe.imagePath
-                        .substring(importRecipe.imagePath.lastIndexOf(".")))
-                : Constants.noRecipeImage,
-            imagePreviewPath: importRecipe.imagePath != Constants.noRecipeImage
-                ? PathProvider.pP.getRecipeImagePreviewPathFull(
-                    importRecipe.name,
-                    imagePathRecipe.imagePath
-                        .substring(importRecipe.imagePath.lastIndexOf(".")))
-                : Constants.noRecipeImage,
-            stepImages: imagePathRecipe.stepImages
-                .map(
-                  (list) => List.generate(
-                    list.length,
-                    (index) =>
-                        PathProvider.pP
-                            .getRecipeStepNumberDir(importRecipe.name, index) +
-                        list[index].substring(list[index].lastIndexOf("/")),
-                  ).toList(),
-                )
-                .toList(),
-          ),
-        );
-      } catch (e) {
-        print("error importing first start recipes");
+        for (FileSystemEntity stepFile in Directory(importPath + recipeFileName)
+            .listSync(recursive: true)) {
+          if (stepFile is File) {
+            Directory newStepDir = Directory(stepFile.path
+                .substring(0, stepFile.path.lastIndexOf("/"))
+                .replaceAll(recipeFileName, newRecipeFileName));
+            if (!newStepDir.existsSync())
+              await newStepDir.create(recursive: true);
+            await stepFile.rename(newStepDir.path +
+                stepFile.path.substring(stepFile.path.lastIndexOf("/")));
+          }
+        }
       }
+
+      await Directory(importPath + newRecipeFileName)
+          .rename((await PathProvider.pP.getRecipeDirFull(importRecipe.name)));
+
+      await _deleteFilesInDir(importDir, recipeFileName);
+
+      importRecipes.add(
+        importRecipe.copyWith(
+          imagePath: importRecipe.imagePath != Constants.noRecipeImage
+              ? await PathProvider.pP.getRecipeImagePathFull(
+                  importRecipe.name,
+                  importRecipe.imagePath
+                      .substring(importRecipe.imagePath.lastIndexOf(".")))
+              : Constants.noRecipeImage,
+          imagePreviewPath:
+              importRecipe.imagePreviewPath != Constants.noRecipeImage
+                  ? await PathProvider.pP.getRecipeImagePreviewPathFull(
+                      importRecipe.name,
+                      importRecipe.imagePreviewPath.substring(
+                          importRecipe.imagePreviewPath.lastIndexOf(".")))
+                  : Constants.noRecipeImage,
+          stepImages: List.generate(
+            importRecipe.stepImages.length,
+            (indexOne) => List.generate(
+              importRecipe.stepImages[indexOne].length,
+              (indexTwo) =>
+                  PathProvider.pP
+                      .getRecipeStepNumberDir(importRecipe.name, indexOne) +
+                  imagePathRecipe.stepImages[indexOne][indexTwo].substring(
+                      imagePathRecipe.stepImages[indexOne][indexTwo]
+                          .lastIndexOf("/")),
+            ).toList(),
+          ).toList(),
+        ),
+      );
     }
   }
 
@@ -561,8 +575,10 @@ Future<void> _deleteFilesInDir(
   // loop through the import files
   for (FileSystemEntity file in importFiles) {
     // stop if json found
-    if (file.path.endsWith(ending) && file.path.contains(containsString)) {
-      await file.delete();
+    if (file.path.endsWith(ending) &&
+        file.path.contains(containsString) &&
+        file.existsSync()) {
+      await file.delete(recursive: true);
     }
   }
 }

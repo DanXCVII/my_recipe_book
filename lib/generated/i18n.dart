@@ -32,6 +32,8 @@ class I18n implements WidgetsLocalizations {
   @override
   TextDirection get textDirection => TextDirection.ltr;
 
+  /// "EN"
+  String get two_char_locale => "EN";
   /// "My RecipeBook"
   String get my_recipe_book => "My RecipeBook";
   /// "Choose a theme"
@@ -546,6 +548,9 @@ class _I18n_en_US extends I18n {
 class _I18n_de_DE extends I18n {
   const _I18n_de_DE();
 
+  /// "DE"
+  @override
+  String get two_char_locale => "DE";
   /// "Mein Kochbuch"
   @override
   String get my_recipe_book => "Mein Kochbuch";
