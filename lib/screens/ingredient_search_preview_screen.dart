@@ -95,7 +95,6 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                 ),
               ),
               Container(
-                height: 65,
                 decoration: BoxDecoration(
                     color: Colors.green[800],
                     border: Border.all(color: Colors.green[900], width: 2)),
@@ -119,27 +118,31 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                             Spacer(),
                             Container(
                               width: MediaQuery.of(context).size.width - 107,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text(I18n.of(context).buy_pro_version,
-                                      style: TextStyle(
-                                        fontSize: 19,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      )),
-                                  SizedBox(
-                                    height: 6,
-                                  ),
-                                  Text(
-                                    I18n.of(context).pro_version_desc,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.white,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Text(I18n.of(context).buy_pro_version,
+                                        style: TextStyle(
+                                          fontSize: 19,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        )),
+                                    SizedBox(
+                                      height: 6,
                                     ),
-                                    textAlign: TextAlign.center,
-                                  )
-                                ],
+                                    Text(
+                                      I18n.of(context).pro_version_desc,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.white,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                             Spacer(),
