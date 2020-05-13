@@ -595,14 +595,14 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
         actions: <Widget>[
           FlatButton(
             child: Text(I18n.of(context).no),
-            textColor: Theme.of(context).textTheme.body1.color,
+            textColor: Theme.of(context).textTheme.bodyText1.color,
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           FlatButton(
             child: Text(I18n.of(context).yes),
-            textColor: Theme.of(context).textTheme.body1.color,
+            textColor: Theme.of(context).textTheme.bodyText1.color,
             color: Colors.red[600],
             onPressed: () {
               if (recipe != null) {
