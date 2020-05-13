@@ -536,6 +536,10 @@ class I18n implements WidgetsLocalizations {
   String get amount => "amount";
   /// "Fix the issues with the red marked text fields"
   String get check_red_fields_desc => "Fix the issues with the red marked text fields";
+  /// "Delete recipe data?"
+  String get clean_recipe_info => "Delete recipe data?";
+  /// "Are you sure, that you want to delete the prefilled recipe data?"
+  String get clean_recipe_info_desc => "Are you sure, that you want to delete the prefilled recipe data?";
 }
 
 class _I18n_en_US extends I18n {
@@ -1295,6 +1299,12 @@ class _I18n_de_DE extends I18n {
   /// "Behebe die Fehler der rot markierten Felder"
   @override
   String get check_red_fields_desc => "Behebe die Fehler der rot markierten Felder";
+  /// "Infos löschen?"
+  @override
+  String get clean_recipe_info => "Infos löschen?";
+  /// "Willst du wirklich die ausgefüllten Daten des aktuell bearbeiteten/neuen Rezeptes löschen"
+  @override
+  String get clean_recipe_info_desc => "Willst du wirklich die ausgefüllten Daten des aktuell bearbeiteten/neuen Rezeptes löschen";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

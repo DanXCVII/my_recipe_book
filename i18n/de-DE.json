@@ -249,5 +249,7 @@
   "like_this_app_desc": "Wenn dir diese App gefällt, würde ich mich über eine Bewertung von dir freuen!\nEs hilft mir sehr und sollte nicht länger als eine Minute dauern.",
   "and_many_more": "und viele weitere!",
   "amount": "Menge",
-  "check_red_fields_desc": "Behebe die Fehler der rot markierten Felder"
+  "check_red_fields_desc": "Behebe die Fehler der rot markierten Felder",
+  "clean_recipe_info": "Infos löschen?",
+  "clean_recipe_info_desc": "Willst du wirklich die ausgefüllten Daten des aktuell bearbeiteten/neuen Rezeptes löschen"
 }

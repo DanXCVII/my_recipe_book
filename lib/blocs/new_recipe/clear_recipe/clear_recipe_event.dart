@@ -7,9 +7,7 @@ abstract class ClearRecipeEvent {
 class Clear extends ClearRecipeEvent {
   final bool editingRecipe;
 
-  final DateTime dateTime;
-
-  Clear(this.editingRecipe, this.dateTime);
+  Clear(this.editingRecipe);
 }
 
 class RemoveRecipeImage extends ClearRecipeEvent {
