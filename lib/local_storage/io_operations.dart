@@ -592,10 +592,16 @@ Future<bool> importRecipeFromTmp(Recipe importRecipe) async {
 
   /// the final directory, where the new import recipe should be
   String recipeDir = await PathProvider.pP.getRecipeDirFull(importRecipe.name);
-  // if the directory already exists for whatever reason, ..
-  if (Directory(recipeDir).existsSync()) {
+
+  /// if the directory already exists for whatever reason or the recipe has referenced files which
+  /// do not exist ..
+  if (Directory(recipeDir).existsSync() ||
+      !checkIfImportRecipeDataIsValid(importRecipe, importRecipeDir)) {
+    // delete the to be imported recipe directory and return false for failed import
+    await importRecipeDir.delete(recursive: true);
     return false;
   }
+
   // move the files from the tmp import recipe directory to the app
   await importRecipeDir
       .rename(await PathProvider.pP.getRecipeDirFull(importRecipe.name));
@@ -603,6 +609,44 @@ Future<bool> importRecipeFromTmp(Recipe importRecipe) async {
   await Directory(
           await PathProvider.pP.getRecipeImportDirFolder(importRecipe.name))
       .delete(recursive: true);
+  return true;
+}
+
+bool checkIfImportRecipeDataIsValid(
+    Recipe importRecipe, Directory importRecipeDir) {
+  String recipeDirName =
+      importRecipeDir.path.substring(importRecipeDir.path.lastIndexOf("/"));
+  if (importRecipe.imagePath != Constants.noRecipeImage) {
+    File importRecipeImageDir = File(importRecipeDir.path +
+        importRecipe.imagePath.substring(
+            importRecipe.imagePath.indexOf(recipeDirName) +
+                recipeDirName.length));
+    File importRecipeImagePreviewDir = File(importRecipeDir.path +
+        importRecipe.imagePreviewPath.substring(
+            importRecipe.imagePreviewPath.indexOf(recipeDirName) +
+                recipeDirName.length));
+    if (!importRecipeImageDir.existsSync() ||
+        !importRecipeImagePreviewDir.existsSync() ||
+        importRecipe.stepImages == null) {
+      return false;
+    }
+  }
+  for (int i = 0; i < importRecipe.stepImages.length; i++) {
+    for (String stepImage in importRecipe.stepImages[i]) {
+      File stepImageFile = File(importRecipeDir.path +
+          stepImage.substring(
+              stepImage.indexOf(recipeDirName) + recipeDirName.length));
+      File stepPreviewImageFile = File(importRecipeDir.path
+              .substring(0, importRecipeDir.path.lastIndexOf("/")) +
+          PathProvider.pP.getRecipeStepPreviewNumberDir(importRecipe.name, i) +
+          "/p-" +
+          stepImage.substring(stepImage.lastIndexOf("/") + 1));
+
+      if (!stepImageFile.existsSync() || !stepPreviewImageFile.existsSync()) {
+        return false;
+      }
+    }
+  }
   return true;
 }
 

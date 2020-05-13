@@ -402,9 +402,7 @@ class _ImportDialogState extends State<ImportDialog> {
                                     SystemChannels.platform
                                         .invokeMethod('SystemNavigator.pop');
                                   } else {
-                                    if (state.importedRecipes.length > 0) {
-                                      Navigator.pop(context);
-                                    }
+                                    Navigator.pop(context);
                                   }
                                 }),
                           ]),
