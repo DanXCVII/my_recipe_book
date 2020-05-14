@@ -616,36 +616,44 @@ bool checkIfImportRecipeDataIsValid(
     Recipe importRecipe, Directory importRecipeDir) {
   String recipeDirName =
       importRecipeDir.path.substring(importRecipeDir.path.lastIndexOf("/"));
-  if (importRecipe.imagePath != Constants.noRecipeImage) {
-    File importRecipeImageDir = File(importRecipeDir.path +
-        importRecipe.imagePath.substring(
-            importRecipe.imagePath.indexOf(recipeDirName) +
-                recipeDirName.length));
-    File importRecipeImagePreviewDir = File(importRecipeDir.path +
-        importRecipe.imagePreviewPath.substring(
-            importRecipe.imagePreviewPath.indexOf(recipeDirName) +
-                recipeDirName.length));
-    if (!importRecipeImageDir.existsSync() ||
-        !importRecipeImagePreviewDir.existsSync() ||
-        importRecipe.stepImages == null) {
-      return false;
-    }
+  if (importRecipe.steps.length != importRecipe.stepImages.length) {
+    return false;
   }
-  for (int i = 0; i < importRecipe.stepImages.length; i++) {
-    for (String stepImage in importRecipe.stepImages[i]) {
-      File stepImageFile = File(importRecipeDir.path +
-          stepImage.substring(
-              stepImage.indexOf(recipeDirName) + recipeDirName.length));
-      File stepPreviewImageFile = File(importRecipeDir.path
-              .substring(0, importRecipeDir.path.lastIndexOf("/")) +
-          PathProvider.pP.getRecipeStepPreviewNumberDir(importRecipe.name, i) +
-          "/p-" +
-          stepImage.substring(stepImage.lastIndexOf("/") + 1));
-
-      if (!stepImageFile.existsSync() || !stepPreviewImageFile.existsSync()) {
+  try {
+    if (importRecipe.imagePath != Constants.noRecipeImage) {
+      File importRecipeImageDir = File(importRecipeDir.path +
+          importRecipe.imagePath.substring(
+              importRecipe.imagePath.indexOf(recipeDirName) +
+                  recipeDirName.length));
+      File importRecipeImagePreviewDir = File(importRecipeDir.path +
+          importRecipe.imagePreviewPath.substring(
+              importRecipe.imagePreviewPath.indexOf(recipeDirName) +
+                  recipeDirName.length));
+      if (!importRecipeImageDir.existsSync() ||
+          !importRecipeImagePreviewDir.existsSync() ||
+          importRecipe.stepImages == null) {
         return false;
       }
     }
+    for (int i = 0; i < importRecipe.stepImages.length; i++) {
+      for (String stepImage in importRecipe.stepImages[i]) {
+        File stepImageFile = File(importRecipeDir.path +
+            stepImage.substring(
+                stepImage.indexOf(recipeDirName) + recipeDirName.length));
+        File stepPreviewImageFile = File(importRecipeDir.path
+                .substring(0, importRecipeDir.path.lastIndexOf("/")) +
+            PathProvider.pP
+                .getRecipeStepPreviewNumberDir(importRecipe.name, i) +
+            "/p-" +
+            stepImage.substring(stepImage.lastIndexOf("/") + 1));
+
+        if (!stepImageFile.existsSync() || !stepPreviewImageFile.existsSync()) {
+          return false;
+        }
+      }
+    }
+  } catch (e) {
+    return false;
   }
   return true;
 }
