@@ -1224,12 +1224,21 @@ class _I18n_de_DE extends I18n {
   TextDirection get textDirection => TextDirection.ltr;
 }
 
+class _I18n_fr_FR extends I18n {
+  const _I18n_fr_FR();
+
+
+  @override
+  TextDirection get textDirection => TextDirection.ltr;
+}
+
 class GeneratedLocalizationsDelegate extends LocalizationsDelegate<WidgetsLocalizations> {
   const GeneratedLocalizationsDelegate();
   List<Locale> get supportedLocales {
     return const <Locale>[
       Locale("en", "US"),
-      Locale("de", "DE")
+      Locale("de", "DE"),
+      Locale("fr", "FR")
     ];
   }
 
@@ -1255,11 +1264,17 @@ class GeneratedLocalizationsDelegate extends LocalizationsDelegate<WidgetsLocali
     else if ("de_DE" == lang) {
       return SynchronousFuture<WidgetsLocalizations>(const _I18n_de_DE());
     }
+    else if ("fr_FR" == lang) {
+      return SynchronousFuture<WidgetsLocalizations>(const _I18n_fr_FR());
+    }
     else if ("en" == languageCode) {
       return SynchronousFuture<WidgetsLocalizations>(const _I18n_en_US());
     }
     else if ("de" == languageCode) {
       return SynchronousFuture<WidgetsLocalizations>(const _I18n_de_DE());
+    }
+    else if ("fr" == languageCode) {
+      return SynchronousFuture<WidgetsLocalizations>(const _I18n_fr_FR());
     }
 
     return SynchronousFuture<WidgetsLocalizations>(const I18n());
