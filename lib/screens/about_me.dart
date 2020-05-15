@@ -37,7 +37,7 @@ class AboutMeScreen extends StatelessWidget {
               ),
             ),
             Text(
-              "My RecipeBook",
+              "DigiRecipes",
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
             ),
             SizedBox(height: 10),

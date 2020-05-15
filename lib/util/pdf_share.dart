@@ -129,7 +129,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
           pw.Align(
             alignment: pw.Alignment.center,
             child: pw.Text(
-              "- for personal use only -\n~ shared with the My RecipeBook App for Android ~",
+              "- for personal use only -\n~ shared with the DigiRecipes App for Android ~",
               textAlign: pw.TextAlign.center,
               style: pw.TextStyle(
                 fontSize: 9,
@@ -159,7 +159,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                 ),
                 pw.SizedBox(width: 20),
                 pw.Text(
-                  "My RecipeBook",
+                  "DigiRecipes",
                   style: pw.TextStyle(font: righteousTtf, fontSize: 28),
                 ),
               ],

@@ -34,8 +34,8 @@ class I18n implements WidgetsLocalizations {
 
   /// "EN"
   String get two_char_locale => "EN";
-  /// "My RecipeBook"
-  String get my_recipe_book => "My RecipeBook";
+  /// "DigiRecipes"
+  String get my_recipe_book => "DigiRecipes";
   /// "Choose a theme"
   String get choose_a_theme => "Choose a theme";
   /// "Swype your recipes"
@@ -348,18 +348,18 @@ class I18n implements WidgetsLocalizations {
   String get nutrition_manager_description => "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself.";
   /// "no recipes fit your filter"
   String get no_recipes_fit_your_filter => "no recipes fit your filter";
-  /// "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook."
-  String get disclaimer_description => "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook.";
+  /// "In no event shall the authors of DigiRecipes application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with DigiRecipes."
+  String get disclaimer_description => "In no event shall the authors of DigiRecipes application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with DigiRecipes.";
   /// "share this app"
   String get share_this_app => "share this app";
   /// "Check out this!"
   String get share_this_app_title => "Check out this!";
-  /// "I now manage my recipes with the App My RecipeBook ${link}"
-  String share_this_app_desc(String link) => "I now manage my recipes with the App My RecipeBook ${link}";
   /// "recipe pinned to overview"
   String get recipe_pinned_to_overview => "recipe pinned to overview";
   /// "field must not be empty"
   String get field_must_not_be_empty => "field must not be empty";
+  /// "I now manage my recipes with the App DigiRecipes ${link}"
+  String share_this_app_desc(String link) => "I now manage my recipes with the App DigiRecipes ${link}";
   /// "by last modified"
   String get by_last_modified => "by last modified";
   /// "import"
@@ -555,9 +555,9 @@ class _I18n_de_DE extends I18n {
   /// "DE"
   @override
   String get two_char_locale => "DE";
-  /// "Mein Kochbuch"
+  /// "DigiRecipes"
   @override
-  String get my_recipe_book => "Mein Kochbuch";
+  String get my_recipe_book => "DigiRecipes";
   /// "Unterstützte Themes"
   @override
   String get choose_a_theme => "Unterstützte Themes";
@@ -1026,24 +1026,24 @@ class _I18n_de_DE extends I18n {
   /// "Keine Rezepte passen zum angegebenen Filter"
   @override
   String get no_recipes_fit_your_filter => "Keine Rezepte passen zum angegebenen Filter";
-  /// "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook."
+  /// "In no event shall the authors of DigiRecipes application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with DigiRecipes."
   @override
-  String get disclaimer_description => "In no event shall the authors of My RecipeBook application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBook.";
+  String get disclaimer_description => "In no event shall the authors of DigiRecipes application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with DigiRecipes.";
   /// "teile diese App"
   @override
   String get share_this_app => "teile diese App";
   /// "Neuigkeiten"
   @override
   String get share_this_app_title => "Neuigkeiten";
-  /// "Ich verwalte meine Rezepte jetzt mit der App My RecipeBook ${link}"
-  @override
-  String share_this_app_desc(String link) => "Ich verwalte meine Rezepte jetzt mit der App My RecipeBook ${link}";
   /// "Rezept an Hauptansicht angepinnt"
   @override
   String get recipe_pinned_to_overview => "Rezept an Hauptansicht angepinnt";
   /// "Textfeld darf nicht leer sein"
   @override
   String get field_must_not_be_empty => "Textfeld darf nicht leer sein";
+  /// "Ich verwalte meine Rezepte jetzt mit der App DigiRecipes ${link}"
+  @override
+  String share_this_app_desc(String link) => "Ich verwalte meine Rezepte jetzt mit der App DigiRecipes ${link}";
   /// "nach Änderungsdatum"
   @override
   String get by_last_modified => "nach Änderungsdatum";
