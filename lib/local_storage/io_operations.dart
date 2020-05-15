@@ -530,6 +530,19 @@ Future<List<Recipe>> importFirstStartRecipes(
 
       await _deleteFilesInDir(importDir, recipeFileName);
 
+      List<List<String>> stepImages = [];
+      for (int i = 0; i < importRecipe.stepImages.length; i++) {
+        stepImages.add([]);
+        for (int j = 0; j < importRecipe.stepImages[i].length; j++) {
+          stepImages[i].add(
+            await PathProvider.pP
+                    .getRecipeStepNumberDirFull(importRecipe.name, i) +
+                imagePathRecipe.stepImages[i][j].substring(
+                    imagePathRecipe.stepImages[i][j].lastIndexOf("/")),
+          );
+        }
+      }
+
       importRecipes.add(
         importRecipe.copyWith(
           imagePath: importRecipe.imagePath != Constants.noRecipeImage
@@ -545,18 +558,7 @@ Future<List<Recipe>> importFirstStartRecipes(
                       importRecipe.imagePreviewPath.substring(
                           importRecipe.imagePreviewPath.lastIndexOf(".")))
                   : Constants.noRecipeImage,
-          stepImages: List.generate(
-            importRecipe.stepImages.length,
-            (indexOne) => List.generate(
-              importRecipe.stepImages[indexOne].length,
-              (indexTwo) =>
-                  PathProvider.pP
-                      .getRecipeStepNumberDir(importRecipe.name, indexOne) +
-                  imagePathRecipe.stepImages[indexOne][indexTwo].substring(
-                      imagePathRecipe.stepImages[indexOne][indexTwo]
-                          .lastIndexOf("/")),
-            ).toList(),
-          ).toList(),
+          stepImages: stepImages,
         ),
       );
     }
