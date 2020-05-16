@@ -1362,6 +1362,7 @@ class _StepsIntroState extends State<StepsIntro> {
                       child: Text(
                         I18n.of(context).steps_intro,
                         style: TextStyle(
+                          color: Colors.white,
                           fontFamily: recipeScreenFontFamily,
                         ),
                       ),
@@ -1372,7 +1373,7 @@ class _StepsIntroState extends State<StepsIntro> {
                     child: Material(
                       color: Colors.transparent,
                       child: IconButton(
-                        icon: Icon(Icons.check),
+                        icon: Icon(Icons.check, color: Colors.white),
                         onPressed: () {
                           SharedPreferences.getInstance().then(
                             (prefs) => setState(() {

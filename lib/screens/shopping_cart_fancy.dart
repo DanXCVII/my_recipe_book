@@ -25,74 +25,92 @@ class FancyShoppingCartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double scaleFactor = MediaQuery.of(context).size.height / 800;
-    return BlocBuilder<ShoppingCartBloc, ShoppingCartState>(
-        builder: (context, state) {
-      return CustomScrollView(slivers: <Widget>[
-        SliverAppBar(
-          centerTitle: false,
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.help_outline),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => InfoDialog(
-                    title: I18n.of(context).shopping_cart_help,
-                    body: I18n.of(context).shopping_cart_help_desc,
-                  ),
-                );
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.share),
-              onPressed: () {
-                if (state is LoadedShoppingCart) {
-                  String shoppingCartString =
-                      _getShoppingCartAsString(state.shoppingCart, context);
-                  if (shoppingCartString != "") {
-                    Share.share(shoppingCartString,
-                        subject: I18n.of(context).shopping_list);
-                  }
-                }
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                showSearch(
-                    context: context,
-                    delegate: RecipeSearch(
-                      HiveProvider().getRecipeNames(),
-                      BlocProvider.of<ShoppingCartBloc>(context),
-                      HiveProvider().getRecipeTags(),
-                      HiveProvider().getCategoryNames()..remove('no category'),
-                    ));
-              },
-            ),
-          ],
-          expandedHeight: scaleFactor * 200.0,
-          floating: false,
-          pinned: true,
-          flexibleSpace: FlexibleSpaceBar(
-            centerTitle: false,
-            title: Text(I18n.of(context).shoppingcart),
-            background: shoppingCartImage,
+    return Stack(children: [
+      Container(
+        height: MediaQuery.of(context).size.height - kToolbarHeight,
+        width: MediaQuery.of(context).size.width,
+        child: Opacity(
+          opacity:
+              Theme.of(context).backgroundColor == Colors.white ? 0.3 : 0.6,
+          child: Image.asset(
+            Theme.of(context).backgroundColor == Colors.white
+                ? "images/vegetables.png"
+                : "images/vegetablesBright.png",
+            repeat: ImageRepeat.repeat,
           ),
         ),
-        SliverPadding(
-            padding: EdgeInsets.all(12),
-            sliver: (state is LoadingShoppingCart)
-                ? SliverList(
-                    delegate: SliverChildListDelegate(
-                        [Center(child: CircularProgressIndicator())]))
-                : (state is LoadedShoppingCart)
-                    ? SliverList(
-                        delegate: SliverChildListDelegate(getRecipeShoppingList(
-                            state.shoppingCart, context, scaleFactor)),
-                      )
-                    : Text(state.toString())),
-      ]);
-    });
+      ),
+      BlocBuilder<ShoppingCartBloc, ShoppingCartState>(
+          builder: (context, state) {
+        return CustomScrollView(slivers: <Widget>[
+          SliverAppBar(
+            centerTitle: false,
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.help_outline),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => InfoDialog(
+                      title: I18n.of(context).shopping_cart_help,
+                      body: I18n.of(context).shopping_cart_help_desc,
+                    ),
+                  );
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.share),
+                onPressed: () {
+                  if (state is LoadedShoppingCart) {
+                    String shoppingCartString =
+                        _getShoppingCartAsString(state.shoppingCart, context);
+                    if (shoppingCartString != "") {
+                      Share.share(shoppingCartString,
+                          subject: I18n.of(context).shopping_list);
+                    }
+                  }
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  showSearch(
+                      context: context,
+                      delegate: RecipeSearch(
+                        HiveProvider().getRecipeNames(),
+                        BlocProvider.of<ShoppingCartBloc>(context),
+                        HiveProvider().getRecipeTags(),
+                        HiveProvider().getCategoryNames()
+                          ..remove('no category'),
+                      ));
+                },
+              ),
+            ],
+            expandedHeight: scaleFactor * 200.0,
+            floating: false,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: false,
+              title: Text(I18n.of(context).shoppingcart),
+              background: shoppingCartImage,
+            ),
+          ),
+          SliverPadding(
+              padding: EdgeInsets.all(12),
+              sliver: (state is LoadingShoppingCart)
+                  ? SliverList(
+                      delegate: SliverChildListDelegate(
+                          [Center(child: CircularProgressIndicator())]))
+                  : (state is LoadedShoppingCart)
+                      ? SliverList(
+                          delegate: SliverChildListDelegate(
+                              getRecipeShoppingList(
+                                  state.shoppingCart, context, scaleFactor)),
+                        )
+                      : Text(state.toString())),
+        ]);
+      }),
+    ]);
   }
 
   String _getShoppingCartAsString(

@@ -52,7 +52,6 @@ class _RecipeFilterState extends State<RecipeFilter>
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Center(

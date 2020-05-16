@@ -144,8 +144,6 @@ class RecipeOverviewBloc
     final String randomRecipeImage =
         randomRecipe != null ? randomRecipe.imagePreviewPath : null;
 
-    print(randomRecipeImage);
-    print(event.recipeTag);
     yield LoadingRecipes(
       randomImage: randomRecipeImage,
       recipeTag: event.recipeTag,

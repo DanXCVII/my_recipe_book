@@ -199,7 +199,8 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                     Expanded(
                       child: Container(
                         height: MediaQuery.of(context).size.height,
-                        child: state.randomRecipes.isEmpty
+                        child: state.randomRecipes == null ||
+                                state.randomRecipes.isEmpty
                             ? Center(
                                 child: IconInfoMessage(
                                 iconWidget: Icon(

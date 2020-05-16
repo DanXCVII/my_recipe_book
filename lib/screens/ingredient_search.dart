@@ -76,7 +76,6 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
     if (!_isInitialized &&
         MediaQuery.of(context).size.width > showExpandedSearch) {
       setState(() {

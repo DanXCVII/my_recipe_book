@@ -415,14 +415,14 @@ class RecipeImageItemBig extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                                padding: const EdgeInsets.fromLTRB(8, 22, 8, 8),
                                 child: Text(
                                   recipe.name,
                                   textAlign: TextAlign.center,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.w400,
+                                      fontWeight: FontWeight.w500,
                                       fontSize: 14,
                                       color: Colors.grey[300]),
                                 ),
@@ -430,7 +430,16 @@ class RecipeImageItemBig extends StatelessWidget {
                             ],
                           ),
                           decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.4),
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                stops: [0, 0.4, 1],
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black45,
+                                  Colors.black54,
+                                ],
+                              ),
                               borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(15),
                                 bottomRight: Radius.circular(15),
