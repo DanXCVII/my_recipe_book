@@ -42,6 +42,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
 
   Stream<SplashScreenState> _mapInitializeDataToState(
       SPInitializeData event) async* {
+    print("started initialization");
     bool showIntro = false;
     bool recipeCategoryOverview;
 
@@ -77,6 +78,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     this._showIntro = showIntro;
 
     _initialized = true;
+    print("finished initialization");
     if (_splashScreenFinished)
       yield InitializedData(recipeCategoryOverview, showIntro);
   }

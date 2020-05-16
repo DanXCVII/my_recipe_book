@@ -34,8 +34,8 @@ class I18n implements WidgetsLocalizations {
 
   /// "EN"
   String get two_char_locale => "EN";
-  /// "DigiRecipes"
-  String get my_recipe_book => "DigiRecipes";
+  /// "My RecipeBible"
+  String get recipe_bible => "My RecipeBible";
   /// "Choose a theme"
   String get choose_a_theme => "Choose a theme";
   /// "Swype your recipes"
@@ -348,8 +348,8 @@ class I18n implements WidgetsLocalizations {
   String get nutrition_manager_description => "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself.";
   /// "no recipes fit your filter"
   String get no_recipes_fit_your_filter => "no recipes fit your filter";
-  /// "In no event shall the authors of DigiRecipes application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with DigiRecipes."
-  String get disclaimer_description => "In no event shall the authors of DigiRecipes application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with DigiRecipes.";
+  /// "In no event shall the authors of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible."
+  String get disclaimer_description => "In no event shall the authors of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible.";
   /// "share this app"
   String get share_this_app => "share this app";
   /// "recipe pinned to overview"
@@ -358,8 +358,8 @@ class I18n implements WidgetsLocalizations {
   String get field_must_not_be_empty => "field must not be empty";
   /// "Checkout this app"
   String get share_this_app_title => "Checkout this app";
-  /// "I now manage my recipes with the App DigiRecipes ${link}"
-  String share_this_app_desc(String link) => "I now manage my recipes with the App DigiRecipes ${link}";
+  /// "I now manage my recipes with the App My RecipeBible ${link}"
+  String share_this_app_desc(String link) => "I now manage my recipes with the App My RecipeBible ${link}";
   /// "by last modified"
   String get by_last_modified => "by last modified";
   /// "import"
@@ -376,8 +376,8 @@ class I18n implements WidgetsLocalizations {
   String get share_recipes_settings_desc => "on this screen, you can:\n- select the recipes you want to share to a friend as a single file\n- select the recipes you want to save to import on another device or just to make sure, they don't get lost.";
   /// "here you can add a new recipe"
   String get tap_here_to_add_recipe => "here you can add a new recipe";
-  /// "and here you can manage\nyour recipe categories"
-  String get tap_here_to_manage_categories => "and here you can manage\nyour recipe categories";
+  /// "here you can manage\nyour recipe categories"
+  String get tap_here_to_manage_categories => "here you can manage\nyour recipe categories";
   /// "contact me"
   String get contact_me => "contact me";
   /// "import failed"
@@ -508,6 +508,8 @@ class I18n implements WidgetsLocalizations {
   String get clean_recipe_info => "Delete recipe data?";
   /// "Are you sure, that you want to delete the prefilled recipe data?"
   String get clean_recipe_info_desc => "Are you sure, that you want to delete the prefilled recipe data?";
+  /// "tap here to imoprt\n a recipe online"
+  String get tap_here_to_import_recipe_online => "tap here to imoprt\n a recipe online";
 }
 
 class _I18n_en_US extends I18n {
@@ -523,9 +525,9 @@ class _I18n_de_DE extends I18n {
   /// "DE"
   @override
   String get two_char_locale => "DE";
-  /// "DigiRecipes"
+  /// "My RecipeBible"
   @override
-  String get my_recipe_book => "DigiRecipes";
+  String get recipe_bible => "My RecipeBible";
   /// "Unterstützte Themes"
   @override
   String get choose_a_theme => "Unterstützte Themes";
@@ -994,9 +996,9 @@ class _I18n_de_DE extends I18n {
   /// "Keine Rezepte passen zum angegebenen Filter"
   @override
   String get no_recipes_fit_your_filter => "Keine Rezepte passen zum angegebenen Filter";
-  /// "In no event shall the authors of DigiRecipes application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with DigiRecipes."
+  /// "In no event shall the authors of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible."
   @override
-  String get disclaimer_description => "In no event shall the authors of DigiRecipes application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with DigiRecipes.";
+  String get disclaimer_description => "In no event shall the authors of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible.";
   /// "teile diese App"
   @override
   String get share_this_app => "teile diese App";
@@ -1009,9 +1011,9 @@ class _I18n_de_DE extends I18n {
   /// "Neuigkeiten"
   @override
   String get share_this_app_title => "Neuigkeiten";
-  /// "Ich verwalte meine Rezepte jetzt mit der App DigiRecipes ${link}"
+  /// "Ich verwalte meine Rezepte jetzt mit der App My RecipeBible ${link}"
   @override
-  String share_this_app_desc(String link) => "Ich verwalte meine Rezepte jetzt mit der App DigiRecipes ${link}";
+  String share_this_app_desc(String link) => "Ich verwalte meine Rezepte jetzt mit der App My RecipeBible ${link}";
   /// "nach Änderungsdatum"
   @override
   String get by_last_modified => "nach Änderungsdatum";
@@ -1033,9 +1035,9 @@ class _I18n_de_DE extends I18n {
   /// "Hier kannst du ein neues\nRezept hinzuzufügen"
   @override
   String get tap_here_to_add_recipe => "Hier kannst du ein neues\nRezept hinzuzufügen";
-  /// "und hier kannst du deine\nKategorien verwalten"
+  /// "Hier kannst du deine\nKategorien verwalten"
   @override
-  String get tap_here_to_manage_categories => "und hier kannst du deine\nKategorien verwalten";
+  String get tap_here_to_manage_categories => "Hier kannst du deine\nKategorien verwalten";
   /// "kontaktiere mich"
   @override
   String get contact_me => "kontaktiere mich";
@@ -1219,6 +1221,9 @@ class _I18n_de_DE extends I18n {
   /// "Willst du wirklich die ausgefüllten Daten des aktuell bearbeiteten/neuen Rezeptes löschen"
   @override
   String get clean_recipe_info_desc => "Willst du wirklich die ausgefüllten Daten des aktuell bearbeiteten/neuen Rezeptes löschen";
+  /// "Tippe hier um ein Rezept\n online zu importieren"
+  @override
+  String get tap_here_to_import_recipe_online => "Tippe hier um ein Rezept\n online zu importieren";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

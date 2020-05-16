@@ -85,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen>
                           child: FittedBox(
                             fit: BoxFit.fill,
                             child: Text(
-                              I18n.of(context).my_recipe_book,
+                              I18n.of(context).recipe_bible,
                               style: TextStyle(
                                 fontFamily: "Righteous",
                                 color: Colors.black,

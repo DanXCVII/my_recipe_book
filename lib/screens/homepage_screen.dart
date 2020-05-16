@@ -65,6 +65,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   Image shoppingCartImage;
   GlobalKey _introKeyOne = GlobalKey();
   GlobalKey _introKeyTwo = GlobalKey();
+  GlobalKey _introKeyThree = GlobalKey();
   MyBooleanWrapper showIntro;
   bool _intentFailedImporting = false;
 
@@ -79,11 +80,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }) {
     this.showIntro = MyBooleanWrapper(showIntro);
   }
-
-  static const List<IconData> icons = const [
-    MdiIcons.apps,
-    Icons.description,
-  ];
 
   @override
   void initState() {
@@ -257,6 +253,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   ? FloatingActionButtonMenu(
                       _introKeyOne,
                       _introKeyTwo,
+                      _introKeyThree,
                       showIntro: showIntro,
                       shoppingCartAdd: state.selectedIndex == 2 ? true : false,
                     )
@@ -554,12 +551,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 class FloatingActionButtonMenu extends StatefulWidget {
   final GlobalKey _introKeyOne;
   final GlobalKey _introKeyTwo;
+  final GlobalKey _introKeyThree;
   final MyBooleanWrapper showIntro;
   final bool shoppingCartAdd;
 
   FloatingActionButtonMenu(
     this._introKeyOne,
-    this._introKeyTwo, {
+    this._introKeyTwo,
+    this._introKeyThree, {
     this.shoppingCartAdd = false,
     this.showIntro,
     Key key,
@@ -583,7 +582,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
   void initState() {
     _controller = new AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 300),
     );
 
     super.initState();
@@ -602,7 +601,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
         children: isOpen
             ? [
                 Showcase.withWidget(
-                  key: widget._introKeyTwo,
+                  key: widget._introKeyThree,
                   height: 50,
                   width: 200,
                   container: Column(
@@ -633,6 +632,45 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                       );
                     },
                     Icon(MdiIcons.apps, color: Theme.of(context).primaryColor),
+                    3,
+                  ),
+                ),
+                Showcase.withWidget(
+                  key: widget._introKeyTwo,
+                  height: 50,
+                  width: 200,
+                  container: Column(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(28),
+                          gradient: LinearGradient(
+                              colors: [Colors.grey[300], Colors.white]),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(
+                              I18n.of(context).tap_here_to_import_recipe_online,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600)),
+                        ),
+                      ),
+                    ],
+                  ),
+                  shapeBorder: CircleBorder(),
+                  child: _getFloatingItem(
+                    () {
+                      getTemporaryDirectory().then((dir) {
+                        IO.clearCache();
+                        Navigator.pushNamed(
+                            context, RouteNames.importFromWebsite,
+                            arguments: ImportFromWebsiteArguments(
+                                BlocProvider.of<ShoppingCartBloc>(context)));
+                      });
+                    },
+                    Icon(MdiIcons.cloudDownload,
+                        color: Theme.of(context).primaryColor),
                     2,
                   ),
                 ),
@@ -701,8 +739,11 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
           if (_controller.isDismissed) {
             setState(() {
               if (widget.showIntro.myBool) {
-                ShowCaseWidget.of(context)
-                    .startShowCase([widget._introKeyOne, widget._introKeyTwo]);
+                ShowCaseWidget.of(context).startShowCase([
+                  widget._introKeyOne,
+                  widget._introKeyTwo,
+                  widget._introKeyThree,
+                ]);
                 widget.showIntro.myBool = false;
               }
               isOpen = true;

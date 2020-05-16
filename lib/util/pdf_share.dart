@@ -129,7 +129,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
           pw.Align(
             alignment: pw.Alignment.center,
             child: pw.Text(
-              "- for personal use only -\n~ shared with the DigiRecipes App for Android ~",
+              "- for personal use only -",
               textAlign: pw.TextAlign.center,
               style: pw.TextStyle(
                 fontSize: 9,
@@ -159,7 +159,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                 ),
                 pw.SizedBox(width: 20),
                 pw.Text(
-                  "DigiRecipes",
+                  "My RecipeBible",
                   style: pw.TextStyle(font: righteousTtf, fontSize: 28),
                 ),
               ],
@@ -370,12 +370,12 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                         ),
                                         pw.TextSpan(
                                           text: recipe.servings.toString() +
-                                                      " " +
-                                                      recipe.servingName !=
-                                                  null
-                                              ? recipe.servingName
-                                              : recipe.servingName ??
-                                                  I18n.of(bContext).persons,
+                                              " " +
+                                              (recipe.servingName != null
+                                                  ? recipe.servingName
+                                                  : recipe.servingName ??
+                                                      I18n.of(bContext)
+                                                          .persons),
                                           style: pw.TextStyle(
                                               font: latoBTtf,
                                               fontSize: 11,

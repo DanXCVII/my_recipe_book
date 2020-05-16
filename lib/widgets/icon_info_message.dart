@@ -53,7 +53,7 @@ class IconInfoMessage extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                   color: textColor == null
                       ? Theme.of(context).backgroundColor == Colors.white
                           ? Colors.grey[800]

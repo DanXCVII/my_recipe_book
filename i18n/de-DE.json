@@ -1,6 +1,6 @@
 {
   "two_char_locale": "DE",
-  "my_recipe_book": "DigiRecipes",
+  "recipe_bible": "My RecipeBible",
   "choose_a_theme": "Unterstützte Themes",
   "swype_your_recipes": "Wische durch deine Rezepte",
   "if_you_cant_decide_random_recipe_explorer": "Wenn du nicht weißt, was du kochen sollst, kannst du dir deine Rezepte nach Zufallsprinzip anzeigen lassen.",
@@ -157,11 +157,11 @@
   "ingredient_manager_description": "Hier kannst du die Namen der Zutaten, die dir vorgeschlagen werden, ändern oder hinzufügen. Die Zutaten der bereits hinzugefügten Rezepte bleiben unverändert. Es dient lediglich der Zeitersparnis beim Eintippen der Zutaten.",
   "nutrition_manager_description": "Hier kannst du die Namen der Nährstoffe verwalten. Beim Bearbeiten der exisiterenden bleiben die Nährwerte, der bereits hinzugefügten Rezepte unverändert.",
   "no_recipes_fit_your_filter": "Keine Rezepte passen zum angegebenen Filter",
-  "disclaimer_description": "In no event shall the authors of DigiRecipes application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with DigiRecipes.",
+  "disclaimer_description": "In no event shall the authors of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible.",
   "share_this_app": "teile diese App",
   "recipe_pinned_to_overview": "Rezept an Hauptansicht angepinnt",
   "share_this_app_title": "Neuigkeiten",
-  "share_this_app_desc": "Ich verwalte meine Rezepte jetzt mit der App DigiRecipes {link}",
+  "share_this_app_desc": "Ich verwalte meine Rezepte jetzt mit der App My RecipeBible {link}",
   "field_must_not_be_empty": "Textfeld darf nicht leer sein",
   "by_last_modified": "nach Änderungsdatum",
   "import": "importiere",
@@ -170,7 +170,7 @@
   "share_recipes_settings": "teile/sichere deine Rezepte",
   "share_recipes_settings_desc": "Hier kannst du:\n- Rezepte auswählen, die du als einzelne Datei mit deinen Freuden teilen möchtest, damit sie diese ihrer App hinzufügen können\n- Rezepte auswählen, die du sichern willst, für den Fall der Fälle, dass dein Handy verloren geht und du sich online oder auf anderen Geräten gesichert haben willst.",
   "tap_here_to_add_recipe": "Hier kannst du ein neues\nRezept hinzuzufügen",
-  "tap_here_to_manage_categories": "und hier kannst du deine\nKategorien verwalten",
+  "tap_here_to_manage_categories": "Hier kannst du deine\nKategorien verwalten",
   "contact_me": "kontaktiere mich",
   "failed_import": "Import fehlgeschlagen",
   "failed_import_desc": "Import aus unbekannten Gründen fehlgeschlagen. Bitte wechsle zum Tab \"Einstellungen\" und importiere die Rezepte dort.",
@@ -233,5 +233,6 @@
   "amount": "Menge",
   "check_red_fields_desc": "Behebe die Fehler der rot markierten Felder",
   "clean_recipe_info": "Infos löschen?",
-  "clean_recipe_info_desc": "Willst du wirklich die ausgefüllten Daten des aktuell bearbeiteten/neuen Rezeptes löschen"
+  "clean_recipe_info_desc": "Willst du wirklich die ausgefüllten Daten des aktuell bearbeiteten/neuen Rezeptes löschen",
+  "tap_here_to_import_recipe_online": "Tippe hier um ein Rezept\n online zu importieren"
 }

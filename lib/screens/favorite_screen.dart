@@ -13,6 +13,17 @@ class FavoriteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
+      Opacity(
+        opacity: Theme.of(context).backgroundColor == Colors.white ? 0.3 : 1,
+        child: Container(
+          height: MediaQuery.of(context).size.height - kToolbarHeight,
+          width: MediaQuery.of(context).size.width,
+          child: Image.asset(
+            "images/hearts.png",
+            repeat: ImageRepeat.repeat,
+          ),
+        ),
+      ),
       BlocBuilder<FavoriteRecipesBloc, FavoriteRecipesState>(
           builder: (context, state) {
         if (state is LoadingFavorites) {
@@ -20,12 +31,16 @@ class FavoriteScreen extends StatelessWidget {
         } else if (state is LoadedFavorites) {
           if (state.recipes.isEmpty) {
             return Center(
-              child: IconInfoMessage(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: IconInfoMessage(
                   iconWidget: SpinKitPumpingHeart(
                     color: Colors.pink,
                     size: 70.0,
                   ),
-                  description: I18n.of(context).no_added_favorites_yet),
+                  description: I18n.of(context).no_added_favorites_yet,
+                ),
+              ),
             );
           }
           return FavoriteRecipeCards(

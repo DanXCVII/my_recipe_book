@@ -361,7 +361,6 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     List<String> steps = [];
 
     String cutStepInfo = stepsInfo;
-    print(stepsInfo);
     if (cutStepInfo.contains("\n\r\n")) {
       cutStepInfo += "\n\r\n";
       while (cutStepInfo.contains("\n\r\n")) {
