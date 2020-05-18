@@ -31,7 +31,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         child: Opacity(
           opacity:
-              Theme.of(context).backgroundColor == Colors.white ? 0.3 : 0.6,
+              Theme.of(context).backgroundColor == Colors.white ? 0.5 : 0.6,
           child: Image.asset(
             Theme.of(context).backgroundColor == Colors.white
                 ? "images/vegetables.png"

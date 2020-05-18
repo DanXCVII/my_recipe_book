@@ -14,13 +14,17 @@ class WatchedVideo extends AdManagerEvent {
   const WatchedVideo(this.time);
 }
 
+class LoadVideo extends AdManagerEvent {}
+
 class StartWatchingVideo extends AdManagerEvent {
   final DateTime time;
   final bool addAddFreeTime;
+  final bool showLoadingIndicator;
 
   const StartWatchingVideo(
     this.time,
     this.addAddFreeTime,
+    this.showLoadingIndicator,
   );
 }
 

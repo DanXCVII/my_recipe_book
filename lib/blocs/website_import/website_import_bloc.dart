@@ -46,15 +46,34 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       ImportRecipe event) async* {
     yield ImportingRecipe();
 
+    bool hasInternetConnection;
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        hasInternetConnection = true;
+      }
+    } on SocketException catch (_) {
+      hasInternetConnection = false;
+    }
+    if (!hasInternetConnection) {
+      yield FailedToConnect();
+      return;
+    }
+
     var response;
+
     try {
       response = await http.get(event.url);
     } catch (e) {
       yield InvalidUrl();
+      return;
     }
+
+    // just a safety check
     if (response == null) {
       return;
     }
+
     if (response.statusCode == 200) {
       String httpWebsite = response.body;
 

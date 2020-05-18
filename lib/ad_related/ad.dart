@@ -7,7 +7,7 @@ import 'package:my_recipe_book/generated/i18n.dart';
 import 'ad_id.dart';
 
 class Ads {
-  static bool _showAds = true;
+  static bool _showBannerAds = true;
   static bool bottomBIsShown = false;
   static bool topBIsShown = false;
   static bool _bottomBIsGoingToBeShown = false;
@@ -59,7 +59,7 @@ class Ads {
     );
   }
 
-  static Future<void> showRewardedVideo([State state]) async {
+  static Future<void> loadRewardedVideo([State state]) async {
     if (state != null && !state.mounted) return;
 
     await RewardedVideoAd.instance
@@ -72,7 +72,7 @@ class Ads {
 
   static void showBottomBannerAd([State state]) {
     // if (Purchases.isNoAds()) return;
-    if (!_showAds || (state != null && !state.mounted)) {
+    if (!_showBannerAds || (state != null && !state.mounted)) {
       print("showBottomBannerAd: return");
       return;
     }
@@ -96,7 +96,7 @@ class Ads {
 
   static void showTopBannerAd([State state]) {
     // if (Purchases.isNoAds()) return;
-    if (!_showAds || (state != null && !state.mounted)) return;
+    if (!_showBannerAds || (state != null && !state.mounted)) return;
     if (_topBannerAd == null) setTopBannerAd();
     if (!topBIsShown && !_topBIsGoingToBeShown) {
       _topBIsGoingToBeShown = true;
@@ -112,7 +112,7 @@ class Ads {
   static int _reloaded = 0;
 
   static void hideBottomBannerAd() {
-    if (!_showAds) return;
+    if (!_showBannerAds) return;
     if (_bottomBannerAd != null && !_bottomBIsGoingToBeShown) {
       print(
           'hideBottomBannerAd: _bottomBannerAd != null, _bottomBIsGoingToBeShow = false');
@@ -139,10 +139,10 @@ class Ads {
           });
         } else {
           _reloaded++;
-          if (_reloaded == 10) {
-            _reloaded = 0;
-            return;
-          }
+          // if (_reloaded == 50) {
+          //   _reloaded = 0;
+          //   return;
+          // }
           hideBottomBannerAd();
         }
       });
@@ -183,6 +183,12 @@ class Ads {
   }
 
   static void showRewardedVideoAd() {
+    try {
+      RewardedVideoAd.instance.show();
+    } catch (e) {
+      print("error showing video");
+    }
+    return;
     RewardedVideoAd.instance.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       if (event == RewardedVideoAdEvent.loaded) {
@@ -206,12 +212,12 @@ class Ads {
         testDevices: <String>["84A003142741DEE5AEED89CE56D794EB"]);
   }
 
-  static void showAds(bool showAds) {
-    _showAds = showAds;
+  static void showBannerAds(bool showAds) {
+    _showBannerAds = showAds;
   }
 
   static bool shouldShowAds() {
-    return _showAds;
+    return _showBannerAds;
   }
 
   Widget getAdPage(Widget page, BuildContext context) {

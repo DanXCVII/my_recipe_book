@@ -193,7 +193,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             child: ImportDialog(closeAfterFinished: false)),
       );
     } else if (intentSharedText != null) {
-      Ads.showBottomBannerAd();
+      BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
       Navigator.pushNamed(
         context,
         RouteNames.importFromWebsite,
@@ -576,6 +576,7 @@ class FloatingActionButtonMenu extends StatefulWidget {
 class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
     with TickerProviderStateMixin {
   AnimationController _controller;
+  AnimationController _controllerFAB;
   static const List<IconData> icons = const [
     MdiIcons.apps,
     Icons.description,
@@ -588,6 +589,10 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
+    _controllerFAB = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
 
     super.initState();
   }
@@ -595,6 +600,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
   @override
   void dispose() {
     _controller.dispose();
+    _controllerFAB.dispose();
     super.dispose();
   }
 
@@ -664,6 +670,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     () {
                       getTemporaryDirectory().then((dir) {
                         IO.clearCache();
+                        Ads.loadRewardedVideo();
                         Navigator.pushNamed(
                             context, RouteNames.importFromWebsite,
                             arguments: ImportFromWebsiteArguments(
@@ -727,13 +734,13 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
         backgroundColor: Theme.of(context).primaryColor,
         heroTag: null,
         child: AnimatedBuilder(
-          animation: _controller,
+          animation: _controllerFAB,
           builder: (BuildContext context, Widget child) {
             return Transform(
-              transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
+              transform: Matrix4.rotationZ(_controllerFAB.value * 0.5 * pi),
               alignment: FractionalOffset.center,
               child: Icon(
-                _controller.isDismissed ? Icons.add : Icons.close,
+                _controllerFAB.isDismissed ? Icons.add : Icons.close,
                 color: Colors.white,
               ),
             );
@@ -752,11 +759,13 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
               }
               isOpen = true;
               _controller.forward();
+              _controllerFAB.forward();
             });
           } else {
             setState(() {
               _controller.reverse();
-              Future.delayed(Duration(milliseconds: 100))
+              _controllerFAB.reverse();
+              Future.delayed(Duration(milliseconds: 300))
                   .then((_) => setState(() {
                         isOpen = false;
                       }));
@@ -777,8 +786,8 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
       child: ScaleTransition(
         scale: CurvedAnimation(
           parent: _controller,
-          curve: Interval(0.0, 1.0 - index / icons.length / 2.0,
-              curve: Curves.easeOut),
+          curve:
+              Interval(0.0, index / icons.length / 2.0, curve: Curves.easeOut),
         ),
         child: FloatingActionButton(
           tooltip: tooltip,
@@ -788,6 +797,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
           child: icon,
           onPressed: () {
             _controller.reverse();
+            _controllerFAB.reverse();
             onTap();
           },
         ),

@@ -348,8 +348,8 @@ class I18n implements WidgetsLocalizations {
   String get nutrition_manager_description => "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself.";
   /// "no recipes fit your filter"
   String get no_recipes_fit_your_filter => "no recipes fit your filter";
-  /// "In no event shall the authors of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible."
-  String get disclaimer_description => "In no event shall the authors of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible.";
+  /// "In no event shall the author of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible."
+  String get disclaimer_description => "In no event shall the author of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible.";
   /// "share this app"
   String get share_this_app => "share this app";
   /// "Check out this!"
@@ -390,8 +390,8 @@ class I18n implements WidgetsLocalizations {
   String get no_internet_connection_desc => "could not connect to the internet and therefore not load the video.";
   /// "failed loading ad"
   String get failed_loading_ad => "failed loading ad";
-  /// "solutions can be: better internet connection, tap \"watch\" again or restarting the app"
-  String get failed_loading_ad_desc => "solutions can be: better internet connection, tap \"watch\" again or restarting the app";
+  /// "solutions can be: better internet connection, tapping \"watch\" again or restarting the app"
+  String get failed_loading_ad_desc => "solutions can be: better internet connection, tapping \"watch\" again or restarting the app";
   /// "if recipes don't show up in overview, pull down to refresh the page or go to another tab and back."
   String get recipes_not_in_overview => "if recipes don't show up in overview, pull down to refresh the page or go to another tab and back.";
   /// "recipes not showing up?"
@@ -446,8 +446,8 @@ class I18n implements WidgetsLocalizations {
   String recipe_already_exists(String name) => "recipe with name \"${name}\" already exists";
   /// "failed to connect to given url"
   String get failed_to_connect_to_url => "failed to connect to given url";
-  /// "invalid url:\ncheck the info about supported websites in the infopanel below"
-  String get invalid_url => "invalid url:\ncheck the info about supported websites in the infopanel below";
+  /// "unsupported url:\ncheck the info about supported websites in the infopanel below"
+  String get invalid_url => "unsupported url:\ncheck the info about supported websites in the infopanel below";
   /// "enter URL of website with recipe:"
   String get enter_url => "enter URL of website with recipe:";
   /// "info about supported websites:"
@@ -1028,9 +1028,6 @@ class _I18n_de_DE extends I18n {
   /// "Keine Rezepte passen zum angegebenen Filter"
   @override
   String get no_recipes_fit_your_filter => "Keine Rezepte passen zum angegebenen Filter";
-  /// "In no event shall the authors of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible."
-  @override
-  String get disclaimer_description => "In no event shall the authors of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible.";
   /// "teile diese App"
   @override
   String get share_this_app => "teile diese App";
@@ -1175,9 +1172,9 @@ class _I18n_de_DE extends I18n {
   /// "Verbindung mit URL fehlgeschlagen"
   @override
   String get failed_to_connect_to_url => "Verbindung mit URL fehlgeschlagen";
-  /// "ungültige URL:\nChecke die Info über unterstützte Webseiten im Infopanel unten"
+  /// "nicht unterstützte URL:\nChecke die Info über unterstützte Webseiten im Infopanel unten"
   @override
-  String get invalid_url => "ungültige URL:\nChecke die Info über unterstützte Webseiten im Infopanel unten";
+  String get invalid_url => "nicht unterstützte URL:\nChecke die Info über unterstützte Webseiten im Infopanel unten";
   /// "URL zum Rezept:"
   @override
   String get enter_url => "URL zum Rezept:";

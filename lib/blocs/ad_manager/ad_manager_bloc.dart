@@ -34,19 +34,23 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
   SharedPreferences _sP;
   bool lastAdForBannerTime;
+  bool _showVideo = false;
 
   AdManagerBloc() {
     RewardedVideoAd.instance.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       if (event == RewardedVideoAdEvent.rewarded) {
         print(DateTime.now().toLocal().toString());
+        _showVideo = false;
         if (lastAdForBannerTime) {
           add(WatchedVideo(DateTime.now()));
         }
-      } else if (event == RewardedVideoAdEvent.loaded) {
+      } else if (event == RewardedVideoAdEvent.loaded && _showVideo) {
         RewardedVideoAd.instance.show();
+        _showVideo = false;
       } else if (event == RewardedVideoAdEvent.failedToLoad) {
         add(_FailedLoadingRewardedVideo());
+        _showVideo = false;
       } else if (event == RewardedVideoAdEvent.closed) {
         add(_InterruptedLoadingVideo());
       }
@@ -60,22 +64,26 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   Stream<AdManagerState> mapEventToState(
     AdManagerEvent event,
   ) async* {
-    if (event is WatchedVideo) {
-      yield* _mapWatchedVideoToState(event);
-    } else if (event is InitializeAds) {
-      yield* _mapInitializeAdsToState(event);
-    } else if (event is StartWatchingVideo) {
-      yield* _mapStartWatchingVideoToState(event);
-    } else if (event is ShowAdsAgain) {
-      yield* _mapShowAdsAgain(event);
-    } else if (event is PurchaseProVersion) {
-      yield* _mapPurchaseProVersionToState(event);
-    } else if (event is _PurchaseSuccessfull) {
-      yield* _mapPurchaseSuccessfullToState(event);
-    } else if (event is _FailedLoadingRewardedVideo) {
-      yield* _mapFailedLoadingRewardedVideoToState(event);
-    } else if (event is _InterruptedLoadingVideo) {
-      yield* _mapInterruptedLoadingVideoToState(event);
+    if (!(state is IsPurchased)) {
+      if (event is WatchedVideo) {
+        yield* _mapWatchedVideoToState(event);
+      } else if (event is InitializeAds) {
+        yield* _mapInitializeAdsToState(event);
+      } else if (event is StartWatchingVideo) {
+        yield* _mapStartWatchingVideoToState(event);
+      } else if (event is LoadVideo) {
+        yield* _mapLoadVideoToState(event);
+      } else if (event is ShowAdsAgain) {
+        yield* _mapShowAdsAgain(event);
+      } else if (event is PurchaseProVersion) {
+        yield* _mapPurchaseProVersionToState(event);
+      } else if (event is _PurchaseSuccessfull) {
+        yield* _mapPurchaseSuccessfullToState(event);
+      } else if (event is _FailedLoadingRewardedVideo) {
+        yield* _mapFailedLoadingRewardedVideoToState(event);
+      } else if (event is _InterruptedLoadingVideo) {
+        yield* _mapInterruptedLoadingVideoToState(event);
+      }
     }
   }
 
@@ -86,10 +94,10 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     _sP ??= await SharedPreferences.getInstance();
 
     if (_sP.getBool('pro_version') == true) {
-      Ads.showAds(false);
+      Ads.showBannerAds(false);
       yield IsPurchased();
     } else {
-      Ads.showAds(true);
+      Ads.showBannerAds(true);
       InAppPurchaseConnection.enablePendingPurchases();
       print(await InAppPurchaseConnection.instance.isAvailable());
       _iap = InAppPurchaseConnection.instance;
@@ -110,7 +118,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
         DateTime noAdsUntil = DateTime.parse(_sP.getString('noAdsUntil'));
 
         if (noAdsUntil.isAfter(DateTime.now())) {
-          Ads.showAds(false);
+          Ads.showBannerAds(false);
 
           int waitTime = DateTime.now().difference(noAdsUntil).inMinutes + 5;
 
@@ -119,7 +127,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
               .listen((count) {
             print(count);
             if (DateTime.now().isAfter(noAdsUntil)) {
-              Ads.showAds(true);
+              Ads.showBannerAds(true);
               _periodicSub.cancel();
               add(ShowAdsAgain());
             }
@@ -144,7 +152,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
     await prefs.setString('noAdsUntil', noAdsUntil.toString());
 
-    Ads.showAds(false);
+    Ads.showBannerAds(false);
 
     int waitTime = noAdsUntil.difference(DateTime.now()).inMinutes + 5;
 
@@ -154,7 +162,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
         .listen((count) {
       print(count);
       if (DateTime.now().isAfter(noAdsUntil)) {
-        Ads.showAds(true);
+        Ads.showBannerAds(true);
         _periodicSub.cancel();
         add(ShowAdsAgain());
       }
@@ -163,9 +171,14 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     yield AdFreeUntil(noAdsUntil);
   }
 
+  Stream<AdManagerState> _mapLoadVideoToState(LoadVideo event) async* {
+    await Ads.loadRewardedVideo();
+  }
+
   Stream<AdManagerState> _mapStartWatchingVideoToState(
       StartWatchingVideo event) async* {
     lastAdForBannerTime = event.addAddFreeTime;
+    _showVideo = true;
     bool hasInternetConnection = false;
     try {
       final result = await InternetAddress.lookup('example.com');
@@ -176,11 +189,19 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       hasInternetConnection = false;
     }
 
+    if (!event.showLoadingIndicator) {
+      Ads.showRewardedVideoAd();
+      await Ads.loadRewardedVideo();
+      return;
+    }
+
     if (hasInternetConnection) {
       lastTimeStartedWatching = event.time;
-      await Ads.showRewardedVideo();
 
       yield LoadingVideo();
+
+      Ads.showRewardedVideoAd();
+      await Ads.loadRewardedVideo();
     } else {
       yield NotConnected();
     }
@@ -206,7 +227,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
   Stream<AdManagerState> _mapFailedLoadingRewardedVideoToState(
       _FailedLoadingRewardedVideo event) async* {
-    yield FailedLoadingRewardedVideo();
+    if (_showVideo) {
+      yield FailedLoadingRewardedVideo();
+    }
   }
 
   Stream<AdManagerState> _mapInterruptedLoadingVideoToState(
@@ -246,7 +269,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     if (purchase != null && purchase.status == PurchaseStatus.purchased) {
       _sP ??= await SharedPreferences.getInstance();
       _sP.setBool('pro_version', true);
-      Ads.showAds(false);
+      Ads.showBannerAds(false);
       add(_PurchaseSuccessfull());
     }
   }

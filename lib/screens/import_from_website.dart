@@ -102,8 +102,8 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                       imageCache.clear();
                       if (!(BlocProvider.of<AdManagerBloc>(context).state
                           is IsPurchased)) {
-                        BlocProvider.of<AdManagerBloc>(context)
-                            .add(StartWatchingVideo(DateTime.now(), false));
+                        BlocProvider.of<AdManagerBloc>(context).add(
+                            StartWatchingVideo(DateTime.now(), false, false));
                       }
 
                       Navigator.pushNamed(
@@ -349,20 +349,22 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
     with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
   List<String> _supportedWebsites = [
+    "EN: allrecipes.com",
+    "EN: food.com",
     "DE: chefkoch.de",
     "DE: lecker.de",
     "DE: kochbar.de",
     "DE: essen-und-trinken.de",
     "DE: eatsmarter.de",
-    "EN: allrecipes.com",
   ];
   List<String> _websiteUrls = [
+    "https://www.allrecipes.com/",
+    "https://www.food.com/",
     "https://www.chefkoch.de",
     "https://www.lecker.de",
     "https://www.kochbar.de/",
     "https://www.essen-und-trinken.de/",
     "https://eatsmarter.de/",
-    "https://www.allrecipes.com/",
   ];
 
   @override

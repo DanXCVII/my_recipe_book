@@ -85,8 +85,12 @@ class Settings extends StatelessWidget {
                               title: I18n.of(context).video_to_remove_ads,
                               body: I18n.of(context).video_to_remove_ads_desc,
                               onPressedOk: () {
-                                BlocProvider.of<AdManagerBloc>(context).add(
-                                    StartWatchingVideo(DateTime.now(), true));
+                                BlocProvider.of<AdManagerBloc>(context)
+                                    .add(StartWatchingVideo(
+                                  DateTime.now(),
+                                  true,
+                                  true,
+                                ));
                               },
                               okText: I18n.of(context).watch,
                             ),
@@ -143,6 +147,7 @@ class Settings extends StatelessWidget {
             leading: Icon(MdiIcons.cloudDownload),
             title: Text(I18n.of(context).import_from_website),
             onTap: () {
+              BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
               Navigator.pushNamed(context, RouteNames.importFromWebsite,
                   arguments: ImportFromWebsiteArguments(
                     BlocProvider.of<ShoppingCartBloc>(context),
