@@ -109,7 +109,6 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
         return false;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: Ads.shouldShowAds() ? false : true,
         appBar: GradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -446,7 +445,6 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
     if (_flush != null && _flush.isShowing()) {
     } else {
       _flush = Flushbar<bool>(
-        margin: EdgeInsets.only(bottom: Ads.shouldShowAds() ? Ads.adHeight : 0),
         animationDuration: Duration(milliseconds: 300),
         leftBarIndicatorColor: Colors.blue[300],
         title: title,

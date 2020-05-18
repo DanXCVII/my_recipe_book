@@ -893,9 +893,9 @@ class _I18n_de_DE extends I18n {
   /// "verbergen"
   @override
   String get dismiss => "verbergen";
-  /// "das Theme wird, wenn unterstützt bei neustart angewendet"
+  /// "das Theme wird, wenn unterstützt, bei neustart angewendet"
   @override
-  String get snackbar_automatic_theme_applied => "das Theme wird, wenn unterstützt bei neustart angewendet";
+  String get snackbar_automatic_theme_applied => "das Theme wird, wenn unterstützt, bei neustart angewendet";
   /// "helles Theme angewendet"
   @override
   String get snackbar_bright_theme_applied => "helles Theme angewendet";

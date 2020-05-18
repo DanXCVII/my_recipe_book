@@ -480,17 +480,20 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           icon: Icon(Icons.edit),
           tooltip: 'edit',
           onPressed: () {
-            HiveProvider()
-                .saveTmpEditingRecipe(recipe)
-                .then((_) => Navigator.pushNamed(
-                      context,
-                      RouteNames.addRecipeGeneralInfo,
-                      arguments: GeneralInfoArguments(
-                        recipe,
-                        BlocProvider.of<ShoppingCartBloc>(context),
-                        editingRecipeName: recipe.name,
-                      ),
-                    ));
+            Ads.hideBottomBannerAd();
+
+            HiveProvider().saveTmpEditingRecipe(recipe).then((_) {
+              BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
+              Navigator.pushNamed(
+                context,
+                RouteNames.addRecipeGeneralInfo,
+                arguments: GeneralInfoArguments(
+                  recipe,
+                  BlocProvider.of<ShoppingCartBloc>(context),
+                  editingRecipeName: recipe.name,
+                ),
+              );
+            });
           },
         ),
         PopupMenuButton<PopupOptionsMore>(

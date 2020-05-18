@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/widgets/icon_info_message.dart';
 import 'package:wakelock/wakelock.dart';
@@ -139,6 +140,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           Navigator.pop(context);
                         } else if (state is NSaved) {
                           if (widget.editingRecipeName == null) {
+                            
                             Future.delayed(Duration(milliseconds: 200))
                                 .then((_) {
                               Navigator.of(context)
@@ -156,6 +158,8 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                   )
                                   .then((_) => Ads.hideBottomBannerAd());
                             });
+                            BlocProvider.of<AdManagerBloc>(context)
+                            .add(StartWatchingVideo(DateTime.now(),false,false));
                           } else {
                             Future.delayed(Duration(milliseconds: 300))
                                 .then((_) {

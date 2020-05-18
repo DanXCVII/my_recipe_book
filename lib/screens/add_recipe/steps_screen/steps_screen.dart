@@ -92,7 +92,6 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
         return false;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: Ads.shouldShowAds() ? false:true ,
         appBar: GradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -117,7 +116,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                       BlocProvider.of<ShoppingCartBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
-                  ).then((_) => Ads.hideBottomBannerAd());
+                  );
                 } else if (state is SSavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);

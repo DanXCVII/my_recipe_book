@@ -122,8 +122,6 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
         return false;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: Ads.shouldShowAds() ? false : true,
-        resizeToAvoidBottomPadding: Ads.shouldShowAds() ? false : true,
         appBar: GradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -148,7 +146,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                       BlocProvider.of<ShoppingCartBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
-                  ).then((_) => Ads.showBottomBannerAd());
+                  );
                 } else if (state is ISavedGoBack) {
                   Scaffold.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
@@ -409,7 +407,6 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
     if (_flush != null && _flush.isShowing()) {
     } else {
       _flush = Flushbar<bool>(
-        margin: EdgeInsets.only(bottom: Ads.shouldShowAds() ? Ads.adHeight : 0),
         animationDuration: Duration(milliseconds: 300),
         leftBarIndicatorColor: Colors.blue[300],
         title: title,

@@ -464,18 +464,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           ),
           title: Text(title),
           actions: <Widget>[
-            currentIndex == 0
-                ? IconButton(
-                    icon: Icon(Icons.help_outline),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => InfoDialog(
-                            title: I18n.of(context).recipes_not_showing_up,
-                            body: I18n.of(context).recipes_not_showing_up_desc),
-                      );
-                    })
-                : null,
             IconButton(
               icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
               onPressed: () {
@@ -711,6 +699,8 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     () {
                       getTemporaryDirectory().then((dir) {
                         IO.clearCache();
+                        BlocProvider.of<AdManagerBloc>(context)
+                            .add(LoadVideo());
                         Navigator.pushNamed(
                           context,
                           RouteNames.addRecipeGeneralInfo,

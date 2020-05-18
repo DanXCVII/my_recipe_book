@@ -100,12 +100,8 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                   listener: (context, state) {
                     if (state is ImportedRecipe) {
                       imageCache.clear();
-                      if (!(BlocProvider.of<AdManagerBloc>(context).state
-                          is IsPurchased)) {
-                        BlocProvider.of<AdManagerBloc>(context).add(
-                            StartWatchingVideo(DateTime.now(), false, false));
-                      }
 
+                      BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
                       Navigator.pushNamed(
                         context,
                         RouteNames.addRecipeGeneralInfo,
@@ -348,6 +344,7 @@ class RecipeWebsiteImportInfo extends StatefulWidget {
 class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
     with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
+
   List<String> _supportedWebsites = [
     "EN: allrecipes.com",
     "EN: food.com",

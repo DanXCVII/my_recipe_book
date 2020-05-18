@@ -229,8 +229,6 @@ class MyApp extends StatelessWidget {
             case "/add-recipe/general-info":
               final GeneralInfoArguments args = settings.arguments;
 
-              Ads.showBottomBannerAd();
-
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
                   providers: [
@@ -259,40 +257,33 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
-                  child: Ads().getAdPage(
-                      GeneralInfoScreen(
-                        modifiedRecipe: args.modifiedRecipe,
-                        editingRecipeName: args.editingRecipeName,
-                      ),
-                      context),
+                  child: GeneralInfoScreen(
+                    modifiedRecipe: args.modifiedRecipe,
+                    editingRecipeName: args.editingRecipeName,
+                  ),
                 ),
               );
 
             case "/add-recipe/ingredients":
               final IngredientsArguments args = settings.arguments;
 
-              Ads.showBottomBannerAd();
-
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
-                    providers: [
-                      BlocProvider<IngredientsBloc>(
-                          create: (context) => IngredientsBloc()),
-                      BlocProvider<ShoppingCartBloc>.value(
-                          value: args.shoppingCartBloc)
-                    ],
-                    child: Ads().getAdPage(
-                        IngredientsAddScreen(
-                          modifiedRecipe: args.modifiedRecipe,
-                          editingRecipeName: args.editingRecipeName,
-                        ),
-                        context)),
+                  providers: [
+                    BlocProvider<IngredientsBloc>(
+                        create: (context) => IngredientsBloc()),
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc)
+                  ],
+                  child: IngredientsAddScreen(
+                    modifiedRecipe: args.modifiedRecipe,
+                    editingRecipeName: args.editingRecipeName,
+                  ),
+                ),
               );
 
             case "/add-recipe/steps":
               final StepsArguments args = settings.arguments;
-
-              Ads.hideBottomBannerAd();
 
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
@@ -389,8 +380,6 @@ class MyApp extends StatelessWidget {
             case "/add-recipe/nutritions":
               final AddRecipeNutritionsArguments args = settings.arguments;
 
-              Ads.showBottomBannerAd();
-
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
                   providers: [
@@ -406,12 +395,10 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
-                  child: Ads().getAdPage(
-                      AddRecipeNutritions(
-                        modifiedRecipe: args.modifiedRecipe,
-                        editingRecipeName: args.editingRecipeName,
-                      ),
-                      context),
+                  child: AddRecipeNutritions(
+                    modifiedRecipe: args.modifiedRecipe,
+                    editingRecipeName: args.editingRecipeName,
+                  ),
                 ),
               );
 
