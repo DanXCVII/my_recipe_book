@@ -16,6 +16,7 @@ Ingredient getIngredientFromString(String ingredientInfo) {
   String unit;
   String name;
 
+  ingredientInfo = ingredientInfo.replaceAll(RegExp(r"\s+"), " ");
   try {
     if (ingredientInfo.startsWith(" ")) {
       return Ingredient(name: ingredientInfo.substring(1));

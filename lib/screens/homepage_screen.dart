@@ -461,18 +461,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           ),
           title: Text(title),
           actions: <Widget>[
-            currentIndex == 0
-                ? IconButton(
-                    icon: Icon(Icons.help_outline),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => InfoDialog(
-                            title: I18n.of(context).recipes_not_showing_up,
-                            body: I18n.of(context).recipes_not_showing_up_desc),
-                      );
-                    })
-                : null,
             IconButton(
               icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
               onPressed: () {
@@ -572,6 +560,7 @@ class FloatingActionButtonMenu extends StatefulWidget {
 class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
     with TickerProviderStateMixin {
   AnimationController _controller;
+  AnimationController _controllerFAB;
   static const List<IconData> icons = const [
     MdiIcons.apps,
     Icons.description,
@@ -584,13 +573,17 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-
+    _controllerFAB = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _controllerFAB.dispose();
     super.dispose();
   }
 
@@ -723,13 +716,13 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
         backgroundColor: Theme.of(context).primaryColor,
         heroTag: null,
         child: AnimatedBuilder(
-          animation: _controller,
+          animation: _controllerFAB,
           builder: (BuildContext context, Widget child) {
             return Transform(
-              transform: Matrix4.rotationZ(_controller.value * 0.5 * pi),
+              transform: Matrix4.rotationZ(_controllerFAB.value * 0.5 * pi),
               alignment: FractionalOffset.center,
               child: Icon(
-                _controller.isDismissed ? Icons.add : Icons.close,
+                _controllerFAB.isDismissed ? Icons.add : Icons.close,
                 color: Colors.white,
               ),
             );
@@ -748,11 +741,13 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
               }
               isOpen = true;
               _controller.forward();
+              _controllerFAB.forward();
             });
           } else {
             setState(() {
               _controller.reverse();
-              Future.delayed(Duration(milliseconds: 100))
+              _controllerFAB.reverse();
+              Future.delayed(Duration(milliseconds: 300))
                   .then((_) => setState(() {
                         isOpen = false;
                       }));

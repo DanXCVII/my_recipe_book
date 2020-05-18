@@ -222,7 +222,7 @@ class AboutMeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "- MADE BY DANIEL WEISSEN -",
+                "- MADE WITH ❤ BY IN MÜNSTER -",
                 style: TextStyle(fontWeight: FontWeight.w300),
               ),
             )
