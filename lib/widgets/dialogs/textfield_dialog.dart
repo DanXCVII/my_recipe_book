@@ -54,56 +54,56 @@ class TextFieldDialogState extends State<TextFieldDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Consts.padding),
-      ),
-      elevation: 0.0,
-      backgroundColor: Theme.of(context).dialogBackgroundColor,
-      child: Container(
-        width: MediaQuery.of(context).size.width > 360 ? 360 : null,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min, // To make the card compact
-              children: <Widget>[
-                SizedBox(height: 16.0),
-                TextFormField(
-                  focusNode: widget.focus,
-                  controller: nameController,
-                  validator: (value) {
-                    return widget.validation(value);
-                  },
-                  decoration: InputDecoration(
-                    filled: true,
-                    hintText: widget.hintText,
-                  ),
-                ),
-                SizedBox(height: 24.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+    return Stack(
+      children: <Widget>[
+        Positioned(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40.0),
+              ),
+              child: Container(
+                height: 60,
+                width: MediaQuery.of(context).size.width > 360
+                    ? 360
+                    : MediaQuery.of(context).size.width,
+                child: Row(
                   children: <Widget>[
-                    FlatButton(
-                        child: Text(I18n.of(context).cancel),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }),
-                    FlatButton(
-                      child: Text(I18n.of(context).save),
+                    SizedBox(width: 24),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Center(
+                          child: Form(
+                            key: _formKey,
+                            child: TextFormField(
+                              focusNode: widget.focus,
+                              controller: nameController,
+                              validator: (value) {
+                                return widget.validation(value);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.check),
                       onPressed: () {
                         validateAddModifyItem();
                       },
                     ),
+                    SizedBox(width: 8)
                   ],
                 ),
-                SizedBox(height: 6),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 

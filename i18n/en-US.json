@@ -253,5 +253,9 @@
   "check_red_fields_desc": "Fix the issues with the red marked text fields",
   "clean_recipe_info": "Delete recipe data?",
   "clean_recipe_info_desc": "Are you sure, that you want to delete the prefilled recipe data?",
-  "tap_here_to_import_recipe_online": "tap here to imoprt\n a recipe online"
+  "tap_here_to_import_recipe_online": "tap here to imoprt\n a recipe online",
+  "delete_section": "Delete section?",
+  "delete_section_desc": "Are you sure, that you want to delete this section with it's containing ingredients",
+  "add_title": "Add a title",
+  "add_title_desc": "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce."
 }

@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:my_recipe_book/blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
 import 'package:showcaseview/showcase_widget.dart';
 
 import './theming.dart';
@@ -273,7 +274,16 @@ class MyApp extends StatelessWidget {
                     BlocProvider<IngredientsBloc>(
                         create: (context) => IngredientsBloc()),
                     BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc)
+                        value: args.shoppingCartBloc),
+                    BlocProvider<IngredientsSectionBloc>(
+                      create: (context) => IngredientsSectionBloc()
+                        ..add(
+                          InitializeIngredientsSection(
+                            args.modifiedRecipe.ingredientsGlossary,
+                            args.modifiedRecipe.ingredients,
+                          ),
+                        ),
+                    ),
                   ],
                   child: IngredientsAddScreen(
                     modifiedRecipe: args.modifiedRecipe,

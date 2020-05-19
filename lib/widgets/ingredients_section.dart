@@ -1,14 +1,17 @@
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+import 'package:flushbar/flushbar.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
+import 'package:my_recipe_book/models/ingredient.dart';
+import 'package:my_recipe_book/widgets/dialogs/are_you_sure_dialog.dart';
 
 import '../generated/i18n.dart';
 import '../util/helper.dart';
+import 'dialogs/ingredient_add_dialog.dart';
+import 'dialogs/textfield_dialog.dart';
 
 class Ingredients extends StatefulWidget {
-  final List<List<TextEditingController>> ingredientNameController;
-  final List<List<TextEditingController>> ingredientAmountController;
-  final List<List<TextEditingController>> ingredientUnitController;
-  final List<TextEditingController> ingredientGlossary;
   final List<String> ingredientNames;
 
   final TextEditingController servingsController;
@@ -17,10 +20,6 @@ class Ingredients extends StatefulWidget {
   Ingredients(
     this.servingsController,
     this.servingsNameController,
-    this.ingredientNameController,
-    this.ingredientAmountController,
-    this.ingredientUnitController,
-    this.ingredientGlossary,
     this.ingredientNames,
   );
 
@@ -32,6 +31,7 @@ class Ingredients extends StatefulWidget {
 
 class _IngredientsState extends State<Ingredients> {
   bool initializedServingsNameController = false;
+  Flushbar _flush;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class _IngredientsState extends State<Ingredients> {
     }
 
     // Column with all the data of the ingredients inside like heading, textFields etc.
-    Column sections = new Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
@@ -99,282 +99,257 @@ class _IngredientsState extends State<Ingredients> {
               fontSize: 16,
             ),
           ),
+        ),
+        BlocBuilder<IngredientsSectionBloc, IngredientsSectionState>(
+          builder: (context, state) {
+            if (state is LoadedIngredientsSection) {
+              return Column(
+                children: List<Widget>.generate(
+                  state.ingredients.length,
+                  (index) => Column(
+                    children: List<Widget>.generate(
+                        state.ingredients[index].length, (indexTwo) {
+                      return ListTile(
+                        // leading: Icon(Icons.reorder),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (bContext) => IngredientAddDialog(
+                              (ingredient) =>
+                                  BlocProvider.of<IngredientsSectionBloc>(
+                                          context)
+                                      .add(
+                                EditIngredient(ingredient, index, indexTwo),
+                              ),
+                              state.ingredients[index][indexTwo],
+                            ),
+                          );
+                        },
+                        trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              BlocProvider.of<IngredientsSectionBloc>(context)
+                                  .add(
+                                RemoveIngredient(index, indexTwo),
+                              );
+                            }),
+                        title: Text(state.ingredients[index][indexTwo].name),
+                        subtitle: state.ingredients[index][indexTwo].amount ==
+                                    null &&
+                                state.ingredients[index][indexTwo].unit == ""
+                            ? null
+                            : Text(
+                                "${cutDouble(state.ingredients[index][indexTwo].amount) ?? ""} ${state.ingredients[index][indexTwo].unit ?? ""}"),
+                      );
+                    })
+                      ..insert(
+                        0,
+                        state.sectionTitles.isNotEmpty
+                            ? ListTile(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (bContext) => TextFieldDialog(
+                                      validation: (title) => title == ""
+                                          ? I18n.of(context)
+                                              .field_must_not_be_empty
+                                          : null,
+                                      prefilledText: state.sectionTitles[index],
+                                      save: (title) => BlocProvider.of<
+                                              IngredientsSectionBloc>(context)
+                                          .add(
+                                        EditSectionTitle(title, index),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                trailing: IconButton(
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () {
+                                      if ((state.ingredients.length == 1 &&
+                                              state.sectionTitles.length ==
+                                                  1) ||
+                                          state.ingredients[index].isEmpty) {
+                                        BlocProvider.of<IngredientsSectionBloc>(
+                                                context)
+                                            .add(
+                                          RemoveSection(index),
+                                        );
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (bcontext) =>
+                                              AreYouSureDialog(
+                                                  I18n.of(context)
+                                                      .delete_section,
+                                                  I18n.of(context)
+                                                      .delete_section_desc, () {
+                                            BlocProvider.of<
+                                                        IngredientsSectionBloc>(
+                                                    context)
+                                                .add(
+                                              RemoveSection(index),
+                                            );
+                                            Navigator.pop(context);
+                                          }),
+                                        );
+                                      }
+                                    }),
+                                title: Text(
+                                  "   " + state.sectionTitles[index],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              )
+                            : state.ingredients.first.isEmpty
+                                ? null
+                                : RaisedButton.icon(
+                                    icon: Icon(Icons.add_circle_outline),
+                                    label: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Text("add title"),
+                                    ),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (bContext) => TextFieldDialog(
+                                          validation: (title) => title == ""
+                                              ? I18n.of(context)
+                                                  .field_must_not_be_empty
+                                              : null,
+                                          save: (title) => BlocProvider.of<
+                                                      IngredientsSectionBloc>(
+                                                  context)
+                                              .add(
+                                            AddSectionTitle(title),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    color: Colors.orange[900],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          new BorderRadius.circular(5.0),
+                                    ),
+                                  ),
+                      )
+                      ..insert(
+                          1,
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Divider(),
+                          ))
+                      ..add(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            RaisedButton.icon(
+                              icon: Icon(Icons.add_circle_outline),
+                              label: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child:
+                                    Text(I18n.of(context).add_ingredient("")),
+                              ),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (bContext) => IngredientAddDialog(
+                                    (ingredient) =>
+                                        BlocProvider.of<IngredientsSectionBloc>(
+                                                context)
+                                            .add(
+                                      AddIngredient(ingredient, index),
+                                    ),
+                                    Ingredient(
+                                        name: "", amount: null, unit: ""),
+                                  ),
+                                );
+                              },
+                              color: Colors.orange[900],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(5.0),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                      ..removeWhere((element) => element == null),
+                  ),
+                )
+                  ..add(
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: RaisedButton.icon(
+                          icon: Icon(Icons.add_circle_outline),
+                          label: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(I18n.of(context).add_section("")),
+                          ),
+                          onPressed: () {
+                            if (state.sectionTitles.isEmpty) {
+                              _showFlushInfo(I18n.of(context).add_title,
+                                  I18n.of(context).add_title_desc);
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (bContext) => TextFieldDialog(
+                                  validation: (title) => title == ""
+                                      ? I18n.of(context).field_must_not_be_empty
+                                      : null,
+                                  save: (title) =>
+                                      BlocProvider.of<IngredientsSectionBloc>(
+                                              context)
+                                          .add(
+                                    AddSectionTitle(title),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          color: Colors.orange[900],
+                          shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(5.0))),
+                    ),
+                  )
+                  ..removeWhere((element) => (element == null)),
+              );
+            } else {
+              return Text(state.toString());
+            }
+          },
         )
       ],
     );
-    // add all the sections to the column
-    for (int i = 0; i < widget.ingredientGlossary.length; i++) {
-      sections.children.add(IngredientSection(
-          // i number of the section in the column
-          i,
-          // callback for when section add is tapped
-          i == widget.ingredientGlossary.length - 1 ? true : false,
-          widget.ingredientNameController,
-          widget.ingredientAmountController,
-          widget.ingredientUnitController,
-          widget.ingredientGlossary,
-          widget.ingredientNames));
-    }
-    // Add remove and add section button
-    sections.children.add(
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              widget.ingredientGlossary.length > 1
-                  ? Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: OutlineButton.icon(
-                        icon: Icon(Icons.remove_circle),
-                        label: Container(
-                          width: MediaQuery.of(context).size.width < 412
-                              ? 80
-                              : null,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(I18n.of(context).remove_section(
-                                MediaQuery.of(context).size.width < 412
-                                    ? "\n"
-                                    : "")),
-                          ),
-                        ),
-                        onPressed: () {
-                          updateAndRemoveController();
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0),
-                        ),
-                      ),
-                    )
-                  : null,
-              OutlineButton.icon(
-                icon: Icon(Icons.add_circle),
-                label: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(I18n.of(context).add_section(
-                      MediaQuery.of(context).size.width < 412 ? "\n" : "")),
-                ),
-                onPressed: () {
-                  updateAndAddController();
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(30.0),
-                ),
-              ),
-            ].where((c) => c != null).toList()),
-      ),
-    );
-    return sections;
   }
 
-  void updateAndRemoveController() {
-    setState(() {
-      if (widget.ingredientGlossary.length > 1) {
-        widget.ingredientGlossary.removeLast();
-        widget.ingredientAmountController.removeLast();
-        widget.ingredientNameController.removeLast();
-        widget.ingredientUnitController.removeLast();
-      }
-    });
-  }
-
-  void updateAndAddController() {
-    setState(() {
-      widget.ingredientGlossary.add(new TextEditingController());
-      widget.ingredientNameController.add(new List<TextEditingController>());
-      widget.ingredientNameController[widget.ingredientGlossary.length - 1]
-          .add(new TextEditingController());
-      widget.ingredientAmountController.add(new List<TextEditingController>());
-      widget.ingredientAmountController[widget.ingredientGlossary.length - 1]
-          .add(new TextEditingController());
-      widget.ingredientUnitController.add(new List<TextEditingController>());
-      widget.ingredientUnitController[widget.ingredientGlossary.length - 1]
-          .add(new TextEditingController());
-    });
-  }
-}
-
-class IngredientSection extends StatefulWidget {
-  // lists for saving the data
-
-  final List<List<TextEditingController>> ingredientNameController;
-  final List<List<TextEditingController>> ingredientAmountController;
-  final List<List<TextEditingController>> ingredientUnitController;
-  final List<TextEditingController> ingredientGlossary;
-  final List<String> ingredientNames;
-
-  final int sectionNumber;
-  final bool lastRow;
-
-  IngredientSection(
-      this.sectionNumber,
-      this.lastRow,
-      this.ingredientNameController,
-      this.ingredientAmountController,
-      this.ingredientUnitController,
-      this.ingredientGlossary,
-      this.ingredientNames);
-
-  @override
-  State<StatefulWidget> createState() {
-    return _IngredientSectionState();
-  }
-}
-
-class _IngredientSectionState extends State<IngredientSection> {
-  List<List<GlobalKey<AutoCompleteTextFieldState<String>>>> keys = [];
-
-  @override
-  void initState() {
-    super.initState();
-    for (int i = 0; i < widget.ingredientNameController.length; i++) {
-      keys.add([]);
-      for (int j = 0; j < widget.ingredientNameController[i].length; j++) {
-        keys[i].add(GlobalKey());
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12.0, 12, 12, 12),
-          child: Row(
-              children: <Widget>[
-            Expanded(
-              child: TextField(
-                controller: widget.ingredientGlossary[widget.sectionNumber],
-                decoration: InputDecoration(
-                  icon: Icon(Icons.receipt),
-                  helperText:
-                      I18n.of(context).not_required_eg_ingredients_of_sauce,
-                  labelText: I18n.of(context).section_name,
-                  filled: true,
-                ),
-              ),
-            ),
-          ].where((c) => c != null).toList()),
-        )
-      ]
-        ..addAll(
-          List.generate(
-            widget.ingredientNameController[widget.sectionNumber].length,
-            (i) => Padding(
-              padding: EdgeInsets.fromLTRB(
-                widget.ingredientNameController[widget.sectionNumber].length > 1
-                    ? 4
-                    : 52,
-                12.0,
-                12,
-                12,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  widget.ingredientNameController[widget.sectionNumber].length >
-                          1
-                      ? IconButton(
-                          icon: Icon(Icons.remove_circle),
-                          onPressed: () {
-                            setState(() {
-                              widget.ingredientNameController[
-                                      widget.sectionNumber]
-                                  .removeAt(i);
-                              widget.ingredientAmountController[
-                                      widget.sectionNumber]
-                                  .removeAt(i);
-                              widget.ingredientUnitController[
-                                      widget.sectionNumber]
-                                  .removeAt(i);
-                              keys[widget.sectionNumber].removeAt(i);
-                            });
-                          },
-                        )
-                      : null,
-                  Expanded(
-                    flex: 9,
-                    child: SimpleAutoCompleteTextField(
-                      key: keys[widget.sectionNumber][i],
-                      controller: widget
-                          .ingredientNameController[widget.sectionNumber][i],
-                      suggestions: widget.ingredientNames,
-                      decoration: InputDecoration(
-                        hintText: I18n.of(context).name,
-                        filled: true,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: TextFormField(
-                        validator: (value) {
-                          if (stringIsValidDouble(value) == false &&
-                              value != "")
-                            return I18n.of(context).no_valid_number;
-                          return null;
-                        },
-                        autovalidate: false,
-                        controller: widget.ingredientAmountController[
-                            widget.sectionNumber][i],
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          filled: true,
-                          hintText: I18n.of(context).amnt,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: TextFormField(
-                        controller: widget
-                            .ingredientUnitController[widget.sectionNumber][i],
-                        decoration: InputDecoration(
-                          filled: true,
-                          hintText: I18n.of(context).unit,
-                        ),
-                      ),
-                    ),
-                  ),
-                ]..removeWhere((c) => c == null),
-              ),
-            ),
-          ),
-        )
-        ..add(
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              OutlineButton.icon(
-                  icon: Icon(Icons.add_circle_outline),
-                  label: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(I18n.of(context).add_ingredient(
-                        MediaQuery.of(context).size.width < 412 ? "\n" : "")),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      widget.ingredientNameController[widget.sectionNumber]
-                          .add(new TextEditingController());
-                      widget.ingredientAmountController[widget.sectionNumber]
-                          .add(new TextEditingController());
-                      widget.ingredientUnitController[widget.sectionNumber]
-                          .add(new TextEditingController());
-                      keys[widget.sectionNumber].add(GlobalKey());
-                    });
-                  },
-                  shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(30.0))),
-            ].where((c) => c != null).toList(),
+  void _showFlushInfo(String title, String body) {
+    if (_flush != null && _flush.isShowing()) {
+    } else {
+      _flush = Flushbar<bool>(
+        animationDuration: Duration(milliseconds: 300),
+        leftBarIndicatorColor: Colors.blue[300],
+        title: title,
+        message: body,
+        icon: Icon(
+          Icons.info_outline,
+          color: Colors.blue,
+        ),
+        mainButton: FlatButton(
+          onPressed: () {
+            _flush.dismiss(true); // result = true
+          },
+          child: Text(
+            "OK",
+            style: TextStyle(color: Colors.amber),
           ),
         ),
-    );
+      ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+        ..show(context).then((result) {});
+    }
   }
 }

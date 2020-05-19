@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../../ad_related/ad.dart';
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import '../../../blocs/new_recipe/general_info/general_info_bloc.dart';
@@ -15,10 +14,11 @@ import '../../../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
 import '../../../generated/i18n.dart';
-import '../../../util/helper.dart';
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
+import '../../../util/helper.dart';
+import '../../../widgets/dialogs/are_you_sure_dialog.dart';
 import '../../../widgets/dialogs/info_dialog.dart';
 import '../../../widgets/image_selector.dart' as IS;
 import '../ingredients_screen.dart';
@@ -146,46 +146,18 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                       context: context,
                       builder: (bcontext) => BlocProvider.value(
                         value: BlocProvider.of<ClearRecipeBloc>(context),
-                        child: AlertDialog(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16)),
-                            title: Text(I18n.of(context).clean_recipe_info),
-                            content: Container(
-                              width: MediaQuery.of(context).size.width > 360
-                                  ? 360
-                                  : null,
-                              child:
-                                  Text(I18n.of(context).clean_recipe_info_desc),
-                            ),
-                            actions: <Widget>[
-                              FlatButton(
-                                  child: Text(I18n.of(context).no),
-                                  textColor: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1
-                                      .color,
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  }),
-                              FlatButton(
-                                  child: Text(I18n.of(context).yes),
-                                  textColor: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1
-                                      .color,
-                                  color: Colors.red,
-                                  onPressed: () {
-                                    BlocProvider.of<ClearRecipeBloc>(context)
-                                        .add(
-                                      Clear(
-                                        widget.editingRecipeName == null
-                                            ? false
-                                            : true,
-                                      ),
-                                    );
-                                    Navigator.pop(context);
-                                  }),
-                            ]),
+                        child: AreYouSureDialog(
+                          I18n.of(context).clean_recipe_info,
+                          I18n.of(context).clean_recipe_info_desc,
+                          () {
+                            BlocProvider.of<ClearRecipeBloc>(context).add(
+                              Clear(
+                                widget.editingRecipeName == null ? false : true,
+                              ),
+                            );
+                            Navigator.pop(context);
+                          },
+                        ),
                       ),
                     );
                   }),

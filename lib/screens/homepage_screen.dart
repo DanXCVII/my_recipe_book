@@ -711,8 +711,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                         ).then((_) => Ads.hideBottomBannerAd());
                       });
                     },
-                    Icon(Icons.description,
-                        color: Theme.of(context).primaryColor),
+                    Icon(Icons.edit, color: Theme.of(context).primaryColor),
                     1,
                     I18n.of(context).add_recipe,
                   ),
