@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:my_recipe_book/blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -47,10 +48,6 @@ class IngredientsAddScreen extends StatefulWidget {
 
 class _IngredientsAddScreenState extends State<IngredientsAddScreen>
     with WidgetsBindingObserver {
-  final List<List<TextEditingController>> ingredientNameController = [[]];
-  final List<List<TextEditingController>> ingredientAmountController = [[]];
-  final List<List<TextEditingController>> ingredientUnitController = [[]];
-  final List<TextEditingController> ingredientGlossaryController = [];
   final TextEditingController servingsController = TextEditingController();
   final TextEditingController servingsNameController = TextEditingController();
 
@@ -67,36 +64,13 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
 
     WidgetsBinding.instance.addObserver(this);
 
-    // initialize list of controllers for the dynamic textFields with one element
-    ingredientNameController[0].add(TextEditingController());
-    ingredientAmountController[0].add(TextEditingController());
-    ingredientUnitController[0].add(TextEditingController());
-    ingredientGlossaryController.add(TextEditingController());
-
     _initializeData(widget.modifiedRecipe);
   }
 
   @override
   void dispose() {
-    ingredientNameController.forEach((list) {
-      list.forEach((controller) {
-        controller.dispose();
-      });
-    });
-    ingredientAmountController.forEach((list) {
-      list.forEach((controller) {
-        controller.dispose();
-      });
-    });
-    ingredientUnitController.forEach((list) {
-      list.forEach((controller) {
-        controller.dispose();
-      });
-    });
-    ingredientGlossaryController.forEach((controller) {
-      controller.dispose();
-    });
     servingsController.dispose();
+    servingsNameController.dispose();
 
     WidgetsBinding.instance.removeObserver(this);
 
@@ -196,10 +170,6 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                     child: Ingredients(
                       servingsController,
                       servingsNameController,
-                      ingredientNameController,
-                      ingredientAmountController,
-                      ingredientUnitController,
-                      ingredientGlossaryController,
                       HiveProvider().getIngredientNames(),
                     ),
                   ),
@@ -242,46 +212,17 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
     if (recipe.servings != null)
       servingsController.text = recipe.servings.toString();
 
-    if (recipe.ingredientsGlossary != null)
-      for (int i = 0; i < recipe.ingredients.length; i++) {
-        if (i > 0) {
-          ingredientGlossaryController.add(TextEditingController());
-          ingredientNameController.add([]);
-          ingredientAmountController.add([]);
-          ingredientUnitController.add([]);
-        }
-        if (recipe.ingredientsGlossary.length > 0) {
-          ingredientGlossaryController[i].text = recipe.ingredientsGlossary[i];
-        }
-
-        if (recipe.ingredients != null)
-          for (int j = 0; j < recipe.ingredients[i].length; j++) {
-            if (i != 0 || j > 0) {
-              ingredientNameController[i].add(TextEditingController());
-              ingredientAmountController[i].add(TextEditingController());
-              ingredientUnitController[i].add(TextEditingController());
-            }
-            ingredientNameController[i][j].text = recipe.ingredients[i][j].name;
-            ingredientAmountController[i][j].text =
-                recipe.ingredients[i][j].amount == 0
-                    ? "0"
-                    : recipe.ingredients[i][j].amount != null
-                        ? recipe.ingredients[i][j].amount.toString()
-                        : "";
-            ingredientUnitController[i][j].text = recipe.ingredients[i][j].unit;
-          }
-        switch (recipe.vegetable) {
-          case Vegetable.NON_VEGETARIAN:
-            selectedRecipeVegetable
-                .setVegetableStatus(Vegetable.NON_VEGETARIAN);
-            break;
-          case Vegetable.VEGETARIAN:
-            selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGETARIAN);
-            break;
-          case Vegetable.VEGAN:
-            selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGAN);
-            break;
-        }
+    if (recipe.vegetable != null)
+      switch (recipe.vegetable) {
+        case Vegetable.NON_VEGETARIAN:
+          selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
+          break;
+        case Vegetable.VEGETARIAN:
+          selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGETARIAN);
+          break;
+        case Vegetable.VEGAN:
+          selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGAN);
+          break;
       }
   }
 
@@ -289,72 +230,53 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
   /// suitable dialog if the info is somehow not valid. If it is, it
   /// calls _saveIngredientsData(..)
   void _finishedEditingIngredients() {
-    Validator v = RecipeValidator().validateIngredientsData(
-        _formKey,
-        ingredientNameController,
-        ingredientAmountController,
-        ingredientUnitController,
-        ingredientGlossaryController);
-
-    switch (v) {
-      case Validator.REQUIRED_FIELDS:
-        _showFlushInfo(
-          I18n.of(context).check_filled_in_information,
-          I18n.of(context).check_red_fields_desc,
-        );
-
-        break;
-      case Validator.INGREDIENTS_NOT_VALID:
-        _showFlushInfo(
-          I18n.of(context).check_ingredients_input,
-          I18n.of(context).check_ingredients_input_description,
-        );
-
-        break;
-      case Validator.GLOSSARY_NOT_VALID:
-        _showFlushInfo(
-          I18n.of(context).check_ingredient_section_fields,
-          I18n.of(context).check_ingredient_section_fields_description,
-        );
-
-        break;
-
-      default:
-        _saveIngredientsData(false);
-        break;
+    if (!_formKey.currentState.validate()) {
+      _showFlushInfo(
+        I18n.of(context).check_filled_in_information,
+        I18n.of(context).check_red_fields_desc,
+      );
+    } else {
+      _saveIngredientsData(false);
     }
   }
 
   /// notifies the Bloc to save all filled in data on this screen, with
   /// the info to go back
   void _saveIngredientsData(bool goBack) {
-    if (goBack)
+    if (goBack) {
       BlocProvider.of<IngredientsBloc>(context).add(
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
           goBack,
           (servingsController.text == "" || servingsController.text == "0")
               ? null
-              : double.parse(servingsController.text),
+              : double.tryParse(servingsController.text),
           servingsNameController.text,
-          _getIngredientsList(
-            ingredientNameController,
-            ingredientAmountController,
-            ingredientUnitController,
-          ),
-          ingredientGlossaryController.map((item) => item.text).toList(),
+          (BlocProvider.of<IngredientsSectionBloc>(context).state
+                  as LoadedIngredientsSection)
+              .ingredients,
+          (BlocProvider.of<IngredientsSectionBloc>(context).state
+                  as LoadedIngredientsSection)
+              .sectionTitles,
           selectedRecipeVegetable.vegetableStatus,
         ),
       );
-    else {
-      List<List<Ingredient>> cleanIngredientsData = getCleanIngredientData(
-          ingredientNameController,
-          ingredientAmountController,
-          ingredientUnitController);
+    } else {
+      List<List<Ingredient>> savedIngredients =
+          (BlocProvider.of<IngredientsSectionBloc>(context).state
+                  as LoadedIngredientsSection)
+              .ingredients;
+      List<String> savedSectionTitles =
+          (BlocProvider.of<IngredientsSectionBloc>(context).state
+                  as LoadedIngredientsSection)
+              .sectionTitles;
 
-      List<String> glossary =
-          getCleanGlossary(ingredientGlossaryController, cleanIngredientsData);
-
+      for (int i = 0; i < savedIngredients.length; i++) {
+        if (savedIngredients[i].isEmpty && savedSectionTitles.length > i) {
+          savedSectionTitles.removeAt(i);
+          savedIngredients.removeAt(i);
+        }
+      }
       BlocProvider.of<IngredientsBloc>(context).add(
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
@@ -363,8 +285,8 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
               ? null
               : double.parse(servingsController.text),
           servingsNameController.text,
-          cleanIngredientsData,
-          glossary,
+          savedIngredients,
+          savedSectionTitles,
           selectedRecipeVegetable.vegetableStatus,
         ),
       );

@@ -1,5 +1,6 @@
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -66,6 +67,15 @@ class _ShoppingCartAddDialogContentState
   }
 
   @override
+  initState() {
+    super.initState();
+
+    SchedulerBinding.instance.addPostFrameCallback((Duration _) {
+      FocusScope.of(context).requestFocus(widget.focus);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,7 +86,7 @@ class _ShoppingCartAddDialogContentState
           children: <Widget>[
             Text(
               I18n.of(context).add_ingredient(""),
-              style: Theme.of(context).textTheme.title,
+              style: Theme.of(context).textTheme.headline6,
             ),
             IconButton(
               icon: Icon(
@@ -115,7 +125,6 @@ class _ShoppingCartAddDialogContentState
                             Container(height: 3),
                             SimpleAutoCompleteTextField(
                               key: autoCompletionTextField,
-                              focusNode: widget.focus,
                               suggestions: HiveProvider().getIngredientNames(),
                               controller: ingredientNameController,
                               decoration: InputDecoration(
@@ -126,16 +135,6 @@ class _ShoppingCartAddDialogContentState
                             SizedBox(height: 6),
                             Row(
                               children: <Widget>[
-                                Expanded(
-                                  child: TextField(
-                                    controller: ingredientUnitController,
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: I18n.of(context).unit,
-                                    ),
-                                  ),
-                                ),
-                                Container(width: 6),
                                 Expanded(
                                   child: TextFormField(
                                     controller: ingredientAmountController,
@@ -153,12 +152,23 @@ class _ShoppingCartAddDialogContentState
                                     },
                                   ),
                                 ),
+                                Container(width: 6),
+                                Expanded(
+                                  child: TextField(
+                                    controller: ingredientUnitController,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: I18n.of(context).unit,
+                                    ),
+                                  ),
+                                ),
                               ],
                             )
                           ],
                         )
                       : SimpleAutoCompleteTextField(
                           key: autoCompletionTextField,
+                          focusNode: widget.focus,
                           suggestions: HiveProvider().getIngredientNames(),
                           controller: ingredientNameController,
                           decoration: InputDecoration(

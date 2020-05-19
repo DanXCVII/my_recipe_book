@@ -704,8 +704,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                         );
                       });
                     },
-                    Icon(Icons.description,
-                        color: Theme.of(context).primaryColor),
+                    Icon(Icons.edit, color: Theme.of(context).primaryColor),
                     1,
                   ),
                 ),
@@ -767,8 +766,8 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
       child: ScaleTransition(
         scale: CurvedAnimation(
           parent: _controller,
-          curve: Interval(0.0, 1.0 - index / icons.length / 2.0,
-              curve: Curves.easeOut),
+          curve:
+              Interval(0.0, index / icons.length / 2.0, curve: Curves.easeOut),
         ),
         child: FloatingActionButton(
           heroTag: null,
@@ -777,6 +776,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
           child: icon,
           onPressed: () {
             _controller.reverse();
+            _controllerFAB.reverse();
             onTap();
           },
         ),

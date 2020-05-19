@@ -232,5 +232,9 @@
   "check_red_fields_desc": "Behebe die Fehler der rot markierten Felder",
   "clean_recipe_info": "Infos löschen?",
   "clean_recipe_info_desc": "Willst du wirklich die ausgefüllten Daten des aktuell bearbeiteten/neuen Rezeptes löschen",
-  "tap_here_to_import_recipe_online": "Tippe hier um ein Rezept\n online zu importieren"
+  "tap_here_to_import_recipe_online": "Tippe hier um ein Rezept\n online zu importieren",
+  "delete_section": "Bereich entfernen?",
+  "delete_section_desc": "Bist du dir sicher, dass du diesen Bereich mit all seinen Zutaten entfernen willst?",
+  "add_title": "Füge einen Titel hinzu",
+  "add_title_desc": "Um einen Bereich hinzufügen zu können, gebe dem ersten einen Titel wie zB. (Zutaten für die) Sauce."
 }

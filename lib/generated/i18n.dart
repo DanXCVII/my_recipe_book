@@ -506,6 +506,14 @@ class I18n implements WidgetsLocalizations {
   String get clean_recipe_info_desc => "Are you sure, that you want to delete the prefilled recipe data?";
   /// "tap here to imoprt\n a recipe online"
   String get tap_here_to_import_recipe_online => "tap here to imoprt\n a recipe online";
+  /// "Delete section?"
+  String get delete_section => "Delete section?";
+  /// "Are you sure, that you want to delete this section with it's containing ingredients"
+  String get delete_section_desc => "Are you sure, that you want to delete this section with it's containing ingredients";
+  /// "Add a title"
+  String get add_title => "Add a title";
+  /// "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce."
+  String get add_title_desc => "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce.";
 }
 
 class _I18n_en_US extends I18n {
@@ -1214,6 +1222,18 @@ class _I18n_de_DE extends I18n {
   /// "Tippe hier um ein Rezept\n online zu importieren"
   @override
   String get tap_here_to_import_recipe_online => "Tippe hier um ein Rezept\n online zu importieren";
+  /// "Bereich entfernen?"
+  @override
+  String get delete_section => "Bereich entfernen?";
+  /// "Bist du dir sicher, dass du diesen Bereich mit all seinen Zutaten entfernen willst?"
+  @override
+  String get delete_section_desc => "Bist du dir sicher, dass du diesen Bereich mit all seinen Zutaten entfernen willst?";
+  /// "Füge einen Titel hinzu"
+  @override
+  String get add_title => "Füge einen Titel hinzu";
+  /// "Um einen Bereich hinzufügen zu können, gebe dem ersten einen Titel wie zB. (Zutaten für die) Sauce."
+  @override
+  String get add_title_desc => "Um einen Bereich hinzufügen zu können, gebe dem ersten einen Titel wie zB. (Zutaten für die) Sauce.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

@@ -65,7 +65,9 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
 
   String source = "";
   int sourceCutIndex = recipe.imagePath != Constants.noRecipeImage ? 33 : 65;
-  for (int i = 0; i < recipe.source.length / sourceCutIndex; i++) {
+  for (int i = 0;
+      i < (recipe.source != null ? (recipe.source.length / sourceCutIndex) : 0);
+      i++) {
     source += recipe.source.substring(
         i * sourceCutIndex,
         (i + 1) * sourceCutIndex > recipe.source.length
