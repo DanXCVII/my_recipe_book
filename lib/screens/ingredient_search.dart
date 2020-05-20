@@ -193,7 +193,9 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
         if (state.tupleMatchesRecipe.isEmpty) {
           return ListView(children: <Widget>[
             Container(
-              height: MediaQuery.of(context).size.height - 350,
+              height: MediaQuery.of(context).size.width > showExpandedSearch
+                  ? MediaQuery.of(context).size.height - kToolbarHeight
+                  : MediaQuery.of(context).size.height - 350,
               child: Center(
                 child: state.totalIngredAmount == 0
                     ? IconInfoMessage(
