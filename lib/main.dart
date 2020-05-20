@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_recipe_book/blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:showcaseview/showcase_widget.dart';
 
 import './theming.dart';
@@ -96,86 +97,70 @@ class MyApp extends StatelessWidget {
           switch (settings.name) {
             case "/":
               return PageRouteBuilder(
-                settings: RouteSettings(name: "recipeRoute"),
                 pageBuilder: (context, animation1, animation2) =>
                     BlocProvider<SplashScreenBloc>(
-                  create: (context) =>
-                      SplashScreenBloc()..add(SPInitializeData(context)),
-                  child: BlocListener<SplashScreenBloc, SplashScreenState>(
-                    listener: (context, state) => {
-                      if (state is InitializedData)
-                        {
-                          if (state.showIntro)
-                            {Navigator.of(context).pushNamed(RouteNames.intro)}
-                        }
-                    },
-                    child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
-                        builder: (context, state) {
-                      return AnimatedSwitcher(
-                        duration: Duration(milliseconds: 500),
-                        child: state is InitializingData
-                            ? SplashScreen()
-                            : BlocProvider<AppBloc>(
-                                create: (context) => AppBloc()
-                                  ..add(InitializeData(
-                                      context,
-                                      (state as InitializedData)
-                                          .recipeCategoryOverview,
-                                      (state as InitializedData).showIntro)),
-                                child: MultiBlocProvider(
-                                  providers: [
-                                    BlocProvider<CategoryOverviewBloc>(
-                                      create: (context) => CategoryOverviewBloc(
-                                        recipeManagerBloc:
-                                            BlocProvider.of<RecipeManagerBloc>(
-                                                context),
-                                      )..add(COLoadCategoryOverview()),
-                                    ),
-                                    BlocProvider<RecipeCategoryOverviewBloc>(
-                                      create: (context) =>
-                                          RecipeCategoryOverviewBloc(
-                                        recipeManagerBloc:
-                                            BlocProvider.of<RecipeManagerBloc>(
-                                                context),
-                                      )..add(RCOLoadRecipeCategoryOverview()),
-                                    ),
-                                    BlocProvider<FavoriteRecipesBloc>(
-                                        create: (context) =>
-                                            FavoriteRecipesBloc(
-                                              recipeManagerBloc: BlocProvider
-                                                  .of<RecipeManagerBloc>(
-                                                      context),
-                                            )..add(LoadFavorites())),
-                                    BlocProvider<RandomRecipeExplorerBloc>(
-                                      create: (context) =>
-                                          RandomRecipeExplorerBloc(
-                                        recipeManagerBloc:
-                                            BlocProvider.of<RecipeManagerBloc>(
-                                                context),
-                                      )..add(InitializeRandomRecipeExplorer()),
-                                    ),
-                                    BlocProvider<ImportRecipeBloc>(
-                                        create: (context) => ImportRecipeBloc(
-                                            BlocProvider.of<RecipeManagerBloc>(
-                                                context))),
-                                    BlocProvider<ShoppingCartBloc>(
-                                      create: (context) => ShoppingCartBloc(
-                                          BlocProvider.of<RecipeManagerBloc>(
-                                              context))
-                                        ..add(LoadShoppingCart()),
-                                    ),
-                                  ],
-                                  child: ShowCaseWidget(
-                                    builder: Builder(
-                                        builder: (context) => MyHomePage(
-                                            showIntro:
-                                                (state as InitializedData)
-                                                    .showIntro)),
-                                  ),
-                                ),
-                              ),
-                      );
-                    }),
+                  create: (context) => SplashScreenBloc()
+                    ..add(
+                      SPInitializeData(context),
+                    ),
+                  child: SplashScreen(),
+                ),
+              );
+
+            case "/home":
+              final MyHomePageArguments args = settings.arguments;
+
+              return PageTransition(
+                type: PageTransitionType.fade,
+                settings: RouteSettings(name: "recipeRoute"),
+                child: MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AppBloc>(
+                      create: (context) => AppBloc()
+                        ..add(InitializeData(
+                          args.context,
+                          args.recipeCategoryOverview,
+                          args.showIntro,
+                        )),
+                    ),
+                    BlocProvider<CategoryOverviewBloc>(
+                      create: (context) => CategoryOverviewBloc(
+                        recipeManagerBloc:
+                            BlocProvider.of<RecipeManagerBloc>(context),
+                      )..add(COLoadCategoryOverview()),
+                    ),
+                    BlocProvider<RecipeCategoryOverviewBloc>(
+                      create: (context) => RecipeCategoryOverviewBloc(
+                        recipeManagerBloc:
+                            BlocProvider.of<RecipeManagerBloc>(context),
+                      )..add(RCOLoadRecipeCategoryOverview()),
+                    ),
+                    BlocProvider<FavoriteRecipesBloc>(
+                        create: (context) => FavoriteRecipesBloc(
+                              recipeManagerBloc:
+                                  BlocProvider.of<RecipeManagerBloc>(context),
+                            )..add(LoadFavorites())),
+                    BlocProvider<RandomRecipeExplorerBloc>(
+                      create: (context) => RandomRecipeExplorerBloc(
+                        recipeManagerBloc:
+                            BlocProvider.of<RecipeManagerBloc>(context),
+                      )..add(InitializeRandomRecipeExplorer()),
+                    ),
+                    BlocProvider<ImportRecipeBloc>(
+                        create: (context) => ImportRecipeBloc(
+                            BlocProvider.of<RecipeManagerBloc>(context))),
+                    BlocProvider<ShoppingCartBloc>(
+                      create: (context) => ShoppingCartBloc(
+                          BlocProvider.of<RecipeManagerBloc>(context))
+                        ..add(LoadShoppingCart()),
+                    ),
+                  ],
+                  child: ShowCaseWidget(
+                    builder: Builder(
+                      builder: (context) => MyHomePage(
+                        showIntro: args.showIntro,
+                      ),
+                    ),
                   ),
                 ),
               );

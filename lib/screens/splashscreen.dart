@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_sequence_animation/flutter_sequence_animation.dart';
-import 'package:my_recipe_book/blocs/splash_screen/splash_screen_bloc.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+
+import '../blocs/splash_screen/splash_screen_bloc.dart';
+import '../generated/i18n.dart';
+import '../constants/routes.dart';
+import '../screens/homepage_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key key}) : super(key: key);
@@ -13,90 +15,92 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  SequenceAnimation _sequenceAnimation;
-
   @override
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
-      vsync: this,
-    );
-
-    _sequenceAnimation = SequenceAnimationBuilder()
-        .addAnimatable(
-            animatable: Tween<double>(begin: 0, end: 1),
-            from: Duration(milliseconds: 0),
-            to: Duration(milliseconds: 700),
-            tag: "first")
-        .addAnimatable(
-            animatable: Tween<double>(begin: 1, end: 10),
-            from: Duration(milliseconds: 1000),
-            to: Duration(milliseconds: 1300),
-            curve: Curves.easeInOutCubic,
-            tag: "second")
-        .animate(_controller);
-
-    _controller.forward();
     Future.delayed(Duration(milliseconds: 1200)).then(
         (_) => BlocProvider.of<SplashScreenBloc>(context).add(SPFinished()));
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.amber,
-      child: Center(
-        child: Transform.scale(
-          scale: 1,
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) => Opacity(
-              opacity: _sequenceAnimation['first'].value,
-              child: Transform.scale(
-                scale: _sequenceAnimation['second'].value,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Image.asset(
-                      'images/cookingHat.png',
-                      fit: BoxFit.cover,
-                      width: MediaQuery.of(context).size.width * 0.45 > 230
-                          ? 230
-                          : MediaQuery.of(context).size.width * 0.45,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Material(
-                        color: Colors.transparent,
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * 0.7 > 380
-                              ? 380
-                              : MediaQuery.of(context).size.width * 0.7,
-                          child: FittedBox(
-                            fit: BoxFit.fill,
-                            child: Text(
-                              I18n.of(context).recipe_bible,
-                              style: TextStyle(
-                                fontFamily: "Righteous",
-                                color: Colors.black,
-                                fontSize: 42,
-                              ),
-                            ),
-                          ),
-                        )),
-                  ],
-                ),
+    double _imageHeight = MediaQuery.of(context).size.width * 0.55 > 320
+        ? 320
+        : MediaQuery.of(context).size.width * 0.55;
+
+    return BlocListener<SplashScreenBloc, SplashScreenState>(
+      listener: (context, state) {
+        if (state is InitializedData) {
+          Future.delayed(Duration(milliseconds: 100)).then((value) {
+            Navigator.popAndPushNamed(
+              context,
+              RouteNames.home,
+              arguments: MyHomePageArguments(
+                state.showIntro,
+                context,
+                state.recipeCategoryOverview,
               ),
+            );
+            if (state.showIntro) {
+              Navigator.of(context).pushNamed(RouteNames.intro);
+            }
+          });
+        }
+      },
+      child: Scaffold(
+        body: Container(
+          color: Colors.amber,
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                Spacer(flex: 2),
+                Container(
+                  height: _imageHeight,
+                  child: TweenAnimationBuilder(
+                    tween: Tween<double>(begin: 0, end: 1),
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.linear,
+                    builder: (_, double opacity, myChild) => Opacity(
+                      opacity: opacity,
+                      child: Image.asset(
+                        'images/cookingHat.png',
+                        fit: BoxFit.cover,
+                        height: _imageHeight,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.7 > 380
+                      ? 380
+                      : MediaQuery.of(context).size.width * 0.7,
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: Text(
+                      I18n.of(context).recipe_bible,
+                      style: TextStyle(
+                        fontFamily: "Righteous",
+                        color: Colors.black,
+                        fontSize: 42,
+                      ),
+                    ),
+                  ),
+                ),
+                Spacer(),
+                Text(
+                  "Loading data...",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16),
+                ),
+                SizedBox(height: 12),
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red[900]),
+                ),
+                Spacer(flex: 2),
+              ],
             ),
           ),
         ),

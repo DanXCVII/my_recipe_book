@@ -67,8 +67,8 @@ class TextFieldDialogState extends State<TextFieldDialog> {
               ),
               child: Container(
                 height: 60,
-                width: MediaQuery.of(context).size.width > 360
-                    ? 360
+                width: MediaQuery.of(context).size.width > 400
+                    ? 400
                     : MediaQuery.of(context).size.width,
                 child: Row(
                   children: <Widget>[
