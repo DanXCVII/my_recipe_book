@@ -546,10 +546,12 @@ class I18n implements WidgetsLocalizations {
   String get delete_section => "Delete section?";
   /// "Are you sure, that you want to delete this section with it's containing ingredients"
   String get delete_section_desc => "Are you sure, that you want to delete this section with it's containing ingredients";
-  /// "Add a title"
-  String get add_title => "Add a title";
+  /// "Add title"
+  String get add_title => "Add title";
   /// "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce."
   String get add_title_desc => "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce.";
+  /// "Loading data..."
+  String get loading_data => "Loading data...";
 }
 
 class _I18n_en_US extends I18n {
@@ -1321,12 +1323,15 @@ class _I18n_de_DE extends I18n {
   /// "Bist du dir sicher, dass du diesen Bereich mit all seinen Zutaten entfernen willst?"
   @override
   String get delete_section_desc => "Bist du dir sicher, dass du diesen Bereich mit all seinen Zutaten entfernen willst?";
-  /// "Füge einen Titel hinzu"
+  /// "Überschrift hinzufügen"
   @override
-  String get add_title => "Füge einen Titel hinzu";
+  String get add_title => "Überschrift hinzufügen";
   /// "Um einen Bereich hinzufügen zu können, gebe dem ersten einen Titel wie zB. (Zutaten für die) Sauce."
   @override
   String get add_title_desc => "Um einen Bereich hinzufügen zu können, gebe dem ersten einen Titel wie zB. (Zutaten für die) Sauce.";
+  /// "Lade Daten..."
+  @override
+  String get loading_data => "Lade Daten...";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

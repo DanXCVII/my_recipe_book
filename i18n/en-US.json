@@ -257,5 +257,6 @@
   "delete_section": "Delete section?",
   "delete_section_desc": "Are you sure, that you want to delete this section with it's containing ingredients",
   "add_title": "Add title",
-  "add_title_desc": "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce."
+  "add_title_desc": "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce.",
+  "loading_data": "Loading data..."
 }

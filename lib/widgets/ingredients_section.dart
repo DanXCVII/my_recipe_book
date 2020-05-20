@@ -282,39 +282,44 @@ class _IngredientsState extends State<Ingredients> {
                   ),
                 )
                   ..add(
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: RaisedButton.icon(
-                          icon: Icon(Icons.add_circle_outline),
-                          label: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(I18n.of(context).add_section("")),
-                          ),
-                          onPressed: () {
-                            if (state.sectionTitles.isEmpty) {
-                              _showFlushInfo(I18n.of(context).add_title,
-                                  I18n.of(context).add_title_desc);
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (bContext) => TextFieldDialog(
-                                  validation: (title) => title == ""
-                                      ? I18n.of(context).field_must_not_be_empty
-                                      : null,
-                                  save: (title) =>
-                                      BlocProvider.of<IngredientsSectionBloc>(
-                                              context)
-                                          .add(
-                                    AddSectionTitle(title),
-                                  ),
+                    state.ingredients.length == 1 &&
+                            state.ingredients.first.isEmpty
+                        ? null
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: RaisedButton.icon(
+                                icon: Icon(Icons.add_circle_outline),
+                                label: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(I18n.of(context).add_section("")),
                                 ),
-                              );
-                            }
-                          },
-                          color: Colors.orange[900],
-                          shape: RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(5.0))),
-                    ),
+                                onPressed: () {
+                                  if (state.sectionTitles.isEmpty) {
+                                    _showFlushInfo(I18n.of(context).add_title,
+                                        I18n.of(context).add_title_desc);
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (bContext) => TextFieldDialog(
+                                        validation: (title) => title == ""
+                                            ? I18n.of(context)
+                                                .field_must_not_be_empty
+                                            : null,
+                                        save: (title) => BlocProvider.of<
+                                                IngredientsSectionBloc>(context)
+                                            .add(
+                                          AddSectionTitle(title),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                color: Colors.orange[900],
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(5.0))),
+                          ),
                   )
                   ..removeWhere((element) => (element == null)),
               );

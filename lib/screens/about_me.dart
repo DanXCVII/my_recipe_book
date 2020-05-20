@@ -48,7 +48,7 @@ class AboutMeScreen extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (context) => InfoDialog(
-                    title: "disclaimer",
+                    title: "Disclaimer",
                     body: I18n.of(context).disclaimer_description,
                   ),
                 );

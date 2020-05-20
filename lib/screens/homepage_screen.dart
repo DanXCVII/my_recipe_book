@@ -53,6 +53,18 @@ RateMyApp _rateMyApp = RateMyApp(
   // appStoreIdentifier: '1491556149',
 );
 
+class MyHomePageArguments {
+  final bool showIntro;
+  final BuildContext context;
+  final bool recipeCategoryOverview;
+
+  MyHomePageArguments(
+    this.showIntro,
+    this.context,
+    this.recipeCategoryOverview,
+  );
+}
+
 class MyHomePage extends StatefulWidget {
   final bool showIntro;
 

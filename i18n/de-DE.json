@@ -255,5 +255,6 @@
   "delete_section": "Bereich entfernen?",
   "delete_section_desc": "Bist du dir sicher, dass du diesen Bereich mit all seinen Zutaten entfernen willst?",
   "add_title": "Überschrift hinzufügen",
-  "add_title_desc": "Um einen Bereich hinzufügen zu können, gebe dem ersten einen Titel wie zB. (Zutaten für die) Sauce."
+  "add_title_desc": "Um einen Bereich hinzufügen zu können, gebe dem ersten einen Titel wie zB. (Zutaten für die) Sauce.",
+  "loading_data": "Lade Daten..."
 }
