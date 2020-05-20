@@ -139,7 +139,7 @@ class _IngredientsState extends State<Ingredients> {
                                 state.ingredients[index][indexTwo].unit == ""
                             ? null
                             : Text(
-                                "${cutDouble(state.ingredients[index][indexTwo].amount) ?? ""} ${state.ingredients[index][indexTwo].unit ?? ""}"),
+                                "${state.ingredients[index][indexTwo].amount == null ? "" : cutDouble(state.ingredients[index][indexTwo].amount)} ${state.ingredients[index][indexTwo].unit ?? ""}"),
                       );
                     })
                       ..insert(
@@ -210,7 +210,7 @@ class _IngredientsState extends State<Ingredients> {
                                     label: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 8.0),
-                                      child: Text("add title"),
+                                      child: Text(I18n.of(context).add_title),
                                     ),
                                     onPressed: () {
                                       showDialog(

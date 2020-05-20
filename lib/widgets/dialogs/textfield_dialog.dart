@@ -75,7 +75,7 @@ class TextFieldDialogState extends State<TextFieldDialog> {
                     SizedBox(width: 24),
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        padding: const EdgeInsets.only(bottom: 8.0, top: 5),
                         child: Center(
                           child: Form(
                             key: _formKey,
