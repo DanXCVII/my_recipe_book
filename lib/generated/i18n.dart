@@ -1156,9 +1156,9 @@ class _I18n_de_DE extends I18n {
   /// "nur auf Rezeptbildschirm"
   @override
   String get only_recipe_screen => "nur auf Rezeptbildschirm";
-  /// "Die Änderungen beim Rezept hinzufügen oder bearbeiten werden gespeichert, wenn man vor oder zurück geht. Mache dir also keine Sorgen, wenn du eine Information falsch eingetippt hast. Beim zurückgehen gehen die Daten nicht verloren."
+  /// "Die Änderungen beim Hinzufügen von Rezepten werden gespeichert, wenn man vor oder zurück geht. Mache dir also keine Sorgen, wenn du eine Information falsch eingetippt hast. Beim zurückgehen gehen die Daten nicht verloren."
   @override
-  String get general_info_changes_will_be_saved => "Die Änderungen beim Rezept hinzufügen oder bearbeiten werden gespeichert, wenn man vor oder zurück geht. Mache dir also keine Sorgen, wenn du eine Information falsch eingetippt hast. Beim zurückgehen gehen die Daten nicht verloren.";
+  String get general_info_changes_will_be_saved => "Die Änderungen beim Hinzufügen von Rezepten werden gespeichert, wenn man vor oder zurück geht. Mache dir also keine Sorgen, wenn du eine Information falsch eingetippt hast. Beim zurückgehen gehen die Daten nicht verloren.";
   /// "Tippe auf einen Schritt um ihn auszuwählen, damit du weißt, was du als nächstes machen musst."
   @override
   String get steps_intro => "Tippe auf einen Schritt um ihn auszuwählen, damit du weißt, was du als nächstes machen musst.";

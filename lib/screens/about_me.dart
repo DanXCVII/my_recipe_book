@@ -182,9 +182,6 @@ class AboutMeScreen extends StatelessWidget {
               ),
             ),
             Container(
-              height: 60,
-            ),
-            Container(
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   boxShadow: [
@@ -222,7 +219,7 @@ class AboutMeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "- MADE WITH ❤ BY IN MÜNSTER -",
+                "- MADE WITH ❤ IN MÜNSTER -",
                 style: TextStyle(fontWeight: FontWeight.w300),
               ),
             )
