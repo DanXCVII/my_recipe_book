@@ -103,7 +103,7 @@ class RecipeScreenIngredientsBloc
       AddToCart event) async* {
     if (state is LoadedRecipeIngredients) {
       await HiveProvider()
-          .addMulitpleIngredientsToCart(event.recipeName, event.ingredients);
+          .addMultipleIngredientsToCart(event.recipeName, event.ingredients);
 
       List<Ingredient> checkedIngredients = event.ingredients;
 
