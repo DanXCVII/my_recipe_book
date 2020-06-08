@@ -89,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 Spacer(),
                 Text(
-                  "Loading data...",
+                  I18n.of(context).loading_data,
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w800,

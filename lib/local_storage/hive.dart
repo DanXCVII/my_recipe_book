@@ -845,7 +845,7 @@ class HiveProvider {
     return shoppingCart;
   }
 
-  Future<void> addMulitpleIngredientsToCart(
+  Future<void> addMultipleIngredientsToCart(
       String recipeName, List<Ingredient> ingredients) async {
     for (Ingredient i in ingredients) {
       await addSingleIngredientToCart(recipeName, i);
@@ -933,7 +933,7 @@ class HiveProvider {
     return true;
   }
 
-  /// removes the ingrdients of the given recipe (if existing) from the list and
+  /// removes the ingredients of the given recipe (if existing) from the list and
   /// also updates the summary
   Future<void> removeRecipeFromCart(String recipeName) async {
     String hiveRecipeKey = getHiveKey(recipeName);
@@ -950,7 +950,7 @@ class HiveProvider {
       ));
     }
     for (Ingredient i in toBeRemoved) {
-      removeIngredientFromCart(recipeName, i);
+      await removeIngredientFromCart(recipeName, i);
     }
   }
 
@@ -1001,6 +1001,7 @@ class HiveProvider {
       int summaryIndex =
           _getSuitingIngredientRecipe(ingredient, summaryIngredients);
 
+      if (summaryIndex == null) return;
       CheckableIngredient summaryIngred = summaryIngredients[summaryIndex];
 
       // if the ingredient has an amount
@@ -1150,9 +1151,12 @@ class HiveProvider {
                 [modifyIngred.copyWith(amount: newAmount, checked: checked)])),
         );
       } else {
-        (boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ?? [])
-            .add(CheckableIngredient(
-                ingredient.name, ingredient.amount, ingredient.unit, false));
+        await boxShoppingCart.put(
+            hiveRecipeKey,
+            (boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ??
+                [])
+              ..add(CheckableIngredient(
+                  ingredient.name, ingredient.amount, ingredient.unit, false)));
       }
     } // if we have to add the recipe with the ingredient to cart
     else {

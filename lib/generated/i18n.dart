@@ -514,6 +514,8 @@ class I18n implements WidgetsLocalizations {
   String get add_title => "Add a title";
   /// "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce."
   String get add_title_desc => "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce.";
+  /// "Loading data..."
+  String get loading_data => "Loading data...";
 }
 
 class _I18n_en_US extends I18n {
@@ -1234,6 +1236,9 @@ class _I18n_de_DE extends I18n {
   /// "Um einen Bereich hinzufügen zu können, gebe dem ersten einen Titel wie zB. (Zutaten für die) Sauce."
   @override
   String get add_title_desc => "Um einen Bereich hinzufügen zu können, gebe dem ersten einen Titel wie zB. (Zutaten für die) Sauce.";
+  /// "Lade Daten..."
+  @override
+  String get loading_data => "Lade Daten...";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;
