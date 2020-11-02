@@ -12,8 +12,7 @@ part 'ingredients_event.dart';
 part 'ingredients_state.dart';
 
 class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
-  @override
-  IngredientsState get initialState => ICanSave();
+  IngredientsBloc() : super(ICanSave());
 
   @override
   Stream<IngredientsState> mapEventToState(

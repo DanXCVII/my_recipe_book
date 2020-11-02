@@ -34,7 +34,7 @@ class RecipeCardBig extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     double scaleFactor = cardHeight / 580;
 
     TextStyle smallHeading = TextStyle(
@@ -374,8 +374,7 @@ class RecipeCardBig extends StatelessWidget {
     );
   }
 
-  String _getRecipeCategoriesString(
-      List<String> categories, BuildContext context) {
+  String _getRecipeCategoriesString(List<String> categories, context) {
     String categoryString = '';
     if (categories.isEmpty) {
       return I18n.of(context).none;

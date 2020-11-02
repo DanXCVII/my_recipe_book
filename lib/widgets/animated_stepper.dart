@@ -26,7 +26,7 @@ class AnimatedStepper extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Column(
       children: List<Widget>.generate(
           steps.length,

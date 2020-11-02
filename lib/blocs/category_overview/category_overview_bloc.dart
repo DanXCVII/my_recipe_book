@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/src/widgets/framework.dart' as fw;
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +21,8 @@ class CategoryOverviewBloc
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
-  CategoryOverviewBloc({@required this.recipeManagerBloc}) {
+  CategoryOverviewBloc({@required this.recipeManagerBloc})
+      : super(LoadingCategoryOverview()) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedCategoryOverview) {
         if (rmState is RM.AddRecipesState) {
@@ -42,9 +44,6 @@ class CategoryOverviewBloc
       }
     });
   }
-
-  @override
-  CategoryOverviewState get initialState => LoadingCategoryOverview();
 
   @override
   Stream<CategoryOverviewState> mapEventToState(

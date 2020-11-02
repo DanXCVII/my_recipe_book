@@ -1,4 +1,4 @@
-import 'package:buy_me_a_coffee_widget/buy_me_a_coffee_widget.dart';
+// import 'package:buy_me_a_coffee_widget/buy_me_a_coffee_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -210,10 +210,10 @@ class AboutMeScreen extends StatelessWidget {
               height: 12,
             ),
             Container(
-              width: 250.0,
-              child: BuyMeACoffeeWidget(
-                sponsorID: "DanielDev",
-              ),
+              width: 250.0, child: Container(),
+              // BuyMeACoffeeWidget(
+              //   sponsorID: "DanielDev",
+              // ),
             ),
             Spacer(),
             Padding(

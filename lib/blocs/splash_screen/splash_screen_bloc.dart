@@ -26,8 +26,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   bool _splashScreenFinished = false;
   bool _initialized = false;
 
-  @override
-  SplashScreenState get initialState => InitializingData();
+  SplashScreenBloc() : super(InitializingData());
 
   @override
   Stream<SplashScreenState> mapEventToState(

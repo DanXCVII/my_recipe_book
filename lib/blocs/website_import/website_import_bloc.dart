@@ -28,10 +28,7 @@ enum ImportState { SUCCESS, DUPLICATE, FAIL }
 class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   final RecipeManagerBloc recipeManagerBloc;
 
-  WebsiteImportBloc(this.recipeManagerBloc);
-
-  @override
-  WebsiteImportState get initialState => ReadyToImport();
+  WebsiteImportBloc(this.recipeManagerBloc) : super(ReadyToImport());
 
   @override
   Stream<WebsiteImportState> mapEventToState(

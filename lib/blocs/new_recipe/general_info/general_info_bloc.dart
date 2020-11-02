@@ -16,8 +16,7 @@ part 'general_info_event.dart';
 part 'general_info_state.dart';
 
 class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
-  @override
-  GeneralInfoState get initialState => GCanSave();
+  GeneralInfoBloc() : super(GCanSave());
 
   @override
   Stream<GeneralInfoState> mapEventToState(

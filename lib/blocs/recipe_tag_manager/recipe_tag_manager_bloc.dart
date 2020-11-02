@@ -19,7 +19,8 @@ class RecipeTagManagerBloc
   List<StringIntTuple> selectedTags = [];
 
   RecipeTagManagerBloc(
-      {@required this.recipeManagerBloc, List<StringIntTuple> selectedTags}) {
+      {@required this.recipeManagerBloc, List<StringIntTuple> selectedTags})
+      : super(LoadingRecipeTagManager()) {
     if (selectedTags != null)
       this.selectedTags = List<StringIntTuple>.from(selectedTags);
     subscription = recipeManagerBloc.listen((rmState) {
@@ -34,9 +35,6 @@ class RecipeTagManagerBloc
       }
     });
   }
-
-  @override
-  RecipeTagManagerState get initialState => LoadingRecipeTagManager();
 
   @override
   Stream<RecipeTagManagerState> mapEventToState(

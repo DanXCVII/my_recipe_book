@@ -16,7 +16,8 @@ class FavoriteRecipesBloc
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
-  FavoriteRecipesBloc({@required this.recipeManagerBloc}) {
+  FavoriteRecipesBloc({@required this.recipeManagerBloc})
+      : super(LoadingFavorites()) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (rmState is RM.AddFavoriteState) {
         add(AddFavorite(rmState.recipe));
@@ -33,9 +34,6 @@ class FavoriteRecipesBloc
       }
     });
   }
-
-  @override
-  FavoriteRecipesState get initialState => LoadingFavorites();
 
   @override
   Stream<FavoriteRecipesState> mapEventToState(
@@ -60,8 +58,8 @@ class FavoriteRecipesBloc
   Stream<FavoriteRecipesState> _mapAddFavoriteToState(
       AddFavorite event) async* {
     if (state is LoadedFavorites) {
-      final recipes = List<Recipe>.from(
-          (state as LoadedFavorites).recipes)..add(event.recipe);
+      final recipes = List<Recipe>.from((state as LoadedFavorites).recipes)
+        ..add(event.recipe);
 
       yield LoadedFavorites(recipes);
     }

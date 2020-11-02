@@ -14,8 +14,7 @@ import 'nutritions_state.dart';
 class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
   bool finishedEditing = false;
 
-  @override
-  NutritionsState get initialState => NCanSave();
+  NutritionsBloc() : super(NCanSave());
 
   @override
   Stream<NutritionsState> mapEventToState(
