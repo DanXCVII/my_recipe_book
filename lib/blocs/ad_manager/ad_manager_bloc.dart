@@ -36,7 +36,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   bool lastAdForBannerTime;
   bool _showVideo = false;
 
-  AdManagerBloc() {
+  AdManagerBloc() : super(AdManagerInitial()) {
     RewardedVideoAd.instance.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       if (event == RewardedVideoAdEvent.rewarded) {
@@ -56,9 +56,6 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       }
     };
   }
-
-  @override
-  AdManagerState get initialState => AdManagerInitial();
 
   @override
   Stream<AdManagerState> mapEventToState(
