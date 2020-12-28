@@ -10,8 +10,7 @@ part 'ingredients_manager_state.dart';
 
 class IngredientsManagerBloc
     extends Bloc<IngredientsManagerEvent, IngredientsManagerState> {
-  @override
-  IngredientsManagerState get initialState => IngredientsManagerInitial();
+  IngredientsManagerBloc() : super(IngredientsManagerInitial());
 
   @override
   Stream<IngredientsManagerState> mapEventToState(

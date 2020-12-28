@@ -12,8 +12,7 @@ class NutritionManagerBloc
     extends Bloc<NutritionManagerEvent, NutritionManagerState> {
   List<String> modifiedRecipeNutritions = [];
 
-  @override
-  NutritionManagerState get initialState => InitialNutritionManagerState();
+  NutritionManagerBloc() : super(InitialNutritionManagerState());
 
   @override
   Stream<NutritionManagerState> mapEventToState(

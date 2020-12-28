@@ -16,7 +16,7 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
-  ShoppingCartBloc(this.recipeManagerBloc) {
+  ShoppingCartBloc(this.recipeManagerBloc) : super(LoadingShoppingCart()) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedShoppingCart) {
         if (rmState is RM.DeleteRecipeState) {
@@ -29,11 +29,6 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
         }
       }
     });
-  }
-
-  @override
-  ShoppingCartState get initialState {
-    return LoadingShoppingCart();
   }
 
   @override

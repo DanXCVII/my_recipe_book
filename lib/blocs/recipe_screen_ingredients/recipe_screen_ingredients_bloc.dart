@@ -15,11 +15,8 @@ class RecipeScreenIngredientsBloc
     extends Bloc<RecipeScreenIngredientsEvent, RecipeScreenIngredientsState> {
   final ShoppingCartBloc shoppingCartBloc;
 
-  RecipeScreenIngredientsBloc({@required this.shoppingCartBloc});
-
-  @override
-  RecipeScreenIngredientsState get initialState =>
-      InitialRecipeScreenIngredientsState();
+  RecipeScreenIngredientsBloc({@required this.shoppingCartBloc})
+      : super(InitialRecipeScreenIngredientsState());
 
   @override
   Stream<RecipeScreenIngredientsState> mapEventToState(

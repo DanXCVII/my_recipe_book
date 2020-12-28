@@ -156,18 +156,18 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     if (intentSharedText == "failedFileCreation" ||
         intentSharedText == "failedWriting" ||
         intentSharedText == "failedClosing") {
-      PermissionStatus permission = await PermissionHandler()
-          .checkPermissionStatus(PermissionGroup.storage);
+      var permission = await Permission.storage.status;
       // if error occured even though the storage permission is granted
-      if (permission == PermissionStatus.granted) {
+      if (permission.isGranted) {
         String error = intentSharedText == "failedFileCreation"
             ? "Error #1:"
-            : intentSharedText == "failedWriting" ? "Error #2:" : "Error #3:";
+            : intentSharedText == "failedWriting"
+                ? "Error #2:"
+                : "Error #3:";
         _showFlushInfo(I18n.of(context).failed_import,
             "$error" + I18n.of(context).failed_import_desc);
       } // if error occured and the storage permission is not granted and not set to neverShowAgain
-      else if (permission == PermissionStatus.denied ||
-          permission == PermissionStatus.unknown) {
+      else if (permission.isDenied || permission.isUndetermined) {
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -175,17 +175,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             title: I18n.of(context).need_to_access_storage,
             body: I18n.of(context).need_to_access_storage_desc,
             onPressedOk: () async {
-              PermissionHandler().requestPermissions(
-                  [PermissionGroup.storage]).then((updatedPermissions) {
-                if (updatedPermissions[PermissionGroup.storage] ==
-                    PermissionStatus.granted) {
-                  if (_intentFailedImporting == false) {
-                    _intentFailedImporting = true;
+              if (await Permission.storage.request().isGranted) {
+                if (_intentFailedImporting == false) {
+                  _intentFailedImporting = true;
 
-                    initializeIntent().then((_) {});
-                  }
+                  initializeIntent().then((_) {});
                 }
-              });
+              }
             },
           ),
         );
@@ -477,7 +473,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           title: Text(title),
           actions: <Widget>[
             IconButton(
-              icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
+              icon: Icon(MdiIcons.textBoxSearchOutline),
               onPressed: () {
                 Navigator.pushNamed(
                   context,

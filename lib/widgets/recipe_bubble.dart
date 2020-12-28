@@ -39,7 +39,7 @@ class _RecipeBubbleState extends State<RecipeBubble> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Positioned(
       left: position.dx,
       top: position.dy,

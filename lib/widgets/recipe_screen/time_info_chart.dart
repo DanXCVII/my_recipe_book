@@ -107,9 +107,10 @@ class TimeInfoChart extends StatelessWidget {
                           : null,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.blue, Colors.blue[800]]),
+                          colors: [Colors.blue, Colors.blue[800]],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(horizontal ? 0 : 30),
                             topRight: Radius.circular(30),

@@ -11,8 +11,7 @@ part 'clear_recipe_event.dart';
 part 'clear_recipe_state.dart';
 
 class ClearRecipeBloc extends Bloc<ClearRecipeEvent, ClearRecipeState> {
-  @override
-  ClearRecipeState get initialState => InitialClearRecipeState();
+  ClearRecipeBloc() : super(InitialClearRecipeState());
 
   @override
   Stream<ClearRecipeState> mapEventToState(

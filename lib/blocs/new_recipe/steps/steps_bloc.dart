@@ -14,7 +14,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
   List<List<String>> stepImages;
   StreamSubscription subscription;
 
-  StepsBloc(StepImagesBloc stepImagesBloc) {
+  StepsBloc(StepImagesBloc stepImagesBloc) : super(SCanSave()) {
     subscription = stepImagesBloc.listen((siState) {
       if (state is SCanSave) {
         if (siState is LoadedStepImages) {
@@ -23,9 +23,6 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
       }
     });
   }
-
-  @override
-  StepsState get initialState => SCanSave();
 
   @override
   Stream<StepsState> mapEventToState(

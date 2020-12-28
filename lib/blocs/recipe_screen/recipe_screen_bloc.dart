@@ -16,7 +16,8 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
   StreamSubscription rmListener;
   RecipeManagerBloc recipeManagerBloc;
 
-  RecipeScreenBloc(this.recipe, this.recipeManagerBloc) {
+  RecipeScreenBloc(this.recipe, this.recipeManagerBloc)
+      : super(RecipeScreenInfo(recipe, [])) {
     rmListener = recipeManagerBloc.listen((state) {
       if (state is DeleteRecipeState) {
         if (state.recipe == recipe) {
@@ -32,9 +33,6 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
     rmListener.cancel();
     return super.close();
   }
-
-  @override
-  RecipeScreenState get initialState => RecipeScreenInfo(recipe, []);
 
   @override
   Stream<RecipeScreenState> mapEventToState(

@@ -28,7 +28,7 @@ class _StepsState extends State<Steps> {
   Widget build(BuildContext context) {
     // Column with all the data of the steps inside like heading, textFields etc.
     return BlocBuilder<StepImagesBloc, StepImagesState>(
-        condition: (oldState, newState) {
+        buildWhen: (oldState, newState) {
       if (oldState is LoadedStepImages && newState is LoadedStepImages) {
         if (oldState.stepImages.length > newState.stepImages.length) {
           widget.stepsDecriptionController.removeLast();
@@ -131,7 +131,9 @@ class _StepsState extends State<Steps> {
                             )..add(
                                 AddImageBox(
                                   size: state.stepImages.length > i
-                                      ? state.stepImages[i].length > 0 ? 80 : 50
+                                      ? state.stepImages[i].length > 0
+                                          ? 80
+                                          : 50
                                       : 50,
                                   iconSize: state.stepImages.length > i
                                       ? state.stepImages[i].length > 0

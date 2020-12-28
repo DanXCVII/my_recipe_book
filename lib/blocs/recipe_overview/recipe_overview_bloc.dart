@@ -26,7 +26,8 @@ class RecipeOverviewBloc
 
   List<Recipe> unfilteredRecipes = [];
 
-  RecipeOverviewBloc({@required this.recipeManagerBloc}) {
+  RecipeOverviewBloc({@required this.recipeManagerBloc})
+      : super(LoadingRecipeOverview()) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedRecipeOverview) {
         if (rmState is RM.AddRecipesState) {
@@ -51,9 +52,6 @@ class RecipeOverviewBloc
       }
     });
   }
-
-  @override
-  RecipeOverviewState get initialState => LoadingRecipeOverview();
 
   @override
   Stream<RecipeOverviewState> mapEventToState(

@@ -1,4 +1,3 @@
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flushbar/flushbar.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,7 +33,7 @@ class _IngredientsState extends State<Ingredients> {
   Flushbar _flush;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     if (!initializedServingsNameController &&
         widget.servingsNameController.text == "") {
       widget.servingsNameController.text = I18n.of(context).servings;

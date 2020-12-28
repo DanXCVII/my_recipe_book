@@ -15,8 +15,7 @@ part 'ingredient_search_state.dart';
 
 class IngredientSearchBloc
     extends Bloc<IngredientSearchEvent, IngredientSearchState> {
-  @override
-  IngredientSearchState get initialState => IngredientSearchInitial();
+  IngredientSearchBloc() : super(IngredientSearchInitial());
 
   @override
   Stream<IngredientSearchState> mapEventToState(

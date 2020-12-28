@@ -17,10 +17,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
   RecipeManagerBloc recipeManagerBloc;
   String fileEndingLastImport;
 
-  ImportRecipeBloc(this.recipeManagerBloc);
-
-  @override
-  ImportRecipeState get initialState => InitialImportRecipeState();
+  ImportRecipeBloc(this.recipeManagerBloc) : super(InitialImportRecipeState());
 
   @override
   Stream<ImportRecipeState> mapEventToState(

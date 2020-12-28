@@ -15,7 +15,8 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
-  RecipeBubbleBloc({@required this.recipeManagerBloc}) {
+  RecipeBubbleBloc({@required this.recipeManagerBloc})
+      : super(LoadedRecipeBubbles([])) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedRecipeBubbles) {
         if (rmState is RM.DeleteRecipeState) {
@@ -43,9 +44,6 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
     subscription.cancel();
     return super.close();
   }
-
-  @override
-  RecipeBubbleState get initialState => LoadedRecipeBubbles([]);
 
   @override
   Stream<RecipeBubbleState> mapEventToState(

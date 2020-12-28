@@ -14,8 +14,7 @@ part 'step_images_state.dart';
 class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
   List<List<String>> editingStepImages;
 
-  @override
-  StepImagesState get initialState => LoadedStepImages([[]]);
+  StepImagesBloc() : super(LoadedStepImages([[]]));
 
   @override
   Stream<StepImagesState> mapEventToState(

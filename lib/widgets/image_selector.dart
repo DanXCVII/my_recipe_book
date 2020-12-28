@@ -42,7 +42,7 @@ class _ImageSelectorState extends State<ImageSelector> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Container(
       height: widget.circleSize + 22,
       child: BlocListener<ClearRecipeBloc, ClearRecipeState>(
