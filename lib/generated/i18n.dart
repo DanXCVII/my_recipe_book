@@ -933,9 +933,9 @@ class _I18n_de_DE extends I18n {
   /// "Kategorie"
   @override
   String get category => "Kategorie";
-  /// "Erweiterte-Suche"
+  /// "Erweiterte Suche"
   @override
-  String get professional_search => "Erweiterte-Suche";
+  String get professional_search => "Erweiterte Suche";
   /// "Informationen angeben"
   @override
   String get enter_some_information => "Informationen angeben";

@@ -106,11 +106,12 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       if (_available) {
         await _getProducts();
         await _getPastPurchases();
-        await _verifyPurchase();
+        await _verifyPurchase(null);
 
         _subscription = _iap.purchaseUpdatedStream.listen((data) {
           _purchases.addAll(data);
-          _verifyPurchase();
+
+          _verifyPurchase(data.first);
         });
       }
 
@@ -255,21 +256,22 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     QueryPurchaseDetailsResponse response = await _iap.queryPastPurchases();
 
     for (PurchaseDetails purchase in response.pastPurchases) {
-      if (Platform.isIOS) {
-        InAppPurchaseConnection.instance.completePurchase(purchase);
-      }
+      InAppPurchaseConnection.instance.completePurchase(purchase);
     }
 
     _purchases = response.pastPurchases;
   }
 
-  Future<void> _verifyPurchase() async {
+  Future<void> _verifyPurchase(PurchaseDetails details) async {
     PurchaseDetails purchase = _hasPurchased('pro_version');
 
     if (purchase != null && purchase.status == PurchaseStatus.purchased) {
       _sP ??= await SharedPreferences.getInstance();
       _sP.setBool('pro_version', true);
       Ads.showBannerAds(false);
+      if (details != null) {
+        await _iap.completePurchase(details);
+      }
       add(_PurchaseSuccessfull());
     }
   }

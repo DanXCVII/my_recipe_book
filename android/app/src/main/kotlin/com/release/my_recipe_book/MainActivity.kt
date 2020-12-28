@@ -83,13 +83,18 @@ class MainActivity : FlutterActivity() {
             println(e.toString())
         }
         try {
-            inn = contentResolver.openInputStream(uri)
-            out = FileOutputStream(outputFile)
-            val buf = ByteArray(1024)
-            var len = inn.read(buf)
-            while (len > 0) {
-                out.write(buf, 0, len)
-                len = inn.read(buf)
+            // ugly necessary null safety checks
+            if (uri != null) {
+                inn = contentResolver.openInputStream(uri)
+                if (inn != null) {
+                    out = FileOutputStream(outputFile)
+                    val buf = ByteArray(1024)
+                    var len = inn.read(buf)
+                    while (len > 0) {
+                        out.write(buf, 0, len)
+                        len = inn.read(buf)
+                    }
+                }
             }
         } catch (e: Exception) {
             failedWriting = true;
