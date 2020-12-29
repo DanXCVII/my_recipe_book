@@ -4,7 +4,6 @@
         <!-- Show a splash screen on the activity. Automatically removed when
              Flutter draws its first frame -->
         <item name="android:windowBackground">@color/splash_color</item>
-        <item name="android:windowFullscreen">true</item>
     </style>
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">@color/splash_color</item>

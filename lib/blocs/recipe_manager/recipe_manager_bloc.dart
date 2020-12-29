@@ -12,8 +12,7 @@ part 'recipe_manager_event.dart';
 part 'recipe_manager_state.dart';
 
 class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
-  @override
-  RecipeManagerState get initialState => InitialRecipeManagerState();
+  RecipeManagerBloc() : super(InitialRecipeManagerState());
 
   @override
   Stream<RecipeManagerState> mapEventToState(

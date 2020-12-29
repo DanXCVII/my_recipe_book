@@ -10,10 +10,7 @@ class AnimatedStepperBloc
     extends Bloc<AnimatedStepperEvent, AnimatedStepperState> {
   final initialStep;
 
-  AnimatedStepperBloc({this.initialStep});
-
-  @override
-  AnimatedStepperState get initialState => SelectedStep(initialStep);
+  AnimatedStepperBloc({this.initialStep}) : super(SelectedStep(initialStep));
 
   @override
   Stream<AnimatedStepperState> mapEventToState(

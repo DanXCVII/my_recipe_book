@@ -20,7 +20,8 @@ class CategoryOverviewBloc
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
-  CategoryOverviewBloc({@required this.recipeManagerBloc}) {
+  CategoryOverviewBloc({@required this.recipeManagerBloc})
+      : super(LoadingCategoryOverview()) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedCategoryOverview) {
         if (rmState is RM.AddRecipesState) {
@@ -42,9 +43,6 @@ class CategoryOverviewBloc
       }
     });
   }
-
-  @override
-  CategoryOverviewState get initialState => LoadingCategoryOverview();
 
   @override
   Stream<CategoryOverviewState> mapEventToState(

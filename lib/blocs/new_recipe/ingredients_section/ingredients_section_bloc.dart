@@ -12,9 +12,7 @@ class IngredientsSectionBloc
   List<String> sectionTitles = [];
   List<List<Ingredient>> ingredients = [[]];
 
-  @override
-  IngredientsSectionState get initialState =>
-      LoadedIngredientsSection([], [[]]);
+  IngredientsSectionBloc() : super(LoadedIngredientsSection([], [[]]));
 
   @override
   Stream<IngredientsSectionState> mapEventToState(

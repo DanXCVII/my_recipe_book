@@ -16,7 +16,8 @@ class RandomRecipeExplorerBloc
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
-  RandomRecipeExplorerBloc({@required this.recipeManagerBloc}) {
+  RandomRecipeExplorerBloc({@required this.recipeManagerBloc})
+      : super(LoadingRandomRecipeExplorer()) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedRandomRecipeExplorer) {
         final List<String> categories =
@@ -62,9 +63,6 @@ class RandomRecipeExplorerBloc
       }
     });
   }
-
-  @override
-  RandomRecipeExplorerState get initialState => LoadingRandomRecipeExplorer();
 
   @override
   Stream<RandomRecipeExplorerState> mapEventToState(
