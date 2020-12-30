@@ -118,12 +118,8 @@ class RecipeGridView extends StatelessWidget {
                   title: Text(title),
                 ),
                 body: NoRecipeCategory(
-                  recipeTag: (state as LoadingRecipes).recipeTag != null
-                      ? true
-                      : false,
-                  vegetable: (state as LoadingRecipes).vegetable != null
-                      ? true
-                      : false,
+                  recipeTag: state.recipeTag != null ? true : false,
+                  vegetable: state.vegetable != null ? true : false,
                 ));
           }
         } else if (state is LoadedRecipeOverview) {
@@ -337,7 +333,9 @@ class NoRecipeCategory extends StatelessWidget {
           iconWidget: Icon(
             recipeTag
                 ? MdiIcons.tag
-                : vegetable ? MdiIcons.foodApple : MdiIcons.chefHat,
+                : vegetable
+                    ? MdiIcons.foodApple
+                    : MdiIcons.chefHat,
             color: Colors.white,
             size: 70.0,
           ),
