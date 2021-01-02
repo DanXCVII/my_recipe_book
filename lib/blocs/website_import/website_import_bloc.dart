@@ -227,6 +227,12 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
         gotImage = true;
       } catch (e) {}
     }
+    if (!gotImage) {
+      try {
+        recipeImageUrl = recipeMap["image"].first["url"];
+        gotImage = true;
+      } catch (e) {}
+    }
 
     if (gotImage) {
       await Dio().download(
@@ -301,21 +307,24 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   /// returns the first number of the value of the key. Otherwise returns null
   double _getServingsFromSchemaRecipe(Map<String, dynamic> recipeMap) {
     double servings = 1;
-    if (recipeMap.containsKey("recipeYield")) {
-      if (recipeMap["recipeYield"].contains(" ")) {
-        return double.tryParse(recipeMap["recipeYield"]
-            .substring(0, recipeMap["recipeYield"].toString().indexOf(" ")));
-      } else {
-        try {
+    try {
+      if (recipeMap.containsKey("recipeYield")) {
+        if (recipeMap["recipeYield"] is double) {
+          return recipeMap["recipeYield"];
+        }
+        if (recipeMap["recipeYield"].contains(" ")) {
+          return double.tryParse(recipeMap["recipeYield"]
+              .substring(0, recipeMap["recipeYield"].toString().indexOf(" ")));
+        } else {
           if (recipeMap["recipeYield"] is List) {
             servings = double.tryParse(recipeMap["recipeYield"].first);
           } else {
             servings = double.tryParse(recipeMap["recipeYield"]);
           }
-        } catch (e) {
-          print("failed to get servings from recipe");
         }
       }
+    } catch (e) {
+      print("failed to get servings from recipe");
     }
     return servings;
   }
@@ -329,6 +338,15 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       recipeSteps = _getStepsFromSingleStringFormat(stepsInfo);
       gotSteps = true;
     } catch (e) {}
+    if (!gotSteps) {
+      try {
+        if (recipeMap["recipeInstructions"].first is String &&
+            recipeMap["recipeInstructions"].last is String)
+          recipeMap["recipeInstructions"]
+              .forEach((item) => recipeSteps.add(item.toString()));
+        gotSteps = true;
+      } catch (e) {}
+    }
     if (!gotSteps) {
       try {
         List<dynamic> dynamicStepInfo = recipeMap["recipeInstructions"];
@@ -599,7 +617,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
                 ? null
                 : Nutrition(
                     name: key.replaceAll("Content", "").replaceAll("Size", ""),
-                    amountUnit: recipeMap["nutrition"][key],
+                    amountUnit: recipeMap["nutrition"][key].toString(),
                   ))
             .toList()
               ..removeWhere((item) => item == null);

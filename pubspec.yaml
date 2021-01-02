@@ -76,9 +76,6 @@ dependencies:
   # google_fonts: ^1.0.0 # Apache 2.0
   animated_text_kit: ^2.0.1 # MIT
   page_transition: ^1.1.5 # BSD
-  googleapis: ^0.56.1
-  googleapis_auth: ^0.2.12
-  flutter_secure_storage: ^3.3.5
 
 dev_dependencies:
   flutter_test:
