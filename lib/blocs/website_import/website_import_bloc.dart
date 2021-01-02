@@ -300,16 +300,24 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   /// checks if the key recipeYield is existingin the map and then
   /// returns the first number of the value of the key. Otherwise returns null
   double _getServingsFromSchemaRecipe(Map<String, dynamic> recipeMap) {
+    double servings = 1;
     if (recipeMap.containsKey("recipeYield")) {
       if (recipeMap["recipeYield"].contains(" ")) {
         return double.tryParse(recipeMap["recipeYield"]
             .substring(0, recipeMap["recipeYield"].toString().indexOf(" ")));
       } else {
-        return double.tryParse(recipeMap["recipeYield"]);
+        try {
+          if (recipeMap["recipeYield"] is List) {
+            servings = double.tryParse(recipeMap["recipeYield"].first);
+          } else {
+            servings = double.tryParse(recipeMap["recipeYield"]);
+          }
+        } catch (e) {
+          print("failed to get servings from recipe");
+        }
       }
-    } else {
-      return null;
     }
+    return servings;
   }
 
   List<String> _getStepsFromSchemaRecipe(Map<String, dynamic> recipeMap) {

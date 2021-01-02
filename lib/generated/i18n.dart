@@ -184,8 +184,8 @@ class I18n implements WidgetsLocalizations {
   String get you_have_no_categories => "you have no categories";
   /// "you have no nutritions"
   String get you_have_no_nutritions => "you have no nutritions";
-  /// "about me"
-  String get about_me => "about me";
+  /// "info"
+  String get about_me => "info";
   /// "rate this app"
   String get rate_app => "rate this app";
   /// "settings"
@@ -765,9 +765,9 @@ class _I18n_de_DE extends I18n {
   /// "Zufällige Rezepte"
   @override
   String get roll_the_dice => "Zufällige Rezepte";
-  /// "theme"
+  /// "Theme"
   @override
-  String get switch_theme => "theme";
+  String get switch_theme => "Theme";
   /// "Einkaufwagenansicht ändern"
   @override
   String get switch_shopping_cart_look => "Einkaufwagenansicht ändern";
@@ -792,9 +792,9 @@ class _I18n_de_DE extends I18n {
   /// "du hast noch keine Nährwerte hinzugefügt"
   @override
   String get you_have_no_nutritions => "du hast noch keine Nährwerte hinzugefügt";
-  /// "über mich"
+  /// "Info"
   @override
-  String get about_me => "über mich";
+  String get about_me => "Info";
   /// "bewerte diese App"
   @override
   String get rate_app => "bewerte diese App";

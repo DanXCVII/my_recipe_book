@@ -398,7 +398,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                         fontSize: 11),
                                   ),
                                   pw.TextSpan(
-                                    text: "${recipe.effort}",
+                                    text: "${recipe.effort}/10",
                                     style: pw.TextStyle(
                                         font: latoBTtf,
                                         fontSize: 11,
@@ -643,67 +643,70 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                               : null,
                         ]..removeWhere((item) => item == null)),
                     recipe.nutritions.isNotEmpty
-                        ? pw.Padding(
-                            padding: pw.EdgeInsets.only(top: 8, bottom: 8),
-                            child: pw.Text(
-                              I18n.of(bContext).nutritions,
-                              style: pw.TextStyle(
-                                font: quandoTtf,
-                                color: PdfColors.red900,
-                                fontSize: 16,
-                              ),
-                            ),
-                          )
+                        ? pw.Column(
+                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            mainAxisSize: pw.MainAxisSize.min,
+                            children: [
+                              pw.Padding(
+                                padding: pw.EdgeInsets.only(top: 8, bottom: 8),
+                                child: pw.Text(
+                                  I18n.of(bContext).nutritions,
+                                  style: pw.TextStyle(
+                                    font: quandoTtf,
+                                    color: PdfColors.red900,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              )
+                            ]..addAll(
+                                recipe.nutritions
+                                    .map(
+                                      (nutrition) => pw.Padding(
+                                        padding: pw.EdgeInsets.only(top: 4),
+                                        child: pw.Row(
+                                          mainAxisSize: pw.MainAxisSize.min,
+                                          children: [
+                                            pw.Container(
+                                              height: 5,
+                                              width: 5,
+                                              decoration: pw.BoxDecoration(
+                                                shape: pw.BoxShape.circle,
+                                                color: PdfColors.grey300,
+                                              ),
+                                            ),
+                                            pw.SizedBox(width: 7),
+                                            pw.RichText(
+                                              text: pw.TextSpan(
+                                                children: [
+                                                  pw.TextSpan(
+                                                    text:
+                                                        "${nutrition.amountUnit} ",
+                                                    style: pw.TextStyle(
+                                                        font: latoTtf,
+                                                        fontSize: 11),
+                                                  ),
+                                                  pw.TextSpan(
+                                                    text: "${nutrition.name}",
+                                                    style: pw.TextStyle(
+                                                        font: latoTtf,
+                                                        fontSize: 11,
+                                                        color:
+                                                            PdfColors.grey800,
+                                                        fontWeight:
+                                                            pw.FontWeight.bold),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ))
                         : null,
                   ]..removeWhere((item) => item == null)),
                 ),
-                recipe.nutritions.isNotEmpty ? pw.Container() : null,
-                recipe.nutritions.isNotEmpty
-                    ? pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        mainAxisSize: pw.MainAxisSize.min,
-                        children: recipe.nutritions
-                            .map(
-                              (nutrition) => pw.Padding(
-                                padding: pw.EdgeInsets.only(top: 4),
-                                child: pw.Row(
-                                  mainAxisSize: pw.MainAxisSize.min,
-                                  children: [
-                                    pw.Container(
-                                      height: 5,
-                                      width: 5,
-                                      decoration: pw.BoxDecoration(
-                                        shape: pw.BoxShape.circle,
-                                        color: PdfColors.grey300,
-                                      ),
-                                    ),
-                                    pw.SizedBox(width: 7),
-                                    pw.RichText(
-                                      text: pw.TextSpan(
-                                        children: [
-                                          pw.TextSpan(
-                                            text: "${nutrition.amountUnit} ",
-                                            style: pw.TextStyle(
-                                                font: latoTtf, fontSize: 11),
-                                          ),
-                                          pw.TextSpan(
-                                            text: "${nutrition.name}",
-                                            style: pw.TextStyle(
-                                                font: latoTtf,
-                                                fontSize: 11,
-                                                color: PdfColors.grey800,
-                                                fontWeight: pw.FontWeight.bold),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      )
-                    : null,
               ]
                 ..addAll(stepWidgets)
                 ..addAll([

@@ -162,7 +162,9 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (permission == PermissionStatus.granted) {
         String error = intentSharedText == "failedFileCreation"
             ? "Error #1:"
-            : intentSharedText == "failedWriting" ? "Error #2:" : "Error #3:";
+            : intentSharedText == "failedWriting"
+                ? "Error #2:"
+                : "Error #3:";
         _showFlushInfo(I18n.of(context).failed_import,
             "$error" + I18n.of(context).failed_import_desc);
       } // if error occured and the storage permission is not granted and not set to neverShowAgain
@@ -328,10 +330,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                           items: [
                             BottomNavigationBarItem(
                               icon: Icon(MdiIcons.notebook),
-                              title: Text(
-                                I18n.of(context).recipes,
-                                style: TextStyle(color: Colors.orange),
-                              ),
+                              label: I18n.of(context).recipes,
                               activeIcon: Icon(
                                 MdiIcons.notebook,
                                 color: Colors.orange,
@@ -339,10 +338,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                             ),
                             BottomNavigationBarItem(
                               icon: Icon(Icons.favorite),
-                              title: Text(
-                                I18n.of(context).favorites,
-                                style: TextStyle(color: Colors.pink),
-                              ),
+                              label: I18n.of(context).favorites,
                               activeIcon: Icon(
                                 Icons.favorite,
                                 color: Colors.pink,
@@ -350,20 +346,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                             ),
                             BottomNavigationBarItem(
                                 icon: Icon(Icons.shopping_basket),
-                                title: Text(
-                                  I18n.of(context).basket,
-                                  style: TextStyle(color: Colors.brown[300]),
-                                ),
+                                label: I18n.of(context).basket,
                                 activeIcon: Icon(
                                   Icons.shopping_basket,
                                   color: Colors.brown[300],
                                 )),
                             BottomNavigationBarItem(
                               icon: Icon(MdiIcons.diceMultiple),
-                              title: Text(
-                                I18n.of(context).explore,
-                                style: TextStyle(color: Colors.green),
-                              ),
+                              label: I18n.of(context).explore,
                               activeIcon: Icon(
                                 MdiIcons.diceMultiple,
                                 color: Colors.green,
@@ -371,10 +361,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                             ),
                             BottomNavigationBarItem(
                               icon: Icon(Icons.settings),
-                              title: Text(
-                                I18n.of(context).settings,
-                                style: TextStyle(color: Colors.grey),
-                              ),
+                              label: I18n.of(context).settings,
                               activeIcon: Icon(
                                 Icons.settings,
                                 color: Colors.grey,
