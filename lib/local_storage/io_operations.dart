@@ -419,7 +419,7 @@ Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
         recipes.addAll(await importRecipeToTmp(File(f.path)));
       }
     }
-    await recipeZip.delete();
+    // await recipeZip.delete();
     return recipes;
   } else {
     Map<String, Recipe> importedRecipes = await importRecipeToTmp(recipeZip);

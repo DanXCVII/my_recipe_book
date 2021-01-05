@@ -280,7 +280,6 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                                   }
                                   return null;
                                 },
-                                autovalidate: false,
                                 controller: preperationTimeController,
                                 keyboardType: TextInputType.number,
                                 decoration: InputDecoration(

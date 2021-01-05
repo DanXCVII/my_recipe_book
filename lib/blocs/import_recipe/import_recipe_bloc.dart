@@ -131,6 +131,8 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
               .substring(event.importZipFile.path.lastIndexOf("/") + 1),
         );
       }
+    } else if (event.importZipFile.path.endsWith("json")) {
+      // TODO: continue
     } else {
       await IO.clearCache();
       yield InvalidDataType(event.importZipFile.path

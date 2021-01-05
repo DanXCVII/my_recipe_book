@@ -125,6 +125,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                       ),
                       SizedBox(height: 6),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Expanded(
                             child: TextFormField(
@@ -138,7 +139,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                                 if (value == "" || stringIsValidDouble(value)) {
                                   if (value == "" &&
                                       ingredientUnitController.text != "") {
-                                    return "fill in/ remove unit";
+                                    return I18n.of(context).fill_remove_unit;
                                   }
                                   return null;
                                 }

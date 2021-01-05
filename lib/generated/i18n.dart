@@ -124,6 +124,8 @@ class I18n implements WidgetsLocalizations {
   String get in_minutes => "in minutes";
   /// "name"
   String get name => "name";
+  /// "fill in/ remove unit"
+  String get fill_remove_unit => "fill in/ remove unit";
   /// "prep. time"
   String get prep_time => "prep. time";
   /// "cook. time"
@@ -254,8 +256,8 @@ class I18n implements WidgetsLocalizations {
   String get sure_you_want_to_delete_this_recipe => "Are you sure that you want to delete this recipe:";
   /// "no"
   String get no => "no";
-  /// "ja"
-  String get yes => "ja";
+  /// "yes"
+  String get yes => "yes";
   /// "verbergen"
   String get dismiss => "verbergen";
   /// "if supported, theme will be applied, when restarting the app :)"
