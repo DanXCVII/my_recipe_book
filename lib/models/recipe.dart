@@ -103,6 +103,7 @@ class Recipe extends Equatable {
         'isFavorite : $isFavorite\n'
         'lastModified : $lastModified\n'
         'rating: $rating\n'
+        // these are actually the recipeTags but renaming could cause problems
         'keywords: $tags\n'
         'source: $source');
   }
@@ -121,9 +122,9 @@ class Recipe extends Equatable {
       name: json['name'],
       imagePath: json['image'],
       imagePreviewPath: json['imagePreviewPath'],
-      preperationTime: json['preperationTime'],
-      cookingTime: json['cookingTime'],
-      totalTime: json['totalTime'],
+      preperationTime: double.tryParse(json['preperationTime'].toString()),
+      cookingTime: double.tryParse(json['cookingTime'].toString()),
+      totalTime: double.tryParse(json['totalTime'].toString()),
       effort: json['complexity'],
       servings: json['servings'],
       servingName: json.containsKey('servingName') ? json['servingName'] : null,

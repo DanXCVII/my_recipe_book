@@ -50,14 +50,17 @@ class MainActivity : FlutterActivity() {
         } else if (Intent.ACTION_VIEW == action && type != null) {
             if ("application/zip" == type) {
                 val intentk = processedIntent;
-                handleFile(processedIntent)
+                handleFile(processedIntent, "zip")
+            } else if ("application/json" == type) {
+                val intentk = processedIntent;
+                handleFile(processedIntent, "json")
             }
         } else {
             println("intent type is null or ACTION_VIEW not equal to action");
         }
     }
 
-    private fun handleFile(intent: Intent?) {
+    private fun handleFile(intent: Intent?, dataType: String) {
         if (intent?.data == null) {
             println("intent data is null");
             return
@@ -74,7 +77,7 @@ class MainActivity : FlutterActivity() {
         var failedClosing = false;
 
 
-        val outputFile = File(cacheDir.absolutePath + "/importRecipe.zip")
+        val outputFile = File(cacheDir.absolutePath + "/importRecipe." + dataType)
 
         try {
             outputFile.createNewFile()

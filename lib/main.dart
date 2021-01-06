@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -37,10 +36,10 @@ import 'blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen_bloc.dart';
 import 'blocs/website_import/website_import_bloc.dart';
-import 'constants/routes.dart';
 import 'generated/i18n.dart';
 import 'screens/SplashScreen.dart';
 import 'screens/about_me.dart';
+import 'screens/import_pc_info.dart';
 import 'screens/add_recipe/general_info_screen/general_info_screen.dart';
 import 'screens/add_recipe/ingredients_screen.dart';
 import 'screens/add_recipe/nutritions.dart';
@@ -528,6 +527,11 @@ class MyApp extends StatelessWidget {
                   },
                   child: IntroScreen(),
                 ),
+              );
+
+            case "/computer-import-info":
+              return MaterialPageRoute(
+                builder: (context) => ImportPcInfo(),
               );
 
             case "/about-me":

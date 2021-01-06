@@ -20,7 +20,7 @@ class Ingredient extends Equatable {
 
   factory Ingredient.fromMap(Map<String, dynamic> json) => new Ingredient(
         name: json['name'],
-        amount: json['amount'],
+        amount: double.tryParse(json['amount'].toString()),
         unit: json['unit'],
       );
 

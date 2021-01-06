@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:archive/archive_io.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:my_recipe_book/models/tuple.dart';
 import 'package:path_provider/path_provider.dart';
@@ -449,7 +448,6 @@ Future<Map<String, Recipe>> importRecipeToTmp(File recipeZip,
   List importFiles = importDir.listSync(recursive: true);
 
   Recipe importRecipe;
-  Recipe imagePathRecipe;
   // loop through the import files
   for (FileSystemEntity file in importFiles) {
     // stop if json found
@@ -658,6 +656,22 @@ bool checkIfImportRecipeDataIsValid(
     return false;
   }
   return true;
+}
+
+/// extracts the recipes saved under the "recipes" key in a list
+Future<List<Recipe>> getRecipesFromJson(File jsonFile) async {
+  String json = await jsonFile.readAsString();
+  Map<String, dynamic> jsonMap = jsonDecode(json);
+  List<Recipe> recipes = [];
+
+  try {
+    for (int i = 0; i < jsonMap["recipes"].length; i++) {
+      Recipe importRecipe = Recipe.fromMap(jsonMap["recipes"][i]);
+      recipes.add(await PathProvider.pP.addLocalDirRecipeFiles(importRecipe));
+    }
+  } catch (e) {}
+
+  return recipes;
 }
 
 Future<Recipe> getRecipeFromJson(File jsonFile) async {

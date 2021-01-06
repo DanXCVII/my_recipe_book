@@ -6,6 +6,7 @@ class RouteNames {
   static final addRecipeSteps = "/add-recipe/steps";
   static final addRecipeNutritions = "/add-recipe/nutritions";
   static final recipeScreen = "/recipe-screen";
+  static final computerImportInfo = "/computer-import-info";
   static final manageCategories = "/manage-categories";
   static final manageNutritions = "/manage-nutritions";
   static final manageIngredients = "/manage-ingredients";

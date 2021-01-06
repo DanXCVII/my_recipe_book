@@ -302,7 +302,6 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                                   }
                                   return null;
                                 },
-                                autovalidate: false,
                                 controller: cookingTimeController,
                                 keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
@@ -325,7 +324,6 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                             }
                             return null;
                           },
-                          autovalidate: false,
                           controller: totalTimeController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(

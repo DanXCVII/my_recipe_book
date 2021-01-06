@@ -130,6 +130,12 @@ class I18n implements WidgetsLocalizations {
   String get prep_time => "prep. time";
   /// "cook. time"
   String get cook_time => "cook. time";
+  /// "import file from PC"
+  String get import_pc_title_info => "import file from PC";
+  /// "1. Visit "
+  String get visit => "1. Visit ";
+  /// "to create your recipes (at the current state pictures can only be imported in the App)\n\n 2. After generating the file with all the recipes, load it onto your mobile phone. You can also upload it to the cloud if you have access to it on your mobile phone.\n\n3. Then you have two options:\n\n3.1. Tap the generated \".json\" file in your file manager and open it with My RecipeBible or\n\n3.2. Open My RecipeBible and go into the settings and tap \"import recipes\" and select the file to import"
+  String get import_computer_info => "to create your recipes (at the current state pictures can only be imported in the App)\n\n 2. After generating the file with all the recipes, load it onto your mobile phone. You can also upload it to the cloud if you have access to it on your mobile phone.\n\n3. Then you have two options:\n\n3.1. Tap the generated \".json\" file in your file manager and open it with My RecipeBible or\n\n3.2. Open My RecipeBible and go into the settings and tap \"import recipes\" and select the file to import";
   /// "total time"
   String get total_time => "total time";
   /// "remaining time"
@@ -710,6 +716,15 @@ class _I18n_de_DE extends I18n {
   /// "Koch-/Backzeit"
   @override
   String get cook_time => "Koch-/Backzeit";
+  /// "Importiere Rezepte vom PC"
+  @override
+  String get import_pc_title_info => "Importiere Rezepte vom PC";
+  /// "1. Besuche "
+  @override
+  String get visit => "1. Besuche ";
+  /// " um die gewünschten Rezepte zu erstellen (zur Zeit können nur in der App Rezepten Bilder hinzugefügt werden)\n\n 2. Nachdem die Rezepte erstellt und gespeichert wurden, lade die generierte \".json\" Datei auf den Handy. Sie kann auch in eine Cloud geladen werden, wenn Zugriff auf diese mittels Smartphone besteht.\n\n3. Danach git es zwei Optionen:\n\n3.1. Klicke die generierte \".json\" Datei im Deiteiexplorer an, um sie dann mit der App zu öffnen und die gewünschten Rezepte zu importieren.\n\n3.2. Öffne My RecipeBible, gehe in die Einstellungen und tippe auf \"Rezepte importieren\", um dann die generierte \".json\" Datei auszuwählen und die gewünschten Rezepte zu importieren"
+  @override
+  String get import_computer_info => " um die gewünschten Rezepte zu erstellen (zur Zeit können nur in der App Rezepten Bilder hinzugefügt werden)\n\n 2. Nachdem die Rezepte erstellt und gespeichert wurden, lade die generierte \".json\" Datei auf den Handy. Sie kann auch in eine Cloud geladen werden, wenn Zugriff auf diese mittels Smartphone besteht.\n\n3. Danach git es zwei Optionen:\n\n3.1. Klicke die generierte \".json\" Datei im Deiteiexplorer an, um sie dann mit der App zu öffnen und die gewünschten Rezepte zu importieren.\n\n3.2. Öffne My RecipeBible, gehe in die Einstellungen und tippe auf \"Rezepte importieren\", um dann die generierte \".json\" Datei auszuwählen und die gewünschten Rezepte zu importieren";
   /// "Gesamtzeit"
   @override
   String get total_time => "Gesamtzeit";

@@ -60,7 +60,7 @@ class Settings extends StatelessWidget {
                     ListTile(
                         title: Text(
                           I18n.of(context).watch_video_remove_ads,
-                          style: Theme.of(context).textTheme.subhead,
+                          style: Theme.of(context).textTheme.subtitle1,
                         ),
                         leading: Icon(Icons.movie),
                         trailing: state is ShowAds
@@ -157,6 +157,17 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+            leading: Icon(MdiIcons.laptop),
+            title: Text(I18n.of(context).import_pc_title_info),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                RouteNames.computerImportInfo,
+              );
+            },
+          ),
+          Divider(),
+          ListTile(
               leading: Icon(MdiIcons.nutrition),
               title: Text(I18n.of(context).manage_nutritions),
               onTap: () {
@@ -226,7 +237,10 @@ class Settings extends StatelessWidget {
                             shape: BoxShape.circle,
                             border: Border.all(
                                 width: 1,
-                                color: Theme.of(context).textTheme.body1.color),
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2
+                                    .color),
                             color: Colors.grey[100],
                           ),
                         ),
@@ -239,8 +253,10 @@ class Settings extends StatelessWidget {
                               shape: BoxShape.circle,
                               border: Border.all(
                                   width: 1,
-                                  color:
-                                      Theme.of(context).textTheme.body1.color),
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      .color),
                               color: Color(0xff454545),
                             ),
                           ),
@@ -260,7 +276,7 @@ class Settings extends StatelessWidget {
                         shape: BoxShape.circle,
                         border: Border.all(
                             width: 1,
-                            color: Theme.of(context).textTheme.body1.color),
+                            color: Theme.of(context).textTheme.bodyText2.color),
                         color: Colors.grey[100],
                       ),
                     ),
@@ -277,7 +293,7 @@ class Settings extends StatelessWidget {
                         shape: BoxShape.circle,
                         border: Border.all(
                             width: 1,
-                            color: Theme.of(context).textTheme.body1.color),
+                            color: Theme.of(context).textTheme.bodyText2.color),
                         color: Color(0xff454545),
                       ),
                     ),
@@ -294,7 +310,7 @@ class Settings extends StatelessWidget {
                         shape: BoxShape.circle,
                         border: Border.all(
                             width: 1,
-                            color: Theme.of(context).textTheme.body1.color),
+                            color: Theme.of(context).textTheme.bodyText2.color),
                         color: Colors.black,
                       ),
                     ),
@@ -417,9 +433,11 @@ class Settings extends StatelessWidget {
 
   Future<void> _importSingleRecipe(BuildContext ctxt) async {
     // Let the user select the .zip file
-    String _path = await FilePicker.getFilePath(
-      type: FileType.any,
-    );
+    FilePickerResult result =
+        await FilePicker.platform.pickFiles(type: FileType.any);
+    String _path;
+
+    _path = result.files.single.path;
 
     if (_path == null) return;
 

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:my_recipe_book/local_storage/local_paths.dart';
 
 import '../../local_storage/hive.dart';
 import '../../local_storage/io_operations.dart' as IO;
@@ -132,7 +133,28 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         );
       }
     } else if (event.importZipFile.path.endsWith("json")) {
-      // TODO: continue
+      fileEndingLastImport = "json";
+
+      List<Recipe> loadedRecipes =
+          await IO.getRecipesFromJson(event.importZipFile);
+      if (loadedRecipes.isEmpty) await IO.clearCache();
+      yield InvalidFile(
+        event.importZipFile.path
+            .substring(event.importZipFile.path.lastIndexOf("/") + 1),
+      );
+      List<Recipe> alreadyExisting = [];
+      List<Recipe> importRecipes = [];
+
+      for (int i = 0; i < loadedRecipes.length; i++) {
+        if (await HiveProvider().getRecipeByName(loadedRecipes[i].name) !=
+            null) {
+          alreadyExisting.add(loadedRecipes[i]);
+        } else {
+          importRecipes.add(loadedRecipes[i]);
+        }
+      }
+
+      yield MultipleRecipes(importRecipes, [], alreadyExisting);
     } else {
       await IO.clearCache();
       yield InvalidDataType(event.importZipFile.path
@@ -231,7 +253,46 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
           .then((_) => recipeManagerBloc.add(RMAddRecipes(importRecipes)));
 
       imageCache.clear();
+    } else if (fileEndingLastImport == "json") {
+      yield ImportingRecipes(0.1);
+
+      for (int i = 0; i < event.recipes.length; i++) {
+        // await Future.delayed(Duration(seconds: 1));
+        // if a recipe with the same name isn't already saved to hive -> double check
+        if (await HiveProvider().getRecipeByName(event.recipes[i].name) ==
+            null) {
+          // import recipe data to app ..
+          PathProvider.pP.getRecipeDirFull(event.recipes[i].name);
+          bool importedRecipeData =
+              await IO.importRecipeFromTmp(event.recipes[i]);
+          // .. and if it succeeded ..
+          List<String> categories = HiveProvider().getCategoryNames();
+          List<String> newCategories = [];
+          for (String category in event.recipes[i].categories) {
+            if (!categories.contains(category) &&
+                !importCategories.contains(category)) {
+              newCategories.add(category);
+            }
+          }
+          // add recipe to recipeManager
+          importCategories.addAll(newCategories);
+          importRecipes.add(event.recipes[i]);
+        } else {
+          // if the recipe is already saved in hive, add it to the alreadyExisting list
+          alreadyExisting
+              .add(await HiveProvider().getRecipeByName(event.recipes[i].name));
+        }
+        yield ImportingRecipes(double.parse(
+            (0.1 + ((i / event.recipes.length) * 0.9)).toStringAsFixed(1)));
+      }
+      recipeManagerBloc.add(RMAddCategories(importCategories));
+      // create empty dir for the recipe for images - may not be necessary
+      Future.delayed(Duration(milliseconds: 100))
+          .then((_) => recipeManagerBloc.add(RMAddRecipes(importRecipes)));
+
+      imageCache.clear();
     }
+
     await IO.clearCache();
 
     yield ImportedRecipes(importRecipes, failedRecipes, alreadyExisting);

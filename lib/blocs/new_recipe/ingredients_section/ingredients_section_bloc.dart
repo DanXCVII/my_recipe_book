@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
 
 part 'ingredients_section_event.dart';
