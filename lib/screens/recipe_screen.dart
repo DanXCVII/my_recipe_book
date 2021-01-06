@@ -794,6 +794,7 @@ class RecipePage extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 0.0),
                         child: IngredientsScreen(
                           currentRecipe: recipe,
+                          hasNutritions: recipe.nutritions.isNotEmpty,
                           animationWaitTime: MyIntWrapper(0),
                           addToCartIngredients: [],
                         ),
@@ -972,6 +973,7 @@ class RecipePage extends StatelessWidget {
                                     : SizedBox(height: 20),
                                 IngredientsScreen(
                                   currentRecipe: recipe,
+                                  hasNutritions: recipe.nutritions.isNotEmpty,
                                   animationWaitTime: MyIntWrapper(0),
                                   addToCartIngredients: [],
                                 ),
@@ -1322,8 +1324,10 @@ class StepsSection extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 25),
-                hasNutritions && MediaQuery.of(context).size.width > 550
-                    ? Container(height: 80)
+                hasNutritions &&
+                        MediaQuery.of(context).size.width > 550 &&
+                        Ads.shouldShowAds()
+                    ? Container(height: 160)
                     : Container(),
               ]..removeWhere((item) => item == null),
             );
@@ -1399,12 +1403,14 @@ class _StepsIntroState extends State<StepsIntro> {
 
 class IngredientsScreen extends StatelessWidget {
   final Recipe currentRecipe;
+  final bool hasNutritions;
   final MyIntWrapper animationWaitTime;
   final List<Ingredient> addToCartIngredients;
 
   const IngredientsScreen({
     Key key,
     @required this.currentRecipe,
+    @required this.hasNutritions,
     // needs to be initialized with 0
     @required this.animationWaitTime,
     // needs to be initialized with an empty list
@@ -1674,7 +1680,8 @@ class IngredientsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            ]..add(Center(
+            ]
+              ..add(Center(
                 child: Container(
                   width: 400,
                   child: Column(
@@ -1682,7 +1689,14 @@ class IngredientsScreen extends StatelessWidget {
                         state.ingredients, state.sectionCheck, context),
                   ),
                 ),
-              )),
+              ))
+              ..add(
+                hasNutritions &&
+                        MediaQuery.of(context).size.width > 550 &&
+                        Ads.shouldShowAds()
+                    ? Container(height: 160)
+                    : Container(),
+              ),
           );
         } else {
           return Text(state.toString());

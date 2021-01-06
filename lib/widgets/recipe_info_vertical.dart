@@ -148,7 +148,15 @@ class RecipeInfoVertical extends StatelessWidget {
                 height: 100,
               )
             : null,
-      ]..removeWhere((item) => item == null),
+      ]
+        ..add(
+          recipe.nutritions.isNotEmpty &&
+                  MediaQuery.of(context).size.width > 550 &&
+                  Ads.shouldShowAds()
+              ? Container(height: 160)
+              : Container(),
+        )
+        ..removeWhere((item) => item == null),
     );
   }
 
