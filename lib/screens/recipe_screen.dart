@@ -820,6 +820,7 @@ class RecipePage extends StatelessWidget {
                       children: <Widget>[
                         StepsSection(
                           recipe.steps,
+                          recipe.stepTitles,
                           recipe.stepImages,
                           recipe.name,
                           recipe.nutritions.isNotEmpty,
@@ -996,6 +997,7 @@ class RecipePage extends StatelessWidget {
                               ),
                               child: StepsSection(
                                 recipe.steps,
+                                recipe.stepTitles,
                                 recipe.stepImages,
                                 recipe.name,
                                 recipe.nutritions.isNotEmpty,
@@ -1256,6 +1258,7 @@ class CategoriesSection extends StatelessWidget {
 
 class StepsSection extends StatelessWidget {
   final List<List<String>> stepImages;
+  final List<String> stepTitles;
   final List<String> steps;
   final String recipeName;
   final bool expandHeight;
@@ -1270,6 +1273,7 @@ class StepsSection extends StatelessWidget {
 
   StepsSection(
     this.steps,
+    this.stepTitles,
     this.stepImages,
     this.recipeName,
     this.hasNutritions, {
@@ -1317,6 +1321,7 @@ class StepsSection extends StatelessWidget {
                         : MediaQuery.of(context).size.width,
                     child: AnimatedStepper(
                       steps,
+                      stepTitles,
                       stepImages: stepImages,
                       fontFamily: recipeScreenFontFamily,
                       lowResStepImages: snapshot.data,

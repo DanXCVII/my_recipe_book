@@ -36,8 +36,16 @@ class AnimatedVegetable extends StatelessWidget {
             milliseconds: GlobalSettings().animationsEnabled() ? 500 : 0),
         curve: Curves.easeOutQuad,
         builder: (_, double size, myChild) => Container(
-          height: size < 0 ? 0 : small ? size * 50 : size * 65,
-          width: size < 0 ? 0 : small ? size * 50 : size * 65,
+          height: size < 0
+              ? 0
+              : small
+                  ? size * 50
+                  : size * 65,
+          width: size < 0
+              ? 0
+              : small
+                  ? size * 50
+                  : size * 65,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(40),

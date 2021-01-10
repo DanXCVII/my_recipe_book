@@ -280,9 +280,13 @@ class MyApp extends StatelessWidget {
                 builder: (context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<StepImagesBloc>(
-                        create: (context) => StepImagesBloc()
-                          ..add(InitializeStepImages(
-                              stepImages: args.modifiedRecipe.stepImages))),
+                      create: (context) => StepImagesBloc()
+                        ..add(
+                          InitializeStepImages(
+                            stepImages: args.modifiedRecipe.stepImages,
+                          ),
+                        ),
+                    ),
                     BlocProvider<StepsBloc>(
                       create: (context) =>
                           StepsBloc(BlocProvider.of<StepImagesBloc>(context)),

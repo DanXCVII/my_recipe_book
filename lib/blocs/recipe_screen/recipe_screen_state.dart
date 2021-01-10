@@ -8,10 +8,16 @@ class RecipeScreenInfo extends RecipeScreenState {
   final Recipe recipe;
   final List<String> categoryImages;
 
-  RecipeScreenInfo(this.recipe, this.categoryImages);
+  RecipeScreenInfo(
+    this.recipe,
+    this.categoryImages,
+  );
 
   @override
-  List<Object> get props => [recipe, categoryImages];
+  List<Object> get props => [
+        recipe,
+        categoryImages,
+      ];
 }
 
 class RecipeEditedDeleted extends RecipeScreenState {

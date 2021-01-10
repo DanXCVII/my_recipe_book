@@ -29,7 +29,7 @@ class ImportPcInfo extends StatelessWidget {
         padding: EdgeInsets.all(22),
         children: [
           Text(
-            "How do I write a recipe on PC and import it in the App?",
+            I18n.of(context).recipe_import_pc_title,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),

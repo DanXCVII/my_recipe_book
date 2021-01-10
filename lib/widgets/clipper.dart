@@ -34,3 +34,43 @@ class NutritionDraggableClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(NutritionDraggableClipper oldClipper) => true;
 }
+
+class RightArrow extends CustomClipper<Path> {
+  RightArrow();
+
+  @override
+  Path getClip(Size size) {
+    final path = Path()
+      ..lineTo(0, 0)
+      ..quadraticBezierTo(size.width * 0.2, size.height * 0.5, 0, size.height)
+      ..quadraticBezierTo(
+          size.width / 2, size.height / 2, size.width, size.height / 2)
+      ..quadraticBezierTo(size.width / 2, size.height / 2, 0, 0);
+
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(RightArrow oldClipper) => true;
+}
+
+class LeftArrow extends CustomClipper<Path> {
+  LeftArrow();
+
+  @override
+  Path getClip(Size size) {
+    final path = Path()
+      ..lineTo(size.width, 0)
+      ..quadraticBezierTo(
+          size.width * 0.8, size.height * 0.5, size.width, size.height)
+      ..quadraticBezierTo(size.width / 2, size.height / 2, 0, size.height / 2)
+      ..quadraticBezierTo(size.width / 2, size.height / 2, size.width, 0);
+
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(LeftArrow oldClipper) => true;
+}

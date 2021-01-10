@@ -41,6 +41,9 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
 
   Stream<StepsState> _mapFinishedEditingToState(FinishedEditing event) async* {
     if (state is SCanSave) {
+      List<String> steps = event.steps.map((e) => e).toList();
+      List<String> stepTitles = event.stepTitles.map((e) => e).toList();
+
       bool stepImagesValid = true;
       for (int i = event.steps.length; i < stepImages.length; i++) {
         if (stepImages[i].length != 0) {
@@ -48,6 +51,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
           break;
         }
       }
+
       if (!stepImagesValid) {
         yield SCanSave(isValid: false, time: DateTime.now());
         return;
@@ -71,7 +75,8 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
               notes: event.notes,
               stepImages: stepImages,
               effort: event.complexity,
-              steps: event.steps,
+              steps: steps,
+              stepTitles: stepTitles,
             );
         await HiveProvider().saveTmpRecipe(newRecipe);
       } else {
@@ -79,7 +84,8 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
               notes: event.notes,
               stepImages: stepImages,
               effort: event.complexity,
-              steps: event.steps,
+              steps: steps,
+              stepTitles: stepTitles,
             );
         await HiveProvider().saveTmpEditingRecipe(newRecipe);
       }

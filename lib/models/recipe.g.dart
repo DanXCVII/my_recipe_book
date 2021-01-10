@@ -39,13 +39,14 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
         rating: fields[18] as int,
         tags: (fields[19] as List)?.cast<StringIntTuple>(),
         source: fields[20] as String,
-        servingName: fields[21] as String);
+        servingName: fields[21] as String,
+        stepTitles: (fields[22] as List)?.cast<String>());
   }
 
   @override
   void write(BinaryWriter writer, Recipe obj) {
     writer
-      ..writeByte(22)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -89,7 +90,9 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       ..writeByte(20)
       ..write(obj.source)
       ..writeByte(21)
-      ..write(obj.servingName);
+      ..write(obj.servingName)
+      ..writeByte(22)
+      ..write(obj.stepTitles);
   }
 
   @override

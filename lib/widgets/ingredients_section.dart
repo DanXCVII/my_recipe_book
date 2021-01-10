@@ -205,7 +205,7 @@ class _IngredientsState extends State<Ingredients> {
                               )
                             : state.ingredients.first.isEmpty
                                 ? null
-                                : RaisedButton.icon(
+                                : OutlineButton.icon(
                                     icon: Icon(Icons.add_circle_outline),
                                     label: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -231,8 +231,7 @@ class _IngredientsState extends State<Ingredients> {
                                     },
                                     color: Colors.orange[900],
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(5.0),
+                                      borderRadius: BorderRadius.circular(5.0),
                                     ),
                                   ),
                       )
@@ -247,7 +246,7 @@ class _IngredientsState extends State<Ingredients> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            RaisedButton.icon(
+                            OutlineButton.icon(
                               icon: Icon(Icons.add_circle_outline),
                               label: Padding(
                                 padding:
@@ -287,7 +286,7 @@ class _IngredientsState extends State<Ingredients> {
                         ? null
                         : Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: RaisedButton.icon(
+                            child: OutlineButton.icon(
                                 icon: Icon(Icons.add_circle_outline),
                                 label: Padding(
                                   padding:

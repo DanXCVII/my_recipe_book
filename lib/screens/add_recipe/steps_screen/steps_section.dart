@@ -3,17 +3,21 @@ import "dart:io";
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:image_picker/image_picker.dart";
+import 'package:my_recipe_book/widgets/dialogs/are_you_sure_dialog.dart';
+import 'package:my_recipe_book/widgets/dialogs/textfield_dialog.dart';
 
 import '../../../blocs/new_recipe/step_images/step_images_bloc.dart';
 import '../../../constants/global_constants.dart' as Constants;
 import '../../../generated/i18n.dart';
 
 class Steps extends StatefulWidget {
-  final List<TextEditingController> stepsDecriptionController;
+  final List<TextEditingController> stepsDescriptionController;
+  final List<String> stepTitles;
   final String editRecipeName;
 
   Steps(
-    this.stepsDecriptionController, {
+    this.stepsDescriptionController,
+    this.stepTitles, {
     this.editRecipeName = Constants.newRecipeLocalPathString,
   });
 
@@ -31,11 +35,18 @@ class _StepsState extends State<Steps> {
         buildWhen: (oldState, newState) {
       if (oldState is LoadedStepImages && newState is LoadedStepImages) {
         if (oldState.stepImages.length > newState.stepImages.length) {
-          widget.stepsDecriptionController.removeLast();
+          if (newState.removedStep != null) {
+            widget.stepsDescriptionController.removeAt(newState.removedStep);
+            widget.stepTitles.removeAt(newState.removedStep);
+          } else {
+            widget.stepsDescriptionController.removeLast();
+            widget.stepTitles.removeLast();
+          }
         } else if (oldState.stepImages.length < newState.stepImages.length &&
-            widget.stepsDecriptionController.length <
+            widget.stepsDescriptionController.length <
                 newState.stepImages.length) {
-          widget.stepsDecriptionController.add(TextEditingController());
+          widget.stepsDescriptionController.add(TextEditingController());
+          widget.stepTitles.add("");
         }
       }
       return true;
@@ -55,49 +66,155 @@ class _StepsState extends State<Steps> {
           ]..addAll(
               // the sections
               List<Widget>.generate(
-                widget.stepsDecriptionController.length,
+                widget.stepsDescriptionController.length,
                 (i) => Column(
                   children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        SizedBox(
-                          width: 14,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 17.0),
-                          child: Container(
-                            width: 26,
-                            height: 26,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFF790604),
+                    widget.stepTitles.isEmpty || widget.stepTitles[i] == ""
+                        ? OutlineButton.icon(
+                            icon: Icon(Icons.add_circle),
+                            label: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(I18n.of(context).add_title),
                             ),
-                            child: Center(
-                              child: Text(
-                                "${i + 1}",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (cntxt) => TextFieldDialog(
+                                  validation: (_) => null,
+                                  save: (String name) {
+                                    setState(() {
+                                      widget.stepTitles[i] = name;
+                                    });
+                                  },
+                                  hintText: I18n.of(context).categoryname,
+                                ),
+                              );
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                          )
+                        : Padding(
+                            padding:
+                                const EdgeInsets.only(left: 62.0, right: 12),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width -
+                                              150 >
+                                          350
+                                      ? 350
+                                      : MediaQuery.of(context).size.width - 150,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (cntxt) => TextFieldDialog(
+                                          validation: (_) => null,
+                                          save: (String name) {
+                                            setState(() {
+                                              widget.stepTitles[i] = name;
+                                            });
+                                          },
+                                          prefilledText: widget.stepTitles[i],
+                                          hintText:
+                                              I18n.of(context).categoryname,
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      widget.stepTitles[i],
+                                    ),
+                                  ),
+                                ),
+                                Spacer(),
+                                IconButton(
+                                  icon: Icon(Icons.remove_circle),
+                                  onPressed: () {
+                                    setState(() {
+                                      widget.stepTitles[i] = "";
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
                           ),
+                    Row(
+                      children: <Widget>[
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 15, right: 17.0),
+                              child: Container(
+                                width: 26,
+                                height: 26,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFF790604),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "${i + 1}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            state.stepImages
+                                        .every((element) => element.isEmpty) &&
+                                    widget.stepsDescriptionController.length > 1
+                                ? IconButton(
+                                    icon: Icon(Icons.remove_circle),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (cntxt) => AreYouSureDialog(
+                                          I18n.of(context).remove_step("") +
+                                              "?",
+                                          I18n.of(context).remove_step_desc,
+                                          () {
+                                            BlocProvider.of<StepImagesBloc>(
+                                                    context)
+                                                .add(
+                                              RemoveStep(
+                                                widget.editRecipeName,
+                                                DateTime.now(),
+                                                stepNumber: i,
+                                              ),
+                                            );
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : null,
+                          ]..removeWhere((element) => element == null),
                         ),
                         Expanded(
                           flex: 4,
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0, right: 12),
-                            child: TextFormField(
-                              controller: widget.stepsDecriptionController[i],
-                              textCapitalization: TextCapitalization.sentences,
-                              keyboardType: TextInputType.multiline,
-                              decoration: InputDecoration(
-                                filled: true,
-                                labelText: I18n.of(context).description,
-                              ),
-                              minLines: 3,
-                              maxLines: 10,
-                            ),
-                          ),
+                              padding:
+                                  const EdgeInsets.only(top: 8.0, right: 12),
+                              child: TextFormField(
+                                controller:
+                                    widget.stepsDescriptionController[i],
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                keyboardType: TextInputType.multiline,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  labelText: I18n.of(context).description,
+                                ),
+                                minLines: 3,
+                                maxLines: 10,
+                              )),
                         ),
                       ],
                     )
@@ -159,48 +276,51 @@ class _StepsState extends State<Steps> {
                     ),
                 ),
               )..add(
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      widget.stepsDecriptionController.length > 1
-                          ? Padding(
-                              padding: const EdgeInsets.only(right: 12),
-                              child: OutlineButton.icon(
-                                icon: Icon(Icons.remove_circle),
-                                label: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text(I18n.of(context).remove_step(
-                                      MediaQuery.of(context).size.width < 412
-                                          ? "\n"
-                                          : "")),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        widget.stepsDescriptionController.length > 1
+                            ? Padding(
+                                padding: const EdgeInsets.only(right: 12),
+                                child: OutlineButton.icon(
+                                  icon: Icon(Icons.remove_circle),
+                                  label: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Text(I18n.of(context).remove_step(
+                                        MediaQuery.of(context).size.width < 412
+                                            ? "\n"
+                                            : "")),
+                                  ),
+                                  onPressed: () {
+                                    _removeStep(widget.editRecipeName);
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
                                 ),
-                                onPressed: () {
-                                  _removeStep(widget.editRecipeName);
-                                },
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: new BorderRadius.circular(30.0),
-                                ),
-                              ),
-                            )
-                          : null,
-                      OutlineButton.icon(
-                        icon: Icon(Icons.add_circle),
-                        label: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(I18n.of(context).add_step(
-                              MediaQuery.of(context).size.width < 412
-                                  ? "\n"
-                                  : "")),
+                              )
+                            : null,
+                        OutlineButton.icon(
+                          icon: Icon(Icons.add_circle),
+                          label: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(I18n.of(context).add_step(
+                                MediaQuery.of(context).size.width < 412
+                                    ? "\n"
+                                    : "")),
+                          ),
+                          onPressed: () {
+                            _addStep(widget.editRecipeName);
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
                         ),
-                        onPressed: () {
-                          _addStep(widget.editRecipeName);
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0),
-                        ),
-                      ),
-                    ].where((c) => c != null).toList(),
+                      ].where((c) => c != null).toList(),
+                    ),
                   ),
                 ),
             ),
@@ -315,9 +435,10 @@ class AddImageBox extends StatelessWidget {
   }
 
   Future _askUser(BuildContext context) async {
-    File newImage = await ImagePicker.pickImage(
+    File newImage = File((await ImagePicker().getImage(
       source: ImageSource.gallery,
-    );
+    ))
+        .path);
 
     if (newImage != null) {
       onNewImage(newImage);

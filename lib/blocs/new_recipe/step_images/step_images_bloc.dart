@@ -95,21 +95,40 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
 
   Stream<StepImagesState> _mapRemoveStepToState(RemoveStep event) async* {
     if ((state as LoadedStepImages).stepImages.length != 1) {
-      String stepPath = await PathProvider.pP.getRecipeStepNumberDirFull(
-          event.recipeName, (state as LoadedStepImages).stepImages.length - 1);
-      await Directory(stepPath).delete(recursive: true);
+      if (event.stepNumber != null) {
+        if ((state as LoadedStepImages)
+            .stepImages
+            .every((element) => element.isEmpty)) {
+          /// No need to modify or remove images in storage, because this option is only available
+          /// if there are no images added yet.
+          yield LoadedStepImages(
+            (state as LoadedStepImages)
+                .stepImages
+                .map<List<String>>(
+                    (list) => list.map<String>((element) => element).toList())
+                .toList()
+                  ..removeLast(),
+            removedStep: event.stepNumber,
+          );
+        }
+      } else {
+        String stepPath = await PathProvider.pP.getRecipeStepNumberDirFull(
+            event.recipeName,
+            (state as LoadedStepImages).stepImages.length - 1);
+        await Directory(stepPath).delete(recursive: true);
 
-      String stepPreviewPath = await PathProvider.pP
-          .getRecipeStepPreviewNumberDirFull(event.recipeName,
-              (state as LoadedStepImages).stepImages.length - 1);
-      await Directory(stepPreviewPath).delete(recursive: true);
+        String stepPreviewPath = await PathProvider.pP
+            .getRecipeStepPreviewNumberDirFull(event.recipeName,
+                (state as LoadedStepImages).stepImages.length - 1);
+        await Directory(stepPreviewPath).delete(recursive: true);
 
-      yield LoadedStepImages((state as LoadedStepImages)
-          .stepImages
-          .map<List<String>>(
-              (list) => list.map<String>((element) => element).toList())
-          .toList()
-            ..removeLast());
+        yield LoadedStepImages((state as LoadedStepImages)
+            .stepImages
+            .map<List<String>>(
+                (list) => list.map<String>((element) => element).toList())
+            .toList()
+              ..removeLast());
+      }
     }
   }
 }

@@ -140,7 +140,6 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           Navigator.pop(context);
                         } else if (state is NSaved) {
                           if (widget.editingRecipeName == null) {
-                            
                             Future.delayed(Duration(milliseconds: 200))
                                 .then((_) {
                               Navigator.of(context)
@@ -158,8 +157,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                   )
                                   .then((_) => Ads.hideBottomBannerAd());
                             });
-                            BlocProvider.of<AdManagerBloc>(context)
-                            .add(StartWatchingVideo(DateTime.now(),false,false));
+                            BlocProvider.of<AdManagerBloc>(context).add(
+                                StartWatchingVideo(
+                                    DateTime.now(), false, false));
                           } else {
                             Future.delayed(Duration(milliseconds: 300))
                                 .then((_) {

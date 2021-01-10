@@ -534,12 +534,16 @@ class I18n implements WidgetsLocalizations {
   String get website_import_info => "To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link.";
   /// "show overview"
   String get show_overview => "show overview";
+  /// "How do I create a recipe on PC and import it in the App?"
+  String get recipe_import_pc_title => "How do I create a recipe on PC and import it in the App?";
   /// "Rate this app"
   String get rate_this_app => "Rate this app";
   /// "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute."
   String get rate_this_app_desc => "If you like this app, please take a little bit of your time to review it!\nIt really helps us and it shouldn't take you more than one minute.";
   /// "and many more!"
   String get and_many_more => "and many more!";
+  /// "Do you really want to remove this step with its description?"
+  String get remove_step_desc => "Do you really want to remove this step with its description?";
   /// "amount"
   String get amount => "amount";
   /// "Fix the issues with the red marked text fields"
@@ -812,9 +816,9 @@ class _I18n_de_DE extends I18n {
   /// "Info"
   @override
   String get about_me => "Info";
-  /// "bewerte diese App"
+  /// "App bewerten"
   @override
-  String get rate_app => "bewerte diese App";
+  String get rate_app => "App bewerten";
   /// "Allgemein"
   @override
   String get settings => "Allgemein";
@@ -989,9 +993,9 @@ class _I18n_de_DE extends I18n {
   /// "importiere Rezept/e"
   @override
   String get importing_recipes => "importiere Rezept/e";
-  /// "Wähle Rezepte zum importieren aus"
+  /// "Wähle Rezepte zum Importieren aus"
   @override
-  String get select_recipes_to_import => "Wähle Rezepte zum importieren aus";
+  String get select_recipes_to_import => "Wähle Rezepte zum Importieren aus";
   /// "bereit"
   @override
   String get ready => "bereit";
@@ -1316,9 +1320,21 @@ class _I18n_de_DE extends I18n {
   /// "zur Übersicht"
   @override
   String get show_overview => "zur Übersicht";
+  /// "Wie erstelle ich ein Rezept am PC, um es in der App zu importieren?"
+  @override
+  String get recipe_import_pc_title => "Wie erstelle ich ein Rezept am PC, um es in der App zu importieren?";
+  /// "Diese App bewerten"
+  @override
+  String get rate_this_app => "Diese App bewerten";
+  /// "Entschuldige der Störung. Wenn dir diese App gefällt und du die Entwicklung fördern möchtest, würde ich mich über eine Bewertung im Play Store sehr freuen :)"
+  @override
+  String get rate_this_app_desc => "Entschuldige der Störung. Wenn dir diese App gefällt und du die Entwicklung fördern möchtest, würde ich mich über eine Bewertung im Play Store sehr freuen :)";
   /// "und viele weitere!"
   @override
   String get and_many_more => "und viele weitere!";
+  /// "Willst du diesen Schritt wirklich entfernen?"
+  @override
+  String get remove_step_desc => "Willst du diesen Schritt wirklich entfernen?";
   /// "Menge"
   @override
   String get amount => "Menge";

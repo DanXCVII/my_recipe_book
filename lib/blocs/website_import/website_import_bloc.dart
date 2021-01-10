@@ -341,10 +341,11 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     if (!gotSteps) {
       try {
         if (recipeMap["recipeInstructions"].first is String &&
-            recipeMap["recipeInstructions"].last is String)
+            recipeMap["recipeInstructions"].last is String) {
           recipeMap["recipeInstructions"]
               .forEach((item) => recipeSteps.add(item.toString()));
-        gotSteps = true;
+          gotSteps = true;
+        }
       } catch (e) {}
     }
     if (!gotSteps) {

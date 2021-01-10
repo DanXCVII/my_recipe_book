@@ -92,30 +92,46 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
             ]),
           )
         : null,
-  ]
-    ..addAll(List.generate(
-      recipe.steps.length,
-      (index) => pw.Padding(
-        padding: pw.EdgeInsets.only(top: 8),
-        child: pw.Row(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Text("${index + 1}.",
-                style: pw.TextStyle(
-                    font: latoTtf, fontSize: 11, color: PdfColors.grey500)),
-            pw.SizedBox(width: 10),
-            pw.Container(
-              width: 420,
+  ];
+
+  if (recipe.stepTitles == null) {
+    stepWidgets.addAll(_getSteps(recipe.steps, bContext, quandoTtf, latoTtf));
+  } else {
+    for (int i = 0; i < recipe.stepTitles.length; i++) {
+      if (i == 0 || recipe.stepTitles[i] != "") {
+        int nextTitleIndex = recipe.stepTitles.length;
+        if (i + 1 < recipe.stepTitles.length) {
+          String nextTitle = recipe.stepTitles
+              .sublist(i + 1)
+              .firstWhere((e) => e != "", orElse: () => null);
+          if (nextTitle == null) {
+            nextTitleIndex = recipe.stepTitles.length;
+          } else {
+            nextTitleIndex =
+                recipe.stepTitles.sublist(i + 1).indexOf(nextTitle) + i + 1;
+          }
+          nextTitleIndex ?? recipe.stepTitles.length;
+        }
+        if (recipe.stepTitles[i] != "") {
+          stepWidgets.add(
+            pw.Padding(
+              padding: pw.EdgeInsets.only(top: 8),
               child: pw.Text(
-                "${recipe.steps[index]}",
-                style: pw.TextStyle(font: latoTtf, fontSize: 11),
+                recipe.stepTitles[i],
+                style: pw.TextStyle(
+                  font: quandoTtf,
+                  color: PdfColors.orange700,
+                  fontSize: 12,
+                ),
               ),
             ),
-          ]..removeWhere((item) => item == null),
-        ),
-      ),
-    ))
-    ..removeWhere((item) => item == null);
+          );
+        }
+        stepWidgets.addAll(_getSteps(recipe.steps.sublist(i, nextTitleIndex),
+            bContext, quandoTtf, latoTtf));
+      }
+    }
+  }
 
   doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
@@ -749,4 +765,34 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
           ]));
 
   return doc.save();
+}
+
+List<pw.Widget> _getSteps(
+  List<String> steps,
+  BuildContext context,
+  pw.Font quandoTtf,
+  pw.Font latoTtf,
+) {
+  return List.generate(
+    steps.length,
+    (index) => pw.Padding(
+      padding: pw.EdgeInsets.only(top: 8),
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text("${index + 1}.",
+              style: pw.TextStyle(
+                  font: latoTtf, fontSize: 11, color: PdfColors.grey500)),
+          pw.SizedBox(width: 10),
+          pw.Container(
+            width: 420,
+            child: pw.Text(
+              "${steps[index]}",
+              style: pw.TextStyle(font: latoTtf, fontSize: 11),
+            ),
+          ),
+        ]..removeWhere((item) => item == null),
+      ),
+    ),
+  )..removeWhere((item) => item == null);
 }

@@ -55,6 +55,8 @@ class Recipe extends Equatable {
   final String source;
   @HiveField(21)
   final String servingName;
+  @HiveField(22)
+  final List<String> stepTitles;
 
   Recipe({
     @required this.name,
@@ -79,6 +81,7 @@ class Recipe extends Equatable {
     this.rating,
     this.tags = const [],
     this.source,
+    this.stepTitles,
   });
 
   @override
@@ -105,7 +108,8 @@ class Recipe extends Equatable {
         'rating: $rating\n'
         // these are actually the recipeTags but renaming could cause problems
         'keywords: $tags\n'
-        'source: $source');
+        'source: $source\n'
+        'stepTitles: $stepTitles');
   }
 
   factory Recipe.fromMap(Map<String, dynamic> json) {
@@ -126,7 +130,7 @@ class Recipe extends Equatable {
       cookingTime: double.tryParse(json['cookingTime'].toString()),
       totalTime: double.tryParse(json['totalTime'].toString()),
       effort: json['complexity'],
-      servings: json['servings'],
+      servings: double.tryParse(json['servings'].toString()),
       servingName: json.containsKey('servingName') ? json['servingName'] : null,
       categories: List<String>.from(json['categories']),
       ingredientsGlossary: List<String>.from(json['ingredientsGlossary']),
@@ -152,6 +156,9 @@ class Recipe extends Equatable {
               .toList()
           : [],
       source: json['source'],
+      stepTitles: json.containsKey('stepTitles')
+          ? json['stepTitles']
+          : (List<String>.from(json['steps'])).map((e) => "").toList(),
     );
   }
 
@@ -179,6 +186,7 @@ class Recipe extends Equatable {
         'rating': rating,
         'keywords': tags.map((t) => t.toMap()).toList(),
         'source': source,
+        'stepTitles': stepTitles ?? steps.map((e) => "").toList(),
       };
 
   Recipe copyWith({
@@ -204,31 +212,32 @@ class Recipe extends Equatable {
     int rating,
     List<StringIntTuple> tags,
     String source,
+    List<String> stepTitles,
   }) {
     return Recipe(
-      name: name ?? this.name,
-      imagePath: imagePath ?? this.imagePath,
-      imagePreviewPath: imagePreviewPath ?? this.imagePreviewPath,
-      preperationTime: preperationTime ?? this.preperationTime,
-      cookingTime: cookingTime ?? this.cookingTime,
-      totalTime: totalTime ?? this.totalTime,
-      servings: servings ?? this.servings,
-      servingName: servingName ?? this.servingName,
-      ingredientsGlossary: ingredientsGlossary ?? this.ingredientsGlossary,
-      ingredients: ingredients ?? this.ingredients,
-      vegetable: vegetable ?? this.vegetable,
-      steps: steps ?? this.steps,
-      stepImages: stepImages ?? this.stepImages,
-      notes: notes ?? this.notes,
-      nutritions: nutritions ?? this.nutritions,
-      categories: categories ?? this.categories,
-      effort: effort ?? this.effort,
-      isFavorite: isFavorite ?? this.isFavorite,
-      lastModified: lastModified ?? this.lastModified,
-      rating: rating ?? this.rating,
-      tags: tags ?? this.tags,
-      source: source ?? this.source,
-    );
+        name: name ?? this.name,
+        imagePath: imagePath ?? this.imagePath,
+        imagePreviewPath: imagePreviewPath ?? this.imagePreviewPath,
+        preperationTime: preperationTime ?? this.preperationTime,
+        cookingTime: cookingTime ?? this.cookingTime,
+        totalTime: totalTime ?? this.totalTime,
+        servings: servings ?? this.servings,
+        servingName: servingName ?? this.servingName,
+        ingredientsGlossary: ingredientsGlossary ?? this.ingredientsGlossary,
+        ingredients: ingredients ?? this.ingredients,
+        vegetable: vegetable ?? this.vegetable,
+        steps: steps ?? this.steps,
+        stepImages: stepImages ?? this.stepImages,
+        notes: notes ?? this.notes,
+        nutritions: nutritions ?? this.nutritions,
+        categories: categories ?? this.categories,
+        effort: effort ?? this.effort,
+        isFavorite: isFavorite ?? this.isFavorite,
+        lastModified: lastModified ?? this.lastModified,
+        rating: rating ?? this.rating,
+        tags: tags ?? this.tags,
+        source: source ?? this.source,
+        stepTitles: stepTitles ?? this.stepTitles);
   }
 
   @override
@@ -255,6 +264,7 @@ class Recipe extends Equatable {
         rating,
         tags,
         source,
+        stepTitles
       ];
 }
 

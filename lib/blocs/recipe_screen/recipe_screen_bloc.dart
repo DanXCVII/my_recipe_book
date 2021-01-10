@@ -17,7 +17,12 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
   RecipeManagerBloc recipeManagerBloc;
 
   RecipeScreenBloc(this.recipe, this.recipeManagerBloc)
-      : super(RecipeScreenInfo(recipe, [])) {
+      : super(
+          RecipeScreenInfo(
+            recipe,
+            [],
+          ),
+        ) {
     rmListener = recipeManagerBloc.listen((state) {
       if (state is DeleteRecipeState) {
         if (state.recipe == recipe) {
@@ -53,7 +58,10 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
           (await HiveProvider().getRandomRecipeOfCategory(category: category))
               .imagePreviewPath);
     }
-    yield RecipeScreenInfo(recipe, categoryImages);
+    yield RecipeScreenInfo(
+      recipe,
+      categoryImages,
+    );
   }
 
   Stream<RecipeScreenState> _mapHideRecipeToState(HideRecipe event) async* {

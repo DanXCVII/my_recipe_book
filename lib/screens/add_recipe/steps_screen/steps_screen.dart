@@ -44,6 +44,7 @@ class StepsScreen extends StatefulWidget {
 
 class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
   final List<TextEditingController> stepsDescController = [];
+  final List<String> stepTitles = [];
   final TextEditingController notesController = TextEditingController();
 
   final MyDoubleWrapper complexity = MyDoubleWrapper(myDouble: 5.0);
@@ -173,10 +174,12 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                     child: widget.editingRecipeName != null
                         ? Steps(
                             stepsDescController,
+                            stepTitles,
                             editRecipeName: widget.editingRecipeName,
                           )
                         : Steps(
                             stepsDescController,
+                            stepTitles,
                           ),
                   ),
                   Padding(
@@ -231,7 +234,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
   }
 
   void _finishedEditingSteps(bool goBack) {
-    if (goBack)
+    if (goBack) {
       BlocProvider.of<StepsBloc>(context).add(
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
@@ -240,9 +243,10 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           notesController.text,
           trimRemoveTrailingEmptyStrings(
               stepsDescController.map((item) => item.text).toList()),
+          stepTitles,
         ),
       );
-    else {
+    } else {
       BlocProvider.of<StepsBloc>(context).add(
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
@@ -251,6 +255,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           notesController.text,
           trimRemoveTrailingEmptyStrings(
               stepsDescController.map((item) => item.text).toList()),
+          stepTitles,
         ),
       );
     }
@@ -260,6 +265,20 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
   void _initializeData(Recipe recipe) {
     if (widget.modifiedRecipe.notes != null)
       notesController.text = widget.modifiedRecipe.notes;
+
+    // case new recipe with no steps
+    if (widget.modifiedRecipe.steps.isEmpty) {
+      stepTitles.add("");
+    } // case already steps added
+    else {
+      // case the recipe is an old recipe where the stepTitles are null
+      if (widget.modifiedRecipe.stepTitles == null) {
+        stepTitles.addAll(widget.modifiedRecipe.steps.map<String>((e) => ""));
+      } // case the recipe already has stepTitles, which can be used
+      else {
+        stepTitles.addAll(widget.modifiedRecipe.stepTitles);
+      }
+    }
 
     if (widget.modifiedRecipe.effort != null)
       complexity.myDouble = widget.modifiedRecipe.effort.toDouble();

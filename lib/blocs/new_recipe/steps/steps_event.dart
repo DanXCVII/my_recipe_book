@@ -15,6 +15,7 @@ class FinishedEditing extends StepsEvent {
 
   final int complexity;
   final List<String> steps;
+  final List<String> stepTitles;
   final String notes;
   // List<List<String>> images -> the bloc keeps track of that
 
@@ -24,6 +25,7 @@ class FinishedEditing extends StepsEvent {
     this.complexity,
     this.notes,
     this.steps,
+    this.stepTitles,
   );
 
   @override
@@ -33,5 +35,6 @@ class FinishedEditing extends StepsEvent {
         complexity,
         notes,
         steps,
+        stepTitles,
       ];
 }

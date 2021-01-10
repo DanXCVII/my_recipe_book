@@ -63,8 +63,9 @@ class RemoveImage extends StepImagesEvent {
 class RemoveStep extends StepImagesEvent {
   final String recipeName;
   final DateTime dateTime;
+  final int stepNumber;
 
-  const RemoveStep(this.recipeName, this.dateTime);
+  const RemoveStep(this.recipeName, this.dateTime, {this.stepNumber});
 
   @override
   List<Object> get props => [recipeName, dateTime];
