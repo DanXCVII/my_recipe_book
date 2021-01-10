@@ -6,8 +6,10 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
+import 'package:my_recipe_book/local_storage/local_paths.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ad_related/ad.dart';
@@ -76,6 +78,10 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       GlobalSettings().disableStandby(prefs.getBool(Constants.disableStandby));
       await initHive(false);
     }
+    // TODO: getPermission
+    // Map<PermissionGroup, PermissionStatus> permissions =
+    //     await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+    await IO.updateBackup();
     Ads.initialize();
     Ads.setBottomBannerAd();
     Ads.adHeight = MediaQuery.of(event.context).size.width > 480 ? 60 : 50;

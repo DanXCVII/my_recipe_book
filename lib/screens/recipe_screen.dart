@@ -613,7 +613,8 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
 
   void _choiceActionShare(PopupOptionsShare value, context) {
     if (value == PopupOptionsShare.EXPORT_TEXT) {
-      Share.share(_getRecipeAsString(recipe, context),
+      String sharedRecipeText = _getRecipeAsString(recipe, context);
+      Share.share(sharedRecipeText,
           subject: stringReplaceSpaceUnderscore(recipe.name));
     } else if (value == PopupOptionsShare.EXPORT_ZIP) {
       _exportRecipe(recipe).then((_) {});
@@ -711,10 +712,34 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     }
 
     int i = 1;
-    for (final String step in recipe.steps) {
-      recipeText += '$i. $step\n';
-      i++;
+
+    if (recipe.stepTitles == null) {
+      return _getStepsString(recipe.steps);
     }
+
+    List<Widget> fullList = [];
+    for (int i = 0; i < recipe.stepTitles.length; i++) {
+      if (i == 0 || recipe.stepTitles[i] != "") {
+        int nextTitleIndex = recipe.stepTitles.length;
+        if (i + 1 < recipe.stepTitles.length) {
+          String nextTitle = recipe.stepTitles
+              .sublist(i + 1)
+              .firstWhere((e) => e != "", orElse: () => null);
+          if (nextTitle == null) {
+            nextTitleIndex = recipe.stepTitles.length;
+          } else {
+            nextTitleIndex =
+                recipe.stepTitles.sublist(i + 1).indexOf(nextTitle) + i + 1;
+          }
+          nextTitleIndex ?? recipe.stepTitles.length;
+        }
+        if (recipe.stepTitles[i] != "") {
+          recipeText += "-> ${recipe.stepTitles[i]}\n <-";
+        }
+        recipeText += _getStepsString(recipe.steps.sublist(i, nextTitleIndex));
+      }
+    }
+
     if (recipe.tags != null && recipe.tags.isNotEmpty) {
       recipeText += '====================\n${I18n.of(context).tags}: ';
       for (StringIntTuple tag in recipe.tags) {
@@ -735,6 +760,14 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     }
 
     return recipeText;
+  }
+
+  String _getStepsString(List<String> steps) {
+    String stepsString = "";
+    for (int i = 0; i < steps.length; i++) {
+      stepsString += "$i. ${steps[i]}\n";
+    }
+    return stepsString;
   }
 }
 

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:my_recipe_book/models/tuple.dart';
+import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
 import 'package:path_provider/path_provider.dart';
 
 import './local_paths.dart';
@@ -259,6 +260,40 @@ String getStepImageName(String selectedImagePath) {
   Random random = new Random();
   String dataType = getImageDatatype(selectedImagePath);
   return random.nextInt(1000000).toString() + dataType;
+}
+
+/// backs up all new recipes under exteralDir/backup/ and deletes the backed
+/// up recipes which are not in the database
+Future<void> updateBackup() async {
+  List<String> savedRecipes = HiveProvider().getRecipeNames();
+  List<String> savedRecipeDirNames = savedRecipes
+    ..forEach((recipeName) => PathProvider.pP.getRecipeDirName(recipeName));
+  List<String> backupedRecipes = await IO.getBackupedRecipenames();
+
+  for (int i = 0; i < savedRecipeDirNames.length; i++) {
+    if (!backupedRecipes.contains(savedRecipeDirNames[i])) {
+      await IO.saveRecipeZip(
+          (await PathProvider.pP.getExternalAppDir()).path, savedRecipes[i]);
+    } else if (!savedRecipeDirNames.contains(backupedRecipes[i])) {
+      File((await PathProvider.pP.getExternalAppDir()).path +
+              '/' +
+              backupedRecipes[i])
+          .deleteSync(recursive: true);
+    }
+  }
+}
+
+Future<List<String>> getBackupedRecipenames() async {
+  List<String> recipeFileNames = [];
+  List importFiles =
+      (await PathProvider.pP.getExternalAppDir()).listSync(recursive: true);
+
+  for (FileSystemEntity f in importFiles) {
+    recipeFileNames
+        .add(f.path.substring(f.path.lastIndexOf("/") + 1, f.path.length - 4));
+  }
+
+  return recipeFileNames;
 }
 
 Future<String> saveRecipeZip(String targetDir, String recipeName) async {

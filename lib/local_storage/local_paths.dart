@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 
 import '../util/helper.dart';
 import '../models/recipe.dart';
@@ -37,6 +38,10 @@ class PathProvider {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '$cRecipeName/stepImages/';
+  }
+
+  String getRecipeDirName(String recipeName) {
+    return stringReplaceSpaceUnderscore(recipeName);
   }
 
   Future<String> getRecipeDirFull(String recipeName) async {
@@ -83,6 +88,14 @@ class PathProvider {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     return '/$cRecipeName/preview/stepImages/p-$stepNumber';
+  }
+
+  Future<Directory> getExternalAppDir() async {
+    String externalPath = (await getExternalStorageDirectory()).path;
+    return await Directory(
+            externalPath.substring(0, externalPath.lastIndexOf("/") + 1) +
+                "backup")
+        .create(recursive: true);
   }
 
   //////////// Paths to the ORIGINAL quality pictures ////////////

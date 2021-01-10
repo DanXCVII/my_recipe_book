@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
 import 'package:flutter/foundation.dart';
+import 'package:my_recipe_book/local_storage/local_paths.dart';
 
 import '../../local_storage/hive.dart';
 import '../../models/recipe.dart';
@@ -51,6 +54,8 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
       newRecipes.add(newRecipe);
       await HiveProvider().saveRecipe(newRecipe);
     }
+
+    await IO.updateBackup();
 
     yield AddRecipesState(newRecipes);
   }
