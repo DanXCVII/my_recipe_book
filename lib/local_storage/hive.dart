@@ -284,7 +284,7 @@ class HiveProvider {
             addIngred = false;
           }
         }
-        if (addIngred) boxIngredientNames.add(i.name);
+        if (addIngred) await boxIngredientNames.add(i.name);
       }
     }
   }

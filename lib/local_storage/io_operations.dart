@@ -265,19 +265,25 @@ String getStepImageName(String selectedImagePath) {
 /// backs up all new recipes under exteralDir/backup/ and deletes the backed
 /// up recipes which are not in the database
 Future<void> updateBackup() async {
-  List<String> savedRecipes = HiveProvider().getRecipeNames();
+  List<String> savedRecipes =
+      (HiveProvider().getRecipeNames()).map((e) => e).toList();
   List<String> savedRecipeDirNames = savedRecipes
     ..forEach((recipeName) => PathProvider.pP.getRecipeDirName(recipeName));
-  List<String> backupedRecipes = await IO.getBackupedRecipenames();
+  List<String> backupedRecipes =
+      (await IO.getBackupedRecipenames()).map((e) => e).toList();
 
   for (int i = 0; i < savedRecipeDirNames.length; i++) {
     if (!backupedRecipes.contains(savedRecipeDirNames[i])) {
       await IO.saveRecipeZip(
           (await PathProvider.pP.getExternalAppDir()).path, savedRecipes[i]);
-    } else if (!savedRecipeDirNames.contains(backupedRecipes[i])) {
+    }
+  }
+  for (int i = 0; i < backupedRecipes.length; i++) {
+    if (!savedRecipeDirNames.contains(backupedRecipes[i])) {
       File((await PathProvider.pP.getExternalAppDir()).path +
               '/' +
-              backupedRecipes[i])
+              backupedRecipes[i] +
+              ".zip")
           .deleteSync(recursive: true);
     }
   }
@@ -299,6 +305,8 @@ Future<List<String>> getBackupedRecipenames() async {
 Future<String> saveRecipeZip(String targetDir, String recipeName) async {
   Recipe recipe = await HiveProvider().getRecipeByName(recipeName);
   Recipe exportRecipe = await PathProvider.pP.removeLocalDirRecipeFiles(recipe);
+
+  if (recipe == null) return "";
 
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDirFull(recipeName));

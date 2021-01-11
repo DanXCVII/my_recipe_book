@@ -157,7 +157,7 @@ class Recipe extends Equatable {
           : [],
       source: json['source'],
       stepTitles: json.containsKey('stepTitles')
-          ? json['stepTitles']
+          ? List<String>.from(json['stepTitles'])
           : (List<String>.from(json['steps'])).map((e) => "").toList(),
     );
   }
