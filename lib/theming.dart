@@ -63,7 +63,9 @@ class MyThemes {
     toggleableActiveColor: Colors.orange,
     cursorColor: Colors.orange[600],
     textSelectionHandleColor: Colors.orange[600],
-    textTheme: TextTheme(subtitle1: TextStyle(color: Colors.grey[100])),
+    textTheme: TextTheme(
+        headline2: TextStyle(color: Colors.grey[400]),
+        subtitle1: TextStyle(color: Colors.grey[100])),
     brightness: Brightness.dark,
     cardColor: Color(0xff34363D),
     focusColor: Colors.white,

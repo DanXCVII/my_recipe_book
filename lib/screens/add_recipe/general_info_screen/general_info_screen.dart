@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/util/my_wrapper.dart';
+import 'package:my_recipe_book/widgets/duration_picker.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
@@ -54,11 +56,12 @@ class GeneralInfoScreen extends StatefulWidget {
 class _GeneralInfoScreenState extends State<GeneralInfoScreen>
     with WidgetsBindingObserver {
   Recipe modifiedRecipe;
-  TextEditingController nameController;
-  final TextEditingController preperationTimeController =
-      TextEditingController();
-  final TextEditingController cookingTimeController = TextEditingController();
-  final TextEditingController totalTimeController = TextEditingController();
+
+  final MyDoubleWrapper preperationTime = MyDoubleWrapper();
+  final MyDoubleWrapper cookingTime = MyDoubleWrapper();
+  final MyDoubleWrapper totalTime = MyDoubleWrapper();
+  final TextEditingController nameController = TextEditingController();
+
   final TextEditingController sourceController = TextEditingController();
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -74,17 +77,12 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    nameController = TextEditingController();
-
     _initializeData(modifiedRecipe);
   }
 
   @override
   void dispose() {
     nameController.dispose();
-    preperationTimeController.dispose();
-    cookingTimeController.dispose();
-    totalTimeController.dispose();
 
     WidgetsBinding.instance.removeObserver(this);
 
@@ -265,74 +263,21 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                         ),
                       ),
                       // time textFields
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (stringIsValidDouble(value) == false &&
-                                      value != "") {
-                                    return I18n.of(context).no_valid_number;
-                                  }
-                                  return null;
-                                },
-                                controller: preperationTimeController,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  labelText: I18n.of(context).prep_time,
-                                  icon: Icon(Icons.access_time),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 4,
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (stringIsValidDouble(value) == false &&
-                                      value != "") {
-                                    return I18n.of(context).no_valid_number;
-                                  }
-                                  return null;
-                                },
-                                controller: cookingTimeController,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  labelText: I18n.of(context).cook_time,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                       Padding(
-                        padding: const EdgeInsets.only(
-                            left: 52, top: 12, right: 12, bottom: 12),
-                        child: TextFormField(
-                          validator: (value) {
-                            if (stringIsValidDouble(value) == false &&
-                                value != "") {
-                              return I18n.of(context).no_valid_number;
-                            }
-                            return null;
-                          },
-                          controller: totalTimeController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            helperText: I18n.of(context).in_minutes,
-                            filled: true,
-                            labelText: I18n.of(context).total_time,
-                          ),
+                        padding: const EdgeInsets.fromLTRB(52, 12, 12, 12),
+                        child: Wrap(
+                          alignment: WrapAlignment.center,
+                          children: <Widget>[
+                            _getTimeSelector(
+                                preperationTime, I18n.of(context).prep_time),
+                            _getTimeSelector(
+                                cookingTime, I18n.of(context).cook_time),
+                            _getTimeSelector(
+                                totalTime, I18n.of(context).total_time)
+                          ],
                         ),
                       ),
+
                       Padding(
                         padding: const EdgeInsets.only(
                             left: 52, top: 0, right: 12, bottom: 12),
@@ -357,15 +302,66 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
     );
   }
 
+  Widget _getTimeSelector(MyDoubleWrapper time, String addText) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: time.myDouble != null
+          ? InkWell(
+              onTap: () async {
+                _onTapDuration(time);
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(addText + ":",
+                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  Container(
+                    width: 100,
+                    child: Text(
+                        "${time.myDouble ~/ 60} h ${cutDouble(time.myDouble % 60)} min",
+                        style: TextStyle(fontSize: 18)),
+                  ),
+                ],
+              ),
+            )
+          : OutlineButton.icon(
+              icon: Icon(Icons.add_circle),
+              label: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(addText),
+              ),
+              onPressed: () async {
+                _onTapDuration(time);
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+    );
+  }
+
+  void _onTapDuration(MyDoubleWrapper time) async {
+    Duration resultingDuration = await showDurationPicker(
+      context: context,
+      initialTime: new Duration(minutes: 30),
+    );
+    if (resultingDuration != null) {
+      setState(() {
+        time.myDouble = resultingDuration.inMinutes.toDouble();
+      });
+    }
+  }
+
   /// prefills the textfields with the data of the given recipe
   void _initializeData(Recipe recipe) {
     if (recipe.name != null) nameController.text = recipe.name;
     if (recipe.preperationTime != null && recipe.preperationTime != 0.0)
-      preperationTimeController.text = recipe.preperationTime.toString();
+      preperationTime.myDouble = recipe.preperationTime;
     if (recipe.cookingTime != null && recipe.cookingTime != 0.0)
-      cookingTimeController.text = recipe.cookingTime.toString();
+      cookingTime.myDouble = recipe.cookingTime;
     if (recipe.totalTime != null && recipe.totalTime != 0.0)
-      totalTimeController.text = recipe.totalTime.toString();
+      totalTime.myDouble = recipe.totalTime;
     if (recipe.source != null) {
       sourceController.text = recipe.source;
     }
@@ -373,9 +369,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
 
   void _emptyTextFields() {
     nameController.clear();
-    preperationTimeController.clear();
-    cookingTimeController.clear();
-    totalTimeController.clear();
+    preperationTime.myDouble = null;
+    cookingTime.myDouble = null;
     sourceController.clear();
   }
 
@@ -443,18 +438,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
       widget.editingRecipeName != null ? true : false,
       goBack,
       nameController.text,
-      preperationTimeController.text.isEmpty
-          ? 0
-          : double.tryParse(
-              preperationTimeController.text.replaceAll(RegExp(r','), '.')),
-      cookingTimeController.text.isEmpty
-          ? 0
-          : double.tryParse(
-              cookingTimeController.text.replaceAll(RegExp(r','), '.')),
-      totalTimeController.text.isEmpty
-          ? 0
-          : double.tryParse(
-              totalTimeController.text.replaceAll(RegExp(r','), '.')),
+      preperationTime.myDouble == null ? 0 : preperationTime.myDouble,
+      cookingTime.myDouble == null ? 0 : cookingTime.myDouble,
+      totalTime.myDouble == null ? 0 : totalTime.myDouble,
       sourceController.text,
       BlocProvider.of<CategoryManagerBloc>(context).selectedCategories,
       BlocProvider.of<RecipeTagManagerBloc>(context).selectedTags,

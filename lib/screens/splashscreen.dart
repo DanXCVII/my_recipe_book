@@ -44,6 +44,7 @@ class _SplashScreenState extends State<SplashScreen>
               arguments: MyHomePageArguments(
                 state.showIntro,
                 context,
+                state.showShoppingCartSummary,
                 state.recipeCategoryOverview,
               ),
             );

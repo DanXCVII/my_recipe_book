@@ -25,7 +25,7 @@ part 'splash_screen_state.dart';
 class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   bool _recipeCategoryOverview;
   bool _showIntro;
-
+  bool _showShoppingCartSummary = false;
   bool _splashScreenFinished = false;
   bool _initialized = false;
 
@@ -50,6 +50,13 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    // check if showSummary for shoppingCart
+    if (prefs.containsKey("shoppingCartSummary")) {
+      _showShoppingCartSummary = prefs.getBool("shoppingCartSummary");
+    } else {
+      prefs.setBool("shoppingCartSummary", _showShoppingCartSummary);
+    }
+
     recipeCategoryOverview = _initRecipeOverviewScreen(prefs);
     _initTheme(prefs, event.context);
     await _initAds();
@@ -63,6 +70,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     if (!prefs.containsKey('showIntro')) {
       showIntro = true;
       GlobalSettings().thisIsFirstStart(true);
+      prefs.setBool('shoppingCartSummary', false);
       prefs.setBool('showIntro', false);
       prefs.setBool('showStepsIntro', true);
       prefs.setBool(Constants.enableAnimations, true);
@@ -92,13 +100,21 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     _initialized = true;
     print("finished initialization");
     if (_splashScreenFinished)
-      yield InitializedData(recipeCategoryOverview, showIntro);
+      yield InitializedData(
+        recipeCategoryOverview,
+        _showShoppingCartSummary,
+        showIntro,
+      );
   }
 
   Stream<SplashScreenState> _mapSPFinishedToState(SPFinished event) async* {
     _splashScreenFinished = true;
     if (_initialized) {
-      yield InitializedData(_recipeCategoryOverview, _showIntro);
+      yield InitializedData(
+        _recipeCategoryOverview,
+        _showShoppingCartSummary,
+        _showIntro,
+      );
     }
   }
 

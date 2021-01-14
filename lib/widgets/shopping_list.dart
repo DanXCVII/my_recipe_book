@@ -1,3 +1,4 @@
+import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -179,22 +180,19 @@ class ShoppingCartListTile extends StatelessWidget {
                             width: 50,
                             decoration: BoxDecoration(),
                             child: Center(
-                              child: IconButton(
-                                highlightColor: Colors.transparent,
-                                splashColor: Colors.transparent,
-                                iconSize: 30,
-                                icon: Icon(
-                                  ingredient.checked
-                                      ? MdiIcons.checkCircleOutline
-                                      : MdiIcons.circleOutline,
-                                ),
-                                color: ingredient.checked
-                                    ? Colors.green
-                                    : Colors.grey,
-                                onPressed: () {
+                              child: CircularCheckBox(
+                                activeColor: Colors.green[700],
+                                value: ingredient.checked,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
+                                onChanged: (bool x) {
                                   BlocProvider.of<ShoppingCartBloc>(context)
-                                      .add(CheckIngredients(
-                                          [ingredient], recipe));
+                                      .add(
+                                    CheckIngredients(
+                                      [ingredient],
+                                      recipe,
+                                    ),
+                                  );
                                 },
                               ),
                             ),
@@ -213,7 +211,10 @@ class ShoppingCartListTile extends StatelessWidget {
                                       ? TextDecoration.lineThrough
                                       : null,
                                   color: (ingredientTextColor == null)
-                                      ? Theme.of(context).textTheme.body1.color
+                                      ? Theme.of(context)
+                                          .textTheme
+                                          .bodyText2
+                                          .color
                                       : ingredientTextColor,
                                 ),
                               ),
@@ -234,16 +235,17 @@ class ShoppingCartListTile extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                          fontSize: 18,
-                                          decoration: ingredient.checked
-                                              ? TextDecoration.lineThrough
-                                              : null,
-                                          color: (ingredientTextColor == null)
-                                              ? Theme.of(context)
-                                                  .textTheme
-                                                  .body1
-                                                  .color
-                                              : ingredientTextColor),
+                                        fontSize: 18,
+                                        decoration: ingredient.checked
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                        color: (ingredientTextColor == null)
+                                            ? Theme.of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                .color
+                                            : ingredientTextColor,
+                                      ),
                                       maxLines: 2,
                                     ),
                                   ))

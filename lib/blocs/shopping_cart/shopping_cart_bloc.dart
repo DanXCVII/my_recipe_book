@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart'
     as RM;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../local_storage/hive.dart';
 import '../../models/ingredient.dart';
@@ -14,9 +15,10 @@ part 'shopping_cart_state.dart';
 
 class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  SharedPreferences prefs;
   StreamSubscription subscription;
 
-  ShoppingCartBloc(this.recipeManagerBloc) :super(LoadingShoppingCart()) {
+  ShoppingCartBloc(this.recipeManagerBloc) : super(LoadingShoppingCart()) {
     subscription = recipeManagerBloc.listen((rmState) {
       if (state is LoadedShoppingCart) {
         if (rmState is RM.DeleteRecipeState) {
@@ -90,6 +92,15 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
         await HiveProvider().getShoppingCart();
 
     yield LoadedShoppingCart(shoppingCart);
+  }
+
+  bool showSummary() {
+    bool showSummary = false;
+    if (prefs.containsKey("shoppingCartSummary")) {
+      showSummary = prefs.getBool("shoppingCartSummary");
+    }
+
+    return showSummary;
   }
 
   @override

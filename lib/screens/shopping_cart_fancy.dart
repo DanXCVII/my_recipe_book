@@ -1,5 +1,7 @@
+import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/app/app_bloc.dart';
 import 'package:share/share.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -46,6 +48,19 @@ class FancyShoppingCartScreen extends StatelessWidget {
           SliverAppBar(
             centerTitle: false,
             actions: <Widget>[
+              BlocBuilder<AppBloc, AppState>(builder: (context, state) {
+                if (state is LoadedState) {
+                  return Switch(
+                    value: state.showShoppingCartSummary,
+                    onChanged: (value) {
+                      BlocProvider.of<AppBloc>(context)
+                          .add(ShoppingCartShowSummary(value));
+                    },
+                  );
+                } else {
+                  return CircularProgressIndicator();
+                }
+              }),
               IconButton(
                 icon: Icon(Icons.help_outline),
                 onPressed: () {
@@ -96,7 +111,12 @@ class FancyShoppingCartScreen extends StatelessWidget {
             ),
           ),
           SliverPadding(
-              padding: EdgeInsets.all(12),
+              padding: EdgeInsets.all(
+                  // Padding only when recipes are shown, otherwise none
+                  (BlocProvider.of<AppBloc>(context).state as LoadedState)
+                          .showShoppingCartSummary
+                      ? 0
+                      : 12),
               sliver: (state is LoadingShoppingCart)
                   ? SliverList(
                       delegate: SliverChildListDelegate(
@@ -104,8 +124,15 @@ class FancyShoppingCartScreen extends StatelessWidget {
                   : (state is LoadedShoppingCart)
                       ? SliverList(
                           delegate: SliverChildListDelegate(
-                              getRecipeShoppingList(
-                                  state.shoppingCart, context, scaleFactor)),
+                            getRecipeShoppingList(
+                              state.shoppingCart,
+                              context,
+                              scaleFactor,
+                              (BlocProvider.of<AppBloc>(context).state
+                                      as LoadedState)
+                                  .showShoppingCartSummary,
+                            ),
+                          ),
                         )
                       : Text(state.toString())),
         ]);
@@ -136,22 +163,97 @@ class FancyShoppingCartScreen extends StatelessWidget {
   }
 
   List<Widget> getRecipeShoppingList(
-      Map<Recipe, List<CheckableIngredient>> ingredients,
-      BuildContext context,
-      scaleFactor) {
+    Map<Recipe, List<CheckableIngredient>> ingredients,
+    BuildContext context,
+    scaleFactor,
+    bool showSummary,
+  ) {
     List<Recipe> recipes = ingredients.keys.toList();
+
     if (ingredients.keys.isEmpty ||
         ingredients[ingredients.keys.first].isEmpty) {
       return [
         displayNothingAdded(context, scaleFactor),
       ];
     }
+
     Recipe summaryRecipe =
         recipes.firstWhere((recipe) => recipe.name == Constants.summary);
+
     if (summaryRecipe != recipes.first) {
       recipes.removeWhere((recipe) => recipe.name == "summary");
       recipes.insert(0, summaryRecipe);
     }
+
+    if (showSummary) {
+      return List.generate(ingredients[summaryRecipe].length * 2 + 1, (index) {
+        if (index % 2 != 0) {
+          int ingredientIndex = ((index - 1) / 2).round();
+          CheckableIngredient currentIngred =
+              ingredients[summaryRecipe][ingredientIndex];
+
+          return Dismissible(
+            key: Key(
+                '${currentIngred.name}${currentIngred.name}${currentIngred.unit}'),
+            onDismissed: (_) {
+              BlocProvider.of<ShoppingCartBloc>(context).add(RemoveIngredients(
+                  [currentIngred.getIngredient()], summaryRecipe));
+            },
+            background: PrimaryBackgroundDismissable(),
+            secondaryBackground: SecondaryBackgroundDismissible(),
+            child: ListTile(
+              onTap: () {
+                BlocProvider.of<ShoppingCartBloc>(context).add(
+                  CheckIngredients(
+                    [currentIngred],
+                    summaryRecipe,
+                  ),
+                );
+              },
+              tileColor: Theme.of(context).scaffoldBackgroundColor,
+              title: Text(
+                "${currentIngred.name}",
+                style: TextStyle(
+                  decoration:
+                      currentIngred.checked ? TextDecoration.lineThrough : null,
+                ),
+              ),
+              trailing: currentIngred.amount == null && currentIngred.unit == ""
+                  ?
+                  // needs size, otherwise error
+                  Container(width: 1, height: 1)
+                  : Text(
+                      "${currentIngred.amount != null ? cutDouble(currentIngred.amount) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit}",
+                      style: TextStyle(
+                        decoration: currentIngred.checked
+                            ? TextDecoration.lineThrough
+                            : null,
+                      ),
+                    ),
+              leading: CircularCheckBox(
+                activeColor: Colors.green[700],
+                value: currentIngred.checked,
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                onChanged: (bool x) {
+                  BlocProvider.of<ShoppingCartBloc>(context).add(
+                    CheckIngredients(
+                      [currentIngred],
+                      summaryRecipe,
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        } else {
+          return Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: Divider(),
+          );
+        }
+      });
+    }
+
     return recipes.map((recipe) {
       Color ingredBackgroundColor =
           Theme.of(context).brightness == Brightness.dark

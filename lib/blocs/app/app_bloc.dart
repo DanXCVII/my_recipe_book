@@ -10,6 +10,7 @@ part 'app_event.dart';
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
+  SharedPreferences prefs;
   AppBloc() : super(LoadingState());
 
   @override
@@ -17,21 +18,26 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     AppEvent event,
   ) async* {
     if (event is InitializeData) {
-      yield* _mapLoadingToState(event);
+      yield* _mapInitializeDataToState(event);
     } else if (event is ChangeView) {
       yield* _mapChangeViewToState(event);
     } else if (event is ChangeCategoryOverview) {
       yield* _mapChangeCategoryOverviewToState(event);
     } else if (event is ChangeShoppingCartView) {
       yield* _mapChangeShoppingCartView(event);
+    } else if (event is ShoppingCartShowSummary) {
+      yield* _mapShoppingCartShowSummaryToState(event);
     }
   }
 
-  Stream<AppState> _mapLoadingToState(InitializeData event) async* {
+  Stream<AppState> _mapInitializeDataToState(InitializeData event) async* {
+    prefs ??= await SharedPreferences.getInstance();
+
     yield LoadedState(
       event.recipeCategoryOverview,
       event.showIntro,
       false,
+      event.showSummary,
       0,
       I18n.of(event.context).recipes,
     );
@@ -63,6 +69,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       (state as LoadedState).recipeCategoryOverview,
       (state as LoadedState).showIntro,
       (state as LoadedState).shoppingCartOpen,
+      (state as LoadedState).showShoppingCartSummary,
       event.index,
       title,
     );
@@ -70,13 +77,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   Stream<AppState> _mapChangeCategoryOverviewToState(
       ChangeCategoryOverview event) async* {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('recipeCatOverview', event.recipeCategoryOverview);
 
     yield LoadedState(
       event.recipeCategoryOverview,
       false,
       (state as LoadedState).shoppingCartOpen,
+      (state as LoadedState).showShoppingCartSummary,
       (state as LoadedState).selectedIndex,
       (state as LoadedState).title,
     );
@@ -88,6 +95,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       (state as LoadedState).recipeCategoryOverview,
       (state as LoadedState).showIntro,
       event.open,
+      (state as LoadedState).showShoppingCartSummary,
+      (state as LoadedState).selectedIndex,
+      (state as LoadedState).title,
+    );
+  }
+
+  Stream<AppState> _mapShoppingCartShowSummaryToState(
+      ShoppingCartShowSummary event) async* {
+    await prefs.setBool("shoppingCartSummary", event.showSummary);
+
+    yield LoadedState(
+      (state as LoadedState).recipeCategoryOverview,
+      (state as LoadedState).showIntro,
+      (state as LoadedState).shoppingCartOpen,
+      event.showSummary,
       (state as LoadedState).selectedIndex,
       (state as LoadedState).title,
     );

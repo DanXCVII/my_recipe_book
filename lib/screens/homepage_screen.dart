@@ -56,11 +56,13 @@ RateMyApp _rateMyApp = RateMyApp(
 class MyHomePageArguments {
   final bool showIntro;
   final BuildContext context;
+  final bool showShoppingCartSummary;
   final bool recipeCategoryOverview;
 
   MyHomePageArguments(
     this.showIntro,
     this.context,
+    this.showShoppingCartSummary,
     this.recipeCategoryOverview,
   );
 }

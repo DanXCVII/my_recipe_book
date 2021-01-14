@@ -13,6 +13,7 @@ class LoadedState extends AppState {
   final bool recipeCategoryOverview;
   final bool showIntro;
   final bool shoppingCartOpen;
+  final bool showShoppingCartSummary;
   final int selectedIndex;
   final String title;
 
@@ -20,6 +21,7 @@ class LoadedState extends AppState {
     this.recipeCategoryOverview,
     this.showIntro,
     this.shoppingCartOpen,
+    this.showShoppingCartSummary,
     this.selectedIndex,
     this.title,
   );
@@ -30,11 +32,7 @@ class LoadedState extends AppState {
         showIntro,
         selectedIndex,
         shoppingCartOpen,
+        showShoppingCartSummary,
         title,
       ];
-
-  @override
-  String toString() =>
-      'Loaded State { recipeCategoryOverview : $recipeCategoryOverview, '
-      'showIntro : $showIntro, selectedIndex : $selectedIndex, title : $title }';
 }

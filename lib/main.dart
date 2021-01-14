@@ -124,6 +124,7 @@ class MyApp extends StatelessWidget {
                         ..add(InitializeData(
                           args.context,
                           args.recipeCategoryOverview,
+                          args.showShoppingCartSummary,
                           args.showIntro,
                         )),
                     ),

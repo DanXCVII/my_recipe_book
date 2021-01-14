@@ -10,11 +10,13 @@ abstract class AppEvent extends Equatable {
 class InitializeData extends AppEvent {
   final bool recipeCategoryOverview;
   final bool showIntro;
+  final bool showSummary;
   final BuildContext context;
 
   const InitializeData(
     this.context,
     this.recipeCategoryOverview,
+    this.showSummary,
     this.showIntro,
   );
 
@@ -23,11 +25,21 @@ class InitializeData extends AppEvent {
         context,
         recipeCategoryOverview,
         showIntro,
+        showSummary,
       ];
 
   @override
   String toString() =>
       'Load App { context: $context , recipeCategoryOverview : $recipeCategoryOverview , showIntro : $showIntro }';
+}
+
+class ShoppingCartShowSummary extends AppEvent {
+  final bool showSummary;
+
+  const ShoppingCartShowSummary(this.showSummary);
+
+  @override
+  List<Object> get props => [showSummary];
 }
 
 class ChangeCategoryOverview extends AppEvent {

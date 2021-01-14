@@ -11,21 +11,19 @@ class InitializingData extends SplashScreenState {}
 
 class InitializedData extends SplashScreenState {
   final bool recipeCategoryOverview;
+  final bool showShoppingCartSummary;
   final bool showIntro;
 
-  InitializedData([
+  InitializedData(
     this.recipeCategoryOverview,
+    this.showShoppingCartSummary,
     this.showIntro,
-  ]);
+  );
 
   @override
   List<Object> get props => [
         recipeCategoryOverview,
+        showShoppingCartSummary,
         showIntro,
       ];
-
-  @override
-  String toString() =>
-      'Loaded State { recipeCategoryOverview : $recipeCategoryOverview, '
-      'showIntro : $showIntro }';
 }
