@@ -50,10 +50,7 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
 
   Stream<ShoppingCartState> _mapLoadShoppingCartToState(
       ShoppingCartEvent event) async* {
-    Map<Recipe, List<CheckableIngredient>> shoppingCart =
-        await HiveProvider().getShoppingCart();
-
-    yield LoadedShoppingCart(shoppingCart);
+    yield LoadedShoppingCart(await HiveProvider().getShoppingCart());
   }
 
   Stream<ShoppingCartState> _mapCleanAddIngredientsToState(
@@ -88,10 +85,10 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
           event.recipeName.name, i.copyWith(checked: !i.checked));
     }
 
-    Map<Recipe, List<CheckableIngredient>> shoppingCart =
+    Map<Recipe, List<CheckableIngredient>> shoppingList =
         await HiveProvider().getShoppingCart();
 
-    yield LoadedShoppingCart(shoppingCart);
+    yield LoadedShoppingCart(shoppingList);
   }
 
   bool showSummary() {
@@ -101,6 +98,29 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
     }
 
     return showSummary;
+  }
+
+  Future<Map<Recipe, List<CheckableIngredient>>> getSortedShoppingList() async {
+    Map<Recipe, List<CheckableIngredient>> shoppingCart =
+        await HiveProvider().getShoppingCart();
+
+    return shoppingCart.map((key, ingredientList) {
+      List<CheckableIngredient> copyList =
+          ingredientList.map((e) => e).toList();
+      copyList.sort((iOne, iTwo) {
+        if (iOne.checked == iTwo.checked) {
+          return 0;
+        } else if (iOne.checked && !iTwo.checked) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+      return MapEntry(
+        key,
+        copyList,
+      );
+    });
   }
 
   @override

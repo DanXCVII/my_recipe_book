@@ -305,7 +305,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   Widget _getTimeSelector(MyDoubleWrapper time, String addText) {
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: time.myDouble != null
+      child: time.myDouble != null && time.myDouble != 0
           ? InkWell(
               onTap: () async {
                 _onTapDuration(time);
