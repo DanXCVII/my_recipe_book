@@ -50,26 +50,18 @@ class RemoveFromCart extends RecipeScreenIngredientsEvent {
       'remove from cart { recipeName : $recipeName, ingredients: $ingredients }';
 }
 
-class DecreaseServings extends RecipeScreenIngredientsEvent {
+class UpdateServings extends RecipeScreenIngredientsEvent {
+  final double oldServings;
   final double newServings;
 
-  const DecreaseServings(this.newServings);
+  const UpdateServings(
+    this.oldServings,
+    this.newServings,
+  );
 
   @override
-  List<Object> get props => [newServings];
-
-  @override
-  String toString() => 'decrease servings { newServings : $newServings }';
-}
-
-class IncreaseServings extends RecipeScreenIngredientsEvent {
-  final double newServings;
-
-  const IncreaseServings(this.newServings);
-
-  @override
-  List<Object> get props => [newServings];
-
-  @override
-  String toString() => 'increase servings { newServings : $newServings }';
+  List<Object> get props => [
+        oldServings,
+        newServings,
+      ];
 }

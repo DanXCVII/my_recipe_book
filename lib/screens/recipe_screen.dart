@@ -8,6 +8,8 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/widgets/clipper.dart';
+import 'package:my_recipe_book/widgets/dialogs/number_dialog.dart';
+import 'package:my_recipe_book/widgets/dialogs/textfield_dialog.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:share/share.dart';
@@ -1677,16 +1679,45 @@ class IngredientsScreen extends StatelessWidget {
                                         color: Colors.white),
                                     tooltip: I18n.of(context).decrease_servings,
                                     onPressed: () {
-                                      _decreaseServings(
-                                          state.servings, context);
+                                      _updateServings(
+                                        state.servings,
+                                        state.servings - 1,
+                                        context,
+                                      );
                                     },
                                   ),
-                                  Text(
-                                    '${state.servings}',
-                                    style: TextStyle(
-                                      color: textColor,
-                                      fontSize: headingSize,
-                                      fontFamily: recipeScreenFontFamily,
+                                  GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (_) => NumberDialog(
+                                          prefilledText:
+                                              state.servings.toStringAsFixed(1),
+                                          validation: (String value) {
+                                            if (stringIsValidDouble(value)) {
+                                              return null;
+                                            } else {
+                                              return I18n.of(context)
+                                                  .no_valid_number;
+                                            }
+                                          },
+                                          save: (String name) {
+                                            _updateServings(
+                                                state.servings,
+                                                double.parse(
+                                                    name.replaceAll(',', '.')),
+                                                context);
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      '${state.servings.toStringAsFixed(1)}',
+                                      style: TextStyle(
+                                        color: textColor,
+                                        fontSize: headingSize,
+                                        fontFamily: recipeScreenFontFamily,
+                                      ),
                                     ),
                                   ),
                                   IconButton(
@@ -1694,8 +1725,8 @@ class IngredientsScreen extends StatelessWidget {
                                         color: Colors.white),
                                     tooltip: I18n.of(context).increase_servings,
                                     onPressed: () {
-                                      _increaseServings(
-                                          state.servings, context);
+                                      _updateServings(state.servings,
+                                          state.servings + 1, context);
                                     },
                                   ),
                                   Padding(
@@ -1743,15 +1774,15 @@ class IngredientsScreen extends StatelessWidget {
     );
   }
 
-  void _decreaseServings(double oldServings, BuildContext context) {
-    if (oldServings <= 1) return;
-    BlocProvider.of<RecipeScreenIngredientsBloc>(context)
-        .add(DecreaseServings(oldServings - 1));
-  }
-
-  void _increaseServings(double oldServings, BuildContext context) {
-    BlocProvider.of<RecipeScreenIngredientsBloc>(context)
-        .add(IncreaseServings(oldServings + 1));
+  void _updateServings(
+      double oldServings, double newServings, BuildContext context) {
+    if (newServings <= 1) return;
+    BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
+      UpdateServings(
+        oldServings,
+        newServings,
+      ),
+    );
   }
 }
 

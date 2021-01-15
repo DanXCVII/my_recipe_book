@@ -49,6 +49,7 @@ class _IngredientsState extends State<Ingredients> {
           padding:
               const EdgeInsets.only(left: 12, top: 22, bottom: 12, right: 50),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Expanded(
                 flex: 2,

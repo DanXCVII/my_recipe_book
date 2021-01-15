@@ -28,10 +28,8 @@ class RecipeScreenIngredientsBloc
       yield* _mapAddToCartToState(event);
     } else if (event is RemoveFromCart) {
       yield* _mapRemoveFromCartToState(event);
-    } else if (event is DecreaseServings) {
-      yield* _mapDecreaseServingsToState(event);
-    } else if (event is IncreaseServings) {
-      yield* _mapIncreaseServingsToState(event);
+    } else if (event is UpdateServings) {
+      yield* _mapUpdateServingsToState(event);
     }
   }
 
@@ -130,34 +128,8 @@ class RecipeScreenIngredientsBloc
     }
   }
 
-  Stream<RecipeScreenIngredientsState> _mapDecreaseServingsToState(
-      DecreaseServings event) async* {
-    if (state is LoadedRecipeIngredients) {
-      if (event.newServings == 0) return;
-      final List<List<CheckableIngredient>> ingredients =
-          (state as LoadedRecipeIngredients)
-              .ingredients
-              .map((list) => list.map((item) {
-                    if (item.amount != null) {
-                      return item.copyWith(
-                          amount:
-                              (event.newServings / (event.newServings + 1)) *
-                                  item.amount);
-                    }
-                    return item;
-                  }).toList())
-              .toList();
-
-      yield LoadedRecipeIngredients(
-        ingredients,
-        event.newServings,
-        (state as LoadedRecipeIngredients).sectionCheck,
-      );
-    }
-  }
-
-  Stream<RecipeScreenIngredientsState> _mapIncreaseServingsToState(
-      IncreaseServings event) async* {
+  Stream<RecipeScreenIngredientsState> _mapUpdateServingsToState(
+      UpdateServings event) async* {
     if (state is LoadedRecipeIngredients) {
       final List<List<CheckableIngredient>> ingredients =
           (state as LoadedRecipeIngredients)
@@ -165,9 +137,8 @@ class RecipeScreenIngredientsBloc
               .map((list) => list.map((item) {
                     if (item.amount != null) {
                       return item.copyWith(
-                          amount:
-                              (event.newServings / (event.newServings - 1)) *
-                                  item.amount);
+                          amount: (event.newServings / (event.oldServings)) *
+                              item.amount);
                     }
                     return item;
                   }).toList())
