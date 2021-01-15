@@ -108,10 +108,10 @@ class I18n implements WidgetsLocalizations {
   String get decrease_servings => "decrease servings";
   /// "Directions"
   String get directions => "Directions";
-  /// "Notes"
-  String get notes => "Notes";
-  /// "Categories"
-  String get categories => "Categories";
+  /// "notes"
+  String get notes => "notes";
+  /// "categories"
+  String get categories => "categories";
   /// "ingredients for"
   String get ingredients_for => "ingredients for";
   /// "ingredients"
@@ -284,8 +284,8 @@ class I18n implements WidgetsLocalizations {
   String get category_already_exists => "category already exists";
   /// "category name"
   String get categoryname => "category name";
-  /// "category:"
-  String get category => "category:";
+  /// "category"
+  String get category => "category";
   /// "professional search"
   String get professional_search => "professional search";
   /// "enter some ingredients"
@@ -348,8 +348,8 @@ class I18n implements WidgetsLocalizations {
   String get you_have_no_ingredients => "you have no ingredients";
   /// "recipe for"
   String get recipe_for => "recipe for";
-  /// "information"
-  String get info => "information";
+  /// "Information"
+  String get info => "Information";
   /// "Here you can manage the ingredients, which you get suggested when adding a recipe or searching for them. When you edit or delete them, they don't change for the recipe. It's just for the suggestions for saving time when typing."
   String get ingredient_manager_description => "Here you can manage the ingredients, which you get suggested when adding a recipe or searching for them. When you edit or delete them, they don't change for the recipe. It's just for the suggestions for saving time when typing.";
   /// "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself."
@@ -436,8 +436,8 @@ class I18n implements WidgetsLocalizations {
   String get recipe_tag_already_exists => "recipe tag already exists";
   /// "Are you sure you want to delete this recipe tag:"
   String get sure_you_want_to_delete_this_recipe_tag => "Are you sure you want to delete this recipe tag:";
-  /// "select recipe tags"
-  String get select_recipe_tags => "select recipe tags";
+  /// "select recipe tags:"
+  String get select_recipe_tags => "select recipe tags:";
   /// "recipetag"
   String get recipe_tag => "recipetag";
   /// "delete recipe tag?"
@@ -466,8 +466,8 @@ class I18n implements WidgetsLocalizations {
   String get standardized_format => "All websites are supported which contain a standardized format. Thet's why only a part of the supported websites are listed here. In practise most websites shoulb be supported.";
   /// "recipe-url"
   String get recipe_url => "recipe-url";
-  /// "source/URL"
-  String get source => "source/URL";
+  /// "source/url"
+  String get source => "source/url";
   /// "recipe has been edited or deleted:\ngo back to man view and view it"
   String get recipe_edited_or_deleted => "recipe has been edited or deleted:\ngo back to man view and view it";
   /// "recipe screen"
@@ -500,8 +500,8 @@ class I18n implements WidgetsLocalizations {
   String get keep_screen_on => "keep screen on";
   /// "only on recipe screen"
   String get only_recipe_screen => "only on recipe screen";
-  /// "The changes you made, when adding a recipe are saved, when you go back and forth. So don't worry if you mistyped an information on one screen."
-  String get general_info_changes_will_be_saved => "The changes you made, when adding a recipe are saved, when you go back and forth. So don't worry if you mistyped an information on one screen.";
+  /// "The changes you make, when adding a recipe are saved, when you go back and forth. So don't worry if you mistyped an information on one screen."
+  String get general_info_changes_will_be_saved => "The changes you make, when adding a recipe are saved, when you go back and forth. So don't worry if you mistyped an information on one screen.";
   /// "Tap on a step to select it so that you know, what you have to do next"
   String get steps_intro => "Tap on a step to select it so that you know, what you have to do next";
   /// "general infos"
@@ -558,8 +558,8 @@ class I18n implements WidgetsLocalizations {
   String get delete_section => "Delete section?";
   /// "Are you sure, that you want to delete this section with it's containing ingredients"
   String get delete_section_desc => "Are you sure, that you want to delete this section with it's containing ingredients";
-  /// "Add title"
-  String get add_title => "Add title";
+  /// "add title"
+  String get add_title => "add title";
   /// "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce."
   String get add_title_desc => "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce.";
   /// "Loading data..."
