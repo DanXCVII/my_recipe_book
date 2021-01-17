@@ -83,14 +83,25 @@ class IngredientsSectionBloc
   }
 
   Stream<IngredientsSectionState> _mapMoveIngredientToState(
-      MoveIngredient event) async* {}
+      MoveIngredient event) async* {
+    Ingredient moveIngred =
+        ingredients[event.sectionIndex].removeAt(event.oldIndex);
+    ingredients[event.sectionIndex].insert(event.newIndex, moveIngred);
+
+    yield LoadedIngredientsSection(
+      sectionTitles,
+      List<List<Ingredient>>.from(ingredients),
+    );
+  }
 
   Stream<IngredientsSectionState> _mapEditIngredientToState(
       EditIngredient event) async* {
     ingredients[event.sectionIndex][event.index] = event.newIngredient;
 
     yield LoadedIngredientsSection(
-        sectionTitles, List<List<Ingredient>>.from(ingredients));
+      sectionTitles,
+      List<List<Ingredient>>.from(ingredients),
+    );
   }
 
   Stream<IngredientsSectionState> _mapAddSectionTitleToState(

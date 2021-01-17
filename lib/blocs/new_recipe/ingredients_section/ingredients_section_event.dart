@@ -26,6 +26,18 @@ class EditIngredient extends IngredientsSectionEvent {
   );
 }
 
+class MoveIngredient extends IngredientsSectionEvent {
+  final int sectionIndex;
+  final int oldIndex;
+  final int newIndex;
+
+  MoveIngredient(
+    this.sectionIndex,
+    this.oldIndex,
+    this.newIndex,
+  );
+}
+
 class AddSectionTitle extends IngredientsSectionEvent {
   final String title;
 
@@ -57,16 +69,6 @@ class RemoveIngredient extends IngredientsSectionEvent {
   RemoveIngredient(
     this.sectionIndex,
     this.index,
-  );
-}
-
-class MoveIngredient extends IngredientsSectionEvent {
-  final int oldIndex;
-  final int newIndex;
-
-  MoveIngredient(
-    this.oldIndex,
-    this.newIndex,
   );
 }
 

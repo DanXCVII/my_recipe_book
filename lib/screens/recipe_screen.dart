@@ -1702,10 +1702,13 @@ class IngredientsScreen extends StatelessWidget {
                                             }
                                           },
                                           save: (String name) {
+                                            String newServingsDot =
+                                                name.replaceAll(',', '.');
+                                            String newServings = newServingsDot
+                                                .replaceAll(' ', '');
                                             _updateServings(
                                                 state.servings,
-                                                double.parse(
-                                                    name.replaceAll(',', '.')),
+                                                double.parse(newServings),
                                                 context);
                                           },
                                         ),
@@ -1776,7 +1779,7 @@ class IngredientsScreen extends StatelessWidget {
 
   void _updateServings(
       double oldServings, double newServings, BuildContext context) {
-    if (newServings <= 1) return;
+    if (newServings <= 0) return;
     BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
       UpdateServings(
         oldServings,

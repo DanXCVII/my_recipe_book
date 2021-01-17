@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/widgets/dialogs/are_you_sure_dialog.dart';
+import 'package:reorderables/reorderables.dart';
 
 import '../generated/i18n.dart';
 import '../util/helper.dart';
@@ -105,44 +106,85 @@ class _IngredientsState extends State<Ingredients> {
           builder: (context, state) {
             if (state is LoadedIngredientsSection) {
               return Column(
-                children: List<Widget>.generate(
-                  state.ingredients.length,
-                  (index) => Column(
-                    children: List<Widget>.generate(
-                        state.ingredients[index].length, (indexTwo) {
-                      return ListTile(
-                        // leading: Icon(Icons.reorder),
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (bContext) => IngredientAddDialog(
-                              (ingredient) =>
-                                  BlocProvider.of<IngredientsSectionBloc>(
-                                          context)
-                                      .add(
-                                EditIngredient(ingredient, index, indexTwo),
-                              ),
-                              state.ingredients[index][indexTwo],
-                            ),
-                          );
+                mainAxisSize: MainAxisSize.min,
+                children: List<Widget>.generate(state.ingredients.length,
+                    (index) {
+                  return Column(
+                    children: [
+                      ReorderableColumn(
+                        scrollController: ScrollController(),
+                        onReorder: (oldIndex, newIndex) {
+                          BlocProvider.of<IngredientsSectionBloc>(context)
+                              .add(MoveIngredient(index, oldIndex, newIndex));
                         },
-                        trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              BlocProvider.of<IngredientsSectionBloc>(context)
-                                  .add(
-                                RemoveIngredient(index, indexTwo),
-                              );
-                            }),
-                        title: Text(state.ingredients[index][indexTwo].name),
-                        subtitle: state.ingredients[index][indexTwo].amount ==
-                                    null &&
-                                state.ingredients[index][indexTwo].unit == ""
-                            ? null
-                            : Text(
-                                "${state.ingredients[index][indexTwo].amount == null ? "" : cutDouble(state.ingredients[index][indexTwo].amount)} ${state.ingredients[index][indexTwo].unit ?? ""}"),
-                      );
-                    })
+                        children: List<Widget>.generate(
+                          state.ingredients[index].length,
+                          (indexTwo) {
+                            Ingredient currentIngred =
+                                state.ingredients[index][indexTwo];
+                            return Container(
+                                key: Key(currentIngred.toString()),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (bContext) =>
+                                          IngredientAddDialog(
+                                        (ingredient) => BlocProvider.of<
+                                                IngredientsSectionBloc>(context)
+                                            .add(
+                                          EditIngredient(
+                                              ingredient, index, indexTwo),
+                                        ),
+                                        currentIngred,
+                                      ),
+                                    );
+                                  },
+                                  child: Row(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 21, 26, 21),
+                                      child: Icon(Icons.reorder),
+                                    ),
+                                    Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            currentIngred.name,
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          currentIngred.amount == null &&
+                                                  (currentIngred.unit == "" ||
+                                                      currentIngred.unit ==
+                                                          null)
+                                              ? null
+                                              : Text(
+                                                  "${currentIngred.amount == null ? "" : cutDouble(currentIngred.amount)}" +
+                                                      " ${currentIngred.unit ?? ""}",
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
+                                                ),
+                                        ]..removeWhere(
+                                            (element) => element == null)),
+                                    Spacer(),
+                                    IconButton(
+                                        icon: Icon(Icons.delete),
+                                        onPressed: () {
+                                          BlocProvider.of<
+                                                      IngredientsSectionBloc>(
+                                                  context)
+                                              .add(
+                                            RemoveIngredient(index, indexTwo),
+                                          );
+                                        }),
+                                  ]),
+                                ));
+                          },
+                        ),
+                      )
+                    ]
                       ..insert(
                         0,
                         state.sectionTitles.isNotEmpty
@@ -259,12 +301,9 @@ class _IngredientsState extends State<Ingredients> {
                                 showDialog(
                                   context: context,
                                   builder: (bContext) => IngredientAddDialog(
-                                    (ingredient) =>
-                                        BlocProvider.of<IngredientsSectionBloc>(
-                                                context)
-                                            .add(
-                                      AddIngredient(ingredient, index),
-                                    ),
+                                    (ingredient) => BlocProvider.of<
+                                            IngredientsSectionBloc>(context)
+                                        .add(AddIngredient(ingredient, index)),
                                     Ingredient(
                                         name: "", amount: null, unit: ""),
                                   ),
@@ -279,8 +318,8 @@ class _IngredientsState extends State<Ingredients> {
                         ),
                       )
                       ..removeWhere((element) => element == null),
-                  ),
-                )
+                  );
+                })
                   ..add(
                     state.ingredients.length == 1 &&
                             state.ingredients.first.isEmpty

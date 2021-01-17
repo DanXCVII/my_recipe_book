@@ -36,6 +36,9 @@ class Ingredient extends Equatable {
         amount,
         unit,
       ];
+
+  /// If method toString() is added, modify ingredientAdd screen to make key unique because the
+  /// reorderable list needs unique keys and is dependent on ingrdient.toString() right now
 }
 
 @HiveType()
