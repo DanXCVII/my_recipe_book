@@ -6,16 +6,14 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
-import 'package:my_recipe_book/local_storage/local_paths.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ad_related/ad.dart';
 import '../../constants/global_constants.dart' as Constants;
-import '../../generated/i18n.dart';
 import '../../constants/global_settings.dart';
+import '../../generated/i18n.dart';
 import '../../local_storage/hive.dart';
 import '../../theming.dart';
 

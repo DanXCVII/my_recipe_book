@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/constants/routes.dart';
@@ -26,8 +27,10 @@ class AnimatedVegetable extends StatelessWidget {
           context,
           RouteNames.vegetableRecipes,
           arguments: RecipeGridViewArguments(
-              shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
-              vegetable: vegetable),
+            shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
+            recipeCalendarBloc: BlocProvider.of<RecipeCalendarBloc>(context),
+            vegetable: vegetable,
+          ),
         );
       },
       child: TweenAnimationBuilder(

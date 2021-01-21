@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import '../../blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
@@ -24,10 +25,12 @@ class IngredientsArguments {
   final Recipe modifiedRecipe;
   final String editingRecipeName;
   final ShoppingCartBloc shoppingCartBloc;
+  final RecipeCalendarBloc recipeCalendarBloc;
 
   IngredientsArguments(
     this.modifiedRecipe,
-    this.shoppingCartBloc, {
+    this.shoppingCartBloc,
+    this.recipeCalendarBloc, {
     this.editingRecipeName,
   });
 }
@@ -116,6 +119,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                     arguments: StepsArguments(
                       state.recipe,
                       BlocProvider.of<ShoppingCartBloc>(context),
+                      BlocProvider.of<RecipeCalendarBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
                   );

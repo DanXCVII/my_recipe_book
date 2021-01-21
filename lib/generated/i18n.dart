@@ -34,6 +34,8 @@ class I18n implements WidgetsLocalizations {
 
   /// "EN"
   String get two_char_locale => "EN";
+  /// "en_US"
+  String get locale_full => "en_US";
   /// "My RecipeBible"
   String get recipe_bible => "My RecipeBible";
   /// "Choose a theme"
@@ -564,6 +566,82 @@ class I18n implements WidgetsLocalizations {
   String get add_title_desc => "To add another section, you need to give the first one a title like e.g. (ingredients for) sauce.";
   /// "Loading data..."
   String get loading_data => "Loading data...";
+  /// "undo"
+  String get undo => "undo";
+  /// "You added ${recipeName} to your the recipe planner for the following date:\n ${year}-${month}-${day}"
+  String undo_added_to_planner_description(String recipeName, String year, String month, String day) => "You added ${recipeName} to your the recipe planner for the following date:\n ${year}-${month}-${day}";
+  /// "recipe-planer"
+  String get recipe_planer => "recipe-planer";
+  /// "you can only add recipes that you have saved in the app."
+  String get no_recipe_with_this_name => "you can only add recipes that you have saved in the app.";
+  /// "select a date"
+  String get select_a_date_first => "select a date";
+  /// "select date"
+  String get add_date => "select date";
+  /// "add recipe"
+  String get add_to_calendar => "add recipe";
+  /// "Jan."
+  String get jan => "Jan.";
+  /// "Feb."
+  String get feb => "Feb.";
+  /// "Mar."
+  String get mar => "Mar.";
+  /// "Apr."
+  String get apr => "Apr.";
+  /// "May"
+  String get may => "May";
+  /// "Jun."
+  String get jun => "Jun.";
+  /// "Jul."
+  String get jul => "Jul.";
+  /// "Aug."
+  String get aug => "Aug.";
+  /// "Sep."
+  String get sep => "Sep.";
+  /// "Oct."
+  String get oct => "Oct.";
+  /// "Nov."
+  String get nov => "Nov.";
+  /// "Dec."
+  String get dec => "Dec.";
+  /// "January"
+  String get january => "January";
+  /// "February"
+  String get february => "February";
+  /// "March"
+  String get march => "March";
+  /// "April"
+  String get april => "April";
+  /// "May"
+  String get may_full => "May";
+  /// "June"
+  String get june => "June";
+  /// "July"
+  String get july => "July";
+  /// "August"
+  String get august => "August";
+  /// "September"
+  String get september => "September";
+  /// "October"
+  String get october => "October";
+  /// "November"
+  String get november => "November";
+  /// "December"
+  String get december => "December";
+  /// "Monday"
+  String get monday => "Monday";
+  /// "Tuesday"
+  String get tuesday => "Tuesday";
+  /// "Wednesday"
+  String get wednesday => "Wednesday";
+  /// "Thursday"
+  String get thursday => "Thursday";
+  /// "Friday"
+  String get friday => "Friday";
+  /// "Saturday"
+  String get saturday => "Saturday";
+  /// "Sunday"
+  String get sunday => "Sunday";
 }
 
 class _I18n_en_US extends I18n {
@@ -579,6 +657,9 @@ class _I18n_de_DE extends I18n {
   /// "DE"
   @override
   String get two_char_locale => "DE";
+  /// "de_DE"
+  @override
+  String get locale_full => "de_DE";
   /// "My RecipeBible"
   @override
   String get recipe_bible => "My RecipeBible";
@@ -1365,6 +1446,120 @@ class _I18n_de_DE extends I18n {
   /// "Lade Daten..."
   @override
   String get loading_data => "Lade Daten...";
+  /// "rückgänig"
+  @override
+  String get undo => "rückgänig";
+  /// "${recipeName} zum Rezepteplaner hinzugefügt: \n${day}.${month}.${year}"
+  @override
+  String undo_added_to_planner_description(String recipeName, String year, String month, String day) => "${recipeName} zum Rezepteplaner hinzugefügt: \n${day}.${month}.${year}";
+  /// "Rezepte-Planer"
+  @override
+  String get recipe_planer => "Rezepte-Planer";
+  /// "Du kannst dem Planer nur Rezepte hinzufügen, die du in der App gespeichert hast."
+  @override
+  String get no_recipe_with_this_name => "Du kannst dem Planer nur Rezepte hinzufügen, die du in der App gespeichert hast.";
+  /// "Wähle ein Datum"
+  @override
+  String get select_a_date_first => "Wähle ein Datum";
+  /// "Datum wählen"
+  @override
+  String get add_date => "Datum wählen";
+  /// "Rezept hinzufügen"
+  @override
+  String get add_to_calendar => "Rezept hinzufügen";
+  /// "Jan."
+  @override
+  String get jan => "Jan.";
+  /// "Feb."
+  @override
+  String get feb => "Feb.";
+  /// "Mär."
+  @override
+  String get mar => "Mär.";
+  /// "Apr."
+  @override
+  String get apr => "Apr.";
+  /// "Mai."
+  @override
+  String get may => "Mai.";
+  /// "Jun."
+  @override
+  String get jun => "Jun.";
+  /// "Jul."
+  @override
+  String get jul => "Jul.";
+  /// "Aug."
+  @override
+  String get aug => "Aug.";
+  /// "Sep."
+  @override
+  String get sep => "Sep.";
+  /// "Okt."
+  @override
+  String get oct => "Okt.";
+  /// "Nov."
+  @override
+  String get nov => "Nov.";
+  /// "Dez."
+  @override
+  String get dec => "Dez.";
+  /// "Januar"
+  @override
+  String get january => "Januar";
+  /// "Februar"
+  @override
+  String get february => "Februar";
+  /// "März"
+  @override
+  String get march => "März";
+  /// "April"
+  @override
+  String get april => "April";
+  /// "Mai"
+  @override
+  String get may_full => "Mai";
+  /// "Juni"
+  @override
+  String get june => "Juni";
+  /// "Juli"
+  @override
+  String get july => "Juli";
+  /// "August"
+  @override
+  String get august => "August";
+  /// "September"
+  @override
+  String get september => "September";
+  /// "Oktober"
+  @override
+  String get october => "Oktober";
+  /// "November"
+  @override
+  String get november => "November";
+  /// "Dezember"
+  @override
+  String get december => "Dezember";
+  /// "Montag"
+  @override
+  String get monday => "Montag";
+  /// "Dienstag"
+  @override
+  String get tuesday => "Dienstag";
+  /// "Mittwoch"
+  @override
+  String get wednesday => "Mittwoch";
+  /// "Donnerstag"
+  @override
+  String get thursday => "Donnerstag";
+  /// "Freitag"
+  @override
+  String get friday => "Freitag";
+  /// "Samstag"
+  @override
+  String get saturday => "Samstag";
+  /// "Sonntag"
+  @override
+  String get sunday => "Sonntag";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

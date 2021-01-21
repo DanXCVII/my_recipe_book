@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_recipe_book/blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import 'package:my_recipe_book/screens/recipe_calendar_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:showcaseview/showcase_widget.dart';
 
@@ -159,6 +161,11 @@ class MyApp extends StatelessWidget {
                           BlocProvider.of<RecipeManagerBloc>(context))
                         ..add(LoadShoppingCart()),
                     ),
+                    BlocProvider<RecipeCalendarBloc>(
+                      create: (context) => RecipeCalendarBloc(
+                          BlocProvider.of<RecipeManagerBloc>(context))
+                        ..add(LoadRecipeCalendarEvent()),
+                    ),
                   ],
                   child: ShowCaseWidget(
                     builder: Builder(
@@ -200,6 +207,8 @@ class MyApp extends StatelessWidget {
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
+                    BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc),
                   ],
                   child: Ads().getAdPage(
                       RecipeScreen(
@@ -239,6 +248,8 @@ class MyApp extends StatelessWidget {
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
+                    BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc),
                   ],
                   child: GeneralInfoScreen(
                     modifiedRecipe: args.modifiedRecipe,
@@ -257,6 +268,8 @@ class MyApp extends StatelessWidget {
                         create: (context) => IngredientsBloc()),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
+                    BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc),
                     BlocProvider<IngredientsSectionBloc>(
                       create: (context) => IngredientsSectionBloc()
                         ..add(
@@ -294,6 +307,8 @@ class MyApp extends StatelessWidget {
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
+                    BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc),
                   ],
                   child: StepsScreen(
                     modifiedRecipe: args.modifiedRecipe,
@@ -313,6 +328,8 @@ class MyApp extends StatelessWidget {
                         providers: [
                           BlocProvider<ShoppingCartBloc>.value(
                               value: args.shoppingCartBloc),
+                          BlocProvider<RecipeCalendarBloc>.value(
+                              value: args.recipeCalendarBloc),
                           BlocProvider<RecipeOverviewBloc>(
                             create: (context) => RecipeOverviewBloc(
                                 recipeManagerBloc:
@@ -336,6 +353,8 @@ class MyApp extends StatelessWidget {
                   providers: [
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
+                    BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc),
                     BlocProvider<RecipeOverviewBloc>(
                       create: (context) => RecipeOverviewBloc(
                           recipeManagerBloc:
@@ -360,6 +379,8 @@ class MyApp extends StatelessWidget {
                   providers: [
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
+                    BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc),
                     BlocProvider<RecipeOverviewBloc>(
                       create: (context) => RecipeOverviewBloc(
                           recipeManagerBloc:
@@ -370,6 +391,22 @@ class MyApp extends StatelessWidget {
                     ),
                   ],
                   child: Ads().getAdPage(RecipeGridView(), context),
+                ),
+              );
+
+            case "/recipe-calendar":
+              final RecipeCalendarScreenArguments args = settings.arguments;
+
+              return MaterialPageRoute(
+                settings: RouteSettings(name: "recipeRoute"),
+                builder: (BuildContext context) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc),
+                    BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc),
+                  ],
+                  child: RecipeCalendarScreen(),
                 ),
               );
 
@@ -390,6 +427,8 @@ class MyApp extends StatelessWidget {
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
+                    BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc),
                   ],
                   child: AddRecipeNutritions(
                     modifiedRecipe: args.modifiedRecipe,

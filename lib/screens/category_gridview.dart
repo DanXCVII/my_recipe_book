@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../ad_related/ad.dart';
@@ -100,6 +101,7 @@ class CategoryGridTile extends StatelessWidget {
           RouteNames.recipeCategories,
           arguments: RecipeGridViewArguments(
             shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
+            recipeCalendarBloc: BlocProvider.of<RecipeCalendarBloc>(context),
             category: category == null ? Constants.noCategory : category,
           ),
         ).then((_) => Ads.hideBottomBannerAd());

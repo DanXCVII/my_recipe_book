@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -64,6 +65,7 @@ class RecipeCard extends StatelessWidget {
           RouteNames.recipeScreen,
           arguments: RecipeScreenArguments(
             BlocProvider.of<ShoppingCartBloc>(context),
+            BlocProvider.of<RecipeCalendarBloc>(context),
             recipe,
             heroImageTag,
             BlocProvider.of<RecipeManagerBloc>(context),
@@ -244,14 +246,16 @@ class RecipeCard extends StatelessWidget {
                                                 Navigator.pushNamed(
                                                   context,
                                                   RouteNames.vegetableRecipes,
-                                                  arguments:
-                                                      RecipeGridViewArguments(
-                                                          shoppingCartBloc:
-                                                              BlocProvider.of<
-                                                                      ShoppingCartBloc>(
-                                                                  context),
-                                                          vegetable:
-                                                              recipe.vegetable),
+                                                  arguments: RecipeGridViewArguments(
+                                                      shoppingCartBloc: BlocProvider
+                                                          .of<ShoppingCartBloc>(
+                                                              context),
+                                                      recipeCalendarBloc:
+                                                          BlocProvider.of<
+                                                                  RecipeCalendarBloc>(
+                                                              context),
+                                                      vegetable:
+                                                          recipe.vegetable),
                                                 ).then((_) {
                                                   if (!showAds)
                                                     Ads.hideBottomBannerAd();

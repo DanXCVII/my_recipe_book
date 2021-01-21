@@ -1,4 +1,3 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -123,7 +122,9 @@ class _ImportDialogState extends State<ImportDialog> {
                           ? 65
                           : totalListItems == 2
                               ? 130
-                              : totalListItems == 3 ? 195 : 280,
+                              : totalListItems == 3
+                                  ? 195
+                                  : 280,
                       width: constraints.maxWidth,
                       child: ListView(
                         children: List.generate(
@@ -302,7 +303,9 @@ class _ImportDialogState extends State<ImportDialog> {
                       child: Container(
                         height: totalListItems == 1
                             ? 55
-                            : totalListItems == 2 ? 110 : 165,
+                            : totalListItems == 2
+                                ? 110
+                                : 165,
                         width: constraints.maxWidth,
                         child: ListView(
                           children: List.generate(

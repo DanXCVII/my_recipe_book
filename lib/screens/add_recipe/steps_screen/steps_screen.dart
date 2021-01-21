@@ -3,14 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
 import '../../../generated/i18n.dart';
-import '../../../util/helper.dart';
 import '../../../models/recipe.dart';
+import '../../../util/helper.dart';
 import '../../../util/my_wrapper.dart';
 import '../../../widgets/complexity_section.dart';
 import '../nutritions.dart';
@@ -21,10 +21,12 @@ class StepsArguments {
   final Recipe modifiedRecipe;
   final String editingRecipeName;
   final ShoppingCartBloc shoppingCartBloc;
+  final RecipeCalendarBloc recipeCalendarBloc;
 
   StepsArguments(
     this.modifiedRecipe,
-    this.shoppingCartBloc, {
+    this.shoppingCartBloc,
+    this.recipeCalendarBloc, {
     this.editingRecipeName,
   });
 }
@@ -115,6 +117,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                     arguments: AddRecipeNutritionsArguments(
                       state.recipe,
                       BlocProvider.of<ShoppingCartBloc>(context),
+                      BlocProvider.of<RecipeCalendarBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
                   );

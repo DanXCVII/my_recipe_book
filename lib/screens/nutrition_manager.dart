@@ -202,7 +202,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             child: Text(I18n.of(context).no),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textColor: Theme.of(context).textTheme.body1.color,
+            textColor: Theme.of(context).textTheme.bodyText2.color,
             onPressed: () {
               Navigator.pop(context, false);
               return false;
@@ -212,7 +212,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             child: Text(I18n.of(context).yes),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textColor: Theme.of(context).textTheme.body1.color,
+            textColor: Theme.of(context).textTheme.bodyText2.color,
             color: Colors.red[600],
             onPressed: () {
               BlocProvider.of<NutritionManagerBloc>(context)

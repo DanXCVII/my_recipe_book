@@ -29,6 +29,7 @@ class BoxNames {
   static final recipeCategories = "recipeCategories";
   static final recipeTags = "recipeTags";
   static final recipeTagsList = "recipeTagsList";
+  static final recipeCalendar = "recipeCalendar";
   // static final recipeBubbles = "recipeBubbles";
   static final vegetarian = Vegetable.VEGETARIAN.toString();
   static final vegan = Vegetable.VEGAN.toString();
@@ -65,6 +66,7 @@ Future<void> initHive(bool firstTime) async {
     Hive.openBox<StringIntTuple>(BoxNames.recipeTags),
     Hive.openBox<List<String>>(BoxNames.recipeTagsList),
     Hive.openBox<List<String>>(BoxNames.ratings),
+    Hive.openBox<String>(BoxNames.recipeCalendar),
   ]);
 
   // initializing with the must have values
@@ -124,6 +126,7 @@ class HiveProvider {
     Hive.box<StringIntTuple>(BoxNames.recipeTags),
     Hive.box<List<String>>(BoxNames.recipeTagsList),
     Hive.box<List<String>>(BoxNames.ratings),
+    Hive.box<String>(BoxNames.recipeCalendar),
     // Hive.box<String>(BoxNames.recipeBubbles),
   );
 
@@ -146,30 +149,32 @@ class HiveProvider {
   Box<StringIntTuple> boxRecipeTags;
   Box<List<String>> boxRecipeTagsList;
   Box<List<String>> boxRatings;
+  Box<String> boxRecipeCalendar;
 
   factory HiveProvider() {
     return _singleton;
   }
 
   HiveProvider._internal(
-      this.boxVegetarian,
-      this.lazyBoxRecipes,
-      this.boxNonVegetarian,
-      this.boxVegan,
-      this.boxKeyString,
-      this.boxRecipeNames,
-      this.boxTmpRecipe,
-      this.boxFavorites,
-      this.boxIngredientNames,
-      this.boxOrder,
-      this.boxRecipeSort,
-      this.boxShoppingCart,
-      this.boxRecipeCategories,
-      this.boxRecipeTags,
-      this.boxRecipeTagsList,
-      this.boxRatings
-      // this.boxRecipeBubbles,
-      );
+    this.boxVegetarian,
+    this.lazyBoxRecipes,
+    this.boxNonVegetarian,
+    this.boxVegan,
+    this.boxKeyString,
+    this.boxRecipeNames,
+    this.boxTmpRecipe,
+    this.boxFavorites,
+    this.boxIngredientNames,
+    this.boxOrder,
+    this.boxRecipeSort,
+    this.boxShoppingCart,
+    this.boxRecipeCategories,
+    this.boxRecipeTags,
+    this.boxRecipeTagsList,
+    this.boxRatings,
+    this.boxRecipeCalendar,
+    // this.boxRecipeBubbles,
+  );
 
   Future<void> reopenBoxes() async {
     await boxVegetarian.close();
@@ -188,6 +193,7 @@ class HiveProvider {
     await boxRecipeTags.close();
     await boxRecipeTagsList.close();
     await boxRatings.close();
+    await boxRecipeCalendar.close();
 
     boxNonVegetarian =
         await Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString());
@@ -208,6 +214,7 @@ class HiveProvider {
         await Hive.openBox<List<String>>(BoxNames.recipeTagsList);
     boxRecipeNames = await Hive.openBox<String>(BoxNames.recipeNames);
     boxRatings = await Hive.openBox<List<String>>(BoxNames.ratings);
+    boxRecipeCalendar = await Hive.openBox<String>(BoxNames.recipeCalendar);
   }
 
   ////////////// single recipe related //////////////
@@ -297,6 +304,51 @@ class HiveProvider {
     // ADD NEW RECIPE TO HIVE
 
     await saveRecipe(newRecipe);
+  }
+
+  Future<void> addRecipeToCalendar(DateTime date, String recipeName) async {
+    int i = 0;
+    while (boxRecipeCalendar.keys
+        .toList()
+        .contains(date.toIso8601String() + "#$i")) {
+      i += 1;
+    }
+    await boxRecipeCalendar.put(date.toIso8601String() + "#$i", recipeName);
+  }
+
+  Future<void> removeRecipeFromCalendar(String recipeName) async {
+    for (dynamic key in boxRecipeCalendar.keys) {
+      if (boxRecipeCalendar.get(key) == recipeName) {
+        await boxRecipeCalendar.delete(key);
+      }
+    }
+  }
+
+  Future<void> removeRecipeFromDateCalendar(
+      DateTime date, String recipeName) async {
+    int i = 0;
+    while (
+        boxRecipeCalendar.get(date.toIso8601String() + "#$i") != recipeName) {
+      i += 1;
+    }
+    await boxRecipeCalendar.delete(date.toIso8601String() + "#$i");
+  }
+
+  Future<Map<DateTime, List<String>>> getRecipeCalendar() async {
+    Map<DateTime, List<String>> recipeCalendar = {};
+
+    for (String dateKey in boxRecipeCalendar.keys) {
+      DateTime currentDate =
+          DateTime.parse(dateKey.substring(0, dateKey.length - 2));
+      if (recipeCalendar.keys.contains(currentDate)) {
+        recipeCalendar[currentDate].add(boxRecipeCalendar.get(dateKey));
+      } else {
+        recipeCalendar.addAll({
+          currentDate: [boxRecipeCalendar.get(dateKey)]
+        });
+      }
+    }
+    return recipeCalendar;
   }
 
   Future<void> addToFavorites(Recipe recipe) async {

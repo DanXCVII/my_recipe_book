@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:wakelock/wakelock.dart';
 
 import '../ad_related/ad.dart';
@@ -20,10 +21,12 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
   final List<StringIntTuple> recipeTags;
   final List<String> categories;
   final ShoppingCartBloc shoppingCartBloc;
+  final RecipeCalendarBloc recipeCalendarBloc;
 
   RecipeSearch(
     this.recipeNames,
     this.shoppingCartBloc,
+    this.recipeCalendarBloc,
     this.recipeTags,
     this.categories,
   );
@@ -119,6 +122,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                     RouteNames.recipeScreen,
                     arguments: RecipeScreenArguments(
                       shoppingCartBloc,
+                      BlocProvider.of<RecipeCalendarBloc>(context),
                       recipe,
                       'heroTag',
                       BlocProvider.of<RecipeManagerBloc>(context),
@@ -142,6 +146,8 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                           ? Constants.noCategory
                           : resultCategories[categoryIndex],
                       shoppingCartBloc: shoppingCartBloc,
+                      recipeCalendarBloc:
+                          BlocProvider.of<RecipeCalendarBloc>(context),
                     ),
                   ).then((_) => Ads.hideBottomBannerAd());
                 });
@@ -165,6 +171,8 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                     arguments: RecipeGridViewArguments(
                       recipeTag: resultRecipeTags[recipeTagIndex],
                       shoppingCartBloc: shoppingCartBloc,
+                      recipeCalendarBloc:
+                          BlocProvider.of<RecipeCalendarBloc>(context),
                     ),
                   ).then((_) => Ads.hideBottomBannerAd());
                 });

@@ -159,7 +159,7 @@ class TextColorDialogState extends State<TextColorDialog> {
             child: Text("ok"),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textColor: Theme.of(context).textTheme.body1.color,
+            textColor: Theme.of(context).textTheme.bodyText2.color,
             onPressed: () {
               Navigator.pop(context);
             },

@@ -27,6 +27,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       yield* _mapChangeShoppingCartView(event);
     } else if (event is ShoppingCartShowSummary) {
       yield* _mapShoppingCartShowSummaryToState(event);
+    } else if (event is ChangeRecipeCalendarView) {
+      yield* _mapChangeRecipeCalendarView(event);
     }
   }
 
@@ -36,6 +38,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     yield LoadedState(
       event.recipeCategoryOverview,
       event.showIntro,
+      false,
       false,
       event.showSummary,
       0,
@@ -69,6 +72,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       (state as LoadedState).recipeCategoryOverview,
       (state as LoadedState).showIntro,
       (state as LoadedState).shoppingCartOpen,
+      (state as LoadedState).recipeCalendarOpen,
       (state as LoadedState).showShoppingCartSummary,
       event.index,
       title,
@@ -83,6 +87,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       event.recipeCategoryOverview,
       false,
       (state as LoadedState).shoppingCartOpen,
+      (state as LoadedState).recipeCalendarOpen,
       (state as LoadedState).showShoppingCartSummary,
       (state as LoadedState).selectedIndex,
       (state as LoadedState).title,
@@ -94,6 +99,20 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     yield LoadedState(
       (state as LoadedState).recipeCategoryOverview,
       (state as LoadedState).showIntro,
+      event.open,
+      (state as LoadedState).recipeCalendarOpen,
+      (state as LoadedState).showShoppingCartSummary,
+      (state as LoadedState).selectedIndex,
+      (state as LoadedState).title,
+    );
+  }
+
+  Stream<AppState> _mapChangeRecipeCalendarView(
+      ChangeRecipeCalendarView event) async* {
+    yield LoadedState(
+      (state as LoadedState).recipeCategoryOverview,
+      (state as LoadedState).showIntro,
+      (state as LoadedState).shoppingCartOpen,
       event.open,
       (state as LoadedState).showShoppingCartSummary,
       (state as LoadedState).selectedIndex,
@@ -109,6 +128,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       (state as LoadedState).recipeCategoryOverview,
       (state as LoadedState).showIntro,
       (state as LoadedState).shoppingCartOpen,
+      (state as LoadedState).recipeCalendarOpen,
       event.showSummary,
       (state as LoadedState).selectedIndex,
       (state as LoadedState).title,

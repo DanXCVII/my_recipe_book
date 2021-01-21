@@ -6,3 +6,6 @@ const String allCategories = "all categories";
 const String summary = "summary";
 const String enableAnimations = "enableAnimations";
 const String disableStandby = "disableStandby";
+
+const double recipeCalendarFloatingWidth = 700;
+const double sideBarWidth = 900;

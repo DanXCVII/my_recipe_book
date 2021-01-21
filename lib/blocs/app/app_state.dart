@@ -13,6 +13,7 @@ class LoadedState extends AppState {
   final bool recipeCategoryOverview;
   final bool showIntro;
   final bool shoppingCartOpen;
+  final bool recipeCalendarOpen;
   final bool showShoppingCartSummary;
   final int selectedIndex;
   final String title;
@@ -21,6 +22,7 @@ class LoadedState extends AppState {
     this.recipeCategoryOverview,
     this.showIntro,
     this.shoppingCartOpen,
+    this.recipeCalendarOpen,
     this.showShoppingCartSummary,
     this.selectedIndex,
     this.title,
@@ -32,6 +34,7 @@ class LoadedState extends AppState {
         showIntro,
         selectedIndex,
         shoppingCartOpen,
+        recipeCalendarOpen,
         showShoppingCartSummary,
         title,
       ];

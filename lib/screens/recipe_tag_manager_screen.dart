@@ -207,7 +207,7 @@ class RecipeTagManager extends StatelessWidget {
             child: Text(I18n.of(context).no),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textColor: Theme.of(context).textTheme.body1.color,
+            textColor: Theme.of(context).textTheme.bodyText2.color,
             onPressed: () {
               Navigator.pop(context);
             },
@@ -217,7 +217,7 @@ class RecipeTagManager extends StatelessWidget {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             color: Colors.red[600],
-            textColor: Theme.of(context).textTheme.body1.color,
+            textColor: Theme.of(context).textTheme.bodyText2.color,
             onPressed: () {
               BlocProvider.of<RecipeManagerBloc>(context)
                   .add(RMDeleteRecipeTag(recipeTag));

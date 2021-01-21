@@ -4,12 +4,14 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import 'package:my_recipe_book/models/tuple.dart';
 import 'package:my_recipe_book/widgets/clipper.dart';
 import 'package:my_recipe_book/widgets/dialogs/number_dialog.dart';
-import 'package:my_recipe_book/widgets/dialogs/textfield_dialog.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:share/share.dart';
@@ -30,7 +32,6 @@ import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
-import '../util/helper.dart';
 import '../local_storage/hive.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
@@ -38,9 +39,10 @@ import '../models/enums.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
+import '../screens/recipe_overview.dart';
+import '../util/helper.dart';
 import '../util/my_wrapper.dart';
 import '../util/pdf_share.dart';
-import '../screens/recipe_overview.dart';
 import '../widgets/animated_stepper.dart';
 import '../widgets/animated_vegetable.dart';
 import '../widgets/category_circle_image.dart';
@@ -72,6 +74,7 @@ enum PopupOptionsShare { EXPORT_ZIP, EXPORT_TEXT, EXPORT_PDF }
 
 class RecipeScreenArguments {
   final ShoppingCartBloc shoppingCartBloc;
+  final RecipeCalendarBloc recipeCalendarBloc;
   final Recipe recipe;
   final String heroImageTag;
   final RecipeManagerBloc recipeManagerBloc;
@@ -80,6 +83,7 @@ class RecipeScreenArguments {
 
   RecipeScreenArguments(
     this.shoppingCartBloc,
+    this.recipeCalendarBloc,
     this.recipe,
     this.heroImageTag,
     this.recipeManagerBloc, {
@@ -139,6 +143,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                 RouteNames.recipeScreen,
                 arguments: RecipeScreenArguments(
                     BlocProvider.of<ShoppingCartBloc>(context),
+                    BlocProvider.of<RecipeCalendarBloc>(context),
                     state.recipe,
                     "",
                     BlocProvider.of<RecipeManagerBloc>(context),
@@ -414,6 +419,25 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
         ],
       ),
       actions: <Widget>[
+        IconButton(
+          icon: Icon(MdiIcons.calendarPlus),
+          onPressed: () {
+            DatePicker.showDateTimePicker(context,
+                showTitleActions: true,
+                minTime: DateTime.now().subtract(Duration(days: 31)),
+                maxTime: DateTime.now().add(Duration(days: 60)),
+                onChanged: (date) {
+              print('change $date');
+            }, onConfirm: (date) {
+              BlocProvider.of<RecipeCalendarBloc>(context)
+                  .add(AddRecipeToCalendarEvent(date, recipe.name));
+              print('confirm $date');
+            },
+                currentTime: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                locale: LocaleType.de);
+          },
+        ),
         BlocBuilder<RecipeBubbleBloc, RecipeBubbleState>(
           builder: (context, state) {
             if (state is LoadedRecipeBubbles) {
@@ -492,6 +516,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                 arguments: GeneralInfoArguments(
                   recipe,
                   BlocProvider.of<ShoppingCartBloc>(context),
+                  BlocProvider.of<RecipeCalendarBloc>(context),
                   editingRecipeName: recipe.name,
                 ),
               );
@@ -713,13 +738,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
       recipeText += '====================\n';
     }
 
-    int i = 1;
-
     if (recipe.stepTitles == null) {
       return _getStepsString(recipe.steps);
     }
 
-    List<Widget> fullList = [];
     for (int i = 0; i < recipe.stepTitles.length; i++) {
       if (i == 0 || recipe.stepTitles[i] != "") {
         int nextTitleIndex = recipe.stepTitles.length;
@@ -788,291 +810,331 @@ class RecipePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          MediaQuery.of(context).size.width > 550
-              ? Container(
-                  width: (MediaQuery.of(context).size.width * 0.4 > 350)
-                      ? 350
-                      : MediaQuery.of(context).size.width * 0.4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[900],
-                  ),
-                  child: RecipeInfoVertical(
-                    recipe,
-                    (MediaQuery.of(context).size.width * 0.45 > 350)
+    return BlocListener<RecipeCalendarBloc, RecipeCalendarState>(
+      listener: (context, state) {
+        Tuple2<DateTime, String> addedRecipe;
+
+        if (state is LoadedRecipeCalendarOverview) {
+          addedRecipe = state.addedRecipe;
+        } else if (state is LoadedRecipeCalendarVertical) {
+          addedRecipe = state.addedRecipe;
+        }
+        if (addedRecipe != null) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text(I18n.of(context).undo_added_to_planner_description(
+                addedRecipe.item2,
+                addedRecipe.item1.year.toString(),
+                addedRecipe.item1.month.toString(),
+                addedRecipe.item1.day.toString(),
+              )),
+              action: SnackBarAction(
+                label: I18n.of(context).undo,
+                onPressed: () {
+                  BlocProvider.of<RecipeCalendarBloc>(context).add(
+                      RemoveRecipeFromDateEvent(
+                          addedRecipe.item1, addedRecipe.item2));
+                },
+              ),
+            ),
+          );
+        }
+      },
+      child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            MediaQuery.of(context).size.width > 550
+                ? Container(
+                    width: (MediaQuery.of(context).size.width * 0.4 > 350)
                         ? 350
-                        : MediaQuery.of(context).size.width * 0.45,
-                    categoriesFiles,
-                    heroImageTag,
-                  ),
-                )
-              : null,
-          MediaQuery.of(context).size.width > 1000
-              ? Container(
-                  height: double.infinity,
-                  width: 370,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(vegetableColor[recipe.vegetable][0]),
-                        Color(vegetableColor[recipe.vegetable][1]),
-                      ],
+                        : MediaQuery.of(context).size.width * 0.4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
                     ),
-                  ),
-                  child: ListView(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 0.0),
-                        child: IngredientsScreen(
-                          currentRecipe: recipe,
-                          hasNutritions: recipe.nutritions.isNotEmpty,
-                          animationWaitTime: MyIntWrapper(0),
-                          addToCartIngredients: [],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : null,
-          MediaQuery.of(context).size.width > 1000
-              ? Expanded(
-                  child: Container(
+                    child: RecipeInfoVertical(
+                      recipe,
+                      (MediaQuery.of(context).size.width * 0.45 > 350)
+                          ? 350
+                          : MediaQuery.of(context).size.width * 0.45,
+                      categoriesFiles,
+                      heroImageTag,
+                    ),
+                  )
+                : null,
+            MediaQuery.of(context).size.width > 1000
+                ? Container(
+                    height: double.infinity,
+                    width: 370,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Color(0xff672B00),
-                          Color(0xff3A1900),
+                          Color(vegetableColor[recipe.vegetable][0]),
+                          Color(vegetableColor[recipe.vegetable][1]),
                         ],
                       ),
                     ),
                     child: ListView(
                       children: <Widget>[
-                        StepsSection(
-                          recipe.steps,
-                          recipe.stepTitles,
-                          recipe.stepImages,
-                          recipe.name,
-                          recipe.nutritions.isNotEmpty,
-                          expandHeight: true,
+                        Padding(
+                          padding: const EdgeInsets.only(top: 0.0),
+                          child: IngredientsScreen(
+                            currentRecipe: recipe,
+                            hasNutritions: recipe.nutritions.isNotEmpty,
+                            animationWaitTime: MyIntWrapper(0),
+                            addToCartIngredients: [],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                )
-              : null,
-          MediaQuery.of(context).size.width > 1000
-              ? null
-              : Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: MediaQuery.of(context).size.width > 550
-                          ? null
-                          : Color(0xff51473b),
-                      gradient: MediaQuery.of(context).size.width > 550
-                          ? LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Color(0xff672B00),
-                                Color(0xff3A1900),
-                              ],
-                            )
-                          : null,
+                  )
+                : null,
+            MediaQuery.of(context).size.width > 1000
+                ? Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xff672B00),
+                            Color(0xff3A1900),
+                          ],
+                        ),
+                      ),
+                      child: ListView(
+                        children: <Widget>[
+                          StepsSection(
+                            recipe.steps,
+                            recipe.stepTitles,
+                            recipe.stepImages,
+                            recipe.name,
+                            recipe.nutritions.isNotEmpty,
+                            expandHeight: true,
+                          ),
+                        ],
+                      ),
                     ),
-                    child: CustomScrollView(
-                      controller: scrollController,
-                      slivers: <Widget>[
-                        MediaQuery.of(context).size.width > 550
+                  )
+                : null,
+            MediaQuery.of(context).size.width > 1000
+                ? null
+                : Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: MediaQuery.of(context).size.width > 550
                             ? null
-                            : SliverAppBar(
-                                flexibleSpace: MyGradientAppBar(recipe),
-                                floating: true,
-                              ),
-                        SliverList(
-                          delegate: SliverChildListDelegate(<Widget>[
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(vegetableColor[recipe.vegetable][0]),
-                                    Color(vegetableColor[recipe.vegetable][1]),
-                                  ],
+                            : Color(0xff51473b),
+                        gradient: MediaQuery.of(context).size.width > 550
+                            ? LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Color(0xff672B00),
+                                  Color(0xff3A1900),
+                                ],
+                              )
+                            : null,
+                      ),
+                      child: CustomScrollView(
+                        controller: scrollController,
+                        slivers: <Widget>[
+                          MediaQuery.of(context).size.width > 550
+                              ? null
+                              : SliverAppBar(
+                                  flexibleSpace: MyGradientAppBar(recipe),
+                                  floating: true,
                                 ),
-                              ),
-                              child: Column(
-                                  children: <Widget>[
-                                MediaQuery.of(context).size.width > 550
-                                    ? null
-                                    : GestureDetector(
-                                        onTap: () {
-                                          _showPictureFullView(recipe.imagePath,
-                                              heroImageTag, context);
-                                        },
-                                        child: Container(
-                                          height: 270,
-                                          child: Stack(children: <Widget>[
-                                            Hero(
-                                              tag: GlobalSettings()
-                                                      .animationsEnabled()
-                                                  ? heroImageTag
-                                                  : "heroImageTag2",
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                child: ClipPath(
-                                                  clipper: MyClipper(),
-                                                  child: Container(
-                                                      height: 250,
-                                                      child: recipe.imagePath ==
-                                                              Constants
-                                                                  .noRecipeImage
-                                                          ? Image.asset(
-                                                              Constants
-                                                                  .noRecipeImage,
-                                                              width: double
-                                                                  .infinity,
-                                                              fit: BoxFit.cover)
-                                                          : Image.file(
-                                                              File(recipe
-                                                                  .imagePath),
-                                                              width: double
-                                                                  .infinity,
-                                                              fit: BoxFit
-                                                                  .cover)),
+                          SliverList(
+                            delegate: SliverChildListDelegate(<Widget>[
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Color(
+                                          vegetableColor[recipe.vegetable][0]),
+                                      Color(
+                                          vegetableColor[recipe.vegetable][1]),
+                                    ],
+                                  ),
+                                ),
+                                child: Column(
+                                    children: <Widget>[
+                                  MediaQuery.of(context).size.width > 550
+                                      ? null
+                                      : GestureDetector(
+                                          onTap: () {
+                                            _showPictureFullView(
+                                                recipe.imagePath,
+                                                heroImageTag,
+                                                context);
+                                          },
+                                          child: Container(
+                                            height: 270,
+                                            child: Stack(children: <Widget>[
+                                              Hero(
+                                                tag: GlobalSettings()
+                                                        .animationsEnabled()
+                                                    ? heroImageTag
+                                                    : "heroImageTag2",
+                                                child: Material(
+                                                  color: Colors.transparent,
+                                                  child: ClipPath(
+                                                    clipper: MyClipper(),
+                                                    child: Container(
+                                                        height: 250,
+                                                        child: recipe
+                                                                    .imagePath ==
+                                                                Constants
+                                                                    .noRecipeImage
+                                                            ? Image.asset(
+                                                                Constants
+                                                                    .noRecipeImage,
+                                                                width: double
+                                                                    .infinity,
+                                                                fit: BoxFit
+                                                                    .cover)
+                                                            : Image.file(
+                                                                File(recipe
+                                                                    .imagePath),
+                                                                width: double
+                                                                    .infinity,
+                                                                fit: BoxFit
+                                                                    .cover)),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            Align(
-                                              alignment: Alignment.bottomRight,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 8.0, right: 8.0),
-                                                child: AnimatedVegetable(
-                                                    recipe.vegetable),
-                                              ),
-                                            )
-                                          ]),
+                                              Align(
+                                                alignment:
+                                                    Alignment.bottomRight,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 8.0,
+                                                          right: 8.0),
+                                                  child: AnimatedVegetable(
+                                                      recipe.vegetable),
+                                                ),
+                                              )
+                                            ]),
+                                          ),
                                         ),
-                                      ),
-                                MediaQuery.of(context).size.width > 550
-                                    ? null
-                                    : Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Padding(
-                                          padding: EdgeInsets.fromLTRB(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.15,
-                                              0,
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.15,
-                                              0),
-                                          child: Text(
-                                            recipe.name,
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: textColor,
-                                              fontSize: 27,
-                                              fontFamily:
-                                                  recipeScreenFontFamily,
+                                  MediaQuery.of(context).size.width > 550
+                                      ? null
+                                      : Align(
+                                          alignment: Alignment.topCenter,
+                                          child: Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.15,
+                                                0,
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.15,
+                                                0),
+                                            child: Text(
+                                              recipe.name,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: textColor,
+                                                fontSize: 27,
+                                                fontFamily:
+                                                    recipeScreenFontFamily,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                MediaQuery.of(context).size.width > 550
-                                    ? null
-                                    : SizedBox(height: 30),
-                                MediaQuery.of(context).size.width > 550
-                                    ? null
-                                    : Center(
-                                        child: TopSectionRecipe(
-                                          preperationTime:
-                                              recipe.preperationTime,
-                                          cookingTime: recipe.cookingTime,
-                                          totalTime: recipe.totalTime,
-                                          effort: recipe.effort,
-                                          recipeTags: recipe.tags,
+                                  MediaQuery.of(context).size.width > 550
+                                      ? null
+                                      : SizedBox(height: 30),
+                                  MediaQuery.of(context).size.width > 550
+                                      ? null
+                                      : Center(
+                                          child: TopSectionRecipe(
+                                            preperationTime:
+                                                recipe.preperationTime,
+                                            cookingTime: recipe.cookingTime,
+                                            totalTime: recipe.totalTime,
+                                            effort: recipe.effort,
+                                            recipeTags: recipe.tags,
+                                          ),
                                         ),
-                                      ),
-                                MediaQuery.of(context).size.width > 550
-                                    ? null
-                                    : SizedBox(height: 20),
-                                IngredientsScreen(
-                                  currentRecipe: recipe,
-                                  hasNutritions: recipe.nutritions.isNotEmpty,
-                                  animationWaitTime: MyIntWrapper(0),
-                                  addToCartIngredients: [],
+                                  MediaQuery.of(context).size.width > 550
+                                      ? null
+                                      : SizedBox(height: 20),
+                                  IngredientsScreen(
+                                    currentRecipe: recipe,
+                                    hasNutritions: recipe.nutritions.isNotEmpty,
+                                    animationWaitTime: MyIntWrapper(0),
+                                    addToCartIngredients: [],
+                                  ),
+                                  SizedBox(height: 30),
+                                ]..removeWhere((item) => item == null)),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient:
+                                      MediaQuery.of(context).size.width <= 550
+                                          ? LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                Color(0xff672B00),
+                                                Color(0xff3A1900),
+                                              ],
+                                            )
+                                          : null,
                                 ),
-                                SizedBox(height: 30),
-                              ]..removeWhere((item) => item == null)),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient:
-                                    MediaQuery.of(context).size.width <= 550
-                                        ? LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Color(0xff672B00),
-                                              Color(0xff3A1900),
-                                            ],
-                                          )
-                                        : null,
+                                child: StepsSection(
+                                  recipe.steps,
+                                  recipe.stepTitles,
+                                  recipe.stepImages,
+                                  recipe.name,
+                                  recipe.nutritions.isNotEmpty,
+                                ),
                               ),
-                              child: StepsSection(
-                                recipe.steps,
-                                recipe.stepTitles,
-                                recipe.stepImages,
-                                recipe.name,
-                                recipe.nutritions.isNotEmpty,
-                              ),
-                            ),
-                            (recipe.notes != "" ||
-                                        recipe.categories.isNotEmpty ||
-                                        recipe.source != null) &&
-                                    MediaQuery.of(context).size.width <= 550
-                                ? Container(
-                                    height: 20,
-                                    decoration:
-                                        BoxDecoration(color: Colors.black87),
-                                  )
-                                : null,
-                            recipe.notes != "" &&
-                                    MediaQuery.of(context).size.width <= 550
-                                ? NotesSection(notes: recipe.notes)
-                                : null,
-                            recipe.source != null &&
-                                    recipe.source != "" &&
-                                    MediaQuery.of(context).size.width <= 550
-                                ? RecipeSource(recipe.source)
-                                : null,
-                            recipe.categories.length > 0 &&
-                                    MediaQuery.of(context).size.width <= 550
-                                ? CategoriesSection(
-                                    categories: recipe.categories,
-                                    categoriesFiles: categoriesFiles)
-                                : null,
-                            recipe.nutritions.isEmpty
-                                ? Container()
-                                : Container(height: 50),
-                          ]..removeWhere((item) => item == null)),
-                        ),
-                      ]..removeWhere((item) => item == null),
+                              (recipe.notes != "" ||
+                                          recipe.categories.isNotEmpty ||
+                                          recipe.source != null) &&
+                                      MediaQuery.of(context).size.width <= 550
+                                  ? Container(
+                                      height: 20,
+                                      decoration:
+                                          BoxDecoration(color: Colors.black87),
+                                    )
+                                  : null,
+                              recipe.notes != "" &&
+                                      MediaQuery.of(context).size.width <= 550
+                                  ? NotesSection(notes: recipe.notes)
+                                  : null,
+                              recipe.source != null &&
+                                      recipe.source != "" &&
+                                      MediaQuery.of(context).size.width <= 550
+                                  ? RecipeSource(recipe.source)
+                                  : null,
+                              recipe.categories.length > 0 &&
+                                      MediaQuery.of(context).size.width <= 550
+                                  ? CategoriesSection(
+                                      categories: recipe.categories,
+                                      categoriesFiles: categoriesFiles)
+                                  : null,
+                              recipe.nutritions.isEmpty
+                                  ? Container()
+                                  : Container(height: 50),
+                            ]..removeWhere((item) => item == null)),
+                          ),
+                        ]..removeWhere((item) => item == null),
+                      ),
                     ),
                   ),
-                ),
-        ]..removeWhere((item) => item == null));
+          ]..removeWhere((item) => item == null)),
+    );
   }
 
   void _showPictureFullView(String image, String tag, BuildContext context) {
@@ -1275,6 +1337,9 @@ class CategoriesSection extends StatelessWidget {
                                       : categories[index],
                                   shoppingCartBloc:
                                       BlocProvider.of<ShoppingCartBloc>(
+                                          context),
+                                  recipeCalendarBloc:
+                                      BlocProvider.of<RecipeCalendarBloc>(
                                           context),
                                 ),
                               );

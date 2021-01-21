@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../ad_related/ad.dart';
@@ -19,11 +20,13 @@ import 'add_recipe/general_info_screen/general_info_screen.dart';
 
 class ImportFromWebsiteArguments {
   final ShoppingCartBloc shoppingCartBloc;
+  final RecipeCalendarBloc recipeCalendarBloc;
   final AdManagerBloc adManagerBloc;
   final String initialWebsite;
 
   ImportFromWebsiteArguments(
     this.shoppingCartBloc,
+    this.recipeCalendarBloc,
     this.adManagerBloc, {
     this.initialWebsite,
   });
@@ -108,6 +111,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                         arguments: GeneralInfoArguments(
                           state.recipe,
                           BlocProvider.of<ShoppingCartBloc>(context),
+                          BlocProvider.of<RecipeCalendarBloc>(context),
                         ),
                       ).then((_) => Ads.hideBottomBannerAd());
                     }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -65,6 +66,7 @@ class _RecipeBubbleState extends State<RecipeBubble> {
           RouteNames.recipeScreen,
           arguments: RecipeScreenArguments(
             BlocProvider.of<ShoppingCartBloc>(context),
+            BlocProvider.of<RecipeCalendarBloc>(context),
             widget.recipe,
             widget.recipe.name + "##bubble#",
             BlocProvider.of<RecipeManagerBloc>(context),

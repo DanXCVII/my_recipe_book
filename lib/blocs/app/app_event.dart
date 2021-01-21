@@ -73,3 +73,12 @@ class ChangeShoppingCartView extends AppEvent {
   @override
   List<Object> get props => [open];
 }
+
+class ChangeRecipeCalendarView extends AppEvent {
+  final bool open;
+
+  const ChangeRecipeCalendarView(this.open);
+
+  @override
+  List<Object> get props => [open];
+}

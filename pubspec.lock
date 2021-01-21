@@ -141,6 +141,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  carousel_extended:
+    dependency: transitive
+    description:
+      name: carousel_extended
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   characters:
     dependency: transitive
     description:
@@ -342,6 +349,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.4"
+  flutter_datetime_picker:
+    dependency: "direct main"
+    description:
+      name: flutter_datetime_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.4.0"
   flutter_image_compress:
     dependency: "direct main"
     description:
@@ -525,6 +539,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.4+16"
+  inline_calender:
+    dependency: "direct main"
+    description:
+      name: inline_calender
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   intl:
     dependency: transitive
     description:
@@ -840,6 +861,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.2"
+  shamsi_date:
+    dependency: transitive
+    description:
+      name: shamsi_date
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.1"
   share:
     dependency: "direct main"
     description:
@@ -917,6 +945,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.6"
+  simple_gesture_detector:
+    dependency: transitive
+    description:
+      name: simple_gesture_detector
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.6"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -971,6 +1006,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0-nullsafety.1"
+  table_calendar:
+    dependency: "direct main"
+    description:
+      name: table_calendar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.3.3"
   term_glyph:
     dependency: transitive
     description:

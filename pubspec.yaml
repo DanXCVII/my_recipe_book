@@ -78,6 +78,9 @@ dependencies:
   page_transition: ^1.1.5 # BSD
   circular_check_box: ^1.0.4 # BSD
   reorderables: ^0.3.2 # MIT
+  inline_calender: ^1.2.0 # MIT
+  table_calendar: ^2.3.3
+  flutter_datetime_picker: ^1.4.0 # MIT
 
 dev_dependencies:
   flutter_test:

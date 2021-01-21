@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/ad_related/ad.dart';
-import 'package:my_recipe_book/blocs/recipe_screen/recipe_screen_bloc.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/widgets/clipper.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -19,12 +17,6 @@ class AnimatedStepper extends StatelessWidget {
   // if losResStepImages are provided, also stepImages must be provided
   final List<List<String>> lowResStepImages;
   final List<List<String>> stepImages;
-  final List<Color> stepsColors = [
-    Color(0xff28B404),
-    Color(0xff009BDE),
-    Color(0xffE3B614),
-    Color(0xff8600C5),
-  ];
 
   AnimatedStepper(
     this.steps,
@@ -44,6 +36,37 @@ class AnimatedStepper extends StatelessWidget {
 
   List<Widget> _getStepsWithTitle(
       List<String> stepTitles, List<String> selectedSteps) {
+    if (steps == null) {
+      return [
+        Container(
+          height: 100,
+          width: 100,
+          color: Colors.blue,
+        )
+      ];
+    } else if (stepImages == null) {
+      return [
+        Container(
+          height: 100,
+          width: 100,
+          color: Colors.red,
+        )
+      ];
+    } else if (stepImages.length != steps.length) {
+      return [
+        Container(
+          height: 400,
+          width: 100,
+          color: Colors.green,
+          child: Text(
+              stepImages.toString() +
+                  "\n" +
+                  steps.toString() +
+                  "If you see this weird box, pleas contact me with a screenshot of it under daniel.weissen.developer@gmail.com",
+              style: TextStyle(fontSize: 10)),
+        )
+      ];
+    }
     if (stepTitles == null) {
       return _getSteps(selectedSteps, 0);
     }

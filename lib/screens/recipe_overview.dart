@@ -7,6 +7,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -26,12 +27,14 @@ class RecipeGridViewArguments {
   final Vegetable vegetable;
   final StringIntTuple recipeTag;
   final ShoppingCartBloc shoppingCartBloc;
+  final RecipeCalendarBloc recipeCalendarBloc;
 
   RecipeGridViewArguments({
     this.category,
     this.vegetable,
     this.recipeTag,
     @required this.shoppingCartBloc,
+    @required this.recipeCalendarBloc,
   });
 }
 
@@ -62,6 +65,7 @@ class RecipeGridView extends StatelessWidget {
                               delegate: RecipeSearch(
                                 HiveProvider().getRecipeNames(),
                                 BlocProvider.of<ShoppingCartBloc>(context),
+                                BlocProvider.of<RecipeCalendarBloc>(context),
                                 HiveProvider().getRecipeTags(),
                                 HiveProvider().getCategoryNames()
                                   ..remove('no category'),
@@ -146,6 +150,7 @@ class RecipeGridView extends StatelessWidget {
                             delegate: RecipeSearch(
                               HiveProvider().getRecipeNames(),
                               BlocProvider.of<ShoppingCartBloc>(context),
+                              BlocProvider.of<RecipeCalendarBloc>(context),
                               HiveProvider().getRecipeTags(),
                               HiveProvider().getCategoryNames()
                                 ..remove('no category'),

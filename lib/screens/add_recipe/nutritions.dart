@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:my_recipe_book/widgets/icon_info_message.dart';
 import 'package:wakelock/wakelock.dart';
@@ -27,10 +28,12 @@ class AddRecipeNutritionsArguments {
   final Recipe modifiedRecipe;
   final String editingRecipeName;
   final ShoppingCartBloc shoppingCartBloc;
+  final RecipeCalendarBloc recipeCalendarBloc;
 
   AddRecipeNutritionsArguments(
     this.modifiedRecipe,
-    this.shoppingCartBloc, {
+    this.shoppingCartBloc,
+    this.recipeCalendarBloc, {
     this.editingRecipeName,
   });
 }
@@ -149,6 +152,8 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                     arguments: RecipeScreenArguments(
                                       BlocProvider.of<ShoppingCartBloc>(
                                           context),
+                                      BlocProvider.of<RecipeCalendarBloc>(
+                                          context),
                                       state.recipe,
                                       'heroImageTag',
                                       BlocProvider.of<RecipeManagerBloc>(
@@ -172,6 +177,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                 ModalRoute.withName('recipeRoute'),
                                 arguments: RecipeScreenArguments(
                                   BlocProvider.of<ShoppingCartBloc>(context),
+                                  BlocProvider.of<RecipeCalendarBloc>(context),
                                   state.recipe,
                                   'heroImageTag',
                                   BlocProvider.of<RecipeManagerBloc>(context),

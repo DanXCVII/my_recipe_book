@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wakelock/wakelock.dart';
@@ -141,6 +142,8 @@ class RecipeRow extends StatelessWidget {
                 RouteNames.recipeCategories,
                 arguments: RecipeGridViewArguments(
                   shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
+                  recipeCalendarBloc:
+                      BlocProvider.of<RecipeCalendarBloc>(context),
                   category: category,
                 ),
               ).then((_) => Ads.hideBottomBannerAd());
@@ -265,6 +268,8 @@ class RecipeImageItemBig extends StatelessWidget {
                     arguments: RecipeGridViewArguments(
                       shoppingCartBloc:
                           BlocProvider.of<ShoppingCartBloc>(context),
+                      recipeCalendarBloc:
+                          BlocProvider.of<RecipeCalendarBloc>(context),
                       category: categoryName == null
                           ? Constants.noCategory
                           : categoryName,
@@ -464,6 +469,7 @@ class RecipeImageItemBig extends StatelessWidget {
       RouteNames.recipeScreen,
       arguments: RecipeScreenArguments(
         BlocProvider.of<ShoppingCartBloc>(context),
+        BlocProvider.of<RecipeCalendarBloc>(context),
         recipe,
         heroImageTag,
         BlocProvider.of<RecipeManagerBloc>(context),
@@ -503,6 +509,8 @@ class RecipeImageItemSmall extends StatelessWidget {
                 RouteNames.recipeCategories,
                 arguments: RecipeGridViewArguments(
                   shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
+                  recipeCalendarBloc:
+                      BlocProvider.of<RecipeCalendarBloc>(context),
                   category: categoryName == null
                       ? Constants.noCategory
                       : categoryName,
@@ -624,6 +632,7 @@ class RecipeImageItemSmall extends StatelessWidget {
       RouteNames.recipeScreen,
       arguments: RecipeScreenArguments(
         BlocProvider.of<ShoppingCartBloc>(context),
+        BlocProvider.of<RecipeCalendarBloc>(context),
         recipe,
         heroImageTag,
         BlocProvider.of<RecipeManagerBloc>(context),

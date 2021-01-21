@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../models/enums.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
@@ -29,10 +30,12 @@ const double showExpandedSearch = 770;
 class IngredientSearchScreenArguments {
   final AdManagerBloc adManagerBloc;
   final ShoppingCartBloc shoppingCartBloc;
+  final RecipeCalendarBloc recipeCalendarBloc;
   final bool hasPremium;
 
   IngredientSearchScreenArguments(
     this.shoppingCartBloc,
+    this.recipeCalendarBloc,
     this.adManagerBloc,
     this.hasPremium,
   );
@@ -247,6 +250,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                       RouteNames.recipeScreen,
                       arguments: RecipeScreenArguments(
                         BlocProvider.of<ShoppingCartBloc>(context),
+                        BlocProvider.of<RecipeCalendarBloc>(context),
                         currentRecipe,
                         currentRecipe.name,
                         BlocProvider.of<RecipeManagerBloc>(context),

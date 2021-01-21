@@ -12,6 +12,95 @@ import '../models/recipe.dart';
 import 'icon_info_message.dart';
 import 'recipe_image_hero.dart';
 
+class ShoppingListSummary extends StatelessWidget {
+  final Recipe summaryRecipe;
+  final List<CheckableIngredient> ingredients;
+
+  const ShoppingListSummary(
+    this.ingredients,
+    this.summaryRecipe, {
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      child: ListView(
+        children: List.generate(ingredients.length * 2 + 1, (index) {
+          if (index % 2 != 0) {
+            int ingredientIndex = ((index - 1) / 2).round();
+            CheckableIngredient currentIngred = ingredients[ingredientIndex];
+
+            return Dismissible(
+              key: Key(
+                  '${currentIngred.name}${currentIngred.name}${currentIngred.unit}'),
+              onDismissed: (_) {
+                BlocProvider.of<ShoppingCartBloc>(context).add(
+                    RemoveIngredients(
+                        [currentIngred.getIngredient()], summaryRecipe));
+              },
+              background: PrimaryBackgroundDismissable(),
+              secondaryBackground: SecondaryBackgroundDismissible(),
+              child: ListTile(
+                onTap: () {
+                  BlocProvider.of<ShoppingCartBloc>(context).add(
+                    CheckIngredients(
+                      [currentIngred],
+                      summaryRecipe,
+                    ),
+                  );
+                },
+                //  tileColor: Theme.of(context).scaffoldBackgroundColor,
+                title: Text(
+                  "${currentIngred.name}",
+                  style: TextStyle(
+                    decoration: currentIngred.checked
+                        ? TextDecoration.lineThrough
+                        : null,
+                  ),
+                ),
+                trailing:
+                    currentIngred.amount == null && currentIngred.unit == ""
+                        ?
+                        // needs size, otherwise error
+                        Container(width: 1, height: 1)
+                        : Text(
+                            "${currentIngred.amount != null ? cutDouble(currentIngred.amount) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit}",
+                            style: TextStyle(
+                              decoration: currentIngred.checked
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
+                leading: CircularCheckBox(
+                  activeColor: Colors.green[700],
+                  value: currentIngred.checked,
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  onChanged: (bool x) {
+                    BlocProvider.of<ShoppingCartBloc>(context).add(
+                      CheckIngredients(
+                        [currentIngred],
+                        summaryRecipe,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          } else {
+            return Container(
+              //color: Theme.of(context).scaffoldBackgroundColor,
+              child: Divider(),
+            );
+          }
+        }),
+      ),
+    );
+  }
+}
+
 class ShoppingList extends StatelessWidget {
   final bool roundBorders;
 

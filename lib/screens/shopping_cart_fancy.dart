@@ -2,6 +2,7 @@ import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/app/app_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:share/share.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -94,6 +95,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
                       delegate: RecipeSearch(
                         HiveProvider().getRecipeNames(),
                         BlocProvider.of<ShoppingCartBloc>(context),
+                        BlocProvider.of<RecipeCalendarBloc>(context),
                         HiveProvider().getRecipeTags(),
                         HiveProvider().getCategoryNames()
                           ..remove('no category'),

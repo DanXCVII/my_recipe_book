@@ -5,6 +5,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -151,6 +152,7 @@ class Settings extends StatelessWidget {
               Navigator.pushNamed(context, RouteNames.importFromWebsite,
                   arguments: ImportFromWebsiteArguments(
                     BlocProvider.of<ShoppingCartBloc>(context),
+                    BlocProvider.of<RecipeCalendarBloc>(context),
                     BlocProvider.of<AdManagerBloc>(context),
                   )).then((_) => Ads.hideBottomBannerAd());
             },

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/util/my_wrapper.dart';
 import 'package:my_recipe_book/widgets/duration_picker.dart';
 
@@ -32,10 +33,12 @@ class GeneralInfoArguments {
   final Recipe modifiedRecipe;
   final String editingRecipeName;
   final ShoppingCartBloc shoppingCartBloc;
+  final RecipeCalendarBloc recipeCalendarBloc;
 
   GeneralInfoArguments(
     this.modifiedRecipe,
-    this.shoppingCartBloc, {
+    this.shoppingCartBloc,
+    this.recipeCalendarBloc, {
     this.editingRecipeName,
   });
 }
@@ -174,6 +177,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                     arguments: IngredientsArguments(
                       state.recipe,
                       BlocProvider.of<ShoppingCartBloc>(context),
+                      BlocProvider.of<RecipeCalendarBloc>(context),
                       editingRecipeName: widget.editingRecipeName,
                     ),
                   );

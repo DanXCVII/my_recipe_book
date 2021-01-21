@@ -160,14 +160,15 @@ class AboutMeScreen extends StatelessWidget {
                                   width: 60,
                                   height: 60,
                                   decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                          width: 2,
-                                          color: Theme.of(context)
-                                                      .backgroundColor ==
-                                                  Colors.white
-                                              ? Colors.grey[500]
-                                              : Colors.white)),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 2,
+                                        color:
+                                            Theme.of(context).backgroundColor ==
+                                                    Colors.white
+                                                ? Colors.grey[500]
+                                                : Colors.white),
+                                  ),
                                   child: Icon(Icons.mail, size: 40),
                                 )
                               ],

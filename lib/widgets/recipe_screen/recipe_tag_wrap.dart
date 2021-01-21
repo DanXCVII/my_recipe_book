@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:my_recipe_book/constants/routes.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
@@ -33,6 +34,8 @@ class RecipeTagWrap extends StatelessWidget {
               arguments: RecipeGridViewArguments(
                 recipeTag: recipeTags[index],
                 shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
+                recipeCalendarBloc:
+                    BlocProvider.of<RecipeCalendarBloc>(context),
               ),
             ); // Not hiding the banner ad because it's shown on the recipe screen
           },
