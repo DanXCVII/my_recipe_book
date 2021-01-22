@@ -50,9 +50,13 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      contentPadding: EdgeInsets.zero,
-      content: Stack(
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Consts.padding),
+      ),
+      elevation: 0.0,
+      backgroundColor: Theme.of(context).dialogBackgroundColor,
+      child: Stack(
         children: <Widget>[
           Container(
             height: 60,

@@ -397,6 +397,8 @@ class MyApp extends StatelessWidget {
             case "/recipe-calendar":
               final RecipeCalendarScreenArguments args = settings.arguments;
 
+              Ads.showBottomBannerAd();
+
               return MaterialPageRoute(
                 settings: RouteSettings(name: "recipeRoute"),
                 builder: (BuildContext context) => MultiBlocProvider(
@@ -406,7 +408,7 @@ class MyApp extends StatelessWidget {
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
-                  child: RecipeCalendarScreen(),
+                  child: Ads().getAdPage(RecipeCalendarScreen(), context),
                 ),
               );
 

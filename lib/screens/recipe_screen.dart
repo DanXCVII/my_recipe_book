@@ -422,20 +422,22 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
         IconButton(
           icon: Icon(MdiIcons.calendarPlus),
           onPressed: () {
+            Ads.hideBottomBannerAd();
             DatePicker.showDateTimePicker(context,
-                showTitleActions: true,
-                minTime: DateTime.now().subtract(Duration(days: 31)),
-                maxTime: DateTime.now().add(Duration(days: 60)),
-                onChanged: (date) {
+                    showTitleActions: true,
+                    minTime: DateTime.now().subtract(Duration(days: 31)),
+                    maxTime: DateTime.now().add(Duration(days: 60)),
+                    onChanged: (date) {
               print('change $date');
             }, onConfirm: (date) {
               BlocProvider.of<RecipeCalendarBloc>(context)
                   .add(AddRecipeToCalendarEvent(date, recipe.name));
               print('confirm $date');
             },
-                currentTime: DateTime(DateTime.now().year, DateTime.now().month,
-                    DateTime.now().day),
-                locale: LocaleType.de);
+                    currentTime: DateTime(DateTime.now().year,
+                        DateTime.now().month, DateTime.now().day),
+                    locale: LocaleType.de)
+                .then((_) => Ads.showBottomBannerAd());
           },
         ),
         BlocBuilder<RecipeBubbleBloc, RecipeBubbleState>(

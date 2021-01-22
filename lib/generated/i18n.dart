@@ -528,8 +528,8 @@ class I18n implements WidgetsLocalizations {
   String get invalid_datatype => "invalid datatype";
   /// "the datatype of the selected file \"${datatype}\" is not supported\nsupported formats: \".zip\", \".mcb\""
   String datatype_not_supported(String datatype) => "the datatype of the selected file \"${datatype}\" is not supported\nsupported formats: \".zip\", \".mcb\"";
-  /// "Start-Rezepte"
-  String get first_start_recipes => "Start-Rezepte";
+  /// "Start Recipes"
+  String get first_start_recipes => "Start Recipes";
   /// "A few example recipes in german are already in this app.\nOf course you can delete them."
   String get first_start_recipes_desc => "A few example recipes in german are already in this app.\nOf course you can delete them.";
   /// "To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link."

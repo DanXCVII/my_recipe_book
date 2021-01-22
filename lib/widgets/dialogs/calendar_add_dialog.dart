@@ -3,6 +3,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:my_recipe_book/ad_related/ad.dart';
 
 import '../../generated/i18n.dart';
 import '../../local_storage/hive.dart';
@@ -200,6 +201,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
   }
 
   void _onSelectDate() {
+    Ads.hideBottomBannerAd();
     DatePicker.showDateTimePicker(
       context,
       showTitleActions: true,
@@ -213,6 +215,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
       currentTime: DateTime(
           DateTime.now().year, DateTime.now().month, DateTime.now().day),
       locale: LocaleType.de,
-    );
+    ).then((_) => Ads.showBottomBannerAd());
+    ;
   }
 }
