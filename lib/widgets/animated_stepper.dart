@@ -25,7 +25,13 @@ class AnimatedStepper extends StatelessWidget {
     this.fontFamily,
     this.lowResStepImages,
     Key key,
-  }) : super(key: key);
+  }) : super(key: key) {
+    if (stepTitles != null && stepTitles.length > steps.length) {
+      for (int i = steps.length; i < stepTitles.length; i++) {
+        stepTitles.removeLast();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,37 +42,6 @@ class AnimatedStepper extends StatelessWidget {
 
   List<Widget> _getStepsWithTitle(
       List<String> stepTitles, List<String> selectedSteps) {
-    if (steps == null) {
-      return [
-        Container(
-          height: 100,
-          width: 100,
-          color: Colors.blue,
-        )
-      ];
-    } else if (stepImages == null) {
-      return [
-        Container(
-          height: 100,
-          width: 100,
-          color: Colors.red,
-        )
-      ];
-    } else if (stepImages.length != steps.length) {
-      return [
-        Container(
-          height: 400,
-          width: 100,
-          color: Colors.green,
-          child: Text(
-              stepImages.toString() +
-                  "\n" +
-                  steps.toString() +
-                  "If you see this weird box, pleas contact me with a screenshot of it under daniel.weissen.developer@gmail.com",
-              style: TextStyle(fontSize: 10)),
-        )
-      ];
-    }
     if (stepTitles == null) {
       return _getSteps(selectedSteps, 0);
     }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -49,8 +50,10 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
 
     for (Recipe r in event.recipes) {
       Recipe newRecipe = r.copyWith(lastModified: DateTime.now().toString());
-      newRecipes.add(newRecipe);
-      await HiveProvider().saveRecipe(newRecipe);
+      Recipe fixedStepsRecipe = _fixRecipeSteps(newRecipe);
+
+      newRecipes.add(fixedStepsRecipe);
+      await HiveProvider().saveRecipe(fixedStepsRecipe);
     }
 
     await IO.updateBackup();
@@ -141,5 +144,41 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
         event.updatedRecipeTag.text, event.updatedRecipeTag.number);
 
     yield UpdateRecipeTagState(event.oldRecipeTag, event.updatedRecipeTag);
+  }
+
+  /// Updates the stepImages and stepTitles to fit the length of steps.
+  /// stepsImages and stepTitles can also be null.
+  Recipe _fixRecipeSteps(Recipe r) {
+    List<String> stepTitles = r.stepTitles.map((e) => e).toList();
+    List<List<String>> stepImages =
+        r.stepImages.map((e) => e.map((e) => e).toList()).toList();
+
+    if (stepTitles == null) {
+      stepTitles = r.steps.map((e) => "").toList();
+    } else if (stepTitles.length < r.steps.length) {
+      for (int i = r.stepTitles.length; i < r.steps.length; i++) {
+        stepTitles.add("");
+      }
+    } else if (r.stepTitles.length > r.steps.length) {
+      for (int i = r.steps.length; i < r.stepTitles.length; i++) {
+        stepTitles.removeLast();
+      }
+    }
+    if (stepImages == null) {
+      stepImages = r.steps.map((e) => []);
+    } else if (r.stepImages.length < r.steps.length) {
+      for (int i = r.stepImages.length; i < r.steps.length; i++) {
+        stepImages.add([]);
+      }
+    } else if (r.stepImages.length > r.steps.length) {
+      for (int i = r.steps.length; i < r.stepImages.length; i++) {
+        stepImages.removeLast();
+      }
+    }
+
+    return r.copyWith(
+      stepImages: stepImages,
+      stepTitles: stepTitles,
+    );
   }
 }
