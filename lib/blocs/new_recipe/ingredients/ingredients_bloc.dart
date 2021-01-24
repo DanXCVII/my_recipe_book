@@ -37,13 +37,21 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
       yield IEditingFinished();
     }
 
+    List<String> recipeIngredientSections = [];
+    List<List<Ingredient>> recipeIngredients = [[]];
+
+    if (event.ingredients.isNotEmpty && event.ingredients.first.isNotEmpty) {
+      recipeIngredientSections = event.ingredientsGlossary;
+      recipeIngredients = event.ingredients;
+    }
+
     Recipe newRecipe;
     if (!event.editingRecipe) {
       newRecipe = HiveProvider().getTmpRecipe().copyWith(
             servings: event.servings,
             servingName: event.servingName,
-            ingredients: event.ingredients,
-            ingredientsGlossary: event.ingredientsGlossary,
+            ingredients: recipeIngredients,
+            ingredientsGlossary: recipeIngredientSections,
             vegetable: event.vegetable,
           );
       await HiveProvider().saveTmpRecipe(newRecipe);
@@ -51,8 +59,8 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
       newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
             servings: event.servings,
             servingName: event.servingName,
-            ingredients: event.ingredients,
-            ingredientsGlossary: event.ingredientsGlossary,
+            ingredients: recipeIngredients,
+            ingredientsGlossary: recipeIngredientSections,
             vegetable: event.vegetable,
           );
       await HiveProvider().saveTmpEditingRecipe(newRecipe);

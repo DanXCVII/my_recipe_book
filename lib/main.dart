@@ -451,7 +451,9 @@ class MyApp extends StatelessWidget {
                         create: (context) => IngredientSearchBloc(),
                       ),
                       BlocProvider<ShoppingCartBloc>.value(
-                          value: args.shoppingCartBloc)
+                          value: args.shoppingCartBloc),
+                      BlocProvider<RecipeCalendarBloc>.value(
+                          value: args.recipeCalendarBloc)
                     ],
                     child: IngredientSearchScreen(),
                   ),

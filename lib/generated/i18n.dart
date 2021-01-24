@@ -570,8 +570,8 @@ class I18n implements WidgetsLocalizations {
   String get undo => "undo";
   /// "You added ${recipeName} to your the recipe planner for the following date:\n ${year}-${month}-${day}"
   String undo_added_to_planner_description(String recipeName, String year, String month, String day) => "You added ${recipeName} to your the recipe planner for the following date:\n ${year}-${month}-${day}";
-  /// "recipe-planer"
-  String get recipe_planer => "recipe-planer";
+  /// "mealplaner"
+  String get recipe_planer => "mealplaner";
   /// "you can only add recipes that you have saved in the app."
   String get no_recipe_with_this_name => "you can only add recipes that you have saved in the app.";
   /// "select a date"
@@ -1452,9 +1452,9 @@ class _I18n_de_DE extends I18n {
   /// "${recipeName} zum Rezepteplaner hinzugefügt: \n${day}.${month}.${year}"
   @override
   String undo_added_to_planner_description(String recipeName, String year, String month, String day) => "${recipeName} zum Rezepteplaner hinzugefügt: \n${day}.${month}.${year}";
-  /// "Rezepte-Planer"
+  /// "Essensplaner"
   @override
-  String get recipe_planer => "Rezepte-Planer";
+  String get recipe_planer => "Essensplaner";
   /// "Du kannst dem Planer nur Rezepte hinzufügen, die du in der App gespeichert hast."
   @override
   String get no_recipe_with_this_name => "Du kannst dem Planer nur Rezepte hinzufügen, die du in der App gespeichert hast.";

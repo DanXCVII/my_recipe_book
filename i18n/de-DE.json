@@ -267,7 +267,7 @@
   "loading_data": "Lade Daten...",
   "undo": "rückgänig",
   "undo_added_to_planner_description": "{recipeName} zum Rezepteplaner hinzugefügt: \n{day}.{month}.{year}",
-  "recipe_planer": "Rezepte-Planer",
+  "recipe_planer": "Essensplaner",
   "no_recipe_with_this_name": "Du kannst dem Planer nur Rezepte hinzufügen, die du in der App gespeichert hast.",
   "select_a_date_first": "Wähle ein Datum",
   "add_date": "Datum wählen",

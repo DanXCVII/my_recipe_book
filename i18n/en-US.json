@@ -268,7 +268,7 @@
   "loading_data": "Loading data...",
   "undo": "undo",
   "undo_added_to_planner_description": "You added {recipeName} to your the recipe planner for the following date:\n {year}-{month}-{day}",
-  "recipe_planer": "recipe-planer",
+  "recipe_planer": "mealplaner",
   "no_recipe_with_this_name": "you can only add recipes that you have saved in the app.",
   "select_a_date_first": "select a date",
   "add_date": "select date",

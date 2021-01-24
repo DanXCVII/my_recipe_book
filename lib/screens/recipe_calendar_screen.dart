@@ -457,12 +457,13 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
             BlocProvider.of<RecipeCalendarBloc>(context),
             dateRecipeTuple.item2,
             dateRecipeTuple.item1.toIso8601String() +
-                dateRecipeTuple.item2.name,
+                dateRecipeTuple.item2.name +
+                uniqueNumber.toString(),
             BlocProvider.of<RecipeManagerBloc>(context),
           ),
         ).then((_) {
           Wakelock.disable();
-          if (!Ads.shouldShowAds()) Ads.hideBottomBannerAd();
+          if (Ads.shouldShowAds()) Ads.hideBottomBannerAd();
         });
       },
       subtitle: dateRecipeTuple.item1.hour == 0 &&

@@ -12,6 +12,7 @@ import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/models/tuple.dart';
 import 'package:my_recipe_book/widgets/clipper.dart';
 import 'package:my_recipe_book/widgets/dialogs/number_dialog.dart';
+import 'package:my_recipe_book/widgets/recipe_screen/animated_nutritions_fab.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:share/share.dart';
@@ -159,177 +160,22 @@ class _RecipeScreenState extends State<RecipeScreen>
                   .then((_) => Ads.showBottomBannerAd());
             }
           },
-          child: state.recipe.nutritions.isEmpty
-              ? Scaffold(
-                  //##
-                  appBar: MediaQuery.of(context).size.width > 550
-                      ? MyGradientAppBar(state.recipe)
-                      : null,
-                  body: RecipePage(
-                    recipe: state.recipe,
-                    heroImageTag: widget.heroImageTag,
-                    scrollController: _scrollController,
-                    categoriesFiles: state.categoryImages,
-                  ),
-                )
-              : Scaffold(
-                  appBar: MediaQuery.of(context).size.width > 550
-                      ? MyGradientAppBar(state.recipe)
-                      : null,
-                  body: SlidingUpPanel(
-                    renderPanelSheet: false,
-                    margin: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width > 450
-                          ? (MediaQuery.of(context).size.width - 450) / 2
-                          : 0,
-                      right: MediaQuery.of(context).size.width > 450
-                          ? (MediaQuery.of(context).size.width - 450) / 2
-                          : 0,
-                    ),
-                    controller: _pc,
-                    backdropColor: Color.fromRGBO(0, 0, 0, 0.5),
-                    backdropEnabled: true,
-                    // margin: EdgeInsets.only(left: 20, right: 20),
-                    parallaxEnabled:
-                        MediaQuery.of(context).size.width > 450 ? false : true,
-                    parallaxOffset: 0.5,
-                    minHeight: 50,
-                    maxHeight: MediaQuery.of(context).size.height -
-                                kToolbarHeight -
-                                30 >
-                            450
-                        ? 480
-                        : MediaQuery.of(context).size.height -
-                            kToolbarHeight -
-                            30,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(25),
-                      topRight: Radius.circular(25),
-                    ),
-
-                    panel: ClipPath(
-                      clipper: NutritionDraggableClipper(),
-                      child: Container(
-                        width: 50,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0xff7E4400),
-                              Color(0xffCFAC53),
-                            ],
-                            begin: FractionalOffset.topLeft,
-                            end: FractionalOffset.bottomRight,
-                            stops: [0.0, 1.0],
-                          ),
-                        ),
-                        child: Stack(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 50),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    SizedBox(height: 20),
-                                    GestureDetector(
-                                      onTap: () {
-                                        _pc.animatePanelToPosition(1);
-                                      },
-                                      child: Text(
-                                        I18n.of(context).nutritions,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                    Container(height: 10),
-                                    Container(
-                                      height: MediaQuery.of(context)
-                                                      .size
-                                                      .height -
-                                                  kToolbarHeight -
-                                                  88 >
-                                              377
-                                          ? 377
-                                          : MediaQuery.of(context).size.height -
-                                              kToolbarHeight -
-                                              133,
-                                      child: ListView.builder(
-                                        itemCount:
-                                            state.recipe.nutritions.length * 2,
-                                        itemBuilder: (context, index) {
-                                          if ((index - 1) % 2 == 0) {
-                                            return Divider();
-                                          } else {
-                                            int nutritionIndex =
-                                                (index / 2).round();
-                                            return ListTile(
-                                              leading: Icon(MdiIcons.gateOr,
-                                                  color: Colors.white),
-                                              title: Text(
-                                                state
-                                                    .recipe
-                                                    .nutritions[nutritionIndex]
-                                                    .name,
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: Colors.white),
-                                              ),
-                                              trailing: Text(
-                                                state
-                                                    .recipe
-                                                    .nutritions[nutritionIndex]
-                                                    .amountUnit,
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: Colors.white),
-                                              ),
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    )
-                                  ]),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 2.0, right: 40),
-                              child: Align(
-                                alignment: Alignment.topRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _pc.animatePanelToPosition(1);
-                                  },
-                                  child: Container(
-                                    color: Colors.transparent,
-                                    width: 80,
-                                    height: 50,
-                                    child: Center(
-                                      child: Container(
-                                        width: 15,
-                                        height: 15,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.grey[300],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    body: RecipePage(
-                      recipe: state.recipe,
-                      heroImageTag: widget.heroImageTag,
-                      scrollController: _scrollController,
-                      categoriesFiles: state.categoryImages,
-                    ),
-                  ),
-                ),
+          child: Scaffold(
+            //##
+            appBar: MediaQuery.of(context).size.width > 550
+                ? MyGradientAppBar(state.recipe)
+                : null,
+            floatingActionButton: state.recipe.nutritions.isEmpty
+                ? null
+                : AnimatedNutritionsFab(
+                    state.recipe.nutritions, _scrollController),
+            body: RecipePage(
+              recipe: state.recipe,
+              heroImageTag: widget.heroImageTag,
+              scrollController: _scrollController,
+              categoriesFiles: state.categoryImages,
+            ),
+          ),
         );
       } else if (state is RecipeEditedDeleted) {
         return Scaffold(
@@ -365,33 +211,34 @@ class NotesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-          width: MediaQuery.of(context).size.width > 450
-              ? 450
-              : MediaQuery.of(context).size.width,
-          padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                I18n.of(context).notes,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 24,
-                  fontFamily: recipeScreenFontFamily,
-                ),
+        width: MediaQuery.of(context).size.width > 450
+            ? 450
+            : MediaQuery.of(context).size.width,
+        padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              I18n.of(context).notes,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 24,
+                fontFamily: recipeScreenFontFamily,
               ),
-              Padding(
-                  padding: EdgeInsets.only(top: 20, bottom: 20),
-                  child: Text(
-                    notes,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontFamily: recipeScreenFontFamily,
-                    ),
-                  ))
-            ],
-          )),
+            ),
+            Padding(
+                padding: EdgeInsets.only(top: 20, bottom: 20),
+                child: Text(
+                  notes,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: recipeScreenFontFamily,
+                  ),
+                ))
+          ],
+        ),
+      ),
     );
   }
 }
@@ -883,7 +730,6 @@ class RecipePage extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 0.0),
                           child: IngredientsScreen(
                             currentRecipe: recipe,
-                            hasNutritions: recipe.nutritions.isNotEmpty,
                             animationWaitTime: MyIntWrapper(0),
                             addToCartIngredients: [],
                           ),
@@ -906,13 +752,13 @@ class RecipePage extends StatelessWidget {
                         ),
                       ),
                       child: ListView(
+                        controller: scrollController,
                         children: <Widget>[
                           StepsSection(
                             recipe.steps,
                             recipe.stepTitles,
                             recipe.stepImages,
                             recipe.name,
-                            recipe.nutritions.isNotEmpty,
                             expandHeight: true,
                           ),
                         ],
@@ -1072,7 +918,6 @@ class RecipePage extends StatelessWidget {
                                       : SizedBox(height: 20),
                                   IngredientsScreen(
                                     currentRecipe: recipe,
-                                    hasNutritions: recipe.nutritions.isNotEmpty,
                                     animationWaitTime: MyIntWrapper(0),
                                     addToCartIngredients: [],
                                   ),
@@ -1098,7 +943,6 @@ class RecipePage extends StatelessWidget {
                                   recipe.stepTitles,
                                   recipe.stepImages,
                                   recipe.name,
-                                  recipe.nutritions.isNotEmpty,
                                 ),
                               ),
                               (recipe.notes != "" ||
@@ -1126,9 +970,6 @@ class RecipePage extends StatelessWidget {
                                       categories: recipe.categories,
                                       categoriesFiles: categoriesFiles)
                                   : null,
-                              recipe.nutritions.isEmpty
-                                  ? Container()
-                                  : Container(height: 50),
                             ]..removeWhere((item) => item == null)),
                           ),
                         ]..removeWhere((item) => item == null),
@@ -1364,7 +1205,6 @@ class StepsSection extends StatelessWidget {
   final List<String> steps;
   final String recipeName;
   final bool expandHeight;
-  final bool hasNutritions;
 
   final List<Color> stepsColors = [
     Color(0xff28B404),
@@ -1377,8 +1217,7 @@ class StepsSection extends StatelessWidget {
     this.steps,
     this.stepTitles,
     this.stepImages,
-    this.recipeName,
-    this.hasNutritions, {
+    this.recipeName, {
     this.expandHeight = false,
   });
 
@@ -1431,11 +1270,6 @@ class StepsSection extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 25),
-                hasNutritions &&
-                        MediaQuery.of(context).size.width > 550 &&
-                        Ads.shouldShowAds()
-                    ? Container(height: 160)
-                    : Container(),
               ]..removeWhere((item) => item == null),
             );
           } else {
@@ -1510,14 +1344,12 @@ class _StepsIntroState extends State<StepsIntro> {
 
 class IngredientsScreen extends StatelessWidget {
   final Recipe currentRecipe;
-  final bool hasNutritions;
   final MyIntWrapper animationWaitTime;
   final List<Ingredient> addToCartIngredients;
 
   const IngredientsScreen({
     Key key,
     @required this.currentRecipe,
-    @required this.hasNutritions,
     // needs to be initialized with 0
     @required this.animationWaitTime,
     // needs to be initialized with an empty list
@@ -1819,22 +1651,16 @@ class IngredientsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            ]
-              ..add(Center(
-                child: Container(
-                  width: 400,
-                  child: Column(
-                    children: getIngredientsData(
-                        state.ingredients, state.sectionCheck, context),
+            ]..add(
+                Center(
+                  child: Container(
+                    width: 400,
+                    child: Column(
+                      children: getIngredientsData(
+                          state.ingredients, state.sectionCheck, context),
+                    ),
                   ),
                 ),
-              ))
-              ..add(
-                hasNutritions &&
-                        MediaQuery.of(context).size.width > 550 &&
-                        Ads.shouldShowAds()
-                    ? Container(height: 160)
-                    : Container(),
               ),
           );
         } else {
