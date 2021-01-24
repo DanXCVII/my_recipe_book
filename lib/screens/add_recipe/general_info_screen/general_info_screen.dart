@@ -324,7 +324,10 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                   Container(
                     width: 100,
                     child: Text(
-                        "${time.myDouble ~/ 60} h ${cutDouble(time.myDouble % 60)} min",
+                        (time.myDouble ~/ 60 > 0
+                                ? "${time.myDouble ~/ 60} h"
+                                : "") +
+                            " ${cutDouble(time.myDouble % 60)} min",
                         style: TextStyle(fontSize: 18)),
                   ),
                 ],

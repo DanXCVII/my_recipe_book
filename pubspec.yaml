@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.1.0+86
+version: 1.2.0+88
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
@@ -38,7 +38,6 @@ dependencies:
   share_extend: ^1.1.9 # MIT
   bottom_navy_bar: ^5.6.0 # Apache 2.0
   intro_slider: ^2.3.3 # MIT
-  sliding_up_panel: ^1.0.2 # BSD
   autocomplete_textfield: ^1.7.3 # MIT
   hive: ^1.4.4+1 # Apache 2.0
   build_runner: ^1.7.1 # BSD
@@ -60,7 +59,7 @@ dependencies:
   pull_to_refresh: ^1.5.7 # MIT
   showcaseview: ^0.1.5 # BSD
   firebase_admob: ^0.10.3 # BSD
-  in_app_purchase: ^0.3.4+16 # BSD
+  in_app_purchase: ^0.3.5+1 # BSD
   video_player: ^0.10.10 # BSD
   permission_handler: ^4.4.0 # MIT
   flutter_sequence_animation: ^3.0.1 # MIT

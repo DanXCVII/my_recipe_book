@@ -10,7 +10,6 @@ import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/models/tuple.dart';
-import 'package:my_recipe_book/widgets/clipper.dart';
 import 'package:my_recipe_book/widgets/dialogs/number_dialog.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/animated_nutritions_fab.dart';
 import 'package:pdf/pdf.dart';
@@ -18,7 +17,6 @@ import 'package:printing/printing.dart';
 import 'package:share/share.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../ad_related/ad.dart';
@@ -109,7 +107,6 @@ class RecipeScreen extends StatefulWidget {
 
 class _RecipeScreenState extends State<RecipeScreen>
     with SingleTickerProviderStateMixin {
-  final PanelController _pc = PanelController();
   ScrollController _scrollController;
 
   @override

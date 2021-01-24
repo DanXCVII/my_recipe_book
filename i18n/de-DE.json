@@ -20,7 +20,7 @@
   "share_recipe": "Rezept teilen",
   "select_recipes": "Rezepte auswählen",
   "import_recipe_s": "Rezepte importieren",
-  "export_recipe_s": "Rezepte teilen/sichern",
+  "export_recipe_s": "Rezepte sichern/teilen",
   "remove_section": "Bereich {newLine}entfernen",
   "remove_ingredient": "Zutat {newLine}entfernen",
   "remove_step": "Schritt {newLine}entfernen",

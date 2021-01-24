@@ -538,7 +538,7 @@ packages:
       name: in_app_purchase
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.4+16"
+    version: "0.3.5+1"
   inline_calender:
     dependency: "direct main"
     description:
@@ -957,13 +957,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  sliding_up_panel:
-    dependency: "direct main"
-    description:
-      name: sliding_up_panel
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   smooth_star_rating:
     dependency: transitive
     description:
