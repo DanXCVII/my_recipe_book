@@ -18,11 +18,13 @@ class EditIngredient extends IngredientsSectionEvent {
   final Ingredient newIngredient;
   final int sectionIndex;
   final int index;
+  final int newSectionIndex;
 
   const EditIngredient(
     this.newIngredient,
     this.sectionIndex,
     this.index,
+    this.newSectionIndex,
   );
 }
 

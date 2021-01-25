@@ -9,12 +9,17 @@ import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 import '../../util/helper.dart';
 
 class IngredientAddDialog extends StatelessWidget {
-  final void Function(Ingredient ingredient) onFinished;
+  final void Function(Ingredient ingredient, int selectedDropdownIndex)
+      onFinished;
   final Ingredient prefilledData;
+  final List<String> sectionTitles;
+  final int selectedDropdownIndex;
 
   const IngredientAddDialog(
     this.onFinished,
     this.prefilledData, {
+    this.sectionTitles = const [],
+    this.selectedDropdownIndex = 0,
     Key key,
   }) : super(key: key);
 
@@ -31,7 +36,12 @@ class IngredientAddDialog extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
               Consts.padding, Consts.padding, Consts.padding, 7),
-          child: IngredientAddDialogContent(onFinished, prefilledData),
+          child: IngredientAddDialogContent(
+            onFinished,
+            prefilledData,
+            sectionTitles: sectionTitles,
+            selectedDropdownIndex: selectedDropdownIndex,
+          ),
         ),
       ),
     );
@@ -39,31 +49,45 @@ class IngredientAddDialog extends StatelessWidget {
 }
 
 class IngredientAddDialogContent extends StatefulWidget {
-  final void Function(Ingredient ingredient) onFinished;
+  final void Function(Ingredient ingredient, int selectedDropdownIndex)
+      onFinished;
   final Ingredient prefilledData;
   final focus = FocusNode();
+  final List<String> sectionTitles;
+  final int selectedDropdownIndex;
 
   IngredientAddDialogContent(
     this.onFinished,
     this.prefilledData, {
+    this.sectionTitles,
+    this.selectedDropdownIndex,
     Key key,
   }) : super(key: key);
 
   @override
   _IngredientAddDialogContentState createState() =>
-      _IngredientAddDialogContentState();
+      _IngredientAddDialogContentState(selectedDropdownIndex, sectionTitles);
 }
 
 class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
     with SingleTickerProviderStateMixin {
   GlobalKey<AutoCompleteTextFieldState<String>> autoCompletionTextField =
-      new GlobalKey();
-  TextEditingController ingredientNameController = new TextEditingController();
-  TextEditingController ingredientAmountController =
-      new TextEditingController();
-  TextEditingController ingredientUnitController = new TextEditingController();
-  GlobalKey<FormState> formKey = new GlobalKey<FormState>();
+      GlobalKey();
+  TextEditingController ingredientNameController = TextEditingController();
+  TextEditingController ingredientAmountController = TextEditingController();
+  TextEditingController ingredientUnitController = TextEditingController();
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool isExpanded = false;
+
+  int selectedDropdownIndex;
+  List<String> dropdownItems = [];
+
+  _IngredientAddDialogContentState(
+      this.selectedDropdownIndex, List<String> sectionTitles) {
+    for (int i = 0; i < sectionTitles.length; i++) {
+      dropdownItems.add("${i + 1}: ${sectionTitles[i]}");
+    }
+  }
 
   @override
   void dispose() {
@@ -103,6 +127,42 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
           child: ListView(
             shrinkWrap: true,
             children: <Widget>[
+              dropdownItems.isEmpty
+                  ? null
+                  : Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: DropdownButton<String>(
+                          value: dropdownItems[selectedDropdownIndex],
+                          iconSize: 24,
+                          elevation: 16,
+                          style: TextStyle(fontSize: 18),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.orange,
+                          ),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              selectedDropdownIndex =
+                                  dropdownItems.indexOf(newValue);
+                            });
+                          },
+                          items: dropdownItems
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width - 150 >
+                                        270
+                                    ? 270
+                                    : MediaQuery.of(context).size.width - 150,
+                                child: Text(value),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
               Form(
                 key: formKey,
                 child: AnimatedSize(
@@ -161,7 +221,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                   ),
                 ),
               ),
-            ],
+            ]..removeWhere((element) => element == null),
           ),
         ),
         SizedBox(
@@ -179,7 +239,9 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
             SizedBox(width: 6),
             FlatButton(
               child: Text(
-                I18n.of(context).add,
+                dropdownItems.isNotEmpty
+                    ? I18n.of(context).save
+                    : I18n.of(context).add,
                 style: TextStyle(color: Colors.black),
               ),
               color: Theme.of(context).backgroundColor == Colors.white
@@ -196,6 +258,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                           : double.parse(ingredientAmountController.text),
                       unit: ingredientUnitController.text,
                     ),
+                    selectedDropdownIndex,
                   );
 
                   Navigator.of(context).pop();

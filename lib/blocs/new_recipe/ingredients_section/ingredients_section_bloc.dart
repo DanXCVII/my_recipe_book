@@ -96,7 +96,13 @@ class IngredientsSectionBloc
 
   Stream<IngredientsSectionState> _mapEditIngredientToState(
       EditIngredient event) async* {
-    ingredients[event.sectionIndex][event.index] = event.newIngredient;
+    if (event.newSectionIndex != null &&
+        event.sectionIndex != event.newSectionIndex) {
+      ingredients[event.sectionIndex].removeAt(event.index);
+      ingredients[event.newSectionIndex].add(event.newIngredient);
+    } else {
+      ingredients[event.sectionIndex][event.index] = event.newIngredient;
+    }
 
     yield LoadedIngredientsSection(
       sectionTitles,

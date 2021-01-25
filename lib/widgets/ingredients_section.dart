@@ -124,18 +124,27 @@ class _IngredientsState extends State<Ingredients> {
                             return Container(
                                 key: Key(currentIngred.toString()),
                                 child: GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
                                   onTap: () {
                                     showDialog(
                                       context: context,
                                       builder: (bContext) =>
                                           IngredientAddDialog(
-                                        (ingredient) => BlocProvider.of<
-                                                IngredientsSectionBloc>(context)
-                                            .add(
+                                        (ingredient, sectionIndex) =>
+                                            BlocProvider.of<
+                                                        IngredientsSectionBloc>(
+                                                    context)
+                                                .add(
                                           EditIngredient(
-                                              ingredient, index, indexTwo),
+                                            ingredient,
+                                            index,
+                                            indexTwo,
+                                            sectionIndex,
+                                          ),
                                         ),
                                         currentIngred,
+                                        sectionTitles: state.sectionTitles,
+                                        selectedDropdownIndex: index,
                                       ),
                                     );
                                   },
@@ -300,11 +309,14 @@ class _IngredientsState extends State<Ingredients> {
                                 showDialog(
                                   context: context,
                                   builder: (bContext) => IngredientAddDialog(
-                                    (ingredient) => BlocProvider.of<
-                                            IngredientsSectionBloc>(context)
+                                    (ingredient, sectionIndex) => BlocProvider
+                                            .of<IngredientsSectionBloc>(context)
                                         .add(AddIngredient(ingredient, index)),
                                     Ingredient(
-                                        name: "", amount: null, unit: ""),
+                                      name: "",
+                                      amount: null,
+                                      unit: "",
+                                    ),
                                   ),
                                 );
                               },

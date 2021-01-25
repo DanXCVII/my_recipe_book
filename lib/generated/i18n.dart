@@ -702,9 +702,9 @@ class _I18n_de_DE extends I18n {
   /// "Rezepte importieren"
   @override
   String get import_recipe_s => "Rezepte importieren";
-  /// "Rezepte teilen/sichern"
+  /// "Rezepte sichern/teilen"
   @override
-  String get export_recipe_s => "Rezepte teilen/sichern";
+  String get export_recipe_s => "Rezepte sichern/teilen";
   /// "Bereich ${newLine}entfernen"
   @override
   String remove_section(String newLine) => "Bereich ${newLine}entfernen";
@@ -735,9 +735,9 @@ class _I18n_de_DE extends I18n {
   /// "Einkaufsliste hinzufügen"
   @override
   String get add_to_cart => "Einkaufsliste hinzufügen";
-  /// "hinzufügen"
+  /// "Hinzufügen"
   @override
-  String get add => "hinzufügen";
+  String get add => "Hinzufügen";
   /// "Rezeptname"
   @override
   String get recipe_name => "Rezeptname";

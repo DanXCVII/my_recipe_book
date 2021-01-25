@@ -352,7 +352,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   void _onTapDuration(MyDoubleWrapper time) async {
     Duration resultingDuration = await showDurationPicker(
       context: context,
-      initialTime: new Duration(minutes: 30),
+      initialTime: new Duration(
+        minutes: time.myDouble != null ? time.myDouble.toInt() : 30,
+      ),
     );
     if (resultingDuration != null) {
       setState(() {
