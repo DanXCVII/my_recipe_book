@@ -297,6 +297,8 @@ class MyApp extends StatelessWidget {
                       create: (context) => StepImagesBloc()
                         ..add(
                           InitializeStepImages(
+                            args.modifiedRecipe.steps,
+                            args.modifiedRecipe.stepTitles,
                             stepImages: args.modifiedRecipe.stepImages,
                           ),
                         ),

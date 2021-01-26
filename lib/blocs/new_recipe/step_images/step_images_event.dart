@@ -6,8 +6,10 @@ abstract class StepImagesEvent extends Equatable {
 
 class InitializeStepImages extends StepImagesEvent {
   final List<List<String>> stepImages;
+  final List<String> steps;
+  final List<String> stepTitles;
 
-  InitializeStepImages({this.stepImages});
+  InitializeStepImages(this.steps, this.stepTitles, {this.stepImages});
 
   @override
   List<Object> get props => [stepImages];
@@ -33,28 +35,29 @@ class AddImage extends StepImagesEvent {
 }
 
 class AddStep extends StepImagesEvent {
+  final String step;
   final DateTime time;
 
-  const AddStep(this.time);
+  const AddStep(this.step, this.time);
 
   @override
-  List<Object> get props => [time];
+  List<Object> get props => [step, time];
 }
 
 class RemoveImage extends StepImagesEvent {
-  final String stepImage;
   final int stepNumber;
+  final int stepImageIndex;
   final bool editingRecipe;
 
   const RemoveImage(
-    this.stepImage,
     this.stepNumber,
+    this.stepImageIndex,
     this.editingRecipe,
   );
 
   @override
   List<Object> get props => [
-        stepImage,
+        stepImageIndex,
         stepNumber,
         editingRecipe,
       ];
@@ -69,4 +72,34 @@ class RemoveStep extends StepImagesEvent {
 
   @override
   List<Object> get props => [recipeName, dateTime];
+}
+
+class EditStepTitle extends StepImagesEvent {
+  final String stepTitle;
+  final int stepIndex;
+
+  EditStepTitle(this.stepTitle, this.stepIndex);
+
+  @override
+  List<Object> get props => [stepTitle, stepIndex];
+}
+
+class EditStep extends StepImagesEvent {
+  final String step;
+  final int stepIndex;
+
+  EditStep(this.step, this.stepIndex);
+
+  @override
+  List<Object> get props => [step, stepIndex];
+}
+
+class MoveStep extends StepImagesEvent {
+  final int oldIndex;
+  final int newIndex;
+
+  MoveStep(this.oldIndex, this.newIndex);
+
+  @override
+  List<Object> get props => [oldIndex, newIndex];
 }

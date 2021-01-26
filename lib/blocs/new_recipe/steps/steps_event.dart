@@ -9,13 +9,20 @@ class SetCanSave extends StepsEvent {
   List<Object> get props => [];
 }
 
+class AddStep extends StepsEvent {
+  final String step;
+
+  AddStep(this.step);
+
+  @override
+  List<Object> get props => [step];
+}
+
 class FinishedEditing extends StepsEvent {
   final bool editingRecipe;
   final bool goBack;
 
   final int complexity;
-  final List<String> steps;
-  final List<String> stepTitles;
   final String notes;
   // List<List<String>> images -> the bloc keeps track of that
 
@@ -24,8 +31,6 @@ class FinishedEditing extends StepsEvent {
     this.goBack,
     this.complexity,
     this.notes,
-    this.steps,
-    this.stepTitles,
   );
 
   @override
@@ -34,7 +39,5 @@ class FinishedEditing extends StepsEvent {
         goBack,
         complexity,
         notes,
-        steps,
-        stepTitles,
       ];
 }

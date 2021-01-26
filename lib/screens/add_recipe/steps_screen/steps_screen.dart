@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -103,6 +104,18 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           ),
           title: Text(I18n.of(context).add_steps),
           actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.info_outline),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => InfoDialog(
+                    title: I18n.of(context).info,
+                    body: I18n.of(context).steps_info_desc,
+                  ),
+                );
+              },
+            ),
             BlocListener<StepsBloc, StepsState>(
               listener: (context, state) {
                 if (state is SEditingFinishedGoBack) {
@@ -176,14 +189,9 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                     key: _formKey,
                     child: widget.editingRecipeName != null
                         ? Steps(
-                            stepsDescController,
-                            stepTitles,
                             editRecipeName: widget.editingRecipeName,
                           )
-                        : Steps(
-                            stepsDescController,
-                            stepTitles,
-                          ),
+                        : Steps(),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -244,9 +252,6 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           goBack,
           complexity.myDouble.round(),
           notesController.text,
-          trimRemoveTrailingEmptyStrings(
-              stepsDescController.map((item) => item.text).toList()),
-          stepTitles,
         ),
       );
     } else {
@@ -256,9 +261,6 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           goBack,
           complexity.myDouble.round(),
           notesController.text,
-          trimRemoveTrailingEmptyStrings(
-              stepsDescController.map((item) => item.text).toList()),
-          stepTitles,
         ),
       );
     }

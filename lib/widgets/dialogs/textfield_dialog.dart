@@ -10,6 +10,7 @@ class Consts {
 class TextFieldDialog extends StatefulWidget {
   // only needs to be specified when editing an item
   final String prefilledText;
+  final bool showExpanded;
   final String hintText;
   final String Function(String name) validation;
   final void Function(String name) save;
@@ -20,6 +21,7 @@ class TextFieldDialog extends StatefulWidget {
     @required this.save,
     this.hintText,
     this.prefilledText,
+    this.showExpanded = false,
   });
 
   @override
@@ -61,10 +63,10 @@ class TextFieldDialogState extends State<TextFieldDialog> {
           child: Center(
             child: Card(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(40.0),
+                borderRadius: BorderRadius.circular(30.0),
               ),
               child: Container(
-                height: 60,
+                height: widget.showExpanded ? null : 60,
                 width: MediaQuery.of(context).size.width > 400
                     ? 400
                     : MediaQuery.of(context).size.width,
@@ -79,6 +81,8 @@ class TextFieldDialogState extends State<TextFieldDialog> {
                             key: _formKey,
                             child: TextFormField(
                               focusNode: widget.focus,
+                              minLines: widget.showExpanded ? 3 : 1,
+                              maxLines: widget.showExpanded ? 10 : 1,
                               controller: nameController,
                               validator: (value) {
                                 return widget.validation(value);

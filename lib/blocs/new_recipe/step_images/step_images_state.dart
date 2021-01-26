@@ -6,9 +6,18 @@ abstract class StepImagesState {
 
 class LoadedStepImages extends StepImagesState {
   final List<List<String>> stepImages;
+  final List<String> steps;
+  final List<String> stepTitles;
   final int removedStep;
 
-  LoadedStepImages(this.stepImages, {this.removedStep});
+  final List<Key> stepKeys;
+
+  LoadedStepImages(
+    this.stepImages,
+    this.steps,
+    this.stepTitles,this.stepKeys, {
+    this.removedStep,
+  });
 
   // @override
   // List<Object> get props => [stepImages, removedStep, stepTitles];

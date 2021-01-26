@@ -382,6 +382,7 @@ Future<Recipe> importMRBrecipeFromTmp(String recipeName) async {
 
 /// saves the stepImage in high and low quality in the local storage under the given
 /// recipeName and if nothing is given, "tmp" as recipeName will be used.
+/// returns the absolute path of the full quality saved stepImage
 Future<String> saveStepImage(File newImage, int stepNumber,
     {String recipeName = 'tmp'}) async {
   String newStepImageName = getStepImageName(newImage.path);

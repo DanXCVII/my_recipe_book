@@ -642,6 +642,8 @@ class I18n implements WidgetsLocalizations {
   String get saturday => "Saturday";
   /// "Sunday"
   String get sunday => "Sunday";
+  /// "If you added multiple steps, you can move them by tapping and holding one step. This feature is only available, if no images for the steps are added. The same with removing steps from the middle."
+  String get steps_info_desc => "If you added multiple steps, you can move them by tapping and holding one step. This feature is only available, if no images for the steps are added. The same with removing steps from the middle.";
 }
 
 class _I18n_en_US extends I18n {
@@ -1560,6 +1562,9 @@ class _I18n_de_DE extends I18n {
   /// "Sonntag"
   @override
   String get sunday => "Sonntag";
+  /// "Wenn du mehere Schritte hinzugefügt hast, kannst du sie verschieben, indem du einen Schritt gedrückt hältst. Die Funktion Schritte zu verschieben oder Schritte aus der Mitte zu entfernen ist nur verfügbar, wenn den Schritten keine Bilder hinzgefügt wurden."
+  @override
+  String get steps_info_desc => "Wenn du mehere Schritte hinzugefügt hast, kannst du sie verschieben, indem du einen Schritt gedrückt hältst. Die Funktion Schritte zu verschieben oder Schritte aus der Mitte zu entfernen ist nur verfügbar, wenn den Schritten keine Bilder hinzgefügt wurden.";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

@@ -302,5 +302,6 @@
   "thursday": "Donnerstag",
   "friday": "Freitag",
   "saturday": "Samstag",
-  "sunday": "Sonntag"
+  "sunday": "Sonntag",
+  "steps_info_desc": "Wenn du mehere Schritte hinzugefügt hast, kannst du sie verschieben, indem du einen Schritt gedrückt hältst. Die Funktion Schritte zu verschieben oder Schritte aus der Mitte zu entfernen ist nur verfügbar, wenn den Schritten keine Bilder hinzgefügt wurden."
 }

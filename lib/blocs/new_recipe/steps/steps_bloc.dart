@@ -11,7 +11,9 @@ part 'steps_event.dart';
 part 'steps_state.dart';
 
 class StepsBloc extends Bloc<StepsEvent, StepsState> {
-  List<List<String>> stepImages;
+  List<List<String>> stepImages = [[]];
+  List<String> stepTitles = [""];
+  List<String> steps = [];
   StreamSubscription subscription;
 
   StepsBloc(StepImagesBloc stepImagesBloc) : super(SCanSave()) {
@@ -19,6 +21,8 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
       if (state is SCanSave) {
         if (siState is LoadedStepImages) {
           stepImages = siState.stepImages;
+          steps = siState.steps;
+          stepTitles = siState.stepTitles;
         }
       }
     });
@@ -41,11 +45,11 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
 
   Stream<StepsState> _mapFinishedEditingToState(FinishedEditing event) async* {
     if (state is SCanSave) {
-      List<String> steps = event.steps.map((e) => e).toList();
-      List<String> stepTitles = event.stepTitles.map((e) => e).toList();
+      List<String> recipeSteps = steps.map((e) => e).toList();
+      List<String> recipeStepTitles = stepTitles.map((e) => e).toList();
 
       bool stepImagesValid = true;
-      for (int i = event.steps.length; i < stepImages.length; i++) {
+      for (int i = steps.length; i < stepImages.length; i++) {
         if (stepImages[i].length != 0) {
           stepImagesValid = false;
           break;
@@ -63,8 +67,8 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
         yield SEditingFinished();
       }
 
-      if (event.steps.length > 1) {
-        for (int i = event.steps.length; i < stepImages.length; i++) {
+      if (steps.length > 1) {
+        for (int i = steps.length; i < stepImages.length; i++) {
           stepImages.removeLast();
         }
       }
@@ -75,8 +79,8 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
               notes: event.notes,
               stepImages: stepImages,
               effort: event.complexity,
-              steps: steps,
-              stepTitles: stepTitles,
+              steps: recipeSteps,
+              stepTitles: recipeStepTitles,
             );
         await HiveProvider().saveTmpRecipe(newRecipe);
       } else {
@@ -84,8 +88,8 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
               notes: event.notes,
               stepImages: stepImages,
               effort: event.complexity,
-              steps: steps,
-              stepTitles: stepTitles,
+              steps: recipeSteps,
+              stepTitles: recipeStepTitles,
             );
         await HiveProvider().saveTmpEditingRecipe(newRecipe);
       }

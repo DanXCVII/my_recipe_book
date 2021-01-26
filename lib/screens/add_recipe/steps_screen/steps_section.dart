@@ -5,19 +5,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:image_picker/image_picker.dart";
 import 'package:my_recipe_book/widgets/dialogs/are_you_sure_dialog.dart';
 import 'package:my_recipe_book/widgets/dialogs/textfield_dialog.dart';
+import 'package:reorderables/reorderables.dart';
 
 import '../../../blocs/new_recipe/step_images/step_images_bloc.dart';
 import '../../../constants/global_constants.dart' as Constants;
 import '../../../generated/i18n.dart';
 
 class Steps extends StatefulWidget {
-  final List<TextEditingController> stepsDescriptionController;
-  final List<String> stepTitles;
   final String editRecipeName;
 
-  Steps(
-    this.stepsDescriptionController,
-    this.stepTitles, {
+  Steps({
     this.editRecipeName = Constants.newRecipeLocalPathString,
   });
 
@@ -28,30 +25,18 @@ class Steps extends StatefulWidget {
 }
 
 class _StepsState extends State<Steps> {
+  TextEditingController stepsDescriptionController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     // Column with all the data of the steps inside like heading, textFields etc.
     return BlocBuilder<StepImagesBloc, StepImagesState>(
-        buildWhen: (oldState, newState) {
-      if (oldState is LoadedStepImages && newState is LoadedStepImages) {
-        if (oldState.stepImages.length > newState.stepImages.length) {
-          if (newState.removedStep != null) {
-            widget.stepsDescriptionController.removeAt(newState.removedStep);
-            widget.stepTitles.removeAt(newState.removedStep);
-          } else {
-            widget.stepsDescriptionController.removeLast();
-            widget.stepTitles.removeLast();
-          }
-        } else if (oldState.stepImages.length < newState.stepImages.length &&
-            widget.stepsDescriptionController.length <
-                newState.stepImages.length) {
-          widget.stepsDescriptionController.add(TextEditingController());
-          widget.stepTitles.add("");
-        }
-      }
-      return true;
-    }, builder: (context, state) {
+        builder: (context, state) {
       if (state is LoadedStepImages) {
+        bool editingRecipe =
+            widget.editRecipeName == Constants.newRecipeLocalPathString
+                ? false
+                : true;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -63,266 +48,102 @@ class _StepsState extends State<Steps> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
-          ]..addAll(
+          ]
+            ..add(
               // the sections
-              List<Widget>.generate(
-                widget.stepsDescriptionController.length,
-                (i) => Column(
+              ReorderableColumn(
+                  scrollController: ScrollController(),
+                  onReorder: (i, j) {
+                    BlocProvider.of<StepImagesBloc>(context)
+                        .add(MoveStep(i, j));
+                  },
+                  children: List<Widget>.generate(
+                    state.steps.length,
+                    (i) => Step(
+                      i,
+                      state.stepTitles[i],
+                      state.steps[i],
+                      state.stepImages[i],
+                      (title) => BlocProvider.of<StepImagesBloc>(context)
+                          .add(EditStepTitle(title, i)),
+                      (step) => BlocProvider.of<StepImagesBloc>(context)
+                          .add(EditStep(step, i)),
+                      () => BlocProvider.of<StepImagesBloc>(context).add(
+                          RemoveStep(widget.editRecipeName, DateTime.now(),
+                              stepNumber: i)),
+                      state.stepImages.every((element) => element.isEmpty),
+                      (File imageFile) =>
+                          BlocProvider.of<StepImagesBloc>(context)
+                              .add(AddImage(imageFile, i, editingRecipe)),
+                      (index) => BlocProvider.of<StepImagesBloc>(context)
+                          .add(RemoveImage(i, index, editingRecipe)),
+                      key: state.stepKeys[i],
+                    ),
+                  )),
+            )
+            ..add(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(58, 8, 8, 8),
+                child: TextFormField(
+                  controller: stepsDescriptionController,
+                  textCapitalization: TextCapitalization.sentences,
+                  keyboardType: TextInputType.multiline,
+                  decoration: InputDecoration(
+                    filled: true,
+                    labelText: I18n.of(context).description,
+                  ),
+                  minLines: 3,
+                  maxLines: 10,
+                ),
+              ),
+            )
+            ..add(
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    widget.stepTitles.isEmpty || widget.stepTitles[i] == ""
-                        ? OutlineButton.icon(
-                            icon: Icon(Icons.add_circle),
-                            label: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Text(I18n.of(context).add_title),
-                            ),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (cntxt) => TextFieldDialog(
-                                  validation: (_) => null,
-                                  save: (String name) {
-                                    setState(() {
-                                      widget.stepTitles[i] = name;
-                                    });
-                                  },
-                                  hintText: I18n.of(context).categoryname,
-                                ),
-                              );
-                            },
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
+                    state.steps.length > 1
+                        ? Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: OutlineButton.icon(
+                              icon: Icon(Icons.remove_circle),
+                              label: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(I18n.of(context).remove_step(
+                                    MediaQuery.of(context).size.width < 412
+                                        ? "\n"
+                                        : "")),
+                              ),
+                              onPressed: () {
+                                _removeStep(widget.editRecipeName);
+                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
                             ),
                           )
-                        : Padding(
-                            padding:
-                                const EdgeInsets.only(left: 62.0, right: 12),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width -
-                                              150 >
-                                          350
-                                      ? 350
-                                      : MediaQuery.of(context).size.width - 150,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (cntxt) => TextFieldDialog(
-                                          validation: (_) => null,
-                                          save: (String name) {
-                                            setState(() {
-                                              widget.stepTitles[i] = name;
-                                            });
-                                          },
-                                          prefilledText: widget.stepTitles[i],
-                                          hintText:
-                                              I18n.of(context).categoryname,
-                                        ),
-                                      );
-                                    },
-                                    child: Text(
-                                      widget.stepTitles[i],
-                                    ),
-                                  ),
-                                ),
-                                Spacer(),
-                                IconButton(
-                                  icon: Icon(Icons.remove_circle),
-                                  onPressed: () {
-                                    setState(() {
-                                      widget.stepTitles[i] = "";
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                    Row(
-                      children: <Widget>[
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 15, right: 17.0),
-                              child: Container(
-                                width: 26,
-                                height: 26,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Color(0xFF790604),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "${i + 1}",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            state.stepImages
-                                        .every((element) => element.isEmpty) &&
-                                    widget.stepsDescriptionController.length > 1
-                                ? IconButton(
-                                    icon: Icon(Icons.remove_circle),
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (cntxt) => AreYouSureDialog(
-                                          I18n.of(context).remove_step("") +
-                                              "?",
-                                          I18n.of(context).remove_step_desc,
-                                          () {
-                                            BlocProvider.of<StepImagesBloc>(
-                                                    context)
-                                                .add(
-                                              RemoveStep(
-                                                widget.editRecipeName,
-                                                DateTime.now(),
-                                                stepNumber: i,
-                                              ),
-                                            );
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  )
-                                : null,
-                          ]..removeWhere((element) => element == null),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 8.0, right: 12),
-                              child: TextFormField(
-                                controller:
-                                    widget.stepsDescriptionController[i],
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                keyboardType: TextInputType.multiline,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  labelText: I18n.of(context).description,
-                                ),
-                                minLines: 3,
-                                maxLines: 10,
-                              )),
-                        ),
-                      ],
-                    )
-                  ]..add(
-                      FractionallySizedBox(
-                        widthFactor: 1,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(58.0, 12.0, 12.0, 0),
-                          child: Wrap(
-                            spacing: 5.0,
-                            runSpacing: 3.0,
-                            children: List.generate(
-                              i > state.stepImages.length - 1
-                                  ? 0
-                                  : state.stepImages[i].length,
-                              (j) => ImageBox(
-                                onPress: () {
-                                  BlocProvider.of<StepImagesBloc>(context)
-                                      .add(RemoveImage(
-                                    state.stepImages[i][j],
-                                    i,
-                                    widget.editRecipeName ==
-                                            Constants.newRecipeLocalPathString
-                                        ? false
-                                        : true,
-                                  ));
-                                },
-                                imagePath: state.stepImages[i][j],
-                              ),
-                            )..add(
-                                AddImageBox(
-                                  size: state.stepImages.length > i
-                                      ? state.stepImages[i].length > 0
-                                          ? 80
-                                          : 50
-                                      : 50,
-                                  iconSize: state.stepImages.length > i
-                                      ? state.stepImages[i].length > 0
-                                          ? null
-                                          : 20
-                                      : 20,
-                                  onNewImage: (File newImage) {
-                                    BlocProvider.of<StepImagesBloc>(context)
-                                        .add(AddImage(
-                                      newImage,
-                                      i,
-                                      widget.editRecipeName ==
-                                              Constants.newRecipeLocalPathString
-                                          ? false
-                                          : true,
-                                    ));
-                                  },
-                                ),
-                              ),
-                          ),
-                        ),
+                        : null,
+                    OutlineButton.icon(
+                      icon: Icon(Icons.add_circle),
+                      label: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(I18n.of(context).add_step(
+                            MediaQuery.of(context).size.width < 412
+                                ? "\n"
+                                : "")),
+                      ),
+                      onPressed: () {
+                        _addStep(widget.editRecipeName);
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0),
                       ),
                     ),
+                  ].where((c) => c != null).toList(),
                 ),
-              )..add(
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        widget.stepsDescriptionController.length > 1
-                            ? Padding(
-                                padding: const EdgeInsets.only(right: 12),
-                                child: OutlineButton.icon(
-                                  icon: Icon(Icons.remove_circle),
-                                  label: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0),
-                                    child: Text(I18n.of(context).remove_step(
-                                        MediaQuery.of(context).size.width < 412
-                                            ? "\n"
-                                            : "")),
-                                  ),
-                                  onPressed: () {
-                                    _removeStep(widget.editRecipeName);
-                                  },
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                ),
-                              )
-                            : null,
-                        OutlineButton.icon(
-                          icon: Icon(Icons.add_circle),
-                          label: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(I18n.of(context).add_step(
-                                MediaQuery.of(context).size.width < 412
-                                    ? "\n"
-                                    : "")),
-                          ),
-                          onPressed: () {
-                            _addStep(widget.editRecipeName);
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                        ),
-                      ].where((c) => c != null).toList(),
-                    ),
-                  ),
-                ),
+              ),
             ),
         );
       } else {
@@ -332,14 +153,14 @@ class _StepsState extends State<Steps> {
   }
 
   void _addStep(String recipeName) {
-    BlocProvider.of<StepImagesBloc>(context).add(AddStep(DateTime.now()));
-    // stepDescController will be added in condition in BlocBuilder
+    BlocProvider.of<StepImagesBloc>(context)
+        .add(AddStep(stepsDescriptionController.text, DateTime.now()));
+    stepsDescriptionController.text = "";
   }
 
   void _removeStep(String recipeName) {
     BlocProvider.of<StepImagesBloc>(context)
         .add(RemoveStep(widget.editRecipeName, DateTime.now()));
-    // stepDescController will be removed in condition in BlocBuilder
   }
 }
 
@@ -393,6 +214,206 @@ class ImageBox extends StatelessWidget {
         ),
       ),
     ]);
+  }
+}
+
+class Step extends StatelessWidget {
+  final int stepIndex;
+  final String stepTitle;
+  final String step;
+  final List<String> stepImages;
+  final void Function(String title) onEditTitle;
+  final void Function(String step) onEditStep;
+  final void Function() onRemoveStep;
+  final void Function(int index) onRemoveImage;
+  final void Function(File image) onAddImage;
+  final bool removeOption;
+
+  const Step(
+    this.stepIndex,
+    this.stepTitle,
+    this.step,
+    this.stepImages,
+    this.onEditTitle,
+    this.onEditStep,
+    this.onRemoveStep,
+    this.removeOption,
+    this.onAddImage,
+    this.onRemoveImage, {
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        stepTitle == "" || stepTitle == null
+            ? OutlineButton.icon(
+                icon: Icon(Icons.add_circle),
+                label: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(I18n.of(context).add_title),
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (cntxt) => TextFieldDialog(
+                      validation: (_) => null,
+                      save: (String name) {
+                        onEditTitle(name);
+                      },
+                      hintText: I18n.of(context).categoryname,
+                    ),
+                  );
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.only(left: 62.0, right: 12),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width - 150 > 350
+                          ? 350
+                          : MediaQuery.of(context).size.width - 150,
+                      child: GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (cntxt) => TextFieldDialog(
+                              validation: (_) => null,
+                              save: (String name) {
+                                onEditTitle(name);
+                              },
+                              prefilledText: stepTitle,
+                              hintText: I18n.of(context).categoryname,
+                            ),
+                          );
+                        },
+                        child: Center(
+                          child: Text(
+                            stepTitle,
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.remove_circle),
+                      onPressed: () {
+                        onEditTitle("");
+                      },
+                    ),
+                  ],
+                ),
+              ),
+        Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 17.0),
+                    child: Container(
+                      width: 26,
+                      height: 26,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFF790604),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "${stepIndex + 1}",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(height: 12),
+                  Icon(Icons.reorder),
+                ]..removeWhere((element) => element == null),
+              ),
+              Expanded(
+                flex: 4,
+                child: GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => TextFieldDialog(
+                        validation: (String name) => null,
+                        save: (String newStep) {
+                          BlocProvider.of<StepImagesBloc>(context)
+                              .add(EditStep(newStep, stepIndex));
+                        },
+                        prefilledText: step,
+                        hintText: I18n.of(context).categoryname,
+                        showExpanded: true,
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Text(step),
+                  ),
+                ),
+              ),
+              removeOption
+                  ? IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (cntxt) => AreYouSureDialog(
+                            I18n.of(context).remove_step("") + "?",
+                            I18n.of(context).remove_step_desc,
+                            () {
+                              onRemoveStep();
+                              Navigator.pop(context);
+                            },
+                          ),
+                        );
+                      },
+                    )
+                  : null,
+            ]..removeWhere((element) => element == null))
+      ]..add(
+          FractionallySizedBox(
+            widthFactor: 1,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(58.0, 12.0, 12.0, 8),
+              child: Wrap(
+                spacing: 5.0,
+                runSpacing: 3.0,
+                children: List.generate(
+                  stepImages.length,
+                  (i) => ImageBox(
+                    size: 70,
+                    onPress: () {
+                      onRemoveImage(i);
+                    },
+                    imagePath: stepImages[i],
+                  ),
+                )..add(
+                    AddImageBox(
+                      size: stepImages.isEmpty ? 40 : 70,
+                      iconSize: 20,
+                      onNewImage: (File newImage) {
+                        onAddImage(newImage);
+                      },
+                    ),
+                  ),
+              ),
+            ),
+          ),
+        ),
+    );
   }
 }
 
