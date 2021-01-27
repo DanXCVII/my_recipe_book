@@ -505,7 +505,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       }
                     }),
             IconButton(
-              icon: Icon(MdiIcons.fileDocumentBoxSearchOutline),
+              icon: Icon(MdiIcons.textBoxSearchOutline),
               onPressed: () {
                 Navigator.pushNamed(
                   context,

@@ -244,8 +244,8 @@ class _RecipeFilterState extends State<RecipeFilter>
       case Vegetable.NON_VEGETARIAN:
         return _getVegetableCircleIcon(
             [Colors.lightBlue[400], Colors.lightBlue[600]],
-            MdiIcons.cow,
-            Colors.brown[800]);
+            MdiIcons.foodDrumstick,
+            Colors.brown[600]);
 
       default:
         return Stack(
@@ -259,8 +259,8 @@ class _RecipeFilterState extends State<RecipeFilter>
               clipper: OneThirdClipperRight(),
               child: _getVegetableCircleIcon(
                 [Colors.lightBlue[400], Colors.lightBlue[600]],
-                MdiIcons.cow,
-                Colors.brown[800],
+                MdiIcons.foodDrumstick,
+                Colors.brown[600],
               ),
             ),
             ClipPath(

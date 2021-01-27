@@ -621,8 +621,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                           case Vegetable.NON_VEGETARIAN:
                             return _getVegetableFilterChip(
                               Colors.lightBlue[300],
-                              MdiIcons.cow,
-                              Colors.brown[800],
+                              MdiIcons.foodDrumstick,
+                              Colors.brown[600],
                               I18n.of(context).with_meat,
                               vegetable,
                             );

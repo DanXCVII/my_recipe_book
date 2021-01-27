@@ -51,35 +51,62 @@ class _StepsState extends State<Steps> {
           ]
             ..add(
               // the sections
-              ReorderableColumn(
-                  scrollController: ScrollController(),
-                  onReorder: (i, j) {
-                    BlocProvider.of<StepImagesBloc>(context)
-                        .add(MoveStep(i, j));
-                  },
-                  children: List<Widget>.generate(
-                    state.steps.length,
-                    (i) => Step(
-                      i,
-                      state.stepTitles[i],
-                      state.steps[i],
-                      state.stepImages[i],
-                      (title) => BlocProvider.of<StepImagesBloc>(context)
-                          .add(EditStepTitle(title, i)),
-                      (step) => BlocProvider.of<StepImagesBloc>(context)
-                          .add(EditStep(step, i)),
-                      () => BlocProvider.of<StepImagesBloc>(context).add(
-                          RemoveStep(widget.editRecipeName, DateTime.now(),
-                              stepNumber: i)),
-                      state.stepImages.every((element) => element.isEmpty),
-                      (File imageFile) =>
-                          BlocProvider.of<StepImagesBloc>(context)
-                              .add(AddImage(imageFile, i, editingRecipe)),
-                      (index) => BlocProvider.of<StepImagesBloc>(context)
-                          .add(RemoveImage(i, index, editingRecipe)),
-                      key: state.stepKeys[i],
+              state.stepImages.every((element) => element.isEmpty)
+                  ? ReorderableColumn(
+                      scrollController: ScrollController(),
+                      onReorder: (i, j) {
+                        BlocProvider.of<StepImagesBloc>(context)
+                            .add(MoveStep(i, j));
+                      },
+                      children: List<Widget>.generate(
+                        state.steps.length,
+                        (i) => Step(
+                          i,
+                          state.stepTitles[i],
+                          state.steps[i],
+                          state.stepImages[i],
+                          (title) => BlocProvider.of<StepImagesBloc>(context)
+                              .add(EditStepTitle(title, i)),
+                          (step) => BlocProvider.of<StepImagesBloc>(context)
+                              .add(EditStep(step, i)),
+                          () => BlocProvider.of<StepImagesBloc>(context).add(
+                              RemoveStep(widget.editRecipeName, DateTime.now(),
+                                  stepNumber: i)),
+                          true,
+                          (File imageFile) =>
+                              BlocProvider.of<StepImagesBloc>(context)
+                                  .add(AddImage(imageFile, i, editingRecipe)),
+                          (index) => BlocProvider.of<StepImagesBloc>(context)
+                              .add(RemoveImage(i, index, editingRecipe)),
+                          key: state.stepKeys[i],
+                        ),
+                      ),
+                    )
+                  : Column(
+                      children: List<Widget>.generate(
+                        state.steps.length,
+                        (i) => Step(
+                          i,
+                          state.stepTitles[i],
+                          state.steps[i],
+                          state.stepImages[i],
+                          (title) => BlocProvider.of<StepImagesBloc>(context)
+                              .add(EditStepTitle(title, i)),
+                          (step) => BlocProvider.of<StepImagesBloc>(context)
+                              .add(EditStep(step, i)),
+                          () => BlocProvider.of<StepImagesBloc>(context).add(
+                              RemoveStep(widget.editRecipeName, DateTime.now(),
+                                  stepNumber: i)),
+                          false,
+                          (File imageFile) =>
+                              BlocProvider.of<StepImagesBloc>(context)
+                                  .add(AddImage(imageFile, i, editingRecipe)),
+                          (index) => BlocProvider.of<StepImagesBloc>(context)
+                              .add(RemoveImage(i, index, editingRecipe)),
+                          key: state.stepKeys[i],
+                        ),
+                      ),
                     ),
-                  )),
             )
             ..add(
               Padding(
@@ -103,7 +130,7 @@ class _StepsState extends State<Steps> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    state.steps.length > 1
+                    state.steps.isNotEmpty
                         ? Padding(
                             padding: const EdgeInsets.only(right: 12),
                             child: OutlineButton.icon(
@@ -280,6 +307,7 @@ class Step extends StatelessWidget {
                           ? 350
                           : MediaQuery.of(context).size.width - 150,
                       child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
                         onTap: () {
                           showDialog(
                             context: context,
@@ -311,7 +339,24 @@ class Step extends StatelessWidget {
                   ],
                 ),
               ),
-        Row(
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (_) => TextFieldDialog(
+                validation: (String name) => null,
+                save: (String newStep) {
+                  BlocProvider.of<StepImagesBloc>(context)
+                      .add(EditStep(newStep, stepIndex));
+                },
+                prefilledText: step,
+                hintText: I18n.of(context).categoryname,
+                showExpanded: true,
+              ),
+            );
+          },
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Column(
@@ -337,31 +382,14 @@ class Step extends StatelessWidget {
                     ),
                   ),
                   Container(height: 12),
-                  Icon(Icons.reorder),
+                  removeOption ? Icon(Icons.reorder) : null,
                 ]..removeWhere((element) => element == null),
               ),
               Expanded(
                 flex: 4,
-                child: GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => TextFieldDialog(
-                        validation: (String name) => null,
-                        save: (String newStep) {
-                          BlocProvider.of<StepImagesBloc>(context)
-                              .add(EditStep(newStep, stepIndex));
-                        },
-                        prefilledText: step,
-                        hintText: I18n.of(context).categoryname,
-                        showExpanded: true,
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: Text(step),
-                  ),
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Text(step),
                 ),
               ),
               removeOption
@@ -382,7 +410,9 @@ class Step extends StatelessWidget {
                       },
                     )
                   : null,
-            ]..removeWhere((element) => element == null))
+            ]..removeWhere((element) => element == null),
+          ),
+        )
       ]..add(
           FractionallySizedBox(
             widthFactor: 1,

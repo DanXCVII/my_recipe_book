@@ -280,15 +280,20 @@ class RecipeCard extends StatelessWidget {
                                                       : recipe.vegetable ==
                                                               Vegetable.VEGAN
                                                           ? MdiIcons.leaf
-                                                          : MdiIcons.cow,
+                                                          : MdiIcons
+                                                              .foodDrumstick,
                                                   color: recipe.vegetable ==
                                                           Vegetable.VEGETARIAN
                                                       ? Colors.amber
                                                       : recipe.vegetable ==
                                                               Vegetable.VEGAN
                                                           ? Colors.green[700]
-                                                          : Colors.brown[800],
-                                                  size: 18,
+                                                          : Colors.brown[600],
+                                                  size: recipe.vegetable ==
+                                                          Vegetable
+                                                              .NON_VEGETARIAN
+                                                      ? 16
+                                                      : 18,
                                                 ),
                                               ),
                                               height: 20,
