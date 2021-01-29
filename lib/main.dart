@@ -557,6 +557,9 @@ class MyApp extends StatelessWidget {
                     ),
                     BlocProvider<AdManagerBloc>.value(
                       value: args.adManagerBloc,
+                    ),
+                    BlocProvider<RecipeCalendarBloc>.value(
+                      value: args.recipeCalendarBloc,
                     )
                   ],
                   child: ImportFromWebsiteScreen(
