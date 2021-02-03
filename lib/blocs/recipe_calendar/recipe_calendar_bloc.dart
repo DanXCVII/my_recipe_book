@@ -193,7 +193,7 @@ class RecipeCalendarBloc
     for (DateTime key in recipeCalendar.keys) {
       String dateString = key.toIso8601String();
       String dateBegin =
-          "${day.year}-${day.month < 10 ? "0" : ""}${day.month}-${day.day}";
+          "${day.year}-${day.month < 10 ? "0" : ""}${day.month}-${day.day < 10 ? "0" : ""}${day.day}";
       if (dateString.startsWith(dateBegin)) {
         selectedKeys.add(key);
       }
