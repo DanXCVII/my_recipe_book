@@ -1451,8 +1451,9 @@ class IngredientsScreen extends StatelessWidget {
       }
 
       BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
-        AddToCart(currentRecipe.name, addToCartIngredients),
+        AddToCart(currentRecipe.name, addToCartIngredients.map((e) => e).toList()),
       );
+      addToCartIngredients.clear();
     }
   }
 
