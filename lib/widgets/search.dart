@@ -122,7 +122,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                     RouteNames.recipeScreen,
                     arguments: RecipeScreenArguments(
                       shoppingCartBloc,
-                      BlocProvider.of<RecipeCalendarBloc>(context),
+                      recipeCalendarBloc,
                       recipe,
                       'heroTag',
                       BlocProvider.of<RecipeManagerBloc>(context),
@@ -146,8 +146,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                           ? Constants.noCategory
                           : resultCategories[categoryIndex],
                       shoppingCartBloc: shoppingCartBloc,
-                      recipeCalendarBloc:
-                          BlocProvider.of<RecipeCalendarBloc>(context),
+                      recipeCalendarBloc: recipeCalendarBloc,
                     ),
                   ).then((_) => Ads.hideBottomBannerAd());
                 });
@@ -171,8 +170,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
                     arguments: RecipeGridViewArguments(
                       recipeTag: resultRecipeTags[recipeTagIndex],
                       shoppingCartBloc: shoppingCartBloc,
-                      recipeCalendarBloc:
-                          BlocProvider.of<RecipeCalendarBloc>(context),
+                      recipeCalendarBloc: recipeCalendarBloc,
                     ),
                   ).then((_) => Ads.hideBottomBannerAd());
                 });

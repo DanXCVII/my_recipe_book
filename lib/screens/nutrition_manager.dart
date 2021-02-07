@@ -44,7 +44,7 @@ class _NutritionManagerState extends State<NutritionManager> {
     return BlocListener<NutritionManagerBloc, NutritionManagerState>(
       listener: (context, state) {
         if (state is LoadedNutritionManager) {
-          if (isInitialized == false && state.nutritions.isNotEmpty) {
+          if (isInitialized == false) {
             setState(() {
               isInitialized = true;
               for (int i = 0; i < state.nutritions.length; i++) {
@@ -143,24 +143,15 @@ class _NutritionManagerState extends State<NutritionManager> {
                             secondaryBackground:
                                 _getSecondaryBackgroundDismissible(),
                             onDismissed: (_) {
-                              setState(() {
-                                dismissibleKeys =
-                                    (List<Key>.from(dismissibleKeys))
-                                      ..removeAt(index);
-                                listTileKeys = (List<Key>.from(listTileKeys))
-                                  ..removeAt(index);
-                                nutritionsController
-                                    .remove(state.nutritions[index]);
-                                BlocProvider.of<NutritionManagerBloc>(context)
-                                    .add(DeleteNutrition(
-                                        state.nutritions[index]));
-                              });
+                              _removeNutrition(index, state.nutritions);
                             },
                             child: _getNutritionListTile(
-                                state.nutritions[index],
-                                context,
-                                listTileKeys[index],
-                                state.nutritions),
+                              state.nutritions[index],
+                              context,
+                              listTileKeys[index],
+                              state.nutritions,
+                              index,
+                            ),
                           ),
                         ).toList(),
                       ),
@@ -172,6 +163,16 @@ class _NutritionManagerState extends State<NutritionManager> {
         },
       ),
     );
+  }
+
+  void _removeNutrition(int index, List<String> nutritions) {
+    setState(() {
+      dismissibleKeys = (List<Key>.from(dismissibleKeys))..removeAt(index);
+      listTileKeys = (List<Key>.from(listTileKeys))..removeAt(index);
+      nutritionsController.remove(nutritions[index]);
+      BlocProvider.of<NutritionManagerBloc>(context)
+          .add(DeleteNutrition(nutritions[index]));
+    });
   }
 
   Widget _getNutritionManagerLoadingScreen() {
@@ -189,7 +190,12 @@ class _NutritionManagerState extends State<NutritionManager> {
         ));
   }
 
-  _showDeleteDialog(BuildContext context, String nutritionName) {
+  _showDeleteDialog(
+    BuildContext context,
+    String nutritionName,
+    List<String> nutritions,
+    int index,
+  ) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -215,6 +221,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             textColor: Theme.of(context).textTheme.bodyText2.color,
             color: Colors.red[600],
             onPressed: () {
+              _removeNutrition(index, nutritions);
               BlocProvider.of<NutritionManagerBloc>(context)
                   .add(DeleteNutrition(nutritionName));
 
@@ -268,8 +275,13 @@ class _NutritionManagerState extends State<NutritionManager> {
     );
   }
 
-  Widget _getNutritionListTile(String nutritionName, BuildContext context,
-      Key key, List<String> nutritions) {
+  Widget _getNutritionListTile(
+    String nutritionName,
+    BuildContext context,
+    Key key,
+    List<String> nutritions,
+    int index,
+  ) {
     return ListTile(
       key: key,
       title: GestureDetector(
@@ -306,7 +318,7 @@ class _NutritionManagerState extends State<NutritionManager> {
         child: IconButton(
           icon: Icon(Icons.delete),
           onPressed: () {
-            _showDeleteDialog(context, nutritionName);
+            _showDeleteDialog(context, nutritionName, nutritions, index);
           },
         ),
       ),

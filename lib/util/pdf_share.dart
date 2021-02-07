@@ -95,7 +95,8 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
   ];
 
   if (recipe.stepTitles == null) {
-    stepWidgets.addAll(_getSteps(recipe.steps, bContext, quandoTtf, latoTtf));
+    stepWidgets.addAll(_getSteps(
+        recipe.steps, recipe.stepImages, bContext, quandoTtf, latoTtf, doc));
   } else {
     for (int i = 0; i < recipe.stepTitles.length; i++) {
       if (i == 0 || recipe.stepTitles[i] != "") {
@@ -127,8 +128,15 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
             ),
           );
         }
-        stepWidgets.addAll(_getSteps(recipe.steps.sublist(i, nextTitleIndex),
-            bContext, quandoTtf, latoTtf));
+        stepWidgets.addAll(
+          _getSteps(
+              recipe.steps.sublist(i, nextTitleIndex),
+              recipe.stepImages.sublist(i, nextTitleIndex),
+              bContext,
+              quandoTtf,
+              latoTtf,
+              doc),
+        );
       }
     }
   }
@@ -769,11 +777,13 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
 
 List<pw.Widget> _getSteps(
   List<String> steps,
+  List<List<String>> stepImages,
   BuildContext context,
   pw.Font quandoTtf,
   pw.Font latoTtf,
+  pw.Document doc,
 ) {
-  return List.generate(
+  List<pw.Widget> stepList = List.generate(
     steps.length,
     (index) => pw.Padding(
       padding: pw.EdgeInsets.only(top: 8),
@@ -795,4 +805,41 @@ List<pw.Widget> _getSteps(
       ),
     ),
   )..removeWhere((item) => item == null);
+
+  for (int i = stepImages.length - 1; i >= 0; i--) {
+    if (stepImages[i].isNotEmpty) {
+      stepList.insert(
+        i + 1,
+        pw.Padding(
+          padding: pw.EdgeInsets.fromLTRB(12, 8, 22, 8),
+          child: pw.Container(
+            width: 500,
+            child: pw.Wrap(
+              direction: pw.Axis.horizontal,
+              children: List.generate(
+                stepImages[i].length,
+                (index) => pw.Padding(
+                  padding: pw.EdgeInsets.fromLTRB(8, 4, 8, 4),
+                  child: pw.ClipRRect(
+                    horizontalRadius: 8,
+                    verticalRadius: 8,
+                    child: pw.Image(
+                        PdfImage.file(
+                          doc.document,
+                          bytes: File(stepImages[i][index]).readAsBytesSync(),
+                        ),
+                        fit: pw.BoxFit.contain,
+                        height: 100,
+                        width: 100),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  return stepList;
 }
