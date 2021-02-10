@@ -481,7 +481,9 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   Future<Map<String, dynamic>> _getRecipeMap(String cutJsonData) async {
     bool foundRecipeMap = true;
     try {
-      Map<String, dynamic> recipeMap = await json.decode(cutJsonData);
+      String newS = cutJsonData.replaceAll(String.fromCharCode(10),
+          ""); // replaces a unicode for lidl.de website import
+      Map<String, dynamic> recipeMap = await json.decode(newS);
       if (recipeMap["@type"] == "Recipe" &&
           recipeMap.containsKey("recipeIngredient")) {
         return recipeMap;

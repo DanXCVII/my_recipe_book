@@ -62,6 +62,29 @@ Ingredient getIngredientFromString(String ingredientInfo) {
       name = ingredientInfo;
     }
   } catch (e) {}
+
+  if (amount == null && unit == null) {
+    try {
+      int indexOfSpace = ingredientInfo.indexOf(" ");
+      String searchedIngredInfo = ingredientInfo.trim();
+      while (indexOfSpace != -1) {
+        amount =
+            getNumberOfString(searchedIngredInfo.substring(0, indexOfSpace));
+        if (amount != null) {
+          name = ingredientInfo
+              .substring(0, ingredientInfo.indexOf(searchedIngredInfo))
+              .trim();
+          unit = searchedIngredInfo.substring(
+              indexOfSpace + 1, searchedIngredInfo.length);
+          break;
+        }
+        searchedIngredInfo = searchedIngredInfo.substring(indexOfSpace + 1);
+        indexOfSpace = searchedIngredInfo.indexOf(" ");
+      }
+    } catch (e) {
+      name = ingredientInfo;
+    }
+  }
   return Ingredient(name: name, amount: amount, unit: unit);
 }
 
