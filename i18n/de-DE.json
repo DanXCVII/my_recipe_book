@@ -201,7 +201,7 @@
   "select_all": "alle auswählen",
   "manage_recipe_tags": "Tags verwalten",
   "recipe_tag_already_exists": "Tag bereits vorhanden",
-  "sure_you_want_to_delete_this_recipe_tag": "Bist du dir sicher, dass du den Tag löschen möchtest?",
+  "sure_you_want_to_delete_this_recipe_tag": "Bist du dir sicher, dass du den Tag löschen möchtest:",
   "select_recipe_tags": "Tags auswählen",
   "recipe_tag": "Schlüsselwort",
   "delete_recipe_tag": "Tag löschen?",

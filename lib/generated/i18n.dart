@@ -42,12 +42,12 @@ class I18n implements WidgetsLocalizations {
   String get choose_a_theme => "Choose a theme";
   /// "Swype your recipes"
   String get swype_your_recipes => "Swype your recipes";
-  /// "If you can’t decide what recipe to cook, use random recipe explorer."
-  String get if_you_cant_decide_random_recipe_explorer => "If you can’t decide what recipe to cook, use random recipe explorer.";
+  /// "If you can’t decide what to cook, use random-recipe-explorer."
+  String get if_you_cant_decide_random_recipe_explorer => "If you can’t decide what to cook, use random-recipe-explorer.";
   /// "EXPORT as text or zip"
   String get export_as_text_or_zip => "EXPORT as text or zip";
-  /// "export as zip for using them on multiple devices, OR as text OR as pdf document"
-  String get multiple_devices_use_export_as_zip_etc => "export as zip for using them on multiple devices, OR as text OR as pdf document";
+  /// "Export your recipes as zip file for using them on multiple devices. Alternatively you can also generate a pdf or text with all the information."
+  String get multiple_devices_use_export_as_zip_etc => "Export your recipes as zip file for using them on multiple devices. Alternatively you can also generate a pdf or text with all the information.";
   /// "Add to shoppingcart"
   String get add_to_shoppingcart => "Add to shoppingcart";
   /// "you can add the ingredients of your recipe to your shoppingcart for more relaxed shopping."
@@ -176,10 +176,10 @@ class I18n implements WidgetsLocalizations {
   String get explore => "explore";
   /// "roll the dice"
   String get roll_the_dice => "roll the dice";
-  /// "switch theme"
-  String get switch_theme => "switch theme";
-  /// "switch shopping cart look"
-  String get switch_shopping_cart_look => "switch shopping cart look";
+  /// "change theme"
+  String get switch_theme => "change theme";
+  /// "change shopping cart look"
+  String get switch_shopping_cart_look => "change shopping cart look";
   /// "view intro"
   String get view_intro => "view intro";
   /// "manage nutritions"
@@ -288,8 +288,8 @@ class I18n implements WidgetsLocalizations {
   String get categoryname => "category name";
   /// "category"
   String get category => "category";
-  /// "professional search"
-  String get professional_search => "professional search";
+  /// "advanced search"
+  String get professional_search => "advanced search";
   /// "enter some ingredients"
   String get enter_some_information => "enter some ingredients";
   /// "no matching recipes"
@@ -352,10 +352,10 @@ class I18n implements WidgetsLocalizations {
   String get recipe_for => "recipe for";
   /// "Information"
   String get info => "Information";
-  /// "Here you can manage the ingredients, which you get suggested when adding a recipe or searching for them. When you edit or delete them, they don't change for the recipe. It's just for the suggestions for saving time when typing."
-  String get ingredient_manager_description => "Here you can manage the ingredients, which you get suggested when adding a recipe or searching for them. When you edit or delete them, they don't change for the recipe. It's just for the suggestions for saving time when typing.";
-  /// "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself."
-  String get nutrition_manager_description => "Here you can manage your nutritions. When you edit or delete them, the recipes with nutritions stay the same. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself.";
+  /// "Here you can manage the ingredients, which you are suggested when adding a recipe or searching for them. When you edit or delete them, only the suggestions are updated and not the recipes with the ingredient."
+  String get ingredient_manager_description => "Here you can manage the ingredients, which you are suggested when adding a recipe or searching for them. When you edit or delete them, only the suggestions are updated and not the recipes with the ingredient.";
+  /// "Here you can manage your nutritions. When you edit or delete them, the recipes with the specific nutrition don't change. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself."
+  String get nutrition_manager_description => "Here you can manage your nutritions. When you edit or delete them, the recipes with the specific nutrition don't change. If you want to edit the nutrition of an existing recipe, you have to edit the recipe itself.";
   /// "no recipes fit your filter"
   String get no_recipes_fit_your_filter => "no recipes fit your filter";
   /// "In no event shall the author of My RecipeBible application be liable for any damages directly or indirectly caused by the application. You are acknowledging that you are 100% responsible for whatever you do with My RecipeBible."
@@ -1256,9 +1256,9 @@ class _I18n_de_DE extends I18n {
   /// "Tag bereits vorhanden"
   @override
   String get recipe_tag_already_exists => "Tag bereits vorhanden";
-  /// "Bist du dir sicher, dass du den Tag löschen möchtest?"
+  /// "Bist du dir sicher, dass du den Tag löschen möchtest:"
   @override
-  String get sure_you_want_to_delete_this_recipe_tag => "Bist du dir sicher, dass du den Tag löschen möchtest?";
+  String get sure_you_want_to_delete_this_recipe_tag => "Bist du dir sicher, dass du den Tag löschen möchtest:";
   /// "Tags auswählen"
   @override
   String get select_recipe_tags => "Tags auswählen";

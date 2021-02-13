@@ -180,6 +180,10 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                           border: OutlineInputBorder(),
                           labelText: I18n.of(context).ingredient,
                         ),
+                        textCapitalization:
+                            I18n.of(context).two_char_locale == "EN"
+                                ? TextCapitalization.none
+                                : TextCapitalization.sentences,
                       ),
                       SizedBox(height: 6),
                       Row(
