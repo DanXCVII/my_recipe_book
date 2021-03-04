@@ -635,7 +635,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
   String _getStepsString(List<String> steps) {
     String stepsString = "";
     for (int i = 0; i < steps.length; i++) {
-      stepsString += "$i. ${steps[i]}\n";
+      stepsString += "${i + 1}. ${steps[i]}\n";
     }
     return stepsString;
   }
@@ -1451,7 +1451,8 @@ class IngredientsScreen extends StatelessWidget {
       }
 
       BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
-        AddToCart(currentRecipe.name, addToCartIngredients.map((e) => e).toList()),
+        AddToCart(
+            currentRecipe.name, addToCartIngredients.map((e) => e).toList()),
       );
       addToCartIngredients.clear();
     }
@@ -1598,14 +1599,11 @@ class IngredientsScreen extends StatelessWidget {
                                                   .no_valid_number;
                                             }
                                           },
-                                          save: (String name) {
-                                            String newServingsDot =
-                                                name.replaceAll(',', '.');
-                                            String newServings = newServingsDot
-                                                .replaceAll(' ', '');
+                                          save: (String servingsString) {
                                             _updateServings(
                                                 state.servings,
-                                                double.parse(newServings),
+                                                getDoubleFromString(
+                                                    servingsString),
                                                 context);
                                           },
                                         ),

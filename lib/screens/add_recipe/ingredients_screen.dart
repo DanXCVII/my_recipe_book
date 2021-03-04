@@ -255,7 +255,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
           goBack,
           (servingsController.text == "" || servingsController.text == "0")
               ? null
-              : double.tryParse(servingsController.text),
+              : getDoubleFromString(servingsController.text),
           servingsNameController.text,
           (BlocProvider.of<IngredientsSectionBloc>(context).state
                   as LoadedIngredientsSection)

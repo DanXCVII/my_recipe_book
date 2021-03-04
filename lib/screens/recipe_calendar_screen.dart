@@ -12,6 +12,7 @@ import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/tuple.dart';
 import 'package:my_recipe_book/screens/recipe_screen.dart';
+import 'package:my_recipe_book/util/helper.dart';
 import 'package:my_recipe_book/widgets/dialogs/calendar_add_dialog.dart';
 import 'package:my_recipe_book/widgets/dialogs/calendar_recipe_add_dialog.dart';
 import 'package:my_recipe_book/widgets/recipe_image_hero.dart';
@@ -216,10 +217,10 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                 Spacer(),
                 Text(
                   state.from.day.toString() +
-                      " - " +
+                      ". - " +
                       state.from.add(Duration(days: 7)).day.toString() +
-                      " " +
-                      _getMonthString(
+                      ". " +
+                      getMonthString(
                           state.from.add(Duration(days: 7)).month, context) +
                       " " +
                       state.from.add(Duration(days: 7)).year.toString(),
@@ -358,7 +359,7 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                     width: 150,
                     child: Center(
                       child: Text(
-                        _getWeekdayString(date.weekday, context),
+                        getWeekdayString(date.weekday, context),
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.white,
@@ -398,7 +399,7 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                             color: Colors.white,
                           ),
                         ),
-                        Text(_getMonthAbbrevString(date.month, context),
+                        Text(getMonthAbbrevString(date.month, context),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.white,
@@ -491,88 +492,5 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
         },
       ),
     );
-  }
-
-  String _getMonthAbbrevString(int month, BuildContext context) {
-    switch (month) {
-      case 1:
-        return I18n.of(context).jan;
-      case 2:
-        return I18n.of(context).feb;
-      case 3:
-        return I18n.of(context).mar;
-      case 4:
-        return I18n.of(context).apr;
-      case 5:
-        return I18n.of(context).may;
-      case 6:
-        return I18n.of(context).jun;
-      case 7:
-        return I18n.of(context).jul;
-      case 8:
-        return I18n.of(context).aug;
-      case 9:
-        return I18n.of(context).sep;
-      case 10:
-        return I18n.of(context).oct;
-      case 11:
-        return I18n.of(context).nov;
-      case 12:
-        return I18n.of(context).dec;
-      default:
-        return "";
-    }
-  }
-
-  String _getMonthString(int month, BuildContext context) {
-    switch (month) {
-      case 1:
-        return I18n.of(context).january;
-      case 2:
-        return I18n.of(context).february;
-      case 3:
-        return I18n.of(context).march;
-      case 4:
-        return I18n.of(context).april;
-      case 5:
-        return I18n.of(context).may_full;
-      case 6:
-        return I18n.of(context).june;
-      case 7:
-        return I18n.of(context).july;
-      case 8:
-        return I18n.of(context).august;
-      case 9:
-        return I18n.of(context).september;
-      case 10:
-        return I18n.of(context).october;
-      case 11:
-        return I18n.of(context).november;
-      case 12:
-        return I18n.of(context).december;
-      default:
-        return "";
-    }
-  }
-
-  String _getWeekdayString(int weekday, BuildContext context) {
-    switch (weekday) {
-      case 1:
-        return I18n.of(context).monday;
-      case 2:
-        return I18n.of(context).tuesday;
-      case 3:
-        return I18n.of(context).wednesday;
-      case 4:
-        return I18n.of(context).thursday;
-      case 5:
-        return I18n.of(context).friday;
-      case 6:
-        return I18n.of(context).saturday;
-      case 7:
-        return I18n.of(context).sunday;
-      default:
-        return "";
-    }
   }
 }

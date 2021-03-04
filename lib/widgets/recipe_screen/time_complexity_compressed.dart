@@ -105,9 +105,12 @@ class TimeComplexityCompressed extends StatelessWidget {
   String _getTimeString(double preperationTime, double cookingTime,
       double totalTime, BuildContext context) {
     if (totalTime != 0 && totalTime != null)
-      return "${I18n.of(context).total_time}: " + cutDouble(totalTime);
+      return "${I18n.of(context).total_time}: " +
+          getTimeHoursMinutes(totalTime);
     if (cookingTime != 0 && cookingTime != null)
-      return "${I18n.of(context).cook_time}: " + cutDouble(cookingTime);
-    return "${I18n.of(context).prep_time}: " + cutDouble(preperationTime);
+      return "${I18n.of(context).cook_time}: " +
+          getTimeHoursMinutes(cookingTime);
+    return "${I18n.of(context).prep_time}: " +
+        getTimeHoursMinutes(preperationTime);
   }
 }

@@ -1,4 +1,45 @@
+import 'package:flutter/widgets.dart';
+import 'package:my_recipe_book/generated/i18n.dart';
+
 import '../models/ingredient.dart';
+
+/// valid formats:
+/// 1.9/2,7
+/// 1.0
+/// 0,5
+double getDoubleFromString(String number) {
+  String validNumber = number.replaceAll(",", ".");
+
+  double convertedNumber;
+  if (validNumber.contains("/")) {
+    convertedNumber =
+        double.parse(validNumber.substring(0, validNumber.indexOf("/"))) /
+            double.parse(validNumber.substring(validNumber.indexOf("/") + 1));
+  } else {
+    convertedNumber = double.parse(validNumber);
+  }
+
+  return convertedNumber;
+}
+
+/// TODO: update to show number in nice string format
+String getNumberString(double number) {
+  String numberString = number.toStringAsFixed(3);
+
+  if (numberString[numberString.length - 1] ==
+      numberString[numberString.length - 2]) {
+    numberString = numberString.substring(0, numberString.length - 2);
+  } else {
+    if (numberString.endsWith("0")) {
+      numberString.substring(0, numberString.length - 1);
+    }
+    if (numberString.endsWith("0")) {
+      numberString.substring(0, numberString.length - 1);
+    }
+  }
+
+  return numberString;
+}
 
 String cutDouble(double number) {
   if (number == number.floor().toDouble()) {
@@ -128,4 +169,87 @@ double getNumberOfString(String numberInfo) {
     }
   }
   return double.tryParse(numberInfo);
+}
+
+String getMonthString(int month, BuildContext context) {
+  switch (month) {
+    case 1:
+      return I18n.of(context).january;
+    case 2:
+      return I18n.of(context).february;
+    case 3:
+      return I18n.of(context).march;
+    case 4:
+      return I18n.of(context).april;
+    case 5:
+      return I18n.of(context).may_full;
+    case 6:
+      return I18n.of(context).june;
+    case 7:
+      return I18n.of(context).july;
+    case 8:
+      return I18n.of(context).august;
+    case 9:
+      return I18n.of(context).september;
+    case 10:
+      return I18n.of(context).october;
+    case 11:
+      return I18n.of(context).november;
+    case 12:
+      return I18n.of(context).december;
+    default:
+      return "";
+  }
+}
+
+String getWeekdayString(int weekday, BuildContext context) {
+  switch (weekday) {
+    case 1:
+      return I18n.of(context).monday;
+    case 2:
+      return I18n.of(context).tuesday;
+    case 3:
+      return I18n.of(context).wednesday;
+    case 4:
+      return I18n.of(context).thursday;
+    case 5:
+      return I18n.of(context).friday;
+    case 6:
+      return I18n.of(context).saturday;
+    case 7:
+      return I18n.of(context).sunday;
+    default:
+      return "";
+  }
+}
+
+String getMonthAbbrevString(int month, BuildContext context) {
+  switch (month) {
+    case 1:
+      return I18n.of(context).jan;
+    case 2:
+      return I18n.of(context).feb;
+    case 3:
+      return I18n.of(context).mar;
+    case 4:
+      return I18n.of(context).apr;
+    case 5:
+      return I18n.of(context).may;
+    case 6:
+      return I18n.of(context).jun;
+    case 7:
+      return I18n.of(context).jul;
+    case 8:
+      return I18n.of(context).aug;
+    case 9:
+      return I18n.of(context).sep;
+    case 10:
+      return I18n.of(context).oct;
+    case 11:
+      return I18n.of(context).nov;
+    case 12:
+      return I18n.of(context).dec;
+    default:
+      return "";
+  }
 }

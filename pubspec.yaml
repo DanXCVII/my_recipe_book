@@ -175,5 +175,9 @@ flutter:
       fonts:
         - asset: fonts/Lato-Regular.ttf
         - asset: fonts/Lato-Bold.ttf
+    - family: Quicksand
+      fonts:
+        - asset: fonts/Quicksand-Regular.ttf
+        
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
