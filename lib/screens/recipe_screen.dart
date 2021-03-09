@@ -5,7 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
@@ -253,7 +253,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GradientAppBar(
+    return NewGradientAppBar(
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomCenter,
@@ -300,16 +300,16 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                 ),
                 onPressed: () {
                   if (isPinned == false && state.recipes.length == 3) {
-                    final scaffold = Scaffold.of(context);
-                    scaffold.hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-                    scaffold.showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
                             I18n.of(context).maximum_recipe_pin_count_exceeded),
                         action: SnackBarAction(
                           label: I18n.of(context).dismiss,
-                          onPressed: scaffold.hideCurrentSnackBar,
+                          onPressed:
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar,
                         ),
                       ),
                     );
@@ -320,16 +320,16 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                     BlocProvider.of<RecipeBubbleBloc>(context)
                         .add(AddRecipeBubble([recipe]));
 
-                    final scaffold = Scaffold.of(context);
-                    scaffold.hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-                    scaffold.showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content:
                             Text(I18n.of(context).recipe_pinned_to_overview),
                         action: SnackBarAction(
                           label: I18n.of(context).dismiss,
-                          onPressed: scaffold.hideCurrentSnackBar,
+                          onPressed:
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar,
                         ),
                       ),
                     );
@@ -365,7 +365,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                   BlocProvider.of<RecipeCalendarBloc>(context),
                   editingRecipeName: recipe.name,
                 ),
-              );
+              ).then((_) => Ads.showBottomBannerAd());
             });
           },
         ),
@@ -666,7 +666,7 @@ class RecipePage extends StatelessWidget {
           addedRecipe = state.addedRecipe;
         }
         if (addedRecipe != null) {
-          Scaffold.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(I18n.of(context).undo_added_to_planner_description(
                 addedRecipe.item2,
@@ -1414,7 +1414,7 @@ class IngredientsScreen extends StatelessWidget {
                 Container(
                   width: 80,
                   child: Text(
-                    "${currentIngredient.amount == null ? "" : (cutDouble(currentIngredient.amount))} "
+                    "${currentIngredient.amount == null ? "" : (GlobalSettings().showDecimal() ? cutDouble(currentIngredient.amount) : getFractionDouble(currentIngredient.amount))} "
                     "${currentIngredient.unit == null ? "" : currentIngredient.unit}",
                     textAlign: TextAlign.end,
                     style: TextStyle(
@@ -1592,7 +1592,8 @@ class IngredientsScreen extends StatelessWidget {
                                           prefilledText:
                                               state.servings.toStringAsFixed(1),
                                           validation: (String value) {
-                                            if (stringIsValidDouble(value)) {
+                                            if (getDoubleFromString(value) !=
+                                                null) {
                                               return null;
                                             } else {
                                               return I18n.of(context)

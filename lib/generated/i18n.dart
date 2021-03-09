@@ -54,6 +54,16 @@ class I18n implements WidgetsLocalizations {
   String get for_more_relaxed_shopping_add_to_shoppingcart => "you can add the ingredients of your recipe to your shoppingcart for more relaxed shopping.";
   /// "recipes"
   String get recipes => "recipes";
+  /// "RATE"
+  String get rate => "RATE";
+  /// "MAYBE LATER"
+  String get maybe_later => "MAYBE LATER";
+  /// "NO THANKS"
+  String get no_thanks => "NO THANKS";
+  /// "fraction or decimal"
+  String get fraction_or_decimal => "fraction or decimal";
+  /// "enabled: decimal, disabled: fraction"
+  String get fraction_or_decimal_desc => "enabled: decimal, disabled: fraction";
   /// "Nutritions"
   String get nutritions => "Nutritions";
   /// "delete recipe"
@@ -689,6 +699,21 @@ class _I18n_de_DE extends I18n {
   /// "Rezepte"
   @override
   String get recipes => "Rezepte";
+  /// "BEWERTEN"
+  @override
+  String get rate => "BEWERTEN";
+  /// "SPÄTER"
+  @override
+  String get maybe_later => "SPÄTER";
+  /// "NEIN DANKE"
+  @override
+  String get no_thanks => "NEIN DANKE";
+  /// "Zahlen als Brüche oder mit Komma"
+  @override
+  String get fraction_or_decimal => "Zahlen als Brüche oder mit Komma";
+  /// "aktiviert: Dezimal, deaktiviert: Bruch"
+  @override
+  String get fraction_or_decimal_desc => "aktiviert: Dezimal, deaktiviert: Bruch";
   /// "Nährwerte"
   @override
   String get nutritions => "Nährwerte";

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/app/app_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
 import 'package:share/share.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -153,7 +154,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
         for (CheckableIngredient ingredient in shoppingCart[key]) {
           shoppingCartString += "${ingredient.checked ? "✅ " : ""}";
           shoppingCartString += ingredient.amount != null
-              ? "${cutDouble(ingredient.amount)} "
+              ? "${(GlobalSettings().showDecimal() ? cutDouble(ingredient.amount) : getFractionDouble(ingredient.amount))} "
               : "";
           shoppingCartString +=
               ingredient.unit != "" ? "${ingredient.unit} " : "";
@@ -225,7 +226,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
                   // needs size, otherwise error
                   Container(width: 1, height: 1)
                   : Text(
-                      "${currentIngred.amount != null ? cutDouble(currentIngred.amount) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit}",
+                      "${currentIngred.amount != null ? (GlobalSettings().showDecimal() ? cutDouble(currentIngred.amount) : getFractionDouble(currentIngred.amount)) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit}",
                       style: TextStyle(
                         decoration: currentIngred.checked
                             ? TextDecoration.lineThrough

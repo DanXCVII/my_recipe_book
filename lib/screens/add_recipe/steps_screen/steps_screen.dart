@@ -2,7 +2,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 
@@ -11,7 +11,6 @@ import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
 import '../../../generated/i18n.dart';
 import '../../../models/recipe.dart';
-import '../../../util/helper.dart';
 import '../../../util/my_wrapper.dart';
 import '../../../widgets/complexity_section.dart';
 import '../nutritions.dart';
@@ -96,7 +95,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
         return false;
       },
       child: Scaffold(
-        appBar: GradientAppBar(
+        appBar: NewGradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,
@@ -119,7 +118,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
             BlocListener<StepsBloc, StepsState>(
               listener: (context, state) {
                 if (state is SEditingFinishedGoBack) {
-                  Scaffold.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(I18n.of(context).saving_your_input)));
                 } else if (state is SSaved) {
                   BlocProvider.of<StepsBloc>(context).add(SetCanSave());
@@ -135,7 +134,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                     ),
                   );
                 } else if (state is SSavedGoBack) {
-                  Scaffold.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
                 } else if (state is SCanSave && state.isValid == false) {
                   _showFlushInfo(

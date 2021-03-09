@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -29,7 +29,7 @@ class RecipeTagManager extends StatelessWidget {
           return _getLoadedScreen(context);
         } else if (state is LoadedRecipeTagManager) {
           return Scaffold(
-            appBar: GradientAppBar(
+            appBar: NewGradientAppBar(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomCenter,
@@ -132,7 +132,7 @@ class RecipeTagManager extends StatelessWidget {
 
   Widget _getLoadedScreen(BuildContext context) {
     return Scaffold(
-      appBar: GradientAppBar(
+      appBar: NewGradientAppBar(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomCenter,

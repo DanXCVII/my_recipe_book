@@ -57,7 +57,7 @@ class _IngredientsState extends State<Ingredients> {
                   controller: widget.servingsController,
                   keyboardType: TextInputType.number,
                   validator: (value) {
-                    if (stringIsValidDouble(value) == false && value != "") {
+                    if (getDoubleFromString(value) == null && value != "") {
                       return I18n.of(context).no_valid_number;
                     }
                     return null;

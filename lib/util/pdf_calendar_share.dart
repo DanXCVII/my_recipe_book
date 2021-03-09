@@ -15,10 +15,10 @@ import 'helper.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
 
-const double weekDayWidth = 100;
-const double weekDayHeight = 100;
+const double weekDayWidth = 177;
+const double weekDayHeight = 182;
 
-Future<Uint8List> getRecipePdf(
+Future<Uint8List> getRecipeCalendarPdf(
     Map<DateTime, List<String>> calendarEntries, BuildContext bContext) async {
   final pw.Document doc = pw.Document();
 
@@ -35,8 +35,7 @@ Future<Uint8List> getRecipePdf(
   final quicksandTtf = pw.Font.ttf(quicksandFont.buffer.asByteData());
 
   const imageProvider = const AssetImage('images/iconIosStyle.png');
-  final PdfImage pdfIconImage =
-      await pdfImageFromImageProvider(pdf: doc.document, image: imageProvider);
+  final pdfIconImage = await flutterImageProvider(imageProvider);
 
   doc.addPage(
     pw.MultiPage(
@@ -63,6 +62,8 @@ Future<Uint8List> getRecipePdf(
             ]),
         build: (pw.Context context) => <pw.Widget>[
               pw.Wrap(
+                spacing: 5,
+                runSpacing: 5,
                 children: List<pw.Widget>.generate(8, (index) {
                   List<Tuple2<DateTime, String>> weekDayRecipes = [];
 
@@ -95,9 +96,9 @@ Future<Uint8List> getRecipePdf(
                               bottom: pw.BorderSide(width: 2),
                             )),
                             child: pw.Padding(
-                              padding: pw.EdgeInsets.all(8),
+                              padding: pw.EdgeInsets.all(4),
                               child: pw.Text(
-                                getWeekdayString(index, bContext),
+                                getWeekdayString(index + 1, bContext),
                               ),
                             ),
                           ),
@@ -124,9 +125,9 @@ Future<Uint8List> getRecipePdf(
                                             : pw.Text(
                                                 "${weekDayRecipes[recipeIndex].item1.hour < 10 ? "0" : ""}${weekDayRecipes[i].item1.hour.toString()}:${weekDayRecipes[recipeIndex].item1.minute < 10 ? "0" : ""}${weekDayRecipes[recipeIndex].item1.minute.toString()}",
                                                 style: pw.TextStyle(
-                                                  color: PdfColor.fromRYB(
-                                                      50, 50, 5),
-                                                ),
+                                                    // color: PdfColor.fromRYB(
+                                                    //     50, 50, 5),
+                                                    ),
                                               ),
                                         pw.Text(
                                             weekDayRecipes[recipeIndex].item2),
@@ -143,10 +144,10 @@ Future<Uint8List> getRecipePdf(
                                       return pw.Container(
                                         width: 10,
                                         decoration: pw.BoxDecoration(
-                                          borderRadiusEx: pw.BorderRadius.all(
+                                          borderRadius: pw.BorderRadius.all(
                                             pw.Radius.circular(3),
                                           ),
-                                          color: PdfColor.fromRYB(50, 50, 50),
+                                          // color: PdfColor.fromRYB(50, 50, 50),
                                         ),
                                       );
                                     }
@@ -173,7 +174,7 @@ Future<Uint8List> getRecipePdf(
                               (i) => pw.Container(
                                 width: weekDayWidth - 20,
                                 height: 2,
-                                color: PdfColor.fromRYB(50, 50, 50),
+                                // color: PdfColor.fromRYB(50, 50, 50),
                               ),
                             ),
                           ),

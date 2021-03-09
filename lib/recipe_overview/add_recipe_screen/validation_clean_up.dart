@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/util/helper.dart';
 
 import '../../local_storage/hive.dart';
 import '../../models/ingredient.dart';
@@ -157,7 +158,8 @@ List<List<Ingredient>> getCleanIngredientData(
       .map((list) => list.map((amount) {
             if (amount.text != "" && amount.text != "0") {
               String addValue = amount.text;
-              return double.parse(addValue.replaceAll(new RegExp(r','), 'e'));
+              return getDoubleFromString(
+                  addValue.replaceAll(new RegExp(r','), 'e'));
             } else {
               return null;
             }

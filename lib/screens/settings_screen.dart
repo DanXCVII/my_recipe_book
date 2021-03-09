@@ -213,6 +213,13 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+            leading: Icon(MdiIcons.decimal),
+            trailing: DecimalCheckbox(),
+            title: Text(I18n.of(context).fraction_or_decimal),
+            subtitle: Text(I18n.of(context).fraction_or_decimal_desc),
+          ),
+          Divider(),
+          ListTile(
             leading: Icon(MdiIcons.animation),
             trailing: AnimationCheckbox(),
             title: Text(I18n.of(context).complex_animations),
@@ -352,54 +359,53 @@ class Settings extends StatelessWidget {
 
   void _changeTheme(BuildContext context, MyThemeKeys key) {
     CustomTheme.instanceOf(context).changeTheme(key);
-    final scaffold = Scaffold.of(context);
-    scaffold.hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     SharedPreferences.getInstance().then((prefs) {
       switch (key) {
         case MyThemeKeys.AUTOMATIC:
           prefs.setInt('theme', 0);
-          scaffold.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(I18n.of(context).snackbar_automatic_theme_applied),
               action: SnackBarAction(
                 label: I18n.of(context).dismiss,
-                onPressed: scaffold.hideCurrentSnackBar,
+                onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar,
               ),
             ),
           );
           return;
         case MyThemeKeys.LIGHT:
           prefs.setInt('theme', 1);
-          scaffold.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(I18n.of(context).snackbar_bright_theme_applied),
               action: SnackBarAction(
                 label: I18n.of(context).dismiss,
-                onPressed: scaffold.hideCurrentSnackBar,
+                onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar,
               ),
             ),
           );
           return;
         case MyThemeKeys.DARK:
           prefs.setInt('theme', 2);
-          scaffold.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(I18n.of(context).snackbar_dark_theme_applied),
               action: SnackBarAction(
                 label: I18n.of(context).dismiss,
-                onPressed: scaffold.hideCurrentSnackBar,
+                onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar,
               ),
             ),
           );
           return;
         case MyThemeKeys.OLEDBLACK:
           prefs.setInt('theme', 3);
-          scaffold.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(I18n.of(context).snackbar_midnight_theme_applied),
               action: SnackBarAction(
                 label: I18n.of(context).dismiss,
-                onPressed: scaffold.hideCurrentSnackBar,
+                onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar,
               ),
             ),
           );
@@ -490,6 +496,32 @@ class _DisableStandbyCheckboxState extends State<DisableStandbyCheckbox> {
             GlobalSettings().disableStandby(value);
           });
         });
+      },
+    );
+  }
+}
+
+class DecimalCheckbox extends StatefulWidget {
+  DecimalCheckbox({Key key}) : super(key: key);
+
+  @override
+  _DecimalCheckboxState createState() => _DecimalCheckboxState();
+}
+
+class _DecimalCheckboxState extends State<DecimalCheckbox> {
+  @override
+  Widget build(BuildContext context) {
+    return Checkbox(
+      value: GlobalSettings().showDecimal(),
+      onChanged: (value) {
+        setState(
+          () {
+            SharedPreferences.getInstance().then((prefs) {
+              prefs.setBool("showDecimal", value);
+              GlobalSettings().shouldShowDecimal(value);
+            });
+          },
+        );
       },
     );
   }

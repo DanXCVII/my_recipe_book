@@ -6,11 +6,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/constants/global_constants.dart' as GC;
-import 'package:my_recipe_book/constants/global_constants.dart';
 import 'package:my_recipe_book/widgets/recipe_calendar_floating.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -19,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcase.dart';
 import 'package:showcaseview/showcase_widget.dart';
 
+import './recipe_calendar_screen.dart';
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/app/app_bloc.dart';
@@ -28,7 +28,6 @@ import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../local_storage/hive.dart';
-import './recipe_calendar_screen.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../util/my_wrapper.dart';
 import '../widgets/dialogs/import_dialog.dart';
@@ -113,39 +112,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     // Listen to lifecycle events.
     WidgetsBinding.instance.addObserver(this);
-
-    _rateMyApp.init().then((_) {
-      if (_rateMyApp.shouldOpenDialog) {
-        _rateMyApp.showRateDialog(
-          context,
-          title: 'Rate this app', // The dialog title.
-          message:
-              'If you like this app, please take a little bit of your time to review it !\nIt really helps us and it shouldn\'t take you more than one minute.', // The dialog message.
-          rateButton: 'RATE', // The dialog "rate" button text.
-          noButton: 'NO THANKS', // The dialog "no" button text.
-          laterButton: 'MAYBE LATER', // The dialog "later" button text.
-          listener: (button) {
-            // The button click listener (useful if you want to cancel the click event).
-            switch (button) {
-              case RateMyAppDialogButton.rate:
-                print('Clicked on "Rate".');
-                break;
-              case RateMyAppDialogButton.later:
-                print('Clicked on "Later".');
-                break;
-              case RateMyAppDialogButton.no:
-                print('Clicked on "No".');
-                break;
-            }
-
-            return true; // Return false if you want to cancel the click event.
-          },
-          // dialogStyle: DialogStyle(),
-          onDismissed: () =>
-              _rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed),
-        );
-      }
-    });
   }
 
   @override
@@ -264,187 +230,213 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-        children: <Widget>[
-      BlocBuilder<AppBloc, AppState>(
-        builder: (context, state) {
-          if (state is LoadingState) {
-            return _getSplashScreen();
-          } else if (state is LoadedState) {
-            return Scaffold(
-              appBar: _buildAppBar(state.selectedIndex,
-                  state.recipeCategoryOverview, state.title),
-              floatingActionButton: state.selectedIndex == 0
-                  ? FloatingActionButtonMenu(
-                      _introKeyOne,
-                      _introKeyTwo,
-                      _introKeyThree,
-                      showIntro: showIntro,
-                      shoppingCartAdd: state.selectedIndex == 2 ? true : false,
-                    )
-                  : state.selectedIndex == 2
-                      ? FloatingActionButton(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          child: Icon(Icons.add_shopping_cart,
-                              color: Colors.white),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (_) => BlocProvider.value(
-                                value:
-                                    BlocProvider.of<ShoppingCartBloc>(context),
-                                child: ShoppingCartAddDialog(),
-                              ),
-                            );
-                          },
-                        )
-                      : null,
-              body: Row(
-                children: <Widget>[
-                  MediaQuery.of(context).size.width > GC.sideBarWidth
-                      ? VerticalSideBar(
-                          state.selectedIndex == 2 ? 0 : state.selectedIndex,
-                          state.shoppingCartOpen,
-                          state.recipeCalendarOpen,
-                        )
-                      : null,
-                  Expanded(
-                    child: IndexedStack(
-                      index: state.selectedIndex,
-                      children: [
-                        AnimatedSwitcher(
-                          duration: Duration(milliseconds: 200),
-                          child: state.recipeCategoryOverview == true
-                              ? RecipeCategoryOverview()
-                              : CategoryGridView(),
-                        ),
-                        FavoriteScreen(),
-                        MediaQuery.of(context).size.width <= GC.sideBarWidth
-                            ? FancyShoppingCartScreen(shoppingCartImage)
-                            : Container(),
-                        SwypingCardsScreen(),
-                        Settings(),
-                      ],
-                    ),
-                  ),
-                ]..removeWhere((item) => item == null),
-              ),
-              backgroundColor: _getBackgroundColor(state.selectedIndex),
-              bottomNavigationBar:
-                  MediaQuery.of(context).size.width <= GC.sideBarWidth
-                      ? MediaQuery.of(context).size.width < 346
-                          ? BottomNavigationBar(
-                              backgroundColor: Color(0xff232323),
-                              currentIndex: state.selectedIndex,
-                              onTap: (index) => _onItemTapped(index, context),
-                              items: [
-                                BottomNavigationBarItem(
-                                  icon: Icon(MdiIcons.notebook),
-                                  label: I18n.of(context).recipes,
-                                  activeIcon: Icon(
-                                    MdiIcons.notebook,
-                                    color: Colors.orange,
-                                  ),
-                                ),
-                                BottomNavigationBarItem(
-                                  icon: Icon(Icons.favorite),
-                                  label: I18n.of(context).favorites,
-                                  activeIcon: Icon(
-                                    Icons.favorite,
-                                    color: Colors.pink,
-                                  ),
-                                ),
-                                BottomNavigationBarItem(
-                                    icon: Icon(Icons.shopping_basket),
-                                    label: I18n.of(context).basket,
-                                    activeIcon: Icon(
-                                      Icons.shopping_basket,
-                                      color: Colors.brown[300],
-                                    )),
-                                BottomNavigationBarItem(
-                                  icon: Icon(MdiIcons.diceMultiple),
-                                  label: I18n.of(context).explore,
-                                  activeIcon: Icon(
-                                    MdiIcons.diceMultiple,
-                                    color: Colors.green,
-                                  ),
-                                ),
-                                BottomNavigationBarItem(
-                                  icon: Icon(Icons.settings),
-                                  label: I18n.of(context).settings,
-                                  activeIcon: Icon(
-                                    Icons.settings,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Theme(
-                              data: Theme.of(context)
-                                  .copyWith(canvasColor: Colors.black87),
-                              child: BottomNavyBar(
-                                backgroundColor: Color(0xff232323),
-                                animationDuration: Duration(milliseconds: 150),
-                                selectedIndex: state.selectedIndex,
-                                showElevation: true,
-                                onItemSelected: (index) =>
-                                    _onItemTapped(index, context),
-                                items: [
-                                  BottomNavyBarItem(
-                                      icon: Icon(MdiIcons.notebook),
-                                      title: Text(I18n.of(context).recipes),
-                                      activeColor: Colors.orange,
-                                      inactiveColor: Colors.white),
-                                  BottomNavyBarItem(
-                                    icon: Icon(Icons.favorite),
-                                    title: Text(I18n.of(context).favorites),
-                                    activeColor: Colors.pink,
-                                    inactiveColor: Colors.white,
-                                  ),
-                                  BottomNavyBarItem(
-                                      icon: Icon(Icons.shopping_basket),
-                                      title: Text(I18n.of(context).basket),
-                                      activeColor: Colors.brown[300],
-                                      inactiveColor: Colors.white),
-                                  BottomNavyBarItem(
-                                    icon: Icon(MdiIcons.diceMultiple),
-                                    title: Text(I18n.of(context).explore),
-                                    activeColor: Colors.green,
-                                    inactiveColor: Colors.white,
-                                  ),
-                                  BottomNavyBarItem(
-                                      icon: Icon(Icons.settings),
-                                      title: Text(I18n.of(context).settings),
-                                      activeColor: Colors.grey[100],
-                                      inactiveColor: Colors.white)
-                                ],
-                              ),
-                            )
-                      : null,
-            );
-          } else {
-            return Text(state.toString());
+    return RateMyAppBuilder(
+      rateMyApp: _rateMyApp,
+      onInitialized: (context, rateMyApp) {
+        rateMyApp.conditions.forEach((condition) {
+          if (condition is DebuggableCondition) {
+            print(condition
+                .valuesAsString); // We iterate through our list of conditions and we print all debuggable ones.
           }
-        },
-      ),
-      RecipeBubbles(),
-      MediaQuery.of(context).size.width > GC.sideBarWidth
-          ? ShoppingCartFloating(
-              initialPosition: Offset(
-                200,
-                200,
-              ),
-            )
-          : null,
-      MediaQuery.of(context).size.width > GC.recipeCalendarFloatingWidth
-          ? RecipeCalendarFloating(
-              initialPosition: Offset(
-                200,
-                45,
-              ),
-            )
-          : null,
-    ]..removeWhere((item) => item == null));
+        });
+
+        print('Are all conditions met ? ' +
+            (rateMyApp.shouldOpenDialog ? 'Yes' : 'No'));
+
+        if (rateMyApp.shouldOpenDialog) {
+          rateMyApp.showRateDialog(
+            context,
+            title: I18n.of(context).rate_this_app,
+            message: I18n.of(context).rate_this_app_desc,
+            laterButton: I18n.of(context).maybe_later,
+            rateButton: I18n.of(context).rate,
+            noButton: I18n.of(context).no_thanks,
+          );
+        }
+      },
+      builder: (context) => Stack(
+          children: <Widget>[
+        BlocBuilder<AppBloc, AppState>(
+          builder: (context, state) {
+            if (state is LoadingState) {
+              return _getSplashScreen();
+            } else if (state is LoadedState) {
+              return Scaffold(
+                appBar: _buildAppBar(state.selectedIndex,
+                    state.recipeCategoryOverview, state.title),
+                floatingActionButton: state.selectedIndex == 0
+                    ? FloatingActionButtonMenu(
+                        _introKeyOne,
+                        _introKeyTwo,
+                        _introKeyThree,
+                        showIntro: showIntro,
+                        shoppingCartAdd:
+                            state.selectedIndex == 2 ? true : false,
+                      )
+                    : state.selectedIndex == 2
+                        ? FloatingActionButton(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            child: Icon(Icons.add_shopping_cart,
+                                color: Colors.white),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => BlocProvider.value(
+                                  value: BlocProvider.of<ShoppingCartBloc>(
+                                      context),
+                                  child: ShoppingCartAddDialog(),
+                                ),
+                              );
+                            },
+                          )
+                        : null,
+                body: Row(
+                  children: <Widget>[
+                    MediaQuery.of(context).size.width > GC.sideBarWidth
+                        ? VerticalSideBar(
+                            state.selectedIndex == 2 ? 0 : state.selectedIndex,
+                            state.shoppingCartOpen,
+                            state.recipeCalendarOpen,
+                          )
+                        : null,
+                    Expanded(
+                      child: IndexedStack(
+                        index: state.selectedIndex,
+                        children: [
+                          AnimatedSwitcher(
+                            duration: Duration(milliseconds: 200),
+                            child: state.recipeCategoryOverview == true
+                                ? RecipeCategoryOverview()
+                                : CategoryGridView(),
+                          ),
+                          FavoriteScreen(),
+                          MediaQuery.of(context).size.width <= GC.sideBarWidth
+                              ? FancyShoppingCartScreen(shoppingCartImage)
+                              : Container(),
+                          SwypingCardsScreen(),
+                          Settings(),
+                        ],
+                      ),
+                    ),
+                  ]..removeWhere((item) => item == null),
+                ),
+                backgroundColor: _getBackgroundColor(state.selectedIndex),
+                bottomNavigationBar: MediaQuery.of(context).size.width <=
+                        GC.sideBarWidth
+                    ? MediaQuery.of(context).size.width < 346
+                        ? BottomNavigationBar(
+                            backgroundColor: Color(0xff232323),
+                            currentIndex: state.selectedIndex,
+                            onTap: (index) => _onItemTapped(index, context),
+                            items: [
+                              BottomNavigationBarItem(
+                                icon: Icon(MdiIcons.notebook),
+                                label: I18n.of(context).recipes,
+                                activeIcon: Icon(
+                                  MdiIcons.notebook,
+                                  color: Colors.orange,
+                                ),
+                              ),
+                              BottomNavigationBarItem(
+                                icon: Icon(Icons.favorite),
+                                label: I18n.of(context).favorites,
+                                activeIcon: Icon(
+                                  Icons.favorite,
+                                  color: Colors.pink,
+                                ),
+                              ),
+                              BottomNavigationBarItem(
+                                  icon: Icon(Icons.shopping_basket),
+                                  label: I18n.of(context).basket,
+                                  activeIcon: Icon(
+                                    Icons.shopping_basket,
+                                    color: Colors.brown[300],
+                                  )),
+                              BottomNavigationBarItem(
+                                icon: Icon(MdiIcons.diceMultiple),
+                                label: I18n.of(context).explore,
+                                activeIcon: Icon(
+                                  MdiIcons.diceMultiple,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              BottomNavigationBarItem(
+                                icon: Icon(Icons.settings),
+                                label: I18n.of(context).settings,
+                                activeIcon: Icon(
+                                  Icons.settings,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Theme(
+                            data: Theme.of(context)
+                                .copyWith(canvasColor: Colors.black87),
+                            child: BottomNavyBar(
+                              backgroundColor: Color(0xff232323),
+                              animationDuration: Duration(milliseconds: 150),
+                              selectedIndex: state.selectedIndex,
+                              showElevation: true,
+                              onItemSelected: (index) =>
+                                  _onItemTapped(index, context),
+                              items: [
+                                BottomNavyBarItem(
+                                    icon: Icon(MdiIcons.notebook),
+                                    title: Text(I18n.of(context).recipes),
+                                    activeColor: Colors.orange,
+                                    inactiveColor: Colors.white),
+                                BottomNavyBarItem(
+                                  icon: Icon(Icons.favorite),
+                                  title: Text(I18n.of(context).favorites),
+                                  activeColor: Colors.pink,
+                                  inactiveColor: Colors.white,
+                                ),
+                                BottomNavyBarItem(
+                                    icon: Icon(Icons.shopping_basket),
+                                    title: Text(I18n.of(context).basket),
+                                    activeColor: Colors.brown[300],
+                                    inactiveColor: Colors.white),
+                                BottomNavyBarItem(
+                                  icon: Icon(MdiIcons.diceMultiple),
+                                  title: Text(I18n.of(context).explore),
+                                  activeColor: Colors.green,
+                                  inactiveColor: Colors.white,
+                                ),
+                                BottomNavyBarItem(
+                                    icon: Icon(Icons.settings),
+                                    title: Text(I18n.of(context).settings),
+                                    activeColor: Colors.grey[100],
+                                    inactiveColor: Colors.white)
+                              ],
+                            ),
+                          )
+                    : null,
+              );
+            } else {
+              return Text(state.toString());
+            }
+          },
+        ),
+        RecipeBubbles(),
+        MediaQuery.of(context).size.width > GC.sideBarWidth
+            ? ShoppingCartFloating(
+                initialPosition: Offset(
+                  200,
+                  200,
+                ),
+              )
+            : null,
+        MediaQuery.of(context).size.width > GC.recipeCalendarFloatingWidth
+            ? RecipeCalendarFloating(
+                initialPosition: Offset(
+                  200,
+                  45,
+                ),
+              )
+            : null,
+      ]..removeWhere((item) => item == null)),
+    );
   }
 
   Widget _getSplashScreen() {
@@ -464,7 +456,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     );
   }
 
-  GradientAppBar _buildAppBar(
+  NewGradientAppBar _buildAppBar(
       int currentIndex, bool recipeCategoryOverview, String title) {
     // if shoppingCartPage with sliverAppBar
 
@@ -473,7 +465,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     } else if (currentIndex == 3 && MediaQuery.of(context).size.height < 730)
       return null;
     else {
-      return GradientAppBar(
+      return NewGradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,

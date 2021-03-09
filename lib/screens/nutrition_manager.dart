@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/nutrition_manager/nutrition_manager_bloc.dart';
@@ -65,7 +65,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             return _getNutritionManagerLoadingScreen();
           } else if (state is LoadedNutritionManager) {
             return Scaffold(
-              appBar: GradientAppBar(
+              appBar: NewGradientAppBar(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomCenter,
@@ -177,7 +177,7 @@ class _NutritionManagerState extends State<NutritionManager> {
 
   Widget _getNutritionManagerLoadingScreen() {
     return Scaffold(
-        appBar: GradientAppBar(
+        appBar: NewGradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,

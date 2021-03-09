@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:fraction/fraction.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
 import '../models/ingredient.dart';
@@ -9,36 +10,39 @@ import '../models/ingredient.dart';
 /// 0,5
 double getDoubleFromString(String number) {
   String validNumber = number.replaceAll(",", ".");
-
-  double convertedNumber;
-  if (validNumber.contains("/")) {
-    convertedNumber =
-        double.parse(validNumber.substring(0, validNumber.indexOf("/"))) /
-            double.parse(validNumber.substring(validNumber.indexOf("/") + 1));
-  } else {
-    convertedNumber = double.parse(validNumber);
+  double parsedDouble;
+  try {
+    parsedDouble = double.parse(validNumber);
+    return parsedDouble;
+  } catch (e) {
+    print(e);
   }
 
-  return convertedNumber;
+  try {
+    var f = MixedFraction.fromString(validNumber);
+    parsedDouble = f.toDouble();
+    return parsedDouble;
+  } catch (e) {
+    print(e);
+  }
+
+  try {
+    var f = Fraction.fromString(validNumber);
+    parsedDouble = f.toDouble();
+    return parsedDouble;
+  } catch (e) {
+    print(e);
+  }
+
+  return null;
 }
 
 /// TODO: update to show number in nice string format
-String getNumberString(double number) {
-  String numberString = number.toStringAsFixed(3);
+String getFractionDouble(double number) {
+  var f = Fraction.fromDouble(number, precision: 0.01);
+  String mf = MixedFraction.fromFraction(f).toString();
 
-  if (numberString[numberString.length - 1] ==
-      numberString[numberString.length - 2]) {
-    numberString = numberString.substring(0, numberString.length - 2);
-  } else {
-    if (numberString.endsWith("0")) {
-      numberString.substring(0, numberString.length - 1);
-    }
-    if (numberString.endsWith("0")) {
-      numberString.substring(0, numberString.length - 1);
-    }
-  }
-
-  return numberString;
+  return mf.endsWith("0/1") ? number.toStringAsFixed(0) : mf;
 }
 
 String cutDouble(double number) {

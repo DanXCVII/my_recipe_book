@@ -2,7 +2,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
@@ -97,7 +97,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
         return false;
       },
       child: Scaffold(
-        appBar: GradientAppBar(
+        appBar: NewGradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,
@@ -288,7 +288,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
           goBack,
           (servingsController.text == "" || servingsController.text == "0")
               ? null
-              : double.parse(servingsController.text),
+              : getDoubleFromString(servingsController.text),
           servingsNameController.text,
           savedIngredients,
           savedSectionTitles,
@@ -314,8 +314,8 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
         String ingredientName = ingredientNamesContr[i][j].text;
         double amount = amountContr[i][j].text == "0"
             ? null
-            : stringIsValidDouble(amountContr[i][j].text)
-                ? double.parse(
+            : getDoubleFromString(amountContr[i][j].text) != null
+                ? getDoubleFromString(
                     amountContr[i][j].text.replaceAll(new RegExp(r','), '.'))
                 : null;
         String unit = unitContr[i][j].text;

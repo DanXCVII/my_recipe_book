@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
@@ -123,8 +123,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
             } else if (state is LoadedNutritionManager) {
               return Scaffold(
                 resizeToAvoidBottomInset: false,
-                resizeToAvoidBottomPadding: false,
-                appBar: GradientAppBar(
+                appBar: NewGradientAppBar(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomCenter,
@@ -135,11 +134,11 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                     BlocListener<NutritionsBloc, NutritionsState>(
                       listener: (context, state) {
                         if (state is NEditingFinishedGoBack) {
-                          Scaffold.of(context).showSnackBar(SnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content:
                                   Text(I18n.of(context).saving_your_input)));
                         } else if (state is NSavedGoBack) {
-                          Scaffold.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           Navigator.pop(context);
                         } else if (state is NSaved) {
                           if (widget.editingRecipeName == null) {
@@ -363,8 +362,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
   Widget _getNutritionManagerLoadingScreen() {
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        resizeToAvoidBottomPadding: false,
-        appBar: GradientAppBar(
+        appBar: NewGradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,

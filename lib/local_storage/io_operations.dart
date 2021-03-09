@@ -661,7 +661,37 @@ bool checkIfImportRecipeDataIsValid(
   String recipeDirName =
       importRecipeDir.path.substring(importRecipeDir.path.lastIndexOf("/"));
   if (importRecipe.steps.length != importRecipe.stepImages.length) {
-    return false;
+    // if the recipe has more steps than stepImages
+    if (importRecipe.steps.length > importRecipe.stepImages.length) {
+      // fill the stepImages with empty arrays so that the lenghts match
+      importRecipe = importRecipe.copyWith(
+        stepImages: importRecipe.stepImages
+          ..addAll(
+            List.generate(
+              (importRecipe.steps.length - importRecipe.stepImages.length)
+                  .abs(),
+              (index) => [],
+            ),
+          ),
+      );
+      print(importRecipe.steps.length);
+      print(importRecipe.stepImages.length);
+    }
+    // if the importRecipe has less steps than stepImages
+    else if (importRecipe.steps.length < importRecipe.stepImages.length) {
+      // remove the stepImages, so that the length of both lists is equal
+      importRecipe = importRecipe.copyWith(
+        stepImages: importRecipe.stepImages
+          ..removeRange(
+            importRecipe.stepImages.length -
+                (importRecipe.steps.length - importRecipe.stepImages.length)
+                    .abs(),
+            importRecipe.stepImages.length,
+          ),
+      );
+      print(importRecipe.steps.length);
+      print(importRecipe.stepImages.length);
+    }
   }
   try {
     if (importRecipe.imagePath != Constants.noRecipeImage) {

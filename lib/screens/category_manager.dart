@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/widgets/icon_info_message.dart';
 
@@ -28,7 +28,7 @@ class CategoryManager extends StatelessWidget {
           return _getLoadedScreen(context);
         } else if (state is LoadedCategoryManager) {
           return Scaffold(
-            appBar: GradientAppBar(
+            appBar: NewGradientAppBar(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomCenter,
@@ -137,7 +137,7 @@ class CategoryManager extends StatelessWidget {
 
   Widget _getLoadedScreen(BuildContext context) {
     return Scaffold(
-      appBar: GradientAppBar(
+      appBar: NewGradientAppBar(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomCenter,

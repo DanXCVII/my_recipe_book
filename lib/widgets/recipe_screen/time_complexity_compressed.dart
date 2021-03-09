@@ -33,8 +33,24 @@ class TimeComplexityCompressed extends StatelessWidget {
                 (totalTime != 0 && totalTime != null))
             ? Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(25)),
-                    color: Colors.grey[800]),
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(2, 2),
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                      color: Colors.black26,
+                    ),
+                  ],
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.grey[700],
+                      Colors.grey[800],
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
                   child: Text(
@@ -56,8 +72,24 @@ class TimeComplexityCompressed extends StatelessWidget {
         showComplexity
             ? Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(25)),
-                    color: _getEffortColor(effort)),
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(2, 2),
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                      color: Colors.black26,
+                    ),
+                  ],
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                  gradient: LinearGradient(
+                    colors: [
+                      _getEffortColor(effort),
+                      _getEffortColor(effort + 1 == 11 ? 9 : effort + 1),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
                   child: Text(

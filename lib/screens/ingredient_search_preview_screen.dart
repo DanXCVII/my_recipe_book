@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:video_player/video_player.dart';
@@ -24,7 +24,7 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: GradientAppBar(
+      appBar: NewGradientAppBar(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomCenter,

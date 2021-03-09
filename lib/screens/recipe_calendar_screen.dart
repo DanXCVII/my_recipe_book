@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:my_recipe_book/util/pdf_calendar_share.dart';
+import 'package:my_recipe_book/util/pdf_share.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/ad_related/ad.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
@@ -16,6 +18,8 @@ import 'package:my_recipe_book/util/helper.dart';
 import 'package:my_recipe_book/widgets/dialogs/calendar_add_dialog.dart';
 import 'package:my_recipe_book/widgets/dialogs/calendar_recipe_add_dialog.dart';
 import 'package:my_recipe_book/widgets/recipe_image_hero.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -49,7 +53,7 @@ class _RecipeCalendarScreenState extends State<RecipeCalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: GradientAppBar(
+        appBar: NewGradientAppBar(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomCenter,
@@ -159,6 +163,15 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
           return Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
+              // IconButton(
+              //     icon: Icon(Icons.print),
+              //     onPressed: () {
+              //       getRecipeCalendarPdf(state.events, context).then(
+              //         (pdf) => Printing.layoutPdf(
+              //           onLayout: (PdfPageFormat format) async => pdf,
+              //         ),
+              //       );
+              //     }),
               // Switch out 2 lines below to play with TableCalendar's settings
               //-----------------------
               width > deviceWidthMedium

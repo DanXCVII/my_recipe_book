@@ -436,7 +436,9 @@ class RecipeCardBig extends StatelessWidget {
         ));
         if (flatIngredients[i].amount != null) {
           leftIngredAmountColumn.children.add(Text(
-            cutDouble(flatIngredients[i].amount) +
+            (GlobalSettings().showDecimal()
+                    ? cutDouble(flatIngredients[i].amount)
+                    : getFractionDouble(flatIngredients[i].amount)) +
                 ' ' +
                 (flatIngredients[i].unit != null
                     ? flatIngredients[i].unit
@@ -458,7 +460,9 @@ class RecipeCardBig extends StatelessWidget {
         ));
         if (flatIngredients[i].amount != null) {
           rightIngredAmountColumn.children.add(Text(
-            cutDouble(flatIngredients[i].amount) +
+            (GlobalSettings().showDecimal()
+                    ? cutDouble(flatIngredients[i].amount)
+                    : getFractionDouble(flatIngredients[i].amount)) +
                 ' ' +
                 (flatIngredients[i].unit != null
                     ? flatIngredients[i].unit
@@ -490,7 +494,9 @@ class RecipeCardBig extends StatelessWidget {
         ));
         if (flatIngredients[i].amount != null) {
           leftIngredAmountColumn.children.add(Text(
-            cutDouble(flatIngredients[i].amount) +
+            (GlobalSettings().showDecimal()
+                    ? cutDouble(flatIngredients[i].amount)
+                    : getFractionDouble(flatIngredients[i].amount)) +
                 ' ' +
                 (flatIngredients[i].unit != null
                     ? flatIngredients[i].unit

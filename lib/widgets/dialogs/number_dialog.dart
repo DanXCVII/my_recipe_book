@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-import '../../generated/i18n.dart';
-
 class Consts {
   Consts._();
 

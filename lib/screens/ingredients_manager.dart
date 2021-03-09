@@ -2,7 +2,7 @@ import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/ingredinets_manager/ingredients_manager_bloc.dart';
@@ -71,7 +71,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
             return _getIngredientManagerLoadingScreen();
           } else if (state is LoadedIngredientsManager) {
             return Scaffold(
-              appBar: GradientAppBar(
+              appBar: NewGradientAppBar(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomCenter,
@@ -193,7 +193,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
 
   Widget _getIngredientManagerLoadingScreen() {
     return Scaffold(
-        appBar: GradientAppBar(
+        appBar: NewGradientAppBar(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,

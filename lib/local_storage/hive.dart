@@ -403,14 +403,15 @@ class HiveProvider {
             .contains(hiveRecipeKey)) {
           await boxRecipeCategories.put(
               getHiveKey(categoryName),
-              boxRecipeCategories.get(getHiveKey(categoryName))
+              List<String>.from(
+                  boxRecipeCategories.get(getHiveKey(categoryName)))
                 ..removeWhere((key) => key == hiveRecipeKey));
         }
       }
     } else {
       await boxRecipeCategories.put(
           'no category',
-          boxRecipeCategories.get('no category')
+          List<String>.from(boxRecipeCategories.get('no category'))
             ..removeWhere((key) => key == hiveRecipeKey));
     }
 
@@ -418,7 +419,7 @@ class HiveProvider {
     if (removeRecipe.rating != null) {
       boxRatings.put(
           removeRecipe.rating,
-          boxRatings.get(removeRecipe.rating)
+          List<String>.from(boxRatings.get(removeRecipe.rating))
             ..removeWhere((key) => key == hiveRecipeKey));
     }
 
@@ -434,7 +435,7 @@ class HiveProvider {
       String hiveRecipeTag = getHiveKey(recipeTag.text);
       await boxRecipeTagsList.put(
         hiveRecipeTag,
-        boxRecipeTagsList.get(hiveRecipeTag)
+        List<String>.from(boxRecipeTagsList.get(hiveRecipeTag))
           ..removeWhere((key) => key == hiveRecipeKey),
       );
     }

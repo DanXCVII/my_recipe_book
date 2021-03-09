@@ -52,7 +52,11 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     if (prefs.containsKey("shoppingCartSummary")) {
       _showShoppingCartSummary = prefs.getBool("shoppingCartSummary");
     } else {
-      prefs.setBool("shoppingCartSummary", _showShoppingCartSummary);
+      await prefs.setBool("shoppingCartSummary", _showShoppingCartSummary);
+    }
+    // check if showSummary for shoppingCart
+    if (!prefs.containsKey(Constants.showDecimal)) {
+      await prefs.setBool(Constants.showDecimal, _showShoppingCartSummary);
     }
 
     recipeCategoryOverview = _initRecipeOverviewScreen(prefs);
@@ -68,11 +72,11 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     if (!prefs.containsKey('showIntro')) {
       showIntro = true;
       GlobalSettings().thisIsFirstStart(true);
-      prefs.setBool('shoppingCartSummary', false);
-      prefs.setBool('showIntro', false);
-      prefs.setBool('showStepsIntro', true);
-      prefs.setBool(Constants.enableAnimations, true);
-      prefs.setBool(Constants.disableStandby, true);
+      await prefs.setBool('shoppingCartSummary', false);
+      await prefs.setBool('showIntro', false);
+      await prefs.setBool('showStepsIntro', true);
+      await prefs.setBool(Constants.enableAnimations, true);
+      await prefs.setBool(Constants.disableStandby, true);
       GlobalSettings().enableAnimations(true);
       await initHive(true);
       await prefs.setBool('pro_version', false);
@@ -82,6 +86,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
           .enableAnimations(prefs.getBool(Constants.enableAnimations));
       GlobalSettings().hasSeenStepIntro(!prefs.getBool('showStepsIntro'));
       GlobalSettings().disableStandby(prefs.getBool(Constants.disableStandby));
+      GlobalSettings().shouldShowDecimal(prefs.getBool(Constants.showDecimal));
       await initHive(false);
     }
     // TODO: getPermission
@@ -127,8 +132,9 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (!prefs.containsKey('noAdsUntil')) {
-      await prefs.setString('noAdsUntil',
-          DateTime.now().subtract(Duration(days: 1000)).toString());
+      String noAdsUntil =
+          (DateTime.now().subtract(Duration(days: 1000))).toString();
+      await prefs.setString('noAdsUntil', noAdsUntil);
     }
   }
 

@@ -198,7 +198,8 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                                 labelText: I18n.of(context).amnt,
                               ),
                               validator: (value) {
-                                if (value == "" || stringIsValidDouble(value)) {
+                                if (value == "" ||
+                                    getDoubleFromString(value) != null) {
                                   if (value == "" &&
                                       ingredientUnitController.text != "") {
                                     return I18n.of(context).fill_remove_unit;
@@ -259,7 +260,8 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                       name: ingredientNameController.text,
                       amount: ingredientAmountController.text == ""
                           ? null
-                          : double.parse(ingredientAmountController.text),
+                          : getDoubleFromString(
+                              ingredientAmountController.text),
                       unit: ingredientUnitController.text,
                     ),
                     selectedDropdownIndex,

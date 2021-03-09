@@ -149,7 +149,7 @@ class _ShoppingCartAddDialogContentState
                                     ),
                                     validator: (value) {
                                       if (value == "" ||
-                                          stringIsValidDouble(value)) {
+                                          getDoubleFromString(value) != null) {
                                         return null;
                                       }
                                       return I18n.of(context).no_valid_number;
@@ -220,7 +220,7 @@ class _ShoppingCartAddDialogContentState
                               name: ingredientNameController.text,
                               amount: ingredientAmountController.text == ""
                                   ? null
-                                  : double.parse(
+                                  : getDoubleFromString(
                                       ingredientAmountController.text),
                               unit: ingredientUnitController.text)
                         ],

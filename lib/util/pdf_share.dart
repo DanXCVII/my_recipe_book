@@ -42,8 +42,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
   final latoBTtf = pw.Font.ttf(latoBFont.buffer.asByteData());
 
   const imageProvider = const AssetImage('images/iconIosStyle.png');
-  final PdfImage pdfIconImage =
-      await pdfImageFromImageProvider(pdf: doc.document, image: imageProvider);
+  final pdfIconImage = await flutterImageProvider(imageProvider);
 
   String categoriesString = "";
   for (String category in recipe.categories) {
@@ -146,9 +145,9 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       header: (pw.Context context) {
         if (context.pageNumber == 1) {
-          return null;
+          return pw.Container();
         }
-        return null;
+        return pw.Container();
       },
       footer: (pw.Context context) {
         return pw.Stack(children: [
@@ -217,9 +216,8 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                         height: 190,
                         width: 190,
                         child: pw.Image(
-                          PdfImage.file(
-                            doc.document,
-                            bytes: File(recipe.imagePath).readAsBytesSync(),
+                          pw.MemoryImage(
+                            File(recipe.imagePath).readAsBytesSync(),
                           ),
                           fit: pw.BoxFit.cover,
                         ),
@@ -824,13 +822,12 @@ List<pw.Widget> _getSteps(
                     horizontalRadius: 8,
                     verticalRadius: 8,
                     child: pw.Image(
-                        PdfImage.file(
-                          doc.document,
-                          bytes: File(stepImages[i][index]).readAsBytesSync(),
-                        ),
-                        fit: pw.BoxFit.contain,
-                        height: 100,
-                        width: 100),
+                      pw.MemoryImage(
+                          File(stepImages[i][index]).readAsBytesSync()),
+                      fit: pw.BoxFit.contain,
+                      height: 100,
+                      width: 100,
+                    ),
                   ),
                 ),
               ),

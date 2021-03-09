@@ -2,6 +2,7 @@ import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_recipe_book/constants/global_settings.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -67,7 +68,7 @@ class ShoppingListSummary extends StatelessWidget {
                         // needs size, otherwise error
                         Container(width: 1, height: 1)
                         : Text(
-                            "${currentIngred.amount != null ? cutDouble(currentIngred.amount) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit}",
+                            "${currentIngred.amount != null ? (GlobalSettings().showDecimal() ? cutDouble(currentIngred.amount) : getFractionDouble(currentIngred.amount)) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit}",
                             style: TextStyle(
                               decoration: currentIngred.checked
                                   ? TextDecoration.lineThrough
@@ -320,7 +321,7 @@ class ShoppingCartListTile extends StatelessWidget {
                                   decoration: BoxDecoration(),
                                   child: Center(
                                     child: Text(
-                                      '${cutDouble(ingredient.amount)} ${ingredient.unit == null ? "" : ingredient.unit}',
+                                      '${(GlobalSettings().showDecimal() ? cutDouble(ingredient.amount) : getFractionDouble(ingredient.amount))} ${ingredient.unit == null ? "" : ingredient.unit}',
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(

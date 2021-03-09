@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 
@@ -113,7 +113,7 @@ class RecipeGridView extends StatelessWidget {
             );
           } else {
             return Scaffold(
-                appBar: GradientAppBar(
+                appBar: NewGradientAppBar(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomCenter,
@@ -257,7 +257,7 @@ class RecipeGridView extends StatelessWidget {
             );
           } else {
             return Scaffold(
-                appBar: GradientAppBar(
+                appBar: NewGradientAppBar(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomCenter,
