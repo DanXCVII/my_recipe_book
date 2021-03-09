@@ -692,7 +692,8 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     () {
                       getTemporaryDirectory().then((dir) {
                         IO.clearCache();
-                        Ads.loadRewardedVideo();
+                        // TODO: ADD REWARDED VIDEO!!
+                        // Ads.loadRewardedVideo();
                         Navigator.pushNamed(
                           context,
                           RouteNames.importFromWebsite,

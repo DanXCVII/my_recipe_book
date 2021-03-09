@@ -1,24 +1,29 @@
 import 'dart:async';
 
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:my_recipe_book/generated/i18n.dart';
 
 import 'ad_id.dart';
 
 class Ads {
+  static AdRequest _adRequest;
+  static RewardedAd _rewardedVideo;
   static bool _showBannerAds = true;
-  static bool bottomBIsShown = false;
-  static bool topBIsShown = false;
-  static bool _bottomBIsGoingToBeShown = false;
-  static bool _topBIsGoingToBeShown = false;
   static BannerAd _bottomBannerAd;
   static BannerAd _topBannerAd;
   static bool _wideBottomBannerAd = false;
   static double adHeight;
 
   static void initialize() {
-    FirebaseAdMob.instance.initialize(appId: getAdAppId());
+    _adRequest = AdRequest(
+        keywords: [
+          'recipes',
+          'kitchen',
+          'cooking',
+        ],
+        nonPersonalizedAds: false,
+        testDevices: <String>["84A003142741DEE5AEED89CE56D794EB"]);
   }
 
   static void showWideBannerAds() {
@@ -29,187 +34,98 @@ class Ads {
     _bottomBannerAd = BannerAd(
       adUnitId: getBannerAdUnitId(),
       size: _wideBottomBannerAd ? AdSize.fullBanner : AdSize.banner,
-      targetingInfo: _getMobileAdTargetingInfo(),
-      listener: (MobileAdEvent event) {
-        if (event == MobileAdEvent.loaded) {
-          bottomBIsShown = true;
-          _bottomBIsGoingToBeShown = false;
-        } else if (event == MobileAdEvent.failedToLoad) {
-          bottomBIsShown = false;
-          _bottomBIsGoingToBeShown = false;
-        }
-      },
+      request: _adRequest,
+      listener: AdListener(
+          onAdLoaded: (_) {},
+          onAdFailedToLoad: (_, __) {
+            _bottomBannerAd.dispose();
+          },
+          onAdClosed: (_) {
+            _bottomBannerAd.dispose();
+          }),
     );
   }
 
   static void setTopBannerAd() {
     _topBannerAd = BannerAd(
       adUnitId: getBannerAdUnitId(),
-      size: AdSize.banner, // maybe smartBanner
-      targetingInfo: _getMobileAdTargetingInfo(),
-      listener: (MobileAdEvent event) {
-        if (event == MobileAdEvent.loaded) {
-          topBIsShown = true;
-          _topBIsGoingToBeShown = false;
-        } else if (event == MobileAdEvent.failedToLoad) {
-          topBIsShown = false;
-          _topBIsGoingToBeShown = false;
-        }
-      },
+      size: AdSize.banner,
+      request: _adRequest,
+      listener: AdListener(
+        onAdLoaded: (_) {},
+        onAdFailedToLoad: (_, __) {},
+      ),
     );
   }
 
-  static Future<void> loadRewardedVideo([State state]) async {
+  static Future<void> loadRewardedVideo(
+    void Function() onAdClosed,
+    void Function() onAdFailedToLoad,
+    void Function() onRewardedAdUserEarnedReward, [
+    State state,
+  ]) async {
     if (state != null && !state.mounted) return;
 
-    await RewardedVideoAd.instance
-        .load(
-          adUnitId: getRewardAdUnitId(),
-          targetingInfo: _getMobileAdTargetingInfo(),
-        )
-        .catchError((e) => print('error loading'));
+    _rewardedVideo = RewardedAd(
+      adUnitId: getRewardAdUnitId(),
+      request: _adRequest,
+      listener: AdListener(
+        // Called when an ad is successfully received.
+        onAdLoaded: (Ad ad) => _rewardedVideo.show(),
+        // Called when an ad request failed.
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          onAdFailedToLoad();
+        },
+        // Called when an ad opens an overlay that covers the screen.
+        onAdOpened: (Ad ad) => print('Ad opened.'),
+        // Called when an ad removes an overlay that covers the screen.
+        onAdClosed: (Ad ad) => onAdClosed(),
+        // Called when an ad is in the process of leaving the application.
+        onApplicationExit: (Ad ad) => print('Left application.'),
+        // Called when a RewardedAd triggers a reward.
+        onRewardedAdUserEarnedReward: (RewardedAd ad, RewardItem reward) {
+          onRewardedAdUserEarnedReward();
+        },
+      ),
+    )..load();
   }
 
   static void showBottomBannerAd([State state]) {
-    // if (Purchases.isNoAds()) return;
-    if (!_showBannerAds || (state != null && !state.mounted)) {
-      print("showBottomBannerAd: return");
-      return;
-    }
-
-    if (_bottomBannerAd == null) {
-      print("showBottomBannerAd: _bottomBannerAd = $_bottomBannerAd");
-      setBottomBannerAd();
-    }
-    if (!bottomBIsShown && !_bottomBIsGoingToBeShown) {
-      print(
-          "showBottomBannerAd: bottomBIsShown = false, _bottomBIsGoingToBeShow = false");
-      _bottomBIsGoingToBeShown = true;
-      _bottomBannerAd
-        ..load()
-        ..show(
-          // anchorOffset: 60.0,
-          anchorType: AnchorType.bottom,
-        );
-    }
+    _bottomBannerAd.load();
   }
 
   static void showTopBannerAd([State state]) {
     // if (Purchases.isNoAds()) return;
     if (!_showBannerAds || (state != null && !state.mounted)) return;
     if (_topBannerAd == null) setTopBannerAd();
-    if (!topBIsShown && !_topBIsGoingToBeShown) {
-      _topBIsGoingToBeShown = true;
-      _topBannerAd
-        ..load()
-        ..show(
-          anchorOffset: 80.0,
-          anchorType: AnchorType.top,
-        );
-    }
+    _topBannerAd..load();
   }
 
-  static int _reloaded = 0;
-
   static void hideBottomBannerAd() {
-    if (!_showBannerAds) return;
-    if (_bottomBannerAd != null && !_bottomBIsGoingToBeShown) {
-      print(
-          'hideBottomBannerAd: _bottomBannerAd != null, _bottomBIsGoingToBeShow = false');
-      _bottomBannerAd.dispose().then((disposed) {
-        print('hideBottomBannerAd: setting bottomBIsShown to ${!disposed}');
-        bottomBIsShown = !disposed;
-      });
-      print('hideBottomBannerAd: setting _bottomBannerAd to null');
-      _bottomBannerAd = null;
-    }
-    if (_bottomBannerAd != null && _bottomBIsGoingToBeShown) {
-      print(
-          'hideBottomBannerAd: _bottomBannerAd != null, _bottomBIsGoingToBeShown = true');
-      Future.delayed(const Duration(milliseconds: 100), () {
-        if (_bottomBannerAd != null && !_bottomBIsGoingToBeShown) {
-          print(
-              'hideBottomBannerAd: _bottomBannerAd != null, _bottomBIsGoingToBeShown = false');
-          _bottomBannerAd.dispose().then((disposed) {
-            print(
-                'hideBottomBannerAd: disposing (setting _bottomBIsShow = ${!disposed}, _bottomBIsGoingToBeShown = false, _bottomBannerAd = null');
-            bottomBIsShown = !disposed;
-            _bottomBIsGoingToBeShown = false;
-            _bottomBannerAd = null;
-          });
-        } else {
-          _reloaded++;
-          // if (_reloaded == 50) {
-          //   _reloaded = 0;
-          //   return;
-          // }
-          hideBottomBannerAd();
-        }
-      });
-    }
+    _bottomBannerAd.dispose();
   }
 
   static void hideTopBannerAd() {
-    if (_topBannerAd != null && !_topBIsGoingToBeShown) {
-      _topBannerAd.dispose().then((disposed) {
-        topBIsShown = !disposed;
-      });
-      _topBannerAd = null;
-    }
-    if (_topBannerAd != null && _topBIsGoingToBeShown) {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        if (_topBannerAd != null && !_topBIsGoingToBeShown) {
-          _topBannerAd.dispose().then((disposed) {
-            topBIsShown = !disposed;
-            _topBIsGoingToBeShown = false;
-            _topBannerAd = null;
-          });
-        } else {
-          hideTopBannerAd();
-        }
-      });
-    }
+    _topBannerAd.dispose();
   }
 
   static void showInterstitialAd() {
     var interstitialAd = InterstitialAd(
-      adUnitId: getInterstitialAdUnitId(),
-      targetingInfo: _getMobileAdTargetingInfo(),
-      listener: (MobileAdEvent event) {},
-    );
+        adUnitId: getInterstitialAdUnitId(),
+        request: _adRequest,
+        listener: AdListener());
     interstitialAd
       ..load()
-      ..show(anchorOffset: 0.0, anchorType: AnchorType.bottom);
+      ..show();
   }
 
   static void showRewardedVideoAd() {
     try {
-      RewardedVideoAd.instance.show();
+      _rewardedVideo.show();
     } catch (e) {
       print("error showing video");
     }
     return;
-    RewardedVideoAd.instance.listener =
-        (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
-      if (event == RewardedVideoAdEvent.loaded) {
-        RewardedVideoAd.instance.show();
-      }
-    };
-    RewardedVideoAd.instance.load(
-        adUnitId: getRewardAdUnitId(),
-        targetingInfo: _getMobileAdTargetingInfo());
-  }
-
-  static MobileAdTargetingInfo _getMobileAdTargetingInfo() {
-    return MobileAdTargetingInfo(
-        keywords: <String>[
-          'recipes',
-          'kitchen',
-          'cooking',
-        ],
-        // contentUrl: 'https://flutter.io',
-        childDirected: false,
-        testDevices: <String>["84A003142741DEE5AEED89CE56D794EB"]);
   }
 
   static void showBannerAds(bool showAds) {
@@ -247,6 +163,9 @@ class Ads {
                         ),
                       ),
                     ),
+                    AdWidget(
+                      ad: _bottomBannerAd,
+                    )
                   ],
                 ),
               )

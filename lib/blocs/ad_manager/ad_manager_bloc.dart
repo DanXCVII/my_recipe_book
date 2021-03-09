@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +17,10 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   bool isInitialized = false;
   DateTime lastTimeStartedWatching =
       DateTime.now().subtract(Duration(days: 10));
+
+  void Function() onAdClosed;
+  void Function() onAdFailedToLoad;
+  void Function() onRewardedAdUserEarnedReward;
 
   /// if the API is available on the device
   bool _available = true;
@@ -37,22 +42,18 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   bool _showVideo = false;
 
   AdManagerBloc() : super(AdManagerInitial()) {
-    RewardedVideoAd.instance.listener =
-        (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
-      if (event == RewardedVideoAdEvent.rewarded) {
-        print(DateTime.now().toLocal().toString());
-        _showVideo = false;
-        if (lastAdForBannerTime) {
-          add(WatchedVideo(DateTime.now()));
-        }
-      } else if (event == RewardedVideoAdEvent.loaded && _showVideo) {
-        RewardedVideoAd.instance.show();
-        _showVideo = false;
-      } else if (event == RewardedVideoAdEvent.failedToLoad) {
-        add(_FailedLoadingRewardedVideo());
-        _showVideo = false;
-      } else if (event == RewardedVideoAdEvent.closed) {
-        add(_InterruptedLoadingVideo());
+    onAdClosed = onAdClosed = () {
+      this.add(_InterruptedLoadingVideo());
+    };
+    onAdFailedToLoad = () {
+      add(_FailedLoadingRewardedVideo());
+      _showVideo = false;
+    };
+    onRewardedAdUserEarnedReward = () {
+      print(DateTime.now().toLocal().toString());
+      _showVideo = false;
+      if (lastAdForBannerTime) {
+        add(WatchedVideo(DateTime.now()));
       }
     };
   }
@@ -170,7 +171,11 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   }
 
   Stream<AdManagerState> _mapLoadVideoToState(LoadVideo event) async* {
-    await Ads.loadRewardedVideo();
+    await Ads.loadRewardedVideo(
+      onAdClosed,
+      onAdFailedToLoad,
+      onRewardedAdUserEarnedReward,
+    );
   }
 
   Stream<AdManagerState> _mapStartWatchingVideoToState(
@@ -188,8 +193,11 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     }
 
     if (!event.showLoadingIndicator) {
-      Ads.showRewardedVideoAd();
-      await Ads.loadRewardedVideo();
+      await Ads.loadRewardedVideo(
+        onAdClosed,
+        onAdFailedToLoad,
+        onRewardedAdUserEarnedReward,
+      );
       return;
     }
 
@@ -198,8 +206,11 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
       yield LoadingVideo();
 
-      Ads.showRewardedVideoAd();
-      await Ads.loadRewardedVideo();
+      await Ads.loadRewardedVideo(
+        onAdClosed,
+        onAdFailedToLoad,
+        onRewardedAdUserEarnedReward,
+      );
     } else {
       yield NotConnected();
     }
