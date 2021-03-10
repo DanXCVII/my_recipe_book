@@ -229,8 +229,10 @@ class HiveProvider {
     for (StringIntTuple recipeTag in newRecipe.tags) {
       String currentRecipeTagKey = getHiveKey(recipeTag.text);
       if (recipeTagKeys.contains(currentRecipeTagKey)) {
-        await boxRecipeTagsList.put(currentRecipeTagKey,
-            boxRecipeTagsList.get(currentRecipeTagKey)..add(hiveRecipeKey));
+        await boxRecipeTagsList.put(
+            currentRecipeTagKey,
+            List<String>.from(boxRecipeTagsList.get(currentRecipeTagKey))
+              ..add(hiveRecipeKey));
         newColorRecipeTags.add(boxRecipeTags.get(currentRecipeTagKey));
       } else {
         await boxRecipeTags.put(currentRecipeTagKey, recipeTag);

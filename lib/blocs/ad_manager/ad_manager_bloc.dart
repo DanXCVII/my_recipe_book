@@ -142,9 +142,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     DateTime oldNoAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
     DateTime noAdsUntil;
     if (oldNoAdsUntil.isAfter(DateTime.now())) {
-      noAdsUntil = oldNoAdsUntil.add(Duration(minutes: 1));
+      noAdsUntil = oldNoAdsUntil.add(Duration(minutes: 30));
     } else {
-      noAdsUntil = DateTime.now().add(Duration(minutes: 1));
+      noAdsUntil = DateTime.now().add(Duration(minutes: 30));
     }
 
     await prefs.setString('noAdsUntil', noAdsUntil.toString());
