@@ -42,11 +42,9 @@ class RecipeCard extends StatelessWidget {
   final double width;
   final String heroImageTag;
   final bool activateVegetableHero;
-  final bool showAds;
 
   const RecipeCard({
     this.recipe,
-    @required this.showAds,
     @required this.width,
     @required this.heroImageTag,
     this.activateVegetableHero = true,
@@ -72,7 +70,7 @@ class RecipeCard extends StatelessWidget {
           ),
         ).then((_) {
           Wakelock.disable();
-          if (!showAds) Ads.hideBottomBannerAd();
+          Ads.hideBottomBannerAd();
         });
       },
       child: Stack(
@@ -257,8 +255,7 @@ class RecipeCard extends StatelessWidget {
                                                       vegetable:
                                                           recipe.vegetable),
                                                 ).then((_) {
-                                                  if (!showAds)
-                                                    Ads.hideBottomBannerAd();
+                                                  Ads.hideBottomBannerAd();
                                                 });
                                             },
                                             child: Container(

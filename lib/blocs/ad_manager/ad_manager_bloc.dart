@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:firebase_admob/firebase_admob.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -144,9 +142,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     DateTime oldNoAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
     DateTime noAdsUntil;
     if (oldNoAdsUntil.isAfter(DateTime.now())) {
-      noAdsUntil = oldNoAdsUntil.add(Duration(minutes: 30));
+      noAdsUntil = oldNoAdsUntil.add(Duration(minutes: 1));
     } else {
-      noAdsUntil = DateTime.now().add(Duration(minutes: 30));
+      noAdsUntil = DateTime.now().add(Duration(minutes: 1));
     }
 
     await prefs.setString('noAdsUntil', noAdsUntil.toString());
@@ -172,6 +170,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
   Stream<AdManagerState> _mapLoadVideoToState(LoadVideo event) async* {
     await Ads.loadRewardedVideo(
+      false,
       onAdClosed,
       onAdFailedToLoad,
       onRewardedAdUserEarnedReward,
@@ -193,11 +192,8 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     }
 
     if (!event.showLoadingIndicator) {
-      await Ads.loadRewardedVideo(
-        onAdClosed,
-        onAdFailedToLoad,
-        onRewardedAdUserEarnedReward,
-      );
+      await Ads.showRewardedVideoAd();
+
       return;
     }
 
@@ -207,6 +203,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       yield LoadingVideo();
 
       await Ads.loadRewardedVideo(
+        true,
         onAdClosed,
         onAdFailedToLoad,
         onRewardedAdUserEarnedReward,
@@ -276,6 +273,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     if (purchase != null && purchase.status == PurchaseStatus.purchased) {
       _sP ??= await SharedPreferences.getInstance();
       _sP.setBool('pro_version', true);
+      Ads.showAds(false);
       Ads.showBannerAds(false);
       if (details != null) {
         await _iap.completePurchase(details);

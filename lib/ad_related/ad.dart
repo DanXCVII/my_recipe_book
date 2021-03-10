@@ -10,43 +10,51 @@ class Ads {
   static AdRequest _adRequest;
   static RewardedAd _rewardedVideo;
   static bool _showBannerAds = true;
-  static BannerAd _bottomBannerAd;
+  static bool _showAds = false;
+  static List<BannerAd> _bottomBannerAd = [];
   static BannerAd _topBannerAd;
   static bool _wideBottomBannerAd = false;
   static double adHeight;
 
-  static void initialize() {
+  static void initialize(bool showAds, {bool personalized = false}) {
+    _showAds = showAds;
+    if (!_showAds) return;
     _adRequest = AdRequest(
         keywords: [
           'recipes',
           'kitchen',
           'cooking',
         ],
-        nonPersonalizedAds: false,
+        nonPersonalizedAds: !personalized,
         testDevices: <String>["84A003142741DEE5AEED89CE56D794EB"]);
   }
 
   static void showWideBannerAds() {
+    if (!_showBannerAds) return;
     _wideBottomBannerAd = true;
   }
 
-  static void setBottomBannerAd() {
-    _bottomBannerAd = BannerAd(
-      adUnitId: getBannerAdUnitId(),
-      size: _wideBottomBannerAd ? AdSize.fullBanner : AdSize.banner,
-      request: _adRequest,
-      listener: AdListener(
-          onAdLoaded: (_) {},
-          onAdFailedToLoad: (_, __) {
-            _bottomBannerAd.dispose();
-          },
-          onAdClosed: (_) {
-            _bottomBannerAd.dispose();
-          }),
+  static void _setBottomBannerAd() {
+    if (!_showBannerAds) return;
+    _bottomBannerAd.add(
+      BannerAd(
+        adUnitId: getBannerAdUnitId(),
+        size: _wideBottomBannerAd ? AdSize.fullBanner : AdSize.banner,
+        request: _adRequest,
+        listener: AdListener(
+            onAdLoaded: (_) {},
+            onAdFailedToLoad: (_, __) {
+              _bottomBannerAd[_bottomBannerAd.length - 1].dispose();
+            },
+            onAdClosed: (_) {
+              _bottomBannerAd[_bottomBannerAd.length - 1].dispose();
+            }),
+      ),
     );
   }
 
   static void setTopBannerAd() {
+    if (!_showBannerAds) return;
     _topBannerAd = BannerAd(
       adUnitId: getBannerAdUnitId(),
       size: AdSize.banner,
@@ -59,11 +67,13 @@ class Ads {
   }
 
   static Future<void> loadRewardedVideo(
+    bool showOnLoad,
     void Function() onAdClosed,
     void Function() onAdFailedToLoad,
     void Function() onRewardedAdUserEarnedReward, [
     State state,
   ]) async {
+    if (!_showAds) return;
     if (state != null && !state.mounted) return;
 
     _rewardedVideo = RewardedAd(
@@ -71,7 +81,10 @@ class Ads {
       request: _adRequest,
       listener: AdListener(
         // Called when an ad is successfully received.
-        onAdLoaded: (Ad ad) => _rewardedVideo.show(),
+        onAdLoaded: (Ad ad) {
+          print("rewarded video ad loaded");
+          if (showOnLoad) _rewardedVideo.show();
+        },
         // Called when an ad request failed.
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           onAdFailedToLoad();
@@ -91,10 +104,13 @@ class Ads {
   }
 
   static void showBottomBannerAd([State state]) {
-    _bottomBannerAd.load();
+    if (!_showBannerAds) return;
+    _setBottomBannerAd();
+    _bottomBannerAd.last.load();
   }
 
   static void showTopBannerAd([State state]) {
+    if (!_showBannerAds) return;
     // if (Purchases.isNoAds()) return;
     if (!_showBannerAds || (state != null && !state.mounted)) return;
     if (_topBannerAd == null) setTopBannerAd();
@@ -102,14 +118,21 @@ class Ads {
   }
 
   static void hideBottomBannerAd() {
-    _bottomBannerAd.dispose();
+    if (!_showBannerAds) return;
+    if (_bottomBannerAd.isNotEmpty) {
+      _bottomBannerAd.last.dispose().then((value) {
+        _bottomBannerAd.removeLast();
+      });
+    }
   }
 
   static void hideTopBannerAd() {
+    if (!_showBannerAds) return;
     _topBannerAd.dispose();
   }
 
   static void showInterstitialAd() {
+    if (!_showAds) return;
     var interstitialAd = InterstitialAd(
         adUnitId: getInterstitialAdUnitId(),
         request: _adRequest,
@@ -119,25 +142,37 @@ class Ads {
       ..show();
   }
 
-  static void showRewardedVideoAd() {
-    try {
+  static Future<void> showRewardedVideoAd() async {
+    if (await _rewardedVideo.isLoaded()) {
       _rewardedVideo.show();
-    } catch (e) {
-      print("error showing video");
+    } else {
+      loadRewardedVideo(true, () {}, () {}, () {});
     }
+
     return;
   }
 
-  static void showBannerAds(bool showAds) {
-    _showBannerAds = showAds;
+  static void showBannerAds(bool showBannerAds) {
+    _showBannerAds = showBannerAds;
   }
 
-  static bool shouldShowAds() {
+  static bool shouldShowBannerAds() {
     return _showBannerAds;
   }
 
+  static void showAds(bool showAds) {
+    _showAds = showAds;
+  }
+
+  static bool shouldShowAds() {
+    return _showAds;
+  }
+
   Widget getAdPage(Widget page, BuildContext context) {
-    return Ads.shouldShowAds()
+    if (_bottomBannerAd.isEmpty) {
+      showBottomBannerAd();
+    }
+    return Ads.shouldShowBannerAds()
         ? Column(
             children: <Widget>[
               Expanded(child: page),
@@ -164,7 +199,7 @@ class Ads {
                       ),
                     ),
                     AdWidget(
-                      ad: _bottomBannerAd,
+                      ad: _bottomBannerAd.last,
                     )
                   ],
                 ),

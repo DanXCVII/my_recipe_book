@@ -177,8 +177,9 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
               width > deviceWidthMedium
                   ? Container(
                       width: width,
-                      height:
-                          Ads.shouldShowAds() ? height - 80 - 60 : height - 80,
+                      height: Ads.shouldShowBannerAds()
+                          ? height - 80 - 60
+                          : height - 80,
                       child: Row(children: [
                         Expanded(
                           flex: 3,
@@ -477,7 +478,7 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
           ),
         ).then((_) {
           Wakelock.disable();
-          if (Ads.shouldShowAds()) Ads.hideBottomBannerAd();
+          if (Ads.shouldShowBannerAds()) Ads.hideBottomBannerAd();
         });
       },
       subtitle: dateRecipeTuple.item1.hour == 0 &&

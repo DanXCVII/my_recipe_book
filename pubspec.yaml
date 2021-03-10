@@ -60,7 +60,7 @@ dependencies:
   showcaseview: ^0.1.5 # BSD
   firebase_admob:  # BSD
   in_app_purchase: ^0.3.5+1 # BSD
-  video_player: ^0.10.10 # BSD
+  video_player: ^2.0.0 # BSD
   permission_handler:  # MIT
   flutter_sequence_animation: ^3.0.1 # MIT
   flutter_native_splash: ^1.0.2 # MIT
@@ -81,6 +81,7 @@ dependencies:
   flutter_datetime_picker: ^1.5.0 # MIT
   fraction: ^2.0.0 # MIT
   google_mobile_ads: ^0.11.0+2 # Apache 2.0
+  gdpr_dialog: ^1.1.5 # MIT
 
 dev_dependencies:
   flutter_test:

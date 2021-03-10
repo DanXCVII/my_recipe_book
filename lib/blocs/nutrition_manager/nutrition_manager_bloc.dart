@@ -114,12 +114,11 @@ class NutritionManagerBloc
       List<String> newNutritionList =
           List<String>.from((state as LoadedNutritionManager).nutritions);
 
-      String moveNutrition = newNutritionList[event.oldIndex];
-      int newIndex = event.newIndex;
-
-      if (event.newIndex > event.oldIndex) newIndex -= 1;
-      newNutritionList[event.oldIndex] = newNutritionList[newIndex];
-      newNutritionList[newIndex] = moveNutrition;
+      newNutritionList
+        ..insert(event.newIndex, newNutritionList[event.oldIndex])
+        ..removeAt(event.oldIndex > event.newIndex
+            ? event.oldIndex + 1
+            : event.oldIndex);
 
       yield LoadedNutritionManager(newNutritionList);
     }

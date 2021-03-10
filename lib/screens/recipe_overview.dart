@@ -236,7 +236,6 @@ class RecipeGridView extends StatelessWidget {
                               builder: (context, constraints) => RecipeCard(
                                 recipe: state.recipes[index],
                                 width: constraints.maxWidth,
-                                showAds: true,
                                 activateVegetableHero:
                                     state.recipes[index].vegetable ==
                                             state.vegetable
@@ -284,7 +283,6 @@ class RecipeGridView extends StatelessWidget {
           (recipe) => LayoutBuilder(
             builder: (context, constraints) => RecipeCard(
               recipe: recipe,
-              showAds: true,
               width: constraints.maxWidth,
               activateVegetableHero:
                   recipe.vegetable == vegetable ? false : true,

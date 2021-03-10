@@ -299,6 +299,7 @@ class AnimatedStepper extends StatelessWidget {
     }
     imageIndex += imageNumber;
 
+    Ads.showBottomBannerAd();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -312,6 +313,6 @@ class AnimatedStepper extends StatelessWidget {
           context,
         ),
       ),
-    );
+    ).then((_) => Ads.hideBottomBannerAd());
   }
 }

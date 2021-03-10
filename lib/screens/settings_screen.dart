@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gdpr_dialog/gdpr_dialog.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -170,62 +171,6 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-              leading: Icon(MdiIcons.nutrition),
-              title: Text(I18n.of(context).manage_nutritions),
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.manageNutritions)
-                    .then((_) => Ads.hideBottomBannerAd());
-              }),
-          Divider(),
-          ListTile(
-              leading: Icon(MdiIcons.fruitPineapple),
-              title: Text(I18n.of(context).manage_ingredients),
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.manageIngredients)
-                    .then((_) => Ads.hideBottomBannerAd());
-              }),
-          Divider(),
-          ListTile(
-            leading: Icon(MdiIcons.tag),
-            title: Text(I18n.of(context).manage_recipe_tags),
-            onTap: () {
-              Navigator.pushNamed(context, RouteNames.manageRecipeTags)
-                  .then((_) => Ads.hideBottomBannerAd());
-            },
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(MdiIcons.apps),
-            title: Text(I18n.of(context).manage_categories),
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                RouteNames.manageCategories,
-              ).then((_) => Ads.hideBottomBannerAd());
-            },
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(MdiIcons.powerStandby),
-            trailing: DisableStandbyCheckbox(),
-            title: Text(I18n.of(context).keep_screen_on),
-            subtitle: Text(I18n.of(context).only_recipe_screen),
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(MdiIcons.decimal),
-            trailing: DecimalCheckbox(),
-            title: Text(I18n.of(context).fraction_or_decimal),
-            subtitle: Text(I18n.of(context).fraction_or_decimal_desc),
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(MdiIcons.animation),
-            trailing: AnimationCheckbox(),
-            title: Text(I18n.of(context).complex_animations),
-          ),
-          Divider(),
-          ListTile(
             leading: Icon(MdiIcons.themeLightDark),
             title: Text(I18n.of(context).switch_theme),
             trailing: Container(
@@ -330,12 +275,84 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
+              leading: Icon(MdiIcons.nutrition),
+              title: Text(I18n.of(context).manage_nutritions),
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.manageNutritions)
+                    .then((_) => Ads.hideBottomBannerAd());
+              }),
+          Divider(),
+          ListTile(
+              leading: Icon(MdiIcons.fruitPineapple),
+              title: Text(I18n.of(context).manage_ingredients),
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.manageIngredients)
+                    .then((_) => Ads.hideBottomBannerAd());
+              }),
+          Divider(),
+          ListTile(
+            leading: Icon(MdiIcons.tag),
+            title: Text(I18n.of(context).manage_recipe_tags),
+            onTap: () {
+              Navigator.pushNamed(context, RouteNames.manageRecipeTags)
+                  .then((_) => Ads.hideBottomBannerAd());
+            },
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(MdiIcons.apps),
+            title: Text(I18n.of(context).manage_categories),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                RouteNames.manageCategories,
+              ).then((_) => Ads.hideBottomBannerAd());
+            },
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(MdiIcons.powerStandby),
+            trailing: DisableStandbyCheckbox(),
+            title: Text(I18n.of(context).keep_screen_on),
+            subtitle: Text(I18n.of(context).only_recipe_screen),
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(MdiIcons.decimal),
+            trailing: DecimalCheckbox(),
+            title: Text(I18n.of(context).fraction_or_decimal),
+            subtitle: Text(I18n.of(context).fraction_or_decimal_desc),
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(MdiIcons.animation),
+            trailing: AnimationCheckbox(),
+            title: Text(I18n.of(context).complex_animations),
+          ),
+          Divider(),
+          ListTile(
             leading: Icon(MdiIcons.compass),
             title: Text(I18n.of(context).view_intro),
             onTap: () {
               Navigator.of(context).pushNamed(RouteNames.intro);
             },
           ),
+          Divider(),
+          ListTile(
+              leading: Icon(Icons.person),
+              onTap: () {
+                GdprDialog.instance.setConsentToUnknown();
+                GdprDialog.instance
+                    .showDialog(
+                  'pub-7711778152436774',
+                  'https://sites.google.com/view/my-recipebook-privacy-policy',
+                  testDeviceId: '',
+                )
+                    .then((onValue) {
+                  Ads.initialize(Ads.shouldShowAds(), personalized: onValue);
+                });
+              },
+              title: Text(I18n.of(context).about_me)),
           Divider(),
           ListTile(
               leading: Icon(Icons.info),
@@ -418,7 +435,8 @@ class Settings extends StatelessWidget {
   void _showInfoFlushBar(String title, String body, BuildContext context) {
     Flushbar flush;
     flush = Flushbar<bool>(
-      margin: EdgeInsets.only(bottom: Ads.shouldShowAds() ? Ads.adHeight : 0),
+      margin:
+          EdgeInsets.only(bottom: Ads.shouldShowBannerAds() ? Ads.adHeight : 0),
       animationDuration: Duration(milliseconds: 300),
       leftBarIndicatorColor: Colors.blue[300],
       title: I18n.of(context).failed_loading_ad,

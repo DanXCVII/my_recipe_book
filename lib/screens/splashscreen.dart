@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gdpr_dialog/gdpr_dialog.dart';
 
 import '../blocs/splash_screen/splash_screen_bloc.dart';
 import '../generated/i18n.dart';

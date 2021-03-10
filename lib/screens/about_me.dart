@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gdpr_dialog/gdpr_dialog.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:fraction/fraction.dart';

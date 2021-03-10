@@ -153,8 +153,6 @@ class _RecipeScreenState extends State<RecipeScreen>
                                 as SelectedStep)
                             .selectedStep),
               ).then((_) => Ads.hideBottomBannerAd());
-              Future.delayed(Duration(seconds: 3))
-                  .then((_) => Ads.showBottomBannerAd());
             }
           },
           child: Scaffold(
@@ -978,6 +976,7 @@ class RecipePage extends StatelessWidget {
   }
 
   void _showPictureFullView(String image, String tag, BuildContext context) {
+    Ads.showBottomBannerAd();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -991,7 +990,7 @@ class RecipePage extends StatelessWidget {
           context,
         ),
       ),
-    );
+    ).then((_) => Ads.hideBottomBannerAd());
   }
 }
 

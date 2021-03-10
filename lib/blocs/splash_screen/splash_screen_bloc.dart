@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gdpr_dialog/gdpr_dialog.dart';
 import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:path_provider/path_provider.dart';
@@ -93,14 +94,28 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     // Map<PermissionGroup, PermissionStatus> permissions =
     //     await PermissionHandler().requestPermissions([PermissionGroup.storage]);
     await IO.updateBackup();
-    Ads.initialize();
-    Ads.setBottomBannerAd();
-    Ads.adHeight = MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
+
+    if (prefs.getBool('pro_version') != true) {
+      await GdprDialog.instance
+          .showDialog(
+        'pub-7711778152436774',
+        'https://sites.google.com/view/my-recipebook-privacy-policy',
+        // isForTest: true,
+        testDeviceId: '',
+      )
+          .then((onValue) {
+        Ads.initialize(true, personalized: onValue);
+        Ads.adHeight = MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
+      });
+    } else {
+      Ads.initialize(false);
+    }
 
     this._recipeCategoryOverview = recipeCategoryOverview;
     this._showIntro = showIntro;
 
     _initialized = true;
+
     print("finished initialization");
     if (_splashScreenFinished)
       yield InitializedData(

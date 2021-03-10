@@ -195,7 +195,7 @@ class _VideoPlayerAdState extends State<VideoPlayerAd> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: _controller.value.initialized
+      child: _controller.value.isInitialized
           ? AspectRatio(
               aspectRatio: 16 / 9,
               child: VideoPlayer(_controller),

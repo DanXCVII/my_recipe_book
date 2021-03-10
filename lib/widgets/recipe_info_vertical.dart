@@ -148,6 +148,7 @@ class RecipeInfoVertical extends StatelessWidget {
   }
 
   void _showPictureFullView(String image, String tag, BuildContext context) {
+    Ads.showBottomBannerAd();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -161,7 +162,7 @@ class RecipeInfoVertical extends StatelessWidget {
           context,
         ),
       ),
-    );
+    ).then((_) => Ads.hideBottomBannerAd());
   }
 
   /// method which determines if the circular chart and complexity termometer should be

@@ -263,13 +263,13 @@ class HiveProvider {
           hiveCategoryKey,
           boxRecipeCategories.get(hiveCategoryKey) == null
               ? [hiveRecipeKey]
-              : boxRecipeCategories.get(hiveCategoryKey)
+              : List<String>.from(boxRecipeCategories.get(hiveCategoryKey))
             ..add(hiveRecipeKey));
     }
     if (readyToImportRecipe.categories.isEmpty) {
       List<String> recipeNames = boxRecipeCategories.get('no category');
       await boxRecipeCategories.put(
-          'no category', recipeNames..add(hiveRecipeKey));
+          'no category', List<String>.from(recipeNames)..add(hiveRecipeKey));
     }
 
     // add recipe to vegetable
@@ -453,8 +453,10 @@ class HiveProvider {
     await boxKeyString.put(hiveCategoryKey, categoryName);
 
     List<String> categories = boxOrder.get('categories');
-    boxOrder.put('categories',
-        categories..insert(categories.length - 1, hiveCategoryKey));
+    boxOrder.put(
+        'categories',
+        List<String>.from(categories)
+          ..insert(categories.length - 1, hiveCategoryKey));
 
     await boxRecipeCategories.put(hiveCategoryKey, []);
 
@@ -493,8 +495,8 @@ class HiveProvider {
 
   Future<void> deleteCategory(String categoryName) async {
     String hiveCategoryKey = getHiveKey(categoryName);
-    await boxOrder.put(
-        'categories', boxOrder.get('categories')..remove(hiveCategoryKey));
+    await boxOrder.put('categories',
+        List<String>.from(boxOrder.get('categories'))..remove(hiveCategoryKey));
     await boxRecipeCategories.delete(hiveCategoryKey);
     await boxRecipeSort.delete(hiveCategoryKey);
 
@@ -525,7 +527,8 @@ class HiveProvider {
   }
 
   Future<void> moveCategory(int oldIndex, newIndex) async {
-    List<String> categoryKeysOrder = boxOrder.get('categories');
+    List<String> categoryKeysOrder =
+        List<String>.from(boxOrder.get('categories'));
 
     categoryKeysOrder
       ..insert(newIndex, categoryKeysOrder[oldIndex])
@@ -573,7 +576,8 @@ class HiveProvider {
           currentRecipe.tags.firstWhere((tag) => tag.text == tagName,
                   orElse: () => null) !=
               null) {
-        currentRecipe.tags.removeWhere((tag) => tag.text == tagName);
+        List<StringIntTuple>.from(currentRecipe.tags)
+            .removeWhere((tag) => tag.text == tagName);
 
         await lazyBoxRecipes.put(key, currentRecipe);
       }
@@ -844,8 +848,8 @@ class HiveProvider {
   /// adds the nutrition to hive if not already existing
   Future<void> addNutrition(String nutritionName) async {
     if (!boxOrder.get('nutritions').contains(nutritionName)) {
-      await boxOrder.put(
-          'nutritions', boxOrder.get('nutritions')..add(nutritionName));
+      await boxOrder.put('nutritions',
+          List<String>.from(boxOrder.get('nutritions'))..add(nutritionName));
     }
   }
 
@@ -856,21 +860,17 @@ class HiveProvider {
   }
 
   Future<void> moveNutrition(int oldIndex, newIndex) async {
-    List<String> nutritions = boxOrder.get('nutritions');
+    List<String> nutritions = List<String>.from(boxOrder.get('nutritions'));
 
-    if (oldIndex < nutritions.length && newIndex < nutritions.length) {
-      String moveNutrition = nutritions[oldIndex];
+    nutritions
+      ..insert(newIndex, nutritions[oldIndex])
+      ..removeAt(oldIndex > newIndex ? oldIndex + 1 : oldIndex);
 
-      if (newIndex > oldIndex) newIndex -= 1;
-      nutritions[oldIndex] = nutritions[newIndex];
-      nutritions[newIndex] = moveNutrition;
-
-      await boxOrder.put('nutritions', nutritions);
-    }
+    await boxOrder.put('nutritions', nutritions);
   }
 
   Future<void> deleteNutrition(String nutritionName) async {
-    List<String> nutritions = boxOrder.get('nutritions');
+    List<String> nutritions = List<String>.from(boxOrder.get('nutritions'));
 
     nutritions.remove(nutritionName);
 
@@ -1028,7 +1028,8 @@ class HiveProvider {
             boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [];
         for (CheckableIngredient i in currentIngredients) {
           if (i.name == ingredient.name && i.unit == ingredient.unit) {
-            await boxShoppingCart.put(key, currentIngredients..remove(i));
+            await boxShoppingCart.put(key,
+                List<CheckableIngredient>.from(currentIngredients)..remove(i));
             break;
           }
         }
@@ -1206,7 +1207,9 @@ class HiveProvider {
       } else {
         await boxShoppingCart.put(
             hiveRecipeKey,
-            (boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ??
+            (List<CheckableIngredient>.from(boxShoppingCart
+                    .get(hiveRecipeKey)
+                    ?.cast<CheckableIngredient>()) ??
                 [])
               ..add(CheckableIngredient(
                   ingredient.name, ingredient.amount, ingredient.unit, false)));

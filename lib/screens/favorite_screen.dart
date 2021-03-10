@@ -70,7 +70,6 @@ class FavoriteRecipeCards extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) => LayoutBuilder(
           builder: (context, constraints) => RecipeCard(
             recipe: favoriteRecipes[index],
-            showAds: false,
             width: constraints.maxWidth,
             heroImageTag:
                 "${favoriteRecipes[index].imagePreviewPath}--${favoriteRecipes[index].name}",
