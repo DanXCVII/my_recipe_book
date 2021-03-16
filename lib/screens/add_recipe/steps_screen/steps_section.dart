@@ -486,7 +486,7 @@ class AddImageBox extends StatelessWidget {
   }
 
   Future _askUser(BuildContext context) async {
-    File newImage = File((await ImagePicker().getImage(
+    File newImage = File((await ImagePicker.pickImage(
       source: ImageSource.gallery,
     ))
         .path);

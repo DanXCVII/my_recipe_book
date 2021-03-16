@@ -5,7 +5,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gdpr_dialog/gdpr_dialog.dart';
+import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
 import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:path_provider/path_provider.dart';
@@ -95,7 +97,10 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     //     await PermissionHandler().requestPermissions([PermissionGroup.storage]);
     await IO.updateBackup();
 
-    if (prefs.getBool('pro_version') != true) {
+    if (prefs.getBool('pro_version') == true ||
+        BlocProvider.of<AdManagerBloc>(event.context).state is IsPurchased) {
+      Ads.initialize(false);
+    } else {
       await GdprDialog.instance
           .showDialog(
         'pub-7711778152436774',
@@ -107,8 +112,6 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
         Ads.initialize(true, personalized: onValue);
         Ads.adHeight = MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
       });
-    } else {
-      Ads.initialize(false);
     }
 
     this._recipeCategoryOverview = recipeCategoryOverview;

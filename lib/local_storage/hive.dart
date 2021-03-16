@@ -280,8 +280,10 @@ class HiveProvider {
 
     // add rating if non null
     if (readyToImportRecipe.rating != null) {
-      await boxRatings.put(readyToImportRecipe.rating,
-          boxRatings.get(readyToImportRecipe.rating)..add(hiveRecipeKey));
+      await boxRatings.put(
+          readyToImportRecipe.rating,
+          List<String>.from(boxRatings.get(readyToImportRecipe.rating))
+            ..add(hiveRecipeKey));
     }
 
     // add ingredients to ingredientNames
@@ -822,7 +824,7 @@ class HiveProvider {
 
   ////////////// nutrition related //////////////
   Future<void> renameNutrition(String oldName, String newName) async {
-    List<String> nutritions = boxOrder.get('nutritions');
+    List<String> nutritions = List<String>.from(boxOrder.get('nutritions'));
     if (nutritions.contains(oldName)) {
       nutritions[nutritions.indexOf(oldName)] = newName;
 
@@ -1077,9 +1079,9 @@ class HiveProvider {
       else {
         // if the removed ingredient is only present in the summary, remove it from there
         if (_getIngredientCount(ingredient) == 1) {
-          List<CheckableIngredient> updatedSummaryIngreds = boxShoppingCart
-              .get('summary')
-              .cast<CheckableIngredient>()
+          List<CheckableIngredient> updatedSummaryIngreds =
+              List<CheckableIngredient>.from(
+                  boxShoppingCart.get('summary').cast<CheckableIngredient>())
                 ..remove(summaryIngred);
           await boxShoppingCart.put('summary', updatedSummaryIngreds);
         }
@@ -1137,7 +1139,9 @@ class HiveProvider {
       for (var key in boxShoppingCart.keys) {
         if (key != "summary") {
           List<CheckableIngredient> ingredients =
-              boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [];
+              List<CheckableIngredient>.from(
+                      boxShoppingCart.get(key)?.cast<CheckableIngredient>()) ??
+                  [];
           int i = _getSuitingIngredientRecipe(
               ingredient.getIngredient(), ingredients);
           if (i != null) {

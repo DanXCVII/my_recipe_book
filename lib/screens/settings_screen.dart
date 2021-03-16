@@ -98,6 +98,23 @@ class Settings extends StatelessWidget {
                             ),
                           );
                         }),
+                    Divider(),
+                    ListTile(
+                        leading: Icon(Icons.person),
+                        onTap: () {
+                          GdprDialog.instance.setConsentToUnknown();
+                          GdprDialog.instance
+                              .showDialog(
+                            'pub-7711778152436774',
+                            'https://sites.google.com/view/my-recipebook-privacy-policy',
+                            testDeviceId: '',
+                          )
+                              .then((onValue) {
+                            Ads.initialize(Ads.shouldShowAds(),
+                                personalized: onValue);
+                          });
+                        },
+                        title: Text(I18n.of(context).change_ad_preferences)),
                   ],
                 );
               }
@@ -337,22 +354,6 @@ class Settings extends StatelessWidget {
               Navigator.of(context).pushNamed(RouteNames.intro);
             },
           ),
-          Divider(),
-          ListTile(
-              leading: Icon(Icons.person),
-              onTap: () {
-                GdprDialog.instance.setConsentToUnknown();
-                GdprDialog.instance
-                    .showDialog(
-                  'pub-7711778152436774',
-                  'https://sites.google.com/view/my-recipebook-privacy-policy',
-                  testDeviceId: '',
-                )
-                    .then((onValue) {
-                  Ads.initialize(Ads.shouldShowAds(), personalized: onValue);
-                });
-              },
-              title: Text(I18n.of(context).about_me)),
           Divider(),
           ListTile(
               leading: Icon(Icons.info),

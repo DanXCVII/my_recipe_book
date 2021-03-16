@@ -56,12 +56,14 @@ class I18n implements WidgetsLocalizations {
   String get recipes => "recipes";
   /// "RATE"
   String get rate => "RATE";
+  /// "change ad preferences"
+  String get change_ad_preferences => "change ad preferences";
   /// "MAYBE LATER"
   String get maybe_later => "MAYBE LATER";
   /// "NO THANKS"
   String get no_thanks => "NO THANKS";
-  /// "fraction or decimal"
-  String get fraction_or_decimal => "fraction or decimal";
+  /// "number notation"
+  String get fraction_or_decimal => "number notation";
   /// "enabled: decimal, disabled: fraction"
   String get fraction_or_decimal_desc => "enabled: decimal, disabled: fraction";
   /// "Nutritions"
@@ -702,6 +704,9 @@ class _I18n_de_DE extends I18n {
   /// "BEWERTEN"
   @override
   String get rate => "BEWERTEN";
+  /// "Werbepräferenz ändern"
+  @override
+  String get change_ad_preferences => "Werbepräferenz ändern";
   /// "SPÄTER"
   @override
   String get maybe_later => "SPÄTER";

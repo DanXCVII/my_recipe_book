@@ -130,10 +130,8 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     if (intentSharedText == "failedFileCreation" ||
         intentSharedText == "failedWriting" ||
         intentSharedText == "failedClosing") {
-      PermissionStatus permission = await PermissionHandler()
-          .checkPermissionStatus(PermissionGroup.storage);
       // if error occured even though the storage permission is granted
-      if (permission == PermissionStatus.granted) {
+      if (await Permission.storage.isGranted) {
         String error = intentSharedText == "failedFileCreation"
             ? "Error #1:"
             : intentSharedText == "failedWriting"
@@ -142,8 +140,8 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         _showFlushInfo(I18n.of(context).failed_import,
             "$error" + I18n.of(context).failed_import_desc);
       } // if error occured and the storage permission is not granted and not set to neverShowAgain
-      else if (permission == PermissionStatus.denied ||
-          permission == PermissionStatus.unknown) {
+      else if (await Permission.storage.isDenied ||
+          await Permission.storage.isUndetermined) {
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -151,10 +149,8 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             title: I18n.of(context).need_to_access_storage,
             body: I18n.of(context).need_to_access_storage_desc,
             onPressedOk: () async {
-              PermissionHandler().requestPermissions(
-                  [PermissionGroup.storage]).then((updatedPermissions) {
-                if (updatedPermissions[PermissionGroup.storage] ==
-                    PermissionStatus.granted) {
+              Permission.storage.request().then((updatedPermissions) {
+                if (updatedPermissions.isGranted) {
                   if (_intentFailedImporting == false) {
                     _intentFailedImporting = true;
 
