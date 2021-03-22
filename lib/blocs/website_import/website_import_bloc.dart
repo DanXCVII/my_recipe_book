@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_downloader/image_downloader.dart';
 
 import '../../constants/global_constants.dart';
 import '../../local_storage/hive.dart';
@@ -60,7 +60,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     var response;
 
     try {
-      response = await http.get(event.url);
+      response = await http.get(Uri.parse(event.url));
     } catch (e) {
       yield InvalidUrl();
       return;
@@ -167,12 +167,12 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       String importRecipeImagePath =
           await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
 
-      await Dio().download(
-        _getRecipeImageStringFromAllRecipes(httpRecipeContent),
-        importRecipeImagePath,
-      );
-      await IO.saveRecipeImage(
-          File(importRecipeImagePath), newRecipeLocalPathString);
+      String imgId = await ImageDownloader.downloadImage(
+          _getRecipeImageStringFromAllRecipes(httpRecipeContent),
+          destination: AndroidDestinationType.custom(
+              inPublicDir: false, directory: "tmp"));
+      var path = await ImageDownloader.findPath(imgId);
+      await IO.saveRecipeImage(File(path), newRecipeLocalPathString);
 
       finalRecipe = importRecipe.copyWith(
         imagePath: await PathProvider.pP
@@ -235,12 +235,11 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     }
 
     if (gotImage) {
-      await Dio().download(
-        recipeImageUrl,
-        importRecipeImagePath,
-      );
-      await IO.saveRecipeImage(
-          File(importRecipeImagePath), newRecipeLocalPathString);
+      String imgId = await ImageDownloader.downloadImage(recipeImageUrl,
+          destination: AndroidDestinationType.custom(
+              inPublicDir: false, directory: "tmp"));
+      var path = await ImageDownloader.findPath(imgId);
+      await IO.saveRecipeImage(File(path), newRecipeLocalPathString);
 
       return [
         await PathProvider.pP

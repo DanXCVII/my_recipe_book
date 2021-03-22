@@ -159,9 +159,20 @@ class _IngredientsState extends State<Ingredients> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            currentIngred.name,
-                                            style: TextStyle(fontSize: 16),
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                        .size
+                                                        .width >
+                                                    500
+                                                ? 380
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width -
+                                                    120,
+                                            child: Text(
+                                              currentIngred.name,
+                                              style: TextStyle(fontSize: 16),
+                                            ),
                                           ),
                                           currentIngred.amount == null &&
                                                   (currentIngred.unit == "" ||

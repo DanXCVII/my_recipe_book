@@ -140,8 +140,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         _showFlushInfo(I18n.of(context).failed_import,
             "$error" + I18n.of(context).failed_import_desc);
       } // if error occured and the storage permission is not granted and not set to neverShowAgain
-      else if (await Permission.storage.isDenied ||
-          await Permission.storage.isUndetermined) {
+      else if (await Permission.storage.isDenied) {
         showDialog(
           context: context,
           barrierDismissible: false,

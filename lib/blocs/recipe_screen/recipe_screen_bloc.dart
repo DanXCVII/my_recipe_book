@@ -58,8 +58,19 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
           (await HiveProvider().getRandomRecipeOfCategory(category: category))
               .imagePreviewPath);
     }
+    Recipe fixedRecipe = recipe;
+    while (recipe.ingredients.length > recipe.ingredientsGlossary.length) {
+      if (recipe.ingredients.last.isEmpty) {
+        fixedRecipe =
+            recipe.copyWith(ingredients: recipe.ingredients..removeLast());
+      } else {
+        fixedRecipe = recipe.copyWith(
+            ingredientsGlossary: recipe.ingredientsGlossary..add(''));
+      }
+    }
+
     yield RecipeScreenInfo(
-      recipe,
+      fixedRecipe,
       categoryImages,
     );
   }

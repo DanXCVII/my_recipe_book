@@ -140,9 +140,11 @@ class _ImageSelectorState extends State<ImageSelector> {
   }
 
   Future _askUser() async {
-    File pictureFile = await ImagePicker.pickImage(
+    final _picker = ImagePicker();
+    File pictureFile = File((await _picker.getImage(
       source: ImageSource.gallery,
-    );
+    ))
+        .path);
 
     if (pictureFile != null) {
       widget.onNewImage(pictureFile);
