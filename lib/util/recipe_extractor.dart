@@ -147,13 +147,15 @@ Tuple2<Recipe, String> getRecipeFromMRB(String xmlData) {
         servings: getServingsFromMRB(xmlData),
         servingName: "servings",
         ingredients: [ingredients],
+        categories: getCategoriesFromMRB(xmlData),
         steps: steps,
         stepImages: List<List<String>>.generate(steps.length, (i) => []),
         effort: 5,
         lastModified: DateTime.now().toIso8601String(),
         preperationTime: times["prepTime"] ?? 0,
-        cookingTime: times["cookTime"] == null ?? 0,
-        totalTime: times["totalTime"] == null ?? 0,
+        cookingTime: times["cookTime"] ?? 0,
+        totalTime: times["totalTime"] ?? 0,
+        source: getSourceFromMRB(xmlData),
         nutritions: getNutritionsFromMRB(xmlData),
       ),
       getImageNameFromMRB(xmlData),
@@ -193,7 +195,7 @@ String getSourceFromMRB(String xmlData) {
 }
 
 List<String> getCategoriesFromMRB(String xmlData) {
-  List<String> categories;
+  List<String> categories = [];
 
   String iteratedXmlData = xmlData;
 
@@ -203,7 +205,7 @@ List<String> getCategoriesFromMRB(String xmlData) {
           iteratedXmlData.indexOf("</category>")),
     );
     iteratedXmlData =
-        iteratedXmlData.substring(iteratedXmlData.indexOf("</category>"));
+        iteratedXmlData.substring(iteratedXmlData.indexOf("</category>") + 11);
   }
   return categories;
 }

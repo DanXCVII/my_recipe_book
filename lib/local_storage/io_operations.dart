@@ -332,7 +332,7 @@ Future<String> saveRecipeZip(String targetDir, String recipeName) async {
 /// extracts the mrb zip to the import dir and returns the recipeNames of all
 /// recipes in there. If the xml is not found, it returns null.
 Future<List<String>> extractMRBzipGetNames(File recipeZipMrb) async {
-  await clearCache();
+  // await clearCache();
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
   await exstractZip(recipeZipMrb, importDir.path);

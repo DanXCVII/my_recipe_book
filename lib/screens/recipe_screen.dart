@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/gestures.dart';
@@ -1461,8 +1462,16 @@ class IngredientsScreen extends StatelessWidget {
       List<bool> sectionCheck, BuildContext context) {
     List<Widget> output = [];
     bool oneSection = ingredients.isEmpty;
+    int iterations;
 
-    for (int i = 0; i < ingredients.length; i++) {
+    if (ingredients.length == 1) {
+      iterations = 1;
+    } else {
+      iterations =
+          min(ingredients.length, currentRecipe.ingredientsGlossary.length);
+    }
+
+    for (int i = 0; i < iterations; i++) {
       // for (int i = 0; i < widget.currentRecipe.ingredientsGlossary.length; i++) {
       List<CheckableIngredient> sectionIngredients = ingredients[i];
       output.add(

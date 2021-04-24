@@ -7,7 +7,7 @@ import 'package:my_recipe_book/blocs/new_recipe/ingredients_section/ingredients_
 import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/screens/recipe_calendar_screen.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:showcaseview/showcase_widget.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import './theming.dart';
 import 'ad_related/ad.dart';

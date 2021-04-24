@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
@@ -40,8 +41,15 @@ class IngredientsSectionBloc
       InitializeIngredientsSection event) async* {
     sectionTitles = List<String>.from(event.sectionTitles);
     ingredients = [];
+    int iterations;
 
-    for (int i = 0; i < event.ingredients.length; i++) {
+    if (event.ingredients.length == 1) {
+      iterations = 1;
+    } else {
+      iterations = min(event.ingredients.length, event.sectionTitles.length);
+    }
+
+    for (int i = 0; i < iterations; i++) {
       ingredients.add([]);
       for (Ingredient ingred in event.ingredients[i]) {
         ingredients[i].add(ingred);

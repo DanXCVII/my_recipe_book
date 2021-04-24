@@ -101,17 +101,26 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
         BlocProvider.of<AdManagerBloc>(event.context).state is IsPurchased) {
       Ads.initialize(false);
     } else {
-      await GdprDialog.instance
-          .showDialog(
-        'pub-7711778152436774',
-        'https://sites.google.com/view/my-recipebook-privacy-policy',
-        // isForTest: true,
-        testDeviceId: '',
-      )
-          .then((onValue) {
-        Ads.initialize(true, personalized: onValue);
+      try {
+        final result = await InternetAddress.lookup('example.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          await GdprDialog.instance
+              .showDialog(
+            'pub-7711778152436774',
+            'https://sites.google.com/view/my-recipebook-privacy-policy',
+            // isForTest: true,
+            testDeviceId: '',
+          )
+              .then((onValue) {
+            Ads.initialize(true, personalized: onValue);
+            Ads.adHeight =
+                MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
+          });
+        }
+      } on SocketException catch (_) {
+        Ads.initialize(true, personalized: false);
         Ads.adHeight = MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
-      });
+      }
     }
 
     this._recipeCategoryOverview = recipeCategoryOverview;

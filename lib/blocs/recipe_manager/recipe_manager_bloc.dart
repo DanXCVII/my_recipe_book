@@ -149,9 +149,12 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   /// Updates the stepImages and stepTitles to fit the length of steps.
   /// stepsImages and stepTitles can also be null.
   Recipe _fixRecipeSteps(Recipe r) {
-    List<String> stepTitles = r.stepTitles.map((e) => e).toList();
-    List<List<String>> stepImages =
-        r.stepImages.map((e) => e.map((e) => e).toList()).toList();
+    List<String> stepTitles;
+    List<List<String>> stepImages;
+    if (r.stepTitles != null) {
+      stepTitles = r.stepTitles.map((e) => e).toList();
+      stepImages = r.stepImages.map((e) => e.map((e) => e).toList()).toList();
+    }
 
     if (stepTitles == null) {
       stepTitles = r.steps.map((e) => "").toList();
@@ -165,7 +168,7 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
       }
     }
     if (stepImages == null) {
-      stepImages = r.steps.map((e) => []);
+      stepImages = r.steps.map<List<String>>((e) => []).toList();
     } else if (r.stepImages.length < r.steps.length) {
       for (int i = r.stepImages.length; i < r.steps.length; i++) {
         stepImages.add([]);
