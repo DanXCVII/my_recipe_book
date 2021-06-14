@@ -85,6 +85,7 @@ class AnimatedStepper extends StatelessWidget {
                         stepTitles[i],
                         style: TextStyle(
                           fontSize: 24,
+                          color: Colors.white,
                           fontWeight: FontWeight.w600,
                           fontFamily: "Questrial",
                         ),

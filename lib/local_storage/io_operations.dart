@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image/image.dart';
 import 'package:my_recipe_book/models/tuple.dart';
 import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
 import 'package:path_provider/path_provider.dart';
@@ -418,15 +419,28 @@ Future<String> saveStepImage(File newImage, int stepNumber,
 
 /// saves the given image under the given targetPath in the given resolution.
 Future<void> saveImage(File image, String targetPath, bool preview) async {
-  if (image != null) {
-    await image.copy(targetPath);
+  // image must be non null and have one of the following datatypes: .jpg, .png, jpeg
+  if (image != null &&
+      (image.path.endsWith(".jpg") ||
+          image.path.endsWith(".png") ||
+          image.path.endsWith(".jpeg"))) {
+    targetPath = targetPath.substring(0, targetPath.lastIndexOf(".")) + ".jpg";
+    if (image.path.endsWith(".png")) {
+      // for png images, convert them into jpg
+      Image decodedImage = decodeImage(image.readAsBytesSync());
+      String tmpTargetPath =
+          (await getTemporaryDirectory()).path + "tmpImage.jpg";
+      image = await File(tmpTargetPath).writeAsBytes(encodeJpg(decodedImage));
+    }
+
     print('UUUUUUUUUNNNNNNNNNNNNDDDDDDDDDD');
 
-    await FlutterImageCompress.compressAndGetFile(image.path, targetPath,
-        minHeight: preview ? 400 : 1000,
-        minWidth: preview ? 400 : 1000,
-        quality: preview ? 60 : 70);
-
+    if (image.path.endsWith(".jpeg") || image.path.endsWith(".jpg")) {
+      await FlutterImageCompress.compressAndGetFile(image.path, targetPath,
+          minHeight: preview ? 400 : 1000,
+          minWidth: preview ? 400 : 1000,
+          quality: preview ? 60 : 70);
+    }
     print(image.path);
     print(targetPath);
 

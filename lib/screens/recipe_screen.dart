@@ -577,7 +577,6 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     } else if (recipe.ingredients.first.isNotEmpty) {
       for (int j = 0; j < recipe.ingredients.first.length; j++) {
         recipeText += '${recipe.ingredients.first[j].amount} '
-            '${recipe.ingredients.first[j].unit ?? ""} '
             '${recipe.ingredients.first[j].unit ?? ""}\n';
       }
       recipeText += '====================\n';
