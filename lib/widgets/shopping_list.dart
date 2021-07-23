@@ -1,4 +1,3 @@
-import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -75,8 +74,9 @@ class ShoppingListSummary extends StatelessWidget {
                                   : null,
                             ),
                           ),
-                leading: CircularCheckBox(
+                leading: Checkbox(
                   activeColor: Colors.green[700],
+                  shape: CircleBorder(),
                   value: currentIngred.checked,
                   materialTapTargetSize: MaterialTapTargetSize.padded,
                   onChanged: (bool x) {
@@ -270,7 +270,7 @@ class ShoppingCartListTile extends StatelessWidget {
                             width: 50,
                             decoration: BoxDecoration(),
                             child: Center(
-                              child: CircularCheckBox(
+                              child: Checkbox(
                                 activeColor: Colors.green[700],
                                 value: ingredient.checked,
                                 materialTapTargetSize:

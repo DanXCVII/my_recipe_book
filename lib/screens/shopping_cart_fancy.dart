@@ -1,4 +1,3 @@
-import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/app/app_bloc.dart';
@@ -233,9 +232,10 @@ class FancyShoppingCartScreen extends StatelessWidget {
                             : null,
                       ),
                     ),
-              leading: CircularCheckBox(
+              leading: Checkbox(
                 activeColor: Colors.green[700],
                 value: currentIngred.checked,
+                shape: CircleBorder(),
                 materialTapTargetSize: MaterialTapTargetSize.padded,
                 onChanged: (bool x) {
                   BlocProvider.of<ShoppingCartBloc>(context).add(

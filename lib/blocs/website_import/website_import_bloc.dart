@@ -59,8 +59,18 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
 
     var response;
 
+    String filteredURL = event.url;
+    if (event.url.contains("https://")) {
+      String cutURLstart =
+          event.url.substring(event.url.lastIndexOf("https://"));
+      if (cutURLstart.contains(" ")) {
+        filteredURL = cutURLstart.substring(0, cutURLstart.indexOf(" "));
+      }
+      filteredURL = cutURLstart;
+    }
+
     try {
-      response = await http.get(Uri.parse(event.url));
+      response = await http.get(Uri.parse(filteredURL));
     } catch (e) {
       yield InvalidUrl();
       return;
@@ -80,16 +90,16 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
           await _tryGetRecipeRecipeMap(httpWebsite);
 
       if (recipeMap != null) {
-        importRecipe = await _getRecipeFromSchemaRecipe(recipeMap, event.url);
-      } else if (event.url.contains("allrecipes.com")) {
+        importRecipe = await _getRecipeFromSchemaRecipe(recipeMap, filteredURL);
+      } else if (filteredURL.contains("allrecipes.com")) {
         importRecipe =
-            await getRecipeFromAllRecipesData(httpWebsite, event.url);
+            await getRecipeFromAllRecipesData(httpWebsite, filteredURL);
       } else {
         yield InvalidUrl();
         return;
       }
       if (importRecipe.item1.toString() == ImportState.FAIL.toString()) {
-        yield FailedImportingRecipe(event.url);
+        yield FailedImportingRecipe(filteredURL);
         return;
       } else if (importRecipe.item1 == ImportState.DUPLICATE) {
         yield AlreadyExists(importRecipe.item2.name);

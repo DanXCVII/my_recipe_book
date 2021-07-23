@@ -78,6 +78,8 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     yield GSavingTmpData();
 
     String imageDataType = getImageDatatype(event.recipeImage.path);
+    String newImageDataType = imageDataType == ".png" ? ".jpg" : imageDataType;
+
     String recipeName = event.editingRecipe
         ? editRecipeLocalPathString
         : newRecipeLocalPathString;
@@ -85,10 +87,10 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     await IO.deleteRecipeImageIfExists(recipeName);
     await IO.saveRecipeImage(event.recipeImage, recipeName);
 
-    String recipeImagePathFull =
-        await PathProvider.pP.getRecipeImagePathFull(recipeName, imageDataType);
+    String recipeImagePathFull = await PathProvider.pP
+        .getRecipeImagePathFull(recipeName, newImageDataType);
     String recipeImagePreviewPathFull = await PathProvider.pP
-        .getRecipeImagePreviewPathFull(recipeName, imageDataType);
+        .getRecipeImagePreviewPathFull(recipeName, newImageDataType);
 
     if (!event.editingRecipe) {
       await HiveProvider().saveTmpRecipe(

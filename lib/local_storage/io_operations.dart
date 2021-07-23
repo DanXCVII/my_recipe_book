@@ -386,8 +386,18 @@ Future<Recipe> importMRBrecipeFromTmp(String recipeName) async {
 /// returns the absolute path of the full quality saved stepImage
 Future<String> saveStepImage(File newImage, int stepNumber,
     {String recipeName = 'tmp'}) async {
-  String newStepImageName = getStepImageName(newImage.path);
-  String newStepImagePreviewName = 'p-' + newStepImageName;
+  String imageDataType = getImageDatatype(newImage.path);
+  String newImageDataType = imageDataType == ".png" ? ".jpg" : imageDataType;
+
+  String stepImageName = getStepImageName(newImage.path);
+  String newStepImageName =
+      stepImageName.substring(0, stepImageName.lastIndexOf(".")) +
+          newImageDataType;
+
+  String stepImagePreviewName = 'p-' + newStepImageName;
+  String newStepImagePreviewName =
+      stepImagePreviewName.substring(0, stepImagePreviewName.lastIndexOf(".")) +
+          newImageDataType;
 
   String stepImagePathFull =
       await PathProvider.pP.getRecipeStepNumberDirFull(recipeName, stepNumber) +
@@ -424,12 +434,16 @@ Future<void> saveImage(File image, String targetPath, bool preview) async {
       (image.path.endsWith(".jpg") ||
           image.path.endsWith(".png") ||
           image.path.endsWith(".jpeg"))) {
+    String tmpImageName =
+        (await getTemporaryDirectory()).path + "/tmpImage.jpg";
+    if (File(tmpImageName).existsSync()) {
+      await File(tmpImageName).delete();
+    }
     targetPath = targetPath.substring(0, targetPath.lastIndexOf(".")) + ".jpg";
     if (image.path.endsWith(".png")) {
       // for png images, convert them into jpg
       Image decodedImage = decodeImage(image.readAsBytesSync());
-      String tmpTargetPath =
-          (await getTemporaryDirectory()).path + "tmpImage.jpg";
+      String tmpTargetPath = tmpImageName;
       image = await File(tmpTargetPath).writeAsBytes(encodeJpg(decodedImage));
     }
 

@@ -179,6 +179,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
   Stream<AdManagerState> _mapStartWatchingVideoToState(
       StartWatchingVideo event) async* {
+    if (!Ads.shouldShowAds()) return;
     lastAdForBannerTime = event.addAddFreeTime;
     _showVideo = true;
     bool hasInternetConnection = false;
