@@ -106,8 +106,6 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
           await GdprDialog.instance
               .showDialog(
-            'pub-7711778152436774',
-            'https://sites.google.com/view/my-recipebook-privacy-policy',
             // isForTest: true,
             testDeviceId: '',
           )

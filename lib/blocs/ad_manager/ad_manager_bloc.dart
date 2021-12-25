@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
 import '../../ad_related/ad.dart';
 
@@ -16,30 +17,36 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   DateTime lastTimeStartedWatching =
       DateTime.now().subtract(Duration(days: 10));
 
+  final InAppPurchase _iap = InAppPurchase.instance;
+  StreamSubscription<List<PurchaseDetails>> _subscription;
+  List<String> _notFoundIds = [];
+  List<ProductDetails> _products = [];
+  List<PurchaseDetails> _purchases = [];
+  List<String> _consumables = [];
+  bool _isAvailable = false;
+  bool _purchasePending = false;
+  bool _loading = true;
+  String _queryProductError;
+
   void Function() onAdClosed;
   void Function() onAdFailedToLoad;
   void Function() onRewardedAdUserEarnedReward;
-
-  /// if the API is available on the device
-  bool _available = true;
-
-  /// In App Purchase plugin
-  InAppPurchaseConnection _iap;
-
-  /// products for sale
-  List<ProductDetails> _products = [];
-
-  /// past purchases
-  List<PurchaseDetails> _purchases = [];
-
-  /// Updates to purchases
-  StreamSubscription _subscription;
 
   SharedPreferences _sP;
   bool lastAdForBannerTime;
   bool _showVideo = false;
 
   AdManagerBloc() : super(AdManagerInitial()) {
+    final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
+    _subscription = purchaseUpdated.listen((purchaseDetailsList) {
+      purchaseDetailsList.forEach((item) {
+        InAppPurchase.instance.completePurchase(item);
+      });
+    }, onDone: () {
+      _subscription.cancel();
+    }, onError: (error) {
+      // handle error here.
+    });
     onAdClosed = onAdClosed = () {
       this.add(_InterruptedLoadingVideo());
     };
@@ -54,6 +61,17 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
         add(WatchedVideo(DateTime.now()));
       }
     };
+    _iap.isAvailable().then((isAvailable) {
+      if (isAvailable) {
+        _isAvailable = isAvailable;
+        _products = [];
+        _purchases = [];
+        _notFoundIds = [];
+        _consumables = [];
+        _purchasePending = false;
+        _loading = false;
+      }
+    });
   }
 
   @override
@@ -94,17 +112,15 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       yield IsPurchased();
     } else {
       Ads.showBannerAds(true);
-      InAppPurchaseConnection.enablePendingPurchases();
-      print(await InAppPurchaseConnection.instance.isAvailable());
-      _iap = InAppPurchaseConnection.instance;
-      _available = await _iap.isAvailable();
+      print(await _iap.isAvailable());
+      _isAvailable = await _iap.isAvailable();
 
-      if (_available) {
+      if (_isAvailable) {
         await _getProducts();
-        await _getPastPurchases();
+        await _iap.restorePurchases();
         await _verifyPurchase(null);
 
-        _subscription = _iap.purchaseUpdatedStream.listen((data) {
+        _subscription = _iap.purchaseStream.listen((data) {
           _purchases.addAll(data);
 
           _verifyPurchase(data.first);
@@ -193,7 +209,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     }
 
     if (!event.showLoadingIndicator) {
-      await Ads.showRewardedVideoAd();
+      await Ads.showRewardedVideoAd(onRewardedAdUserEarnedReward);
 
       return;
     }
@@ -256,16 +272,6 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     ProductDetailsResponse response = await _iap.queryProductDetails(ids);
 
     _products = response.productDetails;
-  }
-
-  Future<void> _getPastPurchases() async {
-    QueryPurchaseDetailsResponse response = await _iap.queryPastPurchases();
-
-    for (PurchaseDetails purchase in response.pastPurchases) {
-      InAppPurchaseConnection.instance.completePurchase(purchase);
-    }
-
-    _purchases = response.pastPurchases;
   }
 
   Future<void> _verifyPurchase(PurchaseDetails details) async {

@@ -22,11 +22,6 @@ class IntroScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return IntroSlider(
       // List slides
-      nameDoneBtn: I18n.of(context).done,
-      nameNextBtn: I18n.of(context).next,
-      namePrevBtn: I18n.of(context).back,
-      widthSkipBtn: 130,
-      nameSkipBtn: I18n.of(context).skip,
       slides: [
         Slide(
           title: I18n.of(context).choose_a_theme,

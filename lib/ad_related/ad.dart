@@ -8,7 +8,13 @@ import 'ad_id.dart';
 
 class Ads {
   static AdRequest _adRequest;
-  static RewardedAd _rewardedVideo;
+  static RewardedAd _rewardedAd;
+  static int maxFailedLoadAttempts = 3;
+
+  static InterstitialAd _interstitialAd;
+  static int _numInterstitialLoadAttempts = 0;
+
+  static int _numRewardedLoadAttempts = 0;
   static bool _showBannerAds = true;
   static bool _showAds = false;
   static List<BannerAd> _bottomBannerAd = [];
@@ -20,13 +26,13 @@ class Ads {
     _showAds = showAds;
     if (!_showAds) return;
     _adRequest = AdRequest(
-        keywords: [
-          'recipes',
-          'kitchen',
-          'cooking',
-        ],
-        nonPersonalizedAds: !personalized,
-        testDevices: <String>["84A003142741DEE5AEED89CE56D794EB"]);
+      keywords: [
+        'recipes',
+        'kitchen',
+        'cooking',
+      ],
+      nonPersonalizedAds: !personalized,
+    );
   }
 
   static void showWideBannerAds() {
@@ -41,7 +47,7 @@ class Ads {
         adUnitId: getBannerAdUnitId(),
         size: _wideBottomBannerAd ? AdSize.fullBanner : AdSize.banner,
         request: _adRequest,
-        listener: AdListener(
+        listener: BannerAdListener(
             onAdLoaded: (_) {},
             onAdFailedToLoad: (_, __) {
               _bottomBannerAd[_bottomBannerAd.length - 1].dispose();
@@ -59,7 +65,7 @@ class Ads {
       adUnitId: getBannerAdUnitId(),
       size: AdSize.banner,
       request: _adRequest,
-      listener: AdListener(
+      listener: BannerAdListener(
         onAdLoaded: (_) {},
         onAdFailedToLoad: (_, __) {},
       ),
@@ -76,31 +82,58 @@ class Ads {
     if (!_showAds) return;
     if (state != null && !state.mounted) return;
 
-    _rewardedVideo = RewardedAd(
+    RewardedAd.load(
       adUnitId: getRewardAdUnitId(),
       request: _adRequest,
-      listener: AdListener(
-        // Called when an ad is successfully received.
-        onAdLoaded: (Ad ad) {
-          print("rewarded video ad loaded");
-          if (showOnLoad) _rewardedVideo.show();
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (RewardedAd ad) {
+          print('$ad loaded.');
+          _rewardedAd = ad;
+          _numRewardedLoadAttempts = 0;
         },
-        // Called when an ad request failed.
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          onAdFailedToLoad();
-        },
-        // Called when an ad opens an overlay that covers the screen.
-        onAdOpened: (Ad ad) => print('Ad opened.'),
-        // Called when an ad removes an overlay that covers the screen.
-        onAdClosed: (Ad ad) => onAdClosed(),
-        // Called when an ad is in the process of leaving the application.
-        onApplicationExit: (Ad ad) => print('Left application.'),
-        // Called when a RewardedAd triggers a reward.
-        onRewardedAdUserEarnedReward: (RewardedAd ad, RewardItem reward) {
-          onRewardedAdUserEarnedReward();
+        onAdFailedToLoad: (LoadAdError error) {
+          print('RewardedAd failed to load: $error');
+          _rewardedAd = null;
+          _numRewardedLoadAttempts += 1;
+          if (_numRewardedLoadAttempts <= maxFailedLoadAttempts) {
+            loadRewardedVideo(
+              showOnLoad,
+              onAdClosed,
+              onAdFailedToLoad,
+              onRewardedAdUserEarnedReward,
+            );
+          } else {
+            onAdFailedToLoad();
+          }
         },
       ),
-    )..load();
+    );
+  }
+
+  static void loadInterstitialAd() {
+    if (!_showAds) return;
+
+    
+    InterstitialAd.load(
+        adUnitId: getInterstitialAdUnitId(),
+        request: _adRequest,
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            print('$ad loaded');
+            _interstitialAd = ad;
+            _numInterstitialLoadAttempts = 0;
+            _interstitialAd.setImmersiveMode(true);
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error.');
+            _numInterstitialLoadAttempts += 1;
+            _interstitialAd = null;
+            if (_numInterstitialLoadAttempts <= maxFailedLoadAttempts) {
+              loadInterstitialAd();
+            }
+          },
+        ));
+    
   }
 
   static void showBottomBannerAd([State state]) {
@@ -133,20 +166,37 @@ class Ads {
 
   static void showInterstitialAd() {
     if (!_showAds) return;
-    var interstitialAd = InterstitialAd(
-        adUnitId: getInterstitialAdUnitId(),
-        request: _adRequest,
-        listener: AdListener());
-    interstitialAd
-      ..load()
-      ..show();
+
+    if (_interstitialAd == null) {
+      print('Warning: attempt to show interstitial before loaded.');
+      return;
+    }
+    _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        loadInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        loadInterstitialAd();
+      },
+    );
+    _interstitialAd.show();
+    _interstitialAd = null;
   }
 
-  static Future<void> showRewardedVideoAd() async {
-    if (await _rewardedVideo.isLoaded()) {
-      _rewardedVideo.show();
-    } else {
+  static Future<void> showRewardedVideoAd(
+      void Function() onRewardedAdUserEarnedReward) async {
+    if (_rewardedAd == null) {
       loadRewardedVideo(true, () {}, () {}, () {});
+    } else {
+      _rewardedAd.show(onUserEarnedReward: (_, __) {
+        onRewardedAdUserEarnedReward();
+      });
     }
 
     return;

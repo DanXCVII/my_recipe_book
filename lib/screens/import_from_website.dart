@@ -172,7 +172,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                           width: 300,
                           child: IconInfoMessage(
                             iconWidget: Icon(
-                              MdiIcons.flashCircle,
+                              MdiIcons.flash,
                               color: Colors.orange,
                               size: 70.0,
                             ),

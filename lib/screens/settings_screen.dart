@@ -102,11 +102,9 @@ class Settings extends StatelessWidget {
                     ListTile(
                         leading: Icon(Icons.person),
                         onTap: () {
-                          GdprDialog.instance.setConsentToUnknown();
+                          GdprDialog.instance.resetDecision();
                           GdprDialog.instance
                               .showDialog(
-                            'pub-7711778152436774',
-                            'https://sites.google.com/view/my-recipebook-privacy-policy',
                             testDeviceId: '',
                           )
                               .then((onValue) {
