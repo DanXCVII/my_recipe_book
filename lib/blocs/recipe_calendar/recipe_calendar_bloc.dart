@@ -29,7 +29,7 @@ class RecipeCalendarBloc
       DateTime.now().day,
     );
     isVertical = false;
-    subscription = recipeManagerBloc.listen((rmState) {
+    subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeCalendarOverview ||
           state is LoadedRecipeCalendarVertical) {
         if (rmState is RM.DeleteRecipeState) {
@@ -163,6 +163,7 @@ class RecipeCalendarBloc
       yield LoadedRecipeCalendarOverview(
         recipeCalendar,
         currentDayRecipes,
+        overviewSelectedDay,
         addedRecipe: addedRecipe,
       );
     }

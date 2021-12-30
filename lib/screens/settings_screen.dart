@@ -462,8 +462,8 @@ class Settings extends StatelessWidget {
         await FilePicker.platform.pickFiles(type: FileType.any);
     String _path;
 
+    if (result == null) return;
     _path = result.files.single.path;
-
     if (_path == null) return;
 
     showDialog(

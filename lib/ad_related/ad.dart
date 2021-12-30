@@ -23,6 +23,7 @@ class Ads {
   static double adHeight;
 
   static void initialize(bool showAds, {bool personalized = false}) {
+    
     _showAds = showAds;
     if (!_showAds) return;
     _adRequest = AdRequest(
@@ -115,7 +116,7 @@ class Ads {
 
     
     InterstitialAd.load(
-        adUnitId: getInterstitialAdUnitId(),
+        adUnitId: InterstitialAd.testAdUnitId,
         request: _adRequest,
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (InterstitialAd ad) {

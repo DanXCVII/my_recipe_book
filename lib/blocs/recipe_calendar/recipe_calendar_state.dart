@@ -35,10 +35,12 @@ class LoadedRecipeCalendarOverview extends RecipeCalendarState {
   final Map<DateTime, List<String>> events;
   final List<Tuple2<DateTime, Recipe>> currentRecipes;
   final Tuple2<DateTime, String> addedRecipe;
+  final DateTime selectedDay;
 
   LoadedRecipeCalendarOverview(
     this.events,
-    this.currentRecipes, {
+    this.currentRecipes,
+    this.selectedDay, {
     this.addedRecipe,
   });
 
@@ -46,6 +48,7 @@ class LoadedRecipeCalendarOverview extends RecipeCalendarState {
   List<Object> get props => [
         events,
         currentRecipes,
+        selectedDay,
         addedRecipe,
       ];
 }

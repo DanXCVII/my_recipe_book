@@ -131,20 +131,9 @@ class RecipeCalendarContent extends StatefulWidget {
 
 class _RecipeCalendarContentState extends State<RecipeCalendarContent>
     with TickerProviderStateMixin {
-  CalendarController _calendarController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _calendarController = CalendarController();
-  }
-
-  @override
-  void dispose() {
-    _calendarController.dispose();
-    super.dispose();
-  }
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _firstDay;
+  DateTime _lastDay;
 
   @override
   Widget build(BuildContext context) {
@@ -180,24 +169,28 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                       height: Ads.shouldShowBannerAds()
                           ? height - 80 - 60
                           : height - 80,
-                      child: Row(children: [
-                        Expanded(
-                          flex: 3,
-                          child: _buildTableCalendar(state.events),
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          flex: 5,
-                          child: _buildEventList(),
-                        )
-                      ]),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: _buildTableCalendar(
+                                state.events, state.selectedDay),
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            flex: 5,
+                            child: _buildEventList(),
+                          )
+                        ],
+                      ),
                     )
                   : Center(
                       child: Container(
                         width: width > 450
                             ? 450
                             : MediaQuery.of(context).size.width,
-                        child: _buildTableCalendar(state.events),
+                        child: _buildTableCalendar(
+                            state.events, state.selectedDay),
                       ),
                     ),
               // _buildTableCalendarWithBuilders(),
@@ -276,22 +269,30 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
               ),
             ],
           );
+        } else {
+          return Container();
         }
       },
     );
   }
 
   // Simple TableCalendar configuration (using Styles)
-  Widget _buildTableCalendar(Map<DateTime, List<String>> events) {
-    return TableCalendar(
+  Widget _buildTableCalendar(
+      Map<DateTime, List<String>> events, DateTime stateSelectedDay) {
+    return TableCalendar<String>(
+      firstDay: DateTime(DateTime.now().year - 1, 1, 1),
+      lastDay: DateTime(DateTime.now().year + 1, 13, 0),
+      calendarFormat: _calendarFormat,
       locale: I18n.of(context).locale_full,
-      calendarController: _calendarController,
-      events: events,
+      focusedDay: stateSelectedDay,
+      eventLoader: (day) {
+        return events[DateTime(day.year, day.month, day.day)];
+      },
       startingDayOfWeek: StartingDayOfWeek.monday,
       calendarStyle: CalendarStyle(
-        selectedColor: Colors.orange[900],
-        todayColor: Colors.orange[700],
-        markersColor: Colors.amber[500],
+        selectedDecoration: BoxDecoration(color: Colors.orange[900]),
+        todayDecoration: BoxDecoration(color: Colors.orange[700]),
+        markerDecoration: BoxDecoration(color: Colors.amber[500]),
         outsideDaysVisible: false,
       ),
       headerStyle: HeaderStyle(
@@ -302,7 +303,10 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
           borderRadius: BorderRadius.circular(16.0),
         ),
       ),
-      onDaySelected: _onDaySelected,
+      // onPageChanged: (){},
+      selectedDayPredicate: (day) => isSameDay(stateSelectedDay, day),
+      onDaySelected: (selectedDay, focusedDay) =>
+          _onDaySelected(selectedDay, focusedDay, stateSelectedDay),
     );
   }
 
@@ -333,9 +337,12 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
     });
   }
 
-  void _onDaySelected(DateTime day, List events, List holidays) {
-    BlocProvider.of<RecipeCalendarBloc>(context)
-        .add(ChangeSelectedDateEvent(day));
+  void _onDaySelected(
+      DateTime selectedDay, DateTime focusedDay, DateTime stateSelectedDay) {
+    if (!isSameDay(stateSelectedDay, selectedDay)) {
+      BlocProvider.of<RecipeCalendarBloc>(context)
+          .add(ChangeSelectedDateEvent(selectedDay));
+    }
   }
 
   List<Widget> _getDayWithRecipes(

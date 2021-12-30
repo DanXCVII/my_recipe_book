@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
@@ -37,6 +38,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   bool _showVideo = false;
 
   AdManagerBloc() : super(AdManagerInitial()) {
+    
     final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       purchaseDetailsList.forEach((item) {
@@ -105,6 +107,8 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     if (isInitialized) return;
     isInitialized = true;
 
+    MobileAds.instance.updateRequestConfiguration(RequestConfiguration(testDeviceIds: ['']));
+    
     _sP ??= await SharedPreferences.getInstance();
 
     if (_sP.getBool('pro_version') == true) {
