@@ -20,14 +20,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
   final InAppPurchase _iap = InAppPurchase.instance;
   StreamSubscription<List<PurchaseDetails>> _subscription;
-  List<String> _notFoundIds = [];
   List<ProductDetails> _products = [];
   List<PurchaseDetails> _purchases = [];
-  List<String> _consumables = [];
   bool _isAvailable = false;
-  bool _purchasePending = false;
-  bool _loading = true;
-  String _queryProductError;
 
   void Function() onAdClosed;
   void Function() onAdFailedToLoad;
@@ -38,7 +33,6 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   bool _showVideo = false;
 
   AdManagerBloc() : super(AdManagerInitial()) {
-    
     final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       purchaseDetailsList.forEach((item) {
@@ -68,10 +62,6 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
         _isAvailable = isAvailable;
         _products = [];
         _purchases = [];
-        _notFoundIds = [];
-        _consumables = [];
-        _purchasePending = false;
-        _loading = false;
       }
     });
   }
@@ -107,8 +97,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     if (isInitialized) return;
     isInitialized = true;
 
-    MobileAds.instance.updateRequestConfiguration(RequestConfiguration(testDeviceIds: ['']));
-    
+    MobileAds.instance
+        .updateRequestConfiguration(RequestConfiguration(testDeviceIds: ['']));
+
     _sP ??= await SharedPreferences.getInstance();
 
     if (_sP.getBool('pro_version') == true) {
@@ -122,7 +113,6 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       if (_isAvailable) {
         await _getProducts();
         await _iap.restorePurchases();
-        await _verifyPurchase(null);
 
         _subscription = _iap.purchaseStream.listen((data) {
           _purchases.addAll(data);
@@ -281,14 +271,23 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   Future<void> _verifyPurchase(PurchaseDetails details) async {
     PurchaseDetails purchase = _hasPurchased('pro_version');
 
-    if (purchase != null && purchase.status == PurchaseStatus.purchased) {
+    if (purchase != null &&
+        (purchase.status == PurchaseStatus.purchased ||
+            purchase.status == PurchaseStatus.restored)) {
       _sP ??= await SharedPreferences.getInstance();
-      _sP.setBool('pro_version', true);
+      await _sP.setBool('pro_version', true);
       Ads.showAds(false);
       Ads.showBannerAds(false);
       if (details != null) {
         await _iap.completePurchase(details);
       }
+      add(_PurchaseSuccessfull());
+    } else if (details != null &&
+        details.error.message == "BillingResponse.itemAlreadyOwned") {
+      _sP ??= await SharedPreferences.getInstance();
+      await _sP.setBool('pro_version', true);
+      Ads.showAds(false);
+      Ads.showBannerAds(false);
       add(_PurchaseSuccessfull());
     }
   }

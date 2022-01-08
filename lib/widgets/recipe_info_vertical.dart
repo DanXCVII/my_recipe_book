@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:my_recipe_book/widgets/recipe_screen/time_complexity_compressed.dart';
 
 import '../ad_related/ad.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -87,49 +88,62 @@ class RecipeInfoVertical extends StatelessWidget {
         ),
         SizedBox(height: 12),
         Center(
-          child: _showComplexTopArea(
-                  recipe.preperationTime, recipe.cookingTime, recipe.totalTime)
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                  child: Wrap(
-                    direction: Axis.horizontal,
-                    alignment: WrapAlignment.center,
-                    runSpacing: 25,
-                    spacing: 20,
-                    children: <Widget>[
-                      TimeInfo(
-                        textColor,
-                        recipeScreenFontFamily,
+          child: Column(
+            children: [
+              _showComplexTopArea(recipe.preperationTime, recipe.cookingTime,
+                      recipe.totalTime)
+                  ? Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                      child: Wrap(
+                        direction: Axis.horizontal,
+                        alignment: WrapAlignment.center,
+                        runSpacing: 25,
+                        spacing: 20,
+                        children: <Widget>[
+                          TimeInfo(
+                            textColor,
+                            recipeScreenFontFamily,
+                            recipe.preperationTime,
+                            recipe.totalTime,
+                            recipe.cookingTime,
+                          ),
+                          SizedBox(height: 12),
+                          TimeInfoChart(
+                            textColor,
+                            recipe.preperationTime ?? 0,
+                            recipe.cookingTime ?? 0,
+                            recipe.totalTime ?? 0,
+                            recipeScreenFontFamily,
+                            horizontal: false,
+                          ),
+                          SizedBox(height: 12),
+                          ComplexityWave(
+                            textColor,
+                            recipeScreenFontFamily,
+                            recipe.effort,
+                          ),
+                        ]..removeWhere((item) => item == null),
+                      ),
+                    )
+                  : Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15),
+                      child: TimeComplexityCompressed(
                         recipe.preperationTime,
-                        recipe.totalTime,
                         recipe.cookingTime,
-                      ),
-                      SizedBox(height: 12),
-                      TimeInfoChart(
-                        textColor,
-                        recipe.preperationTime ?? 0,
-                        recipe.cookingTime ?? 0,
-                        recipe.totalTime ?? 0,
-                        recipeScreenFontFamily,
-                        horizontal: false,
-                      ),
-                      SizedBox(height: 12),
-                      ComplexityWave(
-                        textColor,
-                        recipeScreenFontFamily,
+                        recipe.totalTime,
                         recipe.effort,
+                        recipeScreenFontFamily,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
-                        child: RecipeTagWrap(
-                          recipe.tags,
-                          recipeScreenFontFamily,
-                        ),
-                      ),
-                    ]..removeWhere((item) => item == null),
-                  ),
-                )
-              : null,
+                    ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
+                child: RecipeTagWrap(
+                  recipe.tags,
+                  recipeScreenFontFamily,
+                ),
+              ),
+            ],
+          ),
         ),
         width >= 350 && recipe.notes != ""
             ? NotesSection(notes: recipe.notes)

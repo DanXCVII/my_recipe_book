@@ -212,7 +212,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
                   ),
                 );
               },
-              tileColor: Theme.of(context).scaffoldBackgroundColor,
+              // tileColor: Theme.of(context).scaffoldBackgroundColor,
               title: Text(
                 "${currentIngred.name}",
                 style: TextStyle(

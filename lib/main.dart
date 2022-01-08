@@ -569,7 +569,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/intro":
-              SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+              SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+                  overlays: [SystemUiOverlay.bottom]);
 
               return MaterialPageRoute(
                 builder: (context) => WillPopScope(
