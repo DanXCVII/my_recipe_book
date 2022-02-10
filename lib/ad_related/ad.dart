@@ -23,7 +23,6 @@ class Ads {
   static double adHeight;
 
   static void initialize(bool showAds, {bool personalized = false}) {
-    
     _showAds = showAds;
     if (!_showAds) return;
     _adRequest = AdRequest(
@@ -75,7 +74,7 @@ class Ads {
 
   static Future<void> loadRewardedVideo(
     bool showOnLoad,
-    void Function() onAdClosed,
+    void Function() onAdLoaded,
     void Function() onAdFailedToLoad,
     void Function() onRewardedAdUserEarnedReward, [
     State state,
@@ -91,15 +90,19 @@ class Ads {
           print('$ad loaded.');
           _rewardedAd = ad;
           _numRewardedLoadAttempts = 0;
+          onAdLoaded();
+
+          if (showOnLoad) showRewardedVideoAd(onRewardedAdUserEarnedReward);
         },
         onAdFailedToLoad: (LoadAdError error) {
           print('RewardedAd failed to load: $error');
           _rewardedAd = null;
           _numRewardedLoadAttempts += 1;
+          print('Yooooooooo' + _numRewardedLoadAttempts.toString());
           if (_numRewardedLoadAttempts <= maxFailedLoadAttempts) {
             loadRewardedVideo(
               showOnLoad,
-              onAdClosed,
+              onAdLoaded,
               onAdFailedToLoad,
               onRewardedAdUserEarnedReward,
             );
@@ -114,7 +117,6 @@ class Ads {
   static void loadInterstitialAd() {
     if (!_showAds) return;
 
-    
     InterstitialAd.load(
         adUnitId: InterstitialAd.testAdUnitId,
         request: _adRequest,
@@ -134,7 +136,6 @@ class Ads {
             }
           },
         ));
-    
   }
 
   static void showBottomBannerAd([State state]) {
@@ -193,7 +194,12 @@ class Ads {
   static Future<void> showRewardedVideoAd(
       void Function() onRewardedAdUserEarnedReward) async {
     if (_rewardedAd == null) {
-      loadRewardedVideo(true, () {}, () {}, () {});
+      loadRewardedVideo(
+        true,
+        () {},
+        () {},
+        onRewardedAdUserEarnedReward,
+      );
     } else {
       _rewardedAd.show(onUserEarnedReward: (_, __) {
         onRewardedAdUserEarnedReward();

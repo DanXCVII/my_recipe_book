@@ -22,6 +22,8 @@ class IntroScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return IntroSlider(
       // List slides
+      renderSkipBtn: renderSkipBtn(),
+      renderNextBtn: renderNextBtn(), renderDoneBtn: renderDoneBtn(),
       slides: [
         Slide(
           title: I18n.of(context).choose_a_theme,
@@ -85,9 +87,34 @@ class IntroScreen extends StatelessWidget {
             : null,
       ]..removeWhere((item) => item == null),
       onDonePress: () {
-        SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
         Navigator.pop(context);
       },
+    );
+  }
+
+  void onNextPress() {
+    print("onNextPress caught");
+  }
+
+  Widget renderNextBtn() {
+    return Icon(
+      Icons.navigate_next,
+      color: Color(0xffF3B4BA),
+      size: 35.0,
+    );
+  }
+
+  Widget renderDoneBtn() {
+    return Icon(
+      Icons.done,
+      color: Color(0xffF3B4BA),
+    );
+  }
+
+  Widget renderSkipBtn() {
+    return Icon(
+      Icons.skip_next,
+      color: Color(0xffF3B4BA),
     );
   }
 }

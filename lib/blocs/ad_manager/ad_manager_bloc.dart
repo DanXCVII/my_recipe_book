@@ -24,7 +24,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   List<PurchaseDetails> _purchases = [];
   bool _isAvailable = false;
 
-  void Function() onAdClosed;
+  void Function() onAdLoaded;
   void Function() onAdFailedToLoad;
   void Function() onRewardedAdUserEarnedReward;
 
@@ -43,20 +43,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     }, onError: (error) {
       // handle error here.
     });
-    onAdClosed = onAdClosed = () {
-      this.add(_InterruptedLoadingVideo());
-    };
-    onAdFailedToLoad = () {
-      add(_FailedLoadingRewardedVideo());
-      _showVideo = false;
-    };
-    onRewardedAdUserEarnedReward = () {
-      print(DateTime.now().toLocal().toString());
-      _showVideo = false;
-      if (lastAdForBannerTime) {
-        add(WatchedVideo(DateTime.now()));
-      }
-    };
+
     _iap.isAvailable().then((isAvailable) {
       if (isAvailable) {
         _isAvailable = isAvailable;
@@ -64,6 +51,21 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
         _purchases = [];
       }
     });
+
+    onAdLoaded = () {
+      this.add(_DisplayCurrentVideoAdState());
+    };
+    onAdFailedToLoad = () {
+      this.add(_FailedLoadingRewardedVideo());
+      _showVideo = false;
+    };
+    onRewardedAdUserEarnedReward = () {
+      print(DateTime.now().toLocal().toString());
+      _showVideo = false;
+      if (lastAdForBannerTime) {
+        this.add(WatchedVideo(DateTime.now()));
+      }
+    };
   }
 
   @override
@@ -87,7 +89,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
         yield* _mapPurchaseSuccessfullToState(event);
       } else if (event is _FailedLoadingRewardedVideo) {
         yield* _mapFailedLoadingRewardedVideoToState(event);
-      } else if (event is _InterruptedLoadingVideo) {
+      } else if (event is _DisplayCurrentVideoAdState) {
         yield* _mapInterruptedLoadingVideoToState(event);
       }
     }
@@ -112,7 +114,12 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
       if (_isAvailable) {
         await _getProducts();
-        await _iap.restorePurchases();
+
+        try {
+          await _iap.restorePurchases();
+        } catch (e) {
+          print(e);
+        }
 
         _subscription = _iap.purchaseStream.listen((data) {
           _purchases.addAll(data);
@@ -181,7 +188,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   Stream<AdManagerState> _mapLoadVideoToState(LoadVideo event) async* {
     await Ads.loadRewardedVideo(
       false,
-      onAdClosed,
+      onAdLoaded,
       onAdFailedToLoad,
       onRewardedAdUserEarnedReward,
     );
@@ -206,21 +213,21 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       await Ads.showRewardedVideoAd(onRewardedAdUserEarnedReward);
 
       return;
-    }
-
-    if (hasInternetConnection) {
-      lastTimeStartedWatching = event.time;
-
-      yield LoadingVideo();
-
-      await Ads.loadRewardedVideo(
-        true,
-        onAdClosed,
-        onAdFailedToLoad,
-        onRewardedAdUserEarnedReward,
-      );
     } else {
-      yield NotConnected();
+      if (hasInternetConnection) {
+        lastTimeStartedWatching = event.time;
+
+        yield LoadingVideo();
+
+        await Ads.loadRewardedVideo(
+          true,
+          onAdLoaded,
+          onAdFailedToLoad,
+          onRewardedAdUserEarnedReward,
+        );
+      } else {
+        yield NotConnected();
+      }
     }
   }
 
@@ -231,8 +238,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   Stream<AdManagerState> _mapPurchaseProVersionToState(
       PurchaseProVersion event) async* {
     if (_products != null && _products.isNotEmpty) {
-      final PurchaseParam purchaseParam =
-          PurchaseParam(productDetails: _products.first);
+      final PurchaseParam purchaseParam = GooglePlayPurchaseParam(
+          productDetails: _products.first, applicationUserName: null);
+
       await _iap.buyNonConsumable(purchaseParam: purchaseParam);
     }
   }
@@ -250,10 +258,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   }
 
   Stream<AdManagerState> _mapInterruptedLoadingVideoToState(
-      _InterruptedLoadingVideo event) async* {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+      _DisplayCurrentVideoAdState event) async* {
+    DateTime noAdsUntil = await _getStatusNoAds();
 
-    DateTime noAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
     if (noAdsUntil.isAfter(DateTime.now())) {
       yield AdFreeUntil(noAdsUntil);
     } else {
@@ -262,8 +269,10 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   }
 
   Future<void> _getProducts() async {
-    Set<String> ids = Set.from(['pro_version']);
+    Set<String> ids = ['pro_version'].toSet();
     ProductDetailsResponse response = await _iap.queryProductDetails(ids);
+
+    List<String> _notFoundIds = response.notFoundIDs;
 
     _products = response.productDetails;
   }
@@ -302,5 +311,17 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     _subscription.cancel();
     _periodicSub.cancel();
     return super.close();
+  }
+
+  Future<DateTime> _getStatusNoAds() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    DateTime noAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
+
+    if (_sP.getString('noAdsUntil') != null &&
+        noAdsUntil.isAfter(DateTime.now())) {
+      return noAdsUntil;
+    } else {
+      return DateTime(0);
+    }
   }
 }

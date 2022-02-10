@@ -569,18 +569,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/intro":
-              SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-                  overlays: [SystemUiOverlay.bottom]);
-
               return MaterialPageRoute(
-                builder: (context) => WillPopScope(
-                  onWillPop: () async {
-                    SystemChrome.setEnabledSystemUIOverlays(
-                        SystemUiOverlay.values);
-                    return true;
-                  },
-                  child: IntroScreen(),
-                ),
+                builder: (context) => IntroScreen(),
               );
 
             case "/computer-import-info":

@@ -36,4 +36,4 @@ class _PurchaseSuccessfull extends AdManagerEvent {}
 
 class _FailedLoadingRewardedVideo extends AdManagerEvent {}
 
-class _InterruptedLoadingVideo extends AdManagerEvent {}
+class _DisplayCurrentVideoAdState extends AdManagerEvent {}
