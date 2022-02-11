@@ -68,7 +68,7 @@ dependencies:
   hyphenator: ^0.0.3 # BSD
   wakelock: ^0.5.6 # BSD
   pdf: ^3.6.5 # Apache 2.0
-  printing: ^5.6.6 # Apache 2.0
+  printing: ^5.7.2 # Apache 2.0
   # buy_me_a_coffee_widget: ^2.0.0-nullsafety.0 # MIT
   rate_my_app: ^1.1.1+1 # MIT
   # google_fonts: ^1.0.0 # Apache 2.0

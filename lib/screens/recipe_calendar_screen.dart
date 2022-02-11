@@ -290,9 +290,12 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
       },
       startingDayOfWeek: StartingDayOfWeek.monday,
       calendarStyle: CalendarStyle(
-        selectedDecoration: BoxDecoration(color: Colors.orange[900]),
-        todayDecoration: BoxDecoration(color: Colors.orange[700]),
-        markerDecoration: BoxDecoration(color: Colors.amber[500]),
+        selectedDecoration:
+            BoxDecoration(color: Colors.orange[900], shape: BoxShape.circle),
+        todayDecoration:
+            BoxDecoration(color: Colors.orange[700], shape: BoxShape.circle),
+        markerDecoration:
+            BoxDecoration(color: Colors.amber[500], shape: BoxShape.circle),
         outsideDaysVisible: false,
       ),
       headerStyle: HeaderStyle(

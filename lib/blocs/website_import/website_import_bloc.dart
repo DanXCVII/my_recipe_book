@@ -61,8 +61,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
 
     String filteredURL = event.url;
     if (event.url.contains("https://")) {
-      String cutURLstart =
-          event.url.substring(event.url.lastIndexOf("https://"));
+      String cutURLstart = event.url;
       if (cutURLstart.contains(" ")) {
         filteredURL = cutURLstart.substring(0, cutURLstart.indexOf(" "));
       }
@@ -140,7 +139,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
         _getIngredientStringFromAllRecipes(httpRecipeContent)
             .map((item) => getIngredientFromString(item))
             .toList()
-              ..removeWhere((item) => item == null)
+          ..removeWhere((item) => item == null)
       ];
       List<double> times = _getTimesFromHttpData(
         httpRecipeContent.substring(
@@ -632,7 +631,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
                     amountUnit: recipeMap["nutrition"][key].toString(),
                   ))
             .toList()
-              ..removeWhere((item) => item == null);
+          ..removeWhere((item) => item == null);
       } catch (e) {}
     }
     return [];
