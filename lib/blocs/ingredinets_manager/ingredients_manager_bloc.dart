@@ -29,7 +29,7 @@ class IngredientsManagerBloc
 
   Stream<IngredientsManagerState>
       _mapLoadingIngredientsManagerToState() async* {
-    final List<String> ingredients = HiveProvider().getIngredientNames()
+    final List<String/*!*/> ingredients = HiveProvider().getIngredientNames()
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
     yield LoadedIngredientsManager(ingredients);
@@ -66,7 +66,7 @@ class IngredientsManagerBloc
     if (state is LoadedIngredientsManager) {
       await HiveProvider().deleteIngredient(event.oldIngredient);
       await HiveProvider().addIngredient(event.updatedIngredient);
-      final List<String> ingredients =
+      final List<String/*!*//*!*/> ingredients =
           (state as LoadedIngredientsManager).ingredients
             ..remove(event.oldIngredient)
             ..add(event.updatedIngredient)

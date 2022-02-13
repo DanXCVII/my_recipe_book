@@ -35,9 +35,9 @@ class TextColorDialog extends StatefulWidget {
 
 class TextColorDialogState extends State<TextColorDialog> {
   TextEditingController nameController;
-  int selectedColor;
+  int/*!*/ selectedColor;
 
-  TextColorDialogState(int wSelectedColor) {
+  TextColorDialogState(int/*!*//*!*/ wSelectedColor) {
     selectedColor = wSelectedColor;
   }
 

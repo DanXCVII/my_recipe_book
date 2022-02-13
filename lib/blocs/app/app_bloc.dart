@@ -10,7 +10,7 @@ part 'app_event.dart';
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
-  SharedPreferences prefs;
+  SharedPreferences /*?*/ prefs;
   AppBloc() : super(LoadingState());
 
   @override

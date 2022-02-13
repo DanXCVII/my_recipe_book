@@ -17,9 +17,9 @@ import '../screens/recipe_overview.dart';
 import '../screens/recipe_screen.dart';
 
 class RecipeSearch extends SearchDelegate<SearchRecipe> {
-  final List<String> recipeNames;
-  final List<StringIntTuple> recipeTags;
-  final List<String> categories;
+  final List<String /*!*/ > recipeNames;
+  final List<StringIntTuple /*!*/ > recipeTags;
+  final List<String /*!*/ > categories;
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
 
@@ -82,17 +82,17 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
           child:
               Center(child: Text(I18n.of(context).nothing_to_search_through)));
     }
-    List<String> resultCategories = categories
+    List<String /*!*/ > resultCategories = categories
         .where(
             (category) => category.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    List<StringIntTuple> resultRecipeTags = recipeTags
+    List<StringIntTuple /*!*/ > resultRecipeTags = recipeTags
         .where((recipeTag) =>
             recipeTag.text.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    List<String> resultRecipeNames = recipeNames
+    List<String /*!*/ > resultRecipeNames = recipeNames
         .where((recipeName) =>
             recipeName.toLowerCase().contains(query.toLowerCase()))
         .toList();

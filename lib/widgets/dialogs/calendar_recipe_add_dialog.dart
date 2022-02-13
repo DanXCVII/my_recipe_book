@@ -1,5 +1,5 @@
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:my_recipe_book/generated/i18n.dart';

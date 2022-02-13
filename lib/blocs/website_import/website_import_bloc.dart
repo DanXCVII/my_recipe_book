@@ -201,7 +201,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
         finalRecipe,
       );
     } catch (e) {
-      return Tuple2<ImportState, Recipe>(ImportState.FAIL, null);
+      return Tuple2<ImportState, Recipe/*?*/>(ImportState.FAIL, null);
     }
   }
 

@@ -85,7 +85,7 @@ class CategoryOverviewBloc
   Stream<CategoryOverviewState> _mapAddRecipesToState(
       COAddRecipes event) async* {
     if (state is LoadedCategoryOverview) {
-      final List<Tuple2<String, String>> categoryRandomImageList =
+      final List<Tuple2<String/*!*/, String/*!*/>> categoryRandomImageList =
           await _addCategoryRandomImage(
               (state as LoadedCategoryOverview).categories, event.recipes);
 
@@ -96,7 +96,7 @@ class CategoryOverviewBloc
   Stream<CategoryOverviewState> _mapDeleteRecipeToState(
       CODeleteRecipe event) async* {
     if (state is LoadedCategoryOverview) {
-      final List<Tuple2<String, String>> categoryRandomImageList =
+      final List<Tuple2<String/*!*/, String/*!*//*!*/>> categoryRandomImageList =
           await _removeRecipeFromOverview(
               (state as LoadedCategoryOverview).categories, event.recipe);
       yield LoadedCategoryOverview(categoryRandomImageList);
@@ -106,7 +106,7 @@ class CategoryOverviewBloc
   Stream<CategoryOverviewState> _mapAddCategoriesToState(
       COAddCategory event) async* {
     if (state is LoadedCategoryOverview) {
-      final List<Tuple2<String, String>> categoryRandomImageList =
+      final List<Tuple2<String/*!*/, String>> categoryRandomImageList =
           await _getCategoriesRandomImage();
 
       yield LoadedCategoryOverview(categoryRandomImageList);
@@ -116,7 +116,7 @@ class CategoryOverviewBloc
   Stream<CategoryOverviewState> _mapDeleteCategoryToState(
       CODeleteCategory event) async* {
     if (state is LoadedCategoryOverview) {
-      final List<Tuple2<String, String>> categoryRandomImageList =
+      final List<Tuple2<String/*!*/, String/*!*/>> categoryRandomImageList =
           (state as LoadedCategoryOverview).categories
             ..removeWhere((t) => t.item1 == event.category);
 
@@ -127,10 +127,10 @@ class CategoryOverviewBloc
   Stream<CategoryOverviewState> _mapUpdateCategoryToState(
       COUpdateCategory event) async* {
     if (state is LoadedCategoryOverview) {
-      final List<Tuple2<String, String>> categoryRandomImageList =
+      final List<Tuple2<String/*!*/, String/*!*/>> categoryRandomImageList =
           (state as LoadedCategoryOverview).categories.map((t) {
         if (t.item1 == event.oldCategory) {
-          return Tuple2<String, String>(event.updatedCategory, t.item2);
+          return Tuple2<String, String/*!*/>(event.updatedCategory, t.item2);
         } else {
           return t;
         }
@@ -143,7 +143,7 @@ class CategoryOverviewBloc
   Stream<CategoryOverviewState> _mapMoveCategoryToState(
       COMoveCategory event) async* {
     if (state is LoadedCategoryOverview) {
-      List<Tuple2<String, String>> oldCategoryRandomImageList =
+      List<Tuple2<String/*!*/, String/*!*/>> oldCategoryRandomImageList =
           (state as LoadedCategoryOverview).categories;
       // verify if working
       List<Tuple2<String, String>> newCategoryRandomImageList =

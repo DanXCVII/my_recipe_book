@@ -240,7 +240,7 @@ class NotesSection extends StatelessWidget {
 }
 
 class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
-  final Recipe recipe;
+  final Recipe/*!*//*!*//*!*/ recipe;
 
   MyGradientAppBar(
     this.recipe, {
@@ -507,7 +507,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     return true;
   }
 
-  void _showDeleteDialog(BuildContext context, String recipeName) {
+  void _showDeleteDialog(BuildContext context, String/*!*//*!*//*!*/ recipeName) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -640,7 +640,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 class RecipePage extends StatelessWidget {
-  final Recipe recipe;
+  final Recipe/*!*//*!*/ recipe;
   final String heroImageTag;
   final List<String> categoriesFiles;
   final ScrollController scrollController;

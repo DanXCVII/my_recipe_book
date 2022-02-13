@@ -39,7 +39,7 @@ import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen_bloc.dart';
 import 'blocs/website_import/website_import_bloc.dart';
 import 'generated/i18n.dart';
-import 'screens/SplashScreen.dart';
+import 'screens/splash_screen.dart';
 import 'screens/about_me.dart';
 import 'screens/import_pc_info.dart';
 import 'screens/add_recipe/general_info_screen/general_info_screen.dart';

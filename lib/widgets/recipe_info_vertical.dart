@@ -19,7 +19,7 @@ const Color textColor = Colors.white;
 const String recipeScreenFontFamily = 'Questrial';
 
 class RecipeInfoVertical extends StatelessWidget {
-  final Recipe recipe;
+  final Recipe/*!*/ recipe;
   final String heroImageTag;
   final double width;
   final List<String> categoriesFiles;

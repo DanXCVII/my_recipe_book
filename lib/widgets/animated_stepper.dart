@@ -12,7 +12,7 @@ import 'gallery_view.dart';
 
 class AnimatedStepper extends StatelessWidget {
   final List<String> steps;
-  final List<String> stepTitles;
+  final List<String>/*?*/ stepTitles;
   final String fontFamily;
   // if losResStepImages are provided, also stepImages must be provided
   final List<List<String>> lowResStepImages;

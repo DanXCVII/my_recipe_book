@@ -22,7 +22,7 @@ import '../screens/recipe_overview.dart';
 import '../screens/recipe_screen.dart';
 
 class RecipeCardBig extends StatelessWidget {
-  final Recipe recipe;
+  final Recipe/*!*/ recipe;
   final int index;
   final double cardWidth;
   final double cardHeight;

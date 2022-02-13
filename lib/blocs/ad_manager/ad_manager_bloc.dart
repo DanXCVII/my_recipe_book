@@ -24,9 +24,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   List<PurchaseDetails> _purchases = [];
   bool _isAvailable = false;
 
-  void Function() onAdLoaded;
-  void Function() onAdFailedToLoad;
-  void Function() onRewardedAdUserEarnedReward;
+  void Function()/*!*/ onAdLoaded;
+  void Function()/*!*/ onAdFailedToLoad;
+  void Function()/*!*/ onRewardedAdUserEarnedReward;
 
   SharedPreferences _sP;
   bool lastAdForBannerTime;
