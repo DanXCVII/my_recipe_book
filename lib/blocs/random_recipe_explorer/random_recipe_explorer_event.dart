@@ -5,7 +5,7 @@ abstract class RandomRecipeExplorerEvent {
 }
 
 class InitializeRandomRecipeExplorer extends RandomRecipeExplorerEvent {
-  final String selectedCategory;
+  final String/*!*/ selectedCategory;
 
   const InitializeRandomRecipeExplorer(
       {this.selectedCategory = 'all categories'});
@@ -14,13 +14,13 @@ class InitializeRandomRecipeExplorer extends RandomRecipeExplorerEvent {
 class ReloadRandomRecipeExplorer extends RandomRecipeExplorerEvent {}
 
 class AddCategories extends RandomRecipeExplorerEvent {
-  final List<String> categories;
+  final List<String/*!*/> categories;
 
   const AddCategories(this.categories);
 }
 
 class DeleteCategory extends RandomRecipeExplorerEvent {
-  final String category;
+  final String/*!*/ category;
 
   const DeleteCategory(this.category);
 }
@@ -39,14 +39,14 @@ class UpdateRecipe extends RandomRecipeExplorerEvent {
 }
 
 class UpdateCategory extends RandomRecipeExplorerEvent {
-  final String oldCategory;
+  final String/*!*/ oldCategory;
   final String updatedCategory;
 
   const UpdateCategory(this.oldCategory, this.updatedCategory);
 }
 
 class ChangeCategory extends RandomRecipeExplorerEvent {
-  final String category;
+  final String/*!*/ category;
 
   const ChangeCategory(this.category);
 }

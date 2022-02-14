@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.4.0+122
+version: 1.4.0+123
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -77,7 +77,11 @@ dependencies:
   table_calendar: ^3.0.3
   flutter_datetime_picker: ^1.5.1 # MIT
   fraction: ^3.1.1 # MIT
-  google_mobile_ads: ^1.0.1 # Apache 2.0
+  google_mobile_ads:
+    git:
+      url: https://github.com/SuaMusica/googleads-mobile-flutter.git
+      path: packages/google_mobile_ads
+      ref: feature/suamusica
   gdpr_dialog: ^2.1.0 # MIT
 
 dev_dependencies:

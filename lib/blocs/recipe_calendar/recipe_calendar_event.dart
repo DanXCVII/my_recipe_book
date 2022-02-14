@@ -19,8 +19,8 @@ class ChangeSelectedDateEvent extends RecipeCalendarEvent {
 }
 
 class RemoveRecipeFromDateEvent extends RecipeCalendarEvent {
-  final DateTime date;
-  final String recipeName;
+  final DateTime/*!*/ date;
+  final String/*!*/ recipeName;
 
   RemoveRecipeFromDateEvent(this.date, this.recipeName);
 
@@ -48,7 +48,7 @@ class ChangeSelectedTimeVerticalEvent extends RecipeCalendarEvent {
 }
 
 class RemoveRecipeFromCalendarEvent extends RecipeCalendarEvent {
-  final String recipeName;
+  final String/*!*/ recipeName;
 
   RemoveRecipeFromCalendarEvent(this.recipeName);
 
@@ -58,7 +58,7 @@ class RemoveRecipeFromCalendarEvent extends RecipeCalendarEvent {
 
 class AddRecipeToCalendarEvent extends RecipeCalendarEvent {
   final DateTime date;
-  final String recipeName;
+  final String/*!*/ recipeName;
 
   AddRecipeToCalendarEvent(this.date, this.recipeName);
 

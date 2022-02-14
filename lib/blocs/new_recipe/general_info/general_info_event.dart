@@ -20,7 +20,7 @@ class SetCanSave extends GeneralInfoEvent {
 
 class UpdateRecipeImage extends GeneralInfoEvent {
   final File recipeImage;
-  final bool editingRecipe;
+  final bool/*!*/ editingRecipe;
 
   UpdateRecipeImage([this.recipeImage, this.editingRecipe]);
 
@@ -38,7 +38,7 @@ class GRemoveRecipeImage extends GeneralInfoEvent {
 }
 
 class FinishedEditing extends GeneralInfoEvent {
-  final bool editingRecipe;
+  final bool/*?*/ editingRecipe;
   final bool goBack;
 
   final String recipeName;

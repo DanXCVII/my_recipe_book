@@ -175,7 +175,7 @@ class CategoryOverviewBloc
         if (newRandomImage != null) {
           // add the new randomImage to the category
           newCategoryRandomImageList
-              .add(Tuple2<String, String>(t.item1, newRandomImage));
+              .add(Tuple2<String/*!*/, String>(t.item1, newRandomImage));
         }
       } // if the catogry randomImage is not of the to be deleted recipe
       else {
@@ -205,16 +205,16 @@ class CategoryOverviewBloc
 
   /// if the new recipe is under a category the only one, add the category to the
   /// overview with the new recipeImage
-  Future<List<Tuple2<String, String>>> _addCategoryRandomImage(
-      List<Tuple2<String, String>> oldCategoryRandomImageList,
+  Future<List<Tuple2<String/*!*/, String/*!*/>>> _addCategoryRandomImage(
+      List<Tuple2<String/*!*/, String>> oldCategoryRandomImageList,
       List<Recipe> recipes) async {
-    List<Tuple2<String, String>> categoryRandomImageList =
+    List<Tuple2<String/*!*//*!*/, String/*!*/>> categoryRandomImageList =
         List<Tuple2<String, String>>.from(oldCategoryRandomImageList);
 
     for (Recipe recipe in recipes) {
-      for (String category in recipe.categories) {
+      for (String/*!*/ category in recipe.categories) {
         bool alreadyAdded = false;
-        for (Tuple2<String, String> t in categoryRandomImageList) {
+        for (Tuple2<String/*!*/, String/*!*/> t in categoryRandomImageList) {
           // if the current recipeCategory is already in the overview
           if (t.item1 == category) {
             // add the old category to the new overviewList
@@ -225,7 +225,7 @@ class CategoryOverviewBloc
         // if the current recipeCategory is not yet in the overview
         if (!alreadyAdded) {
           // add the category with the image of the recipe
-          categoryRandomImageList.add(Tuple2<String, String>(
+          categoryRandomImageList.add(Tuple2<String/*!*/, String/*!*/>(
               category,
               (await HiveProvider()
                       .getRandomRecipeOfCategory(category: category))

@@ -37,7 +37,7 @@ class CODeleteRecipe extends CategoryOverviewEvent {
 }
 
 class COAddCategory extends CategoryOverviewEvent {
-  final List<String> categories;
+  final List<String/*!*/> categories;
 
   const COAddCategory(this.categories);
 
@@ -46,7 +46,7 @@ class COAddCategory extends CategoryOverviewEvent {
 }
 
 class CODeleteCategory extends CategoryOverviewEvent {
-  final String category;
+  final String/*!*/ category;
 
   const CODeleteCategory(this.category);
 
@@ -55,7 +55,7 @@ class CODeleteCategory extends CategoryOverviewEvent {
 }
 
 class COUpdateCategory extends CategoryOverviewEvent {
-  final String oldCategory;
+  final String/*!*/ oldCategory;
   final String updatedCategory;
 
   const COUpdateCategory(this.oldCategory, this.updatedCategory);

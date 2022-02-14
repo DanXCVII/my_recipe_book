@@ -73,11 +73,11 @@ class RecipeCategoryOverviewBloc
       RCOLoadRecipeCategoryOverview event) async* {
     if (event.reopenBoxes) await HiveProvider().reopenBoxes();
 
-    List<Tuple2<String, List<Recipe>>> categoryRecipes = [];
+    List<Tuple2<String/*!*/, List<Recipe/*!*/>>> categoryRecipes = [];
     final List<String> categories = HiveProvider().getCategoryNames();
 
-    for (String category in categories) {
-      List<Recipe> categoryRecipeList =
+    for (String/*!*/ category in categories) {
+      List<Recipe/*!*/> categoryRecipeList =
           await HiveProvider().getCategoryRecipes(category);
       if (category == "no category" && categoryRecipeList.isEmpty) {
       } else {
@@ -98,7 +98,7 @@ class RecipeCategoryOverviewBloc
   Stream<RecipeCategoryOverviewState> _mapAddRecipesToState(
       RCOAddRecipes event) async* {
     if (state is LoadedRecipeCategoryOverview) {
-      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview =
+      final List<Tuple2<String/*!*//*!*/, List<Recipe>>> recipeCategoryOverview =
           _addRecipesToOverview(
               event.recipes,
               List<Tuple2<String, List<Recipe>>>.from(
@@ -111,7 +111,7 @@ class RecipeCategoryOverviewBloc
   Stream<RecipeCategoryOverviewState> _mapDeleteRecipeToState(
       RCODeleteRecipe event) async* {
     if (state is LoadedRecipeCategoryOverview) {
-      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview =
+      final List<Tuple2<String, List<Recipe>>/*!*/> recipeCategoryOverview =
           _removeRecipeFromOverview(
               event.recipe,
               List<Tuple2<String, List<Recipe>>>.from(
@@ -124,7 +124,7 @@ class RecipeCategoryOverviewBloc
   Stream<RecipeCategoryOverviewState> _mapUpdateRecipeToState(
       RCOUpdateRecipe event) async* {
     if (state is LoadedRecipeCategoryOverview) {
-      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVone =
+      final List<Tuple2<String, List<Recipe>>/*!*/> recipeCategoryOverviewVone =
           _removeRecipeFromOverview(
               event.oldRecipe,
               List<Tuple2<String, List<Recipe>>>.from(

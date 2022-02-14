@@ -960,7 +960,7 @@ class HiveProvider {
 
   /// Checks if the given ingredient is in the list of the given
   /// recipe with a greater or equal amount
-  bool checkForRecipeIngredient(String recipeName, Ingredient ingredient) {
+  bool checkForRecipeIngredient(String/*!*/ recipeName, Ingredient ingredient) {
     String hiveRecipeKey = getHiveKey(recipeName);
 
     if (boxShoppingCart.get(hiveRecipeKey) != null) {
@@ -1110,7 +1110,7 @@ class HiveProvider {
   /// CheckableIngredient.checked and also updates the summary checked
   /// if necessary
   Future<void> checkIngredient(
-      String recipeName, CheckableIngredient ingredient) async {
+      String/*!*//*!*/ recipeName, CheckableIngredient ingredient) async {
     String hiveRecipeKey = getHiveKey(recipeName);
 
     if (recipeName != "summary") {
@@ -1187,7 +1187,7 @@ class HiveProvider {
   /// adds the ingredient to the given recipe only or updates the amount
   /// and sets checked = false (does not look for incorrect summary)
   Future<void> _addIngredientToRecipe(
-      String recipeName, Ingredient ingredient) async {
+      String/*!*/ recipeName, Ingredient ingredient) async {
     String hiveRecipeKey = getHiveKey(recipeName);
 
     // if we already have the recipe in our shoppingCard
@@ -1246,7 +1246,7 @@ class HiveProvider {
   }
 
   ////////////// hive internal related //////////////
-  String getHiveKey(String name) {
+  String/*!*/ getHiveKey(String/*!*//*!*/ name) {
     if (name == "no category") return "no category";
     if (name.contains(RegExp(r"[^\x00-\x7F]+"))) {
       List<int> bytes = utf8.encode(name).toList();
@@ -1276,7 +1276,7 @@ class HiveProvider {
     return count;
   }
 
-  Box<String> _getBoxVegetable(Vegetable vegetable) {
+  Box<String/*!*/> _getBoxVegetable(Vegetable/*!*/ vegetable) {
     switch (vegetable) {
       case Vegetable.NON_VEGETARIAN:
         return boxNonVegetarian;

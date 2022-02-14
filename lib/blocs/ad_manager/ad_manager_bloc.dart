@@ -24,9 +24,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   List<PurchaseDetails> _purchases = [];
   bool _isAvailable = false;
 
-  void Function()/*!*/ onAdLoaded;
-  void Function()/*!*/ onAdFailedToLoad;
-  void Function()/*!*/ onRewardedAdUserEarnedReward;
+  void Function() /*!*/ onAdLoaded;
+  void Function() onAdFailedToLoad;
+  void Function() onRewardedAdUserEarnedReward;
 
   SharedPreferences _sP;
   bool lastAdForBannerTime;
@@ -35,8 +35,10 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   AdManagerBloc() : super(AdManagerInitial()) {
     final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
-      purchaseDetailsList.forEach((item) {
-        InAppPurchase.instance.completePurchase(item);
+      purchaseDetailsList.forEach((purchase) {
+        if (purchase.pendingCompletePurchase) {
+          InAppPurchase.instance.completePurchase(purchase);
+        }
       });
     }, onDone: () {
       _subscription.cancel();

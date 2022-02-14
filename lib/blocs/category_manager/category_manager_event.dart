@@ -10,7 +10,7 @@ class InitializeCategoryManager extends CategoryManagerEvent {
 }
 
 class AddCategories extends CategoryManagerEvent {
-  final List<String> categories;
+  final List<String/*!*/> categories;
 
   const AddCategories(this.categories);
 
@@ -19,7 +19,7 @@ class AddCategories extends CategoryManagerEvent {
 }
 
 class DeleteCategory extends CategoryManagerEvent {
-  final String category;
+  final String/*!*/ category;
 
   const DeleteCategory(this.category);
 
@@ -47,7 +47,7 @@ class MoveCategory extends CategoryManagerEvent {
 }
 
 class UpdateCategory extends CategoryManagerEvent {
-  final String oldCategory;
+  final String/*!*/ oldCategory;
   final String updatedCategory;
 
   const UpdateCategory(this.oldCategory, this.updatedCategory);
@@ -66,7 +66,7 @@ class SelectCategory extends CategoryManagerEvent {
 }
 
 class UnselectCategory extends CategoryManagerEvent {
-  final String categoryName;
+  final String/*!*/ categoryName;
 
   const UnselectCategory(this.categoryName);
 

@@ -10,7 +10,7 @@ abstract class RecipeCalendarState extends Equatable {
 class LoadingRecipeCalendar extends RecipeCalendarState {}
 
 class LoadedRecipeCalendarVertical extends RecipeCalendarState {
-  final DateTime from;
+  final DateTime/*!*/ from;
   final int days;
   final Map<DateTime, List<Tuple2<DateTime, Recipe>>> recipes;
   final Tuple2<DateTime, String> addedRecipe;
@@ -32,10 +32,10 @@ class LoadedRecipeCalendarVertical extends RecipeCalendarState {
 }
 
 class LoadedRecipeCalendarOverview extends RecipeCalendarState {
-  final Map<DateTime, List<String>> events;
+  final Map<DateTime, List<String/*!*/>> events;
   final List<Tuple2<DateTime, Recipe>> currentRecipes;
   final Tuple2<DateTime, String> addedRecipe;
-  final DateTime selectedDay;
+  final DateTime/*!*/ selectedDay;
 
   LoadedRecipeCalendarOverview(
     this.events,
