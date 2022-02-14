@@ -7,7 +7,7 @@ abstract class FavoriteRecipesState {
 class LoadingFavorites extends FavoriteRecipesState {}
 
 class LoadedFavorites extends FavoriteRecipesState {
-  final List<Recipe> recipes;
+  final List<Recipe/*!*/> recipes;
 
   const LoadedFavorites([this.recipes = const []]);
 }

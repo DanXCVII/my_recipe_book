@@ -6,9 +6,9 @@ part 'nutrition.g.dart';
 @HiveType()
 class Nutrition extends Equatable {
   @HiveField(0)
-  final String name;
+  final String/*!*/ name;
   @HiveField(1)
-  final String amountUnit;
+  final String/*!*/ amountUnit;
 
   Nutrition({
     this.name,

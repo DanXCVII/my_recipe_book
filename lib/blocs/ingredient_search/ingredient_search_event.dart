@@ -7,8 +7,8 @@ abstract class IngredientSearchEvent extends Equatable {
 class SearchRecipes extends IngredientSearchEvent {
   final List<String> ingredients;
   final List<String> categories;
-  final List<StringIntTuple> recipeTags;
-  final Vegetable vegetable;
+  final List<StringIntTuple/*!*/> recipeTags;
+  final Vegetable/*!*/ vegetable;
 
   SearchRecipes(
     this.ingredients,

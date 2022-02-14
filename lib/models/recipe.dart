@@ -12,37 +12,37 @@ part 'recipe.g.dart';
 @HiveType()
 class Recipe extends Equatable {
   @HiveField(0)
-  final String name;
+  final String/*!*/ name;
   @HiveField(1)
-  final String imagePath;
+  final String/*!*/ imagePath;
   @HiveField(2)
-  final String imagePreviewPath;
+  final String/*!*/ imagePreviewPath;
   @HiveField(3)
-  final double preperationTime;
+  final double/*!*/ preperationTime;
   @HiveField(4)
-  final double cookingTime;
+  final double/*!*/ cookingTime;
   @HiveField(5)
-  final double totalTime;
+  final double/*!*/ totalTime;
   @HiveField(6)
   final double servings;
   @HiveField(7)
-  final List<String> categories;
+  final List<String>/*!*/ categories;
   @HiveField(8)
-  final List<String> ingredientsGlossary;
+  final List<String>/*!*/ ingredientsGlossary;
   @HiveField(9)
-  final List<List<Ingredient>> ingredients;
+  final List<List<Ingredient>>/*!*/ ingredients;
   @HiveField(10)
-  final Vegetable vegetable;
+  final Vegetable/*!*/ vegetable;
   @HiveField(11)
-  final List<String> steps;
+  final List<String/*!*/>/*!*/ steps;
   @HiveField(12)
-  final List<List<String>> stepImages;
+  final List<List<String>>/*!*/ stepImages;
   @HiveField(13)
-  final String notes;
+  final String/*!*/ notes;
   @HiveField(14)
-  final List<Nutrition> nutritions;
+  final List<Nutrition/*!*/>/*!*/ nutritions;
   @HiveField(15)
-  final bool isFavorite;
+  final bool/*!*/ isFavorite;
   @HiveField(16)
   final int effort;
   @HiveField(17)
@@ -50,7 +50,7 @@ class Recipe extends Equatable {
   @HiveField(18)
   final int rating;
   @HiveField(19)
-  final List<StringIntTuple> tags;
+  final List<StringIntTuple/*!*/>/*!*/ tags;
   @HiveField(20)
   final String source;
   @HiveField(21)

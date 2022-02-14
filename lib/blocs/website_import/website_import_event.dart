@@ -5,7 +5,7 @@ abstract class WebsiteImportEvent extends Equatable {
 }
 
 class ImportRecipe extends WebsiteImportEvent {
-  final String url;
+  final String/*!*//*!*/ url;
 
   ImportRecipe(this.url);
 

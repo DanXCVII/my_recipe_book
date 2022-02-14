@@ -6,7 +6,7 @@ part 'ingredient.g.dart';
 @HiveType()
 class Ingredient extends Equatable {
   @HiveField(0)
-  final String name;
+  final String/*!*/ name;
   @HiveField(1)
   final double amount;
   @HiveField(2)
@@ -44,13 +44,13 @@ class Ingredient extends Equatable {
 @HiveType()
 class CheckableIngredient extends Equatable {
   @HiveField(0)
-  final String name;
+  final String/*!*/ name;
   @HiveField(1)
   final double amount;
   @HiveField(2)
   final String unit;
   @HiveField(3)
-  final bool checked;
+  final bool/*!*/ checked;
 
   CheckableIngredient(this.name, this.amount, this.unit, this.checked);
 

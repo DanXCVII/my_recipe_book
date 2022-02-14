@@ -106,7 +106,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
           await GdprDialog.instance
               .showDialog(
-            // isForTest: true,
+            isForTest: true,
             testDeviceId: '',
           )
               .then((onValue) {

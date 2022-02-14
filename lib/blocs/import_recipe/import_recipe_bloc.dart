@@ -39,9 +39,9 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
       fileEndingLastImport = "zip";
       if (event.delay != null) await Future.delayed(event.delay);
 
-      List<Recipe> importRecipes = [];
+      List<Recipe/*!*/> importRecipes = [];
       List<String> failedZips = [];
-      List<Recipe> alreadyExisting = [];
+      List<Recipe/*!*/> alreadyExisting = [];
 
       bool failedImporting = false;
       Map<String, Recipe> recipes;
@@ -104,7 +104,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
       yield ImportingRecipes(0.5);
 
       bool failedImporting = false;
-      List<String> recipeNames;
+      List<String>/*!*//*!*/ recipeNames;
       try {
         recipeNames = await IO.extractMRBzipGetNames(event.importZipFile);
         if (recipeNames == null) failedImporting = true;
@@ -166,9 +166,9 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
       FinishImportRecipes event) async* {
     yield ImportingRecipes(0);
 
-    List<Recipe> importRecipes = [];
-    List<Recipe> alreadyExisting = [];
-    List<Recipe> failedRecipes = [];
+    List<Recipe/*!*/> importRecipes = [];
+    List<Recipe/*!*/> alreadyExisting = [];
+    List<Recipe/*!*/> failedRecipes = [];
 
     List<String> importCategories = [];
 
@@ -226,9 +226,9 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
               await IO.importMRBrecipeFromTmp(event.recipes[i].name);
           // .. and if it succeeded ..
           if (importedRecipeData != null) {
-            List<String> categories = HiveProvider().getCategoryNames();
-            List<String> newCategories = [];
-            for (String category in importedRecipeData.categories) {
+            List<String/*!*//*!*/> categories = HiveProvider().getCategoryNames();
+            List<String/*!*/> newCategories = [];
+            for (String/*!*/ category in importedRecipeData.categories) {
               if (!categories.contains(category) &&
                   !importCategories.contains(category)) {
                 newCategories.add(category);
@@ -266,9 +266,9 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
           bool importedRecipeData =
               await IO.importRecipeFromTmp(event.recipes[i]);
           // .. and if it succeeded ..
-          List<String> categories = HiveProvider().getCategoryNames();
-          List<String> newCategories = [];
-          for (String category in event.recipes[i].categories) {
+          List<String/*!*/> categories = HiveProvider().getCategoryNames();
+          List<String/*!*/> newCategories = [];
+          for (String/*!*/ category in event.recipes[i].categories) {
             if (!categories.contains(category) &&
                 !importCategories.contains(category)) {
               newCategories.add(category);

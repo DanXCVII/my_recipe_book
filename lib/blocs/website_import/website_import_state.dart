@@ -10,7 +10,7 @@ class ReadyToImport extends WebsiteImportState {
 }
 
 class ImportedRecipe extends WebsiteImportState {
-  final Recipe recipe;
+  final Recipe/*!*/ recipe;
 
   ImportedRecipe(this.recipe);
 
@@ -19,7 +19,7 @@ class ImportedRecipe extends WebsiteImportState {
 }
 
 class FailedImportingRecipe extends WebsiteImportState {
-  final String url;
+  final String/*!*/ url;
 
   FailedImportingRecipe(this.url);
 
@@ -38,7 +38,7 @@ class InvalidUrl extends WebsiteImportState {
 }
 
 class AlreadyExists extends WebsiteImportState {
-  final String recipeName;
+  final String/*!*/ recipeName;
 
   AlreadyExists(this.recipeName);
 

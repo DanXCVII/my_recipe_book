@@ -10,7 +10,7 @@ class InitializeCategoryManager extends CategoryManagerEvent {
 }
 
 class AddCategories extends CategoryManagerEvent {
-  final List<String/*!*/> categories;
+  final List<String> categories;
 
   const AddCategories(this.categories);
 
@@ -57,7 +57,7 @@ class UpdateCategory extends CategoryManagerEvent {
 }
 
 class SelectCategory extends CategoryManagerEvent {
-  final String categoryName;
+  final String/*!*//*!*/ categoryName;
 
   const SelectCategory(this.categoryName);
 

@@ -29,7 +29,7 @@ class AddNutrition extends NutritionManagerEvent {
 }
 
 class DeleteNutrition extends NutritionManagerEvent {
-  final String nutrition;
+  final String/*!*/ nutrition;
 
   const DeleteNutrition(this.nutrition);
 

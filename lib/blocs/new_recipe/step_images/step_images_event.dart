@@ -5,9 +5,9 @@ abstract class StepImagesEvent extends Equatable {
 }
 
 class InitializeStepImages extends StepImagesEvent {
-  final List<List<String>> stepImages;
-  final List<String> steps;
-  final List<String> stepTitles;
+  final List<List<String>>/*!*/ stepImages;
+  final List<String/*!*/>/*!*/ steps;
+  final List<String>/*!*/ stepTitles;
 
   InitializeStepImages(this.steps, this.stepTitles, {this.stepImages});
 
@@ -64,7 +64,7 @@ class RemoveImage extends StepImagesEvent {
 }
 
 class RemoveStep extends StepImagesEvent {
-  final String recipeName;
+  final String/*!*/ recipeName;
   final DateTime dateTime;
   final int stepNumber;
 

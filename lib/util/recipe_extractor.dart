@@ -12,7 +12,7 @@ import 'package:my_recipe_book/util/helper.dart';
 ///  Gew\u00fcrzmischung
 /// Wasser
 Ingredient getIngredientFromString(String ingredientInfo) {
-  double amount;
+  double/*!*//*?*/ amount;
   String unit;
   String name;
 

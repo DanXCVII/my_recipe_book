@@ -3,14 +3,14 @@ import 'package:equatable/equatable.dart';
 import 'enums.dart';
 
 class RecipePreview extends Equatable {
-  final String name;
-  final String imagePreviewPath;
-  final String totalTime;
-  final int ingredientsAmount;
-  final int effort;
-  final bool isFavorite;
-  final Vegetable vegetable;
-  final List<String> categories;
+  final String/*!*/ name;
+  final String/*!*/ imagePreviewPath;
+  final String/*!*/ totalTime;
+  final int/*!*/ ingredientsAmount;
+  final int/*!*/ effort;
+  final bool/*!*/ isFavorite;
+  final Vegetable/*!*/ vegetable;
+  final List<String>/*!*/ categories;
 
   RecipePreview({
     this.name,

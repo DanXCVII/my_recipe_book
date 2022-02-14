@@ -5,7 +5,7 @@ abstract class RecipeScreenEvent extends Equatable {
 }
 
 class InitRecipeScreen extends RecipeScreenEvent {
-  final Recipe recipe;
+  final Recipe/*!*//*!*/ recipe;
 
   const InitRecipeScreen(this.recipe);
 

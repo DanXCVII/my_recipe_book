@@ -38,11 +38,11 @@ class InvalidDataType extends ImportRecipeState {
 
 class MultipleRecipes extends ImportRecipeState {
   // successfully imported recipes
-  final List<Recipe> readyToImportRecipes;
+  final List<Recipe/*!*/>/*!*/ readyToImportRecipes;
   // the name of the recipe is already saved in hive
-  final List<Recipe> alreadyExistingRecipes;
+  final List<Recipe/*!*/>/*!*/ alreadyExistingRecipes;
   // names of the .zip files with invalid recipe data
-  final List<String> failedZips;
+  final List<String>/*!*/ failedZips;
 
   MultipleRecipes([
     this.readyToImportRecipes,
@@ -59,11 +59,11 @@ class MultipleRecipes extends ImportRecipeState {
 
 class ImportedRecipes extends ImportRecipeState {
   // successfully imported recipes
-  final List<Recipe> importedRecipes;
+  final List<Recipe/*!*/>/*!*/ importedRecipes;
   // names of the .zip files with invalid recipe data
-  final List<Recipe> failedRecipes;
+  final List<Recipe/*!*/>/*!*/ failedRecipes;
   // the name of the recipe is already saved in hive
-  final List<Recipe> alreadyExistingRecipes;
+  final List<Recipe/*!*/>/*!*//*!*/ alreadyExistingRecipes;
 
   ImportedRecipes([
     this.importedRecipes,

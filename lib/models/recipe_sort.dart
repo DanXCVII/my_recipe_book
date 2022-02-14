@@ -8,7 +8,7 @@ part 'recipe_sort.g.dart';
 @HiveType()
 class RSort extends Equatable {
   @HiveField(0)
-  final RecipeSort sort;
+  final RecipeSort/*!*/ sort;
   @HiveField(1)
   final bool ascending;
 

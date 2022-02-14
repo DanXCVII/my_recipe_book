@@ -41,7 +41,7 @@ class FinishedEditing extends GeneralInfoEvent {
   final bool/*?*/ editingRecipe;
   final bool goBack;
 
-  final String recipeName;
+  final String/*!*//*?*/ recipeName;
   final double preperationTime;
   final double cookingTime;
   final double totalTime;

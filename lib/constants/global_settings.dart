@@ -35,11 +35,11 @@ class GlobalSettings {
 
   bool showDecimal() => _showDecimal;
 
-  void enableAnimations(bool value) {
+  void enableAnimations(bool/*!*/ value) {
     _enableAnimations = value;
   }
 
-  void disableStandby(bool value) {
+  void disableStandby(bool/*!*/ value) {
     _disableStandby = value;
   }
 
@@ -51,7 +51,7 @@ class GlobalSettings {
     _firstStart = value;
   }
 
-  void shouldShowDecimal(bool value) {
+  void shouldShowDecimal(bool/*!*/ value) {
     _showDecimal = value;
   }
 }

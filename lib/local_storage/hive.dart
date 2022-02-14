@@ -338,10 +338,10 @@ class HiveProvider {
     await boxRecipeCalendar.delete(date.toIso8601String() + "#$i");
   }
 
-  Future<Map<DateTime, List<String>>> getRecipeCalendar() async {
+  Future<Map<DateTime, List<String/*!*/>>> getRecipeCalendar() async {
     Map<DateTime, List<String>> recipeCalendar = {};
 
-    for (String dateKey in boxRecipeCalendar.keys) {
+    for (String/*!*/ dateKey in boxRecipeCalendar.keys) {
       DateTime currentDate =
           DateTime.parse(dateKey.substring(0, dateKey.length - 2));
       if (recipeCalendar.keys.contains(currentDate)) {
@@ -384,7 +384,7 @@ class HiveProvider {
     await boxTmpRecipe.delete(tmpEditingRecipeKey);
   }
 
-  Future<void> saveTmpRecipe(Recipe recipe) async {
+  Future<void> saveTmpRecipe(Recipe/*!*/ recipe) async {
     await boxTmpRecipe.put(tmpRecipeKey, recipe);
   }
 
@@ -522,9 +522,9 @@ class HiveProvider {
   }
 
   /// returns the categories with "no category" included, in the user defined order
-  List<String> getCategoryNames() {
-    List<String> categories = [];
-    for (String key in boxOrder.get('categories')) {
+  List<String/*!*//*!*/> getCategoryNames() {
+    List<String/*!*/> categories = [];
+    for (String/*!*/ key in boxOrder.get('categories')) {
       categories.add(boxKeyString.get(key));
     }
     return categories;
@@ -635,8 +635,8 @@ class HiveProvider {
   }
 
   ////////////// condition recipe getters //////////////
-  Future<List<Recipe>> getAllRecipes() async {
-    List<Recipe> allRecipes = [];
+  Future<List<Recipe/*!*/>> getAllRecipes() async {
+    List<Recipe/*!*/> allRecipes = [];
 
     for (var key in lazyBoxRecipes.keys) {
       allRecipes.add(await lazyBoxRecipes.get(key));
@@ -659,7 +659,7 @@ class HiveProvider {
 
     for (var key in lazyBoxRecipes.keys) {
       Recipe currentRecipe = await lazyBoxRecipes.get(key);
-      List<String> recipeIngredients = (currentRecipe)
+      List<String/*!*/> recipeIngredients = (currentRecipe)
           .ingredients
           .expand((i) => i)
           .toList()
@@ -676,20 +676,20 @@ class HiveProvider {
     return foundRecipes;
   }
 
-  List<String> getRecipeNames() {
+  List<String/*!*/> getRecipeNames() {
     return boxRecipeNames.keys.map((key) => boxRecipeNames.get(key)).toList()
       ..remove('summary');
   }
 
   /// returns the recipe if it exists and otherwise null
-  Future<Recipe> getRecipeByName(String name) async {
+  Future<Recipe/*!*//*?*/> getRecipeByName(String name) async {
     Recipe recipe = await lazyBoxRecipes.get(getHiveKey(name));
 
     return recipe;
   }
 
-  Future<List<Recipe>> getFavoriteRecipes() async {
-    List<Recipe> favoriteRecipes = [];
+  Future<List<Recipe/*!*/>> getFavoriteRecipes() async {
+    List<Recipe/*!*/> favoriteRecipes = [];
 
     for (var key in boxFavorites.keys) {
       favoriteRecipes.add(await lazyBoxRecipes.get(key));
@@ -698,20 +698,20 @@ class HiveProvider {
     return favoriteRecipes;
   }
 
-  Future<List<Recipe>> getVegetableRecipes(Vegetable vegetable) async {
+  Future<List<Recipe/*!*/>> getVegetableRecipes(Vegetable vegetable) async {
     Box<String> boxVegetable = _getBoxVegetable(vegetable);
 
-    List<Recipe> recipes = [];
+    List<Recipe/*!*/> recipes = [];
     for (var key in boxVegetable.keys) {
       recipes.add(await lazyBoxRecipes.get(boxVegetable.get(key)));
     }
     return recipes;
   }
 
-  Future<List<Recipe>> getRecipeTagRecipes(String recipeTag) async {
+  Future<List<Recipe/*!*/>> getRecipeTagRecipes(String recipeTag) async {
     String recipeTagKey = getHiveKey(recipeTag);
 
-    List<Recipe> recipes = [];
+    List<Recipe/*!*/> recipes = [];
     if (boxRecipeTagsList.keys.toList().contains(recipeTagKey)) {
       for (var recipeKey in boxRecipeTagsList.get(recipeTagKey)) {
         recipes.add(await lazyBoxRecipes.get(recipeKey));
@@ -722,10 +722,10 @@ class HiveProvider {
 
   /// returns the list of recipes under this category and if non
   /// is existing, returns an empty list
-  Future<List<Recipe>> getCategoryRecipes(String category) async {
+  Future<List<Recipe/*!*/>> getCategoryRecipes(String category) async {
     String categoryKey = getHiveKey(category);
 
-    List<Recipe> recipes = [];
+    List<Recipe/*!*/> recipes = [];
     for (var recipeKey in boxRecipeCategories.get(categoryKey)) {
       recipes.add(await lazyBoxRecipes.get(recipeKey));
     }
@@ -734,7 +734,7 @@ class HiveProvider {
 
   Future<Recipe> getRandomRecipeOfCategory(
       {String category, Recipe excludedRecipe}) async {
-    List<String> recipeKeys;
+    List<String/*!*//*?*/> recipeKeys;
 
     if (category == null) {
       recipeKeys = lazyBoxRecipes.keys.map((key) => key as String).toList();
@@ -750,7 +750,7 @@ class HiveProvider {
 
   Future<Recipe> getRandomRecipeOfVegetable(Vegetable vegetable,
       {Recipe excludedRecipe}) async {
-    List<String> recipeKeys = [];
+    List<String/*!*/> recipeKeys = [];
 
     if (vegetable == null) {
       recipeKeys = lazyBoxRecipes.keys.map((key) => key as String).toList();
@@ -858,7 +858,7 @@ class HiveProvider {
   }
 
   List<String> getNutritions() {
-    List<String> nutritions = boxOrder.get('nutritions');
+    List<String/*!*/> nutritions = boxOrder.get('nutritions');
 
     return List<String>.from(nutritions);
   }

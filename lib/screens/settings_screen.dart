@@ -105,6 +105,7 @@ class Settings extends StatelessWidget {
                           GdprDialog.instance.resetDecision();
                           GdprDialog.instance
                               .showDialog(
+                            isForTest: true,
                             testDeviceId: '',
                           )
                               .then((onValue) {
