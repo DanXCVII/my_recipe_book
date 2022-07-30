@@ -77,6 +77,7 @@ dependencies:
   table_calendar: ^3.0.3
   flutter_datetime_picker: ^1.5.1 # MIT
   fraction: ^3.1.1 # MIT
+  dio: ^4.0.4
   google_mobile_ads:
     git:
       url: https://github.com/SuaMusica/googleads-mobile-flutter.git

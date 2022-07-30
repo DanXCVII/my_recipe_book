@@ -5,7 +5,8 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as httpc;
+import 'package:http/io_client.dart';
 import 'package:image_downloader/image_downloader.dart';
 
 import '../../constants/global_constants.dart';
@@ -68,11 +69,23 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       filteredURL = cutURLstart;
     }
 
+    bool couldNotFetch = false;
     try {
-      response = await http.get(Uri.parse(filteredURL));
+      response = await httpc.get(Uri.parse(filteredURL));
     } catch (e) {
-      yield InvalidUrl();
-      return;
+      couldNotFetch = true;
+    }
+    if (couldNotFetch) {
+      try {
+        final ioc = new HttpClient();
+        ioc.badCertificateCallback =
+            (X509Certificate cert, String host, int port) => true;
+        final http = new IOClient(ioc);
+        http.get(Uri.parse(filteredURL));
+      } catch (e) {
+        yield InvalidUrl();
+        return;
+      }
     }
 
     // just a safety check
@@ -201,7 +214,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
         finalRecipe,
       );
     } catch (e) {
-      return Tuple2<ImportState, Recipe/*?*/>(ImportState.FAIL, null);
+      return Tuple2<ImportState, Recipe /*?*/ >(ImportState.FAIL, null);
     }
   }
 
