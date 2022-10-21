@@ -17,7 +17,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
   StreamSubscription subscription;
 
   StepsBloc(StepImagesBloc stepImagesBloc) : super(SCanSave()) {
-    subscription = stepImagesBloc.listen((siState) {
+    subscription = stepImagesBloc.stream.listen((siState) {
       if (state is SCanSave) {
         if (siState is LoadedStepImages) {
           stepImages = siState.stepImages;
@@ -26,80 +26,69 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
         }
       }
     });
-  }
 
-  @override
-  Stream<StepsState> mapEventToState(
-    StepsEvent event,
-  ) async* {
-    if (event is SetCanSave) {
-      yield* _mapSetCanSaveToState(event);
-    } else if (event is FinishedEditing) {
-      yield* _mapFinishedEditingToState(event);
-    }
-  }
+    on<SetCanSave>((event, emit) async {
+      emit(SCanSave());
+    });
 
-  Stream<StepsState> _mapSetCanSaveToState(SetCanSave event) async* {
-    yield SCanSave();
-  }
+    on<FinishedEditing>((event, emit) async {
+      if (state is SCanSave) {
+        List<String> recipeSteps = steps.map((e) => e).toList();
+        List<String> recipeStepTitles = stepTitles.map((e) => e).toList();
 
-  Stream<StepsState> _mapFinishedEditingToState(FinishedEditing event) async* {
-    if (state is SCanSave) {
-      List<String> recipeSteps = steps.map((e) => e).toList();
-      List<String> recipeStepTitles = stepTitles.map((e) => e).toList();
-
-      bool stepImagesValid = true;
-      for (int i = steps.length; i < stepImages.length; i++) {
-        if (stepImages[i].length != 0) {
-          stepImagesValid = false;
-          break;
-        }
-      }
-
-      if (!stepImagesValid) {
-        yield SCanSave(isValid: false, time: DateTime.now());
-        return;
-      }
-
-      if (event.goBack) {
-        yield SEditingFinishedGoBack();
-      } else {
-        yield SEditingFinished();
-      }
-
-      if (steps.length > 1) {
+        bool stepImagesValid = true;
         for (int i = steps.length; i < stepImages.length; i++) {
-          stepImages.removeLast();
+          if (stepImages[i].length != 0) {
+            stepImagesValid = false;
+            break;
+          }
+        }
+
+        if (!stepImagesValid) {
+          emit(SCanSave(isValid: false, time: DateTime.now()));
+          return;
+        }
+
+        if (event.goBack) {
+          emit(SEditingFinishedGoBack());
+        } else {
+          emit(SEditingFinished());
+        }
+
+        if (steps.length > 1) {
+          for (int i = steps.length; i < stepImages.length; i++) {
+            stepImages.removeLast();
+          }
+        }
+
+        Recipe newRecipe;
+        if (!event.editingRecipe) {
+          newRecipe = HiveProvider().getTmpRecipe().copyWith(
+                notes: event.notes,
+                stepImages: stepImages,
+                effort: event.complexity,
+                steps: recipeSteps,
+                stepTitles: recipeStepTitles,
+              );
+          await HiveProvider().saveTmpRecipe(newRecipe);
+        } else {
+          newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
+                notes: event.notes,
+                stepImages: stepImages,
+                effort: event.complexity,
+                steps: recipeSteps,
+                stepTitles: recipeStepTitles,
+              );
+          await HiveProvider().saveTmpEditingRecipe(newRecipe);
+        }
+
+        if (event.goBack) {
+          emit(SSavedGoBack());
+        } else {
+          emit(SSaved(newRecipe));
         }
       }
-
-      Recipe newRecipe;
-      if (!event.editingRecipe) {
-        newRecipe = HiveProvider().getTmpRecipe().copyWith(
-              notes: event.notes,
-              stepImages: stepImages,
-              effort: event.complexity,
-              steps: recipeSteps,
-              stepTitles: recipeStepTitles,
-            );
-        await HiveProvider().saveTmpRecipe(newRecipe);
-      } else {
-        newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
-              notes: event.notes,
-              stepImages: stepImages,
-              effort: event.complexity,
-              steps: recipeSteps,
-              stepTitles: recipeStepTitles,
-            );
-        await HiveProvider().saveTmpEditingRecipe(newRecipe);
-      }
-
-      if (event.goBack) {
-        yield SSavedGoBack();
-      } else {
-        yield SSaved(newRecipe);
-      }
-    }
+    });
   }
 
   @override

@@ -43,7 +43,7 @@ class AboutMeScreen extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
             ),
             SizedBox(height: 10),
-            OutlineButton.icon(
+            OutlinedButton.icon(
               icon: Icon(Icons.info_outline),
               label: Text("Disclaimer"),
               onPressed: () {
@@ -55,8 +55,12 @@ class AboutMeScreen extends StatelessWidget {
                   ),
                 );
               },
-              shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(30.0),
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(30.0),
+                  ),
+                ),
               ),
             ),
             Padding(

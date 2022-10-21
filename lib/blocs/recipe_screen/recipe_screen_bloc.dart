@@ -23,7 +23,7 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
             [],
           ),
         ) {
-    rmListener = recipeManagerBloc.listen((state) {
+    rmListener = recipeManagerBloc.stream.listen((state) {
       if (state is DeleteRecipeState) {
         if (state.recipe == recipe) {
           Future.delayed(Duration(milliseconds: 100))
@@ -31,41 +31,29 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
         }
       }
     });
+
+    on<InitRecipeScreen>((event, emit) async {
+      List<String> categoryImages = [];
+      for (String category in recipe.categories) {
+        categoryImages.add(
+            (await HiveProvider().getRandomRecipeOfCategory(category: category))
+                .imagePreviewPath);
+      }
+
+      emit(RecipeScreenInfo(
+        recipe,
+        categoryImages,
+      ));
+    });
+
+    on<HideRecipe>((event, emit) async {
+      emit(RecipeEditedDeleted());
+    });
   }
 
   @override
   Future<void> close() {
     rmListener.cancel();
     return super.close();
-  }
-
-  @override
-  Stream<RecipeScreenState> mapEventToState(
-    RecipeScreenEvent event,
-  ) async* {
-    if (event is InitRecipeScreen) {
-      yield* _mapInitRecipeScreenToState(event);
-    } else if (event is HideRecipe) {
-      yield* _mapHideRecipeToState(event);
-    }
-  }
-
-  Stream<RecipeScreenState> _mapInitRecipeScreenToState(
-      InitRecipeScreen event) async* {
-    List<String> categoryImages = [];
-    for (String category in recipe.categories) {
-      categoryImages.add(
-          (await HiveProvider().getRandomRecipeOfCategory(category: category))
-              .imagePreviewPath);
-    }
-
-    yield RecipeScreenInfo(
-      recipe,
-      categoryImages,
-    );
-  }
-
-  Stream<RecipeScreenState> _mapHideRecipeToState(HideRecipe event) async* {
-    yield RecipeEditedDeleted();
   }
 }

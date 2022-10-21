@@ -30,120 +30,111 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   bool _splashScreenFinished = false;
   bool _initialized = false;
 
-  SplashScreenBloc() : super(InitializingData());
+  SplashScreenBloc() : super(InitializingData()) {
+    on<SPInitializeData>((event, emit) async {
+      print("started initialization");
+      bool showIntro = false;
+      bool recipeCategoryOverview;
 
-  @override
-  Stream<SplashScreenState> mapEventToState(
-    SplashScreenEvent event,
-  ) async* {
-    if (event is SPInitializeData) {
-      yield* _mapInitializeDataToState(event);
-    } else if (event is SPFinished) {
-      yield* _mapSPFinishedToState(event);
-    }
-  }
+      SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  Stream<SplashScreenState> _mapInitializeDataToState(
-      SPInitializeData event) async* {
-    print("started initialization");
-    bool showIntro = false;
-    bool recipeCategoryOverview;
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // check if showSummary for shoppingCart
-    if (prefs.containsKey("shoppingCartSummary")) {
-      _showShoppingCartSummary = prefs.getBool("shoppingCartSummary");
-    } else {
-      await prefs.setBool("shoppingCartSummary", _showShoppingCartSummary);
-    }
-    // check if showSummary for shoppingCart
-    if (!prefs.containsKey(Constants.showDecimal)) {
-      await prefs.setBool(Constants.showDecimal, _showShoppingCartSummary);
-    }
-
-    recipeCategoryOverview = _initRecipeOverviewScreen(prefs);
-    _initTheme(prefs, event.context);
-    await _initAds();
-
-    await IO.clearCache();
-
-    // delete cache
-    // await getTemporaryDirectory()
-    //  ..delete(recursive: true);
-
-    if (!prefs.containsKey('showIntro')) {
-      showIntro = true;
-      GlobalSettings().thisIsFirstStart(true);
-      await prefs.setBool('shoppingCartSummary', false);
-      await prefs.setBool('showIntro', false);
-      await prefs.setBool('showStepsIntro', true);
-      await prefs.setBool(Constants.enableAnimations, true);
-      await prefs.setBool(Constants.disableStandby, true);
-      GlobalSettings().enableAnimations(true);
-      await initHive(true);
-      await prefs.setBool('pro_version', false);
-      await _initializeFirstStartData(event.context);
-    } else {
-      GlobalSettings()
-          .enableAnimations(prefs.getBool(Constants.enableAnimations));
-      GlobalSettings().hasSeenStepIntro(!prefs.getBool('showStepsIntro'));
-      GlobalSettings().disableStandby(prefs.getBool(Constants.disableStandby));
-      GlobalSettings().shouldShowDecimal(prefs.getBool(Constants.showDecimal));
-      await initHive(false);
-    }
-    // TODO: getPermission
-    // Map<PermissionGroup, PermissionStatus> permissions =
-    //     await PermissionHandler().requestPermissions([PermissionGroup.storage]);
-    await IO.updateBackup();
-
-    if (prefs.getBool('pro_version') == true ||
-        BlocProvider.of<AdManagerBloc>(event.context).state is IsPurchased) {
-      Ads.initialize(false);
-    } else {
-      try {
-        final result = await InternetAddress.lookup('example.com');
-        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-          await GdprDialog.instance
-              .showDialog(
-            isForTest: true,
-            testDeviceId: '',
-          )
-              .then((onValue) {
-            Ads.initialize(true, personalized: onValue);
-            Ads.adHeight =
-                MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
-          });
-        }
-      } on SocketException catch (_) {
-        Ads.initialize(true, personalized: false);
-        Ads.adHeight = MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
+      // check if showSummary for shoppingCart
+      if (prefs.containsKey("shoppingCartSummary")) {
+        _showShoppingCartSummary = prefs.getBool("shoppingCartSummary");
+      } else {
+        await prefs.setBool("shoppingCartSummary", _showShoppingCartSummary);
       }
-    }
+      // check if showSummary for shoppingCart
+      if (!prefs.containsKey(Constants.showDecimal)) {
+        await prefs.setBool(Constants.showDecimal, _showShoppingCartSummary);
+      }
 
-    this._recipeCategoryOverview = recipeCategoryOverview;
-    this._showIntro = showIntro;
+      recipeCategoryOverview = _initRecipeOverviewScreen(prefs);
+      _initTheme(prefs, event.context);
+      await _initAds();
 
-    _initialized = true;
+      await IO.clearCache();
 
-    print("finished initialization");
-    if (_splashScreenFinished)
-      yield InitializedData(
-        recipeCategoryOverview,
-        _showShoppingCartSummary,
-        showIntro,
-      );
-  }
+      // delete cache
+      // await getTemporaryDirectory()
+      //  ..delete(recursive: true);
 
-  Stream<SplashScreenState> _mapSPFinishedToState(SPFinished event) async* {
-    _splashScreenFinished = true;
-    if (_initialized) {
-      yield InitializedData(
-        _recipeCategoryOverview,
-        _showShoppingCartSummary,
-        _showIntro,
-      );
-    }
+      if (!prefs.containsKey('showIntro')) {
+        showIntro = true;
+        GlobalSettings().thisIsFirstStart(true);
+        await prefs.setBool('shoppingCartSummary', false);
+        await prefs.setBool('showIntro', false);
+        await prefs.setBool('showStepsIntro', true);
+        await prefs.setBool(Constants.enableAnimations, true);
+        await prefs.setBool(Constants.disableStandby, true);
+        GlobalSettings().enableAnimations(true);
+        await initHive(true);
+        await prefs.setBool('pro_version', false);
+        await _initializeFirstStartData(event.context);
+      } else {
+        GlobalSettings()
+            .enableAnimations(prefs.getBool(Constants.enableAnimations));
+        GlobalSettings().hasSeenStepIntro(!prefs.getBool('showStepsIntro'));
+        GlobalSettings()
+            .disableStandby(prefs.getBool(Constants.disableStandby));
+        GlobalSettings()
+            .shouldShowDecimal(prefs.getBool(Constants.showDecimal));
+        await initHive(false);
+      }
+      // TODO: getPermission
+      // Map<PermissionGroup, PermissionStatus> permissions =
+      //     await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+      await IO.updateBackup();
+
+      if (prefs.getBool('pro_version') == true ||
+          BlocProvider.of<AdManagerBloc>(event.context).state is IsPurchased) {
+        Ads.initialize(false);
+      } else {
+        try {
+          final result = await InternetAddress.lookup('example.com');
+          if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+            await GdprDialog.instance
+                .showDialog(
+              isForTest: true,
+              testDeviceId: '',
+            )
+                .then((onValue) {
+              Ads.initialize(true, personalized: onValue);
+              Ads.adHeight =
+                  MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
+            });
+          }
+        } on SocketException catch (_) {
+          Ads.initialize(true, personalized: false);
+          Ads.adHeight =
+              MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
+        }
+      }
+
+      this._recipeCategoryOverview = recipeCategoryOverview;
+      this._showIntro = showIntro;
+
+      _initialized = true;
+
+      print("finished initialization");
+      if (_splashScreenFinished)
+        emit(InitializedData(
+          recipeCategoryOverview,
+          _showShoppingCartSummary,
+          showIntro,
+        ));
+    });
+
+    on<SPFinished>((event, emit) async {
+      _splashScreenFinished = true;
+      if (_initialized) {
+        emit(InitializedData(
+          _recipeCategoryOverview,
+          _showShoppingCartSummary,
+          _showIntro,
+        ));
+      }
+    });
   }
 
   bool _initRecipeOverviewScreen(SharedPreferences prefs) {

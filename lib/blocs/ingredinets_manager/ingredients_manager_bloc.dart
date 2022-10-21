@@ -10,69 +10,51 @@ part 'ingredients_manager_state.dart';
 
 class IngredientsManagerBloc
     extends Bloc<IngredientsManagerEvent, IngredientsManagerState> {
-  IngredientsManagerBloc():super(IngredientsManagerInitial());
+  IngredientsManagerBloc() : super(IngredientsManagerInitial()) {
+    on<LoadIngredientsManager>((event, emit) async {
+      final List<String /*!*/ > ingredients = HiveProvider()
+          .getIngredientNames()
+        ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
-  @override
-  Stream<IngredientsManagerState> mapEventToState(
-    IngredientsManagerEvent event,
-  ) async* {
-    if (event is LoadIngredientsManager) {
-      yield* _mapLoadingIngredientsManagerToState();
-    } else if (event is AddIngredient) {
-      yield* _mapAddIngredientToState(event);
-    } else if (event is DeleteIngredient) {
-      yield* _mapDeleteIngredientToState(event);
-    } else if (event is UpdateIngredient) {
-      yield* _mapUpdateIngredientToState(event);
-    }
-  }
+      emit(LoadedIngredientsManager(ingredients));
+    });
 
-  Stream<IngredientsManagerState>
-      _mapLoadingIngredientsManagerToState() async* {
-    final List<String/*!*/> ingredients = HiveProvider().getIngredientNames()
-      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    on<AddIngredient>((event, emit) async {
+      if (state is LoadedIngredientsManager) {
+        await HiveProvider().addIngredient(event.ingredient);
 
-    yield LoadedIngredientsManager(ingredients);
-  }
+        List<String> ingredients =
+            List<String>.from((state as LoadedIngredientsManager).ingredients)
+              ..add(event.ingredient)
+              ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
-  Stream<IngredientsManagerState> _mapAddIngredientToState(
-      AddIngredient event) async* {
-    if (state is LoadedIngredientsManager) {
-      await HiveProvider().addIngredient(event.ingredient);
+        emit(LoadedIngredientsManager(ingredients));
+      }
+    });
 
-      List<String> ingredients =
-          List<String>.from((state as LoadedIngredientsManager).ingredients)
-            ..add(event.ingredient)
-            ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    on<DeleteIngredient>((event, emit) async {
+      if (state is LoadedIngredientsManager) {
+        await HiveProvider().deleteIngredient(event.ingredient);
+        final List<String> ingredients =
+            List<String>.from((state as LoadedIngredientsManager).ingredients)
+              ..remove(event.ingredient);
 
-      yield LoadedIngredientsManager(ingredients);
-    }
-  }
+        emit(LoadedIngredientsManager(ingredients));
+      }
+    });
 
-  Stream<IngredientsManagerState> _mapDeleteIngredientToState(
-      DeleteIngredient event) async* {
-    if (state is LoadedIngredientsManager) {
-      await HiveProvider().deleteIngredient(event.ingredient);
-      final List<String> ingredients =
-          List<String>.from((state as LoadedIngredientsManager).ingredients)
-            ..remove(event.ingredient);
+    on<UpdateIngredient>((event, emit) async {
+      if (state is LoadedIngredientsManager) {
+        await HiveProvider().deleteIngredient(event.oldIngredient);
+        await HiveProvider().addIngredient(event.updatedIngredient);
+        final List<String /*!*/ /*!*/ > ingredients =
+            (state as LoadedIngredientsManager).ingredients
+              ..remove(event.oldIngredient)
+              ..add(event.updatedIngredient)
+              ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
-      yield LoadedIngredientsManager(ingredients);
-    }
-  }
-
-  Stream<IngredientsManagerState> _mapUpdateIngredientToState(
-      UpdateIngredient event) async* {
-    if (state is LoadedIngredientsManager) {
-      await HiveProvider().deleteIngredient(event.oldIngredient);
-      await HiveProvider().addIngredient(event.updatedIngredient);
-      final List<String/*!*//*!*/> ingredients =
-          (state as LoadedIngredientsManager).ingredients
-            ..remove(event.oldIngredient)
-            ..add(event.updatedIngredient)
-            ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-
-      yield LoadedIngredientsManager(ingredients);
-    }
+        emit(LoadedIngredientsManager(ingredients));
+      }
+    });
   }
 }

@@ -7,11 +7,11 @@ import 'package:photo_view/photo_view_gallery.dart';
 import '../constants/global_constants.dart' as Constants;
 
 class GalleryPhotoView extends StatefulWidget {
-  final List<String> heroTags;
+  final List<String/*!*/>/*!*/ heroTags;
   final int initialIndex;
   final PageController pageController;
   final List<String> galleryImagePaths;
-  final List<String> descriptions;
+  final List<String>/*!*/ descriptions;
 
   GalleryPhotoView({
     this.heroTags,

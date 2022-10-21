@@ -13,7 +13,7 @@ import 'icon_info_message.dart';
 import 'recipe_image_hero.dart';
 
 class ShoppingListSummary extends StatelessWidget {
-  final Recipe summaryRecipe;
+  final Recipe/*!*//*?*/ summaryRecipe;
   final List<CheckableIngredient> ingredients;
 
   const ShoppingListSummary(

@@ -20,7 +20,7 @@ class ExportRecipes extends StatefulWidget {
 }
 
 class _ExportRecipesState extends State<ExportRecipes> {
-  List<String> recipeNames;
+  List<String>/*!*/ recipeNames;
   List<String> exportRecipeNames = [];
 
   @override
@@ -114,7 +114,7 @@ class _ExportRecipesState extends State<ExportRecipes> {
 }
 
 class SaveExportRecipes extends StatefulWidget {
-  final List<String> exportRecipes;
+  final List<String>/*!*/ exportRecipes;
 
   SaveExportRecipes({
     this.exportRecipes,

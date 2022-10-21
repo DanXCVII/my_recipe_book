@@ -75,8 +75,8 @@ class Ads {
   static Future<void> loadRewardedVideo(
     bool showOnLoad,
     void Function() onAdLoaded,
-    void Function() onAdFailedToLoad,
-    void Function() onRewardedAdUserEarnedReward, [
+    void Function()/*!*/ onAdFailedToLoad,
+    void Function()/*!*/ onRewardedAdUserEarnedReward, [
     State state,
   ]) async {
     if (!_showAds) return;

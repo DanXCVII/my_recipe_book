@@ -185,7 +185,7 @@ class RecipeRow extends StatelessWidget {
 
 // List of Recipes in a horizontal order with icons as a symbol and unterneath the name
 class RecipeHozizontalList extends StatelessWidget {
-  final List<Recipe> recipes;
+  final List<Recipe>/*!*//*!*/ recipes;
   final String categoryName;
   final int listIndex;
 
@@ -237,13 +237,13 @@ class RecipeHozizontalList extends StatelessWidget {
 }
 
 class RecipeImageItemBig extends StatelessWidget {
-  final Recipe recipe;
-  final String heroImageTag;
+  final Recipe/*!*/ recipe;
+  final String/*!*/ heroImageTag;
 
   final bool showMore;
 
   final String categoryName;
-  final int index;
+  final int/*!*/ index;
 
   const RecipeImageItemBig({
     this.recipe,
@@ -484,12 +484,12 @@ class RecipeImageItemBig extends StatelessWidget {
 /// either specify recipe and heroImageTag
 /// or categoryName
 class RecipeImageItemSmall extends StatelessWidget {
-  final Recipe recipe;
-  final String heroImageTag;
+  final Recipe/*!*/ recipe;
+  final String/*!*/ heroImageTag;
 
   final bool showMore;
 
-  final String categoryName;
+  final String/*!*/ categoryName;
 
   const RecipeImageItemSmall({
     this.recipe,

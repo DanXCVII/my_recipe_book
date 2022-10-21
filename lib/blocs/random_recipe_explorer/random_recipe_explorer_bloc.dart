@@ -18,7 +18,7 @@ class RandomRecipeExplorerBloc
 
   RandomRecipeExplorerBloc({@required this.recipeManagerBloc})
       : super(LoadingRandomRecipeExplorer()) {
-    subscription = recipeManagerBloc.listen((rmState) {
+    subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRandomRecipeExplorer) {
         final List<String> categories =
             (this.state as LoadedRandomRecipeExplorer).categories;
@@ -62,240 +62,208 @@ class RandomRecipeExplorerBloc
         }
       }
     });
-  }
 
-  @override
-  Stream<RandomRecipeExplorerState> mapEventToState(
-    RandomRecipeExplorerEvent event,
-  ) async* {
-    if (event is InitializeRandomRecipeExplorer) {
-      yield* _mapInitializeRandomRecipeExplorerToState(event);
-    } else if (event is ReloadRandomRecipeExplorer) {
-      yield* _mapReloadRandomRecipeExplorerToState(event);
-    } else if (event is AddCategories) {
-      yield* _mapAddCategoryToState(event);
-    } else if (event is DeleteCategory) {
-      yield* _mapDeleteCategoryToState(event);
-    } else if (event is UpdateCategory) {
-      yield* _mapUpdateCategoryToState(event);
-    } else if (event is DeleteRecipe) {
-      yield* _mapDeleteRecipeToState(event);
-    } else if (event is UpdateRecipe) {
-      yield* _mapUpdateRecipeToState(event);
-    } else if (event is ChangeCategory) {
-      yield* _mapChangeCategoryToState(event);
-    } else if (event is MoveCategory) {
-      _mapMoveCategoryToState(event);
-    }
-  }
+    on<InitializeRandomRecipeExplorer>((event, emit) async {
+      final List<String> categories = HiveProvider().getCategoryNames()
+        ..insert(0, 'all categories');
 
-  Stream<RandomRecipeExplorerState> _mapInitializeRandomRecipeExplorerToState(
-      InitializeRandomRecipeExplorer event) async* {
-    final List<String> categories = HiveProvider().getCategoryNames()
-      ..insert(0, 'all categories');
-
-    List<Recipe> randomRecipes = [];
-    for (int i = 0; i < 50; i++) {
-      randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory(
-        category: event.selectedCategory == "all categories"
-            ? null
-            : event.selectedCategory,
-        excludedRecipe: randomRecipes.isNotEmpty ? randomRecipes.last : null,
-      ));
-    }
-    yield LoadedRandomRecipeExplorer(
-        randomRecipes[0] == null ? [] : randomRecipes,
-        categories,
-        categories.indexOf(event.selectedCategory));
-  }
-
-  Stream<RandomRecipeExplorerState> _mapAddCategoryToState(
-      AddCategories event) async* {
-    if (state is LoadedRandomRecipeExplorer) {
-      final List<String> categories =
-          List<String>.from((state as LoadedRandomRecipeExplorer).categories)
-            ..insertAll(
-                (state as LoadedRandomRecipeExplorer).categories.length - 1,
-                event.categories);
-
-      yield LoadedRandomRecipeExplorer(
-        (state as LoadedRandomRecipeExplorer).randomRecipes,
-        categories,
-        (state as LoadedRandomRecipeExplorer).selectedCategory,
-      );
-    }
-  }
-
-  Stream<RandomRecipeExplorerState> _mapDeleteCategoryToState(
-      DeleteCategory event) async* {
-    if (state is LoadedRandomRecipeExplorer) {
-      List<String> categories =
-          List<String>.from((state as LoadedRandomRecipeExplorer).categories);
-      int selectedIndex =
-          (state as LoadedRandomRecipeExplorer).selectedCategory;
-      if (categories.indexOf(event.category) == selectedIndex) {
-        List<Recipe> randomRecipes = [];
-        for (int i = 0; i < 10; i++) {
-          randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory());
-        }
-
-        yield LoadedRandomRecipeExplorer(
-          randomRecipes[0] == null ? [] : randomRecipes,
-          List<String>.from(categories)..remove(event.category),
-          selectedIndex,
-        );
-      } else if (categories.indexOf(event.category) < selectedIndex) {
-        yield LoadedRandomRecipeExplorer(
-          (state as LoadedRandomRecipeExplorer).randomRecipes,
-          List<String>.from(categories)..remove(event.category),
-          selectedIndex - 1,
-        );
-      } else {
-        yield LoadedRandomRecipeExplorer(
-          (state as LoadedRandomRecipeExplorer).randomRecipes,
-          List<String>.from(categories)..remove(event.category),
-          (state as LoadedRandomRecipeExplorer).selectedCategory,
-        );
-      }
-    }
-  }
-
-  Stream<RandomRecipeExplorerState> _mapChangeCategoryToState(
-      ChangeCategory event) async* {
-    add(InitializeRandomRecipeExplorer(selectedCategory: event.category));
-  }
-
-  Stream<RandomRecipeExplorerState> _mapUpdateRecipeToState(
-      UpdateRecipe event) async* {
-    if (state is LoadedRandomRecipeExplorer) {
-      List<Recipe> randomRecipes =
-          (state as LoadedRandomRecipeExplorer).randomRecipes;
-
-      bool updated = false;
-      // while randomRecipes contains the old recipe
-      while (randomRecipes.contains(event.oldRecipe)) {
-        // update them
-        randomRecipes[randomRecipes.indexOf(event.oldRecipe)] =
-            event.updatedRecipe;
-        updated = true;
-      }
-
-      if (updated == true) {
-        yield LoadedRandomRecipeExplorer(
-          randomRecipes,
-          (state as LoadedRandomRecipeExplorer).categories,
-          (state as LoadedRandomRecipeExplorer).selectedCategory,
-        );
-      }
-    }
-  }
-
-  Stream<RandomRecipeExplorerState> _mapDeleteRecipeToState(
-      DeleteRecipe event) async* {
-    if (state is LoadedRandomRecipeExplorer) {
-      List<Recipe> randomRecipes =
-          (state as LoadedRandomRecipeExplorer).randomRecipes;
-      List<String> categories =
-          (state as LoadedRandomRecipeExplorer).categories;
-      int selectedIndex =
-          (state as LoadedRandomRecipeExplorer).selectedCategory;
-
-      if (await HiveProvider().getRandomRecipeOfCategory(
-              category:
-                  selectedIndex == 0 ? null : categories[selectedIndex]) ==
-          null) {
-        yield LoadedRandomRecipeExplorer([], categories, selectedIndex);
-        return;
-      }
-
-      bool updated = false;
-      while (randomRecipes.contains(event.recipe)) {
-        randomRecipes[randomRecipes.indexOf(event.recipe)] =
-            await HiveProvider().getRandomRecipeOfCategory(
-                category:
-                    selectedIndex == 0 ? null : categories[selectedIndex]);
-        updated = true;
-      }
-      if (updated) {
-        yield LoadedRandomRecipeExplorer(
-            randomRecipes, categories, selectedIndex);
-      }
-    }
-  }
-
-  Stream<RandomRecipeExplorerState> _mapUpdateCategoryToState(
-      UpdateCategory event) async* {
-    if (state is LoadedRandomRecipeExplorer) {
-      final List<String> categories =
-          List<String>.from((state as LoadedRandomRecipeExplorer).categories);
-      int renamedCategoryIndex = categories.indexOf(event.oldCategory);
-      categories[renamedCategoryIndex] = event.updatedCategory;
-
-      yield LoadedRandomRecipeExplorer(
-        (state as LoadedRandomRecipeExplorer)
-            .randomRecipes
-            .map(
-              (recipe) => recipe.copyWith(
-                categories: recipe.categories
-                    .map(
-                      (category) => category == event.oldCategory
-                          ? event.updatedCategory
-                          : category,
-                    )
-                    .toList(),
-              ),
-            )
-            .toList(),
-        categories,
-        (state as LoadedRandomRecipeExplorer).selectedCategory,
-      );
-    }
-  }
-
-  Stream<RandomRecipeExplorerState> _mapReloadRandomRecipeExplorerToState(
-      ReloadRandomRecipeExplorer event) async* {
-    if (state is LoadedRandomRecipeExplorer) {
-      final List<String> categories =
-          (state as LoadedRandomRecipeExplorer).categories;
-      final int selectedCategory =
-          (state as LoadedRandomRecipeExplorer).selectedCategory;
-      final List<Recipe> randomRecipes = [];
-
-      yield LoadingRecipes(categories, selectedCategory);
-
+      List<Recipe/*!*/> randomRecipes = [];
       for (int i = 0; i < 50; i++) {
         randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory(
-            category:
-                selectedCategory == 0 ? null : categories[selectedCategory]));
+          category: event.selectedCategory == "all categories"
+              ? null
+              : event.selectedCategory,
+          excludedRecipe: randomRecipes.isNotEmpty ? randomRecipes.last : null,
+        ));
       }
+      emit(LoadedRandomRecipeExplorer(
+          randomRecipes[0] == null ? [] : randomRecipes,
+          categories,
+          categories.indexOf(event.selectedCategory)));
+    });
 
-      yield LoadedRandomRecipeExplorer(
-        randomRecipes[0] == null ? null : randomRecipes,
-        categories,
-        selectedCategory,
-      );
-    }
-  }
+    on<AddCategories>((event, emit) async {
+      if (state is LoadedRandomRecipeExplorer) {
+        final List<String> categories =
+            List<String>.from((state as LoadedRandomRecipeExplorer).categories)
+              ..insertAll(
+                  (state as LoadedRandomRecipeExplorer).categories.length - 1,
+                  event.categories);
 
-  Stream<RandomRecipeExplorerState> _mapMoveCategoryToState(
-      MoveCategory event) async* {
-    if (state is LoadedRandomRecipeExplorer) {
-      List<String> oldCategoryRandomImageList =
-          (state as LoadedRandomRecipeExplorer).categories;
-      // verify if working
-      List<String> newCategoryRandomImageList = oldCategoryRandomImageList
-        ..insert(
-            event.newIndex + 1, oldCategoryRandomImageList[event.oldIndex + 1])
-        ..removeAt(event.oldIndex > event.newIndex
-            ? event.oldIndex + 2
-            : event.oldIndex + 1);
+        emit(LoadedRandomRecipeExplorer(
+          (state as LoadedRandomRecipeExplorer).randomRecipes,
+          categories,
+          (state as LoadedRandomRecipeExplorer).selectedCategory,
+        ));
+      }
+    });
 
-      yield LoadedRandomRecipeExplorer(
-        (state as LoadedRandomRecipeExplorer).randomRecipes,
-        newCategoryRandomImageList,
-        (state as LoadedRandomRecipeExplorer).selectedCategory,
-      );
-    }
+    on<DeleteCategory>((event, emit) async {
+      if (state is LoadedRandomRecipeExplorer) {
+        List<String> categories =
+            List<String>.from((state as LoadedRandomRecipeExplorer).categories);
+        int selectedIndex =
+            (state as LoadedRandomRecipeExplorer).selectedCategory;
+        if (categories.indexOf(event.category) == selectedIndex) {
+          List<Recipe> randomRecipes = [];
+          for (int i = 0; i < 10; i++) {
+            randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory());
+          }
+
+          emit(LoadedRandomRecipeExplorer(
+            randomRecipes[0] == null ? [] : randomRecipes,
+            List<String>.from(categories)..remove(event.category),
+            selectedIndex,
+          ));
+        } else if (categories.indexOf(event.category) < selectedIndex) {
+          emit(LoadedRandomRecipeExplorer(
+            (state as LoadedRandomRecipeExplorer).randomRecipes,
+            List<String>.from(categories)..remove(event.category),
+            selectedIndex - 1,
+          ));
+        } else {
+          emit(LoadedRandomRecipeExplorer(
+            (state as LoadedRandomRecipeExplorer).randomRecipes,
+            List<String>.from(categories)..remove(event.category),
+            (state as LoadedRandomRecipeExplorer).selectedCategory,
+          ));
+        }
+      }
+    });
+
+    on<UpdateRecipe>((event, emit) async {
+      if (state is LoadedRandomRecipeExplorer) {
+        List<Recipe> randomRecipes =
+            (state as LoadedRandomRecipeExplorer).randomRecipes;
+
+        bool updated = false;
+        // while randomRecipes contains the old recipe
+        while (randomRecipes.contains(event.oldRecipe)) {
+          // update them
+          randomRecipes[randomRecipes.indexOf(event.oldRecipe)] =
+              event.updatedRecipe;
+          updated = true;
+        }
+
+        if (updated == true) {
+          emit(LoadedRandomRecipeExplorer(
+            randomRecipes,
+            (state as LoadedRandomRecipeExplorer).categories,
+            (state as LoadedRandomRecipeExplorer).selectedCategory,
+          ));
+        }
+      }
+    });
+
+    on<DeleteRecipe>((event, emit) async {
+      if (state is LoadedRandomRecipeExplorer) {
+        List<Recipe> randomRecipes =
+            (state as LoadedRandomRecipeExplorer).randomRecipes;
+        List<String> categories =
+            (state as LoadedRandomRecipeExplorer).categories;
+        int selectedIndex =
+            (state as LoadedRandomRecipeExplorer).selectedCategory;
+
+        if (await HiveProvider().getRandomRecipeOfCategory(
+                category:
+                    selectedIndex == 0 ? null : categories[selectedIndex]) ==
+            null) {
+          emit(LoadedRandomRecipeExplorer([], categories, selectedIndex));
+          return;
+        }
+
+        bool updated = false;
+        while (randomRecipes.contains(event.recipe)) {
+          randomRecipes[randomRecipes.indexOf(event.recipe)] =
+              await HiveProvider().getRandomRecipeOfCategory(
+                  category:
+                      selectedIndex == 0 ? null : categories[selectedIndex]);
+          updated = true;
+        }
+        if (updated) {
+          emit(LoadedRandomRecipeExplorer(
+              randomRecipes, categories, selectedIndex));
+        }
+      }
+    });
+
+    on<UpdateCategory>((event, emit) async {
+      if (state is LoadedRandomRecipeExplorer) {
+        final List<String> categories =
+            List<String>.from((state as LoadedRandomRecipeExplorer).categories);
+        int renamedCategoryIndex = categories.indexOf(event.oldCategory);
+        categories[renamedCategoryIndex] = event.updatedCategory;
+
+        emit(LoadedRandomRecipeExplorer(
+          (state as LoadedRandomRecipeExplorer)
+              .randomRecipes
+              .map(
+                (recipe) => recipe.copyWith(
+                  categories: recipe.categories
+                      .map(
+                        (category) => category == event.oldCategory
+                            ? event.updatedCategory
+                            : category,
+                      )
+                      .toList(),
+                ),
+              )
+              .toList(),
+          categories,
+          (state as LoadedRandomRecipeExplorer).selectedCategory,
+        ));
+      }
+    });
+
+    on<ReloadRandomRecipeExplorer>((event, emit) async {
+      if (state is LoadedRandomRecipeExplorer) {
+        final List<String> categories =
+            (state as LoadedRandomRecipeExplorer).categories;
+        final int selectedCategory =
+            (state as LoadedRandomRecipeExplorer).selectedCategory;
+        final List<Recipe> randomRecipes = [];
+
+        emit(LoadingRecipes(categories, selectedCategory));
+
+        for (int i = 0; i < 50; i++) {
+          randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory(
+              category:
+                  selectedCategory == 0 ? null : categories[selectedCategory]));
+        }
+
+        emit(LoadedRandomRecipeExplorer(
+          randomRecipes[0] == null ? null : randomRecipes,
+          categories,
+          selectedCategory,
+        ));
+      }
+    });
+
+    on<MoveCategory>((event, emit) async {
+      if (state is LoadedRandomRecipeExplorer) {
+        if (state is LoadedRandomRecipeExplorer) {
+          List<String> oldCategoryRandomImageList =
+              (state as LoadedRandomRecipeExplorer).categories;
+          // verify if working
+          List<String> newCategoryRandomImageList = oldCategoryRandomImageList
+            ..insert(event.newIndex + 1,
+                oldCategoryRandomImageList[event.oldIndex + 1])
+            ..removeAt(event.oldIndex > event.newIndex
+                ? event.oldIndex + 2
+                : event.oldIndex + 1);
+
+          emit(LoadedRandomRecipeExplorer(
+            (state as LoadedRandomRecipeExplorer).randomRecipes,
+            newCategoryRandomImageList,
+            (state as LoadedRandomRecipeExplorer).selectedCategory,
+          ));
+        }
+      }
+    });
+
+    on<ChangeCategory>((event, emit) async {
+      add(InitializeRandomRecipeExplorer(selectedCategory: event.category));
+    });
   }
 
   @override

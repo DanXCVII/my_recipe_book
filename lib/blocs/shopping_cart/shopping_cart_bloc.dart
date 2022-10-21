@@ -19,7 +19,7 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
   StreamSubscription subscription;
 
   ShoppingCartBloc(this.recipeManagerBloc) : super(LoadingShoppingCart()) {
-    subscription = recipeManagerBloc.listen((rmState) {
+    subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedShoppingCart) {
         if (rmState is RM.DeleteRecipeState) {
           add(RemoveIngredients(null, rmState.recipe));
@@ -31,73 +31,45 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
         }
       }
     });
-  }
 
-  @override
-  Stream<ShoppingCartState> mapEventToState(
-    ShoppingCartEvent event,
-  ) async* {
-    if (event is LoadShoppingCart) {
-      yield* _mapLoadShoppingCartToState(event);
-    } else if (event is CleanAddIngredients) {
-      yield* _mapCleanAddIngredientsToState(event);
-    } else if (event is CheckIngredients) {
-      yield* _mapCheckIngredientsToState(event);
-    } else if (event is RemoveIngredients) {
-      yield* _mapRemoveIngredientsToState(event);
-    }
-  }
+    on<LoadShoppingCart>((event, emit) async {
+      emit(LoadedShoppingCart(await HiveProvider().getShoppingCart()));
+    });
 
-  Stream<ShoppingCartState> _mapLoadShoppingCartToState(
-      ShoppingCartEvent event) async* {
-    yield LoadedShoppingCart(await HiveProvider().getShoppingCart());
-  }
-
-  Stream<ShoppingCartState> _mapCleanAddIngredientsToState(
-      CleanAddIngredients event) async* {
-    for (Ingredient ingredient in event.ingredients) {
-      if (!HiveProvider().getIngredientNames().contains(ingredient.name)) {
-        await HiveProvider().addIngredient(ingredient.name);
+    on<CleanAddIngredients>((event, emit) async {
+      for (Ingredient ingredient in event.ingredients) {
+        if (!HiveProvider().getIngredientNames().contains(ingredient.name)) {
+          await HiveProvider().addIngredient(ingredient.name);
+        }
       }
-    }
-    await HiveProvider()
-        .removeAndAddIngredients(event.recipeName, event.ingredients);
-
-    yield LoadedShoppingCart(await HiveProvider().getShoppingCart());
-  }
-
-  Stream<ShoppingCartState> _mapRemoveIngredientsToState(
-      RemoveIngredients event) async* {
-    if (event.ingredients == null) {
-      await HiveProvider().removeRecipeFromCart(event.recipeName.name);
-    } else {
       await HiveProvider()
-          .removeIngredientsFromCart(event.recipeName.name, event.ingredients);
-    }
+          .removeAndAddIngredients(event.recipeName, event.ingredients);
 
-    yield LoadedShoppingCart(await HiveProvider().getShoppingCart());
-  }
+      emit(LoadedShoppingCart(await HiveProvider().getShoppingCart()));
+    });
 
-  Stream<ShoppingCartState> _mapCheckIngredientsToState(
-      CheckIngredients event) async* {
-    for (CheckableIngredient i in event.ingredients) {
-      await HiveProvider().checkIngredient(
-          event.recipeName.name, i.copyWith(checked: !i.checked));
-    }
+    on<CheckIngredients>((event, emit) async {
+      for (CheckableIngredient i in event.ingredients) {
+        await HiveProvider().checkIngredient(
+            event.recipeName.name, i.copyWith(checked: !i.checked));
+      }
 
-    Map<Recipe, List<CheckableIngredient>> shoppingList =
-        await HiveProvider().getShoppingCart();
+      Map<Recipe, List<CheckableIngredient>> shoppingList =
+          await HiveProvider().getShoppingCart();
 
-    yield LoadedShoppingCart(shoppingList);
-  }
+      emit(LoadedShoppingCart(shoppingList));
+    });
 
-  bool showSummary() {
-    bool showSummary = false;
-    if (prefs.containsKey("shoppingCartSummary")) {
-      showSummary = prefs.getBool("shoppingCartSummary");
-    }
+    on<RemoveIngredients>((event, emit) async {
+      if (event.ingredients == null) {
+        await HiveProvider().removeRecipeFromCart(event.recipeName.name);
+      } else {
+        await HiveProvider().removeIngredientsFromCart(
+            event.recipeName.name, event.ingredients);
+      }
 
-    return showSummary;
+      emit(LoadedShoppingCart(await HiveProvider().getShoppingCart()));
+    });
   }
 
   Future<Map<Recipe, List<CheckableIngredient>>> getSortedShoppingList() async {
@@ -121,6 +93,15 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
         copyList,
       );
     });
+  }
+
+  bool/*!*/ showSummary() {
+    bool/*!*/ showSummary = false;
+    if (prefs.containsKey("shoppingCartSummary")) {
+      showSummary = prefs.getBool("shoppingCartSummary");
+    }
+
+    return showSummary;
   }
 
   @override

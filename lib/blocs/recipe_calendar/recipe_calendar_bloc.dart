@@ -44,6 +44,58 @@ class RecipeCalendarBloc
         }
       }
     });
+
+    on<LoadRecipeCalendarEvent>((event, emit) async {
+      emit(LoadingRecipeCalendar());
+
+      prefs ??= await SharedPreferences.getInstance();
+      if (prefs.containsKey("recipeCalendarIsVertical")) {
+        isVertical = prefs.getBool("recipeCalendarIsVertical");
+      } else {
+        prefs.setBool("recipeCalendarIsVertical", false);
+      }
+
+      emit(await _refreshCalendar());
+    });
+
+    on<ChangeSelectedDateEvent>((event, emit) async {
+      overviewSelectedDay = event.day;
+
+      // yep it unnesseserily releoads the events but this shouldn't be too cpu intensive..
+      emit(await _refreshCalendar());
+    });
+
+    on<AddRecipeToCalendarEvent>((event, emit) async {
+      await HiveProvider().addRecipeToCalendar(event.date, event.recipeName);
+
+      emit(await _refreshCalendar(
+        addedRecipe: Tuple2<DateTime, String>(event.date, event.recipeName),
+      ));
+    });
+
+    on<RemoveRecipeFromCalendarEvent>((event, emit) async {
+      await HiveProvider().removeRecipeFromCalendar(event.recipeName);
+
+      emit(await _refreshCalendar());
+    });
+
+    on<ChangeRecipeCalendarViewEvent>((event, emit) async {
+      isVertical = event.showVerticalCalendar;
+      await prefs.setBool(
+          "recipeCalendarIsVertical", event.showVerticalCalendar);
+
+      emit(await _refreshCalendar());
+    });
+
+    on<ChangeSelectedTimeVerticalEvent>((event, emit) async {
+      if (event.nextWeek) {
+        verticalSelectedWeek = verticalSelectedWeek.add(Duration(days: 7));
+      } else {
+        verticalSelectedWeek = verticalSelectedWeek.subtract(Duration(days: 7));
+      }
+
+      emit(await _refreshCalendar());
+    });
   }
 
   @override
@@ -52,97 +104,9 @@ class RecipeCalendarBloc
     return super.close();
   }
 
-  @override
-  Stream<RecipeCalendarState> mapEventToState(
-    RecipeCalendarEvent event,
-  ) async* {
-    if (event is LoadRecipeCalendarEvent) {
-      yield* _mapLoadRecipeCalendarEventToState(event);
-    } else if (event is RemoveRecipeFromDateEvent) {
-      yield* _mapRemoveRecipeFromDateEventToState(event);
-    } else if (event is ChangeSelectedDateEvent) {
-      yield* _mapChangeSelectedDateEventToState(event);
-    } else if (event is AddRecipeToCalendarEvent) {
-      yield* _mapAddRecipeToCalendarEventToState(event);
-    } else if (event is RemoveRecipeFromCalendarEvent) {
-      yield* _mapRemoveRecipeFromCalendarEventToState(event);
-    } else if (event is ChangeRecipeCalendarViewEvent) {
-      yield* _mapChangeRecipeCalendarViewEventToState(event);
-    } else if (event is ChangeSelectedTimeVerticalEvent) {
-      yield* _mapChangeSelectedTimeVerticalEventToState(event);
-    }
-  }
-
-  Stream<RecipeCalendarState> _mapLoadRecipeCalendarEventToState(
-      LoadRecipeCalendarEvent event) async* {
-    yield LoadingRecipeCalendar();
-
-    prefs ??= await SharedPreferences.getInstance();
-    if (prefs.containsKey("recipeCalendarIsVertical")) {
-      isVertical = prefs.getBool("recipeCalendarIsVertical");
-    } else {
-      prefs.setBool("recipeCalendarIsVertical", false);
-    }
-
-    yield* _refreshCalendar();
-  }
-
-  Stream<RecipeCalendarState> _mapRemoveRecipeFromDateEventToState(
-      RemoveRecipeFromDateEvent event) async* {
-    yield LoadingRecipeCalendar();
-
-    await HiveProvider()
-        .removeRecipeFromDateCalendar(event.date, event.recipeName);
-
-    yield* _refreshCalendar();
-  }
-
-  Stream<RecipeCalendarState> _mapChangeSelectedDateEventToState(
-      ChangeSelectedDateEvent event) async* {
-    overviewSelectedDay = event.day;
-
-    // yep it unnesseserily releoads the events but this shouldn't be too cpu intensive..
-    yield* _refreshCalendar();
-  }
-
-  Stream<RecipeCalendarState> _mapAddRecipeToCalendarEventToState(
-      AddRecipeToCalendarEvent event) async* {
-    await HiveProvider().addRecipeToCalendar(event.date, event.recipeName);
-
-    yield* _refreshCalendar(
-      addedRecipe: Tuple2<DateTime, String>(event.date, event.recipeName),
-    );
-  }
-
-  Stream<RecipeCalendarState> _mapChangeRecipeCalendarViewEventToState(
-      ChangeRecipeCalendarViewEvent event) async* {
-    isVertical = event.showVerticalCalendar;
-    await prefs.setBool("recipeCalendarIsVertical", event.showVerticalCalendar);
-
-    yield* _refreshCalendar();
-  }
-
-  Stream<RecipeCalendarState> _mapRemoveRecipeFromCalendarEventToState(
-      RemoveRecipeFromCalendarEvent event) async* {
-    await HiveProvider().removeRecipeFromCalendar(event.recipeName);
-
-    yield* _refreshCalendar();
-  }
-
-  Stream<RecipeCalendarState> _mapChangeSelectedTimeVerticalEventToState(
-      ChangeSelectedTimeVerticalEvent event) async* {
-    if (event.nextWeek) {
-      verticalSelectedWeek = verticalSelectedWeek.add(Duration(days: 7));
-    } else {
-      verticalSelectedWeek = verticalSelectedWeek.subtract(Duration(days: 7));
-    }
-
-    yield* _refreshCalendar();
-  }
-
   // loads the calendar with the selected vertical state an
-  Stream<RecipeCalendarState> _refreshCalendar(
-      {Tuple2<DateTime, String> addedRecipe}) async* {
+  Future<RecipeCalendarState> _refreshCalendar(
+      {Tuple2<DateTime, String> addedRecipe}) async {
     Map<DateTime, List<String>> recipeCalendar =
         await HiveProvider().getRecipeCalendar();
 
@@ -150,7 +114,7 @@ class RecipeCalendarBloc
       Map<DateTime, List<Tuple2<DateTime, Recipe>>> dateRecipes =
           await getRecipesFromTo(verticalSelectedWeek, 7, recipeCalendar);
 
-      yield LoadedRecipeCalendarVertical(
+      return LoadedRecipeCalendarVertical(
         verticalSelectedWeek,
         7,
         dateRecipes,
@@ -160,13 +124,29 @@ class RecipeCalendarBloc
       List<Tuple2<DateTime, Recipe>> currentDayRecipes =
           await getRecipesFromDay(overviewSelectedDay, recipeCalendar);
 
-      yield LoadedRecipeCalendarOverview(
-        recipeCalendar,
+      return LoadedRecipeCalendarOverview(
+        removeTimeFromDateKey(recipeCalendar),
         currentDayRecipes,
         overviewSelectedDay,
         addedRecipe: addedRecipe,
       );
     }
+  }
+
+  // creates a new map which has as keys a DateTime with only day-month-year without time
+  Map<DateTime, List<String>> removeTimeFromDateKey(
+      Map<DateTime, List<String>> events) {
+    Map<DateTime, List<String>> eventsWithoutTime = {};
+    for (DateTime timeKey in events.keys) {
+      DateTime dateKeyClean =
+          DateTime(timeKey.year, timeKey.month, timeKey.day);
+      if (eventsWithoutTime.containsKey(dateKeyClean)) {
+        eventsWithoutTime[dateKeyClean].addAll(events[timeKey]);
+      } else {
+        eventsWithoutTime[dateKeyClean] = events[timeKey];
+      }
+    }
+    return eventsWithoutTime;
   }
 
   Future<Map<DateTime, List<Tuple2<DateTime, Recipe>>>> getRecipesFromTo(

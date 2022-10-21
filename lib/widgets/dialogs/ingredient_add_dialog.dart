@@ -54,7 +54,7 @@ class IngredientAddDialogContent extends StatefulWidget {
   final Ingredient prefilledData;
   final focus = FocusNode();
   final List<String> sectionTitles;
-  final int selectedDropdownIndex;
+  final int/*!*/ selectedDropdownIndex;
 
   IngredientAddDialogContent(
     this.onFinished,
@@ -79,8 +79,8 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool isExpanded = false;
 
-  int selectedDropdownIndex;
-  List<String> dropdownItems = [];
+  int/*!*/ selectedDropdownIndex;
+  List<String/*!*//*!*/> dropdownItems = [];
 
   _IngredientAddDialogContentState(
       this.selectedDropdownIndex, List<String> sectionTitles) {

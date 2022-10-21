@@ -29,101 +29,92 @@ enum ImportState { SUCCESS, DUPLICATE, FAIL }
 class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   final RecipeManagerBloc recipeManagerBloc;
 
-  WebsiteImportBloc(this.recipeManagerBloc) : super(ReadyToImport());
+  WebsiteImportBloc(this.recipeManagerBloc) : super(ReadyToImport()) {
+    on<ImportRecipe>((event, emit) async {
+      emit(ImportingRecipe());
 
-  @override
-  Stream<WebsiteImportState> mapEventToState(
-    WebsiteImportEvent event,
-  ) async* {
-    if (event is ImportRecipe) {
-      yield* _mapImportRecipeToState(event);
-    }
-  }
-
-  Stream<WebsiteImportState> _mapImportRecipeToState(
-      ImportRecipe event) async* {
-    yield ImportingRecipe();
-
-    bool hasInternetConnection;
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        hasInternetConnection = true;
-      }
-    } on SocketException catch (_) {
-      hasInternetConnection = false;
-    }
-    if (!hasInternetConnection) {
-      yield FailedToConnect();
-      return;
-    }
-
-    var response;
-
-    String filteredURL = event.url;
-    if (event.url.contains("https://")) {
-      String cutURLstart = event.url;
-      if (cutURLstart.contains(" ")) {
-        filteredURL = cutURLstart.substring(0, cutURLstart.indexOf(" "));
-      }
-      filteredURL = cutURLstart;
-    }
-
-    bool couldNotFetch = false;
-    try {
-      response = await httpc.get(Uri.parse(filteredURL));
-    } catch (e) {
-      couldNotFetch = true;
-    }
-    if (couldNotFetch) {
+      bool hasInternetConnection;
       try {
-        final ioc = new HttpClient();
-        ioc.badCertificateCallback =
-            (X509Certificate cert, String host, int port) => true;
-        final http = new IOClient(ioc);
-        http.get(Uri.parse(filteredURL));
+        final result = await InternetAddress.lookup('example.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          hasInternetConnection = true;
+        }
+      } on SocketException catch (_) {
+        hasInternetConnection = false;
+      }
+      if (!hasInternetConnection) {
+        emit(FailedToConnect());
+        return;
+      }
+
+      var response;
+
+      String filteredURL = event.url;
+      if (event.url.contains("https://")) {
+        String cutURLstart = event.url;
+        if (cutURLstart.contains(" ")) {
+          filteredURL = cutURLstart.substring(0, cutURLstart.indexOf(" "));
+        }
+        filteredURL = cutURLstart;
+      }
+
+      bool couldNotFetch = false;
+      try {
+        response = await httpc.get(Uri.parse(filteredURL));
       } catch (e) {
-        yield InvalidUrl();
+        couldNotFetch = true;
+      }
+      if (couldNotFetch) {
+        try {
+          final ioc = new HttpClient();
+          ioc.badCertificateCallback =
+              (X509Certificate cert, String host, int port) => true;
+          final http = new IOClient(ioc);
+          http.get(Uri.parse(filteredURL));
+        } catch (e) {
+          emit(InvalidUrl());
+          return;
+        }
+      }
+
+      // just a safety check
+      if (response == null) {
         return;
       }
-    }
 
-    // just a safety check
-    if (response == null) {
-      return;
-    }
+      if (response.statusCode == 200) {
+        String httpWebsite = response.body;
 
-    if (response.statusCode == 200) {
-      String httpWebsite = response.body;
+        Tuple2<ImportState, Recipe> importRecipe;
 
-      Tuple2<ImportState, Recipe> importRecipe;
+        Map<String, dynamic> recipeMap =
+            await _tryGetRecipeRecipeMap(httpWebsite);
 
-      Map<String, dynamic> recipeMap =
-          await _tryGetRecipeRecipeMap(httpWebsite);
+        if (recipeMap != null) {
+          importRecipe =
+              await _getRecipeFromSchemaRecipe(recipeMap, filteredURL);
+        } else if (filteredURL.contains("allrecipes.com")) {
+          importRecipe =
+              await getRecipeFromAllRecipesData(httpWebsite, filteredURL);
+        } else {
+          emit(InvalidUrl());
+          return;
+        }
+        if (importRecipe.item1.toString() == ImportState.FAIL.toString()) {
+          emit(FailedImportingRecipe(filteredURL));
+          return;
+        } else if (importRecipe.item1 == ImportState.DUPLICATE) {
+          emit(AlreadyExists(importRecipe.item2.name));
+        } else {
+          await HiveProvider().saveTmpRecipe(importRecipe.item2);
 
-      if (recipeMap != null) {
-        importRecipe = await _getRecipeFromSchemaRecipe(recipeMap, filteredURL);
-      } else if (filteredURL.contains("allrecipes.com")) {
-        importRecipe =
-            await getRecipeFromAllRecipesData(httpWebsite, filteredURL);
+          emit(ImportedRecipe(importRecipe.item2));
+          return;
+        }
       } else {
-        yield InvalidUrl();
-        return;
+        emit(FailedToConnect());
       }
-      if (importRecipe.item1.toString() == ImportState.FAIL.toString()) {
-        yield FailedImportingRecipe(filteredURL);
-        return;
-      } else if (importRecipe.item1 == ImportState.DUPLICATE) {
-        yield AlreadyExists(importRecipe.item2.name);
-      } else {
-        await HiveProvider().saveTmpRecipe(importRecipe.item2);
-
-        yield ImportedRecipe(importRecipe.item2);
-        return;
-      }
-    } else {
-      yield FailedToConnect();
-    }
+    });
   }
 
   Future<Tuple2<ImportState, Recipe>> getRecipeFromAllRecipesData(
@@ -294,7 +285,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
           await HiveProvider().addNutrition(n.name);
         }
       }
-      List<String> recipeSteps = _getStepsFromSchemaRecipe(recipeMap);
+      List<String/*!*/> recipeSteps = _getStepsFromSchemaRecipe(recipeMap);
 
       Recipe finalRecipe = Recipe(
         name: recipeMap["name"],
@@ -324,23 +315,23 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     return Tuple2(ImportState.FAIL, null);
   }
 
-  /// checks if the key recipeYield is existingin the map and then
+  /// checks if the key recipeemit( is existingin the map and then
   /// returns the first number of the value of the key. Otherwise returns null
   double _getServingsFromSchemaRecipe(Map<String, dynamic> recipeMap) {
     double servings = 1;
     try {
-      if (recipeMap.containsKey("recipeYield")) {
-        if (recipeMap["recipeYield"] is double) {
-          return recipeMap["recipeYield"];
+      if (recipeMap.containsKey("recipeemit(")) {
+        if (recipeMap["recipeemit("] is double) {
+          return recipeMap["recipeemit("];
         }
-        if (recipeMap["recipeYield"].contains(" ")) {
-          return double.tryParse(recipeMap["recipeYield"]
-              .substring(0, recipeMap["recipeYield"].toString().indexOf(" ")));
+        if (recipeMap["recipeemit("].contains(" ")) {
+          return double.tryParse(recipeMap["recipeemit("]
+              .substring(0, recipeMap["recipeemit("].toString().indexOf(" ")));
         } else {
-          if (recipeMap["recipeYield"] is List) {
-            servings = double.tryParse(recipeMap["recipeYield"].first);
+          if (recipeMap["recipeemit("] is List) {
+            servings = double.tryParse(recipeMap["recipeemit("].first);
           } else {
-            servings = double.tryParse(recipeMap["recipeYield"]);
+            servings = double.tryParse(recipeMap["recipeemit("]);
           }
         }
       }
@@ -350,8 +341,8 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     return servings;
   }
 
-  List<String> _getStepsFromSchemaRecipe(Map<String, dynamic> recipeMap) {
-    List<String> recipeSteps = [];
+  List<String/*!*/> _getStepsFromSchemaRecipe(Map<String, dynamic> recipeMap) {
+    List<String/*!*/> recipeSteps = [];
 
     bool gotSteps = false;
     try {
@@ -450,9 +441,9 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     return steps..removeWhere((item) => item.length <= 1);
   }
 
-  List<String> _getStepsFromHowToFormat(
+  List<String/*!*/> _getStepsFromHowToFormat(
       List<Map<String, dynamic>> recipeSteps) {
-    List<String> steps = [];
+    List<String/*!*/> steps = [];
 
     try {
       for (Map<String, dynamic> recipeStepInfo in recipeSteps) {

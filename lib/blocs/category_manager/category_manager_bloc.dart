@@ -18,11 +18,12 @@ class CategoryManagerBloc
   List<String> selectedCategories = [];
 
   CategoryManagerBloc(
-      {@required this.recipeManagerBloc, List<String/*!*/>/*!*/ selectedCategories})
+      {@required this.recipeManagerBloc,
+      List<String /*!*/ > /*!*/ selectedCategories})
       : super(LoadingCategoryManager()) {
     if (selectedCategories != null)
       this.selectedCategories = List<String>.from(selectedCategories);
-    subscription = recipeManagerBloc.listen((rmState) {
+    subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedCategoryManager) {
         if (rmState is RM.AddCategoriesState) {
           add(AddCategories(rmState.categories));

@@ -16,137 +16,117 @@ part 'general_info_event.dart';
 part 'general_info_state.dart';
 
 class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
-  GeneralInfoBloc() : super(GCanSave());
+  GeneralInfoBloc() : super(GCanSave()) {
+    on<SetCanSave>((event, emit) async {
+      emit(GCanSave());
+    });
 
-  @override
-  Stream<GeneralInfoState> mapEventToState(
-    GeneralInfoEvent event,
-  ) async* {
-    if (event is SetCanSave) {
-      yield* _mapSetCanSaveToState(event);
-    } else if (event is InitializeGeneralInfo) {
-      yield* _mapInitializeGeneralInfoToState(event);
-    } else if (event is UpdateRecipeImage) {
-      yield* _mapUpdateRecipeImageToState(event);
-    } else if (event is FinishedEditing) {
-      yield* _mapFinishedEditingToState(event);
-    } else if (event is GRemoveRecipeImage) {
-      yield* _mapGRemoveRecipeImageToState(event);
-    }
-  }
+    on<InitializeGeneralInfo>((event, emit) async {
+      emit(GSavingTmpData());
 
-  Stream<GeneralInfoState> _mapSetCanSaveToState(SetCanSave event) async* {
-    yield GCanSave();
-  }
+      if (event.isEditing) {
+        await HiveProvider().deleteTmpEditingRecipe();
+      }
 
-  Stream<GeneralInfoState> _mapInitializeGeneralInfoToState(
-      InitializeGeneralInfo event) async* {
-    yield GSavingTmpData();
+      emit(GCanSave());
+    });
 
-    if (event.isEditing) {
-      await HiveProvider().deleteTmpEditingRecipe();
-    }
+    on<UpdateRecipeImage>((event, emit) async {
+      emit(GSavingTmpData());
 
-    yield GCanSave();
-  }
+      String imageDataType = getImageDatatype(event.recipeImage.path);
+      String newImageDataType =
+          imageDataType == ".png" ? ".jpg" : imageDataType;
 
-  Stream<GeneralInfoState> _mapGRemoveRecipeImageToState(
-      GRemoveRecipeImage event) async* {
-    if (!event.editingRecipe) {
-      await IO.deleteRecipeImageIfExists(newRecipeLocalPathString);
+      String recipeName = event.editingRecipe
+          ? editRecipeLocalPathString
+          : newRecipeLocalPathString;
 
-      await HiveProvider().saveTmpRecipe(
-        HiveProvider().getTmpRecipe().copyWith(
-              imagePath: noRecipeImage,
-              imagePreviewPath: noRecipeImage,
-            ),
-      );
-    } else {
-      await IO.deleteRecipeImageIfExists(editRecipeLocalPathString);
+      await IO.deleteRecipeImageIfExists(recipeName);
+      await IO.saveRecipeImage(event.recipeImage, recipeName);
 
-      await HiveProvider().saveTmpEditingRecipe(
-        HiveProvider().getTmpEditingRecipe().copyWith(
-              imagePath: noRecipeImage,
-              imagePreviewPath: noRecipeImage,
-            ),
-      );
-    }
-  }
+      String recipeImagePathFull = await PathProvider.pP
+          .getRecipeImagePathFull(recipeName, newImageDataType);
+      String recipeImagePreviewPathFull = await PathProvider.pP
+          .getRecipeImagePreviewPathFull(recipeName, newImageDataType);
 
-  Stream<GeneralInfoState> _mapUpdateRecipeImageToState(
-      UpdateRecipeImage event) async* {
-    yield GSavingTmpData();
+      if (!event.editingRecipe) {
+        await HiveProvider().saveTmpRecipe(
+          HiveProvider().getTmpRecipe().copyWith(
+                imagePath: recipeImagePathFull,
+                imagePreviewPath: recipeImagePreviewPathFull,
+              ),
+        );
+      } else {
+        await HiveProvider().saveTmpEditingRecipe(
+          HiveProvider().getTmpEditingRecipe().copyWith(
+                imagePath: recipeImagePathFull,
+                imagePreviewPath: recipeImagePreviewPathFull,
+              ),
+        );
+      }
 
-    String imageDataType = getImageDatatype(event.recipeImage.path);
-    String newImageDataType = imageDataType == ".png" ? ".jpg" : imageDataType;
+      emit(GCanSave());
+    });
 
-    String recipeName = event.editingRecipe
-        ? editRecipeLocalPathString
-        : newRecipeLocalPathString;
+    on<FinishedEditing>((event, emit) async {
+      if (event.goBack) {
+        emit(GEditingFinishedGoBack());
+      } else {
+        emit(GEditingFinished());
+      }
 
-    await IO.deleteRecipeImageIfExists(recipeName);
-    await IO.saveRecipeImage(event.recipeImage, recipeName);
-
-    String recipeImagePathFull = await PathProvider.pP
-        .getRecipeImagePathFull(recipeName, newImageDataType);
-    String recipeImagePreviewPathFull = await PathProvider.pP
-        .getRecipeImagePreviewPathFull(recipeName, newImageDataType);
-
-    if (!event.editingRecipe) {
-      await HiveProvider().saveTmpRecipe(
-        HiveProvider().getTmpRecipe().copyWith(
-              imagePath: recipeImagePathFull,
-              imagePreviewPath: recipeImagePreviewPathFull,
-            ),
-      );
-    } else {
-      await HiveProvider().saveTmpEditingRecipe(
-        HiveProvider().getTmpEditingRecipe().copyWith(
-              imagePath: recipeImagePathFull,
-              imagePreviewPath: recipeImagePreviewPathFull,
-            ),
-      );
-    }
-
-    yield GCanSave();
-  }
-
-  Stream<GeneralInfoState> _mapFinishedEditingToState(
-      FinishedEditing event) async* {
-    if (event.goBack) {
-      yield GEditingFinishedGoBack();
-    } else {
-      yield GEditingFinished();
-    }
-
-    Recipe newRecipe;
-    if (!event.editingRecipe) {
-      newRecipe = HiveProvider().getTmpRecipe().copyWith(
-          name: event.recipeName,
-          preperationTime: event.preperationTime,
-          cookingTime: event.cookingTime,
-          totalTime: event.totalTime,
-          categories: event.categories,
-          tags: event.recipeTags,
-          source: event.source);
-      await HiveProvider().saveTmpRecipe(newRecipe);
-    } else {
-      newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
+      Recipe newRecipe;
+      if (!event.editingRecipe) {
+        newRecipe = HiveProvider().getTmpRecipe().copyWith(
             name: event.recipeName,
             preperationTime: event.preperationTime,
             cookingTime: event.cookingTime,
             totalTime: event.totalTime,
             categories: event.categories,
             tags: event.recipeTags,
-            source: event.source,
-          );
-      await HiveProvider().saveTmpEditingRecipe(newRecipe);
-    }
+            source: event.source);
+        await HiveProvider().saveTmpRecipe(newRecipe);
+      } else {
+        newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
+              name: event.recipeName,
+              preperationTime: event.preperationTime,
+              cookingTime: event.cookingTime,
+              totalTime: event.totalTime,
+              categories: event.categories,
+              tags: event.recipeTags,
+              source: event.source,
+            );
+        await HiveProvider().saveTmpEditingRecipe(newRecipe);
+      }
 
-    if (event.goBack) {
-      yield GSavedGoBack();
-    } else {
-      yield GSaved(newRecipe);
-    }
+      if (event.goBack) {
+        emit(GSavedGoBack());
+      } else {
+        emit(GSaved(newRecipe));
+      }
+    });
+
+    on<GRemoveRecipeImage>((event, emit) async {
+      if (!event.editingRecipe) {
+        await IO.deleteRecipeImageIfExists(newRecipeLocalPathString);
+
+        await HiveProvider().saveTmpRecipe(
+          HiveProvider().getTmpRecipe().copyWith(
+                imagePath: noRecipeImage,
+                imagePreviewPath: noRecipeImage,
+              ),
+        );
+      } else {
+        await IO.deleteRecipeImageIfExists(editRecipeLocalPathString);
+
+        await HiveProvider().saveTmpEditingRecipe(
+          HiveProvider().getTmpEditingRecipe().copyWith(
+                imagePath: noRecipeImage,
+                imagePreviewPath: noRecipeImage,
+              ),
+        );
+      }
+    });
   }
 }

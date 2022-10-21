@@ -38,7 +38,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
       return theme.copyWith(
         primaryColor: Colors.white,
         primaryIconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
-        primaryColorBrightness: Brightness.light,
+        brightness: Brightness.light,
         primaryTextTheme: theme.textTheme,
       );
     } else {
@@ -46,7 +46,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
         primaryColor: Colors.grey[800],
         primaryIconTheme:
             theme.primaryIconTheme.copyWith(color: Colors.grey[200]),
-        primaryColorBrightness: Brightness.dark,
+        brightness: Brightness.dark,
         primaryTextTheme: theme.textTheme,
       );
     }

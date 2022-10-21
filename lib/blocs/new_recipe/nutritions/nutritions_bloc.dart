@@ -14,82 +14,69 @@ import 'nutritions_state.dart';
 class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
   bool finishedEditing = false;
 
-  NutritionsBloc() : super(NCanSave());
-
-  @override
-  Stream<NutritionsState> mapEventToState(
-    NutritionsEvent event,
-  ) async* {
-    if (event is SetCanSave) {
-      yield* _mapSetCanSaveToState(event);
-    } else if (event is FinishedEditing) {
-      yield* _mapFinishedEditingToState(event);
-    }
-  }
-
-  Stream<NutritionsState> _mapSetCanSaveToState(SetCanSave event) async* {
-    yield NCanSave();
-  }
-
-  Stream<NutritionsState> _mapFinishedEditingToState(
-      FinishedEditing event) async* {
-    // case that the user quickly presses the done button twice
-    if (finishedEditing) return;
-    finishedEditing = true;
-
-    if (event.goBack) {
-      yield NEditingFinishedGoBack();
-    } else {
-      for (Nutrition n in event.nutritions) {
-        await HiveProvider().addNutrition(n.name);
-      }
-      yield NEditingFinished();
-    }
-
-    Recipe newRecipe;
-    if (event.editingRecipeName == null) {
-      Recipe nutritionRecipe = HiveProvider().getTmpRecipe().copyWith(
-            nutritions: event.nutritions,
-          );
+  NutritionsBloc() : super(NCanSave()) {
+    on<SetCanSave>((event, emit) async {
+      emit(NCanSave());
+    });
+    on<FinishedEditing>((event, emit) async {
+      // case that the user quickly presses the done button twice
+      if (finishedEditing) return;
+      finishedEditing = true;
 
       if (event.goBack) {
-        await HiveProvider().saveTmpRecipe(nutritionRecipe);
+        emit(NEditingFinishedGoBack());
       } else {
-        newRecipe = (await IO.fixImagePaths(nutritionRecipe));
-        await HiveProvider().resetTmpRecipe();
-        await IO.deleteRecipeData("tmp");
-        event.recipeManagerBloc.add(RMAddRecipes([newRecipe]));
-      }
-    } else {
-      Recipe nutritionRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
-            nutritions: event.nutritions,
-          );
-      if (event.goBack) {
-        await HiveProvider().saveTmpEditingRecipe(nutritionRecipe);
+        for (Nutrition n in event.nutritions) {
+          await HiveProvider().addNutrition(n.name);
+        }
+        emit(NEditingFinished());
       }
 
-      if (!event.goBack) {
-        if (event.editingRecipeName == null) {
-          event.recipeManagerBloc.add(RMAddRecipes([newRecipe]));
+      Recipe newRecipe;
+      if (event.editingRecipeName == null) {
+        Recipe nutritionRecipe = HiveProvider().getTmpRecipe().copyWith(
+              nutritions: event.nutritions,
+            );
+
+        if (event.goBack) {
+          await HiveProvider().saveTmpRecipe(nutritionRecipe);
         } else {
-          event.recipeManagerBloc
-              .add(RMDeleteRecipe(event.editingRecipeName, deleteFiles: false));
-          await Future.delayed(Duration(milliseconds: 100));
-          newRecipe = await IO.fixImagePaths(nutritionRecipe);
-          if (event.editingRecipeName != newRecipe.name) {
-            await IO.deleteRecipeData(event.editingRecipeName);
-          }
-          imageCache.clear();
-          await HiveProvider().deleteTmpEditingRecipe();
+          newRecipe = (await IO.fixImagePaths(nutritionRecipe));
+          await HiveProvider().resetTmpRecipe();
+          await IO.deleteRecipeData("tmp");
           event.recipeManagerBloc.add(RMAddRecipes([newRecipe]));
         }
-      }
-    }
+      } else {
+        Recipe nutritionRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
+              nutritions: event.nutritions,
+            );
+        if (event.goBack) {
+          await HiveProvider().saveTmpEditingRecipe(nutritionRecipe);
+        }
 
-    if (event.goBack) {
-      yield NSavedGoBack();
-    } else {
-      yield NSaved(newRecipe);
-    }
+        if (!event.goBack) {
+          if (event.editingRecipeName == null) {
+            event.recipeManagerBloc.add(RMAddRecipes([newRecipe]));
+          } else {
+            event.recipeManagerBloc.add(
+                RMDeleteRecipe(event.editingRecipeName, deleteFiles: false));
+            await Future.delayed(Duration(milliseconds: 100));
+            newRecipe = await IO.fixImagePaths(nutritionRecipe);
+            if (event.editingRecipeName != newRecipe.name) {
+              await IO.deleteRecipeData(event.editingRecipeName);
+            }
+            imageCache.clear();
+            await HiveProvider().deleteTmpEditingRecipe();
+            event.recipeManagerBloc.add(RMAddRecipes([newRecipe]));
+          }
+        }
+      }
+
+      if (event.goBack) {
+        emit(NSavedGoBack());
+      } else {
+        emit(NSaved(newRecipe));
+      }
+    });
   }
 }

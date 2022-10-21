@@ -121,10 +121,10 @@ class _CategorySectionState extends State<CategorySection> {
 
 // creates a filterClip with the given name
 class MyCategoryFilterChip extends StatefulWidget {
-  final String chipName;
+  final String/*!*/ chipName;
   final isSelected;
-  final Function(String name) onSelect;
-  final Function(String name) onDeselect;
+  final Function(String/*!*/ name) onSelect;
+  final Function(String/*!*/ name) onDeselect;
 
   MyCategoryFilterChip({
     Key key,
@@ -141,7 +141,7 @@ class MyCategoryFilterChip extends StatefulWidget {
 }
 
 class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
-  bool _isSelected = false;
+  bool/*!*/ _isSelected = false;
 
   @override
   void initState() {

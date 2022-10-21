@@ -83,8 +83,8 @@ class CategoryGridView extends StatelessWidget {
 }
 
 class CategoryGridTile extends StatelessWidget {
-  final String randomCategoryImage;
-  final String category;
+  final String/*!*/ randomCategoryImage;
+  final String/*!*/ category;
 
   const CategoryGridTile({
     this.randomCategoryImage,

@@ -26,8 +26,9 @@ class RecipeOverviewBloc
 
   List<Recipe> unfilteredRecipes = [];
 
-  RecipeOverviewBloc({@required this.recipeManagerBloc}):super(LoadingRecipeOverview()) {
-    subscription = recipeManagerBloc.listen((rmState) {
+  RecipeOverviewBloc({@required this.recipeManagerBloc})
+      : super(LoadingRecipeOverview()) {
+    subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeOverview) {
         if (rmState is RM.AddRecipesState) {
           add(AddRecipes(rmState.recipes));
@@ -50,209 +51,286 @@ class RecipeOverviewBloc
         }
       }
     });
-  }
 
-  @override
-  Stream<RecipeOverviewState> mapEventToState(
-    RecipeOverviewEvent event,
-  ) async* {
-    if (event is LoadCategoryRecipeOverview) {
-      yield* _mapLoadCategoryRecipeOverviewToState(event);
-    } else if (event is LoadVegetableRecipeOverview) {
-      yield* _mapLoadVegetableRecipeOverviewToState(event);
-    } else if (event is ChangeRecipeSort) {
-      yield* _mapChangeRecipeSortToState(event);
-    } else if (event is AddRecipes) {
-      yield* _mapAddRecipeToState(event);
-    } else if (event is DeleteRecipe) {
-      yield* _mapDeleteRecipeToState(event);
-    } else if (event is UpdateRecipe) {
-      yield* _mapUpdateRecipeToState(event);
-    } else if (event is UpdateFavoriteStatus) {
-      yield* _mapUpdateFavoriteStatus(event);
-    } else if (event is FilterRecipesVegetable) {
-      yield* _mapFilterRecipesToState(event);
-    } else if (event is ChangeAscending) {
-      yield* _mapChangeAscendingToState(event);
-    } else if (event is LoadRecipeTagRecipeOverview) {
-      yield* _mapLoadRecipeTagRecipeOverviewToState(event);
-    } else if (event is FilterRecipesTag) {
-      yield* _mapFilterRecipesTagToState(event);
-    }
-  }
+    on<LoadCategoryRecipeOverview>((event, emit) async {
+      final Recipe randomRecipe = (await HiveProvider()
+          .getRandomRecipeOfCategory(category: event.category));
+      final String randomRecipeImage =
+          randomRecipe != null ? randomRecipe.imagePreviewPath : null;
 
-  Stream<RecipeOverviewState> _mapLoadCategoryRecipeOverviewToState(
-      LoadCategoryRecipeOverview event) async* {
-    final Recipe randomRecipe = (await HiveProvider()
-        .getRandomRecipeOfCategory(category: event.category));
-    final String randomRecipeImage =
-        randomRecipe != null ? randomRecipe.imagePreviewPath : null;
+      emit(LoadingRecipes(
+        randomImage: randomRecipeImage,
+        category: event.category,
+      ));
 
-    yield LoadingRecipes(
-      randomImage: randomRecipeImage,
-      category: event.category,
-    );
+      final RSort categorySort =
+          await HiveProvider().getSortOrder(event.category);
+      final List<Recipe> recipes =
+          await HiveProvider().getCategoryRecipes(event.category);
+      final List<Recipe> sortedRecipes = sortRecipes(categorySort, recipes);
 
-    final RSort categorySort =
-        await HiveProvider().getSortOrder(event.category);
-    final List<Recipe> recipes =
-        await HiveProvider().getCategoryRecipes(event.category);
-    final List<Recipe> sortedRecipes = sortRecipes(categorySort, recipes);
+      unfilteredRecipes = List<Recipe>.from(sortedRecipes);
 
-    unfilteredRecipes = List<Recipe>.from(sortedRecipes);
-
-    yield LoadedRecipeOverview(
-      recipes: sortedRecipes,
-      randomImage: randomRecipeImage,
-      recipeSort: categorySort,
-      category: event.category,
-    );
-  }
-
-  Stream<RecipeOverviewState> _mapLoadVegetableRecipeOverviewToState(
-      LoadVegetableRecipeOverview event) async* {
-    final Recipe randomRecipe =
-        await HiveProvider().getRandomRecipeOfVegetable(event.vegetable);
-    final String randomRecipeImage =
-        randomRecipe != null ? randomRecipe.imagePreviewPath : null;
-
-    yield LoadingRecipes(
-      randomImage: randomRecipeImage,
-      vegetable: event.vegetable,
-    );
-
-    final List<Recipe> recipes =
-        await HiveProvider().getVegetableRecipes(event.vegetable);
-
-    unfilteredRecipes = List<Recipe>.from(recipes);
-
-    yield LoadedRecipeOverview(
-      recipes: recipes,
-      randomImage: randomRecipeImage,
-      vegetable: event.vegetable,
-      recipeSort: RSort(RecipeSort.BY_NAME, true),
-    );
-  }
-
-  Stream<RecipeOverviewState> _mapLoadRecipeTagRecipeOverviewToState(
-      LoadRecipeTagRecipeOverview event) async* {
-    final Recipe randomRecipe =
-        await HiveProvider().getRandomRecipeOfRecipeTag(event.recipeTag.text);
-    final String randomRecipeImage =
-        randomRecipe != null ? randomRecipe.imagePreviewPath : null;
-
-    yield LoadingRecipes(
-      randomImage: randomRecipeImage,
-      recipeTag: event.recipeTag,
-    );
-
-    final List<Recipe> recipes =
-        await HiveProvider().getRecipeTagRecipes(event.recipeTag.text);
-    unfilteredRecipes = List<Recipe>.from(recipes);
-
-    yield LoadedRecipeOverview(
-      recipes: recipes,
-      randomImage: randomRecipeImage,
-      recipeTag: event.recipeTag,
-      recipeSort: RSort(RecipeSort.BY_NAME, true),
-    );
-  }
-
-  Stream<RecipeOverviewState> _mapChangeRecipeSortToState(
-      ChangeRecipeSort event) async* {
-    if (state is LoadedRecipeOverview) {
-      final RSort newRecipeSort = RSort(event.recipeSort,
-          (state as LoadedRecipeOverview).recipeSort.ascending);
-
-      final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
-      final List<Recipe> sortedRecipes = sortRecipes(newRecipeSort, recipes);
-      unfilteredRecipes = sortedRecipes;
-
-      if ((state as LoadedRecipeOverview).category != null) {
-        await HiveProvider().changeSortOrder(
-            newRecipeSort, (state as LoadedRecipeOverview).category);
-      }
-
-      yield LoadedRecipeOverview(
+      emit(LoadedRecipeOverview(
         recipes: sortedRecipes,
-        randomImage: (state as LoadedRecipeOverview).randomImage,
-        vegetable: (state as LoadedRecipeOverview).vegetable,
-        category: (state as LoadedRecipeOverview).category,
-        recipeTag: (state as LoadedRecipeOverview).recipeTag,
-        recipeSort: newRecipeSort,
-      );
-    }
-  }
+        randomImage: randomRecipeImage,
+        recipeSort: categorySort,
+        category: event.category,
+      ));
+    });
 
-  Stream<RecipeOverviewState> _mapDeleteRecipeToState(
-      DeleteRecipe event) async* {
-    if (state is LoadedRecipeOverview) {
-      if (_belongsToRecipeList(event.recipe)) {
-        final List<Recipe> recipes =
-            List<Recipe>.from((state as LoadedRecipeOverview).recipes)
-              ..removeWhere((recipe) => event.recipe == recipe);
+    on<LoadVegetableRecipeOverview>((event, emit) async {
+      final Recipe randomRecipe =
+          await HiveProvider().getRandomRecipeOfVegetable(event.vegetable);
+      final String randomRecipeImage =
+          randomRecipe != null ? randomRecipe.imagePreviewPath : null;
 
-        yield LoadedRecipeOverview(
-          recipes: recipes,
+      emit(LoadingRecipes(
+        randomImage: randomRecipeImage,
+        vegetable: event.vegetable,
+      ));
+
+      final List<Recipe> recipes =
+          await HiveProvider().getVegetableRecipes(event.vegetable);
+
+      unfilteredRecipes = List<Recipe>.from(recipes);
+
+      emit(LoadedRecipeOverview(
+        recipes: recipes,
+        randomImage: randomRecipeImage,
+        vegetable: event.vegetable,
+        recipeSort: RSort(RecipeSort.BY_NAME, true),
+      ));
+    });
+
+    on<ChangeRecipeSort>((event, emit) async {
+      if (state is LoadedRecipeOverview) {
+        final RSort newRecipeSort = RSort(event.recipeSort,
+            (state as LoadedRecipeOverview).recipeSort.ascending);
+
+        final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
+        final List<Recipe> sortedRecipes = sortRecipes(newRecipeSort, recipes);
+        unfilteredRecipes = sortedRecipes;
+
+        if ((state as LoadedRecipeOverview).category != null) {
+          await HiveProvider().changeSortOrder(
+              newRecipeSort, (state as LoadedRecipeOverview).category);
+        }
+
+        emit(LoadedRecipeOverview(
+          recipes: sortedRecipes,
           randomImage: (state as LoadedRecipeOverview).randomImage,
           vegetable: (state as LoadedRecipeOverview).vegetable,
           category: (state as LoadedRecipeOverview).category,
           recipeTag: (state as LoadedRecipeOverview).recipeTag,
-          recipeSort: (state as LoadedRecipeOverview).recipeSort,
-        );
+          recipeSort: newRecipeSort,
+        ));
       }
-    }
-  }
+    });
 
-  Stream<RecipeOverviewState> _mapAddRecipeToState(AddRecipes event) async* {
-    if (state is LoadedRecipeOverview) {
-      final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
-
-      for (Recipe r in event.recipes) {
-        if (_belongsToRecipeList(r)) {
-          recipes..add(r);
-        }
-      }
-      final List<Recipe> sortedRecipes =
-          sortRecipes((state as LoadedRecipeOverview).recipeSort, recipes);
-
-      yield LoadedRecipeOverview(
-        recipes: sortedRecipes,
-        randomImage: _getRandomRecipeImage(sortedRecipes),
-        vegetable: (state as LoadedRecipeOverview).vegetable,
-        category: (state as LoadedRecipeOverview).category,
-        recipeTag: (state as LoadedRecipeOverview).recipeTag,
-        recipeSort: (state as LoadedRecipeOverview).recipeSort,
-      );
-    }
-  }
-
-  Stream<RecipeOverviewState> _mapUpdateRecipeToState(
-      UpdateRecipe event) async* {
-    if (state is LoadedRecipeOverview) {
-      if (_belongsToRecipeList(event.oldRecipe) &&
-          _belongsToRecipeList(event.updatedRecipe)) {
+    on<AddRecipes>((event, emit) async {
+      if (state is LoadedRecipeOverview) {
         final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
-        int indexOldRecipe = recipes.indexOf(event.oldRecipe);
-        final List<Recipe> updatedRecipes = recipes
-          ..replaceRange(
-              indexOldRecipe, indexOldRecipe + 1, [event.updatedRecipe]);
-        final List<Recipe> sortedRecipes = sortRecipes(
-            (state as LoadedRecipeOverview).recipeSort, updatedRecipes);
 
-        yield LoadedRecipeOverview(
+        for (Recipe r in event.recipes) {
+          if (_belongsToRecipeList(r)) {
+            recipes..add(r);
+          }
+        }
+        final List<Recipe> sortedRecipes =
+            sortRecipes((state as LoadedRecipeOverview).recipeSort, recipes);
+
+        emit(LoadedRecipeOverview(
           recipes: sortedRecipes,
           randomImage: _getRandomRecipeImage(sortedRecipes),
           vegetable: (state as LoadedRecipeOverview).vegetable,
           category: (state as LoadedRecipeOverview).category,
           recipeTag: (state as LoadedRecipeOverview).recipeTag,
           recipeSort: (state as LoadedRecipeOverview).recipeSort,
-        );
-      } else if (_belongsToRecipeList(event.oldRecipe) &&
-          !_belongsToRecipeList(event.updatedRecipe)) {
-        yield* _mapDeleteRecipeToState(DeleteRecipe(event.oldRecipe));
+        ));
       }
-    }
+    });
+
+    on<DeleteRecipe>((event, emit) async {
+      if (state is LoadedRecipeOverview) {
+        if (_belongsToRecipeList(event.recipe)) {
+          final List<Recipe> recipes =
+              List<Recipe>.from((state as LoadedRecipeOverview).recipes)
+                ..removeWhere((recipe) => event.recipe == recipe);
+
+          emit(LoadedRecipeOverview(
+            recipes: recipes,
+            randomImage: (state as LoadedRecipeOverview).randomImage,
+            vegetable: (state as LoadedRecipeOverview).vegetable,
+            category: (state as LoadedRecipeOverview).category,
+            recipeTag: (state as LoadedRecipeOverview).recipeTag,
+            recipeSort: (state as LoadedRecipeOverview).recipeSort,
+          ));
+        }
+      }
+    });
+
+    on<UpdateRecipe>((event, emit) async {
+      if (state is LoadedRecipeOverview) {
+        if (_belongsToRecipeList(event.oldRecipe) &&
+            _belongsToRecipeList(event.updatedRecipe)) {
+          final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
+          int indexOldRecipe = recipes.indexOf(event.oldRecipe);
+          final List<Recipe> updatedRecipes = recipes
+            ..replaceRange(
+                indexOldRecipe, indexOldRecipe + 1, [event.updatedRecipe]);
+          final List<Recipe> sortedRecipes = sortRecipes(
+              (state as LoadedRecipeOverview).recipeSort, updatedRecipes);
+
+          emit(LoadedRecipeOverview(
+            recipes: sortedRecipes,
+            randomImage: _getRandomRecipeImage(sortedRecipes),
+            vegetable: (state as LoadedRecipeOverview).vegetable,
+            category: (state as LoadedRecipeOverview).category,
+            recipeTag: (state as LoadedRecipeOverview).recipeTag,
+            recipeSort: (state as LoadedRecipeOverview).recipeSort,
+          ));
+        } else if (_belongsToRecipeList(event.oldRecipe) &&
+            !_belongsToRecipeList(event.updatedRecipe)) {
+          this.add(DeleteRecipe(event.oldRecipe));
+        }
+      }
+    });
+
+    on<UpdateFavoriteStatus>((event, emit) async {
+      if (state is LoadedRecipeOverview) {
+        if (_belongsToRecipeList(event.recipe)) {
+          final List<Recipe> recipes =
+              List<Recipe>.from((state as LoadedRecipeOverview).recipes);
+          int favoriteIndex =
+              recipes.indexWhere((recipe) => recipe.name == event.recipe.name);
+          final List<Recipe> updatedRecipes = recipes
+            ..replaceRange(favoriteIndex, favoriteIndex + 1, [event.recipe]);
+          final List<Recipe> sortedRecipes =
+              (state as LoadedRecipeOverview).recipeSort == null
+                  ? updatedRecipes
+                  : sortRecipes((state as LoadedRecipeOverview).recipeSort,
+                      updatedRecipes);
+
+          emit(LoadedRecipeOverview(
+            recipes: sortedRecipes,
+            randomImage: _getRandomRecipeImage(sortedRecipes),
+            vegetable: (state as LoadedRecipeOverview).vegetable,
+            category: (state as LoadedRecipeOverview).category,
+            recipeSort: (state as LoadedRecipeOverview).recipeSort,
+          ));
+        }
+      }
+    });
+
+    on<FilterRecipesVegetable>((event, emit) async {
+      if (state is LoadedRecipeOverview) {
+        currentVegetableFilter = event.vegetable;
+
+        emit(LoadedRecipeOverview(
+          recipes: List<Recipe>.from(unfilteredRecipes)
+            ..removeWhere((recipe) {
+              for (String recipeTagName in currentRecipeTagFilter) {
+                if (recipe.tags.firstWhere((tag) => tag.text == recipeTagName,
+                        orElse: () => null) ==
+                    null) {
+                  return true;
+                }
+              }
+              if (currentVegetableFilter != null) {
+                if (recipe.vegetable != currentVegetableFilter) {
+                  return true;
+                }
+              }
+              return false;
+            }),
+          randomImage: (state as LoadedRecipeOverview).randomImage,
+          vegetable: (state as LoadedRecipeOverview).vegetable,
+          category: (state as LoadedRecipeOverview).category,
+          recipeTag: (state as LoadedRecipeOverview).recipeTag,
+          recipeSort: (state as LoadedRecipeOverview).recipeSort,
+        ));
+      }
+    });
+
+    on<ChangeAscending>((event, emit) async {
+      if (state is LoadedRecipeOverview) {
+        final RSort newRecipeSort = RSort(
+            (state as LoadedRecipeOverview).recipeSort.sort, event.ascending);
+
+        final List<Recipe> recipes =
+            List<Recipe>.from((state as LoadedRecipeOverview).recipes);
+        final List<Recipe> sortedRecipes = sortRecipes(newRecipeSort, recipes);
+        unfilteredRecipes = sortedRecipes;
+
+        if ((state as LoadedRecipeOverview).category != null) {
+          await HiveProvider().changeSortOrder(
+              newRecipeSort, (state as LoadedRecipeOverview).category);
+        }
+
+        emit(LoadedRecipeOverview(
+          recipes: sortedRecipes,
+          randomImage: (state as LoadedRecipeOverview).randomImage,
+          vegetable: (state as LoadedRecipeOverview).vegetable,
+          category: (state as LoadedRecipeOverview).category,
+          recipeTag: (state as LoadedRecipeOverview).recipeTag,
+          recipeSort: (state as LoadedRecipeOverview).recipeSort,
+        ));
+      }
+    });
+
+    on<LoadRecipeTagRecipeOverview>((event, emit) async {
+      final Recipe randomRecipe =
+          await HiveProvider().getRandomRecipeOfRecipeTag(event.recipeTag.text);
+      final String randomRecipeImage =
+          randomRecipe != null ? randomRecipe.imagePreviewPath : null;
+
+      emit(LoadingRecipes(
+        randomImage: randomRecipeImage,
+        recipeTag: event.recipeTag,
+      ));
+
+      final List<Recipe> recipes =
+          await HiveProvider().getRecipeTagRecipes(event.recipeTag.text);
+      unfilteredRecipes = List<Recipe>.from(recipes);
+
+      emit(LoadedRecipeOverview(
+        recipes: recipes,
+        randomImage: randomRecipeImage,
+        recipeTag: event.recipeTag,
+        recipeSort: RSort(RecipeSort.BY_NAME, true),
+      ));
+    });
+
+    on<FilterRecipesTag>((event, emit) async {
+      if (state is LoadedRecipeOverview) {
+        currentRecipeTagFilter = event.recipeTags;
+
+        emit(LoadedRecipeOverview(
+          recipes: List<Recipe>.from(unfilteredRecipes)
+            ..removeWhere((recipe) {
+              for (String recipeTagName in event.recipeTags) {
+                if (recipe.tags.firstWhere((tag) => tag.text == recipeTagName,
+                        orElse: () => null) ==
+                    null) {
+                  return true;
+                }
+              }
+              if (currentVegetableFilter != null) {
+                if (recipe.vegetable != currentVegetableFilter) {
+                  return true;
+                }
+              }
+              return false;
+            }),
+          randomImage: (state as LoadedRecipeOverview).randomImage,
+          vegetable: (state as LoadedRecipeOverview).vegetable,
+          category: (state as LoadedRecipeOverview).category,
+          recipeTag: (state as LoadedRecipeOverview).recipeTag,
+          recipeSort: (state as LoadedRecipeOverview).recipeSort,
+        ));
+      }
+    });
   }
 
   bool _belongsToRecipeList(Recipe recipe) {
@@ -344,121 +422,5 @@ class RecipeOverviewBloc
   Future<void> close() {
     subscription.cancel();
     return super.close();
-  }
-
-  Stream<RecipeOverviewState> _mapUpdateFavoriteStatus(
-      UpdateFavoriteStatus event) async* {
-    if (state is LoadedRecipeOverview) {
-      if (_belongsToRecipeList(event.recipe)) {
-        final List<Recipe> recipes =
-            List<Recipe>.from((state as LoadedRecipeOverview).recipes);
-        int favoriteIndex =
-            recipes.indexWhere((recipe) => recipe.name == event.recipe.name);
-        final List<Recipe> updatedRecipes = recipes
-          ..replaceRange(favoriteIndex, favoriteIndex + 1, [event.recipe]);
-        final List<Recipe> sortedRecipes =
-            (state as LoadedRecipeOverview).recipeSort == null
-                ? updatedRecipes
-                : sortRecipes(
-                    (state as LoadedRecipeOverview).recipeSort, updatedRecipes);
-
-        yield LoadedRecipeOverview(
-          recipes: sortedRecipes,
-          randomImage: _getRandomRecipeImage(sortedRecipes),
-          vegetable: (state as LoadedRecipeOverview).vegetable,
-          category: (state as LoadedRecipeOverview).category,
-          recipeSort: (state as LoadedRecipeOverview).recipeSort,
-        );
-      }
-    }
-  }
-
-  Stream<RecipeOverviewState> _mapFilterRecipesToState(
-      FilterRecipesVegetable event) async* {
-    if (state is LoadedRecipeOverview) {
-      currentVegetableFilter = event.vegetable;
-
-      yield LoadedRecipeOverview(
-        recipes: List<Recipe>.from(unfilteredRecipes)
-          ..removeWhere((recipe) {
-            for (String recipeTagName in currentRecipeTagFilter) {
-              if (recipe.tags.firstWhere((tag) => tag.text == recipeTagName,
-                      orElse: () => null) ==
-                  null) {
-                return true;
-              }
-            }
-            if (currentVegetableFilter != null) {
-              if (recipe.vegetable != currentVegetableFilter) {
-                return true;
-              }
-            }
-            return false;
-          }),
-        randomImage: (state as LoadedRecipeOverview).randomImage,
-        vegetable: (state as LoadedRecipeOverview).vegetable,
-        category: (state as LoadedRecipeOverview).category,
-        recipeTag: (state as LoadedRecipeOverview).recipeTag,
-        recipeSort: (state as LoadedRecipeOverview).recipeSort,
-      );
-    }
-  }
-
-  Stream<RecipeOverviewState> _mapFilterRecipesTagToState(
-      FilterRecipesTag event) async* {
-    if (state is LoadedRecipeOverview) {
-      currentRecipeTagFilter = event.recipeTags;
-
-      yield LoadedRecipeOverview(
-        recipes: List<Recipe>.from(unfilteredRecipes)
-          ..removeWhere((recipe) {
-            for (String recipeTagName in event.recipeTags) {
-              if (recipe.tags.firstWhere((tag) => tag.text == recipeTagName,
-                      orElse: () => null) ==
-                  null) {
-                return true;
-              }
-            }
-            if (currentVegetableFilter != null) {
-              if (recipe.vegetable != currentVegetableFilter) {
-                return true;
-              }
-            }
-            return false;
-          }),
-        randomImage: (state as LoadedRecipeOverview).randomImage,
-        vegetable: (state as LoadedRecipeOverview).vegetable,
-        category: (state as LoadedRecipeOverview).category,
-        recipeTag: (state as LoadedRecipeOverview).recipeTag,
-        recipeSort: (state as LoadedRecipeOverview).recipeSort,
-      );
-    }
-  }
-
-  Stream<RecipeOverviewState> _mapChangeAscendingToState(
-      ChangeAscending event) async* {
-    if (state is LoadedRecipeOverview) {
-      final RSort newRecipeSort = RSort(
-          (state as LoadedRecipeOverview).recipeSort.sort, event.ascending);
-
-      final List<Recipe> recipes =
-          List<Recipe>.from((state as LoadedRecipeOverview).recipes);
-      final List<Recipe> sortedRecipes = sortRecipes(newRecipeSort, recipes);
-      unfilteredRecipes = sortedRecipes;
-
-      if ((state as LoadedRecipeOverview).category != null) {
-        await HiveProvider().changeSortOrder(
-            newRecipeSort, (state as LoadedRecipeOverview).category);
-      }
-
-      yield LoadedRecipeOverview(
-        recipes: sortedRecipes,
-        randomImage: (state as LoadedRecipeOverview).randomImage,
-        vegetable: (state as LoadedRecipeOverview).vegetable,
-        category: (state as LoadedRecipeOverview).category,
-        recipeTag: (state as LoadedRecipeOverview).recipeTag,
-        recipeSort: (state as LoadedRecipeOverview).recipeSort,
-      );
-    }
   }
 }

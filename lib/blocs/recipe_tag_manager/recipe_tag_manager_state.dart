@@ -10,7 +10,7 @@ class LoadingRecipeTagManager extends RecipeTagManagerState {
 }
 
 class LoadedRecipeTagManager extends RecipeTagManagerState {
-  final List<StringIntTuple> recipeTags;
+  final List<StringIntTuple/*!*/> recipeTags;
 
   const LoadedRecipeTagManager([this.recipeTags = const []]);
 

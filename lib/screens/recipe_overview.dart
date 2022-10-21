@@ -225,12 +225,12 @@ class RecipeGridView extends StatelessWidget {
                               )
                             ]),
                           )
-                        : SliverStaggeredGrid.countBuilder(
+                        : SliverMasonryGrid.count(
                             crossAxisCount:
-                                (MediaQuery.of(context).size.width / 200)
+                                (MediaQuery.of(context).size.width / 300)
                                         .round() *
                                     2,
-                            itemCount: state.recipes.length,
+                            childCount: state.recipes.length,
                             itemBuilder: (BuildContext context, int index) =>
                                 LayoutBuilder(
                               builder: (context, constraints) => RecipeCard(
@@ -245,8 +245,6 @@ class RecipeGridView extends StatelessWidget {
                                     "${state.category}${state.recipes[index].name}",
                               ),
                             ),
-                            staggeredTileBuilder: (int index) =>
-                                StaggeredTile.fit(2),
                             mainAxisSpacing: 12.0,
                             crossAxisSpacing: 12.0,
                           ),

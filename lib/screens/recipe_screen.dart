@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -13,6 +12,7 @@ import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:my_recipe_book/models/tuple.dart';
 import 'package:my_recipe_book/widgets/dialogs/number_dialog.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/animated_nutritions_fab.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:share/share.dart';
@@ -70,6 +70,7 @@ const Map<Vegetable, List<int>> vegetableColor = {
 };
 
 enum PopupOptionsMore { DELETE, SHARE, PRINT }
+
 enum PopupOptionsShare { EXPORT_ZIP, EXPORT_TEXT, EXPORT_PDF }
 
 class RecipeScreenArguments {
@@ -199,7 +200,7 @@ class _RecipeScreenState extends State<RecipeScreen>
 }
 
 class NotesSection extends StatelessWidget {
-  final String notes;
+  final String/*!*/ notes;
 
   const NotesSection({this.notes, Key key}) : super(key: key);
 
@@ -240,7 +241,7 @@ class NotesSection extends StatelessWidget {
 }
 
 class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
-  final Recipe/*!*//*!*//*!*/ recipe;
+  final Recipe /*!*/ /*!*/ /*!*/ recipe;
 
   MyGradientAppBar(
     this.recipe, {
@@ -265,22 +266,18 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
         IconButton(
           icon: Icon(MdiIcons.calendarPlus),
           onPressed: () {
-            Ads.hideBottomBannerAd();
-            DatePicker.showDateTimePicker(context,
-                    showTitleActions: true,
-                    minTime: DateTime.now().subtract(Duration(days: 31)),
-                    maxTime: DateTime.now().add(Duration(days: 60)),
-                    onChanged: (date) {
-              print('change $date');
-            }, onConfirm: (date) {
-              BlocProvider.of<RecipeCalendarBloc>(context)
-                  .add(AddRecipeToCalendarEvent(date, recipe.name));
-              print('confirm $date');
-            },
-                    currentTime: DateTime(DateTime.now().year,
-                        DateTime.now().month, DateTime.now().day),
-                    locale: LocaleType.de)
-                .then((_) => Ads.showBottomBannerAd());
+            showOmniDateTimePicker(
+              context: context,
+              startInitialDate: DateTime(
+                DateTime.now().year,
+                DateTime.now().month,
+                DateTime.now().day,
+              ),
+              is24HourMode: true,
+            ).then((DateTime date) => date != null
+                ? BlocProvider.of<RecipeCalendarBloc>(context)
+                    .add(AddRecipeToCalendarEvent(date, recipe.name))
+                : null);
           },
         ),
         BlocBuilder<RecipeBubbleBloc, RecipeBubbleState>(
@@ -507,7 +504,8 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     return true;
   }
 
-  void _showDeleteDialog(BuildContext context, String/*!*//*!*//*!*/ recipeName) {
+  void _showDeleteDialog(
+      BuildContext context, String /*!*/ /*!*/ /*!*/ recipeName) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -640,7 +638,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 class RecipePage extends StatelessWidget {
-  final Recipe/*!*//*!*/ recipe;
+  final Recipe /*!*/ /*!*/ recipe;
   final String heroImageTag;
   final List<String> categoriesFiles;
   final ScrollController scrollController;
@@ -1129,8 +1127,8 @@ bool _showComplexTopArea(
 }
 
 class CategoriesSection extends StatelessWidget {
-  final List<String> categories;
-  final List<String> categoriesFiles;
+  final List<String>/*!*/ categories;
+  final List<String>/*!*/ categoriesFiles;
 
   CategoriesSection({
     this.categories,

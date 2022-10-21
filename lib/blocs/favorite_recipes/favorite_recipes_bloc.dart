@@ -18,7 +18,7 @@ class FavoriteRecipesBloc
 
   FavoriteRecipesBloc({@required this.recipeManagerBloc})
       : super(LoadingFavorites()) {
-    subscription = recipeManagerBloc.listen((rmState) {
+    subscription = recipeManagerBloc.stream.listen((rmState) {
       if (rmState is RM.AddFavoriteState) {
         add(AddFavorite(rmState.recipe));
       } else if (rmState is RM.RemoveFavoriteState) {
@@ -33,46 +33,30 @@ class FavoriteRecipesBloc
         add(LoadFavorites());
       }
     });
-  }
 
-  @override
-  Stream<FavoriteRecipesState> mapEventToState(
-    FavoriteRecipesEvent event,
-  ) async* {
-    if (event is LoadFavorites) {
-      yield* _mapLoadFavoritesToState(event);
-    } else if (event is AddFavorite) {
-      yield* _mapAddFavoriteToState(event);
-    } else if (event is RemoveFavorite) {
-      yield* _mapRemoveFavoriteToState(event);
-    }
-  }
+    on<LoadFavorites>((event, emit) async {
+      final favoriteRecipes = await HiveProvider().getFavoriteRecipes();
 
-  Stream<FavoriteRecipesState> _mapLoadFavoritesToState(
-      LoadFavorites event) async* {
-    final favoriteRecipes = await HiveProvider().getFavoriteRecipes();
+      emit(LoadedFavorites(favoriteRecipes));
+    });
 
-    yield LoadedFavorites(favoriteRecipes);
-  }
+    on<AddFavorite>((event, emit) async {
+      if (state is LoadedFavorites) {
+        final recipes = List<Recipe>.from((state as LoadedFavorites).recipes)
+          ..add(event.recipe);
 
-  Stream<FavoriteRecipesState> _mapAddFavoriteToState(
-      AddFavorite event) async* {
-    if (state is LoadedFavorites) {
-      final recipes = List<Recipe>.from((state as LoadedFavorites).recipes)
-        ..add(event.recipe);
+        emit(LoadedFavorites(recipes));
+      }
+    });
 
-      yield LoadedFavorites(recipes);
-    }
-  }
+    on<RemoveFavorite>((event, emit) async {
+      if (state is LoadedFavorites) {
+        final recipes = List<Recipe>.from((state as LoadedFavorites).recipes)
+          ..removeWhere((recipe) => event.recipe.name == recipe.name);
 
-  Stream<FavoriteRecipesState> _mapRemoveFavoriteToState(
-      RemoveFavorite event) async* {
-    if (state is LoadedFavorites) {
-      final recipes = List<Recipe>.from((state as LoadedFavorites).recipes)
-        ..removeWhere((recipe) => event.recipe.name == recipe.name);
-
-      yield LoadedFavorites(recipes);
-    }
+        emit(LoadedFavorites(recipes));
+      }
+    });
   }
 
   @override

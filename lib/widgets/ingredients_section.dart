@@ -267,7 +267,7 @@ class _IngredientsState extends State<Ingredients> {
                               )
                             : state.ingredients.first.isEmpty
                                 ? null
-                                : OutlineButton.icon(
+                                : OutlinedButton.icon(
                                     icon: Icon(Icons.add_circle_outline),
                                     label: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -291,9 +291,16 @@ class _IngredientsState extends State<Ingredients> {
                                         ),
                                       );
                                     },
-                                    color: Colors.orange[900],
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              Colors.orange[900]),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                        ),
+                                      ),
                                     ),
                                   ),
                       )
@@ -308,7 +315,7 @@ class _IngredientsState extends State<Ingredients> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            OutlineButton.icon(
+                            OutlinedButton.icon(
                               icon: Icon(Icons.add_circle_outline),
                               label: Padding(
                                 padding:
@@ -331,9 +338,15 @@ class _IngredientsState extends State<Ingredients> {
                                   ),
                                 );
                               },
-                              color: Colors.orange[900],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    Colors.orange[900]),
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(5.0),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -348,38 +361,43 @@ class _IngredientsState extends State<Ingredients> {
                         ? null
                         : Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: OutlineButton.icon(
-                                icon: Icon(Icons.add_circle_outline),
-                                label: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text(I18n.of(context).add_section("")),
-                                ),
-                                onPressed: () {
-                                  if (state.sectionTitles.isEmpty) {
-                                    _showFlushInfo(I18n.of(context).add_title,
-                                        I18n.of(context).add_title_desc);
-                                  } else {
-                                    showDialog(
-                                      context: context,
-                                      builder: (bContext) => TextFieldDialog(
-                                        validation: (title) => title == ""
-                                            ? I18n.of(context)
-                                                .field_must_not_be_empty
-                                            : null,
-                                        save: (title) => BlocProvider.of<
-                                                IngredientsSectionBloc>(context)
-                                            .add(
-                                          AddSectionTitle(title),
-                                        ),
+                            child: OutlinedButton.icon(
+                              icon: Icon(Icons.add_circle_outline),
+                              label: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(I18n.of(context).add_section("")),
+                              ),
+                              onPressed: () {
+                                if (state.sectionTitles.isEmpty) {
+                                  _showFlushInfo(I18n.of(context).add_title,
+                                      I18n.of(context).add_title_desc);
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (bContext) => TextFieldDialog(
+                                      validation: (title) => title == ""
+                                          ? I18n.of(context)
+                                              .field_must_not_be_empty
+                                          : null,
+                                      save: (title) => BlocProvider.of<
+                                              IngredientsSectionBloc>(context)
+                                          .add(
+                                        AddSectionTitle(title),
                                       ),
-                                    );
-                                  }
-                                },
-                                color: Colors.orange[900],
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        new BorderRadius.circular(5.0))),
+                                    ),
+                                  );
+                                }
+                              },
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    Colors.orange[900]),
+                                shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                            new BorderRadius.circular(5.0))),
+                              ),
+                            ),
                           ),
                   )
                   ..removeWhere((element) => (element == null)),

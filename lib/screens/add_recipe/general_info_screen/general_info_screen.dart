@@ -333,7 +333,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                 ],
               ),
             )
-          : OutlineButton.icon(
+          : OutlinedButton.icon(
               icon: Icon(Icons.add_circle),
               label: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -342,8 +342,12 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
               onPressed: () async {
                 _onTapDuration(time);
               },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
               ),
             ),
     );

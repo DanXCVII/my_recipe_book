@@ -68,206 +68,174 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
         this.add(WatchedVideo(DateTime.now()));
       }
     };
-  }
 
-  @override
-  Stream<AdManagerState> mapEventToState(
-    AdManagerEvent event,
-  ) async* {
-    if (!(state is IsPurchased)) {
-      if (event is WatchedVideo) {
-        yield* _mapWatchedVideoToState(event);
-      } else if (event is InitializeAds) {
-        yield* _mapInitializeAdsToState(event);
-      } else if (event is StartWatchingVideo) {
-        yield* _mapStartWatchingVideoToState(event);
-      } else if (event is LoadVideo) {
-        yield* _mapLoadVideoToState(event);
-      } else if (event is ShowAdsAgain) {
-        yield* _mapShowAdsAgain(event);
-      } else if (event is PurchaseProVersion) {
-        yield* _mapPurchaseProVersionToState(event);
-      } else if (event is _PurchaseSuccessfull) {
-        yield* _mapPurchaseSuccessfullToState(event);
-      } else if (event is _FailedLoadingRewardedVideo) {
-        yield* _mapFailedLoadingRewardedVideoToState(event);
-      } else if (event is _DisplayCurrentVideoAdState) {
-        yield* _mapInterruptedLoadingVideoToState(event);
+    on<WatchedVideo>((event, emit) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      DateTime oldNoAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
+      DateTime noAdsUntil;
+      if (oldNoAdsUntil.isAfter(DateTime.now())) {
+        noAdsUntil = oldNoAdsUntil.add(Duration(minutes: 30));
+      } else {
+        noAdsUntil = DateTime.now().add(Duration(minutes: 30));
       }
-    }
-  }
 
-  Stream<AdManagerState> _mapInitializeAdsToState(InitializeAds event) async* {
-    if (isInitialized) return;
-    isInitialized = true;
+      await prefs.setString('noAdsUntil', noAdsUntil.toString());
 
-    MobileAds.instance
-        .updateRequestConfiguration(RequestConfiguration(testDeviceIds: ['']));
-
-    _sP ??= await SharedPreferences.getInstance();
-
-    if (_sP.getBool('pro_version') == true) {
       Ads.showBannerAds(false);
-      yield IsPurchased();
-    } else {
-      Ads.showBannerAds(true);
-      print(await _iap.isAvailable());
-      _isAvailable = await _iap.isAvailable();
 
-      if (_isAvailable) {
-        await _getProducts();
+      int waitTime = noAdsUntil.difference(DateTime.now()).inMinutes + 5;
 
-        try {
-          await _iap.restorePurchases();
-        } catch (e) {
-          print(e);
+      _periodicSub?.cancel();
+      _periodicSub = Stream.periodic(const Duration(minutes: 1), (v) => v)
+          .take(waitTime)
+          .listen((count) {
+        print(count);
+        if (DateTime.now().isAfter(noAdsUntil)) {
+          Ads.showBannerAds(true);
+          _periodicSub.cancel();
+          add(ShowAdsAgain());
         }
+      });
 
-        _subscription = _iap.purchaseStream.listen((data) {
-          _purchases.addAll(data);
+      emit(AdFreeUntil(noAdsUntil));
+    });
 
-          _verifyPurchase(data.first);
-        });
-      }
+    on<InitializeAds>((event, emit) async {
+      if (isInitialized) return;
+      isInitialized = true;
 
-      if (_sP.getString('noAdsUntil') != null) {
-        DateTime noAdsUntil = DateTime.parse(_sP.getString('noAdsUntil'));
+      MobileAds.instance.updateRequestConfiguration(
+          RequestConfiguration(testDeviceIds: ['']));
 
-        if (noAdsUntil.isAfter(DateTime.now())) {
-          Ads.showBannerAds(false);
+      _sP ??= await SharedPreferences.getInstance();
 
-          int waitTime = DateTime.now().difference(noAdsUntil).inMinutes + 5;
-
-          _periodicSub = Stream.periodic(const Duration(minutes: 1), (v) => v)
-              .take(waitTime)
-              .listen((count) {
-            print(count);
-            if (DateTime.now().isAfter(noAdsUntil)) {
-              Ads.showBannerAds(true);
-              _periodicSub.cancel();
-              add(ShowAdsAgain());
-            }
-          });
-
-          yield AdFreeUntil(noAdsUntil);
-        }
-      }
-    }
-  }
-
-  Stream<AdManagerState> _mapWatchedVideoToState(WatchedVideo event) async* {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    DateTime oldNoAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
-    DateTime noAdsUntil;
-    if (oldNoAdsUntil.isAfter(DateTime.now())) {
-      noAdsUntil = oldNoAdsUntil.add(Duration(minutes: 30));
-    } else {
-      noAdsUntil = DateTime.now().add(Duration(minutes: 30));
-    }
-
-    await prefs.setString('noAdsUntil', noAdsUntil.toString());
-
-    Ads.showBannerAds(false);
-
-    int waitTime = noAdsUntil.difference(DateTime.now()).inMinutes + 5;
-
-    _periodicSub?.cancel();
-    _periodicSub = Stream.periodic(const Duration(minutes: 1), (v) => v)
-        .take(waitTime)
-        .listen((count) {
-      print(count);
-      if (DateTime.now().isAfter(noAdsUntil)) {
+      if (_sP.getBool('pro_version') == true) {
+        Ads.showBannerAds(false);
+        emit(IsPurchased());
+      } else {
         Ads.showBannerAds(true);
-        _periodicSub.cancel();
-        add(ShowAdsAgain());
+        print(await _iap.isAvailable());
+        _isAvailable = await _iap.isAvailable();
+
+        if (_isAvailable) {
+          await _getProducts();
+
+          try {
+            await _iap.restorePurchases();
+          } catch (e) {
+            print(e);
+          }
+
+          _subscription = _iap.purchaseStream.listen((data) {
+            _purchases.addAll(data);
+
+            _verifyPurchase(data.first);
+          });
+        }
+
+        if (_sP.getString('noAdsUntil') != null) {
+          DateTime noAdsUntil = DateTime.parse(_sP.getString('noAdsUntil'));
+
+          if (noAdsUntil.isAfter(DateTime.now())) {
+            Ads.showBannerAds(false);
+
+            int waitTime = DateTime.now().difference(noAdsUntil).inMinutes + 5;
+
+            _periodicSub = Stream.periodic(const Duration(minutes: 1), (v) => v)
+                .take(waitTime)
+                .listen((count) {
+              print(count);
+              if (DateTime.now().isAfter(noAdsUntil)) {
+                Ads.showBannerAds(true);
+                _periodicSub.cancel();
+                add(ShowAdsAgain());
+              }
+            });
+
+            emit(AdFreeUntil(noAdsUntil));
+          }
+        }
       }
     });
 
-    yield AdFreeUntil(noAdsUntil);
-  }
-
-  Stream<AdManagerState> _mapLoadVideoToState(LoadVideo event) async* {
-    await Ads.loadRewardedVideo(
-      false,
-      onAdLoaded,
-      onAdFailedToLoad,
-      onRewardedAdUserEarnedReward,
-    );
-  }
-
-  Stream<AdManagerState> _mapStartWatchingVideoToState(
-      StartWatchingVideo event) async* {
-    if (!Ads.shouldShowAds()) return;
-    lastAdForBannerTime = event.addAddFreeTime;
-    _showVideo = true;
-    bool hasInternetConnection = false;
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        hasInternetConnection = true;
+    on<StartWatchingVideo>((event, emit) async {
+      if (!Ads.shouldShowAds()) return;
+      lastAdForBannerTime = event.addAddFreeTime;
+      _showVideo = true;
+      bool hasInternetConnection = false;
+      try {
+        final result = await InternetAddress.lookup('example.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          hasInternetConnection = true;
+        }
+      } on SocketException catch (_) {
+        hasInternetConnection = false;
       }
-    } on SocketException catch (_) {
-      hasInternetConnection = false;
-    }
 
-    if (!event.showLoadingIndicator) {
-      await Ads.showRewardedVideoAd(onRewardedAdUserEarnedReward);
+      if (!event.showLoadingIndicator) {
+        await Ads.showRewardedVideoAd(onRewardedAdUserEarnedReward);
 
-      return;
-    } else {
-      if (hasInternetConnection) {
-        lastTimeStartedWatching = event.time;
-
-        yield LoadingVideo();
-
-        await Ads.loadRewardedVideo(
-          true,
-          onAdLoaded,
-          onAdFailedToLoad,
-          onRewardedAdUserEarnedReward,
-        );
+        return;
       } else {
-        yield NotConnected();
+        if (hasInternetConnection) {
+          lastTimeStartedWatching = event.time;
+
+          emit(LoadingVideo());
+
+          await Ads.loadRewardedVideo(
+            true,
+            onAdLoaded,
+            onAdFailedToLoad,
+            onRewardedAdUserEarnedReward,
+          );
+        } else {
+          emit(NotConnected());
+        }
       }
-    }
-  }
+    });
 
-  Stream<AdManagerState> _mapShowAdsAgain(ShowAdsAgain event) async* {
-    yield ShowAds();
-  }
+    on<LoadVideo>((event, emit) async {
+      await Ads.loadRewardedVideo(
+        false,
+        onAdLoaded,
+        onAdFailedToLoad,
+        onRewardedAdUserEarnedReward,
+      );
+    });
 
-  Stream<AdManagerState> _mapPurchaseProVersionToState(
-      PurchaseProVersion event) async* {
-    if (_products != null && _products.isNotEmpty) {
-      final PurchaseParam purchaseParam = GooglePlayPurchaseParam(
-          productDetails: _products.first, applicationUserName: null);
+    on<ShowAdsAgain>((event, emit) async {
+      emit(ShowAds());
+    });
 
-      await _iap.buyNonConsumable(purchaseParam: purchaseParam);
-    }
-  }
+    on<PurchaseProVersion>((event, emit) async {
+      if (_products != null && _products.isNotEmpty) {
+        final PurchaseParam purchaseParam = GooglePlayPurchaseParam(
+            productDetails: _products.first, applicationUserName: null);
 
-  Stream<AdManagerState> _mapPurchaseSuccessfullToState(
-      _PurchaseSuccessfull event) async* {
-    yield IsPurchased();
-  }
+        await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+      }
+    });
 
-  Stream<AdManagerState> _mapFailedLoadingRewardedVideoToState(
-      _FailedLoadingRewardedVideo event) async* {
-    if (_showVideo) {
-      yield FailedLoadingRewardedVideo();
-    }
-  }
+    on<_PurchaseSuccessfull>((event, emit) async {
+      emit(IsPurchased());
+    });
 
-  Stream<AdManagerState> _mapInterruptedLoadingVideoToState(
-      _DisplayCurrentVideoAdState event) async* {
-    DateTime noAdsUntil = await _getStatusNoAds();
+    on<_FailedLoadingRewardedVideo>((event, emit) async {
+      if (_showVideo) {
+        emit(FailedLoadingRewardedVideo());
+      }
+    });
 
-    if (noAdsUntil.isAfter(DateTime.now())) {
-      yield AdFreeUntil(noAdsUntil);
-    } else {
-      yield AdManagerInitial();
-    }
+    on<_DisplayCurrentVideoAdState>((event, emit) async {
+      DateTime noAdsUntil = await _getStatusNoAds();
+
+      if (noAdsUntil.isAfter(DateTime.now())) {
+        emit(AdFreeUntil(noAdsUntil));
+      } else {
+        emit(AdManagerInitial());
+      }
+    });
   }
 
   Future<void> _getProducts() async {

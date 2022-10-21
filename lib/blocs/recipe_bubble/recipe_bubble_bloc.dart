@@ -15,8 +15,9 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
   StreamSubscription subscription;
 
-  RecipeBubbleBloc({@required this.recipeManagerBloc}) :super(LoadedRecipeBubbles([])){
-    subscription = recipeManagerBloc.listen((rmState) {
+  RecipeBubbleBloc({@required this.recipeManagerBloc})
+      : super(LoadedRecipeBubbles([])) {
+    subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeBubbles) {
         if (rmState is RM.DeleteRecipeState) {
           if ((state as LoadedRecipeBubbles).recipes.contains(rmState.recipe)) {
@@ -36,62 +37,49 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
         }
       }
     });
+
+    on<AddRecipeBubble>((event, emit) async {
+      if ((state as LoadedRecipeBubbles).recipes.length < 3) {
+        List<Recipe> recipes =
+            List<Recipe>.from((state as LoadedRecipeBubbles).recipes)
+              ..addAll(event.recipes);
+
+        emit(LoadedRecipeBubbles(recipes));
+      }
+    });
+
+    on<RemoveRecipeBubble>((event, emit) async {
+      if (state is LoadedRecipeBubbles) {
+        List<Recipe> newRecipeList =
+            List<Recipe>.from((state as LoadedRecipeBubbles).recipes);
+
+        for (Recipe r in event.recipes) {
+          newRecipeList.remove(r);
+        }
+
+        emit(LoadedRecipeBubbles(newRecipeList));
+      }
+    });
+
+    on<ReloadRecipeBubbles>((event, emit) async {
+      if (state is LoadedRecipeBubbles) {
+        List<Recipe> newRecipeList = [];
+
+        for (int i = 0;
+            i < (state as LoadedRecipeBubbles).recipes.length;
+            i++) {
+          newRecipeList.add(await HiveProvider()
+              .getRecipeByName((state as LoadedRecipeBubbles).recipes[i].name));
+        }
+
+        emit(LoadedRecipeBubbles(newRecipeList));
+      }
+    });
   }
 
   @override
   Future<void> close() {
     subscription.cancel();
     return super.close();
-  }
-
-  @override
-  Stream<RecipeBubbleState> mapEventToState(
-    RecipeBubbleEvent event,
-  ) async* {
-    if (event is AddRecipeBubble) {
-      yield* _mapAddRecipeBubbleToState(event);
-    } else if (event is RemoveRecipeBubble) {
-      yield* _mapRemoveRecipeBubbleToState(event);
-    } else if (event is ReloadRecipeBubbles) {
-      yield* _mapReloadRecipeBubblesToState();
-    }
-  }
-
-  Stream<RecipeBubbleState> _mapAddRecipeBubbleToState(
-      AddRecipeBubble event) async* {
-    if ((state as LoadedRecipeBubbles).recipes.length < 3) {
-      List<Recipe> recipes =
-          List<Recipe>.from((state as LoadedRecipeBubbles).recipes)
-            ..addAll(event.recipes);
-
-      yield LoadedRecipeBubbles(recipes);
-    }
-  }
-
-  Stream<RecipeBubbleState> _mapRemoveRecipeBubbleToState(
-      RemoveRecipeBubble event) async* {
-    if (state is LoadedRecipeBubbles) {
-      List<Recipe> newRecipeList =
-          List<Recipe>.from((state as LoadedRecipeBubbles).recipes);
-
-      for (Recipe r in event.recipes) {
-        newRecipeList.remove(r);
-      }
-
-      yield LoadedRecipeBubbles(newRecipeList);
-    }
-  }
-
-  Stream<RecipeBubbleState> _mapReloadRecipeBubblesToState() async* {
-    if (state is LoadedRecipeBubbles) {
-      List<Recipe> newRecipeList = [];
-
-      for (int i = 0; i < (state as LoadedRecipeBubbles).recipes.length; i++) {
-        newRecipeList.add(await HiveProvider()
-            .getRecipeByName((state as LoadedRecipeBubbles).recipes[i].name));
-      }
-
-      yield LoadedRecipeBubbles(newRecipeList);
-    }
   }
 }

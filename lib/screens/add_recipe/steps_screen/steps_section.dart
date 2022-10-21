@@ -133,7 +133,7 @@ class _StepsState extends State<Steps> {
                     state.steps.isNotEmpty
                         ? Padding(
                             padding: const EdgeInsets.only(right: 12),
-                            child: OutlineButton.icon(
+                            child: OutlinedButton.icon(
                               icon: Icon(Icons.remove_circle),
                               label: Padding(
                                 padding:
@@ -146,13 +146,17 @@ class _StepsState extends State<Steps> {
                               onPressed: () {
                                 _removeStep(widget.editRecipeName);
                               },
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0),
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                ),
                               ),
                             ),
                           )
                         : null,
-                    OutlineButton.icon(
+                    OutlinedButton.icon(
                       icon: Icon(Icons.add_circle),
                       label: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -164,8 +168,12 @@ class _StepsState extends State<Steps> {
                       onPressed: () {
                         _addStep(widget.editRecipeName);
                       },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                        ),
                       ),
                     ),
                   ].where((c) => c != null).toList(),
@@ -275,7 +283,7 @@ class Step extends StatelessWidget {
     return Column(
       children: <Widget>[
         stepTitle == "" || stepTitle == null
-            ? OutlineButton.icon(
+            ? OutlinedButton.icon(
                 icon: Icon(Icons.add_circle),
                 label: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -293,8 +301,12 @@ class Step extends StatelessWidget {
                     ),
                   );
                 },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0),
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
                 ),
               )
             : Padding(

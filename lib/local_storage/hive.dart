@@ -145,7 +145,7 @@ class HiveProvider {
   Box<List<String>> boxOrder;
   Box<RSort> boxRecipeSort;
   Box<List> boxShoppingCart;
-  Box<List<String>> boxRecipeCategories;
+  Box<List<String>/*!*//*?*//*?*/> boxRecipeCategories;
   Box<StringIntTuple> boxRecipeTags;
   Box<List<String>> boxRecipeTagsList;
   Box<List<String>> boxRatings;
@@ -223,7 +223,7 @@ class HiveProvider {
     String hiveRecipeKey = getHiveKey(newRecipe.name);
 
     // add recipeTags to boxes
-    List<StringIntTuple> newColorRecipeTags = [];
+    List<StringIntTuple/*!*/> newColorRecipeTags = [];
     List<String> recipeTagKeys =
         boxRecipeTagsList.keys.map((item) => item.toString()).toList();
     for (StringIntTuple recipeTag in newRecipe.tags) {
@@ -624,8 +624,8 @@ class HiveProvider {
     }
   }
 
-  List<StringIntTuple> getRecipeTags() {
-    List<StringIntTuple> recipeTags = [];
+  List<StringIntTuple/*!*/> getRecipeTags() {
+    List<StringIntTuple/*!*/> recipeTags = [];
 
     for (var key in boxRecipeTags.keys) {
       recipeTags.add(boxRecipeTags.get(key));
@@ -816,7 +816,7 @@ class HiveProvider {
 
   ////////////// ingredient names //////////////
 
-  List<String> getIngredientNames() {
+  List<String/*!*/> getIngredientNames() {
     return boxIngredientNames.keys
         .map<String>((key) => boxIngredientNames.get(key))
         .toList();

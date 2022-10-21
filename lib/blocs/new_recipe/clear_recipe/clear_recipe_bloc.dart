@@ -11,34 +11,22 @@ part 'clear_recipe_event.dart';
 part 'clear_recipe_state.dart';
 
 class ClearRecipeBloc extends Bloc<ClearRecipeEvent, ClearRecipeState> {
-  ClearRecipeBloc() : super(InitialClearRecipeState());
+  ClearRecipeBloc() : super(InitialClearRecipeState()) {
+    on<Clear>((event, emit) async {
+      Recipe clearedRecipe = Recipe(name: "");
+      if (event.editingRecipe) {
+        await HiveProvider().saveTmpEditingRecipe(clearedRecipe);
+        await IO.deleteRecipeData(Constants.editRecipeLocalPathString);
+      } else {
+        await HiveProvider().saveTmpRecipe(clearedRecipe);
+        await IO.deleteRecipeData(Constants.newRecipeLocalPathString);
+      }
 
-  @override
-  Stream<ClearRecipeState> mapEventToState(
-    ClearRecipeEvent event,
-  ) async* {
-    if (event is Clear) {
-      yield* _mapCearToState(event);
-    } else if (event is RemoveRecipeImage) {
-      yield* _mapRemoveRecipeImageToState(event);
-    }
-  }
+      emit(ClearedRecipe(clearedRecipe));
+    });
 
-  Stream<ClearRecipeState> _mapCearToState(Clear event) async* {
-    Recipe clearedRecipe = Recipe(name: "");
-    if (event.editingRecipe) {
-      await HiveProvider().saveTmpEditingRecipe(clearedRecipe);
-      await IO.deleteRecipeData(Constants.editRecipeLocalPathString);
-    } else {
-      await HiveProvider().saveTmpRecipe(clearedRecipe);
-      await IO.deleteRecipeData(Constants.newRecipeLocalPathString);
-    }
-
-    yield ClearedRecipe(clearedRecipe);
-  }
-
-  Stream<ClearRecipeState> _mapRemoveRecipeImageToState(
-      RemoveRecipeImage event) async* {
-    yield RemovedRecipeImage();
+    on<RemoveRecipeImage>((event, emit) async {
+      emit(RemovedRecipeImage());
+    });
   }
 }

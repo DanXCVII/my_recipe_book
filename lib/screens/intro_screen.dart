@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intro_slider/intro_slider.dart';
-import 'package:intro_slider/slide_object.dart';
 import 'package:my_recipe_book/constants/global_settings.dart';
 
 import '../generated/i18n.dart';

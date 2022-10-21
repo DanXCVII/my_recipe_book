@@ -4,7 +4,7 @@ import '../generated/i18n.dart';
 import '../util/my_wrapper.dart';
 
 class ComplexitySection extends StatefulWidget {
-  final MyDoubleWrapper complexity;
+  final MyDoubleWrapper/*!*/ complexity;
 
   ComplexitySection({this.complexity});
 

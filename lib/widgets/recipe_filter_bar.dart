@@ -11,7 +11,7 @@ class RecipeFilter extends StatefulWidget {
   final bool showVegetableFilter;
   final bool showRecipeTagFilter;
   final RecipeSort initialRecipeSort;
-  final bool initialAscending;
+  final bool/*!*/ initialAscending;
   final Function(RecipeSort rSort) changeOrder;
   final Function(bool ascending) changeAscending;
   final Function(Vegetable vegetable) filterVegetableRecipes;

@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import '../constants/global_constants.dart' as Constants;
 
 class CategoryCircle extends StatelessWidget {
-  final String categoryName;
-  final String imageName;
+  final String/*!*/ categoryName;
+  final String/*!*/ imageName;
   final Function onPressed;
 
   CategoryCircle({

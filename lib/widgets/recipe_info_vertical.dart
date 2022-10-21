@@ -22,7 +22,7 @@ class RecipeInfoVertical extends StatelessWidget {
   final Recipe/*!*/ recipe;
   final String heroImageTag;
   final double width;
-  final List<String> categoriesFiles;
+  final List<String>/*!*/ categoriesFiles;
 
   const RecipeInfoVertical(
     this.recipe,

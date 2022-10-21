@@ -5,7 +5,7 @@ import '../../generated/i18n.dart';
 class ComplexityWave extends StatelessWidget {
   final Color textColor;
   final String fontFamily;
-  final int effort;
+  final int/*!*/ effort;
 
   const ComplexityWave(
     this.textColor,

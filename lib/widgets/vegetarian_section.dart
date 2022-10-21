@@ -15,7 +15,7 @@ class Vegetarian extends StatefulWidget {
 }
 
 class _VegetarianState extends State<Vegetarian> {
-  int _radioValue = 0;
+  int/*!*/ _radioValue = 0;
 
   @override
   initState() {

@@ -19,10 +19,11 @@ class RecipeTagManagerBloc
   List<StringIntTuple> selectedTags = [];
 
   RecipeTagManagerBloc(
-      {@required this.recipeManagerBloc, List<StringIntTuple> selectedTags}):super(LoadingRecipeTagManager()) {
+      {@required this.recipeManagerBloc, List<StringIntTuple> selectedTags})
+      : super(LoadingRecipeTagManager()) {
     if (selectedTags != null)
       this.selectedTags = List<StringIntTuple>.from(selectedTags);
-    subscription = recipeManagerBloc.listen((rmState) {
+    subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeTagManager) {
         if (rmState is RM.AddRecipeTagsState) {
           add(AddRecipeTags(rmState.recipeTags));
@@ -33,90 +34,61 @@ class RecipeTagManagerBloc
         }
       }
     });
-  }
 
-  @override
-  Stream<RecipeTagManagerState> mapEventToState(
-    RecipeTagManagerEvent event,
-  ) async* {
-    if (event is InitializeRecipeTagManager) {
-      yield* _mapInitializeRecipeTagManagerToState(event);
-    } else if (event is AddRecipeTags) {
-      yield* _mapAddRecipeTagsToState(event);
-    } else if (event is DeleteRecipeTag) {
-      yield* _mapDeleteRecipeTagToState(event);
-    } else if (event is UpdateRecipeTag) {
-      yield* _mapUpdateRecipeTagToState(event);
-    } else if (event is SelectRecipeTag) {
-      selectRecipeTag(event);
-    } else if (event is UnselectRecipeTag) {
-      unselectRecipeTag(event);
-    }
-  }
+    on<InitializeRecipeTagManager>((event, emit) async {
+      final List<StringIntTuple> recipeTags = HiveProvider().getRecipeTags();
 
-  @override
-  Future<void> close() {
-    subscription.cancel();
-    return super.close();
-  }
+      emit(LoadedRecipeTagManager(recipeTags));
+    });
 
-  Stream<RecipeTagManagerState> _mapInitializeRecipeTagManagerToState(
-      InitializeRecipeTagManager event) async* {
-    final List<StringIntTuple> recipeTags = HiveProvider().getRecipeTags();
+    on<AddRecipeTags>((event, emit) async {
+      if (state is LoadedRecipeTagManager) {
+        selectedTags.addAll(event.recipeTags);
 
-    yield LoadedRecipeTagManager(recipeTags);
-  }
-
-  Stream<RecipeTagManagerState> _mapAddRecipeTagsToState(
-      AddRecipeTags event) async* {
-    if (state is LoadedRecipeTagManager) {
-      selectedTags.addAll(event.recipeTags);
-
-      yield LoadedRecipeTagManager(List<StringIntTuple>.from(
-          (state as LoadedRecipeTagManager).recipeTags)
-        ..addAll(event.recipeTags));
-    }
-  }
-
-  Stream<RecipeTagManagerState> _mapDeleteRecipeTagToState(
-      DeleteRecipeTag event) async* {
-    if (state is LoadedRecipeTagManager) {
-      yield LoadedRecipeTagManager(List<StringIntTuple>.from(
-          (state as LoadedRecipeTagManager).recipeTags)
-        ..remove(event.recipeTag));
-
-      if (selectedTags.contains(event.recipeTag)) {
-        selectedTags.remove(event.recipeTag);
+        emit(LoadedRecipeTagManager(List<StringIntTuple>.from(
+            (state as LoadedRecipeTagManager).recipeTags)
+          ..addAll(event.recipeTags)));
       }
-    }
-  }
+    });
 
-  Stream<RecipeTagManagerState> _mapUpdateRecipeTagToState(
-      UpdateRecipeTag event) async* {
-    if (state is LoadedRecipeTagManager) {
-      final List<StringIntTuple> recipeTags =
-          (state as LoadedRecipeTagManager).recipeTags.map((recipeTag) {
-        if (recipeTag == event.oldRecipeTag) {
-          return event.updatedRecipeTag;
-        } else {
-          return recipeTag;
+    on<DeleteRecipeTag>((event, emit) async {
+      if (state is LoadedRecipeTagManager) {
+        emit(LoadedRecipeTagManager(List<StringIntTuple>.from(
+            (state as LoadedRecipeTagManager).recipeTags)
+          ..remove(event.recipeTag)));
+
+        if (selectedTags.contains(event.recipeTag)) {
+          selectedTags.remove(event.recipeTag);
         }
-      }).toList();
-
-      if (selectedTags.contains(event.oldRecipeTag)) {
-        selectedTags[selectedTags.indexOf(event.oldRecipeTag)] =
-            event.updatedRecipeTag;
       }
+    });
 
-      yield LoadedRecipeTagManager(recipeTags);
-    }
-  }
+    on<UpdateRecipeTag>((event, emit) async {
+      if (state is LoadedRecipeTagManager) {
+        final List<StringIntTuple/*!*/> recipeTags =
+            (state as LoadedRecipeTagManager).recipeTags.map((recipeTag) {
+          if (recipeTag == event.oldRecipeTag) {
+            return event.updatedRecipeTag;
+          } else {
+            return recipeTag;
+          }
+        }).toList();
 
-  void selectRecipeTag(SelectRecipeTag event) {
-    selectedTags.add(event.recipeTag);
-  }
+        if (selectedTags.contains(event.oldRecipeTag)) {
+          selectedTags[selectedTags.indexOf(event.oldRecipeTag)] =
+              event.updatedRecipeTag;
+        }
 
-  void unselectRecipeTag(UnselectRecipeTag event) {
-    selectedTags.remove(event.recipeTag);
+        emit(LoadedRecipeTagManager(recipeTags));
+      }
+    });
+
+    on<SelectRecipeTag>((event, emit) async {
+      selectedTags.add(event.recipeTag);
+    });
+
+    on<UnselectRecipeTag>((event, emit) async {
+      selectedTags.remove(event.recipeTag);
+    });
   }
 }

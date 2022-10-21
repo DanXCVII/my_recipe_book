@@ -2,11 +2,13 @@ import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:my_recipe_book/ad_related/ad.dart';
+import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 import '../../generated/i18n.dart';
 import '../../local_storage/hive.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 
 class CalendarAddDialog extends StatelessWidget {
@@ -38,7 +40,7 @@ class CalendarAddDialog extends StatelessWidget {
 }
 
 class CalendarAddDialogContent extends StatefulWidget {
-  final void Function(DateTime date, String recipeName) onFinished;
+  final void Function(DateTime/*!*/ date, String recipeName) onFinished;
   final focus = FocusNode();
 
   CalendarAddDialogContent(
@@ -100,7 +102,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
         ),
         selectedDate == null
             ? Center(
-                child: OutlineButton.icon(
+                child: OutlinedButton.icon(
                   icon: Icon(Icons.add_circle),
                   label: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -109,8 +111,12 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                   onPressed: () async {
                     _onSelectDate();
                   },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0),
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
                   ),
                 ),
               )
@@ -202,20 +208,46 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
 
   void _onSelectDate() {
     Ads.hideBottomBannerAd();
-    DatePicker.showDateTimePicker(
-      context,
-      showTitleActions: true,
-      minTime: DateTime.now().subtract(Duration(days: 31)),
-      maxTime: DateTime.now().add(Duration(days: 60)),
-      onConfirm: (date) {
-        setState(() {
-          selectedDate = date;
-        });
-      },
-      currentTime: DateTime(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day),
-      locale: LocaleType.de,
-    ).then((_) => Ads.showBottomBannerAd());
-    ;
+
+    // TODO: fix
+    showOmniDateTimePicker(
+      context: context,
+      startInitialDate: DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+      ),
+      backgroundColor: Theme.of(context).backgroundColor,
+      primaryColor: Theme.of(context).primaryColor,
+      tabTextColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.white
+          : Colors.black,
+      calendarTextColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.white
+          : Colors.black,
+      buttonTextColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.white
+          : Colors.black,
+      is24HourMode: true,
+    ).then((DateTime date) => date != null
+        ? setState(() {
+            selectedDate = date;
+          })
+        : null);
+
+    // DatePicker.showDateTimePicker(
+    //   context,
+    //   showTitleActions: true,
+    //   minTime: DateTime.now().subtract(Duration(days: 31)),
+    //   maxTime: DateTime.now().add(Duration(days: 60)),
+    //   onConfirm: (date) {
+    //     setState(() {
+    //       selectedDate = date;
+    //     });
+    //   },
+    //   currentTime: DateTime(
+    //       DateTime.now().year, DateTime.now().month, DateTime.now().day),
+    //   locale: LocaleType.de,
+    // ).then((_) => Ads.showBottomBannerAd());
   }
 }

@@ -22,7 +22,7 @@ class RecipeCategoryOverviewBloc
 
   RecipeCategoryOverviewBloc({@required this.recipeManagerBloc})
       : super(LoadingRecipeCategoryOverviewState()) {
-    subscription = recipeManagerBloc.listen((rmState) {
+    subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeCategoryOverview) {
         if (rmState is RM.AddRecipesState) {
           add(RCOAddRecipes(rmState.recipes));
@@ -44,174 +44,143 @@ class RecipeCategoryOverviewBloc
         }
       }
     });
-  }
 
-  @override
-  Stream<RecipeCategoryOverviewState> mapEventToState(
-    RecipeCategoryOverviewEvent event,
-  ) async* {
-    if (event is RCOLoadRecipeCategoryOverview) {
-      yield* _mapLoadCategoryOverviewToState(event);
-    } else if (event is RCOAddRecipes) {
-      yield* _mapAddRecipesToState(event);
-    } else if (event is RCOUpdateRecipe) {
-      yield* _mapUpdateRecipeToState(event);
-    } else if (event is RCOAddCategory) {
-      yield* _mapAddCategoryToState(event);
-    } else if (event is RCODeleteRecipe) {
-      yield* _mapDeleteRecipeToState(event);
-    } else if (event is RCODeleteCategory) {
-      yield* _mapDeleteCategoryToState(event);
-    } else if (event is RCOMoveCategory) {
-      yield* _mapMoveCategoryToState(event);
-    } else if (event is RCOUpdateCategory) {
-      yield* _mapUpdateCategoryToState(event);
-    }
-  }
+    on<RCOLoadRecipeCategoryOverview>((event, emit) async {
+      if (event.reopenBoxes) await HiveProvider().reopenBoxes();
 
-  Stream<RecipeCategoryOverviewState> _mapLoadCategoryOverviewToState(
-      RCOLoadRecipeCategoryOverview event) async* {
-    if (event.reopenBoxes) await HiveProvider().reopenBoxes();
+      List<Tuple2<String /*!*/, List<Recipe /*!*/ >>> categoryRecipes = [];
+      final List<String> categories = HiveProvider().getCategoryNames();
 
-    List<Tuple2<String/*!*/, List<Recipe/*!*/>>> categoryRecipes = [];
-    final List<String> categories = HiveProvider().getCategoryNames();
-
-    for (String/*!*/ category in categories) {
-      List<Recipe/*!*/> categoryRecipeList =
-          await HiveProvider().getCategoryRecipes(category);
-      if (category == "no category" && categoryRecipeList.isEmpty) {
-      } else {
-        categoryRecipes.add(Tuple2(category, categoryRecipeList));
-      }
-    }
-
-    yield LoadedRecipeCategoryOverview(categoryRecipes);
-
-    if (event.categoryOverviewContext != null) {
-      BlocProvider.of<RandomRecipeExplorerBloc>(event.categoryOverviewContext)
-          .add(InitializeRandomRecipeExplorer());
-      BlocProvider.of<CategoryOverviewBloc>(event.categoryOverviewContext)
-          .add(COLoadCategoryOverview());
-    }
-  }
-
-  Stream<RecipeCategoryOverviewState> _mapAddRecipesToState(
-      RCOAddRecipes event) async* {
-    if (state is LoadedRecipeCategoryOverview) {
-      final List<Tuple2<String/*!*//*!*/, List<Recipe>>> recipeCategoryOverview =
-          _addRecipesToOverview(
-              event.recipes,
-              List<Tuple2<String, List<Recipe>>>.from(
-                  (state as LoadedRecipeCategoryOverview).rCategoryOverview));
-
-      yield LoadedRecipeCategoryOverview(recipeCategoryOverview);
-    }
-  }
-
-  Stream<RecipeCategoryOverviewState> _mapDeleteRecipeToState(
-      RCODeleteRecipe event) async* {
-    if (state is LoadedRecipeCategoryOverview) {
-      final List<Tuple2<String, List<Recipe>>/*!*/> recipeCategoryOverview =
-          _removeRecipeFromOverview(
-              event.recipe,
-              List<Tuple2<String, List<Recipe>>>.from(
-                  (state as LoadedRecipeCategoryOverview).rCategoryOverview));
-
-      yield LoadedRecipeCategoryOverview(recipeCategoryOverview);
-    }
-  }
-
-  Stream<RecipeCategoryOverviewState> _mapUpdateRecipeToState(
-      RCOUpdateRecipe event) async* {
-    if (state is LoadedRecipeCategoryOverview) {
-      final List<Tuple2<String, List<Recipe>>/*!*/> recipeCategoryOverviewVone =
-          _removeRecipeFromOverview(
-              event.oldRecipe,
-              List<Tuple2<String, List<Recipe>>>.from(
-                  (state as LoadedRecipeCategoryOverview).rCategoryOverview));
-      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVtwo =
-          _addRecipesToOverview([
-        event.updatedRecipe
-      ], List<Tuple2<String, List<Recipe>>>.from(recipeCategoryOverviewVone));
-
-      yield LoadedRecipeCategoryOverview(recipeCategoryOverviewVtwo);
-    }
-  }
-
-  Stream<RecipeCategoryOverviewState> _mapAddCategoryToState(
-      RCOAddCategory event) async* {
-    if (state is LoadedRecipeCategoryOverview) {
-      int categoryCount =
-          (state as LoadedRecipeCategoryOverview).rCategoryOverview.length;
-      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview = (state
-              as LoadedRecipeCategoryOverview)
-          .rCategoryOverview
-        ..insertAll(
-            categoryCount == 0 ? 0 : categoryCount - 1,
-            event.categories
-                .map((category) => Tuple2<String, List<Recipe>>(category, []))
-                .toList());
-
-      yield LoadedRecipeCategoryOverview(recipeCategoryOverview);
-    }
-  }
-
-  Stream<RecipeCategoryOverviewState> _mapDeleteCategoryToState(
-      RCODeleteCategory event) async* {
-    if (state is LoadedRecipeCategoryOverview) {
-      yield* _mapLoadCategoryOverviewToState(RCOLoadRecipeCategoryOverview());
-    }
-  }
-
-  Stream<RecipeCategoryOverviewState> _mapUpdateCategoryToState(
-      RCOUpdateCategory event) async* {
-    if (state is LoadedRecipeCategoryOverview) {
-      final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview = ((state
-              as LoadedRecipeCategoryOverview)
-          .rCategoryOverview
-          .map((tuple) {
-        String overviewItemName = tuple.item1;
-        if (tuple.item1 == event.oldCategory) {
-          overviewItemName = event.updatedCategory;
+      for (String /*!*/ category in categories) {
+        List<Recipe /*!*/ > categoryRecipeList =
+            await HiveProvider().getCategoryRecipes(category);
+        if (category == "no category" && categoryRecipeList.isEmpty) {
+        } else {
+          categoryRecipes.add(Tuple2(category, categoryRecipeList));
         }
-        return Tuple2<String, List<Recipe>>(
-          overviewItemName,
-          tuple.item2
-              .map(
-                (recipe) => recipe.copyWith(
-                  categories: recipe.categories
-                      .map(
-                        (category) => category == event.oldCategory
-                            ? event.updatedCategory
-                            : category,
-                      )
-                      .toList(),
-                ),
-              )
-              .toList(),
-        );
-      }).toList())
-        ..removeWhere((item) => item == null);
+      }
 
-      yield LoadedRecipeCategoryOverview(recipeCategoryOverview);
-    }
-  }
+      emit(LoadedRecipeCategoryOverview(categoryRecipes));
 
-  Stream<RecipeCategoryOverviewState> _mapMoveCategoryToState(
-      RCOMoveCategory event) async* {
-    if (state is LoadedRecipeCategoryOverview) {
-      List<Tuple2<String, List<Recipe>>> oldrCategoryOverview =
-          (state as LoadedRecipeCategoryOverview).rCategoryOverview;
-      // verify if working
-      List<Tuple2<String, List<Recipe>>> newrCategoryOverview =
-          oldrCategoryOverview
-            ..insert(event.newIndex, oldrCategoryOverview[event.oldIndex])
-            ..removeAt(event.oldIndex > event.newIndex
-                ? event.oldIndex + 1
-                : event.oldIndex);
+      if (event.categoryOverviewContext != null) {
+        BlocProvider.of<RandomRecipeExplorerBloc>(event.categoryOverviewContext)
+            .add(InitializeRandomRecipeExplorer());
+        BlocProvider.of<CategoryOverviewBloc>(event.categoryOverviewContext)
+            .add(COLoadCategoryOverview());
+      }
+    });
 
-      yield LoadedRecipeCategoryOverview(newrCategoryOverview);
-    }
+    on<RCOAddRecipes>((event, emit) async {
+      if (state is LoadedRecipeCategoryOverview) {
+        final List<Tuple2<String /*!*/ /*!*/, List<Recipe>>>
+            recipeCategoryOverview = _addRecipesToOverview(
+                event.recipes,
+                List<Tuple2<String, List<Recipe>>>.from(
+                    (state as LoadedRecipeCategoryOverview).rCategoryOverview));
+
+        emit(LoadedRecipeCategoryOverview(recipeCategoryOverview));
+      }
+    });
+
+    on<RCOUpdateRecipe>((event, emit) async {
+      if (state is LoadedRecipeCategoryOverview) {
+        final List<Tuple2<String, List<Recipe>> /*!*/ >
+            recipeCategoryOverviewVone = _removeRecipeFromOverview(
+                event.oldRecipe,
+                List<Tuple2<String, List<Recipe>>>.from(
+                    (state as LoadedRecipeCategoryOverview).rCategoryOverview));
+        final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVtwo =
+            _addRecipesToOverview([
+          event.updatedRecipe
+        ], List<Tuple2<String, List<Recipe>>>.from(recipeCategoryOverviewVone));
+
+        emit(LoadedRecipeCategoryOverview(recipeCategoryOverviewVtwo));
+      }
+    });
+
+    on<RCOAddCategory>((event, emit) async {
+      if (state is LoadedRecipeCategoryOverview) {
+        int categoryCount =
+            (state as LoadedRecipeCategoryOverview).rCategoryOverview.length;
+        final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview = (state
+                as LoadedRecipeCategoryOverview)
+            .rCategoryOverview
+          ..insertAll(
+              categoryCount == 0 ? 0 : categoryCount - 1,
+              event.categories
+                  .map((category) => Tuple2<String, List<Recipe>>(category, []))
+                  .toList());
+
+        emit(LoadedRecipeCategoryOverview(recipeCategoryOverview));
+      }
+    });
+
+    on<RCODeleteRecipe>((event, emit) async {
+      if (state is LoadedRecipeCategoryOverview) {
+        final List<Tuple2<String, List<Recipe>> /*!*/ > recipeCategoryOverview =
+            _removeRecipeFromOverview(
+                event.recipe,
+                List<Tuple2<String, List<Recipe>>>.from(
+                    (state as LoadedRecipeCategoryOverview).rCategoryOverview));
+
+        emit(LoadedRecipeCategoryOverview(recipeCategoryOverview));
+      }
+    });
+
+    on<RCODeleteCategory>((event, emit) async {
+      if (state is LoadedRecipeCategoryOverview) {
+        this.add(RCOLoadRecipeCategoryOverview());
+      }
+    });
+
+    on<RCOMoveCategory>((event, emit) async {
+      if (state is LoadedRecipeCategoryOverview) {
+        List<Tuple2<String, List<Recipe>>> oldrCategoryOverview =
+            (state as LoadedRecipeCategoryOverview).rCategoryOverview;
+        // verify if working
+        List<Tuple2<String, List<Recipe>>> newrCategoryOverview =
+            oldrCategoryOverview
+              ..insert(event.newIndex, oldrCategoryOverview[event.oldIndex])
+              ..removeAt(event.oldIndex > event.newIndex
+                  ? event.oldIndex + 1
+                  : event.oldIndex);
+
+        emit(LoadedRecipeCategoryOverview(newrCategoryOverview));
+      }
+    });
+
+    on<RCOUpdateCategory>((event, emit) async {
+      if (state is LoadedRecipeCategoryOverview) {
+        final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview =
+            ((state as LoadedRecipeCategoryOverview)
+                .rCategoryOverview
+                .map((tuple) {
+          String overviewItemName = tuple.item1;
+          if (tuple.item1 == event.oldCategory) {
+            overviewItemName = event.updatedCategory;
+          }
+          return Tuple2<String, List<Recipe>>(
+            overviewItemName,
+            tuple.item2
+                .map(
+                  (recipe) => recipe.copyWith(
+                    categories: recipe.categories
+                        .map(
+                          (category) => category == event.oldCategory
+                              ? event.updatedCategory
+                              : category,
+                        )
+                        .toList(),
+                  ),
+                )
+                .toList(),
+          );
+        }).toList())
+              ..removeWhere((item) => item == null);
+
+        emit(LoadedRecipeCategoryOverview(recipeCategoryOverview));
+      }
+    });
   }
 
   List<Tuple2<String, List<Recipe>>> _removeRecipeFromOverview(Recipe recipe,

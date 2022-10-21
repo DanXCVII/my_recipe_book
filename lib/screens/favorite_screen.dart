@@ -54,18 +54,16 @@ class FavoriteScreen extends StatelessWidget {
 }
 
 class FavoriteRecipeCards extends StatelessWidget {
-  final List<Recipe> favoriteRecipes;
+  final List<Recipe>/*!*/ favoriteRecipes;
 
   const FavoriteRecipeCards({this.favoriteRecipes, Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => StaggeredGridView.countBuilder(
+      builder: (context, constraints) => MasonryGridView.count(
         padding: EdgeInsets.all(12),
-        crossAxisCount: ((constraints.maxWidth / 200).round() * 2) < 4
-            ? 4
-            : (constraints.maxWidth / 200).round() * 2,
+        crossAxisCount: (constraints.maxWidth / 300).round() * 2,
         itemCount: favoriteRecipes.length,
         itemBuilder: (BuildContext context, int index) => LayoutBuilder(
           builder: (context, constraints) => RecipeCard(
@@ -75,7 +73,6 @@ class FavoriteRecipeCards extends StatelessWidget {
                 "${favoriteRecipes[index].imagePreviewPath}--${favoriteRecipes[index].name}",
           ),
         ),
-        staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
         mainAxisSpacing: 12.0,
         crossAxisSpacing: 12.0,
       ),

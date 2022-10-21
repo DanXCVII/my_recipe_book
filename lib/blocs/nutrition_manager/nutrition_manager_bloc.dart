@@ -12,115 +12,93 @@ class NutritionManagerBloc
     extends Bloc<NutritionManagerEvent, NutritionManagerState> {
   List<String> modifiedRecipeNutritions = [];
 
-  NutritionManagerBloc() : super(InitialNutritionManagerState());
+  NutritionManagerBloc() : super(InitialNutritionManagerState()) {
+    on<LoadNutritionManager>((event, emit) async {
+      final List<String> nutritions =
+          List<String>.from(HiveProvider().getNutritions());
 
-  @override
-  Stream<NutritionManagerState> mapEventToState(
-    NutritionManagerEvent event,
-  ) async* {
-    if (event is LoadNutritionManager) {
-      yield* _mapLoadingNutritionManagerToState(event);
-    } else if (event is AddNutrition) {
-      yield* _mapAddNutritionToState(event);
-    } else if (event is DeleteNutrition) {
-      yield* _mapDeleteNutritionToState(event);
-    } else if (event is UpdateNutrition) {
-      yield* _mapUpdateNutritionToState(event);
-    } else if (event is MoveNutrition) {
-      yield* _mapMoveNutritionToState(event);
-    }
-  }
+      if (event.modifiedRecipe != null) {
+        List<String> editingRecipeNutritions =
+            (await HiveProvider().getRecipeByName(event.modifiedRecipe))
+                .nutritions
+                .map((n) => n.name)
+                .toList();
 
-  Stream<NutritionManagerState> _mapLoadingNutritionManagerToState(
-      LoadNutritionManager event) async* {
-    final List<String> nutritions =
-        List<String>.from(HiveProvider().getNutritions());
-
-    if (event.modifiedRecipe != null) {
-      List<String> editingRecipeNutritions =
-          (await HiveProvider().getRecipeByName(event.modifiedRecipe))
-              .nutritions
-              .map((n) => n.name)
-              .toList();
-
-      if (editingRecipeNutritions != null) {
-        for (String nutrition in editingRecipeNutritions) {
-          if (!nutritions.contains(nutrition)) {
-            modifiedRecipeNutritions.add(nutrition);
+        if (editingRecipeNutritions != null) {
+          for (String nutrition in editingRecipeNutritions) {
+            if (!nutritions.contains(nutrition)) {
+              modifiedRecipeNutritions.add(nutrition);
+            }
           }
         }
       }
-    }
 
-    List<String> allNutritions = List<String>.from(nutritions)
-      ..addAll(modifiedRecipeNutritions);
+      List<String> allNutritions = List<String>.from(nutritions)
+        ..addAll(modifiedRecipeNutritions);
 
-    yield LoadedNutritionManager(allNutritions);
-  }
+      emit(LoadedNutritionManager(allNutritions));
+    });
 
-  Stream<NutritionManagerState> _mapAddNutritionToState(
-      AddNutrition event) async* {
-    if (state is LoadedNutritionManager) {
-      await HiveProvider().addNutrition(event.nutrition);
+    on<AddNutrition>((event, emit) async {
+      if (state is LoadedNutritionManager) {
+        await HiveProvider().addNutrition(event.nutrition);
 
-      final List<String> nutritions =
-          List<String>.from((state as LoadedNutritionManager).nutritions);
-      nutritions.add(event.nutrition);
+        final List<String> nutritions =
+            List<String>.from((state as LoadedNutritionManager).nutritions);
+        nutritions.add(event.nutrition);
 
-      yield LoadedNutritionManager(nutritions);
-    }
-  }
-
-  Stream<NutritionManagerState> _mapDeleteNutritionToState(
-      DeleteNutrition event) async* {
-    if (state is LoadedNutritionManager) {
-      if (!modifiedRecipeNutritions.contains(event.nutrition)) {
-        await HiveProvider().deleteNutrition(event.nutrition);
+        emit(LoadedNutritionManager(nutritions));
       }
-      final List<String> nutritions =
-          List<String>.from((state as LoadedNutritionManager).nutritions)
-            ..remove(event.nutrition);
+    });
 
-      yield LoadedNutritionManager(nutritions);
-    }
-  }
+    on<DeleteNutrition>((event, emit) async {
+      if (state is LoadedNutritionManager) {
+        if (!modifiedRecipeNutritions.contains(event.nutrition)) {
+          await HiveProvider().deleteNutrition(event.nutrition);
+        }
+        final List<String> nutritions =
+            List<String>.from((state as LoadedNutritionManager).nutritions)
+              ..remove(event.nutrition);
 
-  Stream<NutritionManagerState> _mapUpdateNutritionToState(
-      UpdateNutrition event) async* {
-    if (state is LoadedNutritionManager) {
-      if (modifiedRecipeNutritions.contains(event.oldNutrition)) {
-        modifiedRecipeNutritions.remove(event.oldNutrition);
-        await HiveProvider().addNutrition(event.updatedNutrition);
-      } else {
-        await HiveProvider()
-            .renameNutrition(event.oldNutrition, event.updatedNutrition);
+        emit(LoadedNutritionManager(nutritions));
       }
-      final List<String> nutritions = (state as LoadedNutritionManager)
-          .nutritions
-          .map((nutrition) => nutrition == event.oldNutrition
-              ? event.updatedNutrition
-              : nutrition)
-          .toList();
+    });
 
-      yield LoadedNutritionManager(nutritions);
-    }
-  }
+    on<UpdateNutrition>((event, emit) async {
+      if (state is LoadedNutritionManager) {
+        if (modifiedRecipeNutritions.contains(event.oldNutrition)) {
+          modifiedRecipeNutritions.remove(event.oldNutrition);
+          await HiveProvider().addNutrition(event.updatedNutrition);
+        } else {
+          await HiveProvider()
+              .renameNutrition(event.oldNutrition, event.updatedNutrition);
+        }
+        final List<String> nutritions = (state as LoadedNutritionManager)
+            .nutritions
+            .map((nutrition) => nutrition == event.oldNutrition
+                ? event.updatedNutrition
+                : nutrition)
+            .toList();
 
-  Stream<NutritionManagerState> _mapMoveNutritionToState(
-      MoveNutrition event) async* {
-    if (state is LoadedNutritionManager) {
-      await HiveProvider().moveNutrition(event.oldIndex, event.newIndex);
+        emit(LoadedNutritionManager(nutritions));
+      }
+    });
 
-      List<String> newNutritionList =
-          List<String>.from((state as LoadedNutritionManager).nutritions);
+    on<MoveNutrition>((event, emit) async {
+      if (state is LoadedNutritionManager) {
+        await HiveProvider().moveNutrition(event.oldIndex, event.newIndex);
 
-      newNutritionList
-        ..insert(event.newIndex, newNutritionList[event.oldIndex])
-        ..removeAt(event.oldIndex > event.newIndex
-            ? event.oldIndex + 1
-            : event.oldIndex);
+        List<String> newNutritionList =
+            List<String>.from((state as LoadedNutritionManager).nutritions);
 
-      yield LoadedNutritionManager(newNutritionList);
-    }
+        newNutritionList
+          ..insert(event.newIndex, newNutritionList[event.oldIndex])
+          ..removeAt(event.oldIndex > event.newIndex
+              ? event.oldIndex + 1
+              : event.oldIndex);
+
+        emit(LoadedNutritionManager(newNutritionList));
+      }
+    });
   }
 }

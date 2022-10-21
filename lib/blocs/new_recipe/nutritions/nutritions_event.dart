@@ -17,7 +17,7 @@ class FinishedEditing extends NutritionsEvent {
   final bool goBack;
   final RecipeManagerBloc recipeManagerBloc;
 
-  final List<Nutrition> nutritions;
+  final List<Nutrition/*!*/> nutritions;
 
   FinishedEditing(
     this.editingRecipeName,
