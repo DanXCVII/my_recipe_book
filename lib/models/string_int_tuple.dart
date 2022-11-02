@@ -3,16 +3,16 @@ import 'package:hive/hive.dart';
 
 part 'string_int_tuple.g.dart';
 
-@HiveType()
+@HiveType(typeId: 9)
 class StringIntTuple extends Equatable {
   @HiveField(0)
-  final String/*!*/ text;
+  final String text;
   @HiveField(1)
-  final int/*!*/ number;
+  final int number;
 
   StringIntTuple({
-    this.text,
-    this.number,
+    required this.text,
+    required this.number,
   });
 
   factory StringIntTuple.fromMap(Map<String, dynamic> json) =>

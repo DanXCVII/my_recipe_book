@@ -9,16 +9,16 @@ class Consts {
 
 class NumberDialog extends StatefulWidget {
   // only needs to be specified when editing an item
-  final String prefilledText;
-  final String hintText;
-  final String Function(String name) validation;
+  final String? prefilledText;
+  final String? hintText;
+  final String? Function(String? name) validation;
   final void Function(String name) save;
   final focus = FocusNode();
   final bool number;
 
   NumberDialog({
-    @required this.validation,
-    @required this.save,
+    required this.validation,
+    required this.save,
     this.hintText,
     this.prefilledText,
     this.number = false,
@@ -31,7 +31,7 @@ class NumberDialog extends StatefulWidget {
 }
 
 class NumberDialogState extends State<NumberDialog> {
-  TextEditingController nameController;
+  TextEditingController? nameController;
   static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   @override
@@ -39,7 +39,7 @@ class NumberDialogState extends State<NumberDialog> {
     super.initState();
     nameController = new TextEditingController();
     if (widget.prefilledText != null) {
-      nameController.text = widget.prefilledText;
+      nameController!.text = widget.prefilledText!;
     }
     SchedulerBinding.instance.addPostFrameCallback((Duration _) {
       FocusScope.of(context).requestFocus(widget.focus);
@@ -48,7 +48,7 @@ class NumberDialogState extends State<NumberDialog> {
 
   @override
   void dispose() {
-    nameController.dispose();
+    nameController!.dispose();
     super.dispose();
   }
 
@@ -109,8 +109,8 @@ class NumberDialogState extends State<NumberDialog> {
   }
 
   void validateAddModifyItem() {
-    if (_formKey.currentState.validate()) {
-      widget.save(nameController.text);
+    if (_formKey.currentState!.validate()) {
+      widget.save(nameController!.text);
       Future.delayed(Duration(milliseconds: 100))
           .then((_) => Navigator.pop(context));
     }

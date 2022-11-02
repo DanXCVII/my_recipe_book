@@ -6,7 +6,7 @@ import 'package:my_recipe_book/generated/i18n.dart';
 import 'package:video_player/video_player.dart';
 
 class IngredinetSearchPreviewScreen extends StatelessWidget {
-  const IngredinetSearchPreviewScreen({Key key}) : super(key: key);
+  const IngredinetSearchPreviewScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [Color(0xffAF1E1E), Color(0xff641414)],
         ),
-        title: Text(I18n.of(context).professional_search),
+        title: Text(I18n.of(context)!.professional_search),
       ),
       body: Stack(
         children: <Widget>[
@@ -97,7 +97,7 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                     color: Colors.green[800],
-                    border: Border.all(color: Colors.green[900], width: 2)),
+                    border: Border.all(color: Colors.green[900]!, width: 2)),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -124,7 +124,7 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
-                                    Text(I18n.of(context).buy_pro_version,
+                                    Text(I18n.of(context)!.buy_pro_version,
                                         style: TextStyle(
                                           fontSize: 19,
                                           fontWeight: FontWeight.w600,
@@ -134,7 +134,7 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                                       height: 6,
                                     ),
                                     Text(
-                                      I18n.of(context).pro_version_desc,
+                                      I18n.of(context)!.pro_version_desc,
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: Colors.white,
@@ -165,14 +165,14 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
 }
 
 class VideoPlayerAd extends StatefulWidget {
-  VideoPlayerAd({Key key}) : super(key: key);
+  VideoPlayerAd({Key? key}) : super(key: key);
 
   @override
   _VideoPlayerAdState createState() => _VideoPlayerAdState();
 }
 
 class _VideoPlayerAdState extends State<VideoPlayerAd> {
-  VideoPlayerController _controller;
+  late VideoPlayerController _controller;
 
   @override
   void initState() {

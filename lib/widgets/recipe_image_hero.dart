@@ -23,8 +23,8 @@ class RecipeImageHero extends StatelessWidget {
   const RecipeImageHero(
     this.recipe,
     this.heroTag, {
-    @required this.showAds,
-    Key key,
+    required this.showAds,
+    Key? key,
   }) : super(key: key);
 
   @override

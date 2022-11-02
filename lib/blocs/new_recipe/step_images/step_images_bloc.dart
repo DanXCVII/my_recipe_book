@@ -13,9 +13,9 @@ part 'step_images_event.dart';
 part 'step_images_state.dart';
 
 class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
-  List<String> editingSteps;
-  List<String> editingStepTitles;
-  List<List<String>> editingStepImages;
+  List<String>? editingSteps;
+  List<String>? editingStepTitles;
+  late List<List<String>> editingStepImages;
 
   List<Key> stepKeys = [];
 
@@ -134,12 +134,12 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
                   .stepImages
                   .map((e) => e.map((e) => e).toList())
                   .toList()
-                ..removeAt(event.stepNumber),
+                ..removeAt(event.stepNumber!),
               (state as LoadedStepImages).steps.map((e) => e).toList()
-                ..removeAt(event.stepNumber),
+                ..removeAt(event.stepNumber!),
               (state as LoadedStepImages).stepTitles.map((e) => e).toList()
-                ..removeAt(event.stepNumber),
-              stepKeys.map((e) => e).toList()..removeAt(event.stepNumber)));
+                ..removeAt(event.stepNumber!),
+              stepKeys.map((e) => e).toList()..removeAt(event.stepNumber!)));
         }
       } else {
         String stepPath = await PathProvider.pP.getRecipeStepNumberDirFull(

@@ -16,7 +16,7 @@ class LoadedState extends AppState {
   final bool recipeCalendarOpen;
   final bool showShoppingCartSummary;
   final int selectedIndex;
-  final String/*!*/ title;
+  final String title;
 
   LoadedState(
     this.recipeCategoryOverview,

@@ -17,7 +17,7 @@ class CalendarRecipeAddDialog extends StatefulWidget {
   final focus = FocusNode();
 
   CalendarRecipeAddDialog({
-    @required this.save,
+    required this.save,
   });
 
   @override
@@ -27,7 +27,7 @@ class CalendarRecipeAddDialog extends StatefulWidget {
 }
 
 class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
-  TextEditingController recipeNameController;
+  TextEditingController? recipeNameController;
   GlobalKey<AutoCompleteTextFieldState<String>> autoCompletionTextField =
       new GlobalKey();
   static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
@@ -44,7 +44,7 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
 
   @override
   void dispose() {
-    recipeNameController.dispose();
+    recipeNameController!.dispose();
     super.dispose();
   }
 
@@ -83,7 +83,7 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
                           },
                           decoration: InputDecoration(
                             // border: OutlineInputBorder(),
-                            hintText: I18n.of(context).recipe_name,
+                            hintText: I18n.of(context)!.recipe_name,
                           ),
                         ),
                       ),
@@ -106,8 +106,8 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
   }
 
   void validateAddModifyItem() {
-    if (HiveProvider().getRecipeNames().contains(recipeNameController.text)) {
-      widget.save(recipeNameController.text);
+    if (HiveProvider().getRecipeNames().contains(recipeNameController!.text)) {
+      widget.save(recipeNameController!.text);
       Future.delayed(Duration(milliseconds: 100))
           .then((_) => Navigator.pop(context));
     } else {
@@ -119,7 +119,7 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
         forwardAnimationCurve: Curves.elasticOut,
         duration: Duration(seconds: 4),
         icon: Icon(Icons.info),
-        messageText: Text(I18n.of(context).no_recipe_with_this_name),
+        messageText: Text(I18n.of(context)!.no_recipe_with_this_name),
       )..show(context);
     }
   }

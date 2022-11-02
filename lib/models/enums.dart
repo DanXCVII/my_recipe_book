@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'enums.g.dart';
 
-@HiveType()
+@HiveType(typeId: 1)
 enum Vegetable {
   @HiveField(0)
   NON_VEGETARIAN,
@@ -12,7 +12,7 @@ enum Vegetable {
   VEGAN
 }
 
-@HiveType()
+@HiveType(typeId: 2)
 enum RecipeSort {
   @HiveField(0)
   BY_NAME,

@@ -19,7 +19,7 @@ class NutritionManagerBloc
 
       if (event.modifiedRecipe != null) {
         List<String> editingRecipeNutritions =
-            (await HiveProvider().getRecipeByName(event.modifiedRecipe))
+            (await HiveProvider().getRecipeByName(event.modifiedRecipe!))!
                 .nutritions
                 .map((n) => n.name)
                 .toList();

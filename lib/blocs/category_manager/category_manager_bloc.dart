@@ -13,15 +13,15 @@ part 'category_manager_state.dart';
 class CategoryManagerBloc
     extends Bloc<CategoryManagerEvent, CategoryManagerState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
-  StreamSubscription subscription;
+  late StreamSubscription subscription;
 
   List<String> selectedCategories = [];
 
   CategoryManagerBloc(
-      {@required this.recipeManagerBloc,
-      List<String /*!*/ > /*!*/ selectedCategories})
+      {required this.recipeManagerBloc,
+      required List<String> selectedCategories})
       : super(LoadingCategoryManager()) {
-    if (selectedCategories != null)
+    if (selectedCategories.isNotEmpty)
       this.selectedCategories = List<String>.from(selectedCategories);
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedCategoryManager) {
@@ -36,113 +36,90 @@ class CategoryManagerBloc
         }
       }
     });
-  }
 
-  @override
-  Stream<CategoryManagerState> mapEventToState(
-      CategoryManagerEvent event) async* {
-    if (event is InitializeCategoryManager) {
-      yield* _mapLoadingCategoryManagerToState();
-    } else if (event is AddCategories) {
-      yield* _mapAddCategoriesToState(event);
-    } else if (event is DeleteCategory) {
-      yield* _mapDeleteCategoryToState(event);
-    } else if (event is UpdateCategory) {
-      yield* _mapUpdateCategoryToState(event);
-    } else if (event is MoveCategory) {
-      yield* _mapMoveCategoryToState(event);
-    } else if (event is SelectCategory) {
-      selectCategoryToState(event);
-    } else if (event is UnselectCategory) {
-      unselectCategoryToState(event);
-    }
-  }
+    on<InitializeCategoryManager>((event, emit) async {
+      final List<String> categories = HiveProvider().getCategoryNames();
 
-  Stream<CategoryManagerState> _mapLoadingCategoryManagerToState() async* {
-    final List<String> categories = HiveProvider().getCategoryNames();
+      emit(LoadedCategoryManager(categories));
+    });
 
-    yield LoadedCategoryManager(categories);
-  }
+    on<AddCategories>((event, emit) async {
+      if (state is LoadedCategoryManager) {
+        selectedCategories.addAll(event.categories);
 
-  Stream<CategoryManagerState> _mapAddCategoriesToState(
-      AddCategories event) async* {
-    if (state is LoadedCategoryManager) {
-      selectedCategories.addAll(event.categories);
+        final List<String> categories =
+            List.from((state as LoadedCategoryManager).categories)
+              ..insertAll(
+                  (state as LoadedCategoryManager).categories.length - 1,
+                  event.categories);
 
-      final List<String> categories =
-          List.from((state as LoadedCategoryManager).categories)
-            ..insertAll((state as LoadedCategoryManager).categories.length - 1,
-                event.categories);
-
-      yield LoadedCategoryManager(categories);
-    }
-  }
-
-  Stream<CategoryManagerState> _mapDeleteCategoryToState(
-      DeleteCategory event) async* {
-    if (state is LoadedCategoryManager) {
-      final List<String> categories =
-          List<String>.from((state as LoadedCategoryManager).categories)
-            ..remove(event.category);
-      if (selectedCategories.contains(event.category)) {
-        selectedCategories.remove(event.category);
+        emit(LoadedCategoryManager(categories));
       }
+    });
 
-      yield LoadedCategoryManager(categories);
-    }
-  }
-
-  Stream<CategoryManagerState> _mapUpdateCategoryToState(
-      UpdateCategory event) async* {
-    if (state is LoadedCategoryManager) {
-      final List<String> categories =
-          (state as LoadedCategoryManager).categories.map((category) {
-        if (category == event.oldCategory) {
-          return event.updatedCategory;
-        } else {
-          return category;
+    on<DeleteCategory>((event, emit) async {
+      if (state is LoadedCategoryManager) {
+        final List<String> categories =
+            List<String>.from((state as LoadedCategoryManager).categories)
+              ..remove(event.category);
+        if (selectedCategories.contains(event.category)) {
+          selectedCategories.remove(event.category);
         }
-      }).toList();
 
-      if (selectedCategories.contains(event.oldCategory)) {
-        selectedCategories[selectedCategories.indexOf(event.oldCategory)] =
-            event.updatedCategory;
+        emit(LoadedCategoryManager(categories));
       }
+    });
 
-      yield LoadedCategoryManager(categories);
+    on<UpdateCategory>((event, emit) async {
+      if (state is LoadedCategoryManager) {
+        final List<String> categories =
+            (state as LoadedCategoryManager).categories.map((category) {
+          if (category == event.oldCategory) {
+            return event.updatedCategory;
+          } else {
+            return category;
+          }
+        }).toList();
+
+        if (selectedCategories.contains(event.oldCategory)) {
+          selectedCategories[selectedCategories.indexOf(event.oldCategory)] =
+              event.updatedCategory;
+        }
+
+        emit(LoadedCategoryManager(categories));
+      }
+    });
+
+    on<MoveCategory>((event, emit) async {
+      if (state is LoadedCategoryManager) {
+        // List in HiveProvider()Provider() is already updated of the recipeManager
+
+        final List<String> it1 = List<String>.from(
+            (state as LoadedCategoryManager).categories
+              ..insert(event.newIndex,
+                  (state as LoadedCategoryManager).categories[event.oldIndex]));
+
+        final List<String> it2 = List<String>.from(it1
+          ..removeAt(event.oldIndex > event.newIndex
+              ? event.oldIndex + 1
+              : event.oldIndex));
+
+        emit(LoadedCategoryManager(it2));
+      }
+    });
+
+    on<SelectCategory>((event, emit) async {
+      selectedCategories.add(event.categoryName);
+    });
+
+    on<UnselectCategory>((event, emit) async {
+      selectedCategories.remove(event.categoryName);
+    });
+
+    @override
+    Future<void> close() {
+      subscription.cancel();
+      return super.close();
     }
-  }
-
-  Stream<CategoryManagerState> _mapMoveCategoryToState(
-      MoveCategory event) async* {
-    if (state is LoadedCategoryManager) {
-      // List in HiveProvider()Provider() is already updated of the recipeManager
-
-      final List<String> it1 = List<String>.from(
-          (state as LoadedCategoryManager).categories
-            ..insert(event.newIndex,
-                (state as LoadedCategoryManager).categories[event.oldIndex]));
-
-      final List<String> it2 = List<String>.from(it1
-        ..removeAt(event.oldIndex > event.newIndex
-            ? event.oldIndex + 1
-            : event.oldIndex));
-
-      yield LoadedCategoryManager(it2);
-    }
-  }
-
-  void selectCategoryToState(SelectCategory event) {
-    selectedCategories.add(event.categoryName);
-  }
-
-  void unselectCategoryToState(UnselectCategory event) {
-    selectedCategories.remove(event.categoryName);
-  }
-
-  @override
-  Future<void> close() {
-    subscription.cancel();
-    return super.close();
   }
 }

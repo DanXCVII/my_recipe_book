@@ -12,7 +12,7 @@ import '../../models/ingredient.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 
 class ShoppingCartAddDialog extends StatelessWidget {
-  const ShoppingCartAddDialog({Key key}) : super(key: key);
+  const ShoppingCartAddDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class ShoppingCartAddDialog extends StatelessWidget {
 class ShoppingCartAddDialogContent extends StatefulWidget {
   final focus = FocusNode();
 
-  ShoppingCartAddDialogContent({Key key}) : super(key: key);
+  ShoppingCartAddDialogContent({Key? key}) : super(key: key);
 
   @override
   _ShoppingCartAddDialogContentState createState() =>
@@ -85,7 +85,7 @@ class _ShoppingCartAddDialogContentState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              I18n.of(context).add_ingredient(""),
+              I18n.of(context)!.add_ingredient(""),
               style: Theme.of(context).textTheme.headline6,
             ),
             IconButton(
@@ -117,7 +117,7 @@ class _ShoppingCartAddDialogContentState
                               controller: recipeNameController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: I18n.of(context).recipe_name,
+                                labelText: I18n.of(context)!.recipe_name,
                               ),
                             ),
                             Container(height: 3),
@@ -129,10 +129,10 @@ class _ShoppingCartAddDialogContentState
                               controller: ingredientNameController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: I18n.of(context).ingredient,
+                                labelText: I18n.of(context)!.ingredient,
                               ),
                               textCapitalization:
-                                  I18n.of(context).two_char_locale == "EN"
+                                  I18n.of(context)!.two_char_locale == "EN"
                                       ? TextCapitalization.none
                                       : TextCapitalization.sentences,
                             ),
@@ -145,14 +145,14 @@ class _ShoppingCartAddDialogContentState
                                     keyboardType: TextInputType.number,
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(),
-                                      labelText: I18n.of(context).amnt,
+                                      labelText: I18n.of(context)!.amnt,
                                     ),
                                     validator: (value) {
                                       if (value == "" ||
-                                          getDoubleFromString(value) != null) {
+                                          getDoubleFromString(value!) != null) {
                                         return null;
                                       }
-                                      return I18n.of(context).no_valid_number;
+                                      return I18n.of(context)!.no_valid_number;
                                     },
                                   ),
                                 ),
@@ -162,7 +162,7 @@ class _ShoppingCartAddDialogContentState
                                     controller: ingredientUnitController,
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(),
-                                      labelText: I18n.of(context).unit,
+                                      labelText: I18n.of(context)!.unit,
                                     ),
                                   ),
                                 ),
@@ -177,10 +177,10 @@ class _ShoppingCartAddDialogContentState
                           controller: ingredientNameController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: I18n.of(context).ingredient,
+                            labelText: I18n.of(context)!.ingredient,
                           ),
                           textCapitalization:
-                              I18n.of(context).two_char_locale == "EN"
+                              I18n.of(context)!.two_char_locale == "EN"
                                   ? TextCapitalization.none
                                   : TextCapitalization.sentences,
                         ),
@@ -195,24 +195,26 @@ class _ShoppingCartAddDialogContentState
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            FlatButton(
-              child: Text(I18n.of(context).cancel),
+            TextButton(
+              child: Text(I18n.of(context)!.cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             SizedBox(width: 6),
-            FlatButton(
+            TextButton(
               child: Text(
-                I18n.of(context).add,
+                I18n.of(context)!.add,
                 style: TextStyle(color: Colors.black),
               ),
-              color: Theme.of(context).backgroundColor == Colors.white
-                  ? null
-                  : Colors.amber,
-              textTheme: ButtonTextTheme.primary,
+              style: TextButton.styleFrom(
+                backgroundColor:
+                    Theme.of(context).backgroundColor == Colors.white
+                        ? null
+                        : Colors.amber,
+              ),
               onPressed: () {
-                if (formKey.currentState.validate()) {
+                if (formKey.currentState!.validate()) {
                   BlocProvider.of<ShoppingCartBloc>(context).add(
                     CleanAddIngredients(
                         [

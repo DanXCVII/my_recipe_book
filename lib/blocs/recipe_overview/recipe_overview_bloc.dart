@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
@@ -19,14 +20,14 @@ part 'recipe_overview_state.dart';
 class RecipeOverviewBloc
     extends Bloc<RecipeOverviewEvent, RecipeOverviewState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
-  StreamSubscription subscription;
+  late StreamSubscription subscription;
 
-  Vegetable currentVegetableFilter;
+  Vegetable? currentVegetableFilter;
   List<String> currentRecipeTagFilter = [];
 
   List<Recipe> unfilteredRecipes = [];
 
-  RecipeOverviewBloc({@required this.recipeManagerBloc})
+  RecipeOverviewBloc({required this.recipeManagerBloc})
       : super(LoadingRecipeOverview()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeOverview) {
@@ -53,9 +54,9 @@ class RecipeOverviewBloc
     });
 
     on<LoadCategoryRecipeOverview>((event, emit) async {
-      final Recipe randomRecipe = (await HiveProvider()
+      final Recipe? randomRecipe = (await HiveProvider()
           .getRandomRecipeOfCategory(category: event.category));
-      final String randomRecipeImage =
+      final String? randomRecipeImage =
           randomRecipe != null ? randomRecipe.imagePreviewPath : null;
 
       emit(LoadingRecipes(
@@ -80,9 +81,9 @@ class RecipeOverviewBloc
     });
 
     on<LoadVegetableRecipeOverview>((event, emit) async {
-      final Recipe randomRecipe =
+      final Recipe? randomRecipe =
           await HiveProvider().getRandomRecipeOfVegetable(event.vegetable);
-      final String randomRecipeImage =
+      final String? randomRecipeImage =
           randomRecipe != null ? randomRecipe.imagePreviewPath : null;
 
       emit(LoadingRecipes(
@@ -106,15 +107,15 @@ class RecipeOverviewBloc
     on<ChangeRecipeSort>((event, emit) async {
       if (state is LoadedRecipeOverview) {
         final RSort newRecipeSort = RSort(event.recipeSort,
-            (state as LoadedRecipeOverview).recipeSort.ascending);
+            (state as LoadedRecipeOverview).recipeSort!.ascending);
 
-        final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
+        final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes!;
         final List<Recipe> sortedRecipes = sortRecipes(newRecipeSort, recipes);
         unfilteredRecipes = sortedRecipes;
 
         if ((state as LoadedRecipeOverview).category != null) {
           await HiveProvider().changeSortOrder(
-              newRecipeSort, (state as LoadedRecipeOverview).category);
+              newRecipeSort, (state as LoadedRecipeOverview).category!);
         }
 
         emit(LoadedRecipeOverview(
@@ -130,7 +131,7 @@ class RecipeOverviewBloc
 
     on<AddRecipes>((event, emit) async {
       if (state is LoadedRecipeOverview) {
-        final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
+        final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes!;
 
         for (Recipe r in event.recipes) {
           if (_belongsToRecipeList(r)) {
@@ -155,7 +156,7 @@ class RecipeOverviewBloc
       if (state is LoadedRecipeOverview) {
         if (_belongsToRecipeList(event.recipe)) {
           final List<Recipe> recipes =
-              List<Recipe>.from((state as LoadedRecipeOverview).recipes)
+              List<Recipe>.from((state as LoadedRecipeOverview).recipes!)
                 ..removeWhere((recipe) => event.recipe == recipe);
 
           emit(LoadedRecipeOverview(
@@ -174,7 +175,7 @@ class RecipeOverviewBloc
       if (state is LoadedRecipeOverview) {
         if (_belongsToRecipeList(event.oldRecipe) &&
             _belongsToRecipeList(event.updatedRecipe)) {
-          final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes;
+          final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes!;
           int indexOldRecipe = recipes.indexOf(event.oldRecipe);
           final List<Recipe> updatedRecipes = recipes
             ..replaceRange(
@@ -201,7 +202,7 @@ class RecipeOverviewBloc
       if (state is LoadedRecipeOverview) {
         if (_belongsToRecipeList(event.recipe)) {
           final List<Recipe> recipes =
-              List<Recipe>.from((state as LoadedRecipeOverview).recipes);
+              List<Recipe>.from((state as LoadedRecipeOverview).recipes!);
           int favoriteIndex =
               recipes.indexWhere((recipe) => recipe.name == event.recipe.name);
           final List<Recipe> updatedRecipes = recipes
@@ -231,8 +232,7 @@ class RecipeOverviewBloc
           recipes: List<Recipe>.from(unfilteredRecipes)
             ..removeWhere((recipe) {
               for (String recipeTagName in currentRecipeTagFilter) {
-                if (recipe.tags.firstWhere((tag) => tag.text == recipeTagName,
-                        orElse: () => null) ==
+                if (recipe.tags.firstWhereOrNull((tag) => tag.text == recipeTagName) ==
                     null) {
                   return true;
                 }
@@ -256,16 +256,16 @@ class RecipeOverviewBloc
     on<ChangeAscending>((event, emit) async {
       if (state is LoadedRecipeOverview) {
         final RSort newRecipeSort = RSort(
-            (state as LoadedRecipeOverview).recipeSort.sort, event.ascending);
+            (state as LoadedRecipeOverview).recipeSort!.sort, event.ascending);
 
         final List<Recipe> recipes =
-            List<Recipe>.from((state as LoadedRecipeOverview).recipes);
+            List<Recipe>.from((state as LoadedRecipeOverview).recipes!);
         final List<Recipe> sortedRecipes = sortRecipes(newRecipeSort, recipes);
         unfilteredRecipes = sortedRecipes;
 
         if ((state as LoadedRecipeOverview).category != null) {
           await HiveProvider().changeSortOrder(
-              newRecipeSort, (state as LoadedRecipeOverview).category);
+              newRecipeSort, (state as LoadedRecipeOverview).category!);
         }
 
         emit(LoadedRecipeOverview(
@@ -280,9 +280,9 @@ class RecipeOverviewBloc
     });
 
     on<LoadRecipeTagRecipeOverview>((event, emit) async {
-      final Recipe randomRecipe =
+      final Recipe? randomRecipe =
           await HiveProvider().getRandomRecipeOfRecipeTag(event.recipeTag.text);
-      final String randomRecipeImage =
+      final String? randomRecipeImage =
           randomRecipe != null ? randomRecipe.imagePreviewPath : null;
 
       emit(LoadingRecipes(
@@ -310,8 +310,7 @@ class RecipeOverviewBloc
           recipes: List<Recipe>.from(unfilteredRecipes)
             ..removeWhere((recipe) {
               for (String recipeTagName in event.recipeTags) {
-                if (recipe.tags.firstWhere((tag) => tag.text == recipeTagName,
-                        orElse: () => null) ==
+                if (recipe.tags.firstWhereOrNull((tag) => tag.text == recipeTagName) ==
                     null) {
                   return true;
                 }
@@ -337,7 +336,7 @@ class RecipeOverviewBloc
     if (state is LoadedRecipeOverview) {
       // if the bloc shows recipes of a category
       if ((state as LoadedRecipeOverview).category != null) {
-        final String overviewCategory =
+        final String? overviewCategory =
             (state as LoadedRecipeOverview).category;
 
         // if the bloc shows recipes of "no cateogry"
@@ -353,7 +352,7 @@ class RecipeOverviewBloc
         }
       } // the bloc shows recipes of a vegetable
       else {
-        final Vegetable overviewVegetable =
+        final Vegetable? overviewVegetable =
             (state as LoadedRecipeOverview).vegetable;
 
         if (overviewVegetable == recipe.vegetable) {
@@ -365,7 +364,7 @@ class RecipeOverviewBloc
     return false;
   }
 
-  String _getRandomRecipeImage(List<Recipe> recipes) {
+  String? _getRandomRecipeImage(List<Recipe> recipes) {
     Random r = Random();
 
     return recipes.isEmpty
@@ -374,25 +373,25 @@ class RecipeOverviewBloc
             .imagePreviewPath;
   }
 
-  List<Recipe> sortRecipes(RSort recipeSort, List<Recipe> recipes) {
+  List<Recipe> sortRecipes(RSort? recipeSort, List<Recipe> recipes) {
     if (recipes.isEmpty) return [];
 
-    switch (recipeSort.sort) {
+    switch (recipeSort!.sort) {
       case RecipeSort.BY_NAME:
         return recipes
-          ..sort((a, b) => recipeSort.ascending
+          ..sort((a, b) => recipeSort.ascending!
               ? a.name.compareTo(b.name)
               : b.name.compareTo((a.name)));
         break;
       case RecipeSort.BY_EFFORT:
         return recipes
-          ..sort((a, b) => recipeSort.ascending
-              ? a.effort.compareTo(b.effort)
-              : b.effort.compareTo(a.effort));
+          ..sort((a, b) => recipeSort.ascending!
+              ? a.effort!.compareTo(b.effort!)
+              : b.effort!.compareTo(a.effort!));
         break;
       case RecipeSort.BY_INGREDIENT_COUNT:
         return recipes
-          ..sort((a, b) => recipeSort.ascending
+          ..sort((a, b) => recipeSort.ascending!
               ? getIngredientCount(a.ingredients)
                   .compareTo(getIngredientCount(b.ingredients))
               : getIngredientCount(b.ingredients)
@@ -400,19 +399,19 @@ class RecipeOverviewBloc
         break;
       case RecipeSort.BY_LAST_MODIFIED:
         return recipes
-          ..sort((a, b) => recipeSort.ascending
+          ..sort((a, b) => recipeSort.ascending!
               ? DateTime.parse(a.lastModified == null
                       ? DateTime.now().toString()
-                      : a.lastModified)
+                      : a.lastModified!)
                   .compareTo(DateTime.parse(b.lastModified == null
                       ? DateTime.now().toString()
-                      : b.lastModified))
+                      : b.lastModified!))
               : DateTime.parse(b.lastModified == null
                       ? DateTime.now().toString()
-                      : b.lastModified)
+                      : b.lastModified!)
                   .compareTo(DateTime.parse(a.lastModified == null
                       ? DateTime.now().toString()
-                      : a.lastModified)));
+                      : a.lastModified!)));
         break;
     }
     return recipes;

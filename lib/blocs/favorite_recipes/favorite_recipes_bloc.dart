@@ -14,9 +14,9 @@ part 'favorite_recipes_state.dart';
 class FavoriteRecipesBloc
     extends Bloc<FavoriteRecipesEvent, FavoriteRecipesState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
-  StreamSubscription subscription;
+  late StreamSubscription subscription;
 
-  FavoriteRecipesBloc({@required this.recipeManagerBloc})
+  FavoriteRecipesBloc({required this.recipeManagerBloc})
       : super(LoadingFavorites()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (rmState is RM.AddFavoriteState) {

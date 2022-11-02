@@ -8,9 +8,9 @@ abstract class AppEvent extends Equatable {
 }
 
 class InitializeData extends AppEvent {
-  final bool/*!*/ recipeCategoryOverview;
-  final bool/*!*/ showIntro;
-  final bool/*!*/ showSummary;
+  final bool recipeCategoryOverview;
+  final bool showIntro;
+  final bool showSummary;
   final BuildContext context;
 
   const InitializeData(

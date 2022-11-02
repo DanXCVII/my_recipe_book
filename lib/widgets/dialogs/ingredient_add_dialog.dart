@@ -20,7 +20,7 @@ class IngredientAddDialog extends StatelessWidget {
     this.prefilledData, {
     this.sectionTitles = const [],
     this.selectedDropdownIndex = 0,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -53,20 +53,20 @@ class IngredientAddDialogContent extends StatefulWidget {
       onFinished;
   final Ingredient prefilledData;
   final focus = FocusNode();
-  final List<String> sectionTitles;
-  final int/*!*/ selectedDropdownIndex;
+  final List<String>? sectionTitles;
+  final int selectedDropdownIndex;
 
   IngredientAddDialogContent(
     this.onFinished,
     this.prefilledData, {
     this.sectionTitles,
-    this.selectedDropdownIndex,
-    Key key,
+    required this.selectedDropdownIndex,
+    Key? key,
   }) : super(key: key);
 
   @override
   _IngredientAddDialogContentState createState() =>
-      _IngredientAddDialogContentState(selectedDropdownIndex, sectionTitles);
+      _IngredientAddDialogContentState(selectedDropdownIndex, sectionTitles!);
 }
 
 class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
@@ -79,8 +79,8 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool isExpanded = false;
 
-  int/*!*/ selectedDropdownIndex;
-  List<String/*!*//*!*/> dropdownItems = [];
+  int selectedDropdownIndex;
+  List<String /*!*/ > dropdownItems = [];
 
   _IngredientAddDialogContentState(
       this.selectedDropdownIndex, List<String> sectionTitles) {
@@ -105,7 +105,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
     ingredientAmountController.text = widget.prefilledData.amount == null
         ? ""
         : widget.prefilledData.amount.toString();
-    ingredientUnitController.text = widget.prefilledData.unit;
+    ingredientUnitController.text = widget.prefilledData.unit!;
 
     SchedulerBinding.instance.addPostFrameCallback((Duration _) {
       FocusScope.of(context).requestFocus(widget.focus);
@@ -119,14 +119,14 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          I18n.of(context).add_ingredient(""),
+          I18n.of(context)!.add_ingredient(""),
           style: Theme.of(context).textTheme.headline6,
         ),
         SizedBox(height: 12),
         Flexible(
           child: ListView(
             shrinkWrap: true,
-            children: <Widget>[
+            children: [
               dropdownItems.isEmpty
                   ? null
                   : Center(
@@ -136,15 +136,20 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                           value: dropdownItems[selectedDropdownIndex],
                           iconSize: 24,
                           elevation: 16,
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black),
                           underline: Container(
                             height: 2,
                             color: Colors.orange,
                           ),
-                          onChanged: (String newValue) {
+                          onChanged: (String? newValue) {
                             setState(() {
                               selectedDropdownIndex =
-                                  dropdownItems.indexOf(newValue);
+                                  dropdownItems.indexOf(newValue!);
                             });
                           },
                           items: dropdownItems
@@ -178,10 +183,10 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                         controller: ingredientNameController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: I18n.of(context).ingredient,
+                          labelText: I18n.of(context)!.ingredient,
                         ),
                         textCapitalization:
-                            I18n.of(context).two_char_locale == "EN"
+                            I18n.of(context)!.two_char_locale == "EN"
                                 ? TextCapitalization.none
                                 : TextCapitalization.sentences,
                       ),
@@ -195,18 +200,18 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: I18n.of(context).amnt,
+                                labelText: I18n.of(context)!.amnt,
                               ),
                               validator: (value) {
                                 if (value == "" ||
-                                    getDoubleFromString(value) != null) {
+                                    getDoubleFromString(value!) != null) {
                                   if (value == "" &&
                                       ingredientUnitController.text != "") {
-                                    return I18n.of(context).fill_remove_unit;
+                                    return I18n.of(context)!.fill_remove_unit;
                                   }
                                   return null;
                                 }
-                                return I18n.of(context).no_valid_number;
+                                return I18n.of(context)!.no_valid_number;
                               },
                             ),
                           ),
@@ -216,7 +221,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                               controller: ingredientUnitController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: I18n.of(context).unit,
+                                labelText: I18n.of(context)!.unit,
                               ),
                             ),
                           ),
@@ -226,7 +231,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                   ),
                 ),
               ),
-            ]..removeWhere((element) => element == null),
+            ].whereType<Widget>().toList(),
           ),
         ),
         SizedBox(
@@ -235,26 +240,28 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            FlatButton(
-              child: Text(I18n.of(context).cancel),
+            TextButton(
+              child: Text(I18n.of(context)!.cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             SizedBox(width: 6),
-            FlatButton(
+            TextButton(
               child: Text(
                 dropdownItems.isNotEmpty
-                    ? I18n.of(context).save
-                    : I18n.of(context).add,
+                    ? I18n.of(context)!.save
+                    : I18n.of(context)!.add,
                 style: TextStyle(color: Colors.black),
               ),
-              color: Theme.of(context).backgroundColor == Colors.white
-                  ? null
-                  : Colors.amber,
-              textTheme: ButtonTextTheme.primary,
+              style: TextButton.styleFrom(
+                backgroundColor:
+                    Theme.of(context).backgroundColor == Colors.white
+                        ? null
+                        : Colors.amber,
+              ),
               onPressed: () {
-                if (formKey.currentState.validate()) {
+                if (formKey.currentState!.validate()) {
                   widget.onFinished(
                     Ingredient(
                       name: ingredientNameController.text,

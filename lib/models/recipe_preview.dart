@@ -3,24 +3,24 @@ import 'package:equatable/equatable.dart';
 import 'enums.dart';
 
 class RecipePreview extends Equatable {
-  final String/*!*/ name;
-  final String/*!*/ imagePreviewPath;
-  final String/*!*/ totalTime;
-  final int/*!*/ ingredientsAmount;
-  final int/*!*/ effort;
-  final bool/*!*/ isFavorite;
-  final Vegetable/*!*/ vegetable;
-  final List<String>/*!*/ categories;
+  final String name;
+  final String imagePreviewPath;
+  final String totalTime;
+  final int ingredientsAmount;
+  final int effort;
+  final bool isFavorite;
+  final Vegetable vegetable;
+  final List<String> categories;
 
   RecipePreview({
-    this.name,
-    this.totalTime,
-    this.imagePreviewPath,
-    this.ingredientsAmount,
-    this.effort,
-    this.vegetable,
-    this.isFavorite,
-    this.categories,
+    required this.name,
+    required this.totalTime,
+    required this.imagePreviewPath,
+    required this.ingredientsAmount,
+    required this.effort,
+    required this.vegetable,
+    required this.isFavorite,
+    required this.categories,
   });
 
   get rName => name;

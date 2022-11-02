@@ -9,7 +9,7 @@ abstract class RecipeCategoryOverviewEvent extends Equatable {
 
 class RCOLoadRecipeCategoryOverview extends RecipeCategoryOverviewEvent {
   final bool reopenBoxes;
-  final BuildContext categoryOverviewContext;
+  final BuildContext? categoryOverviewContext;
 
   RCOLoadRecipeCategoryOverview(
       {this.reopenBoxes = false, this.categoryOverviewContext});

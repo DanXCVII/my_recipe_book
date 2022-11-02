@@ -20,7 +20,7 @@ class TimeInfoChart extends StatelessWidget {
     this.totalTime,
     this.fontFamily, {
     this.horizontal = false,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -36,7 +36,7 @@ class TimeInfoChart extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Text(
-          "${I18n.of(context).total_time}:",
+          "${I18n.of(context)!.total_time}:",
           style: TextStyle(
             color: textColor,
             fontFamily: fontFamily,
@@ -86,7 +86,7 @@ class TimeInfoChart extends StatelessWidget {
                         gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [Colors.yellow, Colors.yellow[800]]),
+                            colors: [Colors.yellow, Colors.yellow[800]!]),
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(horizontal ? 0 : 30),
                             topRight: Radius.circular(30),
@@ -109,7 +109,7 @@ class TimeInfoChart extends StatelessWidget {
                         gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [Colors.blue, Colors.blue[800]]),
+                            colors: [Colors.blue, Colors.blue[800]!]),
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(horizontal ? 0 : 30),
                             topRight: Radius.circular(30),

@@ -15,7 +15,7 @@ class RecipeScreenIngredientsBloc
     extends Bloc<RecipeScreenIngredientsEvent, RecipeScreenIngredientsState> {
   final ShoppingCartBloc shoppingCartBloc;
 
-  RecipeScreenIngredientsBloc({@required this.shoppingCartBloc})
+  RecipeScreenIngredientsBloc({required this.shoppingCartBloc})
       : super(InitialRecipeScreenIngredientsState()) {
     on<InitializeIngredients>((event, emit) async {
       List<List<CheckableIngredient>> checkableIngredients = [[]];
@@ -117,8 +117,8 @@ class RecipeScreenIngredientsBloc
                 .map((list) => list.map((item) {
                       if (item.amount != null) {
                         return item.copyWith(
-                            amount: (event.newServings / (event.oldServings)) *
-                                item.amount);
+                            amount: (event.newServings / event.oldServings!) *
+                                item.amount!);
                       }
                       return item;
                     }).toList())

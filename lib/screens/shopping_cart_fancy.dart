@@ -18,11 +18,11 @@ import '../widgets/search.dart';
 import '../widgets/shopping_list.dart';
 
 class FancyShoppingCartScreen extends StatelessWidget {
-  final Image shoppingCartImage;
+  final Image? shoppingCartImage;
 
   const FancyShoppingCartScreen(
     this.shoppingCartImage, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -68,8 +68,8 @@ class FancyShoppingCartScreen extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (_) => InfoDialog(
-                      title: I18n.of(context).shopping_cart_help,
-                      body: I18n.of(context).shopping_cart_help_desc,
+                      title: I18n.of(context)!.shopping_cart_help,
+                      body: I18n.of(context)!.shopping_cart_help_desc,
                     ),
                   );
                 },
@@ -82,7 +82,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
                         _getShoppingCartAsString(state.shoppingCart, context);
                     if (shoppingCartString != "") {
                       Share.share(shoppingCartString,
-                          subject: I18n.of(context).shopping_list);
+                          subject: I18n.of(context)!.shopping_list);
                     }
                   }
                 },
@@ -108,7 +108,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
-              title: Text(I18n.of(context).shoppingcart),
+              title: Text(I18n.of(context)!.shoppingcart),
               background: shoppingCartImage,
             ),
           ),
@@ -148,12 +148,12 @@ class FancyShoppingCartScreen extends StatelessWidget {
     String shoppingCartString = "";
 
     for (Recipe key in shoppingCart.keys) {
-      if (key.name == Constants.summary && shoppingCart[key].isNotEmpty) {
-        shoppingCartString += ("${I18n.of(context).shopping_list}:\n");
-        for (CheckableIngredient ingredient in shoppingCart[key]) {
+      if (key.name == Constants.summary && shoppingCart[key]!.isNotEmpty) {
+        shoppingCartString += ("${I18n.of(context)!.shopping_list}:\n");
+        for (CheckableIngredient ingredient in shoppingCart[key]!) {
           shoppingCartString += "${ingredient.checked ? "✅ " : ""}";
           shoppingCartString += ingredient.amount != null
-              ? "${(GlobalSettings().showDecimal() ? cutDouble(ingredient.amount) : getFractionDouble(ingredient.amount))} "
+              ? "${(GlobalSettings().showDecimal() ? cutDouble(ingredient.amount!) : getFractionDouble(ingredient.amount!))} "
               : "";
           shoppingCartString +=
               ingredient.unit != "" ? "${ingredient.unit} " : "";
@@ -173,7 +173,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
     List<Recipe> recipes = ingredients.keys.toList();
 
     if (ingredients.keys.isEmpty ||
-        ingredients[ingredients.keys.first].isEmpty) {
+        ingredients[ingredients.keys.first]!.isEmpty) {
       return [
         displayNothingAdded(context, scaleFactor),
       ];
@@ -188,11 +188,11 @@ class FancyShoppingCartScreen extends StatelessWidget {
     }
 
     if (showSummary) {
-      return List.generate(ingredients[summaryRecipe].length * 2 + 1, (index) {
+      return List.generate(ingredients[summaryRecipe]!.length * 2 + 1, (index) {
         if (index % 2 != 0) {
           int ingredientIndex = ((index - 1) / 2).round();
           CheckableIngredient currentIngred =
-              ingredients[summaryRecipe][ingredientIndex];
+              ingredients[summaryRecipe]![ingredientIndex];
 
           return Dismissible(
             key: Key(
@@ -225,7 +225,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
                   // needs size, otherwise error
                   Container(width: 1, height: 1)
                   : Text(
-                      "${currentIngred.amount != null ? (GlobalSettings().showDecimal() ? cutDouble(currentIngred.amount) : getFractionDouble(currentIngred.amount)) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit}",
+                      "${currentIngred.amount != null ? (GlobalSettings().showDecimal() ? cutDouble(currentIngred.amount!) : getFractionDouble(currentIngred.amount!)) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit!}",
                       style: TextStyle(
                         decoration: currentIngred.checked
                             ? TextDecoration.lineThrough
@@ -237,7 +237,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
                 value: currentIngred.checked,
                 shape: CircleBorder(),
                 materialTapTargetSize: MaterialTapTargetSize.padded,
-                onChanged: (bool x) {
+                onChanged: (bool? x) {
                   BlocProvider.of<ShoppingCartBloc>(context).add(
                     CheckIngredients(
                       [currentIngred],
@@ -258,7 +258,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
     }
 
     return recipes.map((recipe) {
-      Color ingredBackgroundColor =
+      Color? ingredBackgroundColor =
           Theme.of(context).brightness == Brightness.dark
               ? Color(0xff40392F)
               : Colors.grey[100];
@@ -280,7 +280,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
             child: Dismissible(
               key: Key('$recipe'),
               onDismissed: (_) {
-                List<Ingredient> removeIngreds = ingredients[recipe]
+                List<Ingredient> removeIngreds = ingredients[recipe]!
                     .map((ingred) => ingred.getIngredient())
                     .toList();
                 BlocProvider.of<ShoppingCartBloc>(context)
@@ -312,7 +312,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
               color: Colors.brown,
               size: 70.0,
             ),
-            description: I18n.of(context).shopping_cart_is_empty),
+            description: I18n.of(context)!.shopping_cart_is_empty),
       ),
     );
   }

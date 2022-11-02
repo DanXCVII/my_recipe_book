@@ -42,7 +42,7 @@ class IngredientSearchScreenArguments {
 }
 
 class IngredientSearchScreen extends StatefulWidget {
-  const IngredientSearchScreen({Key key}) : super(key: key);
+  const IngredientSearchScreen({Key? key}) : super(key: key);
 
   @override
   _IngredientSearchScreenState createState() => _IngredientSearchScreenState();
@@ -58,12 +58,12 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
 
   bool _isInitialized = false;
 
-  List<StringIntTuple> _recipeTags;
-  List<String> _categories;
+  late List<StringIntTuple> _recipeTags;
+  late List<String> _categories;
 
   List<StringIntTuple> _selectedRecipeTags = [];
   List<String> _selectedCategories = [];
-  Vegetable _selectedVegetable;
+  Vegetable? _selectedVegetable;
 
   _IngredientSearchScreenState() {
     _recipeTags = HiveProvider().getRecipeTags();
@@ -95,11 +95,11 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
             end: Alignment.bottomCenter,
             colors: [Color(0xffAF1E1E), Color(0xff641414)],
           ),
-          title: Text(I18n.of(context).professional_search),
+          title: Text(I18n.of(context)!.professional_search),
         ),
         body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: [
             Container(
               width: MediaQuery.of(context).size.width > 420
                   ? 420
@@ -109,7 +109,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                       MediaQuery.of(context).size.width > showExpandedSearch
                           ? CrossAxisAlignment.start
                           : CrossAxisAlignment.center,
-                  children: <Widget>[
+                  children: [
                     Container(
                       width: MediaQuery.of(context).size.width > 420
                           ? 420
@@ -171,12 +171,12 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                     MediaQuery.of(context).size.width > showExpandedSearch
                         ? null
                         : Expanded(child: _getResultWidget())
-                  ]..removeWhere((item) => item == null)),
+                  ].whereType<Widget>().toList()),
             ),
             MediaQuery.of(context).size.width > showExpandedSearch
                 ? Expanded(child: _getResultWidget())
                 : null
-          ]..removeWhere((item) => item == null),
+          ].whereType<Widget>().toList(),
         ));
   }
 
@@ -207,7 +207,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                           color: Colors.white,
                           size: 70.0,
                         ),
-                        description: I18n.of(context).enter_some_information,
+                        description: I18n.of(context)!.enter_some_information,
                       )
                     : IconInfoMessage(
                         iconWidget: Icon(
@@ -215,7 +215,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                           color: Colors.white,
                           size: 70.0,
                         ),
-                        description: I18n.of(context).no_matching_recipes,
+                        description: I18n.of(context)!.no_matching_recipes,
                       ),
               ),
             ),
@@ -262,7 +262,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                           totalIngredientAmount == 0
                       ? null
                       : Text(
-                          "${I18n.of(context).ingredient_matches}: ${recipeMatches[recipeIndex].item1} ${I18n.of(context).out_of} $totalIngredientAmount"),
+                          "${I18n.of(context)!.ingredient_matches}: ${recipeMatches[recipeIndex].item1} ${I18n.of(context)!.out_of} $totalIngredientAmount"),
                   leading: RecipeImageHero(
                     currentRecipe,
                     currentRecipe.name,
@@ -275,7 +275,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
   }
 
   Widget _getExpanded(double maxHeight, double maxWidth) {
-    double height;
+    double? height;
     if (_showTagCatFilter) {
       height = maxHeight - 100 > 500 ? 500 : maxHeight - 100;
     }
@@ -301,7 +301,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                     controller: _controllers[index],
                     // style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      labelText: I18n.of(context).ingredient,
+                      labelText: I18n.of(context)!.ingredient,
                       labelStyle: TextStyle(
                           fontWeight: FontWeight.w500, color: Colors.grey[500]),
                       border: OutlineInputBorder(),
@@ -333,7 +333,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                 Expanded(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
+                    children: [
                       MediaQuery.of(context).size.width > showExpandedSearch
                           ? null
                           : IconButton(
@@ -407,7 +407,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                         ),
                       ),
                       Spacer(),
-                    ]..removeWhere((item) => item == null),
+                    ].whereType<Widget>().toList(),
                   ),
                 ),
                 _getSearchIconButton(),
@@ -434,7 +434,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                 controller: _controllers[index],
                 style: new TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: I18n.of(context).ingredient,
+                  labelText: I18n.of(context)!.ingredient,
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.w500, color: Colors.grey[500]),
                   border: OutlineInputBorder(),
@@ -531,7 +531,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                 ..removeWhere((text) => text == ""),
               _selectedCategories,
               _selectedRecipeTags,
-              _selectedVegetable,
+              _selectedVegetable!,
             ),
           );
         },
@@ -605,7 +605,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                               Colors.green[700],
                               MdiIcons.cheese,
                               Colors.amber,
-                              I18n.of(context).vegetarian,
+                              I18n.of(context)!.vegetarian,
                               vegetable,
                             );
 
@@ -614,7 +614,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                               Colors.orange,
                               MdiIcons.leaf,
                               Colors.green[700],
-                              I18n.of(context).vegan,
+                              I18n.of(context)!.vegan,
                               vegetable,
                             );
 
@@ -623,16 +623,16 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                               Colors.lightBlue[300],
                               MdiIcons.foodDrumstick,
                               Colors.brown[600],
-                              I18n.of(context).with_meat,
+                              I18n.of(context)!.with_meat,
                               vegetable,
                             );
                           default:
                             return null;
                         }
-                      }).toList(),
+                      }).toList() as List<Widget>,
                     ),
                     Text(
-                      I18n.of(context).categories,
+                      I18n.of(context)!.categories,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
@@ -645,7 +645,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                         children: _categories.map((category) {
                           return FilterChip(
                             label: Text(category == Constants.noCategory
-                                ? I18n.of(context).no_category
+                                ? I18n.of(context)!.no_category
                                 : category),
                             selected: _selectedCategories.contains(category),
                             onSelected: (isSelected) {
@@ -660,7 +660,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                           );
                         }).toList()),
                     Text(
-                      I18n.of(context).tags,
+                      I18n.of(context)!.tags,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
@@ -695,9 +695,9 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
       );
 
   Widget _getVegetableFilterChip(
-    Color backgroundColor,
+    Color? backgroundColor,
     IconData iconData,
-    Color iconColor,
+    Color? iconColor,
     String label,
     Vegetable vegetable,
   ) {

@@ -24,7 +24,7 @@ class IntroScreen extends StatelessWidget {
       renderNextBtn: renderNextBtn(), renderDoneBtn: renderDoneBtn(),
       slides: [
         Slide(
-          title: I18n.of(context).choose_a_theme,
+          title: I18n.of(context)!.choose_a_theme,
           maxLineTitle: 3,
           styleTitle: titleStyle.copyWith(color: Colors.black),
           styleDescription: descStyle,
@@ -33,11 +33,11 @@ class IntroScreen extends StatelessWidget {
           backgroundOpacity: 0,
         ),
         Slide(
-          title: I18n.of(context).swype_your_recipes,
+          title: I18n.of(context)!.swype_your_recipes,
           maxLineTitle: 3,
           styleTitle: titleStyle,
           description:
-              I18n.of(context).if_you_cant_decide_random_recipe_explorer,
+              I18n.of(context)!.if_you_cant_decide_random_recipe_explorer,
           styleDescription: descStyle,
           pathImage: "images/cards.png",
           colorBegin: Color(0xffE0CD1C),
@@ -46,10 +46,10 @@ class IntroScreen extends StatelessWidget {
           heightImage: MediaQuery.of(context).size.height / 2.2,
         ),
         Slide(
-          title: I18n.of(context).export_as_text_or_zip,
+          title: I18n.of(context)!.export_as_text_or_zip,
           maxLineTitle: 3,
           styleTitle: titleStyle,
-          description: I18n.of(context).multiple_devices_use_export_as_zip_etc,
+          description: I18n.of(context)!.multiple_devices_use_export_as_zip_etc,
           styleDescription: descStyle,
           widthImage: MediaQuery.of(context).size.width / 1.3,
           pathImage: "images/export.png",
@@ -57,13 +57,13 @@ class IntroScreen extends StatelessWidget {
           colorEnd: Color(0xff0087A5),
         ),
         Slide(
-          title: I18n.of(context).add_to_shoppingcart,
+          title: I18n.of(context)!.add_to_shoppingcart,
           maxLineTitle: 3,
           colorBegin: Color(0xff59CA00),
           colorEnd: Color(0xff347600),
           styleTitle: titleStyle,
           description:
-              I18n.of(context).for_more_relaxed_shopping_add_to_shoppingcart,
+              I18n.of(context)!.for_more_relaxed_shopping_add_to_shoppingcart,
           styleDescription: descStyle,
           widthImage: MediaQuery.of(context).size.width / 2,
           heightImage: MediaQuery.of(context).size.height / 3,
@@ -71,19 +71,19 @@ class IntroScreen extends StatelessWidget {
         ),
         GlobalSettings().isFirstStart()
             ? Slide(
-                title: I18n.of(context).first_start_recipes,
+                title: I18n.of(context)!.first_start_recipes,
                 maxLineTitle: 3,
                 colorBegin: Color(0xff009EF8),
                 colorEnd: Color(0xff0054B6),
                 styleTitle: titleStyle,
-                description: I18n.of(context).first_start_recipes_desc,
+                description: I18n.of(context)!.first_start_recipes_desc,
                 styleDescription: descStyle,
                 widthImage: MediaQuery.of(context).size.width / 2,
                 heightImage: MediaQuery.of(context).size.height / 3,
                 pathImage: "images/finishFlag.png",
               )
             : null,
-      ]..removeWhere((item) => item == null),
+      ].whereType<Slide>().toList(),
       onDonePress: () {
         Navigator.pop(context);
       },

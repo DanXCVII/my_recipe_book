@@ -18,9 +18,9 @@ part 'recipe_category_overview_state.dart';
 class RecipeCategoryOverviewBloc
     extends Bloc<RecipeCategoryOverviewEvent, RecipeCategoryOverviewState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
-  StreamSubscription subscription;
+  late StreamSubscription subscription;
 
-  RecipeCategoryOverviewBloc({@required this.recipeManagerBloc})
+  RecipeCategoryOverviewBloc({required this.recipeManagerBloc})
       : super(LoadingRecipeCategoryOverviewState()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeCategoryOverview) {
@@ -48,11 +48,11 @@ class RecipeCategoryOverviewBloc
     on<RCOLoadRecipeCategoryOverview>((event, emit) async {
       if (event.reopenBoxes) await HiveProvider().reopenBoxes();
 
-      List<Tuple2<String /*!*/, List<Recipe /*!*/ >>> categoryRecipes = [];
+      List<Tuple2<String, List<Recipe>>> categoryRecipes = [];
       final List<String> categories = HiveProvider().getCategoryNames();
 
-      for (String /*!*/ category in categories) {
-        List<Recipe /*!*/ > categoryRecipeList =
+      for (String category in categories) {
+        List<Recipe> categoryRecipeList =
             await HiveProvider().getCategoryRecipes(category);
         if (category == "no category" && categoryRecipeList.isEmpty) {
         } else {
@@ -63,17 +63,18 @@ class RecipeCategoryOverviewBloc
       emit(LoadedRecipeCategoryOverview(categoryRecipes));
 
       if (event.categoryOverviewContext != null) {
-        BlocProvider.of<RandomRecipeExplorerBloc>(event.categoryOverviewContext)
+        BlocProvider.of<RandomRecipeExplorerBloc>(
+                event.categoryOverviewContext!)
             .add(InitializeRandomRecipeExplorer());
-        BlocProvider.of<CategoryOverviewBloc>(event.categoryOverviewContext)
+        BlocProvider.of<CategoryOverviewBloc>(event.categoryOverviewContext!)
             .add(COLoadCategoryOverview());
       }
     });
 
     on<RCOAddRecipes>((event, emit) async {
       if (state is LoadedRecipeCategoryOverview) {
-        final List<Tuple2<String /*!*/ /*!*/, List<Recipe>>>
-            recipeCategoryOverview = _addRecipesToOverview(
+        final List<Tuple2<String /*!*/, List<Recipe>>> recipeCategoryOverview =
+            _addRecipesToOverview(
                 event.recipes,
                 List<Tuple2<String, List<Recipe>>>.from(
                     (state as LoadedRecipeCategoryOverview).rCategoryOverview));
@@ -84,11 +85,12 @@ class RecipeCategoryOverviewBloc
 
     on<RCOUpdateRecipe>((event, emit) async {
       if (state is LoadedRecipeCategoryOverview) {
-        final List<Tuple2<String, List<Recipe>> /*!*/ >
-            recipeCategoryOverviewVone = _removeRecipeFromOverview(
+        final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVone =
+            _removeRecipeFromOverview(
                 event.oldRecipe,
-                List<Tuple2<String, List<Recipe>>>.from(
-                    (state as LoadedRecipeCategoryOverview).rCategoryOverview));
+                List<Tuple2<String, List<Recipe>>>.from((state
+                        as LoadedRecipeCategoryOverview)
+                    .rCategoryOverview)) as List<Tuple2<String, List<Recipe>>>;
         final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVtwo =
             _addRecipesToOverview([
           event.updatedRecipe
@@ -117,7 +119,7 @@ class RecipeCategoryOverviewBloc
 
     on<RCODeleteRecipe>((event, emit) async {
       if (state is LoadedRecipeCategoryOverview) {
-        final List<Tuple2<String, List<Recipe>> /*!*/ > recipeCategoryOverview =
+        final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview =
             _removeRecipeFromOverview(
                 event.recipe,
                 List<Tuple2<String, List<Recipe>>>.from(
@@ -185,15 +187,17 @@ class RecipeCategoryOverviewBloc
 
   List<Tuple2<String, List<Recipe>>> _removeRecipeFromOverview(Recipe recipe,
       List<Tuple2<String, List<Recipe>>> recipeCategoryOverview) {
-    return recipeCategoryOverview.map((tuple) {
-      var updatedOverviewItem = Tuple2<String, List<Recipe>>(tuple.item1,
-          tuple.item2..removeWhere((item2) => item2.name == recipe.name));
-      return updatedOverviewItem.item1 == "no category" &&
-              updatedOverviewItem.item2.isEmpty
-          ? null
-          : updatedOverviewItem;
-    }).toList()
-      ..removeWhere((item) => item == null);
+    return recipeCategoryOverview
+        .map((tuple) {
+          var updatedOverviewItem = Tuple2<String, List<Recipe>>(tuple.item1,
+              tuple.item2..removeWhere((item2) => item2.name == recipe.name));
+          return updatedOverviewItem.item1 == "no category" &&
+                  updatedOverviewItem.item2.isEmpty
+              ? null
+              : updatedOverviewItem;
+        })
+        .whereType<Tuple2<String, List<Recipe>>>()
+        .toList();
   }
 
   List<Tuple2<String, List<Recipe>>> _addRecipesToOverview(List<Recipe> recipes,

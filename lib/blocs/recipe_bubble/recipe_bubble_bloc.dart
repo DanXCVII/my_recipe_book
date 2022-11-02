@@ -13,9 +13,9 @@ part 'recipe_bubble_state.dart';
 
 class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
-  StreamSubscription subscription;
+  late StreamSubscription subscription;
 
-  RecipeBubbleBloc({@required this.recipeManagerBloc})
+  RecipeBubbleBloc({required this.recipeManagerBloc})
       : super(LoadedRecipeBubbles([])) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeBubbles) {
@@ -68,8 +68,11 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
         for (int i = 0;
             i < (state as LoadedRecipeBubbles).recipes.length;
             i++) {
-          newRecipeList.add(await HiveProvider()
-              .getRecipeByName((state as LoadedRecipeBubbles).recipes[i].name));
+          Recipe? recipe = await HiveProvider()
+              .getRecipeByName((state as LoadedRecipeBubbles).recipes[i].name);
+          if (recipe != null) {
+            newRecipeList.add(recipe);
+          }
         }
 
         emit(LoadedRecipeBubbles(newRecipeList));

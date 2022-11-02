@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,7 +43,7 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      I18n.of(context).select_recipe_tags,
+                      I18n.of(context)!.select_recipe_tags,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -55,15 +56,15 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                         showDialog(
                           context: context,
                           builder: (_) => TextColorDialog(
-                            validation: (String name) {
-                              if (state.recipeTags.firstWhere(
-                                      (element) => element.text == name,
-                                      orElse: () => null) !=
+                            validation: (String? name) {
+                              if (state.recipeTags.firstWhereOrNull(
+                                      (element) => element.text == name) !=
                                   null) {
-                                return I18n.of(context)
+                                return I18n.of(context)!
                                     .recipe_tag_already_exists;
                               } else if (name == "") {
-                                return I18n.of(context).field_must_not_be_empty;
+                                return I18n.of(context)!
+                                    .field_must_not_be_empty;
                               } else {
                                 return null;
                               }
@@ -77,7 +78,7 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                                     ]),
                                   );
                             },
-                            hintText: I18n.of(context).recipe_tag,
+                            hintText: I18n.of(context)!.recipe_tag,
                           ),
                         );
                       },
@@ -130,17 +131,17 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
 
 // creates a filterClip with the given name
 class MyRecipeTagFilterChip extends StatefulWidget {
-  final StringIntTuple recipeTag;
+  final StringIntTuple? recipeTag;
   final isSelected;
-  final Function(StringIntTuple name) onSelect;
-  final Function(StringIntTuple name) onDeselect;
+  final Function(StringIntTuple? name) onSelect;
+  final Function(StringIntTuple? name) onDeselect;
 
   MyRecipeTagFilterChip({
-    Key key,
+    Key? key,
     this.recipeTag,
     this.isSelected,
-    @required this.onSelect,
-    @required this.onDeselect,
+    required this.onSelect,
+    required this.onDeselect,
   });
 
   @override
@@ -150,7 +151,7 @@ class MyRecipeTagFilterChip extends StatefulWidget {
 }
 
 class _MyRecipeTagFilterChipState extends State<MyRecipeTagFilterChip> {
-  bool _isSelected = false;
+  bool? _isSelected = false;
 
   @override
   void initState() {
@@ -162,9 +163,9 @@ class _MyRecipeTagFilterChipState extends State<MyRecipeTagFilterChip> {
   @override
   Widget build(BuildContext context) {
     return FilterChip(
-      label: Text(widget.recipeTag.text),
-      backgroundColor: Color(widget.recipeTag.number),
-      selected: _isSelected,
+      label: Text(widget.recipeTag!.text),
+      backgroundColor: Color(widget.recipeTag!.number),
+      selected: _isSelected!,
       onSelected: (isSelected) {
         setState(() {
           if (_isSelected == true) {

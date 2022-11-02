@@ -38,7 +38,7 @@ class FavoriteScreen extends StatelessWidget {
                     color: Colors.pink,
                     size: 70.0,
                   ),
-                  description: I18n.of(context).no_added_favorites_yet,
+                  description: I18n.of(context)!.no_added_favorites_yet,
                 ),
               ),
             );
@@ -54,9 +54,9 @@ class FavoriteScreen extends StatelessWidget {
 }
 
 class FavoriteRecipeCards extends StatelessWidget {
-  final List<Recipe>/*!*/ favoriteRecipes;
+  final List<Recipe> favoriteRecipes;
 
-  const FavoriteRecipeCards({this.favoriteRecipes, Key key}) : super(key: key);
+  const FavoriteRecipeCards({required this.favoriteRecipes, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

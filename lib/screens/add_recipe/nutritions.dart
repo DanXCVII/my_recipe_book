@@ -26,7 +26,7 @@ import '../recipe_screen.dart';
 /// arguments which are provided to the route, when pushing to it
 class AddRecipeNutritionsArguments {
   final Recipe modifiedRecipe;
-  final String editingRecipeName;
+  final String? editingRecipeName;
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
 
@@ -39,8 +39,8 @@ class AddRecipeNutritionsArguments {
 }
 
 class AddRecipeNutritions extends StatefulWidget {
-  final Recipe modifiedRecipe;
-  final String editingRecipeName;
+  final Recipe? modifiedRecipe;
+  final String? editingRecipeName;
 
   AddRecipeNutritions({
     this.modifiedRecipe,
@@ -55,12 +55,12 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
     with WidgetsBindingObserver {
   bool _isInitialized = false;
   static final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  Map<String, TextEditingController> nutritionsController = {};
+  Map<String, TextEditingController?> nutritionsController = {};
   List<Key> dismissibleKeys = [];
   List<Key> listTileKeys = [];
 
   FocusNode _focusNode = FocusNode();
-  FocusNode _exitFocusNode;
+  FocusNode? _exitFocusNode;
 
   @override
   void initState() {
@@ -72,7 +72,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
   @override
   void dispose() {
     for (String k in nutritionsController.keys) {
-      nutritionsController[k].dispose();
+      nutritionsController[k]!.dispose();
     }
 
     WidgetsBinding.instance.removeObserver(this);
@@ -129,14 +129,14 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                     end: Alignment.bottomCenter,
                     colors: [Color(0xffAF1E1E), Color(0xff641414)],
                   ),
-                  title: Text(I18n.of(context).add_nutritions),
+                  title: Text(I18n.of(context)!.add_nutritions),
                   actions: <Widget>[
                     BlocListener<NutritionsBloc, NutritionsState>(
                       listener: (context, state) {
                         if (state is NEditingFinishedGoBack) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content:
-                                  Text(I18n.of(context).saving_your_input)));
+                                  Text(I18n.of(context)!.saving_your_input)));
                         } else if (state is NSavedGoBack) {
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           Navigator.pop(context);
@@ -235,11 +235,11 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                     showDialog(
                       context: context,
                       builder: (_) => TextFieldDialog(
-                        validation: (String name) {
+                        validation: (String? name) {
                           if (state.nutritions.contains(name)) {
-                            return I18n.of(context).nutrition_already_exists;
+                            return I18n.of(context)!.nutrition_already_exists;
                           } else if (name == "") {
-                            return I18n.of(context).field_must_not_be_empty;
+                            return I18n.of(context)!.field_must_not_be_empty;
                           } else {
                             return null;
                           }
@@ -252,7 +252,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           BlocProvider.of<NutritionManagerBloc>(context)
                               .add(AddNutrition(name));
                         },
-                        hintText: I18n.of(context).nutrition,
+                        hintText: I18n.of(context)!.nutrition,
                       ),
                     );
                   },
@@ -265,7 +265,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           color: Colors.grey[200],
                           size: 70.0,
                         ),
-                        description: I18n.of(context).you_have_no_nutritions,
+                        description: I18n.of(context)!.you_have_no_nutritions,
                       ))
                     : Form(
                         key: _formKey,
@@ -351,9 +351,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
       nutritionsController.addAll({nutritionName: TextEditingController()});
       dismissibleKeys.add(Key('D-$nutritionName'));
       listTileKeys.add(Key(nutritionName));
-      for (Nutrition nutrition in widget.modifiedRecipe.nutritions) {
+      for (Nutrition nutrition in widget.modifiedRecipe!.nutritions) {
         if (nutrition.name == nutritionName) {
-          nutritionsController[nutritionName].text = nutrition.amountUnit;
+          nutritionsController[nutritionName]!.text = nutrition.amountUnit;
         }
       }
     }
@@ -368,7 +368,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
             end: Alignment.bottomCenter,
             colors: [Color(0xffAF1E1E), Color(0xff641414)],
           ),
-          title: Text(I18n.of(context).add_nutritions),
+          title: Text(I18n.of(context)!.add_nutritions),
         ),
         body: Center(
           child: CircularProgressIndicator(),
@@ -377,13 +377,13 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
 
   Future<void> _finishedEditingNutritions(bool goBack) async {
     List<Nutrition> recipeNutritions = nutritionsController.keys
-        .map((nutritionName) => nutritionsController[nutritionName].text == ''
+        .map((nutritionName) => nutritionsController[nutritionName]!.text == ''
             ? null
             : Nutrition(
                 name: nutritionName,
-                amountUnit: nutritionsController[nutritionName].text))
-        .toList()
-          ..removeWhere((item) => item == null);
+                amountUnit: nutritionsController[nutritionName]!.text))
+        .whereType<Nutrition>()
+        .toList();
 
     BlocProvider.of<NutritionsBloc>(context).add(
       FinishedEditing(
@@ -404,11 +404,11 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
           showDialog(
             context: context,
             builder: (_) => TextFieldDialog(
-              validation: (String name) {
+              validation: (String? name) {
                 if (nutritions.contains(name)) {
-                  return I18n.of(context).nutrition_already_exists;
+                  return I18n.of(context)!.nutrition_already_exists;
                 } else if (name == "") {
-                  return I18n.of(context).field_must_not_be_empty;
+                  return I18n.of(context)!.field_must_not_be_empty;
                 } else {
                   return null;
                 }
@@ -420,7 +420,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                 BlocProvider.of<NutritionManagerBloc>(context)
                     .add(UpdateNutrition(nutritionName, name));
               },
-              hintText: I18n.of(context).nutrition,
+              hintText: I18n.of(context)!.nutrition,
               prefilledText: nutritionName,
             ),
           );
@@ -434,7 +434,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
           controller: nutritionsController[nutritionName],
           decoration: InputDecoration(
             filled: true,
-            hintText: I18n.of(context).amnt,
+            hintText: I18n.of(context)!.amnt,
           ),
         ),
       ),

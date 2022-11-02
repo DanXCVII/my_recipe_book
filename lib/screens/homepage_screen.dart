@@ -58,10 +58,10 @@ RateMyApp _rateMyApp = RateMyApp(
 );
 
 class MyHomePageArguments {
-  final bool showIntro;
+  final bool? showIntro;
   final BuildContext context;
-  final bool showShoppingCartSummary;
-  final bool recipeCategoryOverview;
+  final bool? showShoppingCartSummary;
+  final bool? recipeCategoryOverview;
 
   MyHomePageArguments(
     this.showIntro,
@@ -72,7 +72,7 @@ class MyHomePageArguments {
 }
 
 class MyHomePage extends StatefulWidget {
-  final bool showIntro;
+  final bool? showIntro;
 
   MyHomePage({this.showIntro});
 
@@ -81,22 +81,22 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-  Future<SharedPreferences> prefs;
-  Image shoppingCartImage;
+  Future<SharedPreferences>? prefs;
+  Image? shoppingCartImage;
   GlobalKey _introKeyOne = GlobalKey();
   GlobalKey _introKeyTwo = GlobalKey();
   GlobalKey _introKeyThree = GlobalKey();
-  MyBooleanWrapper showIntro;
+  MyBooleanWrapper? showIntro;
   bool _intentFailedImporting = false;
 
-  Flushbar _flush;
+  Flushbar? _flush;
 
   static const platform = const MethodChannel('app.channel.shared.data');
 
   MyHomePageState({
-    String title,
-    bool showIntro,
-    Key key,
+    String? title,
+    bool? showIntro,
+    Key? key,
   }) {
     this.showIntro = MyBooleanWrapper(showIntro);
   }
@@ -136,16 +136,16 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             : intentSharedText == "failedWriting"
                 ? "Error #2:"
                 : "Error #3:";
-        _showFlushInfo(I18n.of(context).failed_import,
-            "$error" + I18n.of(context).failed_import_desc);
+        _showFlushInfo(I18n.of(context)!.failed_import,
+            "$error" + I18n.of(context)!.failed_import_desc);
       } // if error occured and the storage permission is not granted and not set to neverShowAgain
       else if (await Permission.storage.isDenied) {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (context) => InfoDialog(
-            title: I18n.of(context).need_to_access_storage,
-            body: I18n.of(context).need_to_access_storage_desc,
+            title: I18n.of(context)!.need_to_access_storage,
+            body: I18n.of(context)!.need_to_access_storage_desc,
             onPressedOk: () async {
               Permission.storage.request().then((updatedPermissions) {
                 if (updatedPermissions.isGranted) {
@@ -198,7 +198,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   void _showFlushInfo(String title, String body) {
-    if (_flush != null && _flush.isShowing()) {
+    if (_flush != null && _flush!.isShowing()) {
     } else {
       _flush = Flushbar<bool>(
         animationDuration: Duration(milliseconds: 300),
@@ -209,9 +209,9 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           Icons.info_outline,
           color: Colors.blue,
         ),
-        mainButton: FlatButton(
+        mainButton: TextButton(
           onPressed: () {
-            _flush.dismiss(true); // result = true
+            _flush!.dismiss(true); // result = true
           },
           child: Text(
             "OK",
@@ -241,196 +241,199 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         if (rateMyApp.shouldOpenDialog) {
           rateMyApp.showRateDialog(
             context,
-            title: I18n.of(context).rate_this_app,
-            message: I18n.of(context).rate_this_app_desc,
-            laterButton: I18n.of(context).maybe_later,
-            rateButton: I18n.of(context).rate,
-            noButton: I18n.of(context).no_thanks,
+            title: I18n.of(context)!.rate_this_app,
+            message: I18n.of(context)!.rate_this_app_desc,
+            laterButton: I18n.of(context)!.maybe_later,
+            rateButton: I18n.of(context)!.rate,
+            noButton: I18n.of(context)!.no_thanks,
           );
         }
       },
       builder: (context) => Stack(
-          children: <Widget>[
-        BlocBuilder<AppBloc, AppState>(
-          builder: (context, state) {
-            if (state is LoadingState) {
-              return _getSplashScreen();
-            } else if (state is LoadedState) {
-              return Scaffold(
-                appBar: _buildAppBar(state.selectedIndex,
-                    state.recipeCategoryOverview, state.title),
-                floatingActionButton: state.selectedIndex == 0
-                    ? FloatingActionButtonMenu(
-                        _introKeyOne,
-                        _introKeyTwo,
-                        _introKeyThree,
-                        showIntro: showIntro,
-                        shoppingCartAdd:
-                            state.selectedIndex == 2 ? true : false,
-                      )
-                    : state.selectedIndex == 2
-                        ? FloatingActionButton(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: Icon(Icons.add_shopping_cart,
-                                color: Colors.white),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (_) => BlocProvider.value(
-                                  value: BlocProvider.of<ShoppingCartBloc>(
-                                      context),
-                                  child: ShoppingCartAddDialog(),
-                                ),
-                              );
-                            },
-                          )
-                        : null,
-                body: Row(
-                  children: <Widget>[
-                    MediaQuery.of(context).size.width > GC.sideBarWidth
-                        ? VerticalSideBar(
-                            state.selectedIndex == 2 ? 0 : state.selectedIndex,
-                            state.shoppingCartOpen,
-                            state.recipeCalendarOpen,
-                          )
-                        : null,
-                    Expanded(
-                      child: IndexedStack(
-                        index: state.selectedIndex,
-                        children: [
-                          AnimatedSwitcher(
-                            duration: Duration(milliseconds: 200),
-                            child: state.recipeCategoryOverview == true
-                                ? RecipeCategoryOverview()
-                                : CategoryGridView(),
-                          ),
-                          FavoriteScreen(),
-                          MediaQuery.of(context).size.width <= GC.sideBarWidth
-                              ? FancyShoppingCartScreen(shoppingCartImage)
-                              : Container(),
-                          SwypingCardsScreen(),
-                          Settings(),
-                        ],
-                      ),
-                    ),
-                  ]..removeWhere((item) => item == null),
-                ),
-                backgroundColor: _getBackgroundColor(state.selectedIndex),
-                bottomNavigationBar: MediaQuery.of(context).size.width <=
-                        GC.sideBarWidth
-                    ? MediaQuery.of(context).size.width < 346
-                        ? BottomNavigationBar(
-                            backgroundColor: Color(0xff232323),
-                            currentIndex: state.selectedIndex,
-                            onTap: (index) => _onItemTapped(index, context),
-                            items: [
-                              BottomNavigationBarItem(
-                                icon: Icon(MdiIcons.notebook),
-                                label: I18n.of(context).recipes,
-                                activeIcon: Icon(
-                                  MdiIcons.notebook,
-                                  color: Colors.orange,
-                                ),
-                              ),
-                              BottomNavigationBarItem(
-                                icon: Icon(Icons.favorite),
-                                label: I18n.of(context).favorites,
-                                activeIcon: Icon(
-                                  Icons.favorite,
-                                  color: Colors.pink,
-                                ),
-                              ),
-                              BottomNavigationBarItem(
-                                  icon: Icon(Icons.shopping_basket),
-                                  label: I18n.of(context).basket,
-                                  activeIcon: Icon(
-                                    Icons.shopping_basket,
-                                    color: Colors.brown[300],
-                                  )),
-                              BottomNavigationBarItem(
-                                icon: Icon(MdiIcons.diceMultiple),
-                                label: I18n.of(context).explore,
-                                activeIcon: Icon(
-                                  MdiIcons.diceMultiple,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              BottomNavigationBarItem(
-                                icon: Icon(Icons.settings),
-                                label: I18n.of(context).settings,
-                                activeIcon: Icon(
-                                  Icons.settings,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          )
-                        : Theme(
-                            data: Theme.of(context)
-                                .copyWith(canvasColor: Colors.black87),
-                            child: BottomNavyBar(
-                              backgroundColor: Color(0xff232323),
-                              animationDuration: Duration(milliseconds: 150),
-                              selectedIndex: state.selectedIndex,
-                              showElevation: true,
-                              onItemSelected: (index) =>
-                                  _onItemTapped(index, context),
-                              items: [
-                                BottomNavyBarItem(
-                                    icon: Icon(MdiIcons.notebook),
-                                    title: Text(I18n.of(context).recipes),
-                                    activeColor: Colors.orange,
-                                    inactiveColor: Colors.white),
-                                BottomNavyBarItem(
-                                  icon: Icon(Icons.favorite),
-                                  title: Text(I18n.of(context).favorites),
-                                  activeColor: Colors.pink,
-                                  inactiveColor: Colors.white,
-                                ),
-                                BottomNavyBarItem(
-                                    icon: Icon(Icons.shopping_basket),
-                                    title: Text(I18n.of(context).basket),
-                                    activeColor: Colors.brown[300],
-                                    inactiveColor: Colors.white),
-                                BottomNavyBarItem(
-                                  icon: Icon(MdiIcons.diceMultiple),
-                                  title: Text(I18n.of(context).explore),
-                                  activeColor: Colors.green,
-                                  inactiveColor: Colors.white,
-                                ),
-                                BottomNavyBarItem(
-                                    icon: Icon(Icons.settings),
-                                    title: Text(I18n.of(context).settings),
-                                    activeColor: Colors.grey[100],
-                                    inactiveColor: Colors.white)
-                              ],
+        children: [
+          BlocBuilder<AppBloc, AppState>(
+            builder: (context, state) {
+              if (state is LoadingState) {
+                return _getSplashScreen();
+              } else if (state is LoadedState) {
+                return Scaffold(
+                  appBar: _buildAppBar(state.selectedIndex,
+                      state.recipeCategoryOverview, state.title),
+                  floatingActionButton: state.selectedIndex == 0
+                      ? FloatingActionButtonMenu(
+                          _introKeyOne,
+                          _introKeyTwo,
+                          _introKeyThree,
+                          showIntro: showIntro,
+                          shoppingCartAdd:
+                              state.selectedIndex == 2 ? true : false,
+                        )
+                      : state.selectedIndex == 2
+                          ? FloatingActionButton(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              child: Icon(Icons.add_shopping_cart,
+                                  color: Colors.white),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => BlocProvider.value(
+                                    value: BlocProvider.of<ShoppingCartBloc>(
+                                        context),
+                                    child: ShoppingCartAddDialog(),
+                                  ),
+                                );
+                              },
+                            )
+                          : null,
+                  body: Row(
+                    children: ([
+                      MediaQuery.of(context).size.width > GC.sideBarWidth
+                          ? VerticalSideBar(
+                              state.selectedIndex == 2
+                                  ? 0
+                                  : state.selectedIndex,
+                              state.shoppingCartOpen,
+                              state.recipeCalendarOpen,
+                            )
+                          : null,
+                      Expanded(
+                        child: IndexedStack(
+                          index: state.selectedIndex,
+                          children: [
+                            AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: state.recipeCategoryOverview == true
+                                  ? RecipeCategoryOverview()
+                                  : CategoryGridView(),
                             ),
-                          )
-                    : null,
-              );
-            } else {
-              return Text(state.toString());
-            }
-          },
-        ),
-        RecipeBubbles(),
-        MediaQuery.of(context).size.width > GC.sideBarWidth
-            ? ShoppingCartFloating(
-                initialPosition: Offset(
-                  200,
-                  200,
-                ),
-              )
-            : null,
-        MediaQuery.of(context).size.width > GC.recipeCalendarFloatingWidth
-            ? RecipeCalendarFloating(
-                initialPosition: Offset(
-                  200,
-                  45,
-                ),
-              )
-            : null,
-      ]..removeWhere((item) => item == null)),
+                            FavoriteScreen(),
+                            MediaQuery.of(context).size.width <= GC.sideBarWidth
+                                ? FancyShoppingCartScreen(shoppingCartImage)
+                                : Container(),
+                            SwypingCardsScreen(),
+                            Settings(),
+                          ],
+                        ),
+                      ),
+                    ].whereType<Widget>().toList()),
+                  ),
+                  backgroundColor: _getBackgroundColor(state.selectedIndex),
+                  bottomNavigationBar: MediaQuery.of(context).size.width <=
+                          GC.sideBarWidth
+                      ? MediaQuery.of(context).size.width < 346
+                          ? BottomNavigationBar(
+                              backgroundColor: Color(0xff232323),
+                              currentIndex: state.selectedIndex,
+                              onTap: (index) => _onItemTapped(index, context),
+                              items: [
+                                BottomNavigationBarItem(
+                                  icon: Icon(MdiIcons.notebook),
+                                  label: I18n.of(context)!.recipes,
+                                  activeIcon: Icon(
+                                    MdiIcons.notebook,
+                                    color: Colors.orange,
+                                  ),
+                                ),
+                                BottomNavigationBarItem(
+                                  icon: Icon(Icons.favorite),
+                                  label: I18n.of(context)!.favorites,
+                                  activeIcon: Icon(
+                                    Icons.favorite,
+                                    color: Colors.pink,
+                                  ),
+                                ),
+                                BottomNavigationBarItem(
+                                    icon: Icon(Icons.shopping_basket),
+                                    label: I18n.of(context)!.basket,
+                                    activeIcon: Icon(
+                                      Icons.shopping_basket,
+                                      color: Colors.brown[300],
+                                    )),
+                                BottomNavigationBarItem(
+                                  icon: Icon(MdiIcons.diceMultiple),
+                                  label: I18n.of(context)!.explore,
+                                  activeIcon: Icon(
+                                    MdiIcons.diceMultiple,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                                BottomNavigationBarItem(
+                                  icon: Icon(Icons.settings),
+                                  label: I18n.of(context)!.settings,
+                                  activeIcon: Icon(
+                                    Icons.settings,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Theme(
+                              data: Theme.of(context)
+                                  .copyWith(canvasColor: Colors.black87),
+                              child: BottomNavyBar(
+                                backgroundColor: Color(0xff232323),
+                                animationDuration: Duration(milliseconds: 150),
+                                selectedIndex: state.selectedIndex,
+                                showElevation: true,
+                                onItemSelected: (index) =>
+                                    _onItemTapped(index, context),
+                                items: [
+                                  BottomNavyBarItem(
+                                      icon: Icon(MdiIcons.notebook),
+                                      title: Text(I18n.of(context)!.recipes),
+                                      activeColor: Colors.orange,
+                                      inactiveColor: Colors.white),
+                                  BottomNavyBarItem(
+                                    icon: Icon(Icons.favorite),
+                                    title: Text(I18n.of(context)!.favorites),
+                                    activeColor: Colors.pink,
+                                    inactiveColor: Colors.white,
+                                  ),
+                                  BottomNavyBarItem(
+                                      icon: Icon(Icons.shopping_basket),
+                                      title: Text(I18n.of(context)!.basket),
+                                      activeColor: Colors.brown[300],
+                                      inactiveColor: Colors.white),
+                                  BottomNavyBarItem(
+                                    icon: Icon(MdiIcons.diceMultiple),
+                                    title: Text(I18n.of(context)!.explore),
+                                    activeColor: Colors.green,
+                                    inactiveColor: Colors.white,
+                                  ),
+                                  BottomNavyBarItem(
+                                      icon: Icon(Icons.settings),
+                                      title: Text(I18n.of(context)!.settings),
+                                      activeColor: Colors.grey[100],
+                                      inactiveColor: Colors.white)
+                                ],
+                              ),
+                            )
+                      : null,
+                );
+              } else {
+                return Text(state.toString());
+              }
+            },
+          ),
+          RecipeBubbles(),
+          MediaQuery.of(context).size.width > GC.sideBarWidth
+              ? ShoppingCartFloating(
+                  initialPosition: Offset(
+                    200,
+                    200,
+                  ),
+                )
+              : null,
+          MediaQuery.of(context).size.width > GC.recipeCalendarFloatingWidth
+              ? RecipeCalendarFloating(
+                  initialPosition: Offset(
+                    200,
+                    45,
+                  ),
+                )
+              : null,
+        ].whereType<Widget>().toList(),
+      ),
     );
   }
 
@@ -451,7 +454,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     );
   }
 
-  NewGradientAppBar _buildAppBar(
+  NewGradientAppBar? _buildAppBar(
       int currentIndex, bool recipeCategoryOverview, String title) {
     // if shoppingCartPage with sliverAppBar
 
@@ -461,13 +464,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       return null;
     else {
       return NewGradientAppBar(
+          iconTheme: IconThemeData(color: Colors.white),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,
             colors: [Color(0xffAF1E1E), Color(0xff641414)],
           ),
           title: Text(title),
-          actions: <Widget>[
+          actions: ([
             MediaQuery.of(context).size.width > GC.sideBarWidth
                 ? null
                 : IconButton(
@@ -530,7 +534,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     ));
               },
             ),
-          ]..removeWhere((item) => item == null));
+          ].whereType<Widget>().toList()));
     }
   }
 
@@ -573,7 +577,7 @@ class FloatingActionButtonMenu extends StatefulWidget {
   final GlobalKey _introKeyOne;
   final GlobalKey _introKeyTwo;
   final GlobalKey _introKeyThree;
-  final MyBooleanWrapper showIntro;
+  final MyBooleanWrapper? showIntro;
   final bool shoppingCartAdd;
 
   FloatingActionButtonMenu(
@@ -582,7 +586,7 @@ class FloatingActionButtonMenu extends StatefulWidget {
     this._introKeyThree, {
     this.shoppingCartAdd = false,
     this.showIntro,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -592,8 +596,8 @@ class FloatingActionButtonMenu extends StatefulWidget {
 
 class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
     with TickerProviderStateMixin {
-  AnimationController _controller;
-  AnimationController _controllerFAB;
+  late AnimationController _controller;
+  late AnimationController _controllerFAB;
   static const List<IconData> icons = const [
     MdiIcons.apps,
     Icons.description,
@@ -637,12 +641,12 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(22),
                           gradient: LinearGradient(
-                              colors: [Colors.grey[300], Colors.white]),
+                              colors: [Colors.grey[300]!, Colors.white]),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
                           child: Text(
-                              I18n.of(context).tap_here_to_manage_categories,
+                              I18n.of(context)!.tap_here_to_manage_categories,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600)),
@@ -657,7 +661,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                       RouteNames.manageCategories,
                     ).then((_) => Ads.hideBottomBannerAd());
                   }, Icon(MdiIcons.apps, color: Theme.of(context).primaryColor),
-                      3, I18n.of(context).import_from_website),
+                      3, I18n.of(context)!.import_from_website),
                 ),
                 Showcase.withWidget(
                   key: widget._introKeyTwo,
@@ -669,12 +673,13 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(28),
                           gradient: LinearGradient(
-                              colors: [Colors.grey[300], Colors.white]),
+                              colors: [Colors.grey[300]!, Colors.white]),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
                           child: Text(
-                              I18n.of(context).tap_here_to_import_recipe_online,
+                              I18n.of(context)!
+                                  .tap_here_to_import_recipe_online,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600)),
@@ -702,7 +707,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     Icon(MdiIcons.cloudDownload,
                         color: Theme.of(context).primaryColor),
                     2,
-                    I18n.of(context).manage_categories,
+                    I18n.of(context)!.manage_categories,
                   ),
                 ),
                 Showcase.withWidget(
@@ -715,11 +720,11 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(28),
                           gradient: LinearGradient(
-                              colors: [Colors.grey[300], Colors.white]),
+                              colors: [Colors.grey[300]!, Colors.white]),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
-                          child: Text(I18n.of(context).tap_here_to_add_recipe,
+                          child: Text(I18n.of(context)!.tap_here_to_add_recipe,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600)),
@@ -747,7 +752,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     },
                     Icon(Icons.edit, color: Theme.of(context).primaryColor),
                     1,
-                    I18n.of(context).add_recipe,
+                    I18n.of(context)!.add_recipe,
                   ),
                 ),
               ]
@@ -758,7 +763,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
         heroTag: null,
         child: AnimatedBuilder(
           animation: _controllerFAB,
-          builder: (BuildContext context, Widget child) {
+          builder: (BuildContext context, Widget? child) {
             return Transform(
               transform: Matrix4.rotationZ(_controllerFAB.value * 0.5 * pi),
               alignment: FractionalOffset.center,
@@ -772,13 +777,13 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
         onPressed: () {
           if (_controller.isDismissed) {
             setState(() {
-              if (widget.showIntro.myBool) {
+              if (widget.showIntro!.myBool!) {
                 ShowCaseWidget.of(context).startShowCase([
                   widget._introKeyOne,
                   widget._introKeyTwo,
                   widget._introKeyThree,
                 ]);
-                widget.showIntro.myBool = false;
+                widget.showIntro!.myBool = false;
               }
               isOpen = true;
               _controller.forward();
@@ -830,7 +835,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
 }
 
 class RecipeBubbles extends StatelessWidget {
-  const RecipeBubbles({Key key}) : super(key: key);
+  const RecipeBubbles({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -862,7 +867,7 @@ class RecipeBubbles extends StatelessWidget {
 class BottomNavyBar extends StatelessWidget {
   final int selectedIndex;
   final double iconSize;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final bool showElevation;
   final Duration animationDuration;
   final List<BottomNavyBarItem> items;
@@ -872,7 +877,7 @@ class BottomNavyBar extends StatelessWidget {
   final Curve curve;
 
   BottomNavyBar({
-    Key key,
+    Key? key,
     this.selectedIndex = 0,
     this.showElevation = true,
     this.iconSize = 24,
@@ -880,8 +885,8 @@ class BottomNavyBar extends StatelessWidget {
     this.itemCornerRadius = 50,
     this.animationDuration = const Duration(milliseconds: 270),
     this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
-    @required this.items,
-    @required this.onItemSelected,
+    required this.items,
+    required this.onItemSelected,
     this.curve = Curves.linear,
   }) {
     assert(items != null);
@@ -899,7 +904,7 @@ class BottomNavyBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-            colors: [Colors.black87, Colors.grey[900]],
+            colors: [Colors.black87, Colors.grey[900]!],
             begin: Alignment.topCenter,
             end: Alignment.bottomRight),
         boxShadow: [
@@ -925,7 +930,7 @@ class BottomNavyBar extends StatelessWidget {
                   item: item,
                   iconSize: iconSize,
                   isSelected: index == selectedIndex,
-                  backgroundColor: bgColor,
+                  backgroundColor: bgColor!,
                   itemCornerRadius: itemCornerRadius,
                   animationDuration: animationDuration,
                   curve: curve,
@@ -949,13 +954,13 @@ class _ItemWidget extends StatelessWidget {
   final Curve curve;
 
   const _ItemWidget({
-    Key key,
-    @required this.item,
-    @required this.isSelected,
-    @required this.backgroundColor,
-    @required this.animationDuration,
-    @required this.itemCornerRadius,
-    @required this.iconSize,
+    Key? key,
+    required this.item,
+    required this.isSelected,
+    required this.backgroundColor,
+    required this.animationDuration,
+    required this.itemCornerRadius,
+    required this.iconSize,
     this.curve = Curves.linear,
   })  : assert(isSelected != null),
         assert(item != null),
@@ -974,13 +979,14 @@ class _ItemWidget extends StatelessWidget {
       duration: animationDuration,
       curve: curve,
       decoration: BoxDecoration(
-        color:
-            isSelected ? item.activeColor.withOpacity(0.2) : Colors.transparent,
+        color: isSelected
+            ? item.activeColor!.withOpacity(0.2)
+            : Colors.transparent,
         gradient: LinearGradient(
           colors: isSelected
               ? [
-                  item.activeColor,
-                  item.activeColor.withOpacity(0.8),
+                  item.activeColor!,
+                  item.activeColor!.withOpacity(0.8),
                 ]
               : [Colors.transparent, Colors.transparent],
         ),
@@ -1001,7 +1007,7 @@ class _ItemWidget extends StatelessWidget {
                 data: IconThemeData(
                   size: iconSize,
                   color: isSelected
-                      ? item.activeColor.withOpacity(1)
+                      ? item.activeColor!.withOpacity(1)
                       : item.inactiveColor == null
                           ? item.activeColor
                           : item.inactiveColor,
@@ -1034,13 +1040,13 @@ class _ItemWidget extends StatelessWidget {
 class BottomNavyBarItem {
   final Icon icon;
   final Text title;
-  final Color activeColor;
-  final Color inactiveColor;
-  final TextAlign textAlign;
+  final Color? activeColor;
+  final Color? inactiveColor;
+  final TextAlign? textAlign;
 
   BottomNavyBarItem({
-    @required this.icon,
-    @required this.title,
+    required this.icon,
+    required this.title,
     this.activeColor = Colors.blue,
     this.textAlign,
     this.inactiveColor,

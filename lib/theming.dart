@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 enum MyThemeKeys { AUTOMATIC, LIGHT, DARK, OLEDBLACK }
 
 class _CustomTheme extends InheritedWidget {
-  final CustomThemeState data;
+  final CustomThemeState? data;
 
   _CustomTheme({
     this.data,
-    Key key,
-    @required Widget child,
+    Key? key,
+    required Widget child,
   }) : super(key: key, child: child);
 
   @override
@@ -19,26 +20,26 @@ class _CustomTheme extends InheritedWidget {
 
 class CustomTheme extends StatefulWidget {
   final Widget child;
-  final MyThemeKeys initialThemeKey;
+  final MyThemeKeys? initialThemeKey;
 
   const CustomTheme({
-    Key key,
+    Key? key,
     this.initialThemeKey,
-    @required this.child,
+    required this.child,
   }) : super(key: key);
 
   @override
   CustomThemeState createState() => new CustomThemeState();
 
-  static ThemeData of(BuildContext context) {
+  static ThemeData? of(BuildContext context) {
     _CustomTheme inherited =
-        context.dependOnInheritedWidgetOfExactType<_CustomTheme>();
-    return inherited.data.theme;
+        context.dependOnInheritedWidgetOfExactType<_CustomTheme>()!;
+    return inherited.data!.theme;
   }
 
-  static CustomThemeState instanceOf(BuildContext context) {
+  static CustomThemeState? instanceOf(BuildContext context) {
     _CustomTheme inherited =
-        context.dependOnInheritedWidgetOfExactType<_CustomTheme>();
+        context.dependOnInheritedWidgetOfExactType<_CustomTheme>()!;
     return inherited.data;
   }
 }
@@ -50,7 +51,11 @@ class MyThemes {
     scaffoldBackgroundColor: Colors.grey[200],
     canvasColor: Colors.white,
     // cardColor: Color(0xffFFE8C2),
-    accentColor: Colors.orange[700],
+
+    colorScheme: ColorScheme.fromSwatch().copyWith(
+      secondary: Colors.orange[700],
+      brightness: Brightness.light,
+    ),
     //  textSelectionColor: Colors.white,
     //      hintColor: Colors.white,
     //      textSelectionHandleColor: Colors.white,
@@ -61,34 +66,39 @@ class MyThemes {
     primaryColor: Color(0xFF790604),
     unselectedWidgetColor: Colors.grey[100],
     toggleableActiveColor: Colors.orange,
-    cursorColor: Colors.orange[600],
-    textSelectionHandleColor: Colors.orange[600],
+    appBarTheme: AppBarTheme(
+        systemOverlayStyle:
+            SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
+        iconTheme: IconThemeData(color: Colors.white)),
     textTheme: TextTheme(
         headline2: TextStyle(color: Colors.grey[400]),
         subtitle1: TextStyle(color: Colors.grey[100])),
-    brightness: Brightness.dark,
     cardColor: Color(0xff34363D),
     focusColor: Colors.white,
     backgroundColor: Color(0xff212225),
     scaffoldBackgroundColor: Color(0xff212225),
-    accentColor: Colors.amber,
+    colorScheme: ThemeData()
+        .colorScheme
+        .copyWith(primary: Colors.amber, brightness: Brightness.dark),
   );
 
   static final ThemeData oledblackTheme = ThemeData(
     primaryColor: Color(0xff363636),
-    brightness: Brightness.dark,
+    appBarTheme: AppBarTheme(
+        systemOverlayStyle:
+            SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
+        iconTheme: IconThemeData(color: Colors.white)),
     toggleableActiveColor: Colors.orange,
-    cursorColor: Colors.orange[600],
-    textSelectionHandleColor: Colors.orange[600],
     textTheme: TextTheme(subtitle1: TextStyle(color: Colors.grey[100])),
     unselectedWidgetColor: Colors.grey[100],
     cardColor: Color(0xff34363D),
     backgroundColor: Colors.black,
     scaffoldBackgroundColor: Colors.black,
-    accentColor: Colors.amber,
+    colorScheme: ColorScheme.fromSwatch()
+        .copyWith(primary: Colors.amber, brightness: Brightness.dark),
   );
 
-  static ThemeData getThemeFromKey(MyThemeKeys themeKey) {
+  static ThemeData getThemeFromKey(MyThemeKeys? themeKey) {
     switch (themeKey) {
       case MyThemeKeys.LIGHT:
         return lightTheme;
@@ -104,10 +114,10 @@ class MyThemes {
 }
 
 class CustomThemeState extends State<CustomTheme> {
-  ThemeData _theme;
-  MyThemeKeys _currentTheme;
+  ThemeData? _theme;
+  MyThemeKeys? _currentTheme;
 
-  ThemeData get theme => _theme;
+  ThemeData? get theme => _theme;
 
   @override
   void initState() {
@@ -123,7 +133,7 @@ class CustomThemeState extends State<CustomTheme> {
     });
   }
 
-  MyThemeKeys getCurrentTheme() {
+  MyThemeKeys? getCurrentTheme() {
     return _currentTheme;
   }
 

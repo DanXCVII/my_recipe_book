@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,27 +14,28 @@ part 'ad_manager_event.dart';
 part 'ad_manager_state.dart';
 
 class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
-  StreamSubscription _periodicSub;
+  StreamSubscription? _periodicSub;
   bool isInitialized = false;
   DateTime lastTimeStartedWatching =
       DateTime.now().subtract(Duration(days: 10));
 
   final InAppPurchase _iap = InAppPurchase.instance;
-  StreamSubscription<List<PurchaseDetails>> _subscription;
+  late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<ProductDetails> _products = [];
   List<PurchaseDetails> _purchases = [];
   bool _isAvailable = false;
 
-  void Function() /*!*/ onAdLoaded;
-  void Function() onAdFailedToLoad;
-  void Function() onRewardedAdUserEarnedReward;
+  late void Function() onAdLoaded;
+  late void Function() onAdFailedToLoad;
+  void Function()? onRewardedAdUserEarnedReward;
 
-  SharedPreferences _sP;
-  bool lastAdForBannerTime;
+  SharedPreferences? _sP;
+  late bool lastAdForBannerTime;
   bool _showVideo = false;
 
   AdManagerBloc() : super(AdManagerInitial()) {
     final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
+
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       purchaseDetailsList.forEach((purchase) {
         if (purchase.pendingCompletePurchase) {
@@ -72,7 +74,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     on<WatchedVideo>((event, emit) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      DateTime oldNoAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
+      DateTime oldNoAdsUntil = DateTime.parse(prefs.getString('noAdsUntil')!);
       DateTime noAdsUntil;
       if (oldNoAdsUntil.isAfter(DateTime.now())) {
         noAdsUntil = oldNoAdsUntil.add(Duration(minutes: 30));
@@ -93,7 +95,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
         print(count);
         if (DateTime.now().isAfter(noAdsUntil)) {
           Ads.showBannerAds(true);
-          _periodicSub.cancel();
+          _periodicSub!.cancel();
           add(ShowAdsAgain());
         }
       });
@@ -110,7 +112,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
       _sP ??= await SharedPreferences.getInstance();
 
-      if (_sP.getBool('pro_version') == true) {
+      if (_sP!.getBool('pro_version') == true) {
         Ads.showBannerAds(false);
         emit(IsPurchased());
       } else {
@@ -134,8 +136,8 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
           });
         }
 
-        if (_sP.getString('noAdsUntil') != null) {
-          DateTime noAdsUntil = DateTime.parse(_sP.getString('noAdsUntil'));
+        if (_sP!.getString('noAdsUntil') != null) {
+          DateTime noAdsUntil = DateTime.parse(_sP!.getString('noAdsUntil')!);
 
           if (noAdsUntil.isAfter(DateTime.now())) {
             Ads.showBannerAds(false);
@@ -148,7 +150,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
               print(count);
               if (DateTime.now().isAfter(noAdsUntil)) {
                 Ads.showBannerAds(true);
-                _periodicSub.cancel();
+                _periodicSub!.cancel();
                 add(ShowAdsAgain());
               }
             });
@@ -187,7 +189,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
             true,
             onAdLoaded,
             onAdFailedToLoad,
-            onRewardedAdUserEarnedReward,
+            onRewardedAdUserEarnedReward!,
           );
         } else {
           emit(NotConnected());
@@ -200,7 +202,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
         false,
         onAdLoaded,
         onAdFailedToLoad,
-        onRewardedAdUserEarnedReward,
+        onRewardedAdUserEarnedReward!,
       );
     });
 
@@ -248,13 +250,13 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   }
 
   Future<void> _verifyPurchase(PurchaseDetails details) async {
-    PurchaseDetails purchase = _hasPurchased('pro_version');
+    PurchaseDetails? purchase = _hasPurchased('pro_version');
 
     if (purchase != null &&
         (purchase.status == PurchaseStatus.purchased ||
             purchase.status == PurchaseStatus.restored)) {
       _sP ??= await SharedPreferences.getInstance();
-      await _sP.setBool('pro_version', true);
+      await _sP!.setBool('pro_version', true);
       Ads.showAds(false);
       Ads.showBannerAds(false);
       if (details != null) {
@@ -262,32 +264,32 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       }
       add(_PurchaseSuccessfull());
     } else if (details != null &&
-        details.error.message == "BillingResponse.itemAlreadyOwned") {
+        details.error!.message == "BillingResponse.itemAlreadyOwned") {
       _sP ??= await SharedPreferences.getInstance();
-      await _sP.setBool('pro_version', true);
+      await _sP!.setBool('pro_version', true);
       Ads.showAds(false);
       Ads.showBannerAds(false);
       add(_PurchaseSuccessfull());
     }
   }
 
-  PurchaseDetails _hasPurchased(String productID) {
-    return _purchases.firstWhere((purchase) => purchase.productID == productID,
-        orElse: () => null);
+  PurchaseDetails? _hasPurchased(String productID) {
+    return _purchases
+        .firstWhereOrNull((purchase) => purchase.productID == productID);
   }
 
   @override
   Future<void> close() {
     _subscription.cancel();
-    _periodicSub.cancel();
+    _periodicSub!.cancel();
     return super.close();
   }
 
   Future<DateTime> _getStatusNoAds() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    DateTime noAdsUntil = DateTime.parse(prefs.getString('noAdsUntil'));
+    DateTime noAdsUntil = DateTime.parse(prefs.getString('noAdsUntil')!);
 
-    if (_sP.getString('noAdsUntil') != null &&
+    if (_sP!.getString('noAdsUntil') != null &&
         noAdsUntil.isAfter(DateTime.now())) {
       return noAdsUntil;
     } else {

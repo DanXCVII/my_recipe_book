@@ -8,7 +8,7 @@ abstract class RecipeOverviewEvent extends Equatable {
 }
 
 class LoadVegetableRecipeOverview extends RecipeOverviewEvent {
-  final Vegetable/*!*/ vegetable;
+  final Vegetable vegetable;
 
   const LoadVegetableRecipeOverview(this.vegetable);
 
@@ -17,7 +17,7 @@ class LoadVegetableRecipeOverview extends RecipeOverviewEvent {
 }
 
 class LoadRecipeTagRecipeOverview extends RecipeOverviewEvent {
-  final StringIntTuple/*!*/ recipeTag;
+  final StringIntTuple recipeTag;
 
   const LoadRecipeTagRecipeOverview(this.recipeTag);
 
@@ -26,7 +26,7 @@ class LoadRecipeTagRecipeOverview extends RecipeOverviewEvent {
 }
 
 class LoadCategoryRecipeOverview extends RecipeOverviewEvent {
-  final String/*!*//*!*/ category;
+  final String/*!*/ category;
 
   const LoadCategoryRecipeOverview(this.category);
 

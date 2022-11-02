@@ -10,7 +10,7 @@ import '../generated/i18n.dart';
 import '../widgets/dialogs/textfield_dialog.dart';
 
 class CategoryManagerArguments {
-  final CategoryManagerBloc categoryManagerBloc;
+  final CategoryManagerBloc? categoryManagerBloc;
 
   CategoryManagerArguments({
     this.categoryManagerBloc,
@@ -34,7 +34,7 @@ class CategoryManager extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [Color(0xffAF1E1E), Color(0xff641414)],
               ),
-              title: Text(I18n.of(context).manage_categories),
+              title: Text(I18n.of(context)!.manage_categories),
             ),
             floatingActionButton: FloatingActionButton(
                 backgroundColor: Color(0xFF790604),
@@ -46,11 +46,13 @@ class CategoryManager extends StatelessWidget {
                   showDialog(
                       context: context,
                       builder: (_) => TextFieldDialog(
-                            validation: (String name) {
+                            validation: (String? name) {
                               if (state.categories.contains(name)) {
-                                return I18n.of(context).category_already_exists;
+                                return I18n.of(context)!
+                                    .category_already_exists;
                               } else if (name == "") {
-                                return I18n.of(context).field_must_not_be_empty;
+                                return I18n.of(context)!
+                                    .field_must_not_be_empty;
                               } else {
                                 return null;
                               }
@@ -60,7 +62,7 @@ class CategoryManager extends StatelessWidget {
                                   .recipeManagerBloc
                                   .add(RMAddCategories([name]));
                             },
-                            hintText: I18n.of(context).categoryname,
+                            hintText: I18n.of(context)!.categoryname,
                           ));
                 }),
             body: state.categories.length == 1
@@ -73,7 +75,7 @@ class CategoryManager extends StatelessWidget {
                         color: Colors.grey[300],
                         size: 70.0,
                       ),
-                      description: I18n.of(context).you_have_no_categories,
+                      description: I18n.of(context)!.you_have_no_categories,
                     )),
                   )
                 : ReorderableListView(
@@ -91,12 +93,12 @@ class CategoryManager extends StatelessWidget {
                             showDialog(
                               context: context,
                               builder: (_) => TextFieldDialog(
-                                validation: (String name) {
+                                validation: (String? name) {
                                   if (state.categories.contains(name)) {
-                                    return I18n.of(context)
+                                    return I18n.of(context)!
                                         .category_already_exists;
                                   } else if (name == "") {
-                                    return I18n.of(context)
+                                    return I18n.of(context)!
                                         .field_must_not_be_empty;
                                   } else {
                                     return null;
@@ -109,7 +111,7 @@ class CategoryManager extends StatelessWidget {
                                         RMUpdateCategory(categoryName, name),
                                       );
                                 },
-                                hintText: I18n.of(context).categoryname,
+                                hintText: I18n.of(context)!.categoryname,
                                 prefilledText: categoryName,
                               ),
                             );
@@ -143,7 +145,7 @@ class CategoryManager extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [Color(0xffAF1E1E), Color(0xff641414)],
         ),
-        title: Text(I18n.of(context).manage_categories),
+        title: Text(I18n.of(context)!.manage_categories),
       ),
       body: Center(
         child: CircularProgressIndicator(),
@@ -156,25 +158,29 @@ class CategoryManager extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context).delete_category),
-        content: Text(I18n.of(context).sure_you_want_to_delete_this_category +
+        title: Text(I18n.of(context)!.delete_category),
+        content: Text(I18n.of(context)!.sure_you_want_to_delete_this_category +
             " $categoryName"),
         actions: <Widget>[
-          FlatButton(
-            child: Text(I18n.of(context).no),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textColor: Theme.of(context).textTheme.bodyText2.color,
+          TextButton(
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
+            child: Text(I18n.of(context)!.no),
           ),
-          FlatButton(
-            child: Text(I18n.of(context).yes),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            color: Colors.red[600],
-            textColor: Theme.of(context).textTheme.bodyText2.color,
+          TextButton(
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              backgroundColor: Colors.red[600],
+              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+            ),
+            child: Text(I18n.of(context)!.yes),
             onPressed: () {
               BlocProvider.of<RecipeManagerBloc>(context)
                   .add(RMDeleteCategory(categoryName));

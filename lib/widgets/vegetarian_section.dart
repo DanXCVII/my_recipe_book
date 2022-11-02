@@ -7,7 +7,7 @@ import '../util/my_wrapper.dart';
 // Widget for the radio buttons (vegetarian, vegan, etc.)
 class Vegetarian extends StatefulWidget {
   final MyVegetableWrapper vegetableStatus;
-  Vegetarian({@required this.vegetableStatus});
+  Vegetarian({required this.vegetableStatus});
 
   State<StatefulWidget> createState() {
     return _VegetarianState();
@@ -15,7 +15,7 @@ class Vegetarian extends StatefulWidget {
 }
 
 class _VegetarianState extends State<Vegetarian> {
-  int/*!*/ _radioValue = 0;
+  int _radioValue = 0;
 
   @override
   initState() {
@@ -33,9 +33,9 @@ class _VegetarianState extends State<Vegetarian> {
     super.initState();
   }
 
-  void _handleRadioValueChange(int value) {
+  void _handleRadioValueChange(int? value) {
     setState(() {
-      _radioValue = value;
+      _radioValue = value!;
 
       switch (_radioValue) {
         case 0:
@@ -68,7 +68,7 @@ class _VegetarianState extends State<Vegetarian> {
                 ),
               ),
               Text(
-                I18n.of(context).with_meat,
+                I18n.of(context)!.with_meat,
                 style: TextStyle(fontSize: 16),
               ),
             ]),
@@ -83,7 +83,7 @@ class _VegetarianState extends State<Vegetarian> {
                   ),
                 ),
                 Text(
-                  I18n.of(context).vegetarian,
+                  I18n.of(context)!.vegetarian,
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -99,7 +99,7 @@ class _VegetarianState extends State<Vegetarian> {
                   ),
                 ),
                 Text(
-                  I18n.of(context).vegan,
+                  I18n.of(context)!.vegan,
                   style: TextStyle(fontSize: 16),
                 ),
               ],

@@ -13,8 +13,8 @@ class ShoppingCartFloating extends StatefulWidget {
   final Offset initialPosition;
 
   ShoppingCartFloating({
-    @required this.initialPosition,
-    Key key,
+    required this.initialPosition,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -24,9 +24,9 @@ class ShoppingCartFloating extends StatefulWidget {
 class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
     with TickerProviderStateMixin {
   double width = 100.0, height = 100.0;
-  Offset position;
+  late Offset position;
   bool visible = false;
-  Map<Recipe, List<CheckableIngredient>> shoppingCart;
+  Map<Recipe, List<CheckableIngredient>>? shoppingCart;
 
   @override
   void initState() {
@@ -91,7 +91,7 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
   Widget _getShoppingCartContent(
       Map<Recipe, List<CheckableIngredient>> shoppingCart, bool showSummary) {
     if (shoppingCart == null) return Container();
-    Recipe _summaryRecipe;
+    Recipe? _summaryRecipe;
 
     if (showSummary) {
       _summaryRecipe = shoppingCart.keys
@@ -111,7 +111,7 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
                     blurRadius: 2,
                     spreadRadius: 1,
                     color: Theme.of(context).backgroundColor == Colors.white
-                        ? Colors.grey[400]
+                        ? Colors.grey[400]!
                         : Colors.black,
                   ),
                 ],
@@ -129,7 +129,7 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
                 children: <Widget>[
                   showSummary
                       ? ShoppingListSummary(
-                          shoppingCart[_summaryRecipe],
+                          shoppingCart[_summaryRecipe!],
                           _summaryRecipe,
                         )
                       : ShoppingList(

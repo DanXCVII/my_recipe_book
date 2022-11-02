@@ -22,22 +22,22 @@ import '../screens/recipe_overview.dart';
 import '../screens/recipe_screen.dart';
 
 class RecipeCardBig extends StatelessWidget {
-  final Recipe/*!*/ recipe;
-  final int index;
-  final double cardWidth;
-  final double cardHeight;
+  final Recipe recipe;
+  final int? index;
+  final double? cardWidth;
+  final double? cardHeight;
 
   const RecipeCardBig({
     this.index,
     this.cardWidth,
     this.cardHeight,
-    this.recipe,
-    Key key,
+    required this.recipe,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double scaleFactor = cardHeight / 580;
+    double scaleFactor = cardHeight! / 580;
 
     TextStyle smallHeading = TextStyle(
         fontSize: 16, color: Color(0xffC75F00), fontWeight: FontWeight.w600);
@@ -78,8 +78,8 @@ class RecipeCardBig extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [
                   Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey[900]
-                      : Colors.grey[100],
+                      ? Colors.grey[900]!
+                      : Colors.grey[100]!,
                   Theme.of(context).brightness == Brightness.dark
                       ? Theme.of(context).cardColor
                       : Colors.white,
@@ -91,7 +91,7 @@ class RecipeCardBig extends StatelessWidget {
                   blurRadius: 5,
                   spreadRadius: 2,
                   color: Theme.of(context).backgroundColor == Colors.white
-                      ? Colors.grey[400]
+                      ? Colors.grey[400]!
                       : Colors.black,
                 )
               ]),
@@ -104,15 +104,16 @@ class RecipeCardBig extends StatelessWidget {
                   flex: 10,
                   child: Stack(
                     fit: StackFit.expand,
-                    children: <Widget>[
+                    children: [
                       Hero(
                         tag: GlobalSettings().animationsEnabled()
                             ? heroImageTag
                             : "${heroImageTag}5",
                         child: FadeInImage(
-                          image: recipe.imagePath == Constants.noRecipeImage
-                              ? AssetImage(recipe.imagePath)
-                              : FileImage(File(recipe.imagePath)),
+                          image: (recipe.imagePath == Constants.noRecipeImage
+                                  ? AssetImage(recipe.imagePath)
+                                  : FileImage(File(recipe.imagePath)))
+                              as ImageProvider<Object>,
                           placeholder: MemoryImage(kTransparentImage),
                           fadeInDuration: Duration(milliseconds: 250),
                           fit: BoxFit.cover,
@@ -196,7 +197,7 @@ class RecipeCardBig extends StatelessWidget {
                               ),
                             )
                           : null
-                    ]..removeWhere((i) => i == null),
+                    ].whereType<Widget>().toList(),
                   ),
                 ),
                 Expanded(
@@ -210,7 +211,7 @@ class RecipeCardBig extends StatelessWidget {
                           flex: 8,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
+                            children: [
                               recipe.preperationTime != null &&
                                       recipe.preperationTime != 0
                                   ? Expanded(
@@ -223,7 +224,7 @@ class RecipeCardBig extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: <Widget>[
-                                            Text(I18n.of(context).prep_time,
+                                            Text(I18n.of(context)!.prep_time,
                                                 textScaleFactor: scaleFactor,
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
@@ -246,7 +247,7 @@ class RecipeCardBig extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          Text(I18n.of(context).cook_time,
+                                          Text(I18n.of(context)!.cook_time,
                                               textScaleFactor: scaleFactor,
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -275,7 +276,7 @@ class RecipeCardBig extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: <Widget>[
-                                            Text(I18n.of(context).total_time,
+                                            Text(I18n.of(context)!.total_time,
                                                 textScaleFactor: scaleFactor,
                                                 style: smallHeading),
                                             SizedBox(height: 5),
@@ -294,7 +295,7 @@ class RecipeCardBig extends StatelessWidget {
                                       recipe.totalTime != 0)
                                   ? Container()
                                   : null,
-                            ]..removeWhere((item) => item == null),
+                            ].whereType<Widget>().toList(),
                           ),
                         ),
                         Expanded(
@@ -303,7 +304,7 @@ class RecipeCardBig extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                '${getIngredientCount(recipe.ingredients)} ${I18n.of(context).ingredients}:',
+                                '${getIngredientCount(recipe.ingredients)} ${I18n.of(context)!.ingredients}:',
                                 textScaleFactor: scaleFactor,
                                 style: smallHeading,
                               ),
@@ -323,7 +324,7 @@ class RecipeCardBig extends StatelessWidget {
                               alignment: WrapAlignment.start,
                               direction: Axis.vertical,
                               children: <Widget>[
-                                Text(I18n.of(context).steps,
+                                Text(I18n.of(context)!.steps,
                                     textScaleFactor: scaleFactor,
                                     style: smallHeading),
                                 Text(
@@ -343,7 +344,7 @@ class RecipeCardBig extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Text(I18n.of(context).categories,
+                                      Text(I18n.of(context)!.categories,
                                           textScaleFactor: scaleFactor,
                                           style: smallHeading),
                                       Text(
@@ -363,7 +364,7 @@ class RecipeCardBig extends StatelessWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
-                                Text(I18n.of(context).complexity,
+                                Text(I18n.of(context)!.complexity,
                                     textScaleFactor: scaleFactor,
                                     style: smallHeading),
                                 Text(
@@ -391,7 +392,7 @@ class RecipeCardBig extends StatelessWidget {
       List<String> categories, BuildContext context) {
     String categoryString = '';
     if (categories.isEmpty) {
-      return I18n.of(context).none;
+      return I18n.of(context)!.none;
     }
     for (String c in categories) {
       if (categories.last != c) {
@@ -437,11 +438,11 @@ class RecipeCardBig extends StatelessWidget {
         if (flatIngredients[i].amount != null) {
           leftIngredAmountColumn.children.add(Text(
             (GlobalSettings().showDecimal()
-                    ? cutDouble(flatIngredients[i].amount)
-                    : getFractionDouble(flatIngredients[i].amount)) +
+                    ? cutDouble(flatIngredients[i].amount!)
+                    : getFractionDouble(flatIngredients[i].amount!)) +
                 ' ' +
                 (flatIngredients[i].unit != null
-                    ? flatIngredients[i].unit
+                    ? flatIngredients[i].unit!
                     : ''),
             maxLines: 1,
             textScaleFactor: scaleFactor,
@@ -461,11 +462,11 @@ class RecipeCardBig extends StatelessWidget {
         if (flatIngredients[i].amount != null) {
           rightIngredAmountColumn.children.add(Text(
             (GlobalSettings().showDecimal()
-                    ? cutDouble(flatIngredients[i].amount)
-                    : getFractionDouble(flatIngredients[i].amount)) +
+                    ? cutDouble(flatIngredients[i].amount!)
+                    : getFractionDouble(flatIngredients[i].amount!)) +
                 ' ' +
                 (flatIngredients[i].unit != null
-                    ? flatIngredients[i].unit
+                    ? flatIngredients[i].unit!
                     : ''),
             maxLines: 1,
             textScaleFactor: scaleFactor,
@@ -495,11 +496,11 @@ class RecipeCardBig extends StatelessWidget {
         if (flatIngredients[i].amount != null) {
           leftIngredAmountColumn.children.add(Text(
             (GlobalSettings().showDecimal()
-                    ? cutDouble(flatIngredients[i].amount)
-                    : getFractionDouble(flatIngredients[i].amount)) +
+                    ? cutDouble(flatIngredients[i].amount!)
+                    : getFractionDouble(flatIngredients[i].amount!)) +
                 ' ' +
                 (flatIngredients[i].unit != null
-                    ? flatIngredients[i].unit
+                    ? flatIngredients[i].unit!
                     : ''),
             maxLines: 1,
             textScaleFactor: scaleFactor,

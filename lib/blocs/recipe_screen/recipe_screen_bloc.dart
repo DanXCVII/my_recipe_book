@@ -13,7 +13,7 @@ part 'recipe_screen_state.dart';
 
 class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
   final Recipe recipe;
-  StreamSubscription rmListener;
+  late StreamSubscription rmListener;
   RecipeManagerBloc recipeManagerBloc;
 
   RecipeScreenBloc(this.recipe, this.recipeManagerBloc)
@@ -36,7 +36,7 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
       List<String> categoryImages = [];
       for (String category in recipe.categories) {
         categoryImages.add(
-            (await HiveProvider().getRandomRecipeOfCategory(category: category))
+            (await HiveProvider().getRandomRecipeOfCategory(category: category))!
                 .imagePreviewPath);
       }
 

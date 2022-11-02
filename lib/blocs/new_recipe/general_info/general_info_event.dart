@@ -19,13 +19,13 @@ class SetCanSave extends GeneralInfoEvent {
 }
 
 class UpdateRecipeImage extends GeneralInfoEvent {
-  final File recipeImage;
-  final bool/*!*/ editingRecipe;
+  final File? recipeImage;
+  final bool editingRecipe;
 
-  UpdateRecipeImage([this.recipeImage, this.editingRecipe]);
+  UpdateRecipeImage([this.recipeImage, this.editingRecipe = false]);
 
   @override
-  List<Object> get props => [recipeImage, editingRecipe];
+  List<Object?> get props => [recipeImage, editingRecipe];
 }
 
 class GRemoveRecipeImage extends GeneralInfoEvent {
@@ -38,21 +38,20 @@ class GRemoveRecipeImage extends GeneralInfoEvent {
 }
 
 class FinishedEditing extends GeneralInfoEvent {
-  final bool/*?*/ editingRecipe;
-  final bool goBack;
+  final bool? editingRecipe;
+  final bool? goBack;
 
-  final String/*!*//*?*/ recipeName;
-  final double preperationTime;
-  final double cookingTime;
-  final double totalTime;
-  final String source;
-  final List<String> categories;
-  final List<StringIntTuple> recipeTags;
+  final String recipeName;
+  final double? preperationTime;
+  final double? cookingTime;
+  final double? totalTime;
+  final String? source;
+  final List<String>? categories;
+  final List<StringIntTuple>? recipeTags;
 
-  FinishedEditing(
+  FinishedEditing(this.recipeName,
       [this.editingRecipe,
       this.goBack,
-      this.recipeName,
       this.preperationTime,
       this.cookingTime,
       this.totalTime,
@@ -61,7 +60,7 @@ class FinishedEditing extends GeneralInfoEvent {
       this.recipeTags]);
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         editingRecipe,
         goBack,
         recipeName,

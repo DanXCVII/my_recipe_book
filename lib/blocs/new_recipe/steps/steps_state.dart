@@ -8,10 +8,10 @@ abstract class StepsState extends Equatable {
 }
 
 class SCanSave extends StepsState {
-  final bool/*!*/ isValid;
-  final DateTime/*!*/ time;
+  final bool isValid;
+  final DateTime time;
 
-  SCanSave({this.isValid, this.time});
+  SCanSave({required this.isValid, required this.time});
 
   @override
   List<Object> get props => [isValid, time];

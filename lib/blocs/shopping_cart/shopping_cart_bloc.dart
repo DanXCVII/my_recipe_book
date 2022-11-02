@@ -15,8 +15,8 @@ part 'shopping_cart_state.dart';
 
 class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
-  SharedPreferences prefs;
-  StreamSubscription subscription;
+  late SharedPreferences prefs;
+  late StreamSubscription subscription;
 
   ShoppingCartBloc(this.recipeManagerBloc) : super(LoadingShoppingCart()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
@@ -65,7 +65,7 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
         await HiveProvider().removeRecipeFromCart(event.recipeName.name);
       } else {
         await HiveProvider().removeIngredientsFromCart(
-            event.recipeName.name, event.ingredients);
+            event.recipeName.name, event.ingredients!);
       }
 
       emit(LoadedShoppingCart(await HiveProvider().getShoppingCart()));
@@ -95,10 +95,10 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
     });
   }
 
-  bool/*!*/ showSummary() {
-    bool/*!*/ showSummary = false;
+  bool showSummary() {
+    bool showSummary = false;
     if (prefs.containsKey("shoppingCartSummary")) {
-      showSummary = prefs.getBool("shoppingCartSummary");
+      showSummary = prefs.getBool("shoppingCartSummary")!;
     }
 
     return showSummary;

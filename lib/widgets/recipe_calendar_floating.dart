@@ -11,8 +11,8 @@ class RecipeCalendarFloating extends StatefulWidget {
   final Offset initialPosition;
 
   RecipeCalendarFloating({
-    @required this.initialPosition,
-    Key key,
+    required this.initialPosition,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -22,7 +22,7 @@ class RecipeCalendarFloating extends StatefulWidget {
 class _RecipeCalendarFloatingState extends State<RecipeCalendarFloating>
     with TickerProviderStateMixin {
   double width = 100.0, height = 100.0;
-  Offset position;
+  late Offset position;
   bool visible = false;
 
   @override
@@ -81,7 +81,7 @@ class _RecipeCalendarFloatingState extends State<RecipeCalendarFloating>
                       blurRadius: 2,
                       spreadRadius: 1,
                       color: Theme.of(context).backgroundColor == Colors.white
-                          ? Colors.grey[400]
+                          ? Colors.grey[400]!
                           : Colors.black,
                     ),
                   ],

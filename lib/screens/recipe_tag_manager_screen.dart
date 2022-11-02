@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
@@ -11,7 +12,7 @@ import '../widgets/dialogs/text_color_dialog.dart';
 import '../widgets/icon_info_message.dart';
 
 class RecipeTagManagerArguments {
-  final RecipeTagManagerBloc recipeTagManagerBloc;
+  final RecipeTagManagerBloc? recipeTagManagerBloc;
 
   RecipeTagManagerArguments({
     this.recipeTagManagerBloc,
@@ -35,7 +36,7 @@ class RecipeTagManager extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [Color(0xffAF1E1E), Color(0xff641414)],
               ),
-              title: Text(I18n.of(context).manage_recipe_tags),
+              title: Text(I18n.of(context)!.manage_recipe_tags),
             ),
             floatingActionButton: FloatingActionButton(
                 backgroundColor: Color(0xFF790604),
@@ -47,14 +48,13 @@ class RecipeTagManager extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (_) => TextColorDialog(
-                      validation: (String name) {
-                        if (state.recipeTags.firstWhere(
-                                (element) => element.text == name,
-                                orElse: () => null) !=
+                      validation: (String? name) {
+                        if (state.recipeTags.firstWhereOrNull(
+                                (element) => element.text == name) !=
                             null) {
-                          return I18n.of(context).recipe_tag_already_exists;
+                          return I18n.of(context)!.recipe_tag_already_exists;
                         } else if (name == "") {
-                          return I18n.of(context).field_must_not_be_empty;
+                          return I18n.of(context)!.field_must_not_be_empty;
                         } else {
                           return null;
                         }
@@ -67,7 +67,7 @@ class RecipeTagManager extends StatelessWidget {
                                   [StringIntTuple(text: name, number: color)]),
                             );
                       },
-                      hintText: I18n.of(context).recipe_tag,
+                      hintText: I18n.of(context)!.recipe_tag,
                     ),
                   );
                 }),
@@ -79,7 +79,7 @@ class RecipeTagManager extends StatelessWidget {
                       color: Colors.grey[300],
                       size: 70.0,
                     ),
-                    description: I18n.of(context).you_have_no_recipe_tags,
+                    description: I18n.of(context)!.you_have_no_recipe_tags,
                   ))
                 : ListView(
                     children: List<Widget>.generate(
@@ -138,7 +138,7 @@ class RecipeTagManager extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [Color(0xffAF1E1E), Color(0xff641414)],
         ),
-        title: Text(I18n.of(context).manage_recipe_tags),
+        title: Text(I18n.of(context)!.manage_recipe_tags),
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.check),
@@ -158,15 +158,15 @@ class RecipeTagManager extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => TextColorDialog(
-        validation: (String name) {
+        validation: (String? name) {
           List<StringIntTuple> otherRecipeTags =
               List<StringIntTuple>.from(recipeTags)..remove(currentTag);
-          if (otherRecipeTags.firstWhere((element) => element.text == name,
-                  orElse: () => null) !=
+          if (otherRecipeTags
+                  .firstWhereOrNull((element) => element.text == name) !=
               null) {
-            return I18n.of(context).recipe_tag_already_exists;
+            return I18n.of(context)!.recipe_tag_already_exists;
           } else if (name == "") {
-            return I18n.of(context).field_must_not_be_empty;
+            return I18n.of(context)!.field_must_not_be_empty;
           } else {
             return null;
           }
@@ -188,7 +188,7 @@ class RecipeTagManager extends StatelessWidget {
                 );
           }
         },
-        hintText: I18n.of(context).recipe_tag,
+        hintText: I18n.of(context)!.recipe_tag,
         prefilledText: currentTag.text,
       ),
     );
@@ -199,25 +199,30 @@ class RecipeTagManager extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context).delete_recipe_tag),
-        content: Text(I18n.of(context).sure_you_want_to_delete_this_recipe_tag +
-            " ${recipeTag.text}"),
+        title: Text(I18n.of(context)!.delete_recipe_tag),
+        content: Text(
+            I18n.of(context)!.sure_you_want_to_delete_this_recipe_tag +
+                " ${recipeTag.text}"),
         actions: <Widget>[
-          FlatButton(
-            child: Text(I18n.of(context).no),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textColor: Theme.of(context).textTheme.bodyText2.color,
+          TextButton(
+            child: Text(I18n.of(context)!.no),
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
-          FlatButton(
-            child: Text(I18n.of(context).yes),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            color: Colors.red[600],
-            textColor: Theme.of(context).textTheme.bodyText2.color,
+          TextButton(
+            child: Text(I18n.of(context)!.yes),
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              backgroundColor: Colors.red[600],
+              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+            ),
             onPressed: () {
               BlocProvider.of<RecipeManagerBloc>(context)
                   .add(RMDeleteRecipeTag(recipeTag));

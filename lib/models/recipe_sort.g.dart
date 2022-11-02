@@ -15,7 +15,7 @@ class RSortAdapter extends TypeAdapter<RSort> {
     };
     return RSort(
       fields[0] as RecipeSort,
-      fields[1] as bool,
+      fields[1] as bool?,
     );
   }
 

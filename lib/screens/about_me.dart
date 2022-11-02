@@ -10,7 +10,7 @@ import '../generated/i18n.dart';
 import '../widgets/dialogs/info_dialog.dart';
 
 class AboutMeScreen extends StatelessWidget {
-  const AboutMeScreen({Key key}) : super(key: key);
+  const AboutMeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class AboutMeScreen extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [Color(0xffAF1E1E), Color(0xff641414)],
         ),
-        title: Text(I18n.of(context).about_me),
+        title: Text(I18n.of(context)!.about_me),
       ),
       body: Center(
         child: Column(
@@ -39,7 +39,7 @@ class AboutMeScreen extends StatelessWidget {
               ),
             ),
             Text(
-              I18n.of(context).recipe_bible,
+              I18n.of(context)!.recipe_bible,
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
             ),
             SizedBox(height: 10),
@@ -51,15 +51,13 @@ class AboutMeScreen extends StatelessWidget {
                   context: context,
                   builder: (context) => InfoDialog(
                     title: "Disclaimer",
-                    body: I18n.of(context).disclaimer_description,
+                    body: I18n.of(context)!.disclaimer_description,
                   ),
                 );
               },
-              style: ButtonStyle(
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(30.0),
-                  ),
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(30.0),
                 ),
               ),
             ),
@@ -75,9 +73,10 @@ class AboutMeScreen extends StatelessWidget {
                         child: InkWell(
                           onTap: () {
                             Share.share(
-                                I18n.of(context).share_this_app_desc(
+                                I18n.of(context)!.share_this_app_desc(
                                     "http://play.google.com/store/apps/details?id=com.release.my_recipe_book"),
-                                subject: I18n.of(context).share_this_app_title);
+                                subject:
+                                    I18n.of(context)!.share_this_app_title);
                           },
                           child: Container(
                             height: 160,
@@ -87,7 +86,7 @@ class AboutMeScreen extends StatelessWidget {
                                   padding: const EdgeInsets.all(12.0),
                                   child: Center(
                                     child: Text(
-                                      I18n.of(context).share_this_app,
+                                      I18n.of(context)!.share_this_app,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 16,
@@ -151,7 +150,7 @@ class AboutMeScreen extends StatelessWidget {
                                   padding: const EdgeInsets.all(12.0),
                                   child: Center(
                                     child: Text(
-                                      I18n.of(context).contact_me,
+                                      I18n.of(context)!.contact_me,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -172,7 +171,7 @@ class AboutMeScreen extends StatelessWidget {
                                         color:
                                             Theme.of(context).backgroundColor ==
                                                     Colors.white
-                                                ? Colors.grey[500]
+                                                ? Colors.grey[500]!
                                                 : Colors.white),
                                   ),
                                   child: Icon(Icons.mail, size: 40),

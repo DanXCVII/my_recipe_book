@@ -15,7 +15,7 @@ class StringListTupleAdapter extends TypeAdapter<StringListTuple> {
     };
     return StringListTuple(
       fields[0] as String,
-      (fields[1] as List)?.cast<CheckableIngredient>(),
+      (fields[1] as List).cast<CheckableIngredient>(),
     );
   }
 

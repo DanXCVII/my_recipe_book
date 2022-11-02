@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:async';
 import 'dart:math';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:hive/hive.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
 import 'package:path_provider/path_provider.dart';
@@ -71,8 +73,8 @@ Future<void> initHive(bool firstTime) async {
 
   // initializing with the must have values
   if (firstTime) {
-    await Hive.box<Recipe>(BoxNames.tmpRecipe)
-        .put(tmpRecipeKey, Recipe(name: null, vegetable: null, servings: null));
+    await Hive.box<Recipe>(BoxNames.tmpRecipe).put(tmpRecipeKey,
+        Recipe(name: "", vegetable: Vegetable.VEGAN, servings: null));
 
     await Hive.box<String>(BoxNames.keyString)
         .put('no category', 'no category');
@@ -80,7 +82,7 @@ Future<void> initHive(bool firstTime) async {
     await Hive.box<List>(BoxNames.shoppingCart).put('summary', []);
 
     await Hive.box<List<String>>(BoxNames.recipeCategories)
-        .put('no category', List<String>());
+        .put('no category', []);
 
     await Hive.box<List<String>>(BoxNames.ratings).put(1, []);
     await Hive.box<List<String>>(BoxNames.ratings).put(2, []);
@@ -95,13 +97,13 @@ Future<void> initHive(bool firstTime) async {
 
     Box<List<String>> boxOrder = Hive.box<List<String>>(BoxNames.order);
     await boxOrder.put('categories', ['no category']);
-    await boxOrder.put('nutritions', List<String>());
+    await boxOrder.put('nutritions', []);
 
     await Hive.box<Recipe>(BoxNames.tmpRecipe).put(
         tmpRecipeKey,
         Recipe(
           categories: [],
-          name: null,
+          name: "",
           servings: null,
           vegetable: Vegetable.VEGETARIAN,
         ));
@@ -145,9 +147,9 @@ class HiveProvider {
   Box<List<String>> boxOrder;
   Box<RSort> boxRecipeSort;
   Box<List> boxShoppingCart;
-  Box<List<String>/*!*//*?*//*?*/> boxRecipeCategories;
+  Box<List<String> /*?*/ /*?*/ > boxRecipeCategories;
   Box<StringIntTuple> boxRecipeTags;
-  Box<List<String>> boxRecipeTagsList;
+  Box<List<String>?> boxRecipeTagsList;
   Box<List<String>> boxRatings;
   Box<String> boxRecipeCalendar;
 
@@ -211,7 +213,7 @@ class HiveProvider {
     lazyBoxRecipes = await Hive.openLazyBox<Recipe>(BoxNames.recipes);
     boxRecipeTags = await Hive.openBox<StringIntTuple>(BoxNames.recipeTags);
     boxRecipeTagsList =
-        await Hive.openBox<List<String>>(BoxNames.recipeTagsList);
+        await Hive.openBox<List<String>?>(BoxNames.recipeTagsList);
     boxRecipeNames = await Hive.openBox<String>(BoxNames.recipeNames);
     boxRatings = await Hive.openBox<List<String>>(BoxNames.ratings);
     boxRecipeCalendar = await Hive.openBox<String>(BoxNames.recipeCalendar);
@@ -223,7 +225,7 @@ class HiveProvider {
     String hiveRecipeKey = getHiveKey(newRecipe.name);
 
     // add recipeTags to boxes
-    List<StringIntTuple/*!*/> newColorRecipeTags = [];
+    List<StringIntTuple> newColorRecipeTags = [];
     List<String> recipeTagKeys =
         boxRecipeTagsList.keys.map((item) => item.toString()).toList();
     for (StringIntTuple recipeTag in newRecipe.tags) {
@@ -231,9 +233,9 @@ class HiveProvider {
       if (recipeTagKeys.contains(currentRecipeTagKey)) {
         await boxRecipeTagsList.put(
             currentRecipeTagKey,
-            List<String>.from(boxRecipeTagsList.get(currentRecipeTagKey))
+            List<String>.from(boxRecipeTagsList.get(currentRecipeTagKey)!)
               ..add(hiveRecipeKey));
-        newColorRecipeTags.add(boxRecipeTags.get(currentRecipeTagKey));
+        newColorRecipeTags.add(boxRecipeTags.get(currentRecipeTagKey)!);
       } else {
         await boxRecipeTags.put(currentRecipeTagKey, recipeTag);
         await boxRecipeTagsList.put(currentRecipeTagKey, [hiveRecipeKey]);
@@ -265,11 +267,11 @@ class HiveProvider {
           hiveCategoryKey,
           boxRecipeCategories.get(hiveCategoryKey) == null
               ? [hiveRecipeKey]
-              : List<String>.from(boxRecipeCategories.get(hiveCategoryKey))
+              : List<String>.from(boxRecipeCategories.get(hiveCategoryKey)!)
             ..add(hiveRecipeKey));
     }
     if (readyToImportRecipe.categories.isEmpty) {
-      List<String> recipeNames = boxRecipeCategories.get('no category');
+      List<String> recipeNames = boxRecipeCategories.get('no category')!;
       await boxRecipeCategories.put(
           'no category', List<String>.from(recipeNames)..add(hiveRecipeKey));
     }
@@ -282,7 +284,7 @@ class HiveProvider {
     if (readyToImportRecipe.rating != null) {
       await boxRatings.put(
           readyToImportRecipe.rating,
-          List<String>.from(boxRatings.get(readyToImportRecipe.rating))
+          List<String>.from(boxRatings.get(readyToImportRecipe.rating)!)
             ..add(hiveRecipeKey));
     }
 
@@ -291,7 +293,7 @@ class HiveProvider {
       for (Ingredient i in l) {
         bool addIngred = true;
         for (var key in boxIngredientNames.keys) {
-          if (boxIngredientNames.get(key).compareTo(i.name) == 0) {
+          if (boxIngredientNames.get(key)!.compareTo(i.name) == 0) {
             addIngred = false;
           }
         }
@@ -338,17 +340,17 @@ class HiveProvider {
     await boxRecipeCalendar.delete(date.toIso8601String() + "#$i");
   }
 
-  Future<Map<DateTime, List<String/*!*/>>> getRecipeCalendar() async {
+  Future<Map<DateTime, List<String>>> getRecipeCalendar() async {
     Map<DateTime, List<String>> recipeCalendar = {};
 
-    for (String/*!*/ dateKey in boxRecipeCalendar.keys) {
+    for (String dateKey in boxRecipeCalendar.keys) {
       DateTime currentDate =
           DateTime.parse(dateKey.substring(0, dateKey.length - 2));
       if (recipeCalendar.keys.contains(currentDate)) {
-        recipeCalendar[currentDate].add(boxRecipeCalendar.get(dateKey));
+        recipeCalendar[currentDate]!.add(boxRecipeCalendar.get(dateKey)!);
       } else {
         recipeCalendar.addAll({
-          currentDate: [boxRecipeCalendar.get(dateKey)]
+          currentDate: [boxRecipeCalendar.get(dateKey)!]
         });
       }
     }
@@ -384,7 +386,7 @@ class HiveProvider {
     await boxTmpRecipe.delete(tmpEditingRecipeKey);
   }
 
-  Future<void> saveTmpRecipe(Recipe/*!*/ recipe) async {
+  Future<void> saveTmpRecipe(Recipe recipe) async {
     await boxTmpRecipe.put(tmpRecipeKey, recipe);
   }
 
@@ -394,59 +396,61 @@ class HiveProvider {
 
   Future<void> deleteRecipe(String recipeName) async {
     String hiveRecipeKey = getHiveKey(recipeName);
-    Recipe removeRecipe = await lazyBoxRecipes.get(hiveRecipeKey);
+    Recipe? removeRecipe = await lazyBoxRecipes.get(hiveRecipeKey);
 
     await boxRecipeNames.delete(hiveRecipeKey);
     await boxFavorites.delete(hiveRecipeKey);
 
-    // delete recipe from categories
-    if (removeRecipe.categories.isNotEmpty) {
-      for (String categoryName in removeRecipe.categories) {
-        if (boxRecipeCategories
-            .get(getHiveKey(categoryName))
-            .contains(hiveRecipeKey)) {
-          await boxRecipeCategories.put(
-              getHiveKey(categoryName),
-              List<String>.from(
-                  boxRecipeCategories.get(getHiveKey(categoryName)))
-                ..removeWhere((key) => key == hiveRecipeKey));
+    if (removeRecipe != null) {
+      // delete recipe from categories
+      if (removeRecipe.categories.isNotEmpty) {
+        for (String categoryName in removeRecipe.categories) {
+          if (boxRecipeCategories
+              .get(getHiveKey(categoryName))!
+              .contains(hiveRecipeKey)) {
+            await boxRecipeCategories.put(
+                getHiveKey(categoryName),
+                List<String>.from(
+                    boxRecipeCategories.get(getHiveKey(categoryName))!)
+                  ..removeWhere((key) => key == hiveRecipeKey));
+          }
         }
+      } else {
+        await boxRecipeCategories.put(
+            'no category',
+            List<String>.from(boxRecipeCategories.get('no category')!)
+              ..removeWhere((key) => key == hiveRecipeKey));
       }
-    } else {
-      await boxRecipeCategories.put(
-          'no category',
-          List<String>.from(boxRecipeCategories.get('no category'))
-            ..removeWhere((key) => key == hiveRecipeKey));
-    }
 
-    // delete recipe from ratings
-    if (removeRecipe.rating != null) {
-      boxRatings.put(
-          removeRecipe.rating,
-          List<String>.from(boxRatings.get(removeRecipe.rating))
-            ..removeWhere((key) => key == hiveRecipeKey));
-    }
+      // delete recipe from ratings
+      if (removeRecipe.rating != null) {
+        boxRatings.put(
+            removeRecipe.rating,
+            List<String>.from(boxRatings.get(removeRecipe.rating)!)
+              ..removeWhere((key) => key == hiveRecipeKey));
+      }
 
-    // delete recipe from vegetable
-    Box<String> boxVegetable = _getBoxVegetable(removeRecipe.vegetable);
+      // delete recipe from vegetable
+      Box<String> boxVegetable = _getBoxVegetable(removeRecipe.vegetable);
 
-    for (var key in boxVegetable.keys) {
-      if (boxVegetable.get(key) == hiveRecipeKey)
-        await boxVegetable.delete(key);
-    }
+      for (var key in boxVegetable.keys) {
+        if (boxVegetable.get(key) == hiveRecipeKey)
+          await boxVegetable.delete(key);
+      }
 
-    for (StringIntTuple recipeTag in removeRecipe.tags ?? []) {
-      String hiveRecipeTag = getHiveKey(recipeTag.text);
-      await boxRecipeTagsList.put(
-        hiveRecipeTag,
-        List<String>.from(boxRecipeTagsList.get(hiveRecipeTag))
-          ..removeWhere((key) => key == hiveRecipeKey),
-      );
-    }
+      for (StringIntTuple recipeTag in removeRecipe.tags) {
+        String hiveRecipeTag = getHiveKey(recipeTag.text);
+        await boxRecipeTagsList.put(
+          hiveRecipeTag,
+          List<String>.from(boxRecipeTagsList.get(hiveRecipeTag)!)
+            ..removeWhere((key) => key == hiveRecipeKey),
+        );
+      }
 
-    // delete recipe from recipes
-    if (lazyBoxRecipes.keys.toList().contains(hiveRecipeKey)) {
-      await lazyBoxRecipes.delete(hiveRecipeKey);
+      // delete recipe from recipes
+      if (lazyBoxRecipes.keys.toList().contains(hiveRecipeKey)) {
+        await lazyBoxRecipes.delete(hiveRecipeKey);
+      }
     }
   }
 
@@ -456,7 +460,7 @@ class HiveProvider {
 
     await boxKeyString.put(hiveCategoryKey, categoryName);
 
-    List<String> categories = boxOrder.get('categories');
+    List<String> categories = boxOrder.get('categories')!;
     boxOrder.put(
         'categories',
         List<String>.from(categories)
@@ -471,7 +475,7 @@ class HiveProvider {
     String hiveNewKey = getHiveKey(newName);
     String hiveOldKey = getHiveKey(oldName);
 
-    List<String> recipes = boxRecipeCategories.get(hiveOldKey);
+    List<String> recipes = boxRecipeCategories.get(hiveOldKey)!;
     await boxRecipeCategories.delete(hiveOldKey);
     await boxRecipeCategories.put(hiveNewKey, recipes);
 
@@ -479,19 +483,21 @@ class HiveProvider {
     await boxKeyString.put(hiveNewKey, newName);
 
     for (var key in lazyBoxRecipes.keys) {
-      Recipe recipe = await lazyBoxRecipes.get(key);
+      Recipe? recipe = await lazyBoxRecipes.get(key);
 
-      for (int i = 0; i < recipe.categories.length; i++) {
-        if (recipe.categories[i].compareTo(oldName) == 0) {
-          recipe.categories[i] = newName;
-          await lazyBoxRecipes.put(key, recipe);
-          break;
+      if (recipe != null) {
+        for (int i = 0; i < recipe.categories.length; i++) {
+          if (recipe.categories[i].compareTo(oldName) == 0) {
+            recipe.categories[i] = newName;
+            await lazyBoxRecipes.put(key, recipe);
+            break;
+          }
         }
       }
     }
 
     List<String> categoryKeysOrder =
-        List<String>.from(boxOrder.get('categories'));
+        List<String>.from(boxOrder.get('categories')!);
     categoryKeysOrder[categoryKeysOrder.indexOf(hiveOldKey)] = hiveNewKey;
 
     await boxOrder.put('categories', categoryKeysOrder);
@@ -499,40 +505,44 @@ class HiveProvider {
 
   Future<void> deleteCategory(String categoryName) async {
     String hiveCategoryKey = getHiveKey(categoryName);
-    await boxOrder.put('categories',
-        List<String>.from(boxOrder.get('categories'))..remove(hiveCategoryKey));
+    await boxOrder.put(
+        'categories',
+        List<String>.from(boxOrder.get('categories')!)
+          ..remove(hiveCategoryKey));
     await boxRecipeCategories.delete(hiveCategoryKey);
     await boxRecipeSort.delete(hiveCategoryKey);
 
     for (var key in lazyBoxRecipes.keys) {
-      Recipe currentRecipe = await lazyBoxRecipes.get(key);
+      Recipe? currentRecipe = await lazyBoxRecipes.get(key);
 
-      if (currentRecipe.categories.contains(categoryName)) {
-        currentRecipe.categories.remove(categoryName);
+      if (currentRecipe != null) {
+        if (currentRecipe.categories.contains(categoryName)) {
+          currentRecipe.categories.remove(categoryName);
 
-        await lazyBoxRecipes.put(key, currentRecipe);
-        if (currentRecipe.categories.isEmpty) {
-          await boxRecipeCategories.put(
-              'no category',
-              boxRecipeCategories.get('no category')
-                ..add(getHiveKey(currentRecipe.name)));
+          await lazyBoxRecipes.put(key, currentRecipe);
+          if (currentRecipe.categories.isEmpty) {
+            await boxRecipeCategories.put(
+                'no category',
+                boxRecipeCategories.get('no category')!
+                  ..add(getHiveKey(currentRecipe.name)));
+          }
         }
       }
     }
   }
 
   /// returns the categories with "no category" included, in the user defined order
-  List<String/*!*//*!*/> getCategoryNames() {
-    List<String/*!*/> categories = [];
-    for (String/*!*/ key in boxOrder.get('categories')) {
-      categories.add(boxKeyString.get(key));
+  List<String /*!*/ > getCategoryNames() {
+    List<String> categories = [];
+    for (String key in boxOrder.get('categories')!) {
+      categories.add(boxKeyString.get(key)!);
     }
     return categories;
   }
 
   Future<void> moveCategory(int oldIndex, newIndex) async {
     List<String> categoryKeysOrder =
-        List<String>.from(boxOrder.get('categories'));
+        List<String>.from(boxOrder.get('categories')!);
 
     categoryKeysOrder
       ..insert(newIndex, categoryKeysOrder[oldIndex])
@@ -548,7 +558,7 @@ class HiveProvider {
 
   Future<RSort> getSortOrder(String category) async {
     String hiveCategoryKey = getHiveKey(category);
-    RSort categorySort = boxRecipeSort.get(hiveCategoryKey);
+    RSort? categorySort = boxRecipeSort.get(hiveCategoryKey);
     if (categorySort == null) {
       categorySort = RSort(RecipeSort.BY_NAME, true);
       await changeSortOrder(categorySort, hiveCategoryKey);
@@ -574,16 +584,17 @@ class HiveProvider {
     await boxRecipeTagsList.delete(hiveTagKey);
 
     for (var key in lazyBoxRecipes.keys) {
-      Recipe currentRecipe = await lazyBoxRecipes.get(key);
+      Recipe? currentRecipe = await lazyBoxRecipes.get(key);
 
-      if (currentRecipe.tags != null &&
-          currentRecipe.tags.firstWhere((tag) => tag.text == tagName,
-                  orElse: () => null) !=
-              null) {
-        List<StringIntTuple>.from(currentRecipe.tags)
-            .removeWhere((tag) => tag.text == tagName);
+      if (currentRecipe != null) {
+        if (currentRecipe.tags != null &&
+            currentRecipe.tags.firstWhereOrNull((tag) => tag.text == tagName) !=
+                null) {
+          List<StringIntTuple>.from(currentRecipe.tags)
+              .removeWhere((tag) => tag.text == tagName);
 
-        await lazyBoxRecipes.put(key, currentRecipe);
+          await lazyBoxRecipes.put(key, currentRecipe);
+        }
       }
     }
   }
@@ -608,38 +619,43 @@ class HiveProvider {
 
     // updating recipes
     for (var key in lazyBoxRecipes.keys) {
-      Recipe currentRecipe = await lazyBoxRecipes.get(key);
+      Recipe? currentRecipe = await lazyBoxRecipes.get(key);
 
-      if (currentRecipe.tags != null &&
+      if (currentRecipe != null) {
+        if (currentRecipe.tags != null &&
+            currentRecipe.tags
+                .map((tag) => tag.text)
+                .toList()
+                .contains(oldTagName)) {
           currentRecipe.tags
-              .map((tag) => tag.text)
-              .toList()
-              .contains(oldTagName)) {
-        currentRecipe.tags
-          ..removeWhere((tag) => tag.text == oldTagName)
-          ..add(StringIntTuple(text: newTagName, number: newColor));
+            ..removeWhere((tag) => tag.text == oldTagName)
+            ..add(StringIntTuple(text: newTagName, number: newColor));
 
-        await lazyBoxRecipes.put(key, currentRecipe);
+          await lazyBoxRecipes.put(key, currentRecipe);
+        }
       }
     }
   }
 
-  List<StringIntTuple/*!*/> getRecipeTags() {
-    List<StringIntTuple/*!*/> recipeTags = [];
+  List<StringIntTuple> getRecipeTags() {
+    List<StringIntTuple> recipeTags = [];
 
     for (var key in boxRecipeTags.keys) {
-      recipeTags.add(boxRecipeTags.get(key));
+      recipeTags.add(boxRecipeTags.get(key)!);
     }
 
     return recipeTags;
   }
 
   ////////////// condition recipe getters //////////////
-  Future<List<Recipe/*!*/>> getAllRecipes() async {
-    List<Recipe/*!*/> allRecipes = [];
+  Future<List<Recipe>> getAllRecipes() async {
+    List<Recipe> allRecipes = [];
 
     for (var key in lazyBoxRecipes.keys) {
-      allRecipes.add(await lazyBoxRecipes.get(key));
+      Recipe? recipe = await lazyBoxRecipes.get(key);
+      if (recipe != null) {
+        allRecipes.add(recipe);
+      }
     }
 
     return allRecipes;
@@ -658,63 +674,77 @@ class HiveProvider {
     List<Tuple2<int, Recipe>> foundRecipes = [];
 
     for (var key in lazyBoxRecipes.keys) {
-      Recipe currentRecipe = await lazyBoxRecipes.get(key);
-      List<String/*!*/> recipeIngredients = (currentRecipe)
-          .ingredients
-          .expand((i) => i)
-          .toList()
-          .map((i) => i.name)
-          .toList();
+      Recipe? currentRecipe = await lazyBoxRecipes.get(key);
+      if (currentRecipe != null) {
+        List<String> recipeIngredients = (currentRecipe)
+            .ingredients
+            .expand((i) => i)
+            .toList()
+            .map((i) => i.name)
+            .toList();
 
-      int elementsInList = _elementsInList(
-          recipeIngredients.map((element) => element.toLowerCase()).toList(),
-          ingredients.map((element) => element.toLowerCase()).toList());
-      if (0 != elementsInList) {
-        foundRecipes.add(Tuple2(elementsInList, currentRecipe));
+        int elementsInList = _elementsInList(
+            recipeIngredients.map((element) => element.toLowerCase()).toList(),
+            ingredients.map((element) => element.toLowerCase()).toList());
+        if (0 != elementsInList) {
+          foundRecipes.add(Tuple2(elementsInList, currentRecipe));
+        }
       }
     }
     return foundRecipes;
   }
 
-  List<String/*!*/> getRecipeNames() {
-    return boxRecipeNames.keys.map((key) => boxRecipeNames.get(key)).toList()
+  List<String> getRecipeNames() {
+    return boxRecipeNames.keys
+        .map((key) => boxRecipeNames.get(key))
+        .toList()
+        .cast<String>()
       ..remove('summary');
   }
 
   /// returns the recipe if it exists and otherwise null
-  Future<Recipe/*!*//*?*/> getRecipeByName(String name) async {
-    Recipe recipe = await lazyBoxRecipes.get(getHiveKey(name));
+  Future<Recipe?> getRecipeByName(String name) async {
+    Recipe? recipe = await lazyBoxRecipes.get(getHiveKey(name));
 
     return recipe;
   }
 
-  Future<List<Recipe/*!*/>> getFavoriteRecipes() async {
-    List<Recipe/*!*/> favoriteRecipes = [];
+  Future<List<Recipe>> getFavoriteRecipes() async {
+    List<Recipe> favoriteRecipes = [];
 
     for (var key in boxFavorites.keys) {
-      favoriteRecipes.add(await lazyBoxRecipes.get(key));
+      Recipe? recipe = await lazyBoxRecipes.get(key);
+      if (recipe != null) {
+        favoriteRecipes.add(recipe);
+      }
     }
 
     return favoriteRecipes;
   }
 
-  Future<List<Recipe/*!*/>> getVegetableRecipes(Vegetable vegetable) async {
+  Future<List<Recipe>> getVegetableRecipes(Vegetable vegetable) async {
     Box<String> boxVegetable = _getBoxVegetable(vegetable);
 
-    List<Recipe/*!*/> recipes = [];
+    List<Recipe> recipes = [];
     for (var key in boxVegetable.keys) {
-      recipes.add(await lazyBoxRecipes.get(boxVegetable.get(key)));
+      Recipe? recipe = await lazyBoxRecipes.get(boxVegetable.get(key));
+      if (recipe != null) {
+        recipes.add(recipe);
+      }
     }
     return recipes;
   }
 
-  Future<List<Recipe/*!*/>> getRecipeTagRecipes(String recipeTag) async {
+  Future<List<Recipe>> getRecipeTagRecipes(String recipeTag) async {
     String recipeTagKey = getHiveKey(recipeTag);
 
-    List<Recipe/*!*/> recipes = [];
+    List<Recipe> recipes = [];
     if (boxRecipeTagsList.keys.toList().contains(recipeTagKey)) {
-      for (var recipeKey in boxRecipeTagsList.get(recipeTagKey)) {
-        recipes.add(await lazyBoxRecipes.get(recipeKey));
+      for (var recipeKey in boxRecipeTagsList.get(recipeTagKey)!) {
+        Recipe? recipe = await lazyBoxRecipes.get(recipeKey);
+        if (recipe != null) {
+          recipes.add(recipe);
+        }
       }
     }
     return recipes;
@@ -722,35 +752,41 @@ class HiveProvider {
 
   /// returns the list of recipes under this category and if non
   /// is existing, returns an empty list
-  Future<List<Recipe/*!*/>> getCategoryRecipes(String category) async {
+  Future<List<Recipe>> getCategoryRecipes(String category) async {
     String categoryKey = getHiveKey(category);
 
-    List<Recipe/*!*/> recipes = [];
-    for (var recipeKey in boxRecipeCategories.get(categoryKey)) {
-      recipes.add(await lazyBoxRecipes.get(recipeKey));
+    List<Recipe> recipes = [];
+    for (var recipeKey in boxRecipeCategories.get(categoryKey)!) {
+      Recipe? recipe = await lazyBoxRecipes.get(recipeKey);
+      if (recipe != null) {
+        recipes.add(recipe);
+      }
     }
     return recipes;
   }
 
-  Future<Recipe> getRandomRecipeOfCategory(
-      {String category, Recipe excludedRecipe}) async {
-    List<String/*!*//*?*/> recipeKeys;
+  Future<Recipe?> getRandomRecipeOfCategory(
+      {String? category, Recipe? excludedRecipe}) async {
+    List<String /*?*/ > recipeKeys;
 
     if (category == null) {
-      recipeKeys = lazyBoxRecipes.keys.map((key) => key as String).toList();
+      recipeKeys = lazyBoxRecipes.keys
+          .map((key) => key as String?)
+          .toList()
+          .cast<String>();
     } else {
       String categoryKey = getHiveKey(category);
 
-      recipeKeys = List<String>.from(boxRecipeCategories.get(categoryKey));
+      recipeKeys = List<String>.from(boxRecipeCategories.get(categoryKey)!);
     }
 
     return await getRandomRecipeFromKeyList(recipeKeys,
         excludedRecipe: excludedRecipe);
   }
 
-  Future<Recipe> getRandomRecipeOfVegetable(Vegetable vegetable,
-      {Recipe excludedRecipe}) async {
-    List<String/*!*/> recipeKeys = [];
+  Future<Recipe?> getRandomRecipeOfVegetable(Vegetable vegetable,
+      {Recipe? excludedRecipe}) async {
+    List<String> recipeKeys = [];
 
     if (vegetable == null) {
       recipeKeys = lazyBoxRecipes.keys.map((key) => key as String).toList();
@@ -758,7 +794,7 @@ class HiveProvider {
       Box<String> boxVegetable = _getBoxVegetable(vegetable);
 
       for (var key in boxVegetable.keys) {
-        recipeKeys.add(boxVegetable.get(key));
+        recipeKeys.add(boxVegetable.get(key)!);
       }
     }
 
@@ -766,8 +802,8 @@ class HiveProvider {
         excludedRecipe: excludedRecipe);
   }
 
-  Future<Recipe> getRandomRecipeOfRecipeTag(String recipeTag,
-      {Recipe excludedRecipe}) async {
+  Future<Recipe?> getRandomRecipeOfRecipeTag(String recipeTag,
+      {Recipe? excludedRecipe}) async {
     List<String> recipeKeys;
 
     if (recipeTag == null) {
@@ -775,15 +811,15 @@ class HiveProvider {
     } else {
       String recipeTagKey = getHiveKey(recipeTag);
 
-      recipeKeys = List<String>.from(boxRecipeTagsList.get(recipeTagKey));
+      recipeKeys = List<String>.from(boxRecipeTagsList.get(recipeTagKey)!);
     }
 
     return await getRandomRecipeFromKeyList(recipeKeys,
         excludedRecipe: excludedRecipe);
   }
 
-  Future<Recipe> getRandomRecipeFromKeyList(List<String> recipeKeys,
-      {Recipe excludedRecipe}) async {
+  Future<Recipe?> getRandomRecipeFromKeyList(List<String> recipeKeys,
+      {Recipe? excludedRecipe}) async {
     if (excludedRecipe != null && recipeKeys.length > 1) {
       String hiveRecipeKey = getHiveKey(excludedRecipe.name);
       recipeKeys.remove(hiveRecipeKey);
@@ -798,33 +834,34 @@ class HiveProvider {
     return await lazyBoxRecipes.get(randomRecipeHash);
   }
 
-  Recipe getTmpRecipe() {
-    Recipe tmpRecipe = boxTmpRecipe.get(tmpRecipeKey);
+  Recipe? getTmpRecipe() {
+    Recipe? tmpRecipe = boxTmpRecipe.get(tmpRecipeKey);
 
     return tmpRecipe;
   }
 
-  Recipe getTmpEditingRecipe() {
-    Recipe tmpRecipe = boxTmpRecipe.get(tmpEditingRecipeKey);
+  Recipe? getTmpEditingRecipe() {
+    Recipe? tmpRecipe = boxTmpRecipe.get(tmpEditingRecipeKey);
 
     return tmpRecipe;
   }
 
   int getRecipeAmountCategory(String category) {
-    return boxRecipeCategories.get(getHiveKey(category)).length;
+    return boxRecipeCategories.get(getHiveKey(category))!.length;
   }
 
   ////////////// ingredient names //////////////
 
-  List<String/*!*/> getIngredientNames() {
+  List<String> getIngredientNames() {
     return boxIngredientNames.keys
-        .map<String>((key) => boxIngredientNames.get(key))
-        .toList();
+        .map<String?>((key) => boxIngredientNames.get(key))
+        .toList()
+        .cast<String>();
   }
 
   ////////////// nutrition related //////////////
   Future<void> renameNutrition(String oldName, String newName) async {
-    List<String> nutritions = List<String>.from(boxOrder.get('nutritions'));
+    List<String> nutritions = List<String>.from(boxOrder.get('nutritions')!);
     if (nutritions.contains(oldName)) {
       nutritions[nutritions.indexOf(oldName)] = newName;
 
@@ -851,20 +888,20 @@ class HiveProvider {
 
   /// adds the nutrition to hive if not already existing
   Future<void> addNutrition(String nutritionName) async {
-    if (!boxOrder.get('nutritions').contains(nutritionName)) {
+    if (!boxOrder.get('nutritions')!.contains(nutritionName)) {
       await boxOrder.put('nutritions',
-          List<String>.from(boxOrder.get('nutritions'))..add(nutritionName));
+          List<String>.from(boxOrder.get('nutritions')!)..add(nutritionName));
     }
   }
 
   List<String> getNutritions() {
-    List<String/*!*/> nutritions = boxOrder.get('nutritions');
+    List<String> nutritions = boxOrder.get('nutritions')!;
 
     return List<String>.from(nutritions);
   }
 
   Future<void> moveNutrition(int oldIndex, newIndex) async {
-    List<String> nutritions = List<String>.from(boxOrder.get('nutritions'));
+    List<String> nutritions = List<String>.from(boxOrder.get('nutritions')!);
 
     nutritions
       ..insert(newIndex, nutritions[oldIndex])
@@ -874,7 +911,7 @@ class HiveProvider {
   }
 
   Future<void> deleteNutrition(String nutritionName) async {
-    List<String> nutritions = List<String>.from(boxOrder.get('nutritions'));
+    List<String> nutritions = List<String>.from(boxOrder.get('nutritions')!);
 
     nutritions.remove(nutritionName);
 
@@ -886,7 +923,7 @@ class HiveProvider {
     Map<Recipe, List<CheckableIngredient>> shoppingCart = {};
 
     for (var key in boxShoppingCart.keys) {
-      Recipe recipe = key == "summary"
+      Recipe? recipe = key == "summary"
           ? Recipe(name: "summary")
           : await lazyBoxRecipes.get(key);
       List<CheckableIngredient> ingredients =
@@ -895,7 +932,7 @@ class HiveProvider {
         shoppingCart.addAll({recipe: ingredients});
       } else {
         shoppingCart.addAll({
-          Recipe(name: boxKeyString.get(key), notes: "noLink"): ingredients
+          Recipe(name: boxKeyString.get(key)!, notes: "noLink"): ingredients
         });
       }
     }
@@ -960,12 +997,12 @@ class HiveProvider {
 
   /// Checks if the given ingredient is in the list of the given
   /// recipe with a greater or equal amount
-  bool checkForRecipeIngredient(String/*!*/ recipeName, Ingredient ingredient) {
+  bool checkForRecipeIngredient(String recipeName, Ingredient ingredient) {
     String hiveRecipeKey = getHiveKey(recipeName);
 
     if (boxShoppingCart.get(hiveRecipeKey) != null) {
       for (CheckableIngredient i
-          in boxShoppingCart.get(hiveRecipeKey).cast<CheckableIngredient>()) {
+          in boxShoppingCart.get(hiveRecipeKey)!.cast<CheckableIngredient>()) {
         if (i.amount == null &&
             ingredient.amount == null &&
             i.name == ingredient.name) {
@@ -973,7 +1010,7 @@ class HiveProvider {
         }
         if (i.name == ingredient.name &&
             i.unit == ingredient.unit &&
-            i.amount >= ingredient.amount) {
+            i.amount! >= ingredient.amount!) {
           return true;
         }
       }
@@ -1042,8 +1079,8 @@ class HiveProvider {
       // remove ingredient from given recipe
       List<CheckableIngredient> ingredients =
           boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ?? [];
-      int removeIngred = _getSuitingIngredientRecipe(ingredient, ingredients);
-      double removeAmount = ingredients[removeIngred].amount;
+      int removeIngred = _getSuitingIngredientRecipe(ingredient, ingredients)!;
+      double? removeAmount = ingredients[removeIngred].amount;
 
       await boxShoppingCart.put(
         hiveRecipeKey,
@@ -1056,7 +1093,7 @@ class HiveProvider {
       List<CheckableIngredient> summaryIngredients =
           boxShoppingCart.get("summary")?.cast<CheckableIngredient>() ?? [];
 
-      int summaryIndex =
+      int? summaryIndex =
           _getSuitingIngredientRecipe(ingredient, summaryIngredients);
 
       if (summaryIndex == null) return;
@@ -1066,11 +1103,11 @@ class HiveProvider {
       if (summaryIngred.amount != null && removeAmount != null) {
         await boxShoppingCart.put(
           "summary",
-          summaryIngred.amount - removeAmount > 0
+          summaryIngred.amount! - removeAmount > 0
               ? List<CheckableIngredient>.from(summaryIngredients
                 ..replaceRange(summaryIndex, summaryIndex + 1, [
                   summaryIngred.copyWith(
-                      amount: summaryIngred.amount - removeAmount)
+                      amount: summaryIngred.amount! - removeAmount)
                 ]))
               : List<CheckableIngredient>.from(
                   summaryIngredients..removeAt(summaryIndex)),
@@ -1081,7 +1118,7 @@ class HiveProvider {
         if (_getIngredientCount(ingredient) == 1) {
           List<CheckableIngredient> updatedSummaryIngreds =
               List<CheckableIngredient>.from(
-                  boxShoppingCart.get('summary').cast<CheckableIngredient>())
+                  boxShoppingCart.get('summary')!.cast<CheckableIngredient>())
                 ..remove(summaryIngred);
           await boxShoppingCart.put('summary', updatedSummaryIngreds);
         }
@@ -1110,14 +1147,14 @@ class HiveProvider {
   /// CheckableIngredient.checked and also updates the summary checked
   /// if necessary
   Future<void> checkIngredient(
-      String/*!*//*!*/ recipeName, CheckableIngredient ingredient) async {
+      String /*!*/ recipeName, CheckableIngredient ingredient) async {
     String hiveRecipeKey = getHiveKey(recipeName);
 
     if (recipeName != "summary") {
       List<CheckableIngredient> ingredients =
           boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ?? [];
       int modifiiedIndex =
-          _getSuitingIngredientRecipe(ingredient.getIngredient(), ingredients);
+          _getSuitingIngredientRecipe(ingredient.getIngredient(), ingredients)!;
       ingredients[modifiiedIndex] = ingredient;
       await boxShoppingCart.put(
         hiveRecipeKey,
@@ -1140,9 +1177,8 @@ class HiveProvider {
         if (key != "summary") {
           List<CheckableIngredient> ingredients =
               List<CheckableIngredient>.from(
-                      boxShoppingCart.get(key)?.cast<CheckableIngredient>()) ??
-                  [];
-          int i = _getSuitingIngredientRecipe(
+                  boxShoppingCart.get(key)!.cast<CheckableIngredient>());
+          int? i = _getSuitingIngredientRecipe(
               ingredient.getIngredient(), ingredients);
           if (i != null) {
             if (ingredients[i].checked == false) return false;
@@ -1159,7 +1195,7 @@ class HiveProvider {
     for (var key in boxShoppingCart.keys) {
       List<CheckableIngredient> ingredients =
           boxShoppingCart.get(key)?.cast<CheckableIngredient>() ?? [];
-      int ingredientIndex =
+      int? ingredientIndex =
           _getSuitingIngredientRecipe(ingredient.getIngredient(), ingredients);
 
       if (ingredientIndex != null) {
@@ -1178,7 +1214,7 @@ class HiveProvider {
   Future<void> _cleanUpEmptyRecipes() async {
     for (var key in boxShoppingCart.keys) {
       if (key != 'summary' &&
-          boxShoppingCart.get(key).cast<CheckableIngredient>().isEmpty) {
+          boxShoppingCart.get(key)!.cast<CheckableIngredient>().isEmpty) {
         await boxShoppingCart.delete(key);
       }
     }
@@ -1187,21 +1223,21 @@ class HiveProvider {
   /// adds the ingredient to the given recipe only or updates the amount
   /// and sets checked = false (does not look for incorrect summary)
   Future<void> _addIngredientToRecipe(
-      String/*!*/ recipeName, Ingredient ingredient) async {
+      String recipeName, Ingredient ingredient) async {
     String hiveRecipeKey = getHiveKey(recipeName);
 
     // if we already have the recipe in our shoppingCard
     if (boxShoppingCart.keys.contains(hiveRecipeKey)) {
       List<CheckableIngredient> newIngredientList =
           boxShoppingCart.get(hiveRecipeKey)?.cast<CheckableIngredient>() ?? [];
-      int indexIngred =
+      int? indexIngred =
           _getSuitingIngredientRecipe(ingredient, newIngredientList);
 
       if (indexIngred != null) {
         CheckableIngredient modifyIngred = newIngredientList[indexIngred];
-        double newAmount = modifyIngred.amount;
+        double? newAmount = modifyIngred.amount;
         if (modifyIngred.amount != null) {
-          newAmount = ingredient.amount + modifyIngred.amount;
+          newAmount = ingredient.amount! + modifyIngred.amount!;
         }
         bool checked = false;
         await boxShoppingCart.put(
@@ -1214,9 +1250,8 @@ class HiveProvider {
         await boxShoppingCart.put(
             hiveRecipeKey,
             (List<CheckableIngredient>.from(boxShoppingCart
-                    .get(hiveRecipeKey)
-                    ?.cast<CheckableIngredient>()) ??
-                [])
+                .get(hiveRecipeKey)!
+                .cast<CheckableIngredient>()))
               ..add(CheckableIngredient(
                   ingredient.name, ingredient.amount, ingredient.unit, false)));
       }
@@ -1235,7 +1270,7 @@ class HiveProvider {
 
   /// returns the ingredient of the recipe with the same name and unit if
   /// existing and otherwise null
-  int _getSuitingIngredientRecipe(
+  int? _getSuitingIngredientRecipe(
       Ingredient ingredient, List<CheckableIngredient> ingredients) {
     if (ingredients == null) return null;
     for (int i = 0; i < ingredients.length; i++) {
@@ -1246,7 +1281,7 @@ class HiveProvider {
   }
 
   ////////////// hive internal related //////////////
-  String/*!*/ getHiveKey(String/*!*//*!*/ name) {
+  String getHiveKey(String /*!*/ name) {
     if (name == "no category") return "no category";
     if (name.contains(RegExp(r"[^\x00-\x7F]+"))) {
       List<int> bytes = utf8.encode(name).toList();
@@ -1276,7 +1311,7 @@ class HiveProvider {
     return count;
   }
 
-  Box<String/*!*/> _getBoxVegetable(Vegetable/*!*/ vegetable) {
+  Box<String> _getBoxVegetable(Vegetable vegetable) {
     switch (vegetable) {
       case Vegetable.NON_VEGETARIAN:
         return boxNonVegetarian;

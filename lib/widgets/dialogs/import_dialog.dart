@@ -15,7 +15,7 @@ enum ImportStatus { Loading, Selection, Finished }
 class ImportDialog extends StatefulWidget {
   final bool closeAfterFinished;
 
-  ImportDialog({this.closeAfterFinished = false, Key key}) : super(key: key);
+  ImportDialog({this.closeAfterFinished = false, Key? key}) : super(key: key);
 
   @override
   _ImportDialogState createState() => _ImportDialogState();
@@ -31,10 +31,10 @@ class _ImportDialogState extends State<ImportDialog> {
     return AlertDialog(
       contentPadding: EdgeInsets.all(12),
       title: Text(importStatus == ImportStatus.Finished
-          ? I18n.of(context).finished
+          ? I18n.of(context)!.finished
           : importStatus == ImportStatus.Loading
-              ? I18n.of(context).import_recipe_s
-              : I18n.of(context).select_recipes_to_import),
+              ? I18n.of(context)!.import_recipe_s
+              : I18n.of(context)!.select_recipes_to_import),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       content: Container(
         width: MediaQuery.of(context).size.width > 320 ? 320 : null,
@@ -64,7 +64,7 @@ class _ImportDialogState extends State<ImportDialog> {
             },
             child: BlocBuilder<ImportRecipeBloc, ImportRecipeState>(
                 builder: (context, state) {
-              double percentageDone;
+              late double percentageDone;
               if (state is InitialImportRecipeState ||
                   state is ImportingRecipes) {
                 if (state is InitialImportRecipeState) {
@@ -88,7 +88,7 @@ class _ImportDialogState extends State<ImportDialog> {
                 return Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
                   direction: Axis.vertical,
-                  children: <Widget>[
+                  children: [
                     state.readyToImportRecipes.isEmpty
                         ? null
                         : Container(
@@ -101,13 +101,13 @@ class _ImportDialogState extends State<ImportDialog> {
                               ),
                             ),
                             child: ListTile(
-                              title: Text(I18n.of(context).select_all),
+                              title: Text(I18n.of(context)!.select_all),
                               trailing: Checkbox(
                                 value: listEquals(selectedRecipes,
                                     state.readyToImportRecipes),
                                 onChanged: (value) {
                                   setState(() {
-                                    if (value) {
+                                    if (value!) {
                                       selectedRecipes = List<Recipe>.from(
                                           state.readyToImportRecipes);
                                     } else {
@@ -152,7 +152,7 @@ class _ImportDialogState extends State<ImportDialog> {
                                             currentRecipeIndex.round()]),
                                     onChanged: (status) {
                                       setState(() {
-                                        if (status) {
+                                        if (status!) {
                                           selectedRecipes.add(
                                               state.readyToImportRecipes[
                                                   currentRecipeIndex.round()]);
@@ -238,7 +238,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context).ready} ',
+                              ' ${I18n.of(context)!.ready} ',
                               style: TextStyle(fontSize: 12),
                             ),
                             Icon(
@@ -247,7 +247,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context).duplicate} ',
+                              ' ${I18n.of(context)!.duplicate} ',
                               style: TextStyle(fontSize: 12),
                             ),
                             Icon(
@@ -256,7 +256,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context).failed}',
+                              ' ${I18n.of(context)!.failed}',
                               style: TextStyle(fontSize: 12),
                             ),
                           ],
@@ -269,8 +269,8 @@ class _ImportDialogState extends State<ImportDialog> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
-                          FlatButton(
-                              child: Text(I18n.of(context).cancel),
+                          TextButton(
+                              child: Text(I18n.of(context)!.cancel),
                               onPressed: () {
                                 clearCache().then((_) {});
 
@@ -282,8 +282,8 @@ class _ImportDialogState extends State<ImportDialog> {
                           SizedBox(
                             width: 6,
                           ),
-                          FlatButton(
-                            child: Text(I18n.of(context).import),
+                          TextButton(
+                            child: Text(I18n.of(context)!.import),
                             onPressed: () => selectedRecipes.isNotEmpty
                                 ? BlocProvider.of<ImportRecipeBloc>(context)
                                     .add(FinishImportRecipes(selectedRecipes))
@@ -292,7 +292,7 @@ class _ImportDialogState extends State<ImportDialog> {
                         ],
                       ),
                     ),
-                  ]..removeWhere((item) => item == null),
+                  ].whereType<Widget>().toList(),
                 );
               } else if (state is ImportedRecipes) {
                 return Wrap(
@@ -365,7 +365,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context).successful} ',
+                              ' ${I18n.of(context)!.successful} ',
                               style: TextStyle(fontSize: 12),
                             ),
                             Icon(
@@ -374,7 +374,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context).duplicate} ',
+                              ' ${I18n.of(context)!.duplicate} ',
                               style: TextStyle(fontSize: 12),
                             ),
                             Icon(
@@ -383,7 +383,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context).failed}',
+                              ' ${I18n.of(context)!.failed}',
                               style: TextStyle(fontSize: 12),
                             ),
                           ],
@@ -395,7 +395,7 @@ class _ImportDialogState extends State<ImportDialog> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
-                            FlatButton(
+                            TextButton(
                                 child: Text(
                                   "ok",
                                   style: TextStyle(color: Colors.amber),
@@ -413,11 +413,11 @@ class _ImportDialogState extends State<ImportDialog> {
                   ],
                 );
               } else if (state is InvalidDataType) {
-                return _getShowInfoStringWidget(I18n.of(context)
+                return _getShowInfoStringWidget(I18n.of(context)!
                     .datatype_not_supported(state.fileExtension));
               } else if (state is InvalidFile) {
                 return _getShowInfoStringWidget(
-                    I18n.of(context).file_not_supported(state.fileName));
+                    I18n.of(context)!.file_not_supported(state.fileName));
               } else {
                 return Text(state.toString());
               }
@@ -441,7 +441,7 @@ class _ImportDialogState extends State<ImportDialog> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text("ok", style: TextStyle(color: Colors.amber)),
                 onPressed: () {
                   Navigator.pop(context);

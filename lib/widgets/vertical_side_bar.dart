@@ -27,7 +27,7 @@ class VerticalSideBar extends StatelessWidget {
             SideBarItem(
               MdiIcons.notebook,
               selectedIndex == 0 ? Colors.orange : Colors.grey[600],
-              I18n.of(context).recipes,
+              I18n.of(context)!.recipes,
               () {
                 _changeView(0, context);
               },
@@ -36,7 +36,7 @@ class VerticalSideBar extends StatelessWidget {
             SideBarItem(
               Icons.favorite,
               selectedIndex == 1 ? Colors.pink : Colors.grey[600],
-              I18n.of(context).favorites,
+              I18n.of(context)!.favorites,
               () {
                 _changeView(1, context);
               },
@@ -45,7 +45,7 @@ class VerticalSideBar extends StatelessWidget {
             SideBarItem(
               MdiIcons.diceMultiple,
               selectedIndex == 3 ? Colors.green : Colors.grey[600],
-              I18n.of(context).explore,
+              I18n.of(context)!.explore,
               () {
                 _changeView(3, context);
               },
@@ -54,7 +54,7 @@ class VerticalSideBar extends StatelessWidget {
             SideBarItem(
               Icons.settings,
               selectedIndex == 4 ? Colors.yellow : Colors.grey[600],
-              I18n.of(context).settings,
+              I18n.of(context)!.settings,
               () {
                 _changeView(4, context);
               },
@@ -66,7 +66,7 @@ class VerticalSideBar extends StatelessWidget {
             SideBarItem(
               Icons.shopping_basket,
               shoppingCartOpen ? Colors.brown : Colors.grey[600],
-              I18n.of(context).shoppingcart,
+              I18n.of(context)!.shoppingcart,
               () {
                 _changeShoppingCartView(context, !shoppingCartOpen);
               },
@@ -75,7 +75,7 @@ class VerticalSideBar extends StatelessWidget {
             SideBarItem(
               Icons.calendar_today,
               calendarIsOpen ? Colors.blue : Colors.grey[600],
-              I18n.of(context).recipe_planer,
+              I18n.of(context)!.recipe_planer,
               () {
                 BlocProvider.of<AppBloc>(context)
                     .add(ChangeRecipeCalendarView(true));
@@ -103,7 +103,7 @@ class VerticalSideBar extends StatelessWidget {
 }
 
 class SideBarItem extends StatelessWidget {
-  final Color selectedColor;
+  final Color? selectedColor;
   final IconData icon;
   final String title;
   final Function onPressed;
@@ -113,14 +113,14 @@ class SideBarItem extends StatelessWidget {
     this.selectedColor,
     this.title,
     this.onPressed, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: selectedColor.withOpacity(0.3),
+        color: selectedColor!.withOpacity(0.3),
         borderRadius: BorderRadius.all(Radius.circular(30)),
       ),
       child: ClipRRect(
@@ -131,7 +131,7 @@ class SideBarItem extends StatelessWidget {
             onTap: () {
               onPressed();
             },
-            splashColor: selectedColor.withOpacity(0.3),
+            splashColor: selectedColor!.withOpacity(0.3),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Container(

@@ -16,10 +16,10 @@ import '../models/string_int_tuple.dart';
 import '../screens/recipe_overview.dart';
 import '../screens/recipe_screen.dart';
 
-class RecipeSearch extends SearchDelegate<SearchRecipe> {
-  final List<String /*!*/ > recipeNames;
-  final List<StringIntTuple /*!*/ > recipeTags;
-  final List<String /*!*/ > categories;
+class RecipeSearch extends SearchDelegate<SearchRecipe?> {
+  final List<String> recipeNames;
+  final List<StringIntTuple> recipeTags;
+  final List<String> categories;
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
 
@@ -36,18 +36,24 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
     ThemeData theme = Theme.of(context);
     if (theme.brightness != Brightness.dark) {
       return theme.copyWith(
-        primaryColor: Colors.white,
         primaryIconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
         brightness: Brightness.light,
         primaryTextTheme: theme.textTheme,
+        appBarTheme: AppBarTheme(
+          color: Colors.white,
+          iconTheme: IconThemeData(color: Colors.grey[800]),
+        ),
       );
     } else {
       return theme.copyWith(
-        primaryColor: Colors.grey[800],
         primaryIconTheme:
             theme.primaryIconTheme.copyWith(color: Colors.grey[200]),
         brightness: Brightness.dark,
         primaryTextTheme: theme.textTheme,
+        appBarTheme: AppBarTheme(
+          color: Colors.grey[800],
+          iconTheme: IconThemeData(color: Colors.grey[200]),
+        ),
       );
     }
   }
@@ -80,19 +86,19 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
       return Container(
           height: 70,
           child:
-              Center(child: Text(I18n.of(context).nothing_to_search_through)));
+              Center(child: Text(I18n.of(context)!.nothing_to_search_through)));
     }
-    List<String /*!*/ > resultCategories = categories
+    List<String> resultCategories = categories
         .where(
             (category) => category.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    List<StringIntTuple /*!*/ > resultRecipeTags = recipeTags
+    List<StringIntTuple> resultRecipeTags = recipeTags
         .where((recipeTag) =>
             recipeTag.text.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    List<String /*!*/ > resultRecipeNames = recipeNames
+    List<String> resultRecipeNames = recipeNames
         .where((recipeName) =>
             recipeName.toLowerCase().contains(query.toLowerCase()))
         .toList();

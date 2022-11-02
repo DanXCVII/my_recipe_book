@@ -3,16 +3,16 @@ import 'package:hive/hive.dart';
 
 part 'nutrition.g.dart';
 
-@HiveType()
+@HiveType(typeId: 5)
 class Nutrition extends Equatable {
   @HiveField(0)
-  final String/*!*/ name;
+  final String name;
   @HiveField(1)
-  final String/*!*/ amountUnit;
+  final String amountUnit;
 
   Nutrition({
-    this.name,
-    this.amountUnit,
+    required this.name,
+    required this.amountUnit,
   });
 
   @override

@@ -4,7 +4,7 @@ abstract class ShoppingCartEvent extends Equatable {
   const ShoppingCartEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadShoppingCart extends ShoppingCartEvent {}
@@ -35,10 +35,10 @@ class CheckIngredients extends ShoppingCartEvent {
 
 class RemoveIngredients extends ShoppingCartEvent {
   final Recipe recipeName;
-  final List<Ingredient> ingredients;
+  final List<Ingredient>? ingredients;
 
   const RemoveIngredients(this.ingredients, this.recipeName);
 
   @override
-  List<Object> get props => [ingredients, recipeName];
+  List<Object?> get props => [ingredients, recipeName];
 }

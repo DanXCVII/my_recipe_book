@@ -7,17 +7,17 @@ import 'package:photo_view/photo_view_gallery.dart';
 import '../constants/global_constants.dart' as Constants;
 
 class GalleryPhotoView extends StatefulWidget {
-  final List<String/*!*/>/*!*/ heroTags;
+  final List<String> heroTags;
   final int initialIndex;
   final PageController pageController;
   final List<String> galleryImagePaths;
-  final List<String>/*!*/ descriptions;
+  final List<String> descriptions;
 
   GalleryPhotoView({
-    this.heroTags,
-    this.initialIndex,
-    @required this.galleryImagePaths,
-    this.descriptions,
+    required this.heroTags,
+    required this.initialIndex,
+    required this.galleryImagePaths,
+    required this.descriptions,
   }) : pageController = PageController(initialPage: initialIndex);
 
   @override
@@ -27,7 +27,7 @@ class GalleryPhotoView extends StatefulWidget {
 }
 
 class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
-  int currentIndex;
+  late int currentIndex;
   @override
   void initState() {
     super.initState();
@@ -90,9 +90,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     return PhotoViewGalleryPageOptions(
-      imageProvider: widget.galleryImagePaths[index] == Constants.noRecipeImage
+      imageProvider: (widget.galleryImagePaths[index] == Constants.noRecipeImage
           ? AssetImage(widget.galleryImagePaths[index])
-          : FileImage(File(widget.galleryImagePaths[index])),
+          : FileImage(File(widget.galleryImagePaths[index]))) as ImageProvider<Object>?,
       initialScale: PhotoViewComputedScale.contained,
       minScale: PhotoViewComputedScale.contained * (1.0),
       maxScale: PhotoViewComputedScale.covered * 1.5,

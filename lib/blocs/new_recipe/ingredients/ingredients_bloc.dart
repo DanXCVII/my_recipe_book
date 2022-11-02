@@ -18,23 +18,23 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
     });
 
     on<FinishedEditing>((event, emit) async {
-      if (event.goBack) {
+      if (event.goBack!) {
         emit(IEditingFinishedGoBack());
       } else {
         emit(IEditingFinished());
       }
 
-      List<String> recipeIngredientSections = [];
-      List<List<Ingredient>> recipeIngredients = [[]];
+      List<String>? recipeIngredientSections = [];
+      List<List<Ingredient>>? recipeIngredients = [[]];
 
-      if (event.ingredients.isNotEmpty && event.ingredients.first.isNotEmpty) {
+      if (event.ingredients!.isNotEmpty && event.ingredients!.first.isNotEmpty) {
         recipeIngredientSections = event.ingredientsGlossary;
         recipeIngredients = event.ingredients;
       }
 
       Recipe newRecipe;
-      if (!event.editingRecipe) {
-        newRecipe = HiveProvider().getTmpRecipe().copyWith(
+      if (!event.editingRecipe!) {
+        newRecipe = HiveProvider().getTmpRecipe()!.copyWith(
               servings: event.servings,
               servingName: event.servingName,
               ingredients: recipeIngredients,
@@ -43,7 +43,7 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
             );
         await HiveProvider().saveTmpRecipe(newRecipe);
       } else {
-        newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
+        newRecipe = HiveProvider().getTmpEditingRecipe()!.copyWith(
               servings: event.servings,
               servingName: event.servingName,
               ingredients: recipeIngredients,
@@ -53,7 +53,7 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
         await HiveProvider().saveTmpEditingRecipe(newRecipe);
       }
 
-      if (event.goBack) {
+      if (event.goBack!) {
         emit(ISavedGoBack());
       } else {
         emit(ISaved(newRecipe));

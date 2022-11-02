@@ -14,9 +14,10 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
   List<List<String>> stepImages = [[]];
   List<String> stepTitles = [""];
   List<String> steps = [];
-  StreamSubscription subscription;
+  late StreamSubscription subscription;
 
-  StepsBloc(StepImagesBloc stepImagesBloc) : super(SCanSave()) {
+  StepsBloc(StepImagesBloc stepImagesBloc)
+      : super(SCanSave(isValid: true, time: DateTime.now())) {
     subscription = stepImagesBloc.stream.listen((siState) {
       if (state is SCanSave) {
         if (siState is LoadedStepImages) {
@@ -28,7 +29,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
     });
 
     on<SetCanSave>((event, emit) async {
-      emit(SCanSave());
+      emit(SCanSave(isValid: true, time: DateTime.now()));
     });
 
     on<FinishedEditing>((event, emit) async {
@@ -63,7 +64,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
 
         Recipe newRecipe;
         if (!event.editingRecipe) {
-          newRecipe = HiveProvider().getTmpRecipe().copyWith(
+          newRecipe = HiveProvider().getTmpRecipe()!.copyWith(
                 notes: event.notes,
                 stepImages: stepImages,
                 effort: event.complexity,
@@ -72,7 +73,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
               );
           await HiveProvider().saveTmpRecipe(newRecipe);
         } else {
-          newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
+          newRecipe = HiveProvider().getTmpEditingRecipe()!.copyWith(
                 notes: event.notes,
                 stepImages: stepImages,
                 effort: event.complexity,

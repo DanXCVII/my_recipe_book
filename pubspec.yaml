@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.4.0+123
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -67,7 +67,7 @@ dependencies:
   image_downloader: ^0.31.0 # MIT
   wakelock: ^0.6.2 # BSD
   pdf: ^3.8.3 # Apache 2.0
-  printing: ^5.9.2 # Apache 2.0
+  printing: ^5.9.3 # Apache 2.0
   # buy_me_a_coffee_widget: ^2.0.0-nullsafety.0 # MIT
   rate_my_app: ^1.1.3 # MIT
   # google_fonts: ^1.0.0 # Apache 2.0
@@ -84,6 +84,7 @@ dependencies:
       path: packages/google_mobile_ads
       ref: feature/suamusica
   gdpr_dialog: ^2.1.1 # MIT
+  collection: ^1.15.0-nullsafety.4
 
 dev_dependencies:
   flutter_test:

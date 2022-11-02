@@ -5,10 +5,10 @@ abstract class AnimatedStepperState extends Equatable {
 }
 
 class SelectedStep extends AnimatedStepperState {
-  final int selectedStep;
+  final int? selectedStep;
 
   SelectedStep(this.selectedStep);
 
   @override
-  List<Object> get props => [selectedStep];
+  List<Object?> get props => [selectedStep];
 }

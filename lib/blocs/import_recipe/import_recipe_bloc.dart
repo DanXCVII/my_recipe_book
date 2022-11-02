@@ -16,15 +16,15 @@ part 'import_recipe_state.dart';
 
 class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
   RecipeManagerBloc recipeManagerBloc;
-  String fileEndingLastImport;
+  String? fileEndingLastImport;
 
   ImportRecipeBloc(this.recipeManagerBloc) : super(InitialImportRecipeState()) {
     on<FinishImportRecipes>((event, emit) async {
       emit(ImportingRecipes(0));
 
-      List<Recipe /*!*/ > importRecipes = [];
-      List<Recipe /*!*/ > alreadyExisting = [];
-      List<Recipe /*!*/ > failedRecipes = [];
+      List<Recipe> importRecipes = [];
+      List<Recipe> alreadyExisting = [];
+      List<Recipe> failedRecipes = [];
 
       List<String> importCategories = [];
 
@@ -34,8 +34,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         for (int i = 0; i < event.recipes.length; i++) {
           // await Future.delayed(Duration(seconds: 1));
           // if a recipe with the same name isn't already saved to hive -> double check
-          if (await HiveProvider().getRecipeByName(event.recipes[i].name) ==
-              null) {
+          if (!await HiveProvider().doesRecipeExist(event.recipes[i].name)) {
             // import recipe data to app ..
             bool importedRecipeData =
                 await IO.importRecipeFromTmp(event.recipes[i]);
@@ -53,13 +52,13 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
               importCategories.addAll(newCategories);
               importRecipes.add(event.recipes[i]);
             } else {
-              await IO.deleteRecipeData(event.recipes[i]?.name);
+              await IO.deleteRecipeData(event.recipes[i].name);
               failedRecipes.add(event.recipes[i]);
             }
           } else {
             // if the recipe is already saved in hive, add it to the alreadyExisting list
             alreadyExisting.add(
-                await HiveProvider().getRecipeByName(event.recipes[i].name));
+                (await HiveProvider().getRecipeByName(event.recipes[i].name))!);
           }
           emit(ImportingRecipes(double.parse(
               (0.1 + ((i / event.recipes.length) * 0.9)).toStringAsFixed(1))));
@@ -75,17 +74,16 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         for (int i = 0; i < event.recipes.length; i++) {
           // await Future.delayed(Duration(seconds: 1));
           // if a recipe with the same name isn't already saved to hive -> double check
-          if (await HiveProvider().getRecipeByName(event.recipes[i].name) ==
-              null) {
+          if (!await HiveProvider().doesRecipeExist(event.recipes[i].name)) {
             // import recipe data to app ..
             Recipe importedRecipeData =
-                await IO.importMRBrecipeFromTmp(event.recipes[i].name);
+                (await (IO.importMRBrecipeFromTmp(event.recipes[i].name)))!;
             // .. and if it succeeded ..
             if (importedRecipeData != null) {
-              List<String /*!*/ /*!*/ > categories =
+              List<String /*!*/ > categories =
                   HiveProvider().getCategoryNames();
-              List<String /*!*/ > newCategories = [];
-              for (String /*!*/ category in importedRecipeData.categories) {
+              List<String> newCategories = [];
+              for (String category in importedRecipeData.categories) {
                 if (!categories.contains(category) &&
                     !importCategories.contains(category)) {
                   newCategories.add(category);
@@ -100,7 +98,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
           } else {
             // if the recipe is already saved in hive, add it to the alreadyExisting list
             alreadyExisting.add(
-                await HiveProvider().getRecipeByName(event.recipes[i].name));
+                (await HiveProvider().getRecipeByName(event.recipes[i].name))!);
           }
           emit(ImportingRecipes(double.parse(
               (0.1 + ((i / event.recipes.length) * 0.9)).toStringAsFixed(1))));
@@ -123,9 +121,9 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
             bool importedRecipeData =
                 await IO.importRecipeFromTmp(event.recipes[i]);
             // .. and if it succeeded ..
-            List<String /*!*/ > categories = HiveProvider().getCategoryNames();
-            List<String /*!*/ > newCategories = [];
-            for (String /*!*/ category in event.recipes[i].categories) {
+            List<String> categories = HiveProvider().getCategoryNames();
+            List<String> newCategories = [];
+            for (String category in event.recipes[i].categories) {
               if (!categories.contains(category) &&
                   !importCategories.contains(category)) {
                 newCategories.add(category);
@@ -137,7 +135,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
           } else {
             // if the recipe is already saved in hive, add it to the alreadyExisting list
             alreadyExisting.add(
-                await HiveProvider().getRecipeByName(event.recipes[i].name));
+                (await HiveProvider().getRecipeByName(event.recipes[i].name))!);
           }
           emit(ImportingRecipes(double.parse(
               (0.1 + ((i / event.recipes.length) * 0.9)).toStringAsFixed(1))));
@@ -162,12 +160,12 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         fileEndingLastImport = "zip";
         if (event.delay != null) await Future.delayed(event.delay);
 
-        List<Recipe /*!*/ > importRecipes = [];
+        List<Recipe> importRecipes = [];
         List<String> failedZips = [];
-        List<Recipe /*!*/ > alreadyExisting = [];
+        List<Recipe> alreadyExisting = [];
 
         bool failedImporting = false;
-        Map<String, Recipe> recipes;
+        Map<String, Recipe?>? recipes;
         try {
           recipes = await IO.importRecipesToTmp(event.importZipFile);
           if (recipes == null) failedImporting = true;
@@ -178,7 +176,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         if (!failedImporting) {
           emit(ImportingRecipes(0.1));
 
-          List<String> recipeKeys = recipes.keys.toList();
+          List<String> recipeKeys = recipes!.keys.toList();
           for (int i = 0; i < recipeKeys.length; i++) {
             // await Future.delayed(Duration(seconds: 1));
             if (recipes[recipeKeys[i]] == null) {
@@ -186,13 +184,13 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
             } else {
               // if a recipe with the same name isn't already saved to hive
               if (await HiveProvider()
-                      .getRecipeByName(recipes[recipeKeys[i]].name) !=
+                      .getRecipeByName(recipes[recipeKeys[i]]!.name) !=
                   null) {
                 // if the recipe is already saved in hive, add it to the alreadyExisting list
-                alreadyExisting.add(await HiveProvider()
-                    .getRecipeByName(recipes[recipeKeys[i]].name));
+                alreadyExisting.add((await HiveProvider()
+                    .getRecipeByName(recipes[recipeKeys[i]]!.name))!);
               } else {
-                importRecipes.add(recipes[recipeKeys[i]]);
+                importRecipes.add(recipes[recipeKeys[i]]!);
               }
               if (recipeKeys.length != 1) {
                 emit(ImportingRecipes(double.parse(
@@ -200,7 +198,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
                         .toStringAsFixed(1))));
               } else {
                 if (importRecipes.isNotEmpty) {
-                  this.add(FinishImportRecipes([recipes[recipeKeys[i]]]));
+                  this.add(FinishImportRecipes([recipes[recipeKeys[i]]!]));
                   return;
                 }
               }
@@ -227,9 +225,10 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         emit(ImportingRecipes(0.5));
 
         bool failedImporting = false;
-        List<String> /*!*/ /*!*/ recipeNames;
+        late List<String> recipeNames;
         try {
-          recipeNames = await IO.extractMRBzipGetNames(event.importZipFile);
+          recipeNames =
+              (await (IO.extractMRBzipGetNames(event.importZipFile))) ?? [];
           if (recipeNames == null) failedImporting = true;
         } catch (e) {
           failedImporting = true;
@@ -240,7 +239,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
 
           for (String recipeName in recipeNames) {
             Recipe hiveRecipe =
-                await HiveProvider().getRecipeByName(recipeName);
+                (await HiveProvider().getRecipeByName(recipeName))!;
             if (hiveRecipe != null) {
               alreadyExisting.add(hiveRecipe);
             } else {

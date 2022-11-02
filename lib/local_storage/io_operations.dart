@@ -27,7 +27,7 @@ import '../util/recipe_extractor.dart';
 Future<Recipe> fixImagePaths(Recipe recipe) async {
   String _underscoreNewRecipeName = stringReplaceSpaceUnderscore(recipe.name);
 
-  String newRecipeImageDataType = getImageDatatype(recipe.imagePath);
+  String? newRecipeImageDataType = getImageDatatype(recipe.imagePath);
 
   String newRecipeImagePath = Constants.noRecipeImage;
   String newRecipeImagePreviewPath = Constants.noRecipeImage;
@@ -39,7 +39,7 @@ Future<Recipe> fixImagePaths(Recipe recipe) async {
   // if the recipe image has changed
   if (recipe.imagePath != Constants.noRecipeImage) {
     newRecipeImagePath = await PathProvider.pP.getRecipeImagePathFull(
-        _underscoreNewRecipeName, newRecipeImageDataType);
+        _underscoreNewRecipeName, newRecipeImageDataType!);
     newRecipeImagePreviewPath = await PathProvider.pP
         .getRecipeImagePreviewPathFull(
             _underscoreNewRecipeName, newRecipeImageDataType);
@@ -157,7 +157,7 @@ Future<void> copyRecipeDataToNewPath(
       } else if (f is File) {
         print('Should be a preview image path or image path');
         print(f.path);
-        String dataType = getImageDatatype(f.path);
+        String dataType = getImageDatatype(f.path)!;
 
         File oldRecipeImageFile = File(await PathProvider.pP
             .getRecipeImagePathFull(oldRecipeName, dataType));
@@ -175,7 +175,7 @@ Future<void> copyRecipeDataToNewPath(
 }
 
 Future<void> renameRecipeData(String oldRecipeName, String newRecipeName,
-    {String fileExtension}) async {
+    {String? fileExtension}) async {
   await copyRecipeDataToNewPath(oldRecipeName, newRecipeName);
   await Directory(await PathProvider.pP.getRecipeDirFull(oldRecipeName))
       .delete(recursive: true);
@@ -203,8 +203,8 @@ Future<void> renameRecipeData(String oldRecipeName, String newRecipeName,
 /// saves the image in high and low quality in the local storage under the
 /// recipe directory or in the target dir under the recipe structure
 Future<void> saveRecipeImage(File pictureFile, String recipeName,
-    {String targetDir}) async {
-  String dataType = getImageDatatype(pictureFile.path);
+    {String? targetDir}) async {
+  String dataType = getImageDatatype(pictureFile.path)!;
 
   String recipeImagePathFull = await PathProvider.pP
       .getRecipeImagePathFull(recipeName, dataType, targetDir: targetDir);
@@ -259,7 +259,7 @@ Future<void> deleteStepImage(
 /// e.g.: 3242.jpg
 String getStepImageName(String selectedImagePath) {
   Random random = new Random();
-  String dataType = getImageDatatype(selectedImagePath);
+  String dataType = getImageDatatype(selectedImagePath)!;
   return random.nextInt(1000000).toString() + dataType;
 }
 
@@ -295,7 +295,7 @@ Future<List<String>> getBackupedRecipenames() async {
   List importFiles =
       (await PathProvider.pP.getExternalAppDir()).listSync(recursive: true);
 
-  for (FileSystemEntity f in importFiles) {
+  for (FileSystemEntity f in importFiles as Iterable<FileSystemEntity>) {
     recipeFileNames
         .add(f.path.substring(f.path.lastIndexOf("/") + 1, f.path.length - 4));
   }
@@ -304,10 +304,10 @@ Future<List<String>> getBackupedRecipenames() async {
 }
 
 Future<String> saveRecipeZip(String targetDir, String recipeName) async {
-  Recipe recipe = await HiveProvider().getRecipeByName(recipeName);
-  Recipe exportRecipe = await PathProvider.pP.removeLocalDirRecipeFiles(recipe);
+  Recipe? recipe = await HiveProvider().getRecipeByName(recipeName);
 
   if (recipe == null) return "";
+  Recipe exportRecipe = await PathProvider.pP.removeLocalDirRecipeFiles(recipe);
 
   Directory recipeDir =
       Directory(await PathProvider.pP.getRecipeDirFull(recipeName));
@@ -332,14 +332,14 @@ Future<String> saveRecipeZip(String targetDir, String recipeName) async {
 
 /// extracts the mrb zip to the import dir and returns the recipeNames of all
 /// recipes in there. If the xml is not found, it returns null.
-Future<List<String>> extractMRBzipGetNames(File recipeZipMrb) async {
+Future<List<String>?> extractMRBzipGetNames(File recipeZipMrb) async {
   // await clearCache();
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
   await exstractZip(recipeZipMrb, importDir.path);
   List importFiles = importDir.listSync(recursive: true);
 
-  for (FileSystemEntity f in importFiles) {
+  for (FileSystemEntity f in importFiles as Iterable<FileSystemEntity>) {
     if (f.path.endsWith('.xml')) {
       return getRecipeNamesFromMRB((f as File).readAsStringSync());
     }
@@ -347,17 +347,17 @@ Future<List<String>> extractMRBzipGetNames(File recipeZipMrb) async {
   return null;
 }
 
-Future<Recipe> importMRBrecipeFromTmp(String recipeName) async {
+Future<Recipe?> importMRBrecipeFromTmp(String recipeName) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
 
   List importFiles = importDir.listSync(recursive: true);
 
-  for (FileSystemEntity f in importFiles) {
+  for (FileSystemEntity f in importFiles as Iterable<FileSystemEntity>) {
     if (f.path.endsWith('.xml')) {
       String xmlData = (f as File).readAsStringSync();
 
-      Tuple2<Recipe, String> recipeData =
-          getSpecifiedRecipeFromMRB(xmlData, recipeName);
+      Tuple2<Recipe, String?> recipeData =
+          getSpecifiedRecipeFromMRB(xmlData, recipeName)!;
 
       Recipe finalRecipe = recipeData.item1;
       File recipeImageFile =
@@ -369,9 +369,9 @@ Future<Recipe> importMRBrecipeFromTmp(String recipeName) async {
 
         finalRecipe = finalRecipe.copyWith(
           imagePath: await PathProvider.pP.getRecipeImagePathFull(
-              recipeName, getImageDatatype(recipeData.item2)),
+              recipeName, getImageDatatype(recipeData.item2!)!),
           imagePreviewPath: await PathProvider.pP.getRecipeImagePreviewPathFull(
-              recipeName, getImageDatatype(recipeData.item2)),
+              recipeName, getImageDatatype(recipeData.item2!)!),
         );
       }
 
@@ -386,8 +386,8 @@ Future<Recipe> importMRBrecipeFromTmp(String recipeName) async {
 /// returns the absolute path of the full quality saved stepImage
 Future<String> saveStepImage(File newImage, int stepNumber,
     {String recipeName = 'tmp'}) async {
-  String imageDataType = getImageDatatype(newImage.path);
-  String newImageDataType = imageDataType == ".png" ? ".jpg" : imageDataType;
+  String? imageDataType = getImageDatatype(newImage.path);
+  String newImageDataType = imageDataType == ".png" ? ".jpg" : imageDataType!;
 
   String stepImageName = getStepImageName(newImage.path);
   String newStepImageName =
@@ -442,7 +442,7 @@ Future<void> saveImage(File image, String targetPath, bool preview) async {
     targetPath = targetPath.substring(0, targetPath.lastIndexOf(".")) + ".jpg";
     if (image.path.endsWith(".png")) {
       // for png images, convert them into jpg
-      Image decodedImage = decodeImage(image.readAsBytesSync());
+      Image decodedImage = decodeImage(image.readAsBytesSync())!;
       String tmpTargetPath = tmpImageName;
       image = await File(tmpTargetPath).writeAsBytes(encodeJpg(decodedImage));
     }
@@ -466,7 +466,7 @@ Future<void> saveImage(File image, String targetPath, bool preview) async {
 /// extracts the given .zip to the tmp directory and if the recipe/s data is valid,
 /// returns the name of the .zip with the recipe data, otherwise: name of .zip with
 /// null
-Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
+Future<Map<String, Recipe?>> importRecipesToTmp(File recipeZip) async {
   await Directory(await PathProvider.pP.getImportDir()).delete(recursive: true);
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
@@ -475,7 +475,7 @@ Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
 
   bool importMulitiple = false;
 
-  for (FileSystemEntity f in importFiles) {
+  for (FileSystemEntity f in importFiles as Iterable<FileSystemEntity>) {
     if (f.path.endsWith('.zip')) {
       importMulitiple = true;
       break;
@@ -483,9 +483,9 @@ Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
   }
   if (importMulitiple) {
     List importZips = importDir.listSync(recursive: true);
-    Map<String, Recipe> recipes = {};
+    Map<String, Recipe?> recipes = {};
 
-    for (FileSystemEntity f in importZips) {
+    for (FileSystemEntity f in importZips as Iterable<FileSystemEntity>) {
       if (f.path.endsWith('.zip')) {
         recipes.addAll(await importRecipeToTmp(File(f.path)));
       }
@@ -493,7 +493,7 @@ Future<Map<String, Recipe>> importRecipesToTmp(File recipeZip) async {
     // await recipeZip.delete();
     return recipes;
   } else {
-    Map<String, Recipe> importedRecipes = await importRecipeToTmp(recipeZip);
+    Map<String, Recipe?> importedRecipes = await importRecipeToTmp(recipeZip);
     return importedRecipes;
   }
 }
@@ -512,20 +512,20 @@ Future<void> clearCache() async {
 /// returns the name of the .zip with the recipe data, otherwise: name of .zip with
 /// null
 /// the json which contains the recipe object will be deleted afterwards
-Future<Map<String, Recipe>> importRecipeToTmp(File recipeZip,
-    {String locale}) async {
+Future<Map<String, Recipe?>> importRecipeToTmp(File recipeZip,
+    {String? locale}) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
   await exstractZip(recipeZip, importDir.path);
   List importFiles = importDir.listSync(recursive: true);
 
-  Recipe importRecipe;
+  Recipe? importRecipe;
   // loop through the import files
-  for (FileSystemEntity file in importFiles) {
+  for (FileSystemEntity file in importFiles as Iterable<FileSystemEntity>) {
     // stop if json found
     if (file.path.endsWith('.json')) {
       try {
-        importRecipe = await getRecipeFromJson(file);
+        importRecipe = await getRecipeFromJson(file as File);
       } catch (e) {
         // if json doesn't contain a valid recipe
         importRecipe = null;
@@ -556,7 +556,7 @@ Future<List<Recipe>> importFirstStartRecipes(
   List<Recipe> importRecipes = [];
 
   // loop through the import files
-  for (FileSystemEntity file in importFiles) {
+  for (FileSystemEntity file in importFiles as Iterable<FileSystemEntity>) {
     // stop if json found
     if (file.path.endsWith('DE.json')) {
       Recipe imagePathRecipe =
@@ -645,7 +645,7 @@ Future<void> _deleteFilesInDir(
   List importFiles = dir.listSync(recursive: true);
 
   // loop through the import files
-  for (FileSystemEntity file in importFiles) {
+  for (FileSystemEntity file in importFiles as Iterable<FileSystemEntity>) {
     // stop if json found
     if (file.path.endsWith(ending) &&
         file.path.contains(containsString) &&

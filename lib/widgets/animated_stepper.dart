@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/ad_related/ad.dart';
@@ -12,11 +13,11 @@ import 'gallery_view.dart';
 
 class AnimatedStepper extends StatelessWidget {
   final List<String> steps;
-  final List<String>/*?*/ stepTitles;
-  final String fontFamily;
+  final List<String>? stepTitles;
+  final String? fontFamily;
   // if losResStepImages are provided, also stepImages must be provided
-  final List<List<String>> lowResStepImages;
-  final List<List<String>> stepImages;
+  final List<List<String>>? lowResStepImages;
+  final List<List<String>>? stepImages;
 
   AnimatedStepper(
     this.steps,
@@ -24,11 +25,11 @@ class AnimatedStepper extends StatelessWidget {
     this.stepImages,
     this.fontFamily,
     this.lowResStepImages,
-    Key key,
+    Key? key,
   }) : super(key: key) {
-    if (stepTitles != null && stepTitles.length > steps.length) {
-      for (int i = steps.length; i < stepTitles.length; i++) {
-        stepTitles.removeLast();
+    if (stepTitles != null && stepTitles!.length > steps.length) {
+      for (int i = steps.length; i < stepTitles!.length; i++) {
+        stepTitles!.removeLast();
       }
     }
   }
@@ -41,7 +42,7 @@ class AnimatedStepper extends StatelessWidget {
   }
 
   List<Widget> _getStepsWithTitle(
-      List<String> stepTitles, List<String> selectedSteps) {
+      List<String>? stepTitles, List<String> selectedSteps) {
     if (stepTitles == null) {
       return _getSteps(selectedSteps, 0);
     }
@@ -51,16 +52,14 @@ class AnimatedStepper extends StatelessWidget {
       if (i == 0 || stepTitles[i] != "") {
         int nextTitleIndex = stepTitles.length;
         if (i + 1 < stepTitles.length) {
-          String nextTitle = stepTitles
-              .sublist(i + 1)
-              .firstWhere((e) => e != "", orElse: () => null);
+          String? nextTitle =
+              stepTitles.sublist(i + 1).firstWhereOrNull((e) => e != "");
           if (nextTitle == null) {
             nextTitleIndex = stepTitles.length;
           } else {
             nextTitleIndex =
                 stepTitles.sublist(i + 1).indexOf(nextTitle) + i + 1;
           }
-          nextTitleIndex ?? stepTitles.length;
         }
         if (stepTitles[i] != "") {
           fullList.add(
@@ -210,15 +209,15 @@ class AnimatedStepper extends StatelessWidget {
                                       spacing: 10,
                                       children: List<Widget>.generate(
                                         lowResStepImages == null
-                                            ? stepImages[index + globalIndex]
+                                            ? stepImages![index + globalIndex]
                                                 .length
-                                            : lowResStepImages[
+                                            : lowResStepImages![
                                                     index + globalIndex]
                                                 .length,
                                         (wrapIndex) => GestureDetector(
                                           onTap: () {
                                             _showStepFullView(
-                                                stepImages,
+                                                stepImages!,
                                                 steps,
                                                 index + globalIndex,
                                                 wrapIndex,
@@ -243,10 +242,10 @@ class AnimatedStepper extends StatelessWidget {
                                                   image: FileImage(
                                                     File(lowResStepImages ==
                                                             null
-                                                        ? stepImages[index +
+                                                        ? stepImages![index +
                                                                 globalIndex]
                                                             [wrapIndex]
-                                                        : lowResStepImages[
+                                                        : lowResStepImages![
                                                                 index +
                                                                     globalIndex]
                                                             [wrapIndex]),

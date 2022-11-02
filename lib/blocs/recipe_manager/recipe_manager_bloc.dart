@@ -32,7 +32,7 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
     });
 
     on<RMDeleteRecipe>((event, emit) async {
-      Recipe deletedRecipe =
+      Recipe? deletedRecipe =
           await HiveProvider().getRecipeByName(event.recipeName);
 
       if (deletedRecipe != null) {
@@ -110,21 +110,21 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
   /// Updates the stepImages and stepTitles to fit the length of steps.
   /// stepsImages and stepTitles can also be null.
   Recipe _fixRecipeSteps(Recipe r) {
-    List<String> stepTitles;
-    List<List<String>> stepImages;
+    List<String>? stepTitles;
+    List<List<String>>? stepImages;
     if (r.stepTitles != null) {
-      stepTitles = r.stepTitles.map((e) => e).toList();
+      stepTitles = r.stepTitles!.map((e) => e).toList();
       stepImages = r.stepImages.map((e) => e.map((e) => e).toList()).toList();
     }
 
     if (stepTitles == null) {
       stepTitles = r.steps.map((e) => "").toList();
     } else if (stepTitles.length < r.steps.length) {
-      for (int i = r.stepTitles.length; i < r.steps.length; i++) {
+      for (int i = r.stepTitles!.length; i < r.steps.length; i++) {
         stepTitles.add("");
       }
-    } else if (r.stepTitles.length > r.steps.length) {
-      for (int i = r.steps.length; i < r.stepTitles.length; i++) {
+    } else if (r.stepTitles!.length > r.steps.length) {
+      for (int i = r.steps.length; i < r.stepTitles!.length; i++) {
         stepTitles.removeLast();
       }
     }

@@ -23,9 +23,9 @@ import '../widgets/recipe_filter_bar.dart';
 import '../widgets/search.dart';
 
 class RecipeGridViewArguments {
-  final String category;
-  final Vegetable vegetable;
-  final StringIntTuple recipeTag;
+  final String? category;
+  final Vegetable? vegetable;
+  final StringIntTuple? recipeTag;
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
 
@@ -33,8 +33,8 @@ class RecipeGridViewArguments {
     this.category,
     this.vegetable,
     this.recipeTag,
-    @required this.shoppingCartBloc,
-    @required this.recipeCalendarBloc,
+    required this.shoppingCartBloc,
+    required this.recipeCalendarBloc,
   });
 }
 
@@ -48,7 +48,7 @@ class RecipeGridView extends StatelessWidget {
         if (state is LoadingRecipeOverview) {
           return Center(child: CircularProgressIndicator());
         } else if (state is LoadingRecipes) {
-          String title = _getTitle(
+          String? title = _getTitle(
               context, state.category, state.vegetable, state.recipeTag);
 
           if (state.randomImage != null) {
@@ -78,13 +78,14 @@ class RecipeGridView extends StatelessWidget {
                     floating: false,
                     pinned: false,
                     flexibleSpace: FlexibleSpaceBar(
-                      title: Text(title),
+                      title: Text(title!),
                       background: Container(
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: state.randomImage == Constants.noRecipeImage
-                                ? AssetImage(state.randomImage)
-                                : FileImage(File(state.randomImage)),
+                            image: (state.randomImage == Constants.noRecipeImage
+                                    ? AssetImage(state.randomImage!)
+                                    : FileImage(File(state.randomImage!)))
+                                as ImageProvider<Object>,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -119,7 +120,7 @@ class RecipeGridView extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [Color(0xffAF1E1E), Color(0xff641414)],
                   ),
-                  title: Text(title),
+                  title: Text(title!),
                 ),
                 body: NoRecipeCategory(
                   recipeTag: state.recipeTag != null ? true : false,
@@ -127,11 +128,11 @@ class RecipeGridView extends StatelessWidget {
                 ));
           }
         } else if (state is LoadedRecipeOverview) {
-          String title = _getTitle(
+          String? title = _getTitle(
               context, state.category, state.vegetable, state.recipeTag);
           // also checking for randomImage because, when filter changed, there can be no recipes visible
           // but still the category has recipes
-          if (state.recipes.isNotEmpty || state.randomImage != null) {
+          if (state.recipes!.isNotEmpty || state.randomImage != null) {
             // TODO: Hyphenator
             // DefaultResourceLoader r = await DefaultResourceLoader.load(
             //     DefaultResourceLoaderLanguage.de1996);
@@ -141,6 +142,7 @@ class RecipeGridView extends StatelessWidget {
             return Scaffold(
               body: CustomScrollView(slivers: <Widget>[
                 SliverAppBar(
+                  //iconTheme: IconThemeData(color: Colors.white),
                   actions: <Widget>[
                     IconButton(
                       icon: Icon(Icons.search),
@@ -163,13 +165,14 @@ class RecipeGridView extends StatelessWidget {
                   floating: false,
                   pinned: false,
                   flexibleSpace: FlexibleSpaceBar(
-                      title: Text(title),
+                      title: Text(title!),
                       background: Container(
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: state.randomImage == Constants.noRecipeImage
-                                ? AssetImage(state.randomImage)
-                                : FileImage(File(state.randomImage)),
+                            image: (state.randomImage == Constants.noRecipeImage
+                                    ? AssetImage(state.randomImage!)
+                                    : FileImage(File(state.randomImage!)))
+                                as ImageProvider<Object>,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -187,8 +190,8 @@ class RecipeGridView extends StatelessWidget {
                   header: RecipeFilter(
                     showVegetableFilter: state.vegetable != null ? false : true,
                     showRecipeTagFilter: state.recipeTag == null ? true : false,
-                    initialRecipeSort: state.recipeSort.sort,
-                    initialAscending: state.recipeSort.ascending,
+                    initialRecipeSort: state.recipeSort!.sort,
+                    initialAscending: state.recipeSort!.ascending!,
                     changeAscending: (bool ascending) =>
                         BlocProvider.of<RecipeOverviewBloc>(context)
                             .add(ChangeAscending(ascending)),
@@ -205,7 +208,7 @@ class RecipeGridView extends StatelessWidget {
                   ),
                   sliver: SliverPadding(
                     padding: EdgeInsets.all(12),
-                    sliver: state.recipes.isEmpty
+                    sliver: state.recipes!.isEmpty
                         // if the category has recipes but not with the current (vegetable) filter
                         ? SliverList(
                             delegate: SliverChildListDelegate([
@@ -218,7 +221,7 @@ class RecipeGridView extends StatelessWidget {
                                       color: Colors.white,
                                       size: 70.0,
                                     ),
-                                    description: I18n.of(context)
+                                    description: I18n.of(context)!
                                         .no_recipes_fit_your_filter,
                                   ),
                                 ),
@@ -230,19 +233,19 @@ class RecipeGridView extends StatelessWidget {
                                 (MediaQuery.of(context).size.width / 300)
                                         .round() *
                                     2,
-                            childCount: state.recipes.length,
+                            childCount: state.recipes!.length,
                             itemBuilder: (BuildContext context, int index) =>
                                 LayoutBuilder(
                               builder: (context, constraints) => RecipeCard(
-                                recipe: state.recipes[index],
+                                recipe: state.recipes![index],
                                 width: constraints.maxWidth,
                                 activateVegetableHero:
-                                    state.recipes[index].vegetable ==
+                                    state.recipes![index].vegetable ==
                                             state.vegetable
                                         ? false
                                         : true,
                                 heroImageTag:
-                                    "${state.category}${state.recipes[index].name}",
+                                    "${state.category}${state.recipes![index].name}",
                               ),
                             ),
                             mainAxisSpacing: 12.0,
@@ -260,7 +263,7 @@ class RecipeGridView extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [Color(0xffAF1E1E), Color(0xff641414)],
                   ),
-                  title: Text(title),
+                  title: Text(title!),
                 ),
                 body: NoRecipeCategory(
                   recipeTag: state.recipeTag != null ? true : false,
@@ -291,28 +294,28 @@ class RecipeGridView extends StatelessWidget {
         .toList();
   }
 
-  String _getTitle(BuildContext context, String category, Vegetable vegetable,
-      StringIntTuple recipeTag) {
+  String? _getTitle(BuildContext context, String? category,
+      Vegetable? vegetable, StringIntTuple? recipeTag) {
     if (category != null) {
       if (category == Constants.noCategory) {
-        return I18n.of(context).no_category;
+        return I18n.of(context)!.no_category;
       } else if (category == Constants.allCategories) {
-        return I18n.of(context).all_categories;
+        return I18n.of(context)!.all_categories;
       } else {
         return category;
       }
     } else if (vegetable != null) {
       if (vegetable == Vegetable.NON_VEGETARIAN) {
-        return I18n.of(context).with_meat;
+        return I18n.of(context)!.with_meat;
       } else if (vegetable == Vegetable.VEGETARIAN) {
-        return I18n.of(context).vegetarian;
+        return I18n.of(context)!.vegetarian;
       } else if (vegetable == Vegetable.VEGAN) {
-        return I18n.of(context).vegan;
+        return I18n.of(context)!.vegan;
       } else {
         return null;
       }
     } else {
-      return recipeTag.text;
+      return recipeTag!.text;
     }
   }
 }
@@ -324,7 +327,7 @@ class NoRecipeCategory extends StatelessWidget {
   const NoRecipeCategory({
     this.recipeTag = false,
     this.vegetable = false,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -341,8 +344,8 @@ class NoRecipeCategory extends StatelessWidget {
             size: 70.0,
           ),
           description: recipeTag
-              ? I18n.of(context).no_recipes_with_this_tag
-              : I18n.of(context).no_recipes_under_this_category),
+              ? I18n.of(context)!.no_recipes_with_this_tag
+              : I18n.of(context)!.no_recipes_under_this_category),
     );
   }
 }

@@ -75,8 +75,8 @@ class RemoveIngredient extends IngredientsSectionEvent {
 }
 
 class InitializeIngredientsSection extends IngredientsSectionEvent {
-  final List<String>/*!*/ sectionTitles;
-  final List<List<Ingredient>>/*!*/ ingredients;
+  final List<String> sectionTitles;
+  final List<List<Ingredient>> ingredients;
 
   const InitializeIngredientsSection(
     this.sectionTitles,

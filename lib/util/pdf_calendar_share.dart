@@ -69,7 +69,8 @@ Future<Uint8List> getRecipeCalendarPdf(
 
                   for (DateTime key in calendarEntries.keys.toList()) {
                     if (key.weekday == index + 1) {
-                      for (String recipeName in calendarEntries[key].toList()) {
+                      for (String recipeName
+                          in calendarEntries[key]!.toList()) {
                         weekDayRecipes.add(
                           Tuple2<DateTime, String>(key, recipeName),
                         );
@@ -131,7 +132,7 @@ Future<Uint8List> getRecipeCalendarPdf(
                                               ),
                                         pw.Text(
                                             weekDayRecipes[recipeIndex].item2),
-                                      ],
+                                      ].whereType<pw.Widget>().toList(),
                                     ),
                                   ),
                                 );
@@ -167,7 +168,7 @@ Future<Uint8List> getRecipeCalendarPdf(
                         mainAxisSize: pw.MainAxisSize.min,
                         mainAxisAlignment: pw.MainAxisAlignment.center,
                         children: [
-                          pw.Text(I18n.of(bContext).notes),
+                          pw.Text(I18n.of(bContext)!.notes),
                         ]..addAll(
                             List.generate(
                               10,

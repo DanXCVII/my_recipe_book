@@ -38,17 +38,17 @@ const Map<int, Color> complexityColors = {
 FontWeight itemsFW = FontWeight.w400;
 
 class RecipeCard extends StatelessWidget {
-  final Recipe recipe;
+  final Recipe? recipe;
   final double width;
   final String heroImageTag;
   final bool activateVegetableHero;
 
   const RecipeCard({
     this.recipe,
-    @required this.width,
-    @required this.heroImageTag,
+    required this.width,
+    required this.heroImageTag,
     this.activateVegetableHero = true,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -82,8 +82,8 @@ class RecipeCard extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [
                   Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey[800].withAlpha(100)
-                      : Colors.grey[100].withAlpha(200),
+                      ? Colors.grey[800]!.withAlpha(100)
+                      : Colors.grey[100]!.withAlpha(200),
                   Theme.of(context).brightness == Brightness.dark
                       ? Theme.of(context).cardColor.withAlpha(150)
                       : Colors.white.withAlpha(200),
@@ -119,9 +119,9 @@ class RecipeCard extends StatelessWidget {
                         ),
                         child: FadeInImage(
                           image:
-                              recipe.imagePreviewPath == Constants.noRecipeImage
-                                  ? AssetImage(recipe.imagePreviewPath)
-                                  : FileImage(File(recipe.imagePreviewPath)),
+                              (recipe!.imagePreviewPath == Constants.noRecipeImage
+                                  ? AssetImage(recipe!.imagePreviewPath)
+                                  : FileImage(File(recipe!.imagePreviewPath))) as ImageProvider<Object>,
                           placeholder: MemoryImage(kTransparentImage),
                           fadeInDuration: Duration(milliseconds: 250),
                           fit: BoxFit.cover,
@@ -139,7 +139,7 @@ class RecipeCard extends StatelessWidget {
                           Container(
                             width: width - 12,
                             child: Text(
-                              "${recipe.name}",
+                              "${recipe!.name}",
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                               textAlign: TextAlign.left,
@@ -161,10 +161,10 @@ class RecipeCard extends StatelessWidget {
                                   Container(
                                     width: width - 27,
                                     child: Text(
-                                      (recipe.totalTime != null
-                                              ? "${getTimeHoursMinutes(recipe.totalTime)} • "
+                                      (recipe!.totalTime != null
+                                              ? "${getTimeHoursMinutes(recipe!.totalTime)} • "
                                               : "") +
-                                          ("${getIngredientCount(recipe.ingredients)} ${I18n.of(context).ingredients}"),
+                                          ("${getIngredientCount(recipe!.ingredients)} ${I18n.of(context)!.ingredients}"),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
                                       style: TextStyle(
@@ -181,7 +181,7 @@ class RecipeCard extends StatelessWidget {
                                     child: Row(
                                       children: List<Widget>.generate(5,
                                           (index) {
-                                        if (recipe.effort >= (index + 1) * 2) {
+                                        if (recipe!.effort! >= (index + 1) * 2) {
                                           return Icon(
                                             MdiIcons.knife,
                                             size: 18,
@@ -192,7 +192,7 @@ class RecipeCard extends StatelessWidget {
                                                 : Colors.grey[200],
                                           );
                                         } else {
-                                          if (recipe.effort == index * 2 + 1) {
+                                          if (recipe!.effort == index * 2 + 1) {
                                             return Stack(
                                               children: <Widget>[
                                                 Container(
@@ -253,7 +253,7 @@ class RecipeCard extends StatelessWidget {
                                                                   RecipeCalendarBloc>(
                                                               context),
                                                       vegetable:
-                                                          recipe.vegetable),
+                                                          recipe!.vegetable),
                                                 ).then((_) {
                                                   Ads.hideBottomBannerAd();
                                                 });
@@ -261,32 +261,32 @@ class RecipeCard extends StatelessWidget {
                                             child: Container(
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                color: recipe.vegetable ==
+                                                color: recipe!.vegetable ==
                                                         Vegetable.VEGETARIAN
                                                     ? Colors.green[700]
-                                                    : recipe.vegetable ==
+                                                    : recipe!.vegetable ==
                                                             Vegetable.VEGAN
                                                         ? Colors.orange
                                                         : Colors.lightBlue[400],
                                               ),
                                               child: Center(
                                                 child: Icon(
-                                                  recipe.vegetable ==
+                                                  recipe!.vegetable ==
                                                           Vegetable.VEGETARIAN
                                                       ? MdiIcons.cheese
-                                                      : recipe.vegetable ==
+                                                      : recipe!.vegetable ==
                                                               Vegetable.VEGAN
                                                           ? MdiIcons.leaf
                                                           : MdiIcons
                                                               .foodDrumstick,
-                                                  color: recipe.vegetable ==
+                                                  color: recipe!.vegetable ==
                                                           Vegetable.VEGETARIAN
                                                       ? Colors.amber
-                                                      : recipe.vegetable ==
+                                                      : recipe!.vegetable ==
                                                               Vegetable.VEGAN
                                                           ? Colors.green[700]
                                                           : Colors.brown[600],
-                                                  size: recipe.vegetable ==
+                                                  size: recipe!.vegetable ==
                                                           Vegetable
                                                               .NON_VEGETARIAN
                                                       ? 16
@@ -312,7 +312,7 @@ class RecipeCard extends StatelessWidget {
             ),
           ),
 
-          recipe.isFavorite == true
+          recipe!.isFavorite == true
               ? Align(
                   alignment: Alignment(0.95, -0.95),
                   child: Padding(

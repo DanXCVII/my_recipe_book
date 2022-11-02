@@ -20,9 +20,9 @@ class RecipeBubble extends StatefulWidget {
   final Recipe recipe;
 
   RecipeBubble({
-    @required this.initialPosition,
-    @required this.recipe,
-    Key key,
+    required this.initialPosition,
+    required this.recipe,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -31,7 +31,7 @@ class RecipeBubble extends StatefulWidget {
 
 class _RecipeBubbleState extends State<RecipeBubble> {
   double width = 100.0, height = 100.0;
-  Offset position;
+  late Offset position;
 
   @override
   void initState() {
@@ -89,7 +89,7 @@ class _RecipeBubbleState extends State<RecipeBubble> {
                 blurRadius: 2,
                 spreadRadius: 1,
                 color: Theme.of(context).backgroundColor == Colors.white
-                    ? Colors.grey[400]
+                    ? Colors.grey[400]!
                     : Colors.black,
               ),
             ],

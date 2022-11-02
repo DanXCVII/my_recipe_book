@@ -6,20 +6,20 @@ import 'package:flutter/material.dart';
 import '../constants/global_constants.dart' as Constants;
 
 class CategoryCircle extends StatelessWidget {
-  final String/*!*/ categoryName;
-  final String/*!*/ imageName;
+  final String categoryName;
+  final String imageName;
   final Function onPressed;
 
   CategoryCircle({
-    this.categoryName,
-    this.imageName,
-    @required this.onPressed,
-    Key key,
+    required this.categoryName,
+    required this.imageName,
+    required this.onPressed,
+    Key? key,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: onPressed as void Function()?,
       child: Container(
         width: 100,
         height: 100,
@@ -42,9 +42,9 @@ class CategoryCircle extends StatelessWidget {
                 height: 100,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: imageName != Constants.noRecipeImage
+                    image: (imageName != Constants.noRecipeImage
                         ? FileImage(File(imageName))
-                        : AssetImage(Constants.noRecipeImage),
+                        : AssetImage(Constants.noRecipeImage)) as ImageProvider<Object>,
                     fit: BoxFit.cover,
                   ),
                 ),

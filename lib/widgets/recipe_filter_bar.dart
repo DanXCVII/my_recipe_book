@@ -11,11 +11,11 @@ class RecipeFilter extends StatefulWidget {
   final bool showVegetableFilter;
   final bool showRecipeTagFilter;
   final RecipeSort initialRecipeSort;
-  final bool/*!*/ initialAscending;
+  final bool initialAscending;
   final Function(RecipeSort rSort) changeOrder;
   final Function(bool ascending) changeAscending;
   final Function(Vegetable vegetable) filterVegetableRecipes;
-  final Function(List<String> recipeTags) filterRecipeTagRecipes;
+  final Function(List<String> recipeTags)? filterRecipeTagRecipes;
 
   RecipeFilter({
     this.showVegetableFilter = true,
@@ -23,10 +23,10 @@ class RecipeFilter extends StatefulWidget {
     this.initialAscending = true,
     this.showRecipeTagFilter = false,
     this.filterRecipeTagRecipes,
-    @required this.changeOrder,
-    @required this.changeAscending,
-    @required this.filterVegetableRecipes,
-    Key key,
+    required this.changeOrder,
+    required this.changeAscending,
+    required this.filterVegetableRecipes,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -35,8 +35,8 @@ class RecipeFilter extends StatefulWidget {
 
 class _RecipeFilterState extends State<RecipeFilter>
     with SingleTickerProviderStateMixin {
-  RecipeSort dropdownValue;
-  Vegetable vegetableFilter;
+  RecipeSort? dropdownValue;
+  Vegetable? vegetableFilter;
   bool _isExpanded = false;
   List<StringIntTuple> selectedRecipeTags = [];
   List<StringIntTuple> recipeTags = [];
@@ -70,8 +70,8 @@ class _RecipeFilterState extends State<RecipeFilter>
             borderRadius: BorderRadius.all(Radius.circular(10)),
             gradient: LinearGradient(
               colors: Theme.of(context).backgroundColor != Colors.white
-                  ? [Colors.grey[800], Colors.grey[800]]
-                  : [Colors.grey[200], Colors.grey[200]],
+                  ? [Colors.grey[800]!, Colors.grey[800]!]
+                  : [Colors.grey[200]!, Colors.grey[200]!],
               stops: [0, 0.5],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -98,8 +98,10 @@ class _RecipeFilterState extends State<RecipeFilter>
                         //   height: 2,
                         //   color: Colors.amber,
                         // ),
-                        onChanged: (RecipeSort newValue) {
-                          widget.changeOrder(newValue);
+                        onChanged: (RecipeSort? newValue) {
+                          if (newValue != null) {
+                            widget.changeOrder(newValue);
+                          }
                           setState(() {
                             dropdownValue = newValue;
                           });
@@ -119,14 +121,15 @@ class _RecipeFilterState extends State<RecipeFilter>
                                       : 170,
                               child: Text(
                                 value == RecipeSort.BY_NAME
-                                    ? I18n.of(context).by_name
+                                    ? I18n.of(context)!.by_name
                                     : value == RecipeSort.BY_EFFORT
-                                        ? I18n.of(context).by_effort
+                                        ? I18n.of(context)!.by_effort
                                         : value ==
                                                 RecipeSort.BY_INGREDIENT_COUNT
-                                            ? I18n.of(context)
+                                            ? I18n.of(context)!
                                                 .by_ingredientsamount
-                                            : I18n.of(context).by_last_modified,
+                                            : I18n.of(context)!
+                                                .by_last_modified,
                                 style: TextStyle(
                                     fontSize:
                                         MediaQuery.of(context).size.width -
@@ -155,19 +158,21 @@ class _RecipeFilterState extends State<RecipeFilter>
                               // ),
                               icon: Container(),
                               underline: Container(),
-                              onChanged: (Vegetable newValue) {
+                              onChanged: (Vegetable? newValue) {
                                 setState(() {
-                                  widget.filterVegetableRecipes(newValue);
+                                  if (newValue != null) {
+                                    widget.filterVegetableRecipes(newValue);
+                                  }
                                   vegetableFilter = newValue;
                                 });
                               },
-                              items: <Vegetable>[
+                              items: <Vegetable?>[
                                 null,
                                 Vegetable.NON_VEGETARIAN,
                                 Vegetable.VEGAN,
                                 Vegetable.VEGETARIAN
                               ].map<DropdownMenuItem<Vegetable>>(
-                                  (Vegetable value) {
+                                  (Vegetable? value) {
                                 return DropdownMenuItem<Vegetable>(
                                   value: value,
                                   child: _getVegetableIcon(value),
@@ -213,7 +218,7 @@ class _RecipeFilterState extends State<RecipeFilter>
                                   } else {
                                     selectedRecipeTags.remove(recipeTag);
                                   }
-                                  widget.filterRecipeTagRecipes(
+                                  widget.filterRecipeTagRecipes!(
                                       selectedRecipeTags
                                           .map((tag) => tag.text)
                                           .toList());
@@ -231,19 +236,19 @@ class _RecipeFilterState extends State<RecipeFilter>
     );
   }
 
-  Widget _getVegetableIcon(Vegetable vegetable) {
+  Widget _getVegetableIcon(Vegetable? vegetable) {
     switch (vegetable) {
       case Vegetable.VEGETARIAN:
-        return _getVegetableCircleIcon([Colors.green[600], Colors.green[900]],
+        return _getVegetableCircleIcon([Colors.green[600]!, Colors.green[900]!],
             MdiIcons.cheese, Colors.amber);
 
       case Vegetable.VEGAN:
-        return _getVegetableCircleIcon([Colors.orange, Colors.orange[800]],
+        return _getVegetableCircleIcon([Colors.orange, Colors.orange[800]!],
             MdiIcons.leaf, Colors.green[700]);
 
       case Vegetable.NON_VEGETARIAN:
         return _getVegetableCircleIcon(
-            [Colors.lightBlue[400], Colors.lightBlue[600]],
+            [Colors.lightBlue[400]!, Colors.lightBlue[600]!],
             MdiIcons.foodDrumstick,
             Colors.brown[600]);
 
@@ -251,14 +256,14 @@ class _RecipeFilterState extends State<RecipeFilter>
         return Stack(
           children: <Widget>[
             _getVegetableCircleIcon(
-              [Colors.orange, Colors.orange[800]],
+              [Colors.orange, Colors.orange[800]!],
               MdiIcons.leaf,
               Colors.green[700],
             ),
             ClipPath(
               clipper: OneThirdClipperRight(),
               child: _getVegetableCircleIcon(
-                [Colors.lightBlue[400], Colors.lightBlue[600]],
+                [Colors.lightBlue[400]!, Colors.lightBlue[600]!],
                 MdiIcons.foodDrumstick,
                 Colors.brown[600],
               ),
@@ -266,7 +271,7 @@ class _RecipeFilterState extends State<RecipeFilter>
             ClipPath(
               clipper: OneThirdClipperLeft(),
               child: _getVegetableCircleIcon(
-                [Colors.green[600], Colors.green[900]],
+                [Colors.green[600]!, Colors.green[900]!],
                 MdiIcons.cheese,
                 Colors.amber,
               ),
@@ -277,7 +282,7 @@ class _RecipeFilterState extends State<RecipeFilter>
   }
 
   Widget _getVegetableCircleIcon(
-      List<Color> backgroundColors, IconData iconData, Color iconColor) {
+      List<Color> backgroundColors, IconData iconData, Color? iconColor) {
     return Container(
       height: 30,
       width: 30,
@@ -303,9 +308,9 @@ class RotatingArrow extends StatefulWidget {
   final bool initialAscending;
 
   RotatingArrow({
-    @required this.onChangeDirection,
+    required this.onChangeDirection,
     this.initialAscending = true,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -314,8 +319,8 @@ class RotatingArrow extends StatefulWidget {
 
 class _RotatingArrowState extends State<RotatingArrow>
     with TickerProviderStateMixin {
-  AnimationController _controller;
-  bool ascending;
+  late AnimationController _controller;
+  late bool ascending;
 
   @override
   void initState() {

@@ -7,8 +7,8 @@ abstract class IngredientSearchEvent extends Equatable {
 class SearchRecipes extends IngredientSearchEvent {
   final List<String> ingredients;
   final List<String> categories;
-  final List<StringIntTuple/*!*/> recipeTags;
-  final Vegetable/*!*/ vegetable;
+  final List<StringIntTuple> recipeTags;
+  final Vegetable? vegetable;
 
   SearchRecipes(
     this.ingredients,
@@ -18,5 +18,5 @@ class SearchRecipes extends IngredientSearchEvent {
   );
 
   @override
-  List<Object> get props => [ingredients, categories, recipeTags, vegetable];
+  List<Object?> get props => [ingredients, categories, recipeTags, vegetable];
 }

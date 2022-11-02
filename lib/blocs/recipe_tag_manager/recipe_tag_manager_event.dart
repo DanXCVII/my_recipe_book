@@ -19,7 +19,7 @@ class AddRecipeTags extends RecipeTagManagerEvent {
 }
 
 class DeleteRecipeTag extends RecipeTagManagerEvent {
-  final StringIntTuple/*!*/ recipeTag;
+  final StringIntTuple recipeTag;
 
   const DeleteRecipeTag(this.recipeTag);
 
@@ -28,7 +28,7 @@ class DeleteRecipeTag extends RecipeTagManagerEvent {
 }
 
 class UpdateRecipeTag extends RecipeTagManagerEvent {
-  final StringIntTuple/*!*/ oldRecipeTag;
+  final StringIntTuple oldRecipeTag;
   final StringIntTuple updatedRecipeTag;
 
   const UpdateRecipeTag(
@@ -44,7 +44,7 @@ class UpdateRecipeTag extends RecipeTagManagerEvent {
 }
 
 class SelectRecipeTag extends RecipeTagManagerEvent {
-  final StringIntTuple/*!*/ recipeTag;
+  final StringIntTuple recipeTag;
 
   const SelectRecipeTag(this.recipeTag);
 
@@ -53,7 +53,7 @@ class SelectRecipeTag extends RecipeTagManagerEvent {
 }
 
 class UnselectRecipeTag extends RecipeTagManagerEvent {
-  final StringIntTuple/*!*/ recipeTag;
+  final StringIntTuple recipeTag;
 
   const UnselectRecipeTag(this.recipeTag);
 

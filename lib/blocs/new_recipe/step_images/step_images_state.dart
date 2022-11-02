@@ -5,17 +5,18 @@ abstract class StepImagesState {
 }
 
 class LoadedStepImages extends StepImagesState {
-  final List<List<String>>/*!*/ stepImages;
-  final List<String/*!*/>/*!*/ steps;
+  final List<List<String>> stepImages;
+  final List<String> steps;
   final List<String> stepTitles;
-  final int/*!*/ removedStep;
+  final int? removedStep;
 
   final List<Key> stepKeys;
 
   LoadedStepImages(
     this.stepImages,
     this.steps,
-    this.stepTitles,this.stepKeys, {
+    this.stepTitles,
+    this.stepKeys, {
     this.removedStep,
   });
 

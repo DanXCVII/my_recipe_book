@@ -34,16 +34,16 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     on<UpdateRecipeImage>((event, emit) async {
       emit(GSavingTmpData());
 
-      String imageDataType = getImageDatatype(event.recipeImage.path);
+      String? imageDataType = getImageDatatype(event.recipeImage!.path);
       String newImageDataType =
-          imageDataType == ".png" ? ".jpg" : imageDataType;
+          imageDataType == ".png" ? ".jpg" : imageDataType!;
 
       String recipeName = event.editingRecipe
           ? editRecipeLocalPathString
           : newRecipeLocalPathString;
 
       await IO.deleteRecipeImageIfExists(recipeName);
-      await IO.saveRecipeImage(event.recipeImage, recipeName);
+      await IO.saveRecipeImage(event.recipeImage!, recipeName);
 
       String recipeImagePathFull = await PathProvider.pP
           .getRecipeImagePathFull(recipeName, newImageDataType);
@@ -52,14 +52,14 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
 
       if (!event.editingRecipe) {
         await HiveProvider().saveTmpRecipe(
-          HiveProvider().getTmpRecipe().copyWith(
+          HiveProvider().getTmpRecipe()!.copyWith(
                 imagePath: recipeImagePathFull,
                 imagePreviewPath: recipeImagePreviewPathFull,
               ),
         );
       } else {
         await HiveProvider().saveTmpEditingRecipe(
-          HiveProvider().getTmpEditingRecipe().copyWith(
+          HiveProvider().getTmpEditingRecipe()!.copyWith(
                 imagePath: recipeImagePathFull,
                 imagePreviewPath: recipeImagePreviewPathFull,
               ),
@@ -70,15 +70,15 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
     });
 
     on<FinishedEditing>((event, emit) async {
-      if (event.goBack) {
+      if (event.goBack!) {
         emit(GEditingFinishedGoBack());
       } else {
         emit(GEditingFinished());
       }
 
       Recipe newRecipe;
-      if (!event.editingRecipe) {
-        newRecipe = HiveProvider().getTmpRecipe().copyWith(
+      if (!event.editingRecipe!) {
+        newRecipe = HiveProvider().getTmpRecipe()!.copyWith(
             name: event.recipeName,
             preperationTime: event.preperationTime,
             cookingTime: event.cookingTime,
@@ -88,7 +88,7 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
             source: event.source);
         await HiveProvider().saveTmpRecipe(newRecipe);
       } else {
-        newRecipe = HiveProvider().getTmpEditingRecipe().copyWith(
+        newRecipe = HiveProvider().getTmpEditingRecipe()!.copyWith(
               name: event.recipeName,
               preperationTime: event.preperationTime,
               cookingTime: event.cookingTime,
@@ -100,7 +100,7 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
         await HiveProvider().saveTmpEditingRecipe(newRecipe);
       }
 
-      if (event.goBack) {
+      if (event.goBack!) {
         emit(GSavedGoBack());
       } else {
         emit(GSaved(newRecipe));
@@ -112,7 +112,7 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
         await IO.deleteRecipeImageIfExists(newRecipeLocalPathString);
 
         await HiveProvider().saveTmpRecipe(
-          HiveProvider().getTmpRecipe().copyWith(
+          HiveProvider().getTmpRecipe()!.copyWith(
                 imagePath: noRecipeImage,
                 imagePreviewPath: noRecipeImage,
               ),
@@ -121,7 +121,7 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
         await IO.deleteRecipeImageIfExists(editRecipeLocalPathString);
 
         await HiveProvider().saveTmpEditingRecipe(
-          HiveProvider().getTmpEditingRecipe().copyWith(
+          HiveProvider().getTmpEditingRecipe()!.copyWith(
                 imagePath: noRecipeImage,
                 imagePreviewPath: noRecipeImage,
               ),

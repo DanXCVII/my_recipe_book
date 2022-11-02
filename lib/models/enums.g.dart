@@ -6,9 +6,9 @@ part of 'enums.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class VegetableAdapter extends TypeAdapter<Vegetable> {
+class VegetableAdapter extends TypeAdapter<Vegetable?> {
   @override
-  Vegetable read(BinaryReader reader) {
+  Vegetable? read(BinaryReader reader) {
     switch (reader.readByte()) {
       case 0:
         return Vegetable.NON_VEGETARIAN;
@@ -22,7 +22,7 @@ class VegetableAdapter extends TypeAdapter<Vegetable> {
   }
 
   @override
-  void write(BinaryWriter writer, Vegetable obj) {
+  void write(BinaryWriter writer, Vegetable? obj) {
     switch (obj) {
       case Vegetable.NON_VEGETARIAN:
         writer.writeByte(0);
@@ -40,9 +40,9 @@ class VegetableAdapter extends TypeAdapter<Vegetable> {
   int get typeId => 1;
 }
 
-class RecipeSortAdapter extends TypeAdapter<RecipeSort> {
+class RecipeSortAdapter extends TypeAdapter<RecipeSort?> {
   @override
-  RecipeSort read(BinaryReader reader) {
+  RecipeSort? read(BinaryReader reader) {
     switch (reader.readByte()) {
       case 0:
         return RecipeSort.BY_NAME;
@@ -58,7 +58,7 @@ class RecipeSortAdapter extends TypeAdapter<RecipeSort> {
   }
 
   @override
-  void write(BinaryWriter writer, RecipeSort obj) {
+  void write(BinaryWriter writer, RecipeSort? obj) {
     switch (obj) {
       case RecipeSort.BY_NAME:
         writer.writeByte(0);

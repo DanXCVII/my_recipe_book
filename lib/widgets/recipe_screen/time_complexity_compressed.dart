@@ -7,7 +7,7 @@ class TimeComplexityCompressed extends StatelessWidget {
   final double preperationTime;
   final double cookingTime;
   final double totalTime;
-  final int effort;
+  final int? effort;
   final String fontFamily;
   final bool showComplexity;
 
@@ -18,7 +18,7 @@ class TimeComplexityCompressed extends StatelessWidget {
     this.effort,
     this.fontFamily, {
     this.showComplexity = true,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -27,7 +27,7 @@ class TimeComplexityCompressed extends StatelessWidget {
       direction: Axis.horizontal,
       runSpacing: 10,
       spacing: 10,
-      children: <Widget>[
+      children: [
         ((preperationTime != 0 && preperationTime != null) ||
                 (cookingTime != 0 && cookingTime != null) ||
                 (totalTime != 0 && totalTime != null))
@@ -44,8 +44,8 @@ class TimeComplexityCompressed extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(25)),
                   gradient: LinearGradient(
                     colors: [
-                      Colors.grey[700],
-                      Colors.grey[800],
+                      Colors.grey[700]!,
+                      Colors.grey[800]!,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -83,8 +83,8 @@ class TimeComplexityCompressed extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(25)),
                   gradient: LinearGradient(
                     colors: [
-                      _getEffortColor(effort),
-                      _getEffortColor(effort + 1 == 11 ? 9 : effort + 1),
+                      _getEffortColor(effort)!,
+                      _getEffortColor(effort! + 1 == 11 ? 9 : effort! + 1)!,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -93,7 +93,7 @@ class TimeComplexityCompressed extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
                   child: Text(
-                    "${I18n.of(context).complexity}: $effort",
+                    "${I18n.of(context)!.complexity}: $effort",
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
@@ -103,11 +103,11 @@ class TimeComplexityCompressed extends StatelessWidget {
                 ),
               )
             : null,
-      ]..removeWhere((item) => item == null),
+      ].whereType<Widget>().toList(),
     );
   }
 
-  Color _getEffortColor(int effort) {
+  Color? _getEffortColor(int? effort) {
     switch (effort) {
       case 1:
         return Color(0xff10C800);
@@ -137,12 +137,12 @@ class TimeComplexityCompressed extends StatelessWidget {
   String _getTimeString(double preperationTime, double cookingTime,
       double totalTime, BuildContext context) {
     if (totalTime != 0 && totalTime != null)
-      return "${I18n.of(context).total_time}: " +
+      return "${I18n.of(context)!.total_time}: " +
           getTimeHoursMinutes(totalTime);
     if (cookingTime != 0 && cookingTime != null)
-      return "${I18n.of(context).cook_time}: " +
+      return "${I18n.of(context)!.cook_time}: " +
           getTimeHoursMinutes(cookingTime);
-    return "${I18n.of(context).prep_time}: " +
+    return "${I18n.of(context)!.prep_time}: " +
         getTimeHoursMinutes(preperationTime);
   }
 }

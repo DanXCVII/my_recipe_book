@@ -23,7 +23,7 @@ import 'steps_screen/steps_screen.dart';
 /// arguments which are provided to the route, when pushing to it
 class IngredientsArguments {
   final Recipe modifiedRecipe;
-  final String editingRecipeName;
+  final String? editingRecipeName;
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
 
@@ -36,13 +36,13 @@ class IngredientsArguments {
 }
 
 class IngredientsAddScreen extends StatefulWidget {
-  final Recipe modifiedRecipe;
-  final String editingRecipeName;
+  final Recipe? modifiedRecipe;
+  final String? editingRecipeName;
 
   IngredientsAddScreen({
     this.modifiedRecipe,
     this.editingRecipeName,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   _IngredientsAddScreenState createState() => _IngredientsAddScreenState();
@@ -55,10 +55,10 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
 
   final MyVegetableWrapper selectedRecipeVegetable = MyVegetableWrapper();
   FocusNode _focusNode = FocusNode();
-  FocusNode _exitFocusNode;
+  FocusNode? _exitFocusNode;
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Flushbar _flush;
+  Flushbar? _flush;
 
   @override
   void initState() {
@@ -66,7 +66,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
 
     WidgetsBinding.instance.addObserver(this);
 
-    _initializeData(widget.modifiedRecipe);
+    _initializeData(widget.modifiedRecipe!);
   }
 
   @override
@@ -103,13 +103,13 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
             end: Alignment.bottomCenter,
             colors: [Color(0xffAF1E1E), Color(0xff641414)],
           ),
-          title: Text(I18n.of(context).add_ingredients_info),
+          title: Text(I18n.of(context)!.add_ingredients_info),
           actions: <Widget>[
             BlocListener<IngredientsBloc, IngredientsState>(
               listener: (context, state) {
                 if (state is IEditingFinishedGoBack) {
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(I18n.of(context).saving_your_input)));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(I18n.of(context)!.saving_your_input)));
                 } else if (state is ISaved) {
                   BlocProvider.of<IngredientsBloc>(context).add(SetCanSave());
 
@@ -124,7 +124,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                     ),
                   );
                 } else if (state is ISavedGoBack) {
-                  Scaffold.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
                 }
               },
@@ -182,7 +182,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                     padding:
                         const EdgeInsets.only(left: 56, top: 12, bottom: 12),
                     child: Text(
-                      I18n.of(context).category + ":",
+                      I18n.of(context)!.category + ":",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -211,7 +211,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
     }
 
     if (recipe.servingName != null) {
-      servingsNameController.text = recipe.servingName;
+      servingsNameController.text = recipe.servingName!;
     }
 
     if (recipe.servings != null)
@@ -235,10 +235,10 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
   /// suitable dialog if the info is somehow not valid. If it is, it
   /// calls _saveIngredientsData(..)
   void _finishedEditingIngredients() {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       _showFlushInfo(
-        I18n.of(context).check_filled_in_information,
-        I18n.of(context).check_red_fields_desc,
+        I18n.of(context)!.check_filled_in_information,
+        I18n.of(context)!.check_red_fields_desc,
       );
     } else {
       _saveIngredientsData(false);
@@ -312,7 +312,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
       ingredients.add([]);
       for (int j = 0; j < ingredientNamesContr[i].length; j++) {
         String ingredientName = ingredientNamesContr[i][j].text;
-        double amount = amountContr[i][j].text == "0"
+        double? amount = amountContr[i][j].text == "0"
             ? null
             : getDoubleFromString(amountContr[i][j].text) != null
                 ? getDoubleFromString(
@@ -328,7 +328,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
   }
 
   void _showFlushInfo(String title, String body) {
-    if (_flush != null && _flush.isShowing()) {
+    if (_flush != null && _flush!.isShowing()) {
     } else {
       _flush = Flushbar<bool>(
         animationDuration: Duration(milliseconds: 300),
@@ -339,9 +339,9 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
           Icons.info_outline,
           color: Colors.blue,
         ),
-        mainButton: FlatButton(
+        mainButton: TextButton(
           onPressed: () {
-            _flush.dismiss(true); // result = true
+            _flush!.dismiss(true); // result = true
           },
           child: Text(
             "OK",

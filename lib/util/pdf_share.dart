@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
@@ -65,12 +66,15 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
   String source = "";
   int sourceCutIndex = recipe.imagePath != Constants.noRecipeImage ? 33 : 65;
   for (int i = 0;
-      i < (recipe.source != null ? (recipe.source.length / sourceCutIndex) : 0);
+      i <
+          (recipe.source != null
+              ? (recipe.source!.length / sourceCutIndex)
+              : 0);
       i++) {
-    source += recipe.source.substring(
+    source += recipe.source!.substring(
         i * sourceCutIndex,
-        (i + 1) * sourceCutIndex > recipe.source.length
-            ? recipe.source.length
+        (i + 1) * sourceCutIndex > recipe.source!.length
+            ? recipe.source!.length
             : (i + 1) * sourceCutIndex);
     source += "\n";
   }
@@ -81,7 +85,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
             padding: pw.EdgeInsets.only(top: 8),
             child: pw.Row(children: [
               pw.Text(
-                I18n.of(bContext).directions,
+                I18n.of(bContext)!.directions,
                 style: pw.TextStyle(
                   font: quandoTtf,
                   color: PdfColors.red900,
@@ -91,33 +95,32 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
             ]),
           )
         : null,
-  ];
+  ].whereType<pw.Widget>().toList();
 
   if (recipe.stepTitles == null) {
     stepWidgets.addAll(_getSteps(
         recipe.steps, recipe.stepImages, bContext, quandoTtf, latoTtf, doc));
   } else {
-    for (int i = 0; i < recipe.stepTitles.length; i++) {
-      if (i == 0 || recipe.stepTitles[i] != "") {
-        int nextTitleIndex = recipe.stepTitles.length;
-        if (i + 1 < recipe.stepTitles.length) {
-          String nextTitle = recipe.stepTitles
+    for (int i = 0; i < recipe.stepTitles!.length; i++) {
+      if (i == 0 || recipe.stepTitles![i] != "") {
+        int nextTitleIndex = recipe.stepTitles!.length;
+        if (i + 1 < recipe.stepTitles!.length) {
+          String? nextTitle = recipe.stepTitles!
               .sublist(i + 1)
-              .firstWhere((e) => e != "", orElse: () => null);
+              .firstWhereOrNull((e) => e != "");
           if (nextTitle == null) {
-            nextTitleIndex = recipe.stepTitles.length;
+            nextTitleIndex = recipe.stepTitles!.length;
           } else {
             nextTitleIndex =
-                recipe.stepTitles.sublist(i + 1).indexOf(nextTitle) + i + 1;
+                recipe.stepTitles!.sublist(i + 1).indexOf(nextTitle) + i + 1;
           }
-          nextTitleIndex ?? recipe.stepTitles.length;
         }
-        if (recipe.stepTitles[i] != "") {
+        if (recipe.stepTitles![i] != "") {
           stepWidgets.add(
             pw.Padding(
               padding: pw.EdgeInsets.only(top: 8),
               child: pw.Text(
-                recipe.stepTitles[i],
+                recipe.stepTitles![i],
                 style: pw.TextStyle(
                   font: quandoTtf,
                   color: PdfColors.orange700,
@@ -237,7 +240,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
                           pw.Text(
-                            I18n.of(bContext).general_infos,
+                            I18n.of(bContext)!.general_infos,
                             style: pw.TextStyle(
                               font: quandoTtf,
                               color: PdfColors.red900,
@@ -252,7 +255,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text: I18n.of(bContext).categories +
+                                          text: I18n.of(bContext)!.categories +
                                               ": ",
                                           style: pw.TextStyle(
                                               color: PdfColors.grey700,
@@ -278,7 +281,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text: I18n.of(bContext).tags + ": ",
+                                          text: I18n.of(bContext)!.tags + ": ",
                                           style: pw.TextStyle(
                                               font: latoTtf,
                                               color: PdfColors.grey700,
@@ -303,7 +306,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text: I18n.of(bContext)
+                                          text: I18n.of(bContext)!
                                                   .preperation_time +
                                               ": ",
                                           style: pw.TextStyle(
@@ -331,7 +334,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text: I18n.of(bContext).cook_time +
+                                          text: I18n.of(bContext)!.cook_time +
                                               ": ",
                                           style: pw.TextStyle(
                                               font: latoTtf,
@@ -358,7 +361,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text: I18n.of(bContext).total_time +
+                                          text: I18n.of(bContext)!.total_time +
                                               ": ",
                                           style: pw.TextStyle(
                                               font: latoTtf,
@@ -386,7 +389,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                       children: [
                                         pw.TextSpan(
                                           text:
-                                              I18n.of(bContext).for_word + " ",
+                                              I18n.of(bContext)!.for_word + " ",
                                           style: pw.TextStyle(
                                               font: latoTtf,
                                               color: PdfColors.grey700,
@@ -396,7 +399,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                           text: recipe.servings.toString() +
                                               " " +
                                               (recipe.servingName ??
-                                                  I18n.of(bContext).persons),
+                                                  I18n.of(bContext)!.persons),
                                           style: pw.TextStyle(
                                               font: latoBTtf,
                                               fontSize: 11,
@@ -413,7 +416,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                               text: pw.TextSpan(
                                 children: [
                                   pw.TextSpan(
-                                    text: I18n.of(bContext).effort + ": ",
+                                    text: I18n.of(bContext)!.effort + ": ",
                                     style: pw.TextStyle(
                                         font: latoTtf,
                                         color: PdfColors.grey700,
@@ -438,7 +441,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                         pw.CrossAxisAlignment.start,
                                     children: [
                                       pw.Text(
-                                        I18n.of(bContext).source + ": ",
+                                        I18n.of(bContext)!.source + ": ",
                                         style: pw.TextStyle(
                                             font: latoTtf,
                                             color: PdfColors.grey700,
@@ -456,7 +459,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                   ),
                                 )
                               : null,
-                        ]..removeWhere((item) => item == null)),
+                        ].whereType<pw.Widget>().toList()),
                   ),
                 ),
                 pw.Padding(
@@ -472,8 +475,8 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                   text: pw.TextSpan(
                                     children: [
                                       pw.TextSpan(
-                                        text:
-                                            I18n.of(bContext).ingredients + " ",
+                                        text: I18n.of(bContext)!.ingredients +
+                                            " ",
                                         style: pw.TextStyle(
                                           font: quandoTtf,
                                           color: PdfColors.red900,
@@ -484,12 +487,13 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                         text: "(" +
                                             (recipe.vegetable ==
                                                     Vegetable.NON_VEGETARIAN
-                                                ? I18n.of(bContext).with_meat
+                                                ? I18n.of(bContext)!.with_meat
                                                 : recipe.vegetable ==
                                                         Vegetable.VEGETARIAN
-                                                    ? I18n.of(bContext)
+                                                    ? I18n.of(bContext)!
                                                         .vegetarian
-                                                    : I18n.of(bContext).vegan) +
+                                                    : I18n.of(bContext)!
+                                                        .vegan) +
                                             ")",
                                         style: pw.TextStyle(
                                           font: latoTtf,
@@ -657,13 +661,12 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                                 ),
                                               ).toList(),
                                             ),
-                                          ]..removeWhere(
-                                              (item) => item == null)),
+                                          ].whereType<pw.Widget>().toList()),
                                     ),
                                   ),
                                 )
                               : null,
-                        ]..removeWhere((item) => item == null)),
+                        ].whereType<pw.Widget>().toList()),
                     recipe.nutritions.isNotEmpty
                         ? pw.Column(
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -672,7 +675,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                               pw.Padding(
                                 padding: pw.EdgeInsets.only(top: 8, bottom: 8),
                                 child: pw.Text(
-                                  I18n.of(bContext).nutritions,
+                                  I18n.of(bContext)!.nutritions,
                                   style: pw.TextStyle(
                                     font: quandoTtf,
                                     color: PdfColors.red900,
@@ -727,48 +730,49 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     .toList(),
                               ))
                         : null,
-                  ]..removeWhere((item) => item == null)),
+                  ].whereType<pw.Widget>().toList()),
                 ),
-              ]
-                ..addAll(stepWidgets)
-                ..addAll([
-                  recipe.notes != ""
-                      ? pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.start,
-                          children: [
-                              pw.Container(
-                                width: 200,
-                                child: pw.Padding(
-                                  padding: pw.EdgeInsets.only(top: 8),
-                                  child: pw.Text(
-                                    I18n.of(bContext).notes,
-                                    style: pw.TextStyle(
-                                      font: quandoTtf,
-                                      color: PdfColors.red900,
-                                      fontSize: 16,
+              ].whereType<pw.Widget>().toList()
+                ..addAll(stepWidgets as Iterable<pw.Widget>)
+                ..addAll(
+                  [
+                    recipe.notes != ""
+                        ? pw.Column(
+                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            children: [
+                                pw.Container(
+                                  width: 200,
+                                  child: pw.Padding(
+                                    padding: pw.EdgeInsets.only(top: 8),
+                                    child: pw.Text(
+                                      I18n.of(bContext)!.notes,
+                                      style: pw.TextStyle(
+                                        font: quandoTtf,
+                                        color: PdfColors.red900,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              pw.Padding(
-                                padding: pw.EdgeInsets.only(top: 6),
-                                child: pw.Container(
-                                  width: 450,
-                                  child: pw.Text(
-                                    "${recipe.notes}",
-                                    style: pw.TextStyle(
-                                        font: latoTtf,
-                                        fontSize: 11,
-                                        color: PdfColors.grey900),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.only(top: 6),
+                                  child: pw.Container(
+                                    width: 450,
+                                    child: pw.Text(
+                                      "${recipe.notes}",
+                                      style: pw.TextStyle(
+                                          font: latoTtf,
+                                          fontSize: 11,
+                                          color: PdfColors.grey900),
+                                    ),
                                   ),
-                                ),
-                              )
-                            ])
-                      : null,
-                ]..removeWhere((item) => item == null))
-                ..removeWhere((item) => item == null),
+                                )
+                              ])
+                        : null,
+                  ].whereType<pw.Widget>().toList(),
+                ),
             ),
-          ]));
+          ].whereType<pw.Widget>().toList()));
 
   return doc.save();
 }

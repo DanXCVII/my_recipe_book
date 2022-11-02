@@ -83,13 +83,13 @@ class CategoryGridView extends StatelessWidget {
 }
 
 class CategoryGridTile extends StatelessWidget {
-  final String/*!*/ randomCategoryImage;
-  final String/*!*/ category;
+  final String randomCategoryImage;
+  final String category;
 
   const CategoryGridTile({
-    this.randomCategoryImage,
-    this.category,
-    Key key,
+    required this.randomCategoryImage,
+    required this.category,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -112,7 +112,7 @@ class CategoryGridTile extends StatelessWidget {
             : Image.file(File(randomCategoryImage), fit: BoxFit.cover),
         footer: GridTileBar(
           title: Text(
-            category == "no category" ? I18n.of(context).no_category : category,
+            category == "no category" ? I18n.of(context)!.no_category : category,
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.black45,

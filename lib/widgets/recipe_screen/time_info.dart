@@ -17,7 +17,7 @@ class TimeInfo extends StatelessWidget {
     this.preperationTime,
     this.totalTime,
     this.cookingTime, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -29,7 +29,7 @@ class TimeInfo extends StatelessWidget {
       remainingTimeChart = totalTime - cookingTime - preperationTime;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+      children: [
         preperationTime != 0
             ? Row(
                 mainAxisSize: MainAxisSize.min,
@@ -52,7 +52,7 @@ class TimeInfo extends StatelessWidget {
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Colors.pink, Colors.pink[800]]),
+                          colors: [Colors.pink, Colors.pink[800]!]),
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Icon(
@@ -66,7 +66,7 @@ class TimeInfo extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "${I18n.of(context).prep_time}:",
+                        "${I18n.of(context)!.prep_time}:",
                         style: TextStyle(
                           color: textColor,
                           fontFamily: fontFamily,
@@ -97,7 +97,7 @@ class TimeInfo extends StatelessWidget {
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Colors.lightBlue, Colors.lightBlue[800]]),
+                          colors: [Colors.lightBlue, Colors.lightBlue[800]!]),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black45,
@@ -122,7 +122,7 @@ class TimeInfo extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "${I18n.of(context).cook_time}:",
+                        "${I18n.of(context)!.cook_time}:",
                         style: TextStyle(
                           color: textColor,
                           fontFamily: fontFamily,
@@ -147,7 +147,7 @@ class TimeInfo extends StatelessWidget {
             ? null
             : Row(
                 mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
+                children: [
                   Container(
                     height: 35,
                     width: 35,
@@ -155,7 +155,7 @@ class TimeInfo extends StatelessWidget {
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Colors.yellow, Colors.yellow[800]]),
+                          colors: [Colors.yellow, Colors.yellow[800]!]),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black45,
@@ -181,7 +181,7 @@ class TimeInfo extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              "${I18n.of(context).remaining_time}:",
+                              "${I18n.of(context)!.remaining_time}:",
                               style: TextStyle(
                                 color: textColor,
                                 fontFamily: fontFamily,
@@ -199,8 +199,8 @@ class TimeInfo extends StatelessWidget {
                           ],
                         )
                       : null
-                ]..removeWhere((item) => item == null))
-      ]..removeWhere((item) => item == null),
+                ].whereType<Widget>().toList())
+      ].whereType<Widget>().toList(),
     );
   }
 }

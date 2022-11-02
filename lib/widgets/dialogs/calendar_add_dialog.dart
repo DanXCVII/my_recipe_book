@@ -16,7 +16,7 @@ class CalendarAddDialog extends StatelessWidget {
 
   const CalendarAddDialog(
     this.onFinished, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -40,12 +40,12 @@ class CalendarAddDialog extends StatelessWidget {
 }
 
 class CalendarAddDialogContent extends StatefulWidget {
-  final void Function(DateTime/*!*/ date, String recipeName) onFinished;
+  final void Function(DateTime date, String recipeName) onFinished;
   final focus = FocusNode();
 
   CalendarAddDialogContent(
     this.onFinished, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -59,7 +59,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
       new GlobalKey();
   TextEditingController recipeNameController = new TextEditingController();
   GlobalKey<FormState> formKey = new GlobalKey<FormState>();
-  DateTime selectedDate;
+  DateTime? selectedDate;
 
   @override
   void dispose() {
@@ -83,7 +83,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          I18n.of(context).add_to_calendar,
+          I18n.of(context)!.add_to_calendar,
           style: Theme.of(context).textTheme.headline6,
         ),
         SizedBox(height: 16),
@@ -94,7 +94,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
           controller: recipeNameController,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
-            labelText: I18n.of(context).recipe_name,
+            labelText: I18n.of(context)!.recipe_name,
           ),
         ),
         SizedBox(
@@ -106,7 +106,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                   icon: Icon(Icons.add_circle),
                   label: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(I18n.of(context).add_date),
+                    child: Text(I18n.of(context)!.add_date),
                   ),
                   onPressed: () async {
                     _onSelectDate();
@@ -133,11 +133,11 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                           width: 1,
                           color:
                               Theme.of(context).backgroundColor == Colors.white
-                                  ? Colors.grey[500]
+                                  ? Colors.grey[500]!
                                   : Colors.white),
                     ),
                     child: Text(
-                      "${selectedDate.day}.${selectedDate.month}.${selectedDate.year}",
+                      "${selectedDate!.day}.${selectedDate!.month}.${selectedDate!.year}",
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w400,
@@ -149,28 +149,30 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            FlatButton(
-              child: Text(I18n.of(context).cancel),
+            TextButton(
+              child: Text(I18n.of(context)!.cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             SizedBox(width: 6),
-            FlatButton(
+            TextButton(
               child: Text(
-                I18n.of(context).add,
+                I18n.of(context)!.add,
                 style: TextStyle(color: Colors.black),
               ),
-              color: Theme.of(context).backgroundColor == Colors.white
-                  ? null
-                  : Colors.amber,
-              textTheme: ButtonTextTheme.primary,
+              style: TextButton.styleFrom(
+                backgroundColor:
+                    Theme.of(context).backgroundColor == Colors.white
+                        ? null
+                        : Colors.amber,
+              ),
               onPressed: () {
                 if (HiveProvider()
                     .getRecipeNames()
                     .contains(recipeNameController.text)) {
                   if (selectedDate != null) {
-                    widget.onFinished(selectedDate, recipeNameController.text);
+                    widget.onFinished(selectedDate!, recipeNameController.text);
 
                     Navigator.of(context).pop();
                   } else {
@@ -182,7 +184,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                       forwardAnimationCurve: Curves.elasticOut,
                       duration: Duration(seconds: 4),
                       icon: Icon(Icons.info),
-                      messageText: Text(I18n.of(context).select_a_date_first),
+                      messageText: Text(I18n.of(context)!.select_a_date_first),
                     )..show(context);
                   }
                 } else {
@@ -195,7 +197,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                     duration: Duration(seconds: 4),
                     icon: Icon(Icons.info),
                     messageText:
-                        Text(I18n.of(context).no_recipe_with_this_name),
+                        Text(I18n.of(context)!.no_recipe_with_this_name),
                   )..show(context);
                 }
               },
@@ -229,7 +231,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
           ? Colors.white
           : Colors.black,
       is24HourMode: true,
-    ).then((DateTime date) => date != null
+    ).then((DateTime? date) => date != null
         ? setState(() {
             selectedDate = date;
           })

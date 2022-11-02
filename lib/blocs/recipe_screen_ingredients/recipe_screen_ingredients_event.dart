@@ -4,18 +4,18 @@ abstract class RecipeScreenIngredientsEvent extends Equatable {
   const RecipeScreenIngredientsEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class InitializeIngredients extends RecipeScreenIngredientsEvent {
   final String recipeName;
-  final double servings;
+  final double? servings;
   final List<List<Ingredient>> ingredients;
 
   const InitializeIngredients(this.recipeName, this.servings, this.ingredients);
 
   @override
-  List<Object> get props => [recipeName, servings, ingredients];
+  List<Object?> get props => [recipeName, servings, ingredients];
 
   @override
   String toString() =>
@@ -51,7 +51,7 @@ class RemoveFromCart extends RecipeScreenIngredientsEvent {
 }
 
 class UpdateServings extends RecipeScreenIngredientsEvent {
-  final double oldServings;
+  final double? oldServings;
   final double newServings;
 
   const UpdateServings(
@@ -60,7 +60,7 @@ class UpdateServings extends RecipeScreenIngredientsEvent {
   );
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         oldServings,
         newServings,
       ];

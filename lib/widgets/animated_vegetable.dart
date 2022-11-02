@@ -16,7 +16,7 @@ class AnimatedVegetable extends StatelessWidget {
   const AnimatedVegetable(
     this.vegetable, {
     this.small = false,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -81,7 +81,7 @@ class AnimatedVegetable extends StatelessWidget {
     );
   }
 
-  Color _getVegetableCircleColor(Vegetable vegetable) {
+  Color? _getVegetableCircleColor(Vegetable vegetable) {
     switch (vegetable) {
       case Vegetable.NON_VEGETARIAN:
         return Color(0xffAB5C00);

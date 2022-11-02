@@ -15,7 +15,7 @@ class LoadingNutritionManager extends NutritionManagerState {
 }
 
 class LoadedNutritionManager extends NutritionManagerState {
-  final List<String/*!*/> nutritions;
+  final List<String> nutritions;
 
   const LoadedNutritionManager([this.nutritions = const []]);
 

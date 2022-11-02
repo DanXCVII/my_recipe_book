@@ -6,12 +6,12 @@ import 'package:my_recipe_book/models/nutrition.dart';
 
 class AnimatedNutritionsFab extends StatefulWidget {
   final List<Nutrition> recipeNutritions;
-  final ScrollController hideButtonController;
+  final ScrollController? hideButtonController;
 
   AnimatedNutritionsFab(
     this.recipeNutritions,
     this.hideButtonController, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -27,8 +27,8 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
 
   @override
   void initState() {
-    widget.hideButtonController.addListener(() {
-      if (widget.hideButtonController.position.userScrollDirection ==
+    widget.hideButtonController!.addListener(() {
+      if (widget.hideButtonController!.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (isVisible == true) {
           canceld = false;
@@ -38,7 +38,7 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
           });
         }
       } else {
-        if (widget.hideButtonController.position.userScrollDirection ==
+        if (widget.hideButtonController!.position.userScrollDirection ==
             ScrollDirection.forward) {
           if (isVisible == false) {
             canceld = true;
@@ -76,8 +76,8 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
                 color: Colors.amber[800],
                 gradient: new LinearGradient(
                   colors: [
-                    Colors.amber[600],
-                    Colors.amber[800],
+                    Colors.amber[600]!,
+                    Colors.amber[800]!,
                   ],
                   begin: const FractionalOffset(0.0, 0.0),
                   end: const FractionalOffset(1.0, 1.0),
@@ -94,6 +94,7 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
                         width: 60,
                         child: IconButton(
                           icon: Icon(MdiIcons.nutrition),
+                          color: Colors.white,
                           onPressed: (() {
                             setState(() {
                               isMinimized = false;
@@ -116,7 +117,7 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
                                 child: Row(
                                   children: [
                                     Spacer(),
-                                    Text(I18n.of(context).nutritions,
+                                    Text(I18n.of(context)!.nutritions,
                                         style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -124,6 +125,7 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
                                     Spacer(),
                                     IconButton(
                                       icon: Icon(Icons.cancel),
+                                      color: Colors.grey[800],
                                       onPressed: () {
                                         setState(() {
                                           isMinimized = true;

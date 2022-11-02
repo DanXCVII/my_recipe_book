@@ -8,13 +8,13 @@ import 'package:my_recipe_book/screens/recipe_overview.dart';
 
 // must be in context of shoppingCartBloc
 class RecipeTagWrap extends StatelessWidget {
-  final List<StringIntTuple>/*!*/ recipeTags;
+  final List<StringIntTuple> recipeTags;
   final String fontFamily;
 
   const RecipeTagWrap(
     this.recipeTags,
     this.fontFamily, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

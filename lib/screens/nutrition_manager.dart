@@ -11,7 +11,7 @@ import '../widgets/dialogs/textfield_dialog.dart';
 import '../widgets/icon_info_message.dart';
 
 class NutritionManager extends StatefulWidget {
-  final Recipe newRecipe;
+  final Recipe? newRecipe;
 
   NutritionManager({this.newRecipe});
 
@@ -34,7 +34,7 @@ class _NutritionManagerState extends State<NutritionManager> {
   @override
   void dispose() {
     for (String k in nutritionsController.keys) {
-      nutritionsController[k].dispose();
+      nutritionsController[k]!.dispose();
     }
     super.dispose();
   }
@@ -71,7 +71,7 @@ class _NutritionManagerState extends State<NutritionManager> {
                   end: Alignment.bottomCenter,
                   colors: [Color(0xffAF1E1E), Color(0xff641414)],
                 ),
-                title: Text(I18n.of(context).manage_nutritions),
+                title: Text(I18n.of(context)!.manage_nutritions),
                 actions: <Widget>[
                   IconButton(
                     icon: Icon(Icons.help_outline),
@@ -79,8 +79,8 @@ class _NutritionManagerState extends State<NutritionManager> {
                       showDialog(
                         context: context,
                         builder: (context) => InfoDialog(
-                          title: I18n.of(context).info,
-                          body: I18n.of(context).nutrition_manager_description,
+                          title: I18n.of(context)!.info,
+                          body: I18n.of(context)!.nutrition_manager_description,
                         ),
                       );
                     },
@@ -97,11 +97,11 @@ class _NutritionManagerState extends State<NutritionManager> {
                     showDialog(
                       context: context,
                       builder: (_) => TextFieldDialog(
-                        validation: (String name) {
+                        validation: (String? name) {
                           if (state.nutritions.contains(name)) {
-                            return I18n.of(context).nutrition_already_exists;
+                            return I18n.of(context)!.nutrition_already_exists;
                           } else if (name == "") {
-                            return I18n.of(context).field_must_not_be_empty;
+                            return I18n.of(context)!.field_must_not_be_empty;
                           } else {
                             return null;
                           }
@@ -114,7 +114,7 @@ class _NutritionManagerState extends State<NutritionManager> {
                           dismissibleKeys.add(Key('D-$name'));
                           listTileKeys.add(Key(name));
                         },
-                        hintText: I18n.of(context).nutrition,
+                        hintText: I18n.of(context)!.nutrition,
                       ),
                     );
                   }),
@@ -126,7 +126,7 @@ class _NutritionManagerState extends State<NutritionManager> {
                         color: Colors.grey[200],
                         size: 70.0,
                       ),
-                      description: I18n.of(context).you_have_no_nutritions,
+                      description: I18n.of(context)!.you_have_no_nutritions,
                     ))
                   : Form(
                       key: _formKey,
@@ -183,7 +183,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             end: Alignment.bottomCenter,
             colors: [Color(0xffAF1E1E), Color(0xff641414)],
           ),
-          title: Text(I18n.of(context).manage_nutritions),
+          title: Text(I18n.of(context)!.manage_nutritions),
         ),
         body: Center(
           child: CircularProgressIndicator(),
@@ -200,26 +200,29 @@ class _NutritionManagerState extends State<NutritionManager> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context).delete_nutrition),
-        content: Text(I18n.of(context).sure_you_want_to_delete_this_nutrition +
+        title: Text(I18n.of(context)!.delete_nutrition),
+        content: Text(I18n.of(context)!.sure_you_want_to_delete_this_nutrition +
             " $nutritionName"),
         actions: <Widget>[
-          FlatButton(
-            child: Text(I18n.of(context).no),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textColor: Theme.of(context).textTheme.bodyText2.color,
+          TextButton(
+            child: Text(I18n.of(context)!.no),
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+            ),
             onPressed: () {
               Navigator.pop(context, false);
-              return false;
             },
           ),
-          FlatButton(
-            child: Text(I18n.of(context).yes),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textColor: Theme.of(context).textTheme.bodyText2.color,
-            color: Colors.red[600],
+          TextButton(
+            child: Text(I18n.of(context)!.yes),
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+              backgroundColor: Colors.red[600],
+            ),
             onPressed: () {
               _removeNutrition(index, nutritions);
               BlocProvider.of<NutritionManagerBloc>(context)
@@ -227,7 +230,6 @@ class _NutritionManagerState extends State<NutritionManager> {
 
               nutritionsController.remove(nutritionName);
               Navigator.pop(context, true);
-              return true;
             },
           ),
         ],
@@ -289,11 +291,11 @@ class _NutritionManagerState extends State<NutritionManager> {
           showDialog(
             context: context,
             builder: (_) => TextFieldDialog(
-              validation: (String name) {
+              validation: (String? name) {
                 if (nutritions.contains(name)) {
-                  return I18n.of(context).nutrition_already_exists;
+                  return I18n.of(context)!.nutrition_already_exists;
                 } else if (name == "") {
-                  return I18n.of(context).field_must_not_be_empty;
+                  return I18n.of(context)!.field_must_not_be_empty;
                 } else {
                   return null;
                 }
@@ -303,7 +305,7 @@ class _NutritionManagerState extends State<NutritionManager> {
                   UpdateNutrition(nutritionName, name),
                 );
               },
-              hintText: I18n.of(context).nutrition,
+              hintText: I18n.of(context)!.nutrition,
               prefilledText: nutritionName,
             ),
           );

@@ -18,9 +18,9 @@ part 'category_overview_state.dart';
 class CategoryOverviewBloc
     extends Bloc<CategoryOverviewEvent, CategoryOverviewState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
-  StreamSubscription subscription;
+  late StreamSubscription subscription;
 
-  CategoryOverviewBloc({@required this.recipeManagerBloc})
+  CategoryOverviewBloc({required this.recipeManagerBloc})
       : super(LoadingCategoryOverview()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedCategoryOverview) {
@@ -52,17 +52,17 @@ class CategoryOverviewBloc
       emit(LoadedCategoryOverview(categoryRandomImageList));
 
       if (event.categoryOverviewContext != null) {
-        BlocProvider.of<RandomRecipeExplorerBloc>(event.categoryOverviewContext)
+        BlocProvider.of<RandomRecipeExplorerBloc>(event.categoryOverviewContext!)
             .add(InitializeRandomRecipeExplorer());
         BlocProvider.of<RecipeCategoryOverviewBloc>(
-                event.categoryOverviewContext)
+                event.categoryOverviewContext!)
             .add(RCOLoadRecipeCategoryOverview());
       }
     });
 
     on<COAddRecipes>((event, emit) async {
       if (state is LoadedCategoryOverview) {
-        final List<Tuple2<String /*!*/, String /*!*/ >>
+        final List<Tuple2<String, String >>
             categoryRandomImageList = await _addCategoryRandomImage(
                 (state as LoadedCategoryOverview).categories, event.recipes);
 
@@ -72,7 +72,7 @@ class CategoryOverviewBloc
 
     on<CODeleteRecipe>((event, emit) async {
       if (state is LoadedCategoryOverview) {
-        final List<Tuple2<String /*!*/, String /*!*/ /*!*/ >>
+        final List<Tuple2<String, String /*!*/ >>
             categoryRandomImageList = await _removeRecipeFromOverview(
                 (state as LoadedCategoryOverview).categories, event.recipe);
         emit(LoadedCategoryOverview(categoryRandomImageList));
@@ -81,7 +81,7 @@ class CategoryOverviewBloc
 
     on<COAddCategory>((event, emit) async {
       if (state is LoadedCategoryOverview) {
-        final List<Tuple2<String /*!*/, String>> categoryRandomImageList =
+        final List<Tuple2<String, String>> categoryRandomImageList =
             await _getCategoriesRandomImage();
 
         emit(LoadedCategoryOverview(categoryRandomImageList));
@@ -90,7 +90,7 @@ class CategoryOverviewBloc
 
     on<CODeleteCategory>((event, emit) async {
       if (state is LoadedCategoryOverview) {
-        final List<Tuple2<String /*!*/, String /*!*/ >>
+        final List<Tuple2<String, String >>
             categoryRandomImageList = (state as LoadedCategoryOverview)
                 .categories
               ..removeWhere((t) => t.item1 == event.category);
@@ -101,11 +101,11 @@ class CategoryOverviewBloc
 
     on<COUpdateCategory>((event, emit) async {
       if (state is LoadedCategoryOverview) {
-        final List<Tuple2<String /*!*/, String /*!*/ >>
+        final List<Tuple2<String, String >>
             categoryRandomImageList =
             (state as LoadedCategoryOverview).categories.map((t) {
           if (t.item1 == event.oldCategory) {
-            return Tuple2<String, String /*!*/ >(
+            return Tuple2<String, String >(
                 event.updatedCategory, t.item2);
           } else {
             return t;
@@ -118,7 +118,7 @@ class CategoryOverviewBloc
 
     on<COMoveCategory>((event, emit) async {
       if (state is LoadedCategoryOverview) {
-        List<Tuple2<String /*!*/, String /*!*/ >> oldCategoryRandomImageList =
+        List<Tuple2<String, String >> oldCategoryRandomImageList =
             (state as LoadedCategoryOverview).categories;
         // verify if working
         List<Tuple2<String, String>> newCategoryRandomImageList =
@@ -143,16 +143,16 @@ class CategoryOverviewBloc
       // if the current category shows the image of the to be deleted recipe
       if (t.item2 == recipe.imagePath) {
         // get a new randomImage
-        Recipe randomRecipe = await HiveProvider().getRandomRecipeOfCategory(
+        Recipe? randomRecipe = await HiveProvider().getRandomRecipeOfCategory(
             category: t.item1, excludedRecipe: recipe);
 
-        String newRandomImage =
+        String? newRandomImage =
             randomRecipe == null ? null : randomRecipe.imagePath;
         // if there is a new randomImage
         if (newRandomImage != null) {
           // add the new randomImage to the category
           newCategoryRandomImageList
-              .add(Tuple2<String /*!*/, String>(t.item1, newRandomImage));
+              .add(Tuple2<String, String>(t.item1, newRandomImage));
         }
       } // if the catogry randomImage is not of the to be deleted recipe
       else {
@@ -169,9 +169,9 @@ class CategoryOverviewBloc
     final List<Tuple2<String, String>> categoryRandomImageList = [];
 
     for (String category in categories) {
-      Recipe randomRecipe =
+      Recipe? randomRecipe =
           await HiveProvider().getRandomRecipeOfCategory(category: category);
-      String randomImage = randomRecipe == null ? null : randomRecipe.imagePath;
+      String? randomImage = randomRecipe == null ? null : randomRecipe.imagePath;
       if (randomImage != null) {
         categoryRandomImageList
             .add(Tuple2<String, String>(category, randomImage));
@@ -182,16 +182,16 @@ class CategoryOverviewBloc
 
   /// if the new recipe is under a category the only one, add the category to the
   /// overview with the new recipeImage
-  Future<List<Tuple2<String /*!*/, String /*!*/ >>> _addCategoryRandomImage(
-      List<Tuple2<String /*!*/, String>> oldCategoryRandomImageList,
+  Future<List<Tuple2<String, String >>> _addCategoryRandomImage(
+      List<Tuple2<String, String>> oldCategoryRandomImageList,
       List<Recipe> recipes) async {
-    List<Tuple2<String /*!*/ /*!*/, String /*!*/ >> categoryRandomImageList =
+    List<Tuple2<String /*!*/, String >> categoryRandomImageList =
         List<Tuple2<String, String>>.from(oldCategoryRandomImageList);
 
     for (Recipe recipe in recipes) {
-      for (String /*!*/ category in recipe.categories) {
+      for (String category in recipe.categories) {
         bool alreadyAdded = false;
-        for (Tuple2<String /*!*/, String /*!*/ > t in categoryRandomImageList) {
+        for (Tuple2<String, String > t in categoryRandomImageList) {
           // if the current recipeCategory is already in the overview
           if (t.item1 == category) {
             // add the old category to the new overviewList
@@ -202,10 +202,10 @@ class CategoryOverviewBloc
         // if the current recipeCategory is not yet in the overview
         if (!alreadyAdded) {
           // add the category with the image of the recipe
-          categoryRandomImageList.add(Tuple2<String /*!*/, String /*!*/ >(
+          categoryRandomImageList.add(Tuple2<String, String >(
               category,
               (await HiveProvider()
-                      .getRandomRecipeOfCategory(category: category))
+                      .getRandomRecipeOfCategory(category: category))!
                   .imagePath));
         }
       }

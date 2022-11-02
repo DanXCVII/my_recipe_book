@@ -10,14 +10,14 @@ class SetCanSave extends IngredientsEvent {
 }
 
 class FinishedEditing extends IngredientsEvent {
-  final bool editingRecipe;
-  final bool goBack;
+  final bool? editingRecipe;
+  final bool? goBack;
 
-  final double servings;
-  final String servingName;
-  final List<List<Ingredient>> ingredients;
-  final List<String> ingredientsGlossary;
-  final Vegetable vegetable;
+  final double? servings;
+  final String? servingName;
+  final List<List<Ingredient>>? ingredients;
+  final List<String>? ingredientsGlossary;
+  final Vegetable? vegetable;
 
   FinishedEditing([
     this.editingRecipe,
@@ -30,7 +30,7 @@ class FinishedEditing extends IngredientsEvent {
   ]);
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         editingRecipe,
         goBack,
         servings,

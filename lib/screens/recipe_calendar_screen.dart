@@ -36,13 +36,13 @@ class RecipeCalendarScreenArguments {
 }
 
 class RecipeCalendarScreen extends StatefulWidget {
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
 
   RecipeCalendarScreen({
     this.width,
     this.height,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -59,7 +59,7 @@ class _RecipeCalendarScreenState extends State<RecipeCalendarScreen> {
               end: Alignment.bottomCenter,
               colors: [Color(0xffAF1E1E), Color(0xff641414)],
             ),
-            title: Text(I18n.of(context).recipe_planer),
+            title: Text(I18n.of(context)!.recipe_planer),
             actions: [
               BlocBuilder<RecipeCalendarBloc, RecipeCalendarState>(
                   builder: (context, state) {
@@ -116,13 +116,13 @@ class _RecipeCalendarScreenState extends State<RecipeCalendarScreen> {
 }
 
 class RecipeCalendarContent extends StatefulWidget {
-  final double height;
-  final double width;
+  final double? height;
+  final double? width;
 
   RecipeCalendarContent({
-    @required this.height,
-    @required this.width,
-    Key key,
+    required this.height,
+    required this.width,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -132,15 +132,15 @@ class RecipeCalendarContent extends StatefulWidget {
 class _RecipeCalendarContentState extends State<RecipeCalendarContent>
     with TickerProviderStateMixin {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _firstDay;
-  DateTime _lastDay;
+  DateTime? _firstDay;
+  DateTime? _lastDay;
 
   @override
   Widget build(BuildContext context) {
-    double height = widget.height == null
+    double? height = widget.height == null
         ? MediaQuery.of(context).size.height
         : widget.height;
-    double width =
+    double? width =
         widget.width == null ? MediaQuery.of(context).size.width : widget.width;
     return BlocBuilder<RecipeCalendarBloc, RecipeCalendarState>(
       builder: (context, state) {
@@ -151,7 +151,7 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
         } else if (state is LoadedRecipeCalendarOverview) {
           return Column(
             mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
+            children: [
               // IconButton(
               //     icon: Icon(Icons.print),
               //     onPressed: () {
@@ -163,12 +163,12 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
               //     }),
               // Switch out 2 lines below to play with TableCalendar's settings
               //-----------------------
-              width > deviceWidthMedium
+              width! > deviceWidthMedium
                   ? Container(
                       width: width,
                       height: Ads.shouldShowBannerAds()
-                          ? height - 80 - 60
-                          : height - 80,
+                          ? height! - 80 - 60
+                          : height! - 80,
                       child: Row(
                         children: [
                           Expanded(
@@ -207,7 +207,7 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                         ),
                       ),
                     ),
-            ]..removeWhere((element) => element == null),
+            ].whereType<Widget>().toList(),
           );
         } else if (state is LoadedRecipeCalendarVertical) {
           List<Widget> verticalDaysWithRecipes = [];
@@ -247,7 +247,7 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
           for (int i = 0; i < state.days; i++) {
             verticalDaysWithRecipes.addAll(_getDayWithRecipes(
                 state.from.add(Duration(days: i)),
-                state.recipes[state.from.add(Duration(days: i))]));
+                state.recipes[state.from.add(Duration(days: i))]!));
           }
           return ListView(
             padding: EdgeInsets.zero,
@@ -283,10 +283,15 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
       firstDay: DateTime(DateTime.now().year - 1, 1, 1),
       lastDay: DateTime(DateTime.now().year + 1, 13, 0),
       calendarFormat: _calendarFormat,
-      locale: I18n.of(context).locale_full,
+      locale: I18n.of(context)!.locale_full,
       focusedDay: stateSelectedDay,
       eventLoader: (day) {
-        return events[DateTime(day.year, day.month, day.day)];
+        return events[DateTime(day.year, day.month, day.day)] ?? [];
+      },
+      onFormatChanged: (calendarFormat) {
+        setState(() {
+          _calendarFormat = calendarFormat;
+        });
       },
       startingDayOfWeek: StartingDayOfWeek.monday,
       calendarStyle: CalendarStyle(

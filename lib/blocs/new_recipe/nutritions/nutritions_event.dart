@@ -13,11 +13,11 @@ class SetCanSave extends NutritionsEvent {
 }
 
 class FinishedEditing extends NutritionsEvent {
-  final String editingRecipeName;
+  final String? editingRecipeName;
   final bool goBack;
   final RecipeManagerBloc recipeManagerBloc;
 
-  final List<Nutrition/*!*/> nutritions;
+  final List<Nutrition> nutritions;
 
   FinishedEditing(
     this.editingRecipeName,
@@ -27,7 +27,7 @@ class FinishedEditing extends NutritionsEvent {
   );
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         editingRecipeName,
         goBack,
         nutritions,

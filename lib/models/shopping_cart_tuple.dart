@@ -5,12 +5,12 @@ import 'package:hive/hive.dart';
 
 part 'shopping_cart_tuple.g.dart';
 
-@HiveType()
+@HiveType(typeId: 8)
 class StringListTuple extends Equatable {
   @HiveField(0)
-  final String/*!*/ item1;
+  final String item1;
   @HiveField(1)
-  final List<CheckableIngredient>/*!*/ item2;
+  final List<CheckableIngredient> item2;
 
   /// Creates a new tuple value with the specified items.
   StringListTuple(this.item1, this.item2);

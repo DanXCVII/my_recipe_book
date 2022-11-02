@@ -19,13 +19,23 @@ class ChangeSelectedDateEvent extends RecipeCalendarEvent {
 }
 
 class RemoveRecipeFromDateEvent extends RecipeCalendarEvent {
-  final DateTime/*!*/ date;
-  final String/*!*/ recipeName;
+  final DateTime date;
+  final String recipeName;
 
   RemoveRecipeFromDateEvent(this.date, this.recipeName);
 
   @override
   List<Object> get props => [date, recipeName];
+}
+
+class UpdateRecipeEvent extends RecipeCalendarEvent {
+  final String oldRecipeName;
+  final String newRecipeName;
+
+  UpdateRecipeEvent(this.oldRecipeName, this.newRecipeName);
+
+  @override
+  List<Object> get props => [oldRecipeName, newRecipeName];
 }
 
 class ChangeRecipeCalendarViewEvent extends RecipeCalendarEvent {
@@ -48,7 +58,7 @@ class ChangeSelectedTimeVerticalEvent extends RecipeCalendarEvent {
 }
 
 class RemoveRecipeFromCalendarEvent extends RecipeCalendarEvent {
-  final String/*!*/ recipeName;
+  final String recipeName;
 
   RemoveRecipeFromCalendarEvent(this.recipeName);
 
@@ -58,7 +68,7 @@ class RemoveRecipeFromCalendarEvent extends RecipeCalendarEvent {
 
 class AddRecipeToCalendarEvent extends RecipeCalendarEvent {
   final DateTime date;
-  final String/*!*/ recipeName;
+  final String recipeName;
 
   AddRecipeToCalendarEvent(this.date, this.recipeName);
 

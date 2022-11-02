@@ -23,9 +23,9 @@ class PathProvider {
   PathProvider._();
   static final PathProvider pP = PathProvider._();
 
-  static String _localPath;
+  static String? _localPath;
 
-  Future<String> get localPath async {
+  Future<String?> get localPath async {
     if (_localPath != null) return _localPath;
 
     // if _database is null we instantiate it
@@ -46,7 +46,7 @@ class PathProvider {
   Future<String> getRecipeDirFull(String recipeName) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
-    String imageLocalPath = await localPath;
+    String? imageLocalPath = await localPath;
     return '$imageLocalPath/$cRecipeName';
   }
 
@@ -54,7 +54,7 @@ class PathProvider {
       String recipeName, int stepNumber) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
-    String imageLocalPath = await localPath;
+    String? imageLocalPath = await localPath;
     await Directory('$imageLocalPath/$cRecipeName/stepImages/$stepNumber')
         .create(recursive: true);
     return '$imageLocalPath/$cRecipeName/stepImages/$stepNumber';
@@ -67,7 +67,7 @@ class PathProvider {
   }
 
   Future<String> getTmpRecipeDir() async {
-    String imageLocalPath = await localPath;
+    String? imageLocalPath = await localPath;
     await Directory('$imageLocalPath/tmp/').create(recursive: true);
     return '$imageLocalPath/tmp/';
   }
@@ -76,7 +76,7 @@ class PathProvider {
       String recipeName, int stepNumber) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
-    String imageLocalPath = await localPath;
+    String? imageLocalPath = await localPath;
     await Directory(
             '$imageLocalPath/$cRecipeName/preview/stepImages/p-$stepNumber')
         .create(recursive: true);
@@ -90,7 +90,7 @@ class PathProvider {
   }
 
   Future<Directory> getExternalAppDir() async {
-    String externalPath = (await getExternalStorageDirectory()).path;
+    String externalPath = (await getExternalStorageDirectory())!.path;
     return await Directory(
             externalPath.substring(0, externalPath.lastIndexOf("/") + 1) +
                 "backup")
@@ -104,7 +104,7 @@ class PathProvider {
     String cOldRecipeName = stringReplaceSpaceUnderscore(oldRecipeName);
     String cNewRecipeName = stringReplaceSpaceUnderscore(newRecipeName);
 
-    String imageLocalPath = await localPath;
+    String? imageLocalPath = await localPath;
     return '$imageLocalPath/$cNewRecipeName/$cOldRecipeName' + ending;
   }
 
@@ -113,15 +113,15 @@ class PathProvider {
     String cOldRecipeName = stringReplaceSpaceUnderscore(oldRecipeName);
     String cNewRecipeName = stringReplaceSpaceUnderscore(newRecipeName);
 
-    String imageLocalPath = await localPath;
+    String? imageLocalPath = await localPath;
     return '$imageLocalPath/$cNewRecipeName/preview/p-$cOldRecipeName' + ending;
   }
 
   Future<String> getRecipeImagePathFull(String recipeName, String ending,
-      {String targetDir}) async {
+      {String? targetDir}) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
-    String imageLocalPath = await localPath;
+    String? imageLocalPath = await localPath;
     await Directory(
             '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName')
         .create(recursive: true);
@@ -138,10 +138,10 @@ class PathProvider {
   //////////// Paths to the PREVIEW quality pictures ////////////
 
   Future<String> getRecipeImagePreviewPathFull(String recipeName, String ending,
-      {String targetDir}) async {
+      {String? targetDir}) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
-    String imageLocalPath = await localPath;
+    String? imageLocalPath = await localPath;
     await Directory(
             '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName/preview')
         .create(recursive: true);
@@ -158,7 +158,7 @@ class PathProvider {
   Future<String> getRecipePreviewDirFull(String recipeName) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
-    String imageLocalPath = await localPath;
+    String? imageLocalPath = await localPath;
     return '$imageLocalPath/$cRecipeName/preview';
   }
 

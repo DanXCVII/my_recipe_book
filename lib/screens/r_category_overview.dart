@@ -31,7 +31,7 @@ class RecipeCategoryOverview extends StatelessWidget {
   final RefreshController _refreshControllerTwo =
       RefreshController(initialRefresh: false);
 
-  RecipeCategoryOverview({Key key}) : super(key: key);
+  RecipeCategoryOverview({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -123,10 +123,10 @@ class RecipeRow extends StatelessWidget {
   final int listIndex;
 
   const RecipeRow({
-    @required this.category,
-    @required this.recipes,
-    @required this.listIndex,
-    Key key,
+    required this.category,
+    required this.recipes,
+    required this.listIndex,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -155,7 +155,7 @@ class RecipeRow extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     category == "no category"
-                        ? I18n.of(context).no_category
+                        ? I18n.of(context)!.no_category
                         : category,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -185,15 +185,15 @@ class RecipeRow extends StatelessWidget {
 
 // List of Recipes in a horizontal order with icons as a symbol and unterneath the name
 class RecipeHozizontalList extends StatelessWidget {
-  final List<Recipe>/*!*//*!*/ recipes;
+  final List<Recipe> /*!*/ recipes;
   final String categoryName;
   final int listIndex;
 
   const RecipeHozizontalList({
-    @required this.categoryName,
-    this.recipes,
-    this.listIndex,
-    Key key,
+    required this.categoryName,
+    required this.recipes,
+    required this.listIndex,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -215,6 +215,7 @@ class RecipeHozizontalList extends StatelessWidget {
                   recipe: recipes[index],
                   showMore: false,
                   heroImageTag: "$categoryName$index-image",
+                  index: listIndex,
                 ),
               );
             } else {
@@ -223,9 +224,8 @@ class RecipeHozizontalList extends StatelessWidget {
                       left: leftPadding), //10, bottom: 35, right: 20),
                   child: RecipeImageItemBig(
                     showMore: true,
-                    categoryName: categoryName == null
-                        ? Constants.noCategory
-                        : categoryName,
+                    heroImageTag: categoryName,
+                    categoryName: categoryName,
                     index: listIndex,
                   ));
             }
@@ -237,21 +237,21 @@ class RecipeHozizontalList extends StatelessWidget {
 }
 
 class RecipeImageItemBig extends StatelessWidget {
-  final Recipe/*!*/ recipe;
-  final String/*!*/ heroImageTag;
+  final Recipe? recipe;
+  final String heroImageTag;
 
   final bool showMore;
 
-  final String categoryName;
-  final int/*!*/ index;
+  final String? categoryName;
+  final int index;
 
   const RecipeImageItemBig({
+    required this.showMore,
+    required this.heroImageTag,
     this.recipe,
-    this.heroImageTag,
-    @required this.showMore,
     this.categoryName,
-    this.index,
-    Key key,
+    required this.index,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -332,7 +332,7 @@ class RecipeImageItemBig extends StatelessWidget {
                                           padding: const EdgeInsets.fromLTRB(
                                               8, 8, 8, 8),
                                           child: Text(
-                                            I18n.of(context).show_overview,
+                                            I18n.of(context)!.show_overview,
                                             textAlign: TextAlign.center,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
@@ -364,7 +364,7 @@ class RecipeImageItemBig extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: GestureDetector(
               onTap: () {
-                _pushRecipeRoute(context, heroImageTag, recipe);
+                _pushRecipeRoute(context, heroImageTag, recipe!.copyWith());
               },
               child: Stack(
                 children: <Widget>[
@@ -389,10 +389,11 @@ class RecipeImageItemBig extends StatelessWidget {
                         tag: heroImageTag,
                         child: Container(
                           child: FadeInImage(
-                            image: recipe.imagePreviewPath ==
-                                    Constants.noRecipeImage
-                                ? AssetImage(Constants.noRecipeImage)
-                                : FileImage(File(recipe.imagePreviewPath)),
+                            image: (recipe!.imagePreviewPath ==
+                                        Constants.noRecipeImage
+                                    ? AssetImage(Constants.noRecipeImage)
+                                    : FileImage(File(recipe!.imagePreviewPath)))
+                                as ImageProvider<Object>,
                             fadeInDuration: const Duration(milliseconds: 250),
                             placeholder: MemoryImage(kTransparentImage),
                             height: 110,
@@ -422,7 +423,7 @@ class RecipeImageItemBig extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(8, 22, 8, 8),
                                 child: Text(
-                                  recipe.name,
+                                  recipe!.name,
                                   textAlign: TextAlign.center,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -484,19 +485,19 @@ class RecipeImageItemBig extends StatelessWidget {
 /// either specify recipe and heroImageTag
 /// or categoryName
 class RecipeImageItemSmall extends StatelessWidget {
-  final Recipe/*!*/ recipe;
-  final String/*!*/ heroImageTag;
+  final Recipe recipe;
+  final String heroImageTag;
 
   final bool showMore;
 
-  final String/*!*/ categoryName;
+  final String categoryName;
 
   const RecipeImageItemSmall({
-    this.recipe,
-    this.heroImageTag,
-    @required this.showMore,
-    this.categoryName,
-    Key key,
+    required this.recipe,
+    required this.heroImageTag,
+    required this.showMore,
+    required this.categoryName,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -573,7 +574,7 @@ class RecipeImageItemSmall extends StatelessWidget {
                                   spreadRadius: 1,
                                   color: Theme.of(context).backgroundColor ==
                                           Colors.white
-                                      ? Colors.grey[400]
+                                      ? Colors.grey[400]!
                                       : Colors.black,
                                 ),
                               ]),
@@ -586,10 +587,12 @@ class RecipeImageItemSmall extends StatelessWidget {
                                 bottomLeft: Radius.circular(15),
                                 bottomRight: Radius.circular(35)),
                             child: FadeInImage(
-                              image: recipe.imagePreviewPath ==
-                                      Constants.noRecipeImage
-                                  ? AssetImage(Constants.noRecipeImage)
-                                  : FileImage(File(recipe.imagePreviewPath)),
+                              image: (recipe.imagePreviewPath ==
+                                          Constants.noRecipeImage
+                                      ? AssetImage(Constants.noRecipeImage)
+                                      : FileImage(
+                                          File(recipe.imagePreviewPath)))
+                                  as ImageProvider<Object>,
                               fadeInDuration: const Duration(milliseconds: 250),
                               placeholder: MemoryImage(kTransparentImage),
                               height: 90,

@@ -10,7 +10,7 @@ class AreYouSureDialog extends StatelessWidget {
     this.title,
     this.description,
     this.onPressedYes, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -23,16 +23,20 @@ class AreYouSureDialog extends StatelessWidget {
           child: Text(description),
         ),
         actions: <Widget>[
-          FlatButton(
-              child: Text(I18n.of(context).no),
-              textColor: Theme.of(context).textTheme.bodyText1.color,
+          TextButton(
+              child: Text(I18n.of(context)!.no),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).textTheme.bodyText1!.color,
+              ),
               onPressed: () {
                 Navigator.pop(context);
               }),
-          FlatButton(
-              child: Text(I18n.of(context).yes),
-              textColor: Theme.of(context).textTheme.bodyText1.color,
-              color: Colors.red,
+          TextButton(
+              child: Text(I18n.of(context)!.yes),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).textTheme.bodyText1!.color,
+                backgroundColor: Colors.red,
+              ),
               onPressed: () {
                 onPressedYes();
               }),

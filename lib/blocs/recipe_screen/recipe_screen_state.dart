@@ -5,7 +5,7 @@ abstract class RecipeScreenState extends Equatable {
 }
 
 class RecipeScreenInfo extends RecipeScreenState {
-  final Recipe/*!*/ recipe;
+  final Recipe recipe;
   final List<String> categoryImages;
 
   RecipeScreenInfo(

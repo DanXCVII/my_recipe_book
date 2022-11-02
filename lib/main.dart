@@ -62,11 +62,12 @@ import 'screens/recipe_tag_manager_screen.dart';
 
 /// for some devices, if accessing certain domains causes a 'certificate expired' error..
 /// this seems to be the only fix
-class MyHttpOverrides extends HttpOverrides{
+class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext context){
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
 
@@ -127,7 +128,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/home":
-              final MyHomePageArguments args = settings.arguments;
+              final MyHomePageArguments? args =
+                  settings.arguments as MyHomePageArguments?;
 
               return PageTransition(
                 type: PageTransitionType.fade,
@@ -137,10 +139,10 @@ class MyApp extends StatelessWidget {
                     BlocProvider<AppBloc>(
                       create: (context) => AppBloc()
                         ..add(InitializeData(
-                          args.context,
-                          args.recipeCategoryOverview,
-                          args.showShoppingCartSummary,
-                          args.showIntro,
+                          args!.context,
+                          args.recipeCategoryOverview!,
+                          args.showShoppingCartSummary!,
+                          args.showIntro!,
                         )),
                     ),
                     BlocProvider<CategoryOverviewBloc>(
@@ -183,7 +185,7 @@ class MyApp extends StatelessWidget {
                   child: ShowCaseWidget(
                     builder: Builder(
                       builder: (context) => MyHomePage(
-                        showIntro: args.showIntro,
+                        showIntro: args!.showIntro,
                       ),
                     ),
                   ),
@@ -191,7 +193,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/recipe-screen":
-              final RecipeScreenArguments args = settings.arguments;
+              final RecipeScreenArguments? args =
+                  settings.arguments as RecipeScreenArguments?;
 
               Ads.showBottomBannerAd();
 
@@ -201,25 +204,25 @@ class MyApp extends StatelessWidget {
                   providers: [
                     BlocProvider<RecipeScreenBloc>(
                         create: (context) => RecipeScreenBloc(
-                              args.recipe,
+                              args!.recipe!,
                               args.recipeManagerBloc,
                             )..add(InitRecipeScreen(
-                                args.recipe,
+                                args.recipe!,
                               ))),
                     BlocProvider<RecipeScreenIngredientsBloc>(
                         create: (context) => RecipeScreenIngredientsBloc(
-                            shoppingCartBloc: args.shoppingCartBloc)
+                            shoppingCartBloc: args!.shoppingCartBloc)
                           ..add(InitializeIngredients(
-                            args.recipe.name,
-                            args.recipe.servings,
-                            args.recipe.ingredients,
+                            args.recipe!.name,
+                            args.recipe!.servings,
+                            args.recipe!.ingredients,
                           ))),
                     BlocProvider<AnimatedStepperBloc>(
                       create: (context) => AnimatedStepperBloc(
-                          initialStep: args.initialSelectedStep),
+                          initialStep: args!.initialSelectedStep),
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc),
+                        value: args!.shoppingCartBloc),
                     BlocProvider<RecipeCalendarBloc>.value(
                         value: args.recipeCalendarBloc),
                   ],
@@ -232,7 +235,8 @@ class MyApp extends StatelessWidget {
                 ),
               );
             case "/add-recipe/general-info":
-              final GeneralInfoArguments args = settings.arguments;
+              final GeneralInfoArguments? args =
+                  settings.arguments as GeneralInfoArguments?;
 
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
@@ -247,20 +251,20 @@ class MyApp extends StatelessWidget {
                       create: (context) => CategoryManagerBloc(
                           recipeManagerBloc:
                               BlocProvider.of<RecipeManagerBloc>(context),
-                          selectedCategories: args.modifiedRecipe.categories)
+                          selectedCategories: args!.modifiedRecipe!.categories)
                         ..add(InitializeCategoryManager()),
                     ),
                     BlocProvider<RecipeTagManagerBloc>(
                       create: (context) => RecipeTagManagerBloc(
                           recipeManagerBloc:
                               BlocProvider.of<RecipeManagerBloc>(context),
-                          selectedTags: args.modifiedRecipe.tags)
+                          selectedTags: args!.modifiedRecipe!.tags)
                         ..add(
                           InitializeRecipeTagManager(),
                         ),
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc),
+                        value: args!.shoppingCartBloc),
                     BlocProvider<RecipeCalendarBloc>.value(
                         value: args.recipeCalendarBloc),
                   ],
@@ -272,7 +276,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/add-recipe/ingredients":
-              final IngredientsArguments args = settings.arguments;
+              final IngredientsArguments? args =
+                  settings.arguments as IngredientsArguments?;
 
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
@@ -280,7 +285,7 @@ class MyApp extends StatelessWidget {
                     BlocProvider<IngredientsBloc>(
                         create: (context) => IngredientsBloc()),
                     BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc),
+                        value: args!.shoppingCartBloc),
                     BlocProvider<RecipeCalendarBloc>.value(
                         value: args.recipeCalendarBloc),
                     BlocProvider<IngredientsSectionBloc>(
@@ -301,7 +306,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/add-recipe/steps":
-              final StepsArguments args = settings.arguments;
+              final StepsArguments? args =
+                  settings.arguments as StepsArguments?;
 
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
@@ -310,8 +316,8 @@ class MyApp extends StatelessWidget {
                       create: (context) => StepImagesBloc()
                         ..add(
                           InitializeStepImages(
-                            args.modifiedRecipe.steps,
-                            args.modifiedRecipe.stepTitles,
+                            args!.modifiedRecipe.steps,
+                            args.modifiedRecipe.stepTitles!,
                             stepImages: args.modifiedRecipe.stepImages,
                           ),
                         ),
@@ -321,7 +327,7 @@ class MyApp extends StatelessWidget {
                           StepsBloc(BlocProvider.of<StepImagesBloc>(context)),
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc),
+                        value: args!.shoppingCartBloc),
                     BlocProvider<RecipeCalendarBloc>.value(
                         value: args.recipeCalendarBloc),
                   ],
@@ -333,7 +339,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/recipe-categories":
-              final RecipeGridViewArguments args = settings.arguments;
+              final RecipeGridViewArguments? args =
+                  settings.arguments as RecipeGridViewArguments?;
 
               Ads.showBottomBannerAd();
 
@@ -342,7 +349,7 @@ class MyApp extends StatelessWidget {
                   builder: (BuildContext context) => MultiBlocProvider(
                         providers: [
                           BlocProvider<ShoppingCartBloc>.value(
-                              value: args.shoppingCartBloc),
+                              value: args!.shoppingCartBloc),
                           BlocProvider<RecipeCalendarBloc>.value(
                               value: args.recipeCalendarBloc),
                           BlocProvider<RecipeOverviewBloc>(
@@ -350,7 +357,7 @@ class MyApp extends StatelessWidget {
                                 recipeManagerBloc:
                                     BlocProvider.of<RecipeManagerBloc>(context))
                               ..add(
-                                LoadCategoryRecipeOverview(args.category),
+                                LoadCategoryRecipeOverview(args.category!),
                               ),
                           ),
                         ],
@@ -358,7 +365,8 @@ class MyApp extends StatelessWidget {
                       ));
 
             case "/vegetable-recipes-oveview":
-              final RecipeGridViewArguments args = settings.arguments;
+              final RecipeGridViewArguments? args =
+                  settings.arguments as RecipeGridViewArguments?;
 
               Ads.showBottomBannerAd();
 
@@ -367,7 +375,7 @@ class MyApp extends StatelessWidget {
                 builder: (BuildContext context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc),
+                        value: args!.shoppingCartBloc),
                     BlocProvider<RecipeCalendarBloc>.value(
                         value: args.recipeCalendarBloc),
                     BlocProvider<RecipeOverviewBloc>(
@@ -375,7 +383,7 @@ class MyApp extends StatelessWidget {
                           recipeManagerBloc:
                               BlocProvider.of<RecipeManagerBloc>(context))
                         ..add(
-                          LoadVegetableRecipeOverview(args.vegetable),
+                          LoadVegetableRecipeOverview(args.vegetable!),
                         ),
                     ),
                   ],
@@ -384,7 +392,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/recipe-tag-recipes-overview":
-              final RecipeGridViewArguments args = settings.arguments;
+              final RecipeGridViewArguments? args =
+                  settings.arguments as RecipeGridViewArguments?;
 
               Ads.showBottomBannerAd();
 
@@ -393,7 +402,7 @@ class MyApp extends StatelessWidget {
                 builder: (BuildContext context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc),
+                        value: args!.shoppingCartBloc),
                     BlocProvider<RecipeCalendarBloc>.value(
                         value: args.recipeCalendarBloc),
                     BlocProvider<RecipeOverviewBloc>(
@@ -401,7 +410,7 @@ class MyApp extends StatelessWidget {
                           recipeManagerBloc:
                               BlocProvider.of<RecipeManagerBloc>(context))
                         ..add(
-                          LoadRecipeTagRecipeOverview(args.recipeTag),
+                          LoadRecipeTagRecipeOverview(args.recipeTag!),
                         ),
                     ),
                   ],
@@ -410,7 +419,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/recipe-calendar":
-              final RecipeCalendarScreenArguments args = settings.arguments;
+              final RecipeCalendarScreenArguments? args =
+                  settings.arguments as RecipeCalendarScreenArguments?;
 
               Ads.showBottomBannerAd();
 
@@ -419,7 +429,7 @@ class MyApp extends StatelessWidget {
                 builder: (BuildContext context) => MultiBlocProvider(
                   providers: [
                     BlocProvider<RecipeCalendarBloc>.value(
-                        value: args.recipeCalendarBloc),
+                        value: args!.recipeCalendarBloc),
                     BlocProvider<ShoppingCartBloc>.value(
                         value: args.shoppingCartBloc),
                   ],
@@ -428,7 +438,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/add-recipe/nutritions":
-              final AddRecipeNutritionsArguments args = settings.arguments;
+              final AddRecipeNutritionsArguments? args =
+                  settings.arguments as AddRecipeNutritionsArguments?;
 
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
@@ -436,14 +447,14 @@ class MyApp extends StatelessWidget {
                     BlocProvider<NutritionManagerBloc>(
                       create: (context) => NutritionManagerBloc()
                         ..add(
-                          LoadNutritionManager(args.editingRecipeName),
+                          LoadNutritionManager(args!.editingRecipeName),
                         ),
                     ),
                     BlocProvider<NutritionsBloc>(
                       create: (context) => NutritionsBloc(),
                     ),
                     BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc),
+                        value: args!.shoppingCartBloc),
                     BlocProvider<RecipeCalendarBloc>.value(
                         value: args.recipeCalendarBloc),
                   ],
@@ -455,7 +466,8 @@ class MyApp extends StatelessWidget {
               );
 
             case "/ingredient-search":
-              final IngredientSearchScreenArguments args = settings.arguments;
+              final IngredientSearchScreenArguments args =
+                  settings.arguments as IngredientSearchScreenArguments;
 
               if (args.hasPremium) {
                 return MaterialPageRoute(
@@ -480,16 +492,16 @@ class MyApp extends StatelessWidget {
                       child: IngredinetSearchPreviewScreen()),
                 );
               }
-              break;
 
             case "/manage-categories":
               Ads.showBottomBannerAd();
-              final CategoryManagerArguments args = settings.arguments;
+              final CategoryManagerArguments? args =
+                  settings.arguments as CategoryManagerArguments?;
 
               if (args != null) {
                 return MaterialPageRoute(
                   builder: (context) => BlocProvider<CategoryManagerBloc>.value(
-                    value: args.categoryManagerBloc,
+                    value: args.categoryManagerBloc!,
                     child: Ads().getAdPage(CategoryManager(), context),
                   ),
                 );
@@ -499,22 +511,23 @@ class MyApp extends StatelessWidget {
                     create: (context) => CategoryManagerBloc(
                       recipeManagerBloc:
                           BlocProvider.of<RecipeManagerBloc>(context),
+                      selectedCategories: [],
                     )..add(InitializeCategoryManager()),
                     child: Ads().getAdPage(CategoryManager(), context),
                   ),
                 );
               }
-              break;
 
             case "/manage-recipe-tags":
               Ads.showBottomBannerAd();
-              final RecipeTagManagerArguments args = settings.arguments;
+              final RecipeTagManagerArguments? args =
+                  settings.arguments as RecipeTagManagerArguments?;
 
               if (args != null) {
                 return MaterialPageRoute(
                   builder: (context) =>
                       BlocProvider<RecipeTagManagerBloc>.value(
-                    value: args.recipeTagManagerBloc,
+                    value: args.recipeTagManagerBloc!,
                     child: Ads().getAdPage(RecipeTagManager(), context),
                   ),
                 );
@@ -554,19 +567,26 @@ class MyApp extends StatelessWidget {
               );
 
             case "/import-recipes-from-website":
-              final ImportFromWebsiteArguments args = settings.arguments;
+              final ImportFromWebsiteArguments? args =
+                  settings.arguments as ImportFromWebsiteArguments?;
 
               return MaterialPageRoute(
                 builder: (context) => MultiBlocProvider(
                   providers: [
-                    BlocProvider<WebsiteImportBloc>(
-                        create: (_) => WebsiteImportBloc(
+                    BlocProvider<WebsiteImportBloc>(create: (_) {
+                      if (args!.initialWebsite != null) {
+                        return WebsiteImportBloc(
                             BlocProvider.of<RecipeManagerBloc>(context))
                           ..add(args.initialWebsite == null
                               ? null
-                              : ImportRecipe(args.initialWebsite))),
+                              : ImportRecipe(args.initialWebsite!));
+                      }
+
+                      return WebsiteImportBloc(
+                          BlocProvider.of<RecipeManagerBloc>(context));
+                    }),
                     BlocProvider<ShoppingCartBloc>.value(
-                      value: args.shoppingCartBloc,
+                      value: args!.shoppingCartBloc,
                     ),
                     BlocProvider<AdManagerBloc>.value(
                       value: args.adManagerBloc,

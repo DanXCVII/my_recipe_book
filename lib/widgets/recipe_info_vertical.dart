@@ -19,23 +19,23 @@ const Color textColor = Colors.white;
 const String recipeScreenFontFamily = 'Questrial';
 
 class RecipeInfoVertical extends StatelessWidget {
-  final Recipe/*!*/ recipe;
-  final String heroImageTag;
+  final Recipe recipe;
+  final String? heroImageTag;
   final double width;
-  final List<String>/*!*/ categoriesFiles;
+  final List<String> categoriesFiles;
 
   const RecipeInfoVertical(
     this.recipe,
     this.width,
     this.categoriesFiles,
     this.heroImageTag, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: <Widget>[
+      children: [
         GestureDetector(
           onTap: () {
             _showPictureFullView(recipe.imagePath, heroImageTag, context);
@@ -45,7 +45,7 @@ class RecipeInfoVertical extends StatelessWidget {
             child: Stack(children: <Widget>[
               Hero(
                 tag: GlobalSettings().animationsEnabled()
-                    ? heroImageTag
+                    ? heroImageTag!
                     : "heroImageTag2",
                 child: Material(
                   color: Colors.transparent,
@@ -110,9 +110,9 @@ class RecipeInfoVertical extends StatelessWidget {
                           SizedBox(height: 12),
                           TimeInfoChart(
                             textColor,
-                            recipe.preperationTime ?? 0,
-                            recipe.cookingTime ?? 0,
-                            recipe.totalTime ?? 0,
+                            recipe.preperationTime,
+                            recipe.cookingTime,
+                            recipe.totalTime,
                             recipeScreenFontFamily,
                             horizontal: false,
                           ),
@@ -120,9 +120,9 @@ class RecipeInfoVertical extends StatelessWidget {
                           ComplexityWave(
                             textColor,
                             recipeScreenFontFamily,
-                            recipe.effort,
+                            recipe.effort!,
                           ),
-                        ]..removeWhere((item) => item == null),
+                        ],
                       ),
                     )
                   : Padding(
@@ -157,11 +157,11 @@ class RecipeInfoVertical extends StatelessWidget {
                 categoriesFiles: categoriesFiles,
               )
             : null,
-      ]..removeWhere((item) => item == null),
+      ].whereType<Widget>().toList(),
     );
   }
 
-  void _showPictureFullView(String image, String tag, BuildContext context) {
+  void _showPictureFullView(String image, String? tag, BuildContext context) {
     Ads.showBottomBannerAd();
     Navigator.push(
       context,
@@ -171,7 +171,7 @@ class RecipeInfoVertical extends StatelessWidget {
             initialIndex: 0,
             galleryImagePaths: [image],
             descriptions: [''],
-            heroTags: [tag],
+            heroTags: [tag!],
           ),
           context,
         ),

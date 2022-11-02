@@ -19,7 +19,7 @@ class IngredientSearchBloc
     on<SearchRecipes>((event, emit) async {
       emit(SearchingRecipes());
 
-      List<Tuple2<int, Recipe>/*!*/> filteredRecipes = [];
+      List<Tuple2<int, Recipe>> filteredRecipes = [];
 
       if (event.ingredients.isNotEmpty) {
         filteredRecipes = (await HiveProvider()
@@ -52,7 +52,7 @@ class IngredientSearchBloc
         if (event.recipeTags.isNotEmpty ||
             event.categories.isNotEmpty ||
             event.vegetable != null) {
-          filteredRecipes = allRecipes.map<Tuple2<int, Recipe>/*!*/>((recipe) {
+          for (Recipe recipe in allRecipes) {
             bool addRecipe = true;
             if (event.categories.length == 1 &&
                 event.categories[0] == Constants.noCategory &&
@@ -74,15 +74,11 @@ class IngredientSearchBloc
               addRecipe = false;
             }
             if (addRecipe) {
-              return Tuple2<int, Recipe>(0, recipe);
-            } else {
-              return null;
+              filteredRecipes.add(Tuple2<int, Recipe>(0, recipe));
             }
-          }).toList()
-            ..removeWhere((item) => item == null);
+          }
         }
       }
-
       emit(IngredientSearchMatches(
         filteredRecipes,
         event.ingredients.length,

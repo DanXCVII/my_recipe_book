@@ -26,14 +26,14 @@ part 'website_import_state.dart';
 
 enum ImportState { SUCCESS, DUPLICATE, FAIL }
 
-class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
+class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
   final RecipeManagerBloc recipeManagerBloc;
 
   WebsiteImportBloc(this.recipeManagerBloc) : super(ReadyToImport()) {
     on<ImportRecipe>((event, emit) async {
       emit(ImportingRecipe());
 
-      bool hasInternetConnection;
+      late bool hasInternetConnection;
       try {
         final result = await InternetAddress.lookup('example.com');
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -85,9 +85,9 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       if (response.statusCode == 200) {
         String httpWebsite = response.body;
 
-        Tuple2<ImportState, Recipe> importRecipe;
+        Tuple2<ImportState, Recipe?> importRecipe;
 
-        Map<String, dynamic> recipeMap =
+        Map<String, dynamic>? recipeMap =
             await _tryGetRecipeRecipeMap(httpWebsite);
 
         if (recipeMap != null) {
@@ -104,11 +104,11 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
           emit(FailedImportingRecipe(filteredURL));
           return;
         } else if (importRecipe.item1 == ImportState.DUPLICATE) {
-          emit(AlreadyExists(importRecipe.item2.name));
+          emit(AlreadyExists(importRecipe.item2!.name));
         } else {
-          await HiveProvider().saveTmpRecipe(importRecipe.item2);
+          await HiveProvider().saveTmpRecipe(importRecipe.item2!);
 
-          emit(ImportedRecipe(importRecipe.item2));
+          emit(ImportedRecipe(importRecipe.item2!));
           return;
         }
       } else {
@@ -117,7 +117,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     });
   }
 
-  Future<Tuple2<ImportState, Recipe>> getRecipeFromAllRecipesData(
+  Future<Tuple2<ImportState, Recipe?>> getRecipeFromAllRecipesData(
       String websiteData, String url) async {
     try {
       Recipe finalRecipe;
@@ -129,8 +129,10 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
           httpRecipeContent.indexOf(">") + 1,
           httpRecipeContent.indexOf("<", 3));
       if (HiveProvider().getRecipeNames().contains(recipeName)) {
-        return Tuple2<ImportState, Recipe>(ImportState.DUPLICATE,
-            await HiveProvider().getRecipeByName(recipeName));
+        return Tuple2<ImportState, Recipe>(
+            ImportState.DUPLICATE,
+            (await HiveProvider().getRecipeByName(
+                recipeName))!); // should never be null since we checked for the name
       }
 
       List<String> steps = _getStepsFromAllRecipes(httpRecipeContent);
@@ -145,7 +147,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
             .toList()
           ..removeWhere((item) => item == null)
       ];
-      List<double> times = _getTimesFromHttpData(
+      List<double?> times = _getTimesFromHttpData(
         httpRecipeContent.substring(
           httpRecipeContent.indexOf("<time itemprop=\"prepTime\""),
           httpRecipeContent.indexOf(
@@ -159,9 +161,9 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
         name: recipeName,
         lastModified: DateTime.now().toIso8601String(),
         servings: null,
-        preperationTime: times[0],
-        cookingTime: times[1],
-        totalTime: times[2],
+        preperationTime: times[0]!,
+        cookingTime: times[1]!,
+        totalTime: times[2]!,
         steps: steps,
         stepImages: List<List<String>>.generate(steps.length, (i) => []),
         nutritions: recipeNutritions,
@@ -180,32 +182,41 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
       String importRecipeImagePath =
           await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
 
-      String imgId = await ImageDownloader.downloadImage(
+      String? imgId = await ImageDownloader.downloadImage(
           _getRecipeImageStringFromAllRecipes(httpRecipeContent),
           destination: AndroidDestinationType.custom(
               inPublicDir: false, directory: "tmp"));
-      var path = await ImageDownloader.findPath(imgId);
-      await IO.saveRecipeImage(File(path), newRecipeLocalPathString);
+      if (imgId != null) {
+        var path = await ImageDownloader.findPath(imgId);
+        if (path != null) {
+          await IO.saveRecipeImage(File(path), newRecipeLocalPathString);
 
-      finalRecipe = importRecipe.copyWith(
-        imagePath: await PathProvider.pP
-            .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
-        imagePreviewPath: await PathProvider.pP
-            .getRecipeImagePreviewPathFull(newRecipeLocalPathString, ".jpg"),
-      );
+          finalRecipe = importRecipe.copyWith(
+            imagePath: await PathProvider.pP
+                .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
+            imagePreviewPath: await PathProvider.pP
+                .getRecipeImagePreviewPathFull(
+                    newRecipeLocalPathString, ".jpg"),
+          );
 
-      if (finalRecipe == null) {
-        return Tuple2<ImportState, Recipe>(
-          ImportState.FAIL,
-          null,
-        );
+          if (finalRecipe == null) {
+            return Tuple2<ImportState, Recipe?>(
+              ImportState.FAIL,
+              null,
+            );
+          }
+          return Tuple2<ImportState, Recipe>(
+            ImportState.SUCCESS,
+            finalRecipe,
+          );
+        }
       }
       return Tuple2<ImportState, Recipe>(
         ImportState.SUCCESS,
-        finalRecipe,
+        importRecipe,
       );
     } catch (e) {
-      return Tuple2<ImportState, Recipe /*?*/ >(ImportState.FAIL, null);
+      return Tuple2<ImportState, Recipe?>(ImportState.FAIL, null);
     }
   }
 
@@ -215,12 +226,12 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   /// "image": {"url": "url..."}
   /// "image": [url...]
   /// "image": url...
-  Future<List<String>> _getImageFromSchemaRecipe(
+  Future<List<String>?> _getImageFromSchemaRecipe(
       Map<String, dynamic> recipeMap) async {
     String importRecipeImagePath =
         await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
 
-    String recipeImageUrl;
+    String? recipeImageUrl;
 
     bool gotImage = false;
 
@@ -248,53 +259,57 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     }
 
     if (gotImage) {
-      String imgId = await ImageDownloader.downloadImage(recipeImageUrl,
+      String? imgId = await ImageDownloader.downloadImage(recipeImageUrl!,
           destination: AndroidDestinationType.custom(
               inPublicDir: false, directory: "tmp"));
-      var path = await ImageDownloader.findPath(imgId);
-      await IO.saveRecipeImage(File(path), newRecipeLocalPathString);
+      if (imgId != null) {
+        String? path = await (ImageDownloader.findPath(imgId));
+        if (path != null) {
+          await IO.saveRecipeImage(File(path), newRecipeLocalPathString);
+        }
 
-      return [
-        await PathProvider.pP
-            .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
-        await PathProvider.pP
-            .getRecipeImagePreviewPathFull(newRecipeLocalPathString, ".jpg")
-      ];
+        return [
+          await PathProvider.pP
+              .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
+          await PathProvider.pP
+              .getRecipeImagePreviewPathFull(newRecipeLocalPathString, ".jpg")
+        ];
+      }
     } else {
       return null;
     }
   }
 
-  Future<Tuple2<ImportState, Recipe>> _getRecipeFromSchemaRecipe(
+  Future<Tuple2<ImportState, Recipe?>> _getRecipeFromSchemaRecipe(
       Map<String, dynamic> recipeMap, String url) async {
     if (HiveProvider().getRecipeNames().contains(recipeMap["name"])) {
       return Tuple2<ImportState, Recipe>(ImportState.DUPLICATE,
-          await HiveProvider().getRecipeByName(recipeMap["name"]));
+          (await HiveProvider().getRecipeByName(recipeMap["name"]))!);
     }
 
     try {
-      Map<String, double> recipeTimes = _getTimesFromSchemaRecipe(recipeMap);
+      Map<String, double?> recipeTimes = _getTimesFromSchemaRecipe(recipeMap);
       List<String> recipeImagePaths =
-          await _getImageFromSchemaRecipe(recipeMap);
+          (await _getImageFromSchemaRecipe(recipeMap)) ?? [];
       List<Nutrition> recipeNutritions =
           _getNutritionsFromSchemaRecipe(recipeMap);
 
       List<String> savedNutritions = HiveProvider().getNutritions();
-      for (Nutrition n in recipeNutritions) {
-        if (!savedNutritions.contains(n.name)) {
+      for (Nutrition? n in recipeNutritions) {
+        if (!savedNutritions.contains(n!.name)) {
           await HiveProvider().addNutrition(n.name);
         }
       }
-      List<String/*!*/> recipeSteps = _getStepsFromSchemaRecipe(recipeMap);
+      List<String> recipeSteps = _getStepsFromSchemaRecipe(recipeMap);
 
       Recipe finalRecipe = Recipe(
         name: recipeMap["name"],
         imagePath: recipeImagePaths[0],
         imagePreviewPath: recipeImagePaths[1],
         servings: _getServingsFromSchemaRecipe(recipeMap),
-        preperationTime: recipeTimes["prepTime"],
-        cookingTime: recipeTimes["cookTime"],
-        totalTime: recipeTimes["totalTime"],
+        preperationTime: recipeTimes["prepTime"]!,
+        cookingTime: recipeTimes["cookTime"]!,
+        totalTime: recipeTimes["totalTime"]!,
         vegetable: _getVegetableFromSchemaRecipe(recipeMap),
         ingredients: [
           _getIngredientsFromSchemaRecipe(recipeMap),
@@ -317,8 +332,8 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
 
   /// checks if the key recipeemit( is existingin the map and then
   /// returns the first number of the value of the key. Otherwise returns null
-  double _getServingsFromSchemaRecipe(Map<String, dynamic> recipeMap) {
-    double servings = 1;
+  double? _getServingsFromSchemaRecipe(Map<String, dynamic> recipeMap) {
+    double? servings = 1;
     try {
       if (recipeMap.containsKey("recipeemit(")) {
         if (recipeMap["recipeemit("] is double) {
@@ -341,8 +356,8 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     return servings;
   }
 
-  List<String/*!*/> _getStepsFromSchemaRecipe(Map<String, dynamic> recipeMap) {
-    List<String/*!*/> recipeSteps = [];
+  List<String> _getStepsFromSchemaRecipe(Map<String, dynamic> recipeMap) {
+    List<String> recipeSteps = [];
 
     bool gotSteps = false;
     try {
@@ -441,9 +456,9 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     return steps..removeWhere((item) => item.length <= 1);
   }
 
-  List<String/*!*/> _getStepsFromHowToFormat(
+  List<String> _getStepsFromHowToFormat(
       List<Map<String, dynamic>> recipeSteps) {
-    List<String/*!*/> steps = [];
+    List<String> steps = [];
 
     try {
       for (Map<String, dynamic> recipeStepInfo in recipeSteps) {
@@ -466,14 +481,14 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
 
   /// checks all the ld+json string in the httpData and if one contains the recipe
   /// data, returns the Map
-  Future<Map<String, dynamic>> _tryGetRecipeRecipeMap(String httpData) async {
+  Future<Map<String, dynamic>?> _tryGetRecipeRecipeMap(String httpData) async {
     String iteratedHttpData = httpData;
     while (iteratedHttpData.contains("application/ld+json")) {
       int jsonStartIndex = iteratedHttpData.indexOf(
               ">", iteratedHttpData.indexOf("application/ld+json")) +
           1;
       if (jsonStartIndex != -1) {
-        Map<String, dynamic> recipeMap = await _getRecipeMap(
+        Map<String, dynamic>? recipeMap = await _getRecipeMap(
             iteratedHttpData.substring(jsonStartIndex,
                 iteratedHttpData.indexOf("</script>", jsonStartIndex)));
         if (recipeMap != null) {
@@ -490,7 +505,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   /// checks if the decoded json string is decoded the recipeMap or if
   /// it is a list of Maps of which the last element is the recipeMap.
   /// Returns null if it's none of the options.
-  Future<Map<String, dynamic>> _getRecipeMap(String cutJsonData) async {
+  Future<Map<String, dynamic>?> _getRecipeMap(String cutJsonData) async {
     bool foundRecipeMap = true;
     try {
       String newS = cutJsonData.replaceAll(String.fromCharCode(10),
@@ -505,7 +520,8 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
     }
     try {
       List<dynamic> recipeJsonList = await json.decode(cutJsonData);
-      for (Map<String, dynamic> map in recipeJsonList) {
+      for (Map<String, dynamic> map
+          in recipeJsonList as Iterable<Map<String, dynamic>>) {
         if (map["@type"] == "Recipe" && map.containsKey("recipeIngredient")) {
           return map;
         }
@@ -533,9 +549,9 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   /// Result Map has all the keys:
   /// "prepTime", "cookTime" and "totalTime" with it's values null,
   /// if no information could be extracted out of the recipe map
-  Map<String, double> _getTimesFromSchemaRecipe(
+  Map<String, double?> _getTimesFromSchemaRecipe(
       Map<String, dynamic> recipeMapData) {
-    Map<String, double> times = {
+    Map<String, double?> times = {
       "prepTime": null,
       "cookTime": null,
       "totalTime": null,
@@ -583,28 +599,28 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
 
     if (iteratedTimeString.indexOf("Y") != -1) {
       timeInMinutes += double.tryParse(iteratedTimeString.substring(
-              0, iteratedTimeString.indexOf("Y"))) *
+              0, iteratedTimeString.indexOf("Y")))! *
           525600;
       iteratedTimeString =
           iteratedTimeString.substring(iteratedTimeString.indexOf("Y") + 1);
     }
     if (iteratedTimeString.indexOf("D") != -1) {
       timeInMinutes += double.tryParse(iteratedTimeString.substring(
-              0, iteratedTimeString.indexOf("D"))) *
+              0, iteratedTimeString.indexOf("D")))! *
           1440;
       iteratedTimeString =
           iteratedTimeString.substring(iteratedTimeString.indexOf("D") + 1);
     }
     if (iteratedTimeString.indexOf("H") != -1) {
       timeInMinutes += double.tryParse(iteratedTimeString.substring(
-              0, iteratedTimeString.indexOf("H"))) *
+              0, iteratedTimeString.indexOf("H")))! *
           60;
       iteratedTimeString =
           iteratedTimeString.substring(iteratedTimeString.indexOf("H") + 1);
     }
     if (iteratedTimeString.indexOf("M") != -1) {
       timeInMinutes += double.tryParse(
-          iteratedTimeString.substring(0, iteratedTimeString.indexOf("M")));
+          iteratedTimeString.substring(0, iteratedTimeString.indexOf("M")))!;
       iteratedTimeString =
           iteratedTimeString.substring(iteratedTimeString.indexOf("M") + 1);
     }
@@ -634,8 +650,8 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
                     name: key.replaceAll("Content", "").replaceAll("Size", ""),
                     amountUnit: recipeMap["nutrition"][key].toString(),
                   ))
-            .toList()
-          ..removeWhere((item) => item == null);
+            .whereType<Nutrition>()
+            .toList();
       } catch (e) {}
     }
     return [];
@@ -736,10 +752,10 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent, WebsiteImportState> {
   ///             <p class="prepTime__item--type" aria-hidden="true">Ready In</p><time itemprop="totalTime" datetime="PT1H"><span aria-hidden="true"><span class="prepTime__item--time">1</span> h</span></time>
   ///         </li>
   /// </ul>
-  List<double> _getTimesFromHttpData(String httpData) {
-    double preperationTime;
-    double cookingTime;
-    double totalTime;
+  List<double?> _getTimesFromHttpData(String httpData) {
+    double? preperationTime;
+    double? cookingTime;
+    double? totalTime;
     try {
       preperationTime = _getTimeInMinutesFromXQueryString(httpData.substring(
         httpData.indexOf("prepTime\" datetime=\"") + 21,

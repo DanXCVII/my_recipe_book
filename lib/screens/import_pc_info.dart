@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/gestures.dart';
 
 class ImportPcInfo extends StatelessWidget {
-  const ImportPcInfo({Key key}) : super(key: key);
+  const ImportPcInfo({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +23,13 @@ class ImportPcInfo extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [Color(0xffAF1E1E), Color(0xff641414)],
         ),
-        title: Text(I18n.of(context).import_from_website_short),
+        title: Text(I18n.of(context)!.import_from_website_short),
       ),
       body: ListView(
         padding: EdgeInsets.all(22),
         children: [
           Text(
-            I18n.of(context).recipe_import_pc_title,
+            I18n.of(context)!.recipe_import_pc_title,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
@@ -39,7 +39,7 @@ class ImportPcInfo extends StatelessWidget {
           RichText(
             text: TextSpan(
               children: [
-                TextSpan(text: I18n.of(context).visit, style: style),
+                TextSpan(text: I18n.of(context)!.visit, style: style),
                 TextSpan(
                   text: "https://danxcvii.github.io/#/ ",
                   style: TextStyle(
@@ -54,7 +54,7 @@ class ImportPcInfo extends StatelessWidget {
                 ),
                 TextSpan(
                   style: style,
-                  text: I18n.of(context).import_computer_info,
+                  text: I18n.of(context)!.import_computer_info,
                 ),
               ],
             ),

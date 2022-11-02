@@ -10,7 +10,7 @@ part 'app_event.dart';
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
-  SharedPreferences /*?*/ prefs;
+  SharedPreferences? prefs;
   AppBloc() : super(LoadingState()) {
     on<InitializeData>((event, emit) async {
       prefs ??= await SharedPreferences.getInstance();
@@ -22,27 +22,27 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         false,
         event.showSummary,
         0,
-        I18n.of(event.context).recipes,
+        I18n.of(event.context)!.recipes,
       ));
     });
 
     on<ChangeView>((event, emit) async {
-      String title;
+      late String title;
       switch (event.index) {
         case 0:
-          title = I18n.of(event.context).recipes;
+          title = I18n.of(event.context)!.recipes;
           break;
         case 1:
-          title = I18n.of(event.context).favorites;
+          title = I18n.of(event.context)!.favorites;
           break;
         case 2:
-          title = I18n.of(event.context).shoppingcart;
+          title = I18n.of(event.context)!.shoppingcart;
           break;
         case 3:
-          title = I18n.of(event.context).roll_the_dice;
+          title = I18n.of(event.context)!.roll_the_dice;
           break;
         case 4:
-          title = I18n.of(event.context).settings;
+          title = I18n.of(event.context)!.settings;
           break;
         default:
           break;
@@ -60,7 +60,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     });
 
     on<ChangeCategoryOverview>((event, emit) async {
-      await prefs.setBool('recipeCatOverview', event.recipeCategoryOverview);
+      await prefs!.setBool('recipeCatOverview', event.recipeCategoryOverview);
 
       emit(LoadedState(
         event.recipeCategoryOverview,
@@ -86,7 +86,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     });
 
     on<ShoppingCartShowSummary>((event, emit) async {
-      await prefs.setBool("shoppingCartSummary", event.showSummary);
+      await prefs!.setBool("shoppingCartSummary", event.showSummary);
 
       emit(LoadedState(
         (state as LoadedState).recipeCategoryOverview,

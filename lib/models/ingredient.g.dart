@@ -15,8 +15,8 @@ class IngredientAdapter extends TypeAdapter<Ingredient> {
     };
     return Ingredient(
       name: fields[0] as String,
-      amount: fields[1] as double,
-      unit: fields[2] as String,
+      amount: fields[1] as double?,
+      unit: fields[2] as String?,
     );
   }
 
@@ -45,8 +45,8 @@ class CheckableIngredientAdapter extends TypeAdapter<CheckableIngredient> {
     };
     return CheckableIngredient(
       fields[0] as String,
-      fields[1] as double,
-      fields[2] as String,
+      fields[1] as double?,
+      fields[2] as String?,
       fields[3] as bool,
     );
   }

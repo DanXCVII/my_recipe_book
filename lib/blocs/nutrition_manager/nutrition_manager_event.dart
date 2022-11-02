@@ -4,16 +4,16 @@ abstract class NutritionManagerEvent extends Equatable {
   const NutritionManagerEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadNutritionManager extends NutritionManagerEvent {
-  final String modifiedRecipe;
+  final String? modifiedRecipe;
 
   LoadNutritionManager([this.modifiedRecipe]);
 
   @override
-  List<Object> get props => [modifiedRecipe];
+  List<Object?> get props => [modifiedRecipe];
 }
 
 class AddNutrition extends NutritionManagerEvent {
@@ -29,7 +29,7 @@ class AddNutrition extends NutritionManagerEvent {
 }
 
 class DeleteNutrition extends NutritionManagerEvent {
-  final String/*!*/ nutrition;
+  final String nutrition;
 
   const DeleteNutrition(this.nutrition);
 

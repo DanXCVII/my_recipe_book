@@ -10,10 +10,10 @@ class LoadingRecipeOverview extends RecipeOverviewState {
 }
 
 class LoadingRecipes extends RecipeOverviewState {
-  final String randomImage;
-  final String category;
-  final Vegetable vegetable;
-  final StringIntTuple recipeTag;
+  final String? randomImage;
+  final String? category;
+  final Vegetable? vegetable;
+  final StringIntTuple? recipeTag;
 
   const LoadingRecipes({
     this.randomImage,
@@ -23,7 +23,7 @@ class LoadingRecipes extends RecipeOverviewState {
   });
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         randomImage,
         vegetable,
         category,
@@ -32,12 +32,12 @@ class LoadingRecipes extends RecipeOverviewState {
 }
 
 class LoadedRecipeOverview extends RecipeOverviewState {
-  final List<Recipe> recipes;
-  final String randomImage;
-  final String category;
-  final Vegetable vegetable;
-  final StringIntTuple recipeTag;
-  final RSort recipeSort;
+  final List<Recipe>? recipes;
+  final String? randomImage;
+  final String? category;
+  final Vegetable? vegetable;
+  final StringIntTuple? recipeTag;
+  final RSort? recipeSort;
 
   const LoadedRecipeOverview(
       {this.recipes,
@@ -48,7 +48,7 @@ class LoadedRecipeOverview extends RecipeOverviewState {
       this.recipeSort});
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         recipes,
         randomImage,
         vegetable,

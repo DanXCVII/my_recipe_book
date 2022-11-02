@@ -6,11 +6,11 @@ abstract class ImportRecipeEvent extends Equatable {
 
 class StartImportRecipes extends ImportRecipeEvent {
   final File importZipFile;
-  final Duration/*!*/ delay;
+  final Duration delay;
 
   StartImportRecipes(
     this.importZipFile, {
-    this.delay,
+    required this.delay,
   });
 
   @override
@@ -18,7 +18,7 @@ class StartImportRecipes extends ImportRecipeEvent {
 }
 
 class FinishImportRecipes extends ImportRecipeEvent {
-  final List<Recipe/*!*/> recipes;
+  final List<Recipe> recipes;
 
   FinishImportRecipes(this.recipes);
 

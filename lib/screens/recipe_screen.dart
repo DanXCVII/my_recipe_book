@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -76,11 +77,11 @@ enum PopupOptionsShare { EXPORT_ZIP, EXPORT_TEXT, EXPORT_PDF }
 class RecipeScreenArguments {
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
-  final Recipe recipe;
+  final Recipe? recipe;
   final String heroImageTag;
   final RecipeManagerBloc recipeManagerBloc;
-  final double initialScrollOffset;
-  final int initialSelectedStep;
+  final double? initialScrollOffset;
+  final int? initialSelectedStep;
 
   RecipeScreenArguments(
     this.shoppingCartBloc,
@@ -94,8 +95,8 @@ class RecipeScreenArguments {
 }
 
 class RecipeScreen extends StatefulWidget {
-  final String heroImageTag;
-  final double initialScrollOffset;
+  final String? heroImageTag;
+  final double? initialScrollOffset;
 
   RecipeScreen({
     this.heroImageTag,
@@ -109,7 +110,7 @@ class RecipeScreen extends StatefulWidget {
 
 class _RecipeScreenState extends State<RecipeScreen>
     with SingleTickerProviderStateMixin {
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
 
   @override
   void initState() {
@@ -123,7 +124,7 @@ class _RecipeScreenState extends State<RecipeScreen>
     super.dispose();
   }
 
-  _RecipeScreenState({double initialScrollOffset}) {
+  _RecipeScreenState({double? initialScrollOffset}) {
     _scrollController = ScrollController(
         initialScrollOffset:
             initialScrollOffset == null ? 0 : initialScrollOffset,
@@ -137,7 +138,7 @@ class _RecipeScreenState extends State<RecipeScreen>
       if (state is RecipeScreenInfo) {
         return BlocListener<AdManagerBloc, AdManagerState>(
           listener: (context, adState) {
-            if (adState is ShowAds && ModalRoute.of(context).isCurrent) {
+            if (adState is ShowAds && ModalRoute.of(context)!.isCurrent) {
               Navigator.popAndPushNamed(
                 context,
                 RouteNames.recipeScreen,
@@ -147,7 +148,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                     state.recipe,
                     "",
                     BlocProvider.of<RecipeManagerBloc>(context),
-                    initialScrollOffset: _scrollController.hasClients
+                    initialScrollOffset: _scrollController!.hasClients
                         ? _scrollController?.offset
                         : null,
                     initialSelectedStep:
@@ -177,7 +178,8 @@ class _RecipeScreenState extends State<RecipeScreen>
       } else if (state is RecipeEditedDeleted) {
         return Scaffold(
           appBar: AppBar(
-            title: Text(I18n.of(context).recipe_screen),
+            iconTheme: IconThemeData(color: Colors.white),
+            title: Text(I18n.of(context)!.recipe_screen),
           ),
           body: Center(
             child: Padding(
@@ -188,7 +190,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                     color: Colors.red,
                     size: 70.0,
                   ),
-                  description: I18n.of(context).recipe_edited_or_deleted),
+                  description: I18n.of(context)!.recipe_edited_or_deleted),
             ),
           ),
         );
@@ -200,9 +202,9 @@ class _RecipeScreenState extends State<RecipeScreen>
 }
 
 class NotesSection extends StatelessWidget {
-  final String/*!*/ notes;
+  final String notes;
 
-  const NotesSection({this.notes, Key key}) : super(key: key);
+  const NotesSection({required this.notes, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +218,7 @@ class NotesSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              I18n.of(context).notes,
+              I18n.of(context)!.notes,
               style: TextStyle(
                 color: textColor,
                 fontSize: 24,
@@ -241,11 +243,11 @@ class NotesSection extends StatelessWidget {
 }
 
 class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
-  final Recipe /*!*/ /*!*/ /*!*/ recipe;
+  final Recipe /*!*/ /*!*/ recipe;
 
   MyGradientAppBar(
     this.recipe, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -258,10 +260,11 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
         begin: Alignment.topLeft,
         end: Alignment.bottomCenter,
         colors: [
-          Color(vegetableColor[recipe.vegetable][0]),
-          Color(vegetableColor[recipe.vegetable][1]),
+          Color(vegetableColor[recipe.vegetable]![0]),
+          Color(vegetableColor[recipe.vegetable]![1]),
         ],
       ),
+      leading: BackButton(color: Colors.white),
       actions: <Widget>[
         IconButton(
           icon: Icon(MdiIcons.calendarPlus),
@@ -274,7 +277,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                 DateTime.now().day,
               ),
               is24HourMode: true,
-            ).then((DateTime date) => date != null
+            ).then((DateTime? date) => date != null
                 ? BlocProvider.of<RecipeCalendarBloc>(context)
                     .add(AddRecipeToCalendarEvent(date, recipe.name))
                 : null);
@@ -300,10 +303,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                            I18n.of(context).maximum_recipe_pin_count_exceeded),
+                        content: Text(I18n.of(context)!
+                            .maximum_recipe_pin_count_exceeded),
                         action: SnackBarAction(
-                          label: I18n.of(context).dismiss,
+                          label: I18n.of(context)!.dismiss,
                           onPressed:
                               ScaffoldMessenger.of(context).hideCurrentSnackBar,
                         ),
@@ -321,9 +324,9 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content:
-                            Text(I18n.of(context).recipe_pinned_to_overview),
+                            Text(I18n.of(context)!.recipe_pinned_to_overview),
                         action: SnackBarAction(
-                          label: I18n.of(context).dismiss,
+                          label: I18n.of(context)!.dismiss,
                           onPressed:
                               ScaffoldMessenger.of(context).hideCurrentSnackBar,
                         ),
@@ -378,7 +381,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                           ? Colors.grey
                           : Colors.white),
                   SizedBox(width: 10),
-                  Text(I18n.of(context).delete_recipe)
+                  Text(I18n.of(context)!.delete_recipe)
                 ]),
               ),
               PopupMenuItem(
@@ -389,7 +392,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                           ? Colors.grey
                           : Colors.white),
                   SizedBox(width: 10),
-                  Text(I18n.of(context).share_recipe)
+                  Text(I18n.of(context)!.share_recipe)
                 ]),
               ),
               PopupMenuItem(
@@ -400,7 +403,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                           ? Colors.grey
                           : Colors.white),
                   SizedBox(width: 10),
-                  Text(I18n.of(context).print_recipe)
+                  Text(I18n.of(context)!.print_recipe)
                 ]),
               ),
             ];
@@ -424,7 +427,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           PopupMenuItem(
             value: PopupOptionsShare.EXPORT_TEXT,
             child: getMenuListItem(
-              I18n.of(context).export_text,
+              I18n.of(context)!.export_text,
               Icon(MdiIcons.formatColorText),
               PopupOptionsShare.EXPORT_TEXT,
               context,
@@ -433,7 +436,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           PopupMenuItem(
             value: PopupOptionsShare.EXPORT_ZIP,
             child: getMenuListItem(
-              I18n.of(context).export_zip,
+              I18n.of(context)!.export_zip,
               Icon(MdiIcons.package),
               PopupOptionsShare.EXPORT_ZIP,
               context,
@@ -442,7 +445,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           PopupMenuItem(
             value: PopupOptionsShare.EXPORT_PDF,
             child: getMenuListItem(
-              I18n.of(context).export_pdf,
+              I18n.of(context)!.export_pdf,
               Icon(MdiIcons.fileDocument),
               PopupOptionsShare.EXPORT_PDF,
               context,
@@ -504,28 +507,31 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     return true;
   }
 
-  void _showDeleteDialog(
-      BuildContext context, String /*!*/ /*!*/ /*!*/ recipeName) {
+  void _showDeleteDialog(BuildContext context, String /*!*/ /*!*/ recipeName) {
     showDialog(
       barrierDismissible: false,
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context).delete_recipe),
-        content: Text(I18n.of(context).sure_you_want_to_delete_this_recipe +
+        title: Text(I18n.of(context)!.delete_recipe),
+        content: Text(I18n.of(context)!.sure_you_want_to_delete_this_recipe +
             " $recipeName"),
         actions: <Widget>[
-          FlatButton(
-            child: Text(I18n.of(context).no),
-            textColor: Theme.of(context).textTheme.bodyText1.color,
+          TextButton(
+            child: Text(I18n.of(context)!.no),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).textTheme.bodyText1!.color,
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
-          FlatButton(
-            child: Text(I18n.of(context).yes),
-            textColor: Theme.of(context).textTheme.bodyText1.color,
-            color: Colors.red[600],
+          TextButton(
+            child: Text(I18n.of(context)!.yes),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).textTheme.bodyText1!.color,
+              backgroundColor: Colors.red[600],
+            ),
             onPressed: () {
               if (recipe != null) {
                 Navigator.pop(context);
@@ -544,27 +550,27 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
   }
 
   String _getRecipeAsString(Recipe recipe, BuildContext context) {
-    String recipeText = '${I18n.of(context).recipe_name}: ${recipe.name}\n';
+    String recipeText = '${I18n.of(context)!.recipe_name}: ${recipe.name}\n';
     if (recipe.preperationTime != 0 ||
         recipe.cookingTime != 0 ||
         recipe.totalTime != 0) recipeText += '====================\n';
     if (recipe.preperationTime != 0)
       recipeText +=
-          '${I18n.of(context).prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n';
+          '${I18n.of(context)!.prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n';
     if (recipe.cookingTime != 0)
       recipeText +=
-          '${I18n.of(context).cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n';
+          '${I18n.of(context)!.cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n';
     if (recipe.totalTime != 0)
       recipeText +=
-          '${I18n.of(context).total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
+          '${I18n.of(context)!.total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
                   '====================\n' +
               (recipe.servings == null
-                  ? I18n.of(context).ingredients + ":"
-                  : '${I18n.of(context).ingredients_for} ${recipe.servings} ${recipe.servingName ?? I18n.of(context).servings}:\n');
+                  ? I18n.of(context)!.ingredients + ":"
+                  : '${I18n.of(context)!.ingredients_for} ${recipe.servings} ${recipe.servingName ?? I18n.of(context)!.servings}:\n');
     if (recipe.ingredientsGlossary.isNotEmpty) {
       for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
         recipeText +=
-            '${I18n.of(context).ingredients}: ${recipe.ingredientsGlossary[i]}:\n';
+            '${I18n.of(context)!.ingredients}: ${recipe.ingredientsGlossary[i]}:\n';
         for (int j = 0; j < recipe.ingredients[i].length; j++) {
           recipeText += '${recipe.ingredients[i][j].amount ?? ""} '
               '${recipe.ingredients[i][j].unit ?? ""} '
@@ -584,30 +590,29 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
       return _getStepsString(recipe.steps);
     }
 
-    for (int i = 0; i < recipe.stepTitles.length; i++) {
-      if (i == 0 || recipe.stepTitles[i] != "") {
-        int nextTitleIndex = recipe.stepTitles.length;
-        if (i + 1 < recipe.stepTitles.length) {
-          String nextTitle = recipe.stepTitles
+    for (int i = 0; i < recipe.stepTitles!.length; i++) {
+      if (i == 0 || recipe.stepTitles![i] != "") {
+        int nextTitleIndex = recipe.stepTitles!.length;
+        if (i + 1 < recipe.stepTitles!.length) {
+          String? nextTitle = recipe.stepTitles!
               .sublist(i + 1)
-              .firstWhere((e) => e != "", orElse: () => null);
+              .firstWhereOrNull((e) => e != "");
           if (nextTitle == null) {
-            nextTitleIndex = recipe.stepTitles.length;
+            nextTitleIndex = recipe.stepTitles!.length;
           } else {
             nextTitleIndex =
-                recipe.stepTitles.sublist(i + 1).indexOf(nextTitle) + i + 1;
+                recipe.stepTitles!.sublist(i + 1).indexOf(nextTitle) + i + 1;
           }
-          nextTitleIndex ?? recipe.stepTitles.length;
         }
-        if (recipe.stepTitles[i] != "") {
-          recipeText += "-> ${recipe.stepTitles[i]}\n <-";
+        if (recipe.stepTitles![i] != "") {
+          recipeText += "-> ${recipe.stepTitles![i]}\n <-";
         }
         recipeText += _getStepsString(recipe.steps.sublist(i, nextTitleIndex));
       }
     }
 
     if (recipe.tags != null && recipe.tags.isNotEmpty) {
-      recipeText += '====================\n${I18n.of(context).tags}: ';
+      recipeText += '====================\n${I18n.of(context)!.tags}: ';
       for (StringIntTuple tag in recipe.tags) {
         if (!(tag == recipe.tags.last)) {
           recipeText += '${tag.text}, ';
@@ -618,11 +623,11 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     }
     if (recipe.notes != null && recipe.notes != '') {
       recipeText += '====================\n';
-      recipeText += '${I18n.of(context).notes}: ${recipe.notes}\n';
+      recipeText += '${I18n.of(context)!.notes}: ${recipe.notes}\n';
     }
     if (recipe.source != null && recipe.source != '') {
       recipeText += '====================\n';
-      recipeText += '${I18n.of(context).source}: ${recipe.source}\n';
+      recipeText += '${I18n.of(context)!.source}: ${recipe.source}\n';
     }
 
     return recipeText;
@@ -638,13 +643,13 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
 }
 
 class RecipePage extends StatelessWidget {
-  final Recipe /*!*/ /*!*/ recipe;
-  final String heroImageTag;
-  final List<String> categoriesFiles;
-  final ScrollController scrollController;
+  final Recipe /*!*/ recipe;
+  final String? heroImageTag;
+  final List<String>? categoriesFiles;
+  final ScrollController? scrollController;
 
   RecipePage({
-    @required this.recipe,
+    required this.recipe,
     this.heroImageTag,
     this.categoriesFiles,
     this.scrollController,
@@ -654,7 +659,7 @@ class RecipePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<RecipeCalendarBloc, RecipeCalendarState>(
       listener: (context, state) {
-        Tuple2<DateTime, String> addedRecipe;
+        Tuple2<DateTime, String>? addedRecipe;
 
         if (state is LoadedRecipeCalendarOverview) {
           addedRecipe = state.addedRecipe;
@@ -664,18 +669,18 @@ class RecipePage extends StatelessWidget {
         if (addedRecipe != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(I18n.of(context).undo_added_to_planner_description(
+              content: Text(I18n.of(context)!.undo_added_to_planner_description(
                 addedRecipe.item2,
                 addedRecipe.item1.year.toString(),
                 addedRecipe.item1.month.toString(),
                 addedRecipe.item1.day.toString(),
               )),
               action: SnackBarAction(
-                label: I18n.of(context).undo,
+                label: I18n.of(context)!.undo,
                 onPressed: () {
                   BlocProvider.of<RecipeCalendarBloc>(context).add(
                       RemoveRecipeFromDateEvent(
-                          addedRecipe.item1, addedRecipe.item2));
+                          addedRecipe!.item1, addedRecipe.item2));
                 },
               ),
             ),
@@ -684,7 +689,7 @@ class RecipePage extends StatelessWidget {
       },
       child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: [
             MediaQuery.of(context).size.width > 550
                 ? Container(
                     width: (MediaQuery.of(context).size.width * 0.4 > 350)
@@ -698,7 +703,7 @@ class RecipePage extends StatelessWidget {
                       (MediaQuery.of(context).size.width * 0.45 > 350)
                           ? 350
                           : MediaQuery.of(context).size.width * 0.45,
-                      categoriesFiles,
+                      categoriesFiles!,
                       heroImageTag,
                     ),
                   )
@@ -712,8 +717,8 @@ class RecipePage extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Color(vegetableColor[recipe.vegetable][0]),
-                          Color(vegetableColor[recipe.vegetable][1]),
+                          Color(vegetableColor[recipe.vegetable]![0]),
+                          Color(vegetableColor[recipe.vegetable]![1]),
                         ],
                       ),
                     ),
@@ -780,7 +785,7 @@ class RecipePage extends StatelessWidget {
                       ),
                       child: CustomScrollView(
                         controller: scrollController,
-                        slivers: <Widget>[
+                        slivers: [
                           MediaQuery.of(context).size.width > 550
                               ? null
                               : SliverAppBar(
@@ -788,192 +793,194 @@ class RecipePage extends StatelessWidget {
                                   floating: true,
                                 ),
                           SliverList(
-                            delegate: SliverChildListDelegate(<Widget>[
-                              Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Color(
-                                          vegetableColor[recipe.vegetable][0]),
-                                      Color(
-                                          vegetableColor[recipe.vegetable][1]),
-                                    ],
+                            delegate: SliverChildListDelegate(
+                              [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Color(vegetableColor[recipe.vegetable]![
+                                            0]),
+                                        Color(vegetableColor[recipe.vegetable]![
+                                            1]),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                child: Column(
-                                    children: <Widget>[
-                                  MediaQuery.of(context).size.width > 550
-                                      ? null
-                                      : GestureDetector(
-                                          onTap: () {
-                                            _showPictureFullView(
-                                                recipe.imagePath,
-                                                heroImageTag,
-                                                context);
-                                          },
-                                          child: Container(
-                                            height: 270,
-                                            child: Stack(children: <Widget>[
-                                              Hero(
-                                                tag: GlobalSettings()
-                                                        .animationsEnabled()
-                                                    ? heroImageTag
-                                                    : "heroImageTag2",
-                                                child: Material(
-                                                  color: Colors.transparent,
-                                                  child: ClipPath(
-                                                    clipper: MyClipper(),
-                                                    child: Container(
-                                                        height: 250,
-                                                        child: recipe
-                                                                    .imagePath ==
-                                                                Constants
-                                                                    .noRecipeImage
-                                                            ? Image.asset(
-                                                                Constants
-                                                                    .noRecipeImage,
-                                                                width: double
-                                                                    .infinity,
-                                                                fit: BoxFit
-                                                                    .cover)
-                                                            : Image.file(
-                                                                File(recipe
-                                                                    .imagePath),
-                                                                width: double
-                                                                    .infinity,
-                                                                fit: BoxFit
-                                                                    .cover)),
+                                  child: Column(
+                                      children: [
+                                    MediaQuery.of(context).size.width > 550
+                                        ? null
+                                        : GestureDetector(
+                                            onTap: () {
+                                              _showPictureFullView(
+                                                  recipe.imagePath,
+                                                  heroImageTag,
+                                                  context);
+                                            },
+                                            child: Container(
+                                              height: 270,
+                                              child: Stack(children: <Widget>[
+                                                Hero(
+                                                  tag: GlobalSettings()
+                                                          .animationsEnabled()
+                                                      ? heroImageTag!
+                                                      : "heroImageTag2",
+                                                  child: Material(
+                                                    color: Colors.transparent,
+                                                    child: ClipPath(
+                                                      clipper: MyClipper(),
+                                                      child: Container(
+                                                          height: 250,
+                                                          child: recipe
+                                                                      .imagePath ==
+                                                                  Constants
+                                                                      .noRecipeImage
+                                                              ? Image.asset(
+                                                                  Constants
+                                                                      .noRecipeImage,
+                                                                  width: double
+                                                                      .infinity,
+                                                                  fit: BoxFit
+                                                                      .cover)
+                                                              : Image.file(
+                                                                  File(recipe
+                                                                      .imagePath),
+                                                                  width: double
+                                                                      .infinity,
+                                                                  fit: BoxFit
+                                                                      .cover)),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 8.0,
-                                                          right: 8.0),
-                                                  child: AnimatedVegetable(
-                                                      recipe.vegetable),
-                                                ),
-                                              )
-                                            ]),
+                                                Align(
+                                                  alignment:
+                                                      Alignment.bottomRight,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 8.0,
+                                                            right: 8.0),
+                                                    child: AnimatedVegetable(
+                                                        recipe.vegetable),
+                                                  ),
+                                                )
+                                              ]),
+                                            ),
                                           ),
-                                        ),
-                                  MediaQuery.of(context).size.width > 550
-                                      ? null
-                                      : Align(
-                                          alignment: Alignment.topCenter,
-                                          child: Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.15,
-                                                0,
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.15,
-                                                0),
-                                            child: Text(
-                                              recipe.name,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: textColor,
-                                                fontSize: 27,
-                                                fontFamily:
-                                                    recipeScreenFontFamily,
+                                    MediaQuery.of(context).size.width > 550
+                                        ? null
+                                        : Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.15,
+                                                  0,
+                                                  MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.15,
+                                                  0),
+                                              child: Text(
+                                                recipe.name,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: textColor,
+                                                  fontSize: 27,
+                                                  fontFamily:
+                                                      recipeScreenFontFamily,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                  MediaQuery.of(context).size.width > 550
-                                      ? null
-                                      : SizedBox(height: 30),
-                                  MediaQuery.of(context).size.width > 550
-                                      ? null
-                                      : Center(
-                                          child: TopSectionRecipe(
-                                            preperationTime:
-                                                recipe.preperationTime,
-                                            cookingTime: recipe.cookingTime,
-                                            totalTime: recipe.totalTime,
-                                            effort: recipe.effort,
-                                            recipeTags: recipe.tags,
+                                    MediaQuery.of(context).size.width > 550
+                                        ? null
+                                        : SizedBox(height: 30),
+                                    MediaQuery.of(context).size.width > 550
+                                        ? null
+                                        : Center(
+                                            child: TopSectionRecipe(
+                                              preperationTime:
+                                                  recipe.preperationTime,
+                                              cookingTime: recipe.cookingTime,
+                                              totalTime: recipe.totalTime,
+                                              effort: recipe.effort,
+                                              recipeTags: recipe.tags,
+                                            ),
                                           ),
-                                        ),
-                                  MediaQuery.of(context).size.width > 550
-                                      ? null
-                                      : SizedBox(height: 20),
-                                  IngredientsScreen(
-                                    currentRecipe: recipe,
-                                    animationWaitTime: MyIntWrapper(0),
-                                    addToCartIngredients: [],
+                                    MediaQuery.of(context).size.width > 550
+                                        ? null
+                                        : SizedBox(height: 20),
+                                    IngredientsScreen(
+                                      currentRecipe: recipe,
+                                      animationWaitTime: MyIntWrapper(0),
+                                      addToCartIngredients: [],
+                                    ),
+                                    SizedBox(height: 30),
+                                  ].whereType<Widget>().toList()),
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient:
+                                        MediaQuery.of(context).size.width <= 550
+                                            ? LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomCenter,
+                                                colors: [
+                                                  Color(0xff672B00),
+                                                  Color(0xff3A1900),
+                                                ],
+                                              )
+                                            : null,
                                   ),
-                                  SizedBox(height: 30),
-                                ]..removeWhere((item) => item == null)),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  gradient:
-                                      MediaQuery.of(context).size.width <= 550
-                                          ? LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomCenter,
-                                              colors: [
-                                                Color(0xff672B00),
-                                                Color(0xff3A1900),
-                                              ],
-                                            )
-                                          : null,
+                                  child: StepsSection(
+                                    recipe.steps,
+                                    recipe.stepTitles,
+                                    recipe.stepImages,
+                                    recipe.name,
+                                  ),
                                 ),
-                                child: StepsSection(
-                                  recipe.steps,
-                                  recipe.stepTitles,
-                                  recipe.stepImages,
-                                  recipe.name,
-                                ),
-                              ),
-                              (recipe.notes != "" ||
-                                          recipe.categories.isNotEmpty ||
-                                          recipe.source != null) &&
-                                      MediaQuery.of(context).size.width <= 550
-                                  ? Container(
-                                      height: 20,
-                                      decoration:
-                                          BoxDecoration(color: Colors.black87),
-                                    )
-                                  : null,
-                              recipe.notes != "" &&
-                                      MediaQuery.of(context).size.width <= 550
-                                  ? NotesSection(notes: recipe.notes)
-                                  : null,
-                              recipe.source != null &&
-                                      recipe.source != "" &&
-                                      MediaQuery.of(context).size.width <= 550
-                                  ? RecipeSource(recipe.source)
-                                  : null,
-                              recipe.categories.length > 0 &&
-                                      MediaQuery.of(context).size.width <= 550
-                                  ? CategoriesSection(
-                                      categories: recipe.categories,
-                                      categoriesFiles: categoriesFiles)
-                                  : null,
-                            ]..removeWhere((item) => item == null)),
+                                (recipe.notes != "" ||
+                                            recipe.categories.isNotEmpty ||
+                                            recipe.source != null) &&
+                                        MediaQuery.of(context).size.width <= 550
+                                    ? Container(
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                            color: Colors.black87),
+                                      )
+                                    : null,
+                                recipe.notes != "" &&
+                                        MediaQuery.of(context).size.width <= 550
+                                    ? NotesSection(notes: recipe.notes)
+                                    : null,
+                                recipe.source != null &&
+                                        recipe.source != "" &&
+                                        MediaQuery.of(context).size.width <= 550
+                                    ? RecipeSource(recipe.source)
+                                    : null,
+                                recipe.categories.length > 0 &&
+                                        MediaQuery.of(context).size.width <= 550
+                                    ? CategoriesSection(
+                                        categories: recipe.categories,
+                                        categoriesFiles: categoriesFiles!)
+                                    : null,
+                              ].whereType<Widget>().toList(),
+                            ),
                           ),
-                        ]..removeWhere((item) => item == null),
+                        ].whereType<Widget>().toList(),
                       ),
                     ),
                   ),
-          ]..removeWhere((item) => item == null)),
+          ].whereType<Widget>().toList()),
     );
   }
 
-  void _showPictureFullView(String image, String tag, BuildContext context) {
+  void _showPictureFullView(String image, String? tag, BuildContext context) {
     Ads.showBottomBannerAd();
     Navigator.push(
       context,
@@ -983,7 +990,7 @@ class RecipePage extends StatelessWidget {
             initialIndex: 0,
             galleryImagePaths: [image],
             descriptions: [''],
-            heroTags: [tag],
+            heroTags: [tag!],
           ),
           context,
         ),
@@ -993,9 +1000,9 @@ class RecipePage extends StatelessWidget {
 }
 
 class RecipeSource extends StatelessWidget {
-  final String source;
+  final String? source;
 
-  const RecipeSource(this.source, {Key key}) : super(key: key);
+  const RecipeSource(this.source, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1019,7 +1026,7 @@ class RecipeSource extends StatelessWidget {
                     style: TextStyle(color: Colors.blue),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launch(source);
+                        launch(source!);
                       },
                   )),
                 )
@@ -1038,8 +1045,8 @@ class TopSectionRecipe extends StatelessWidget {
   final double preperationTime;
   final double cookingTime;
   final double totalTime;
-  final int effort;
-  final List<StringIntTuple> recipeTags;
+  final int? effort;
+  final List<StringIntTuple>? recipeTags;
 
   const TopSectionRecipe({
     this.preperationTime = 0,
@@ -1047,7 +1054,7 @@ class TopSectionRecipe extends StatelessWidget {
     this.totalTime = 0,
     this.effort,
     this.recipeTags,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -1074,16 +1081,16 @@ class TopSectionRecipe extends StatelessWidget {
                       Spacer(),
                       TimeInfoChart(
                         textColor,
-                        preperationTime ?? 0,
-                        cookingTime ?? 0,
-                        totalTime ?? 0,
+                        preperationTime,
+                        cookingTime,
+                        totalTime,
                         recipeScreenFontFamily,
                       ),
                       Spacer(),
                       ComplexityWave(
                         textColor,
                         recipeScreenFontFamily,
-                        effort,
+                        effort!,
                       ),
                       Spacer(),
                     ],
@@ -1101,7 +1108,7 @@ class TopSectionRecipe extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 15, right: 15, top: 15.0),
               child: RecipeTagWrap(
-                recipeTags,
+                recipeTags!,
                 recipeScreenFontFamily,
               ),
             )
@@ -1127,12 +1134,12 @@ bool _showComplexTopArea(
 }
 
 class CategoriesSection extends StatelessWidget {
-  final List<String>/*!*/ categories;
-  final List<String>/*!*/ categoriesFiles;
+  final List<String> categories;
+  final List<String> categoriesFiles;
 
   CategoriesSection({
-    this.categories,
-    this.categoriesFiles,
+    required this.categories,
+    required this.categoriesFiles,
   });
 
   @override
@@ -1148,7 +1155,7 @@ class CategoriesSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                I18n.of(context).categories,
+                I18n.of(context)!.categories,
                 style: TextStyle(
                   color: textColor,
                   fontSize: 24,
@@ -1195,7 +1202,7 @@ class CategoriesSection extends StatelessWidget {
 
 class StepsSection extends StatelessWidget {
   final List<List<String>> stepImages;
-  final List<String> stepTitles;
+  final List<String>? stepTitles;
   final List<String> steps;
   final String recipeName;
   final bool expandHeight;
@@ -1225,7 +1232,7 @@ class StepsSection extends StatelessWidget {
           if (snapshot.hasData) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: [
                 Container(
                     height: 40,
                     decoration:
@@ -1237,7 +1244,7 @@ class StepsSection extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Text(
-                            I18n.of(context).directions,
+                            I18n.of(context)!.directions,
                             style: TextStyle(
                               color: textColor,
                               fontSize: headingSize,
@@ -1264,7 +1271,7 @@ class StepsSection extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 25),
-              ]..removeWhere((item) => item == null),
+              ].whereType<Widget>().toList(),
             );
           } else {
             return Container(
@@ -1277,7 +1284,7 @@ class StepsSection extends StatelessWidget {
 }
 
 class StepsIntro extends StatefulWidget {
-  StepsIntro({Key key}) : super(key: key);
+  StepsIntro({Key? key}) : super(key: key);
 
   @override
   _StepsIntroState createState() => _StepsIntroState();
@@ -1302,7 +1309,7 @@ class _StepsIntroState extends State<StepsIntro> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        I18n.of(context).steps_intro,
+                        I18n.of(context)!.steps_intro,
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: recipeScreenFontFamily,
@@ -1342,12 +1349,12 @@ class IngredientsScreen extends StatelessWidget {
   final List<Ingredient> addToCartIngredients;
 
   const IngredientsScreen({
-    Key key,
-    @required this.currentRecipe,
+    Key? key,
+    required this.currentRecipe,
     // needs to be initialized with 0
-    @required this.animationWaitTime,
+    required this.animationWaitTime,
     // needs to be initialized with an empty list
-    @required this.addToCartIngredients,
+    required this.addToCartIngredients,
   }) : super(key: key);
 
   List<Widget> getIngredientsSection(List<CheckableIngredient> ingredients,
@@ -1366,10 +1373,10 @@ class IngredientsScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: LikeButton(
                     circleColor: CircleColor(
-                        start: Colors.green[300], end: Colors.green[800]),
+                        start: Colors.green[300]!, end: Colors.green[800]!),
                     bubblesColor: BubblesColor(
-                        dotPrimaryColor: Colors.green[200],
-                        dotSecondaryColor: Colors.green[600],
+                        dotPrimaryColor: Colors.green[200]!,
+                        dotSecondaryColor: Colors.green[600]!,
                         dotLastColor: Colors.green[900]),
                     animationDuration: Duration(milliseconds: 500),
                     isLiked: currentIngredient.checked,
@@ -1411,7 +1418,7 @@ class IngredientsScreen extends StatelessWidget {
                 Container(
                   width: 80,
                   child: Text(
-                    "${currentIngredient.amount == null ? "" : (GlobalSettings().showDecimal() ? cutDouble(currentIngredient.amount) : getFractionDouble(currentIngredient.amount))} "
+                    "${currentIngredient.amount == null ? "" : (GlobalSettings().showDecimal() ? cutDouble(currentIngredient.amount!) : getFractionDouble(currentIngredient.amount!))} "
                     "${currentIngredient.unit == null ? "" : currentIngredient.unit}",
                     textAlign: TextAlign.end,
                     style: TextStyle(
@@ -1456,7 +1463,7 @@ class IngredientsScreen extends StatelessWidget {
   }
 
   List<Widget> getIngredientsData(List<List<CheckableIngredient>> ingredients,
-      List<bool> sectionCheck, BuildContext context) {
+      List<bool>? sectionCheck, BuildContext context) {
     List<Widget> output = [];
     bool oneSection = ingredients.isEmpty;
     int iterations;
@@ -1491,10 +1498,10 @@ class IngredientsScreen extends StatelessWidget {
                     )),
               ),
               IconButton(
-                icon: sectionCheck[i]
+                icon: sectionCheck![i]
                     ? Icon(Icons.shopping_cart)
                     : Icon(Icons.add_shopping_cart),
-                tooltip: I18n.of(context).add_to_cart,
+                tooltip: I18n.of(context)!.add_to_cart,
                 onPressed: () {
                   _pressAddSection(
                       sectionIngredients
@@ -1559,7 +1566,7 @@ class IngredientsScreen extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12.0),
                                     child: Text(
-                                      I18n.of(context).ingredients,
+                                      I18n.of(context)!.ingredients,
                                       style: TextStyle(
                                         color: textColor,
                                         fontSize: headingSize,
@@ -1570,7 +1577,7 @@ class IngredientsScreen extends StatelessWidget {
                                 ]
                               : <Widget>[
                                   Text(
-                                    I18n.of(context).ingredients_for,
+                                    I18n.of(context)!.ingredients_for,
                                     style: TextStyle(
                                       color: textColor,
                                       fontSize: headingSize,
@@ -1580,11 +1587,12 @@ class IngredientsScreen extends StatelessWidget {
                                   IconButton(
                                     icon: Icon(Icons.remove_circle_outline,
                                         color: Colors.white),
-                                    tooltip: I18n.of(context).decrease_servings,
+                                    tooltip:
+                                        I18n.of(context)!.decrease_servings,
                                     onPressed: () {
                                       _updateServings(
                                         state.servings,
-                                        state.servings - 1,
+                                        state.servings! - 1,
                                         context,
                                       );
                                     },
@@ -1594,14 +1602,15 @@ class IngredientsScreen extends StatelessWidget {
                                       showDialog(
                                         context: context,
                                         builder: (_) => NumberDialog(
-                                          prefilledText:
-                                              state.servings.toStringAsFixed(1),
-                                          validation: (String value) {
+                                          prefilledText: state.servings!
+                                              .toStringAsFixed(1),
+                                          validation: (String? value) {
+                                            if (value == null) return null;
                                             if (getDoubleFromString(value) !=
                                                 null) {
                                               return null;
                                             } else {
-                                              return I18n.of(context)
+                                              return I18n.of(context)!
                                                   .no_valid_number;
                                             }
                                           },
@@ -1609,14 +1618,14 @@ class IngredientsScreen extends StatelessWidget {
                                             _updateServings(
                                                 state.servings,
                                                 getDoubleFromString(
-                                                    servingsString),
+                                                    servingsString)!,
                                                 context);
                                           },
                                         ),
                                       );
                                     },
                                     child: Text(
-                                      '${state.servings.toStringAsFixed(1)}',
+                                      '${state.servings!.toStringAsFixed(1)}',
                                       style: TextStyle(
                                         color: textColor,
                                         fontSize: headingSize,
@@ -1627,10 +1636,11 @@ class IngredientsScreen extends StatelessWidget {
                                   IconButton(
                                     icon: Icon(Icons.add_circle_outline,
                                         color: Colors.white),
-                                    tooltip: I18n.of(context).increase_servings,
+                                    tooltip:
+                                        I18n.of(context)!.increase_servings,
                                     onPressed: () {
                                       _updateServings(state.servings,
-                                          state.servings + 1, context);
+                                          state.servings! + 1, context);
                                     },
                                   ),
                                   Padding(
@@ -1638,7 +1648,7 @@ class IngredientsScreen extends StatelessWidget {
                                         vertical: 8.0),
                                     child: Text(
                                       currentRecipe.servingName ??
-                                          I18n.of(context).servings,
+                                          I18n.of(context)!.servings,
                                       style: TextStyle(
                                         color: textColor,
                                         fontSize: headingSize,
@@ -1673,7 +1683,7 @@ class IngredientsScreen extends StatelessWidget {
   }
 
   void _updateServings(
-      double oldServings, double newServings, BuildContext context) {
+      double? oldServings, double newServings, BuildContext context) {
     if (newServings <= 0) return;
     BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
       UpdateServings(
@@ -1686,21 +1696,21 @@ class IngredientsScreen extends StatelessWidget {
 
 class Favorite extends StatelessWidget {
   final Recipe recipe;
-  final double iconSize;
+  final double? iconSize;
   final Function addFavorite;
   final Function removeFavorite;
 
   Favorite(
     this.recipe, {
-    @required this.addFavorite,
-    @required this.removeFavorite,
+    required this.addFavorite,
+    required this.removeFavorite,
     this.iconSize,
   });
 
   @override
   Widget build(BuildContext context) {
     return LikeButton(
-      size: iconSize == null ? 24 : iconSize,
+      size: iconSize == null ? 24 : iconSize!,
       isLiked: HiveProvider().isRecipeFavorite(recipe.name),
       likeBuilder: (bool isFavorite) {
         return Icon(
@@ -1748,14 +1758,14 @@ bool containsList(List<Ingredient> list, List<Ingredient> contains) {
 }
 
 class Indicator extends StatelessWidget {
-  final Color color;
-  final String text;
-  final bool isSquare;
+  final Color? color;
+  final String? text;
+  final bool? isSquare;
   final double size;
   final Color textColor;
 
   const Indicator({
-    Key key,
+    Key? key,
     this.color,
     this.text,
     this.isSquare,
@@ -1771,7 +1781,7 @@ class Indicator extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
+            shape: isSquare! ? BoxShape.rectangle : BoxShape.circle,
             color: color,
           ),
         ),
@@ -1779,7 +1789,7 @@ class Indicator extends StatelessWidget {
           width: 4,
         ),
         Text(
-          text,
+          text!,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,

@@ -5,20 +5,20 @@ import '../../generated/i18n.dart';
 class ComplexityWave extends StatelessWidget {
   final Color textColor;
   final String fontFamily;
-  final int/*!*/ effort;
+  final int effort;
 
   const ComplexityWave(
     this.textColor,
     this.fontFamily,
     this.effort, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Text(I18n.of(context).complexity + ':',
+        Text(I18n.of(context)!.complexity + ':',
             style: TextStyle(
               fontSize: 15,
               color: textColor,

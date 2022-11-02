@@ -28,7 +28,7 @@ class RecipeValidator {
     List<List<TextEditingController>> ingredientUnitController,
     List<TextEditingController> ingredientGlossaryController,
   ) {
-    if (!formKey.currentState.validate())
+    if (!formKey.currentState!.validate())
       return Validator.REQUIRED_FIELDS;
     else if (!_isIngredientListValid(
       ingredientNameController,
@@ -50,7 +50,7 @@ class RecipeValidator {
 
   Future<Validator> validateGeneralInfo(GlobalKey<FormState> formKey,
       bool editingRecipe, String recipeName) async {
-    if (!formKey.currentState.validate())
+    if (!formKey.currentState!.validate())
       return Validator.REQUIRED_FIELDS;
     else if (!editingRecipe &&
         await HiveProvider().getRecipeByName(recipeName) != null)
@@ -68,7 +68,7 @@ class RecipeValidator {
     String recipeName,
     bool editingRecipe,
   ) async {
-    if (!formKey.currentState.validate())
+    if (!formKey.currentState!.validate())
       return Validator.REQUIRED_FIELDS;
     else if (!_isIngredientListValid(
       ingredientNameController,
@@ -127,7 +127,7 @@ class RecipeValidator {
 /// After that, it removes the empty strings in the glossary
 List<String> getCleanGlossary(List<TextEditingController> glossary,
     List<List<Ingredient>> cleanIngredientsData) {
-  List<String> output = new List<String>();
+  List<String> output = [];
   for (int i = 0; i < glossary.length; i++) {
     output.add(glossary[i].text);
   }
@@ -154,7 +154,7 @@ List<List<Ingredient>> getCleanIngredientData(
       .map((list) => list.map((ingredient) => ingredient.text).toList())
       .toList();
 
-  List<List<double>> ingredientsAmount = amount
+  List<List<double?>> ingredientsAmount = amount
       .map((list) => list.map((amount) {
             if (amount.text != "" && amount.text != "0") {
               String addValue = amount.text;
@@ -166,7 +166,7 @@ List<List<Ingredient>> getCleanIngredientData(
           }).toList())
       .toList();
 
-  List<List<String>> ingredientsUnit = unit
+  List<List<String?>> ingredientsUnit = unit
       .map((list) =>
           list.map((unit) => unit.text == '' ? null : unit.text).toList())
       .toList();
@@ -182,9 +182,9 @@ List<List<Ingredient>> getCleanIngredientData(
       String name = ingredientsNames[i][j].trim();
       // only add ingredient if the name is not empty
       if (name != "") {
-        String unit;
+        String? unit;
         // trim unit if not empty
-        if (ingredientsUnit[i][j] != null) unit = ingredientsUnit[i][j].trim();
+        if (ingredientsUnit[i][j] != null) unit = ingredientsUnit[i][j]!.trim();
         // add the ingredient with modified data
         cleanIngredientsData[i].add(Ingredient(
           name: name,

@@ -8,7 +8,7 @@ import '../models/ingredient.dart';
 /// 1.9/2,7
 /// 1.0
 /// 0,5
-double getDoubleFromString(String number) {
+double? getDoubleFromString(String number) {
   String validNumber = number.replaceAll(",", ".");
   double parsedDouble;
   try {
@@ -52,8 +52,8 @@ String cutDouble(double number) {
   return number.toStringAsFixed(2);
 }
 
-String getImageDatatype(String filename) {
-  String dataType;
+String? getImageDatatype(String filename) {
+  String? dataType;
   String partWithDataType = filename.substring(filename.length - 5);
   if (partWithDataType.contains('.')) {
     dataType = partWithDataType.substring(partWithDataType.lastIndexOf('.'));
@@ -149,7 +149,7 @@ List<String> trimRemoveTrailingEmptyStrings(List<String> list) {
 
 /// trys to get the number value out of the string and otherwise
 /// returns null
-double getNumberOfString(String numberInfo) {
+double? getNumberOfString(String numberInfo) {
   bool failed = false;
 
   try {
@@ -178,29 +178,29 @@ double getNumberOfString(String numberInfo) {
 String getMonthString(int month, BuildContext context) {
   switch (month) {
     case 1:
-      return I18n.of(context).january;
+      return I18n.of(context)!.january;
     case 2:
-      return I18n.of(context).february;
+      return I18n.of(context)!.february;
     case 3:
-      return I18n.of(context).march;
+      return I18n.of(context)!.march;
     case 4:
-      return I18n.of(context).april;
+      return I18n.of(context)!.april;
     case 5:
-      return I18n.of(context).may_full;
+      return I18n.of(context)!.may_full;
     case 6:
-      return I18n.of(context).june;
+      return I18n.of(context)!.june;
     case 7:
-      return I18n.of(context).july;
+      return I18n.of(context)!.july;
     case 8:
-      return I18n.of(context).august;
+      return I18n.of(context)!.august;
     case 9:
-      return I18n.of(context).september;
+      return I18n.of(context)!.september;
     case 10:
-      return I18n.of(context).october;
+      return I18n.of(context)!.october;
     case 11:
-      return I18n.of(context).november;
+      return I18n.of(context)!.november;
     case 12:
-      return I18n.of(context).december;
+      return I18n.of(context)!.december;
     default:
       return "";
   }
@@ -209,19 +209,19 @@ String getMonthString(int month, BuildContext context) {
 String getWeekdayString(int weekday, BuildContext context) {
   switch (weekday) {
     case 1:
-      return I18n.of(context).monday;
+      return I18n.of(context)!.monday;
     case 2:
-      return I18n.of(context).tuesday;
+      return I18n.of(context)!.tuesday;
     case 3:
-      return I18n.of(context).wednesday;
+      return I18n.of(context)!.wednesday;
     case 4:
-      return I18n.of(context).thursday;
+      return I18n.of(context)!.thursday;
     case 5:
-      return I18n.of(context).friday;
+      return I18n.of(context)!.friday;
     case 6:
-      return I18n.of(context).saturday;
+      return I18n.of(context)!.saturday;
     case 7:
-      return I18n.of(context).sunday;
+      return I18n.of(context)!.sunday;
     default:
       return "";
   }
@@ -230,29 +230,29 @@ String getWeekdayString(int weekday, BuildContext context) {
 String getMonthAbbrevString(int month, BuildContext context) {
   switch (month) {
     case 1:
-      return I18n.of(context).jan;
+      return I18n.of(context)!.jan;
     case 2:
-      return I18n.of(context).feb;
+      return I18n.of(context)!.feb;
     case 3:
-      return I18n.of(context).mar;
+      return I18n.of(context)!.mar;
     case 4:
-      return I18n.of(context).apr;
+      return I18n.of(context)!.apr;
     case 5:
-      return I18n.of(context).may;
+      return I18n.of(context)!.may;
     case 6:
-      return I18n.of(context).jun;
+      return I18n.of(context)!.jun;
     case 7:
-      return I18n.of(context).jul;
+      return I18n.of(context)!.jul;
     case 8:
-      return I18n.of(context).aug;
+      return I18n.of(context)!.aug;
     case 9:
-      return I18n.of(context).sep;
+      return I18n.of(context)!.sep;
     case 10:
-      return I18n.of(context).oct;
+      return I18n.of(context)!.oct;
     case 11:
-      return I18n.of(context).nov;
+      return I18n.of(context)!.nov;
     case 12:
-      return I18n.of(context).dec;
+      return I18n.of(context)!.dec;
     default:
       return "";
   }

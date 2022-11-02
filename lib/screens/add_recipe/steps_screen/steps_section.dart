@@ -1,5 +1,6 @@
 import "dart:io";
 
+import 'package:collection/collection.dart' show IterableNullableExtension;
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:image_picker/image_picker.dart";
@@ -12,7 +13,7 @@ import '../../../constants/global_constants.dart' as Constants;
 import '../../../generated/i18n.dart';
 
 class Steps extends StatefulWidget {
-  final String editRecipeName;
+  final String? editRecipeName;
 
   Steps({
     this.editRecipeName = Constants.newRecipeLocalPathString,
@@ -44,7 +45,7 @@ class _StepsState extends State<Steps> {
             Padding(
               padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
               child: Text(
-                I18n.of(context).steps + ':',
+                I18n.of(context)!.steps + ':',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
@@ -70,7 +71,7 @@ class _StepsState extends State<Steps> {
                           (step) => BlocProvider.of<StepImagesBloc>(context)
                               .add(EditStep(step, i)),
                           () => BlocProvider.of<StepImagesBloc>(context).add(
-                              RemoveStep(widget.editRecipeName, DateTime.now(),
+                              RemoveStep(widget.editRecipeName!, DateTime.now(),
                                   stepNumber: i)),
                           true,
                           (File imageFile) =>
@@ -95,7 +96,7 @@ class _StepsState extends State<Steps> {
                           (step) => BlocProvider.of<StepImagesBloc>(context)
                               .add(EditStep(step, i)),
                           () => BlocProvider.of<StepImagesBloc>(context).add(
-                              RemoveStep(widget.editRecipeName, DateTime.now(),
+                              RemoveStep(widget.editRecipeName!, DateTime.now(),
                                   stepNumber: i)),
                           false,
                           (File imageFile) =>
@@ -117,7 +118,7 @@ class _StepsState extends State<Steps> {
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     filled: true,
-                    labelText: I18n.of(context).description,
+                    labelText: I18n.of(context)!.description,
                   ),
                   minLines: 3,
                   maxLines: 10,
@@ -129,7 +130,7 @@ class _StepsState extends State<Steps> {
                 padding: const EdgeInsets.only(top: 12.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+                  children: [
                     state.steps.isNotEmpty
                         ? Padding(
                             padding: const EdgeInsets.only(right: 12),
@@ -138,7 +139,7 @@ class _StepsState extends State<Steps> {
                               label: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(I18n.of(context).remove_step(
+                                child: Text(I18n.of(context)!.remove_step(
                                     MediaQuery.of(context).size.width < 412
                                         ? "\n"
                                         : "")),
@@ -146,11 +147,9 @@ class _StepsState extends State<Steps> {
                               onPressed: () {
                                 _removeStep(widget.editRecipeName);
                               },
-                              style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0),
                                 ),
                               ),
                             ),
@@ -160,7 +159,7 @@ class _StepsState extends State<Steps> {
                       icon: Icon(Icons.add_circle),
                       label: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(I18n.of(context).add_step(
+                        child: Text(I18n.of(context)!.add_step(
                             MediaQuery.of(context).size.width < 412
                                 ? "\n"
                                 : "")),
@@ -168,15 +167,13 @@ class _StepsState extends State<Steps> {
                       onPressed: () {
                         _addStep(widget.editRecipeName);
                       },
-                      style: ButtonStyle(
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0),
                         ),
                       ),
                     ),
-                  ].where((c) => c != null).toList(),
+                  ].whereType<Widget>().toList(),
                 ),
               ),
             ),
@@ -187,15 +184,15 @@ class _StepsState extends State<Steps> {
     });
   }
 
-  void _addStep(String recipeName) {
+  void _addStep(String? recipeName) {
     BlocProvider.of<StepImagesBloc>(context)
         .add(AddStep(stepsDescriptionController.text, DateTime.now()));
     stepsDescriptionController.text = "";
   }
 
-  void _removeStep(String recipeName) {
+  void _removeStep(String? recipeName) {
     BlocProvider.of<StepImagesBloc>(context)
-        .add(RemoveStep(widget.editRecipeName, DateTime.now()));
+        .add(RemoveStep(widget.editRecipeName!, DateTime.now()));
   }
 }
 
@@ -205,10 +202,10 @@ class ImageBox extends StatelessWidget {
   final double size;
 
   const ImageBox({
-    @required this.onPress,
-    @required this.imagePath,
+    required this.onPress,
+    required this.imagePath,
     this.size = 80,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -275,7 +272,7 @@ class Step extends StatelessWidget {
     this.removeOption,
     this.onAddImage,
     this.onRemoveImage, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -287,7 +284,7 @@ class Step extends StatelessWidget {
                 icon: Icon(Icons.add_circle),
                 label: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(I18n.of(context).add_title),
+                  child: Text(I18n.of(context)!.add_title),
                 ),
                 onPressed: () {
                   showDialog(
@@ -297,15 +294,13 @@ class Step extends StatelessWidget {
                       save: (String name) {
                         onEditTitle(name);
                       },
-                      hintText: I18n.of(context).categoryname,
+                      hintText: I18n.of(context)!.categoryname,
                     ),
                   );
                 },
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
               )
@@ -329,7 +324,7 @@ class Step extends StatelessWidget {
                                 onEditTitle(name);
                               },
                               prefilledText: stepTitle,
-                              hintText: I18n.of(context).categoryname,
+                              hintText: I18n.of(context)!.categoryname,
                             ),
                           );
                         },
@@ -357,20 +352,20 @@ class Step extends StatelessWidget {
             showDialog(
               context: context,
               builder: (_) => TextFieldDialog(
-                validation: (String name) => null,
+                validation: (String? name) => null,
                 save: (String newStep) {
                   BlocProvider.of<StepImagesBloc>(context)
                       .add(EditStep(newStep, stepIndex));
                 },
                 prefilledText: step,
-                hintText: I18n.of(context).categoryname,
+                hintText: I18n.of(context)!.categoryname,
                 showExpanded: true,
               ),
             );
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -395,7 +390,7 @@ class Step extends StatelessWidget {
                   ),
                   Container(height: 12),
                   removeOption ? Icon(Icons.reorder) : null,
-                ]..removeWhere((element) => element == null),
+                ].whereType<Widget>().toList(),
               ),
               Expanded(
                 flex: 4,
@@ -411,8 +406,8 @@ class Step extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (cntxt) => AreYouSureDialog(
-                            I18n.of(context).remove_step("") + "?",
-                            I18n.of(context).remove_step_desc,
+                            I18n.of(context)!.remove_step("") + "?",
+                            I18n.of(context)!.remove_step_desc,
                             () {
                               onRemoveStep();
                               Navigator.pop(context);
@@ -422,7 +417,7 @@ class Step extends StatelessWidget {
                       },
                     )
                   : null,
-            ]..removeWhere((element) => element == null),
+            ].whereType<Widget>().toList(),
           ),
         )
       ]..add(
@@ -462,13 +457,13 @@ class Step extends StatelessWidget {
 class AddImageBox extends StatelessWidget {
   final void Function(File newImage) onNewImage;
   final double size;
-  final double iconSize;
+  final double? iconSize;
 
   const AddImageBox({
     this.size = 80,
     this.iconSize,
-    @required this.onNewImage,
-    Key key,
+    required this.onNewImage,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -501,7 +496,7 @@ class AddImageBox extends StatelessWidget {
     final _picker = ImagePicker();
     File newImage = File((await _picker.getImage(
       source: ImageSource.gallery,
-    ))
+    ))!
         .path);
 
     if (newImage != null) {

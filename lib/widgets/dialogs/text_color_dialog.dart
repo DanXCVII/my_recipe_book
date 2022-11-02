@@ -12,16 +12,16 @@ class Consts {
 
 class TextColorDialog extends StatefulWidget {
   // only needs to be specified when editing an item
-  final String prefilledText;
+  final String? prefilledText;
   final int selectedColor;
-  final String hintText;
-  final String Function(String name) validation;
+  final String? hintText;
+  final String? Function(String? name) validation;
   final void Function(String name, int color) save;
   final focus = FocusNode();
 
   TextColorDialog({
-    @required this.validation,
-    @required this.save,
+    required this.validation,
+    required this.save,
     this.selectedColor = 4278238420,
     this.hintText,
     this.prefilledText,
@@ -34,10 +34,10 @@ class TextColorDialog extends StatefulWidget {
 }
 
 class TextColorDialogState extends State<TextColorDialog> {
-  TextEditingController nameController;
-  int/*!*/ selectedColor;
+  TextEditingController? nameController;
+  late int selectedColor;
 
-  TextColorDialogState(int/*!*//*!*/ wSelectedColor) {
+  TextColorDialogState(int /*!*/ wSelectedColor) {
     selectedColor = wSelectedColor;
   }
 
@@ -48,7 +48,7 @@ class TextColorDialogState extends State<TextColorDialog> {
     super.initState();
     nameController = new TextEditingController();
     if (widget.prefilledText != null) {
-      nameController.text = widget.prefilledText;
+      nameController!.text = widget.prefilledText!;
     }
     SchedulerBinding.instance.addPostFrameCallback((Duration _) {
       FocusScope.of(context).requestFocus(widget.focus);
@@ -57,7 +57,7 @@ class TextColorDialogState extends State<TextColorDialog> {
 
   @override
   void dispose() {
-    nameController.dispose();
+    nameController!.dispose();
     super.dispose();
   }
 
@@ -118,13 +118,13 @@ class TextColorDialogState extends State<TextColorDialog> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    FlatButton(
-                        child: Text(I18n.of(context).cancel),
+                    TextButton(
+                        child: Text(I18n.of(context)!.cancel),
                         onPressed: () {
                           Navigator.pop(context);
                         }),
-                    FlatButton(
-                      child: Text(I18n.of(context).save),
+                    TextButton(
+                      child: Text(I18n.of(context)!.save),
                       onPressed: () {
                         validateAddModifyItem();
                       },
@@ -145,7 +145,7 @@ class TextColorDialogState extends State<TextColorDialog> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context).delete_category),
+        title: Text(I18n.of(context)!.delete_category),
         content: BlockPicker(
           pickerColor: Color(selectedColor),
           onColorChanged: (color) {
@@ -155,11 +155,13 @@ class TextColorDialogState extends State<TextColorDialog> {
           },
         ),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             child: Text("ok"),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textColor: Theme.of(context).textTheme.bodyText2.color,
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -170,8 +172,8 @@ class TextColorDialogState extends State<TextColorDialog> {
   }
 
   void validateAddModifyItem() {
-    if (_formKey.currentState.validate()) {
-      widget.save(nameController.text, selectedColor);
+    if (_formKey.currentState!.validate()) {
+      widget.save(nameController!.text, selectedColor);
       Future.delayed(Duration(milliseconds: 100))
           .then((_) => Navigator.pop(context));
     }

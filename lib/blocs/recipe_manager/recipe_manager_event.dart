@@ -5,7 +5,7 @@ abstract class RecipeManagerEvent extends Equatable {
 }
 
 class RMAddRecipes extends RecipeManagerEvent {
-  final List<Recipe/*!*/> recipes;
+  final List<Recipe> recipes;
 
   const RMAddRecipes(this.recipes);
 
@@ -14,10 +14,10 @@ class RMAddRecipes extends RecipeManagerEvent {
 }
 
 class RMDeleteRecipe extends RecipeManagerEvent {
-  final String/*!*//*!*/ recipeName;
+  final String/*!*/ recipeName;
   final bool deleteFiles;
 
-  const RMDeleteRecipe(this.recipeName, {@required this.deleteFiles});
+  const RMDeleteRecipe(this.recipeName, {required this.deleteFiles});
 
   @override
   List<Object> get props => [recipeName];
@@ -98,7 +98,7 @@ class RMAddRecipeTag extends RecipeManagerEvent {
 }
 
 class RMDeleteRecipeTag extends RecipeManagerEvent {
-  final StringIntTuple/*!*//*!*/ recipeTag;
+  final StringIntTuple/*!*/ recipeTag;
 
   const RMDeleteRecipeTag(this.recipeTag);
 
@@ -107,7 +107,7 @@ class RMDeleteRecipeTag extends RecipeManagerEvent {
 }
 
 class RMUpdateRecipeTag extends RecipeManagerEvent {
-  final StringIntTuple/*!*/ oldRecipeTag;
+  final StringIntTuple oldRecipeTag;
   final StringIntTuple updatedRecipeTag;
 
   const RMUpdateRecipeTag(

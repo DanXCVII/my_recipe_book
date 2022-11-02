@@ -9,7 +9,7 @@ import '../screens/homepage_screen.dart';
 import '../ad_related/ad.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key key}) : super(key: key);
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen>
                 state.recipeCategoryOverview,
               ),
             );
-            if (state.showIntro) {
+            if (state.showIntro!) {
               Navigator.of(context).pushNamed(RouteNames.intro);
             }
           });
@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: FittedBox(
                     fit: BoxFit.fill,
                     child: Text(
-                      I18n.of(context).recipe_bible,
+                      I18n.of(context)!.recipe_bible,
                       style: TextStyle(
                         fontFamily: "Righteous",
                         color: Colors.black,
@@ -95,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 Spacer(),
                 Text(
-                  I18n.of(context).loading_data,
+                  I18n.of(context)!.loading_data,
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w800,
@@ -103,7 +103,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 SizedBox(height: 12),
                 CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red[900]),
+                  valueColor: AlwaysStoppedAnimation<Color?>(Colors.red[900]),
                 ),
                 Spacer(flex: 2),
               ],

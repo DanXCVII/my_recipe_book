@@ -4,9 +4,9 @@ import '../generated/i18n.dart';
 import '../util/my_wrapper.dart';
 
 class ComplexitySection extends StatefulWidget {
-  final MyDoubleWrapper/*!*/ complexity;
+  final MyDoubleWrapper complexity;
 
-  ComplexitySection({this.complexity});
+  ComplexitySection({required this.complexity});
 
   @override
   State createState() => ComplexitySectionState();
@@ -22,7 +22,7 @@ class ComplexitySectionState extends State<ComplexitySection> {
           padding:
               const EdgeInsets.only(right: 12, top: 12, left: 56, bottom: 12),
           child: Text(
-            I18n.of(context).complexity_effort,
+            I18n.of(context)!.complexity_effort,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -38,7 +38,7 @@ class ComplexitySectionState extends State<ComplexitySection> {
                 widget.complexity.myDouble = value;
               });
             },
-            value: widget.complexity.myDouble,
+            value: widget.complexity.myDouble!,
             divisions: 9,
             min: 1,
             max: 10,

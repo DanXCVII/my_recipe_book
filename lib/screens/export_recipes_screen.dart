@@ -14,13 +14,13 @@ import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
 
 class ExportRecipes extends StatefulWidget {
-  ExportRecipes({Key key}) : super(key: key);
+  ExportRecipes({Key? key}) : super(key: key);
 
   _ExportRecipesState createState() => _ExportRecipesState();
 }
 
 class _ExportRecipesState extends State<ExportRecipes> {
-  List<String>/*!*/ recipeNames;
+  List<String> recipeNames = [];
   List<String> exportRecipeNames = [];
 
   @override
@@ -38,7 +38,7 @@ class _ExportRecipesState extends State<ExportRecipes> {
           end: Alignment.bottomCenter,
           colors: [Color(0xffAF1E1E), Color(0xff641414)],
         ),
-        title: Text(I18n.of(context).select_recipes),
+        title: Text(I18n.of(context)!.select_recipes),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.help_outline),
@@ -46,8 +46,8 @@ class _ExportRecipesState extends State<ExportRecipes> {
               showDialog(
                   context: context,
                   builder: (_) => InfoDialog(
-                        title: I18n.of(context).share_recipes_settings,
-                        body: I18n.of(context).share_recipes_settings_desc,
+                        title: I18n.of(context)!.share_recipes_settings,
+                        body: I18n.of(context)!.share_recipes_settings_desc,
                       ));
             },
           ),
@@ -71,9 +71,9 @@ class _ExportRecipesState extends State<ExportRecipes> {
             color: Color.fromRGBO(0, 0, 0, 0.3),
             child: CheckboxListTile(
               value: listEquals(exportRecipeNames, recipeNames),
-              title: Text(I18n.of(context).select_all),
+              title: Text(I18n.of(context)!.select_all),
               onChanged: (value) {
-                if (value) {
+                if (value!) {
                   setState(() {
                     exportRecipeNames = List<String>.from(recipeNames);
                   });
@@ -93,7 +93,7 @@ class _ExportRecipesState extends State<ExportRecipes> {
                   value: exportRecipeNames.contains(recipeNames[index]),
                   onChanged: (value) {
                     setState(() {
-                      if (value) {
+                      if (value!) {
                         exportRecipeNames.add(recipeNames[index]);
                       } else {
                         exportRecipeNames.remove(recipeNames[index]);
@@ -114,11 +114,11 @@ class _ExportRecipesState extends State<ExportRecipes> {
 }
 
 class SaveExportRecipes extends StatefulWidget {
-  final List<String>/*!*/ exportRecipes;
+  final List<String> exportRecipes;
 
   SaveExportRecipes({
-    this.exportRecipes,
-    Key key,
+    required this.exportRecipes,
+    Key? key,
   }) : super(key: key);
 
   _SaveExportRecipesState createState() => _SaveExportRecipesState();
@@ -127,7 +127,7 @@ class SaveExportRecipes extends StatefulWidget {
 class _SaveExportRecipesState extends State<SaveExportRecipes> {
   int _exportRecipe = 1;
   bool finished = false;
-  Future<String> exportZipFile;
+  Future<String>? exportZipFile;
 
   @override
   void initState() {
@@ -153,7 +153,7 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
               future: exportZipFile,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  ShareExtend.share(snapshot.data, "file",
+                  ShareExtend.share(snapshot.data!, "file",
                       subject: "mrb-recipes.zip");
                   myCallback(() {
                     Navigator.pop(context);
@@ -165,8 +165,8 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
             ),
             Container(width: 20),
             Text(finished
-                ? I18n.of(context).almost_done
-                : '${I18n.of(context).exporting_recipe} $_exportRecipe ${I18n.of(context).out_of} ${widget.exportRecipes.length}'),
+                ? I18n.of(context)!.almost_done
+                : '${I18n.of(context)!.exporting_recipe} $_exportRecipe ${I18n.of(context)!.out_of} ${widget.exportRecipes.length}'),
             Container(width: 20),
           ],
         ),
@@ -203,7 +203,7 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
         PathProvider.pP.getZipFilePath('mrb-recipes', exportMultiDir);
     encoder.create(finalZipFilePath);
     for (FileSystemEntity f in exportFiles) {
-      encoder.addFile(f);
+      encoder.addFile(f as File);
       f.deleteSync();
     }
     encoder.close();

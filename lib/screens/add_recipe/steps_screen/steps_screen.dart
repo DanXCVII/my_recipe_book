@@ -19,7 +19,7 @@ import 'steps_section.dart';
 /// arguments which are provided to the route, when pushing to it
 class StepsArguments {
   final Recipe modifiedRecipe;
-  final String editingRecipeName;
+  final String? editingRecipeName;
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
 
@@ -32,13 +32,13 @@ class StepsArguments {
 }
 
 class StepsScreen extends StatefulWidget {
-  final Recipe modifiedRecipe;
-  final String editingRecipeName;
+  final Recipe? modifiedRecipe;
+  final String? editingRecipeName;
 
   StepsScreen({
     this.modifiedRecipe,
     this.editingRecipeName,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   _StepsScreenState createState() => _StepsScreenState();
@@ -50,9 +50,9 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
   final TextEditingController notesController = TextEditingController();
 
   final MyDoubleWrapper complexity = MyDoubleWrapper(myDouble: 5.0);
-  Flushbar _flush;
+  Flushbar? _flush;
   FocusNode _focusNode = FocusNode();
-  FocusNode _exitFocusNode;
+  FocusNode? _exitFocusNode;
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -101,7 +101,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
             end: Alignment.bottomCenter,
             colors: [Color(0xffAF1E1E), Color(0xff641414)],
           ),
-          title: Text(I18n.of(context).add_steps),
+          title: Text(I18n.of(context)!.add_steps),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.info_outline),
@@ -109,8 +109,8 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                 showDialog(
                   context: context,
                   builder: (context) => InfoDialog(
-                    title: I18n.of(context).info,
-                    body: I18n.of(context).steps_info_desc,
+                    title: I18n.of(context)!.info,
+                    body: I18n.of(context)!.steps_info_desc,
                   ),
                 );
               },
@@ -119,7 +119,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
               listener: (context, state) {
                 if (state is SEditingFinishedGoBack) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(I18n.of(context).saving_your_input)));
+                      content: Text(I18n.of(context)!.saving_your_input)));
                 } else if (state is SSaved) {
                   BlocProvider.of<StepsBloc>(context).add(SetCanSave());
 
@@ -138,8 +138,8 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                   Navigator.pop(context);
                 } else if (state is SCanSave && state.isValid == false) {
                   _showFlushInfo(
-                    I18n.of(context).too_many_images_for_the_steps,
-                    I18n.of(context).too_many_images_for_the_steps_description,
+                    I18n.of(context)!.too_many_images_for_the_steps,
+                    I18n.of(context)!.too_many_images_for_the_steps_description,
                   );
                 }
               },
@@ -199,7 +199,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                       controller: notesController,
                       textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
-                        labelText: I18n.of(context).notes,
+                        labelText: I18n.of(context)!.notes,
                         filled: true,
                         icon: Icon(Icons.assignment),
                       ),
@@ -218,7 +218,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
   }
 
   void _showFlushInfo(String title, String body) {
-    if (_flush != null && _flush.isShowing()) {
+    if (_flush != null && _flush!.isShowing()) {
     } else {
       _flush = Flushbar<bool>(
         animationDuration: Duration(milliseconds: 300),
@@ -229,9 +229,9 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           Icons.info_outline,
           color: Colors.blue,
         ),
-        mainButton: FlatButton(
+        mainButton: TextButton(
           onPressed: () {
-            _flush.dismiss(true); // result = true
+            _flush!.dismiss(true); // result = true
           },
           child: Text(
             "OK",
@@ -249,7 +249,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
           goBack,
-          complexity.myDouble.round(),
+          complexity.myDouble!.round(),
           notesController.text,
         ),
       );
@@ -258,7 +258,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
         FinishedEditing(
           widget.editingRecipeName == null ? false : true,
           goBack,
-          complexity.myDouble.round(),
+          complexity.myDouble!.round(),
           notesController.text,
         ),
       );
@@ -266,34 +266,34 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
   }
 
   /// prefills the textfields with the data of the given recipe
-  void _initializeData(Recipe recipe) {
-    if (widget.modifiedRecipe.notes != null)
-      notesController.text = widget.modifiedRecipe.notes;
+  void _initializeData(Recipe? recipe) {
+    if (widget.modifiedRecipe!.notes != null)
+      notesController.text = widget.modifiedRecipe!.notes;
 
     // case new recipe with no steps
-    if (widget.modifiedRecipe.steps.isEmpty) {
+    if (widget.modifiedRecipe!.steps.isEmpty) {
       stepTitles.add("");
     } // case already steps added
     else {
       // case the recipe is an old recipe where the stepTitles are null
-      if (widget.modifiedRecipe.stepTitles == null) {
-        stepTitles.addAll(widget.modifiedRecipe.steps.map<String>((e) => ""));
+      if (widget.modifiedRecipe!.stepTitles == null) {
+        stepTitles.addAll(widget.modifiedRecipe!.steps.map<String>((e) => ""));
       } // case the recipe already has stepTitles, which can be used
       else {
-        stepTitles.addAll(widget.modifiedRecipe.stepTitles);
+        stepTitles.addAll(widget.modifiedRecipe!.stepTitles!);
       }
     }
 
-    if (widget.modifiedRecipe.effort != null)
-      complexity.myDouble = widget.modifiedRecipe.effort.toDouble();
+    if (widget.modifiedRecipe!.effort != null)
+      complexity.myDouble = widget.modifiedRecipe!.effort!.toDouble();
 
-    if (widget.modifiedRecipe.steps != null)
-      for (int i = 0; i < widget.modifiedRecipe.steps.length; i++) {
+    if (widget.modifiedRecipe!.steps != null)
+      for (int i = 0; i < widget.modifiedRecipe!.steps.length; i++) {
         if (i > 0) {
           stepsDescController.add(TextEditingController());
         }
 
-        stepsDescController[i].text = widget.modifiedRecipe.steps[i];
+        stepsDescController[i].text = widget.modifiedRecipe!.steps[i];
       }
   }
 }

@@ -3,17 +3,17 @@ import 'package:hive/hive.dart';
 
 part 'ingredient.g.dart';
 
-@HiveType()
+@HiveType(typeId: 3)
 class Ingredient extends Equatable {
   @HiveField(0)
-  final String/*!*/ name;
+  final String name;
   @HiveField(1)
-  final double amount;
+  final double? amount;
   @HiveField(2)
-  final String unit;
+  final String? unit;
 
   Ingredient({
-    this.name,
+    required this.name,
     this.amount,
     this.unit,
   });
@@ -31,7 +31,7 @@ class Ingredient extends Equatable {
       };
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         name,
         amount,
         unit,
@@ -41,16 +41,16 @@ class Ingredient extends Equatable {
   /// reorderable list needs unique keys and is dependent on ingrdient.toString() right now
 }
 
-@HiveType()
+@HiveType(typeId: 4)
 class CheckableIngredient extends Equatable {
   @HiveField(0)
-  final String/*!*/ name;
+  final String name;
   @HiveField(1)
-  final double amount;
+  final double? amount;
   @HiveField(2)
-  final String unit;
+  final String? unit;
   @HiveField(3)
-  final bool/*!*/ checked;
+  final bool checked;
 
   CheckableIngredient(this.name, this.amount, this.unit, this.checked);
 
@@ -64,10 +64,10 @@ class CheckableIngredient extends Equatable {
   }
 
   CheckableIngredient copyWith({
-    String name,
-    double amount,
-    String unit,
-    bool checked,
+    String? name,
+    double? amount,
+    String? unit,
+    bool? checked,
   }) =>
       CheckableIngredient(
         name ?? this.name,
@@ -77,7 +77,7 @@ class CheckableIngredient extends Equatable {
       );
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         name,
         amount,
         unit,

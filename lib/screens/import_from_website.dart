@@ -22,7 +22,7 @@ class ImportFromWebsiteArguments {
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
   final AdManagerBloc adManagerBloc;
-  final String initialWebsite;
+  final String? initialWebsite;
 
   ImportFromWebsiteArguments(
     this.shoppingCartBloc,
@@ -37,7 +37,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
 
   const ImportFromWebsiteScreen({
     this.initialWebsite = "",
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -50,7 +50,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [Color(0xffAF1E1E), Color(0xff641414)],
         ),
-        title: Text(I18n.of(context).import_from_website_short),
+        title: Text(I18n.of(context)!.import_from_website_short),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.info_outline),
@@ -58,8 +58,8 @@ class ImportFromWebsiteScreen extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) => InfoDialog(
-                  title: I18n.of(context).info,
-                  body: I18n.of(context).website_import_info,
+                  title: I18n.of(context)!.info,
+                  body: I18n.of(context)!.website_import_info,
                 ),
               );
             },
@@ -146,7 +146,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                               color: Colors.lightBlue[100],
                               size: 70.0,
                             ),
-                            description: I18n.of(context)
+                            description: I18n.of(context)!
                                 .recipe_already_exists(state.recipeName),
                             backgroundText: true,
                             textColor: Colors.white,
@@ -161,7 +161,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                               color: Colors.red,
                               size: 70.0,
                             ),
-                            description: I18n.of(context)
+                            description: I18n.of(context)!
                                 .failed_to_import_recipe_unknown_reason,
                             backgroundText: true,
                             textColor: Colors.white,
@@ -177,7 +177,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                               size: 70.0,
                             ),
                             description:
-                                I18n.of(context).failed_to_connect_to_url,
+                                I18n.of(context)!.failed_to_connect_to_url,
                             backgroundText: true,
                             textColor: Colors.white,
                           ),
@@ -191,7 +191,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                               color: Colors.red[800],
                               size: 70.0,
                             ),
-                            description: I18n.of(context).invalid_url,
+                            description: I18n.of(context)!.invalid_url,
                             backgroundText: true,
                             textColor: Colors.white,
                           ),
@@ -220,7 +220,7 @@ class WebsiteSearch extends StatefulWidget {
 
   WebsiteSearch({
     this.initialWebsite = "",
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -228,18 +228,18 @@ class WebsiteSearch extends StatefulWidget {
 }
 
 class _WebsiteSearchState extends State<WebsiteSearch> {
-  TextEditingController _urlController;
+  TextEditingController? _urlController;
 
   @override
   void initState() {
     super.initState();
     _urlController = TextEditingController();
-    _urlController.text = widget.initialWebsite;
+    _urlController!.text = widget.initialWebsite;
   }
 
   @override
   void dispose() {
-    _urlController.dispose();
+    _urlController!.dispose();
     super.dispose();
   }
 
@@ -274,14 +274,14 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              I18n.of(context).enter_url,
+              I18n.of(context)!.enter_url,
               style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
             ),
             SizedBox(height: 10),
             TextFormField(
               controller: _urlController,
               decoration: InputDecoration(
-                hintText: I18n.of(context).recipe_url,
+                hintText: I18n.of(context)!.recipe_url,
                 border: OutlineInputBorder(),
                 focusedBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(50)),
@@ -309,7 +309,7 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
                     onTap: () {
                       FocusScope.of(context).requestFocus(FocusNode());
                       BlocProvider.of<WebsiteImportBloc>(context)
-                          .add(ImportRecipe(_urlController.text));
+                          .add(ImportRecipe(_urlController!.text));
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -338,7 +338,7 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
 }
 
 class RecipeWebsiteImportInfo extends StatefulWidget {
-  RecipeWebsiteImportInfo({Key key}) : super(key: key);
+  RecipeWebsiteImportInfo({Key? key}) : super(key: key);
 
   @override
   _RecipeWebsiteImportInfoState createState() =>
@@ -395,7 +395,7 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                 ),
               ),
               Expanded(
-                child: Text(I18n.of(context).supported_websites),
+                child: Text(I18n.of(context)!.supported_websites),
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
@@ -450,7 +450,7 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                           0,
                           ListTile(
                             title: Text(
-                              I18n.of(context).standardized_format,
+                              I18n.of(context)!.standardized_format,
                               style: TextStyle(
                                 fontSize: 11,
                               ),
@@ -458,7 +458,7 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                           ),
                         )
                         ..add(ListTile(
-                            title: Text(I18n.of(context).and_many_more))),
+                            title: Text(I18n.of(context)!.and_many_more))),
                     ),
                   )
                 : Container(),

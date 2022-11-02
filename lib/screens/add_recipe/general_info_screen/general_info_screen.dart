@@ -30,8 +30,8 @@ import 'recipe_tag_section.dart';
 
 /// arguments which are provided to the route, when pushing to it
 class GeneralInfoArguments {
-  final Recipe modifiedRecipe;
-  final String editingRecipeName;
+  final Recipe? modifiedRecipe;
+  final String? editingRecipeName;
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
 
@@ -44,8 +44,8 @@ class GeneralInfoArguments {
 }
 
 class GeneralInfoScreen extends StatefulWidget {
-  final Recipe modifiedRecipe;
-  final String editingRecipeName;
+  final Recipe? modifiedRecipe;
+  final String? editingRecipeName;
 
   GeneralInfoScreen({
     this.modifiedRecipe,
@@ -58,7 +58,7 @@ class GeneralInfoScreen extends StatefulWidget {
 
 class _GeneralInfoScreenState extends State<GeneralInfoScreen>
     with WidgetsBindingObserver {
-  Recipe modifiedRecipe;
+  Recipe? modifiedRecipe;
 
   final MyDoubleWrapper preperationTime = MyDoubleWrapper();
   final MyDoubleWrapper cookingTime = MyDoubleWrapper();
@@ -70,17 +70,17 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   _GeneralInfoScreenState(this.modifiedRecipe);
-  Flushbar _flush;
+  Flushbar? _flush;
 
   FocusNode _focusNode = FocusNode();
-  FocusNode _exitFocusNode;
+  FocusNode? _exitFocusNode;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    _initializeData(modifiedRecipe);
+    _initializeData(modifiedRecipe!);
   }
 
   @override
@@ -117,7 +117,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
             end: Alignment.bottomCenter,
             colors: [Color(0xffAF1E1E), Color(0xff641414)],
           ),
-          title: Text(I18n.of(context).add_general_info),
+          title: Text(I18n.of(context)!.add_general_info),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.info_outline),
@@ -125,8 +125,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                 showDialog(
                     context: context,
                     builder: (context) => InfoDialog(
-                          title: I18n.of(context).info,
-                          body: I18n.of(context)
+                          title: I18n.of(context)!.info,
+                          body: I18n.of(context)!
                               .general_info_changes_will_be_saved,
                         ));
               },
@@ -136,7 +136,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                 if (state is ClearedRecipe) {
                   setState(() {
                     modifiedRecipe = state.recipe
-                        .copyWith(categories: modifiedRecipe.categories);
+                        .copyWith(categories: modifiedRecipe!.categories);
                     _emptyTextFields();
                   });
                 }
@@ -149,8 +149,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                       builder: (bcontext) => BlocProvider.value(
                         value: BlocProvider.of<ClearRecipeBloc>(context),
                         child: AreYouSureDialog(
-                          I18n.of(context).clean_recipe_info,
-                          I18n.of(context).clean_recipe_info_desc,
+                          I18n.of(context)!.clean_recipe_info,
+                          I18n.of(context)!.clean_recipe_info_desc,
                           () {
                             BlocProvider.of<ClearRecipeBloc>(context).add(
                               Clear(
@@ -167,8 +167,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
             BlocListener<GeneralInfoBloc, GeneralInfoState>(
               listener: (context, state) {
                 if (state is GEditingFinishedGoBack) {
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(I18n.of(context).saving_your_input)));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(I18n.of(context)!.saving_your_input)));
                 } else if (state is GSaved) {
                   BlocProvider.of<GeneralInfoBloc>(context).add(SetCanSave());
 
@@ -183,7 +183,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                     ),
                   );
                 } else if (state is GSavedGoBack) {
-                  Scaffold.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   Navigator.pop(context);
                 }
               },
@@ -237,7 +237,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                       widget.editingRecipeName == null ? false : true,
                     ),
                   ),
-                  prefilledImage: modifiedRecipe.imagePath,
+                  prefilledImage: modifiedRecipe!.imagePath,
                   circleSize: 120,
                   color: Color(0xFF790604),
                   onCancel: () {
@@ -262,7 +262,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                           textCapitalization: TextCapitalization.sentences,
                           decoration: InputDecoration(
                             filled: true,
-                            labelText: I18n.of(context).name + "*",
+                            labelText: I18n.of(context)!.name + "*",
                             icon: Icon(MdiIcons.notebook),
                           ),
                         ),
@@ -274,11 +274,11 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                           alignment: WrapAlignment.center,
                           children: <Widget>[
                             _getTimeSelector(
-                                preperationTime, I18n.of(context).prep_time),
+                                preperationTime, I18n.of(context)!.prep_time),
                             _getTimeSelector(
-                                cookingTime, I18n.of(context).cook_time),
+                                cookingTime, I18n.of(context)!.cook_time),
                             _getTimeSelector(
-                                totalTime, I18n.of(context).total_time)
+                                totalTime, I18n.of(context)!.total_time)
                           ],
                         ),
                       ),
@@ -290,7 +290,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                           controller: sourceController,
                           decoration: InputDecoration(
                             filled: true,
-                            labelText: I18n.of(context).source,
+                            labelText: I18n.of(context)!.source,
                           ),
                         ),
                       ),
@@ -324,10 +324,10 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                   Container(
                     width: 100,
                     child: Text(
-                        (time.myDouble ~/ 60 > 0
-                                ? "${time.myDouble ~/ 60} h"
+                        (time.myDouble! ~/ 60 > 0
+                                ? "${time.myDouble! ~/ 60} h"
                                 : "") +
-                            " ${cutDouble(time.myDouble % 60)} min",
+                            " ${cutDouble(time.myDouble! % 60)} min",
                         style: TextStyle(fontSize: 18)),
                   ),
                 ],
@@ -354,10 +354,10 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   }
 
   void _onTapDuration(MyDoubleWrapper time) async {
-    Duration resultingDuration = await showDurationPicker(
+    Duration? resultingDuration = await showDurationPicker(
       context: context,
       initialTime: new Duration(
-        minutes: time.myDouble != null ? time.myDouble.toInt() : 30,
+        minutes: time.myDouble != null ? time.myDouble!.toInt() : 30,
       ),
     );
     if (resultingDuration != null) {
@@ -377,7 +377,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
     if (recipe.totalTime != null && recipe.totalTime != 0.0)
       totalTime.myDouble = recipe.totalTime;
     if (recipe.source != null) {
-      sourceController.text = recipe.source;
+      sourceController.text = recipe.source!;
     }
   }
 
@@ -402,14 +402,14 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
       switch (v) {
         case Validator.REQUIRED_FIELDS:
           _showFlushInfo(
-            I18n.of(context).check_filled_in_information,
-            I18n.of(context).check_filled_in_information_description,
+            I18n.of(context)!.check_filled_in_information,
+            I18n.of(context)!.check_filled_in_information_description,
           );
 
           break;
         case Validator.NAME_TAKEN:
-          _showFlushInfo(I18n.of(context).recipename_taken,
-              I18n.of(context).recipename_taken_description);
+          _showFlushInfo(I18n.of(context)!.recipename_taken,
+              I18n.of(context)!.recipename_taken_description);
           break;
 
         default:
@@ -420,7 +420,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   }
 
   void _showFlushInfo(String title, String body) {
-    if (_flush != null && _flush.isShowing()) {
+    if (_flush != null && _flush!.isShowing()) {
     } else {
       _flush = Flushbar<bool>(
         animationDuration: Duration(milliseconds: 300),
@@ -431,9 +431,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
           Icons.info_outline,
           color: Colors.blue,
         ),
-        mainButton: FlatButton(
+        mainButton: TextButton(
           onPressed: () {
-            _flush.dismiss(true); // result = true
+            _flush!.dismiss(true); // result = true
           },
           child: Text(
             "OK",
@@ -449,9 +449,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   /// the info to go back
   void _saveGeneralInfoData(BuildContext gInfoScreenContext, bool goBack) {
     BlocProvider.of<GeneralInfoBloc>(context).add(FinishedEditing(
+      nameController.text,
       widget.editingRecipeName != null ? true : false,
       goBack,
-      nameController.text,
       preperationTime.myDouble == null ? 0 : preperationTime.myDouble,
       cookingTime.myDouble == null ? 0 : cookingTime.myDouble,
       totalTime.myDouble == null ? 0 : totalTime.myDouble,
@@ -463,14 +463,14 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
 
   /// checks the recipeName for invalid characters like . or / or length
   /// because the name will be used as a directory for the recipe images
-  String _validateRecipeName(String recipeName) {
-    if (recipeName.isEmpty) {
-      return I18n.of(context).please_enter_a_name;
+  String? _validateRecipeName(String? recipeName) {
+    if (recipeName!.isEmpty) {
+      return I18n.of(context)!.please_enter_a_name;
     }
     if (recipeName.contains('/') ||
         recipeName.contains('.') ||
         recipeName.length >= 70) {
-      return I18n.of(context).invalid_name;
+      return I18n.of(context)!.invalid_name;
     } else {
       try {
         PathProvider.pP.getRecipeDirFull(recipeName).then((path) {

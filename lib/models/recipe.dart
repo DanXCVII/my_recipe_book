@@ -9,57 +9,57 @@ import 'string_int_tuple.dart';
 
 part 'recipe.g.dart';
 
-@HiveType()
+@HiveType(typeId: 7)
 class Recipe extends Equatable {
   @HiveField(0)
-  final String/*!*/ name;
+  final String name;
   @HiveField(1)
-  final String/*!*/ imagePath;
+  final String imagePath;
   @HiveField(2)
-  final String/*!*/ imagePreviewPath;
+  final String imagePreviewPath;
   @HiveField(3)
-  final double/*!*/ preperationTime;
+  final double preperationTime;
   @HiveField(4)
-  final double/*!*/ cookingTime;
+  final double cookingTime;
   @HiveField(5)
-  final double/*!*/ totalTime;
+  final double totalTime;
   @HiveField(6)
-  final double servings;
+  final double? servings;
   @HiveField(7)
-  final List<String>/*!*/ categories;
+  final List<String> categories;
   @HiveField(8)
-  final List<String>/*!*/ ingredientsGlossary;
+  final List<String> ingredientsGlossary;
   @HiveField(9)
-  final List<List<Ingredient>>/*!*/ ingredients;
+  final List<List<Ingredient>> ingredients;
   @HiveField(10)
-  final Vegetable/*!*/ vegetable;
+  final Vegetable vegetable;
   @HiveField(11)
-  final List<String/*!*/>/*!*/ steps;
+  final List<String> steps;
   @HiveField(12)
-  final List<List<String>>/*!*/ stepImages;
+  final List<List<String>> stepImages;
   @HiveField(13)
-  final String/*!*/ notes;
+  final String notes;
   @HiveField(14)
-  final List<Nutrition/*!*/>/*!*/ nutritions;
+  final List<Nutrition> nutritions;
   @HiveField(15)
-  final bool/*!*/ isFavorite;
+  final bool isFavorite;
   @HiveField(16)
-  final int effort;
+  final int? effort;
   @HiveField(17)
-  final String lastModified;
+  final String? lastModified;
   @HiveField(18)
-  final int rating;
+  final int? rating;
   @HiveField(19)
-  final List<StringIntTuple/*!*/>/*!*/ tags;
+  final List<StringIntTuple> tags;
   @HiveField(20)
-  final String source;
+  final String? source;
   @HiveField(21)
-  final String servingName;
+  final String? servingName;
   @HiveField(22)
-  final List<String> stepTitles;
+  final List<String>? stepTitles;
 
   Recipe({
-    @required this.name,
+    required this.name,
     this.imagePath = "images/randomFood.jpg",
     this.imagePreviewPath = "images/randomFood.jpg",
     this.preperationTime = 0,
@@ -126,9 +126,9 @@ class Recipe extends Equatable {
       name: json['name'],
       imagePath: json['image'],
       imagePreviewPath: json['imagePreviewPath'],
-      preperationTime: double.tryParse(json['preperationTime'].toString()),
-      cookingTime: double.tryParse(json['cookingTime'].toString()),
-      totalTime: double.tryParse(json['totalTime'].toString()),
+      preperationTime: double.tryParse(json['preperationTime'].toString())!,
+      cookingTime: double.tryParse(json['cookingTime'].toString())!,
+      totalTime: double.tryParse(json['totalTime'].toString())!,
       effort: json['complexity'],
       servings: double.tryParse(json['servings'].toString()),
       servingName: json.containsKey('servingName') ? json['servingName'] : null,
@@ -190,29 +190,29 @@ class Recipe extends Equatable {
       };
 
   Recipe copyWith({
-    String name,
-    String imagePath,
-    String imagePreviewPath,
-    double preperationTime,
-    double cookingTime,
-    double totalTime,
-    double servings,
-    String servingName,
-    List<String> ingredientsGlossary,
-    List<List<Ingredient>> ingredients,
-    Vegetable vegetable,
-    List<String> steps,
-    List<List<String>> stepImages,
-    String notes,
-    List<Nutrition> nutritions,
-    List<String> categories,
-    int effort,
-    bool isFavorite,
-    String lastModified,
-    int rating,
-    List<StringIntTuple> tags,
-    String source,
-    List<String> stepTitles,
+    String? name,
+    String? imagePath,
+    String? imagePreviewPath,
+    double? preperationTime,
+    double? cookingTime,
+    double? totalTime,
+    double? servings,
+    String? servingName,
+    List<String>? ingredientsGlossary,
+    List<List<Ingredient>>? ingredients,
+    Vegetable? vegetable,
+    List<String>? steps,
+    List<List<String>>? stepImages,
+    String? notes,
+    List<Nutrition>? nutritions,
+    List<String>? categories,
+    int? effort,
+    bool? isFavorite,
+    String? lastModified,
+    int? rating,
+    List<StringIntTuple>? tags,
+    String? source,
+    List<String>? stepTitles,
   }) {
     return Recipe(
         name: name ?? this.name,
@@ -241,7 +241,7 @@ class Recipe extends Equatable {
   }
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         name,
         imagePath,
         imagePreviewPath,
@@ -269,8 +269,8 @@ class Recipe extends Equatable {
 }
 
 class SearchRecipe {
-  String name;
-  int id;
+  String? name;
+  int? id;
 
   SearchRecipe({this.name, this.id});
 }

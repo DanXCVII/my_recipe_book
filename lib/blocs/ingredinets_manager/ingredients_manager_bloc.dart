@@ -12,7 +12,7 @@ class IngredientsManagerBloc
     extends Bloc<IngredientsManagerEvent, IngredientsManagerState> {
   IngredientsManagerBloc() : super(IngredientsManagerInitial()) {
     on<LoadIngredientsManager>((event, emit) async {
-      final List<String /*!*/ > ingredients = HiveProvider()
+      final List<String > ingredients = HiveProvider()
           .getIngredientNames()
         ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
@@ -47,7 +47,7 @@ class IngredientsManagerBloc
       if (state is LoadedIngredientsManager) {
         await HiveProvider().deleteIngredient(event.oldIngredient);
         await HiveProvider().addIngredient(event.updatedIngredient);
-        final List<String /*!*/ /*!*/ > ingredients =
+        final List<String /*!*/ > ingredients =
             (state as LoadedIngredientsManager).ingredients
               ..remove(event.oldIngredient)
               ..add(event.updatedIngredient)

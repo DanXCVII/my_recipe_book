@@ -10,8 +10,8 @@ class LoadingRandomRecipeExplorer extends RandomRecipeExplorerState {
 }
 
 class LoadingRecipes extends RandomRecipeExplorerState {
-  final List<String/*!*/>/*!*/ categories;
-  final int/*!*/ selectedCategory;
+  final List<String> categories;
+  final int selectedCategory;
 
   LoadingRecipes(this.categories, this.selectedCategory);
 
@@ -20,13 +20,15 @@ class LoadingRecipes extends RandomRecipeExplorerState {
 }
 
 class LoadedRandomRecipeExplorer extends RandomRecipeExplorerState {
-  final List<String/*!*/>/*!*/ categories;
-  final int selectedCategory;
-  final List<Recipe/*!*/>/*!*/ randomRecipes;
+  final List<String> categories;
+  final int? selectedCategory;
+  final List<Recipe> randomRecipes;
 
   const LoadedRandomRecipeExplorer(
-      [this.randomRecipes = const [], this.categories, this.selectedCategory]);
+      [this.randomRecipes = const [],
+      this.categories = const [],
+      this.selectedCategory]);
 
   @override
-  List<Object> get props => [selectedCategory, categories, randomRecipes];
+  List<Object?> get props => [selectedCategory, categories, randomRecipes];
 }

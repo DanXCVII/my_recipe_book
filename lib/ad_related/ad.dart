@@ -7,20 +7,20 @@ import 'package:my_recipe_book/generated/i18n.dart';
 import 'ad_id.dart';
 
 class Ads {
-  static AdRequest _adRequest;
-  static RewardedAd _rewardedAd;
+  static late AdRequest _adRequest;
+  static RewardedAd? _rewardedAd;
   static int maxFailedLoadAttempts = 3;
 
-  static InterstitialAd _interstitialAd;
+  static InterstitialAd? _interstitialAd;
   static int _numInterstitialLoadAttempts = 0;
 
   static int _numRewardedLoadAttempts = 0;
   static bool _showBannerAds = true;
   static bool _showAds = false;
   static List<BannerAd> _bottomBannerAd = [];
-  static BannerAd _topBannerAd;
+  static BannerAd? _topBannerAd;
   static bool _wideBottomBannerAd = false;
-  static double adHeight;
+  static double? adHeight;
 
   static void initialize(bool showAds, {bool personalized = false}) {
     _showAds = showAds;
@@ -75,9 +75,9 @@ class Ads {
   static Future<void> loadRewardedVideo(
     bool showOnLoad,
     void Function() onAdLoaded,
-    void Function()/*!*/ onAdFailedToLoad,
-    void Function()/*!*/ onRewardedAdUserEarnedReward, [
-    State state,
+    void Function() onAdFailedToLoad,
+    void Function() onRewardedAdUserEarnedReward, [
+    State? state,
   ]) async {
     if (!_showAds) return;
     if (state != null && !state.mounted) return;
@@ -125,7 +125,7 @@ class Ads {
             print('$ad loaded');
             _interstitialAd = ad;
             _numInterstitialLoadAttempts = 0;
-            _interstitialAd.setImmersiveMode(true);
+            _interstitialAd!.setImmersiveMode(true);
           },
           onAdFailedToLoad: (LoadAdError error) {
             print('InterstitialAd failed to load: $error.');
@@ -138,18 +138,18 @@ class Ads {
         ));
   }
 
-  static void showBottomBannerAd([State state]) {
+  static void showBottomBannerAd([State? state]) {
     if (!_showBannerAds) return;
     _setBottomBannerAd();
     _bottomBannerAd.last.load();
   }
 
-  static void showTopBannerAd([State state]) {
+  static void showTopBannerAd([State? state]) {
     if (!_showBannerAds) return;
     // if (Purchases.isNoAds()) return;
     if (!_showBannerAds || (state != null && !state.mounted)) return;
     if (_topBannerAd == null) setTopBannerAd();
-    _topBannerAd..load();
+    _topBannerAd!..load();
   }
 
   static void hideBottomBannerAd() {
@@ -163,7 +163,7 @@ class Ads {
 
   static void hideTopBannerAd() {
     if (!_showBannerAds) return;
-    _topBannerAd.dispose();
+    _topBannerAd!.dispose();
   }
 
   static void showInterstitialAd() {
@@ -173,7 +173,7 @@ class Ads {
       print('Warning: attempt to show interstitial before loaded.');
       return;
     }
-    _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (InterstitialAd ad) =>
           print('ad onAdShowedFullScreenContent.'),
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
@@ -187,22 +187,22 @@ class Ads {
         loadInterstitialAd();
       },
     );
-    _interstitialAd.show();
+    _interstitialAd!.show();
     _interstitialAd = null;
   }
 
   static Future<void> showRewardedVideoAd(
-      void Function() onRewardedAdUserEarnedReward) async {
+      void Function()? onRewardedAdUserEarnedReward) async {
     if (_rewardedAd == null) {
       loadRewardedVideo(
         true,
         () {},
         () {},
-        onRewardedAdUserEarnedReward,
+        onRewardedAdUserEarnedReward!,
       );
     } else {
-      _rewardedAd.show(onUserEarnedReward: (_, __) {
-        onRewardedAdUserEarnedReward();
+      _rewardedAd!.show(onUserEarnedReward: (_, __) {
+        onRewardedAdUserEarnedReward!();
       });
     }
 
@@ -249,7 +249,7 @@ class Ads {
                       type: MaterialType.transparency,
                       child: Center(
                         child: Text(
-                          I18n.of(context).remove_ads_upgrade_in_settings,
+                          I18n.of(context)!.remove_ads_upgrade_in_settings,
                           style: TextStyle(fontSize: 18, color: Colors.white),
                           textAlign: TextAlign.center,
                         ),

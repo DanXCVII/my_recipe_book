@@ -13,13 +13,13 @@ import 'icon_info_message.dart';
 import 'recipe_image_hero.dart';
 
 class ShoppingListSummary extends StatelessWidget {
-  final Recipe/*!*//*?*/ summaryRecipe;
-  final List<CheckableIngredient> ingredients;
+  final Recipe /*?*/ summaryRecipe;
+  final List<CheckableIngredient>? ingredients;
 
   const ShoppingListSummary(
     this.ingredients,
     this.summaryRecipe, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -28,10 +28,10 @@ class ShoppingListSummary extends StatelessWidget {
       context: context,
       removeTop: true,
       child: ListView(
-        children: List.generate(ingredients.length * 2 + 1, (index) {
+        children: List.generate(ingredients!.length * 2 + 1, (index) {
           if (index % 2 != 0) {
             int ingredientIndex = ((index - 1) / 2).round();
-            CheckableIngredient currentIngred = ingredients[ingredientIndex];
+            CheckableIngredient currentIngred = ingredients![ingredientIndex];
 
             return Dismissible(
               key: Key(
@@ -67,7 +67,7 @@ class ShoppingListSummary extends StatelessWidget {
                         // needs size, otherwise error
                         Container(width: 1, height: 1)
                         : Text(
-                            "${currentIngred.amount != null ? (GlobalSettings().showDecimal() ? cutDouble(currentIngred.amount) : getFractionDouble(currentIngred.amount)) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit}",
+                            "${currentIngred.amount != null ? (GlobalSettings().showDecimal() ? cutDouble(currentIngred.amount!) : getFractionDouble(currentIngred.amount!)) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit!}",
                             style: TextStyle(
                               decoration: currentIngred.checked
                                   ? TextDecoration.lineThrough
@@ -79,7 +79,7 @@ class ShoppingListSummary extends StatelessWidget {
                   shape: CircleBorder(),
                   value: currentIngred.checked,
                   materialTapTargetSize: MaterialTapTargetSize.padded,
-                  onChanged: (bool x) {
+                  onChanged: (bool? x) {
                     BlocProvider.of<ShoppingCartBloc>(context).add(
                       CheckIngredients(
                         [currentIngred],
@@ -110,15 +110,15 @@ class ShoppingList extends StatelessWidget {
   const ShoppingList(
     this.ingredients, {
     this.roundBorders = false,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    List<Recipe> recipes = ingredients?.keys?.toList();
+    List<Recipe> recipes = ingredients.keys.toList();
     if (ingredients == null ||
         ingredients.keys.isEmpty ||
-        ingredients[ingredients.keys.first].isEmpty) {
+        ingredients[ingredients.keys.first]!.isEmpty) {
       return displayNothingAdded(context);
     }
     Recipe summaryRecipe =
@@ -127,7 +127,7 @@ class ShoppingList extends StatelessWidget {
       recipes.removeWhere((recipe) => recipe.name == "summary");
       recipes.insert(0, summaryRecipe);
     }
-    Color ingredBackgroundColor =
+    Color? ingredBackgroundColor =
         Theme.of(context).brightness == Brightness.dark
             ? Color(0xff40392F)
             : Colors.grey[100];
@@ -148,7 +148,7 @@ class ShoppingList extends StatelessWidget {
             return Dismissible(
               key: Key('$recipe'),
               onDismissed: (_) {
-                List<Ingredient> removeIngreds = ingredients[recipe]
+                List<Ingredient> removeIngreds = ingredients[recipe]!
                     .map((ingred) => ingred.getIngredient())
                     .toList();
                 BlocProvider.of<ShoppingCartBloc>(context)
@@ -181,7 +181,7 @@ class ShoppingList extends StatelessWidget {
               color: Colors.brown,
               size: 70.0,
             ),
-            description: I18n.of(context).shopping_cart_is_empty),
+            description: I18n.of(context)!.shopping_cart_is_empty),
       ),
     );
   }
@@ -189,9 +189,9 @@ class ShoppingList extends StatelessWidget {
 
 class ShoppingCartListTile extends StatelessWidget {
   final Recipe recipe;
-  final List<CheckableIngredient> ingredients;
-  final Color ingredientTextColor;
-  final Color backgroundColor;
+  final List<CheckableIngredient>? ingredients;
+  final Color? ingredientTextColor;
+  final Color? backgroundColor;
   final bool roundBorders;
 
   const ShoppingCartListTile(
@@ -200,7 +200,7 @@ class ShoppingCartListTile extends StatelessWidget {
     this.ingredients, {
     this.ingredientTextColor,
     this.roundBorders = false,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -223,10 +223,10 @@ class ShoppingCartListTile extends StatelessWidget {
                 ),
           title: Text(
             recipe.name == Constants.summary
-                ? I18n.of(context).summary
+                ? I18n.of(context)!.summary
                 : recipe.name,
           ),
-          children: ingredients.map((ingredient) {
+          children: ingredients!.map((ingredient) {
             return Dismissible(
               key: Key('${recipe.name}${ingredient.name}${ingredient.unit}'),
               onDismissed: (_) {
@@ -240,11 +240,11 @@ class ShoppingCartListTile extends StatelessWidget {
               },
               background: PrimaryBackgroundDismissable(
                 roundBottomBorder:
-                    ingredients.last == ingredient && roundBorders,
+                    ingredients!.last == ingredient && roundBorders,
               ),
               secondaryBackground: SecondaryBackgroundDismissible(
                 roundBottomBorder:
-                    ingredients.last == ingredient && roundBorders,
+                    ingredients!.last == ingredient && roundBorders,
               ),
               child: InkWell(
                 onTap: () {
@@ -256,7 +256,7 @@ class ShoppingCartListTile extends StatelessWidget {
                   child: Container(
                       decoration: BoxDecoration(
                         borderRadius:
-                            ingredients.last == ingredient && roundBorders
+                            ingredients!.last == ingredient && roundBorders
                                 ? BorderRadius.only(
                                     bottomRight: Radius.circular(15),
                                     bottomLeft: Radius.circular(15))
@@ -264,7 +264,7 @@ class ShoppingCartListTile extends StatelessWidget {
                         color: backgroundColor,
                       ),
                       child: Row(
-                        children: <Widget>[
+                        children: [
                           Container(
                             height: 50,
                             width: 50,
@@ -275,7 +275,7 @@ class ShoppingCartListTile extends StatelessWidget {
                                 value: ingredient.checked,
                                 materialTapTargetSize:
                                     MaterialTapTargetSize.padded,
-                                onChanged: (bool x) {
+                                onChanged: (bool? x) {
                                   BlocProvider.of<ShoppingCartBloc>(context)
                                       .add(
                                     CheckIngredients(
@@ -303,7 +303,7 @@ class ShoppingCartListTile extends StatelessWidget {
                                   color: (ingredientTextColor == null)
                                       ? Theme.of(context)
                                           .textTheme
-                                          .bodyText2
+                                          .bodyText2!
                                           .color
                                       : ingredientTextColor,
                                 ),
@@ -321,7 +321,7 @@ class ShoppingCartListTile extends StatelessWidget {
                                   decoration: BoxDecoration(),
                                   child: Center(
                                     child: Text(
-                                      '${(GlobalSettings().showDecimal() ? cutDouble(ingredient.amount) : getFractionDouble(ingredient.amount))} ${ingredient.unit == null ? "" : ingredient.unit}',
+                                      '${(GlobalSettings().showDecimal() ? cutDouble(ingredient.amount!) : getFractionDouble(ingredient.amount!))} ${ingredient.unit == null ? "" : ingredient.unit}',
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -332,7 +332,7 @@ class ShoppingCartListTile extends StatelessWidget {
                                         color: (ingredientTextColor == null)
                                             ? Theme.of(context)
                                                 .textTheme
-                                                .bodyText2
+                                                .bodyText2!
                                                 .color
                                             : ingredientTextColor,
                                       ),
@@ -340,7 +340,7 @@ class ShoppingCartListTile extends StatelessWidget {
                                     ),
                                   ))
                               : null
-                        ]..removeWhere((item) => item == null),
+                        ].whereType<Widget>().toList(),
                       )),
                 ),
               ),
@@ -357,7 +357,7 @@ class PrimaryBackgroundDismissable extends StatelessWidget {
 
   const PrimaryBackgroundDismissable({
     this.roundBottomBorder = false,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

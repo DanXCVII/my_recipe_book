@@ -41,7 +41,7 @@ class _CategorySectionState extends State<CategorySection> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      I18n.of(context).select_subcategories,
+                      I18n.of(context)!.select_subcategories,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -54,11 +54,13 @@ class _CategorySectionState extends State<CategorySection> {
                         showDialog(
                           context: context,
                           builder: (_) => TextFieldDialog(
-                            validation: (String name) {
+                            validation: (String? name) {
                               if (state.categories.contains(name)) {
-                                return I18n.of(context).category_already_exists;
+                                return I18n.of(context)!
+                                    .category_already_exists;
                               } else if (name == "") {
-                                return I18n.of(context).field_must_not_be_empty;
+                                return I18n.of(context)!
+                                    .field_must_not_be_empty;
                               } else {
                                 return null;
                               }
@@ -68,7 +70,7 @@ class _CategorySectionState extends State<CategorySection> {
                                   .recipeManagerBloc
                                   .add(RMAddCategories([name]));
                             },
-                            hintText: I18n.of(context).categoryname,
+                            hintText: I18n.of(context)!.categoryname,
                           ),
                         );
                       },
@@ -121,17 +123,17 @@ class _CategorySectionState extends State<CategorySection> {
 
 // creates a filterClip with the given name
 class MyCategoryFilterChip extends StatefulWidget {
-  final String/*!*/ chipName;
+  final String chipName;
   final isSelected;
-  final Function(String/*!*/ name) onSelect;
-  final Function(String/*!*/ name) onDeselect;
+  final Function(String name) onSelect;
+  final Function(String name) onDeselect;
 
   MyCategoryFilterChip({
-    Key key,
-    this.chipName,
+    Key? key,
+    required this.chipName,
     this.isSelected,
-    @required this.onSelect,
-    @required this.onDeselect,
+    required this.onSelect,
+    required this.onDeselect,
   });
 
   @override
@@ -141,7 +143,7 @@ class MyCategoryFilterChip extends StatefulWidget {
 }
 
 class _MyCategoryFilterChipState extends State<MyCategoryFilterChip> {
-  bool/*!*/ _isSelected = false;
+  bool _isSelected = false;
 
   @override
   void initState() {

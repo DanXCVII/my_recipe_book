@@ -74,20 +74,23 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
           //     ),
           //   ),
           // );
-          return FlatButton(
-            color: currentCategory == selectedCategory ? Colors.brown : null,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textColor:
-                currentCategory == selectedCategory ? Colors.amber : null,
+          return TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor:
+                  currentCategory == selectedCategory ? Colors.brown : null,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              foregroundColor:
+                  currentCategory == selectedCategory ? Colors.amber : null,
+            ),
             onPressed: () {
               BlocProvider.of<RandomRecipeExplorerBloc>(context)
                   .add(ChangeCategory(currentCategory));
             },
             child: Text(currentCategory == "no category"
-                ? I18n.of(context).no_category
+                ? I18n.of(context)!.no_category
                 : currentCategory == "all categories"
-                    ? I18n.of(context).all_categories
+                    ? I18n.of(context)!.all_categories
                     : currentCategory),
           );
         } else {
@@ -114,10 +117,10 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                   child: ListTile(
                     title: Text(
                         categoryNames[(index / 2).floor()] == "no category"
-                            ? I18n.of(context).no_category
+                            ? I18n.of(context)!.no_category
                             : categoryNames[(index / 2).floor()] ==
                                     "all categories"
-                                ? I18n.of(context).all_categories
+                                ? I18n.of(context)!.all_categories
                                 : categoryNames[(index / 2).floor()],
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
@@ -141,7 +144,7 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
           return Center(child: CircularProgressIndicator());
         } else if (state is LoadingRecipes) {
           return Column(
-              children: <Widget>[
+              children: [
             MediaQuery.of(context).size.width <= 750
                 ? SafeArea(
                     child: Container(
@@ -156,7 +159,7 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
             MediaQuery.of(context).size.width <= 750 ? Divider() : null,
             Expanded(
               child: Row(
-                children: <Widget>[
+                children: [
                   MediaQuery.of(context).size.width > 750
                       ? _getCategoriesSelectorSideList(
                           state.categories,
@@ -168,13 +171,13 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                       child: CircularProgressIndicator(),
                     ),
                   ),
-                ]..removeWhere((item) => item == null),
+                ].whereType<Widget>().toList(),
               ),
             )
-          ]..removeWhere((item) => item == null));
+          ].whereType<Widget>().toList());
         } else if (state is LoadedRandomRecipeExplorer) {
           return Column(
-            children: <Widget>[
+            children: [
               MediaQuery.of(context).size.width <= 750
                   ? SafeArea(
                       child: Container(
@@ -182,18 +185,18 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                         padding: const EdgeInsets.only(top: 8.0),
                         width: MediaQuery.of(context).size.width,
                         child: _getCategorySelectorTopBar(state.categories,
-                            state.categories[state.selectedCategory]),
+                            state.categories[state.selectedCategory!]),
                       ),
                     )
                   : null,
               MediaQuery.of(context).size.width <= 750 ? Divider() : null,
               Expanded(
                 child: Row(
-                  children: <Widget>[
+                  children: [
                     MediaQuery.of(context).size.width > 750
                         ? _getCategoriesSelectorSideList(
                             state.categories,
-                            state.categories[state.selectedCategory],
+                            state.categories[state.selectedCategory!],
                           )
                         : null,
                     Expanded(
@@ -208,7 +211,7 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                                   color: Colors.white,
                                   size: 70.0,
                                 ),
-                                description: I18n.of(context)
+                                description: I18n.of(context)!
                                     .no_recipes_under_this_category,
                               ))
                             : TweenAnimationBuilder(
@@ -228,10 +231,10 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                               ),
                       ),
                     ),
-                  ]..removeWhere((item) => item == null),
+                  ].whereType<Widget>().toList(),
                 ),
               ),
-            ]..removeWhere((item) => item == null),
+            ].whereType<Widget>().toList(),
           );
         } else {
           return Text("uncatched state $state");
@@ -247,10 +250,10 @@ class SwypingCards extends StatefulWidget {
   final double maxHeigth;
 
   SwypingCards({
-    @required this.recipes,
-    @required this.maxWidth,
-    @required this.maxHeigth,
-    Key key,
+    required this.recipes,
+    required this.maxWidth,
+    required this.maxHeigth,
+    Key? key,
   }) : super(key: key);
 
   _SwypingCardsState createState() => _SwypingCardsState();
@@ -258,7 +261,7 @@ class SwypingCards extends StatefulWidget {
 
 class _SwypingCardsState extends State<SwypingCards>
     with TickerProviderStateMixin {
-  CardController controller; //Use this to trigger swap.
+  CardController? controller; //Use this to trigger swap.
   int currentSwipeIndex = 0;
 
   @override
@@ -286,7 +289,7 @@ class _SwypingCardsState extends State<SwypingCards>
                     .add(ReloadRandomRecipeExplorer());
               },
             ),
-            description: I18n.of(context).you_made_it_to_the_end,
+            description: I18n.of(context)!.you_made_it_to_the_end,
           ),
         ),
       )),
@@ -313,9 +316,10 @@ class _SwypingCardsState extends State<SwypingCards>
               cardHeight: maxHeightCard,
             ),
             cardController: CardController(),
-            swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
+            swipeUpdateCallback:
+                (DragUpdateDetails? details, Alignment? align) {
               /// Get swiping card's alignment
-              if (align.x < 0) {
+              if (align!.x < 0) {
                 //Card is LEFT swiping
               } else if (align.x > 0) {
                 //Card is RIGHT swiping

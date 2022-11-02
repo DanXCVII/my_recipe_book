@@ -14,7 +14,7 @@ class Tuple2<T1, T2> extends Equatable {
   String toString() => '[$item1, $item2]';
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         item1,
         item2,
       ];

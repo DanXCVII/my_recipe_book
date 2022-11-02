@@ -14,15 +14,15 @@ part 'recipe_tag_manager_state.dart';
 class RecipeTagManagerBloc
     extends Bloc<RecipeTagManagerEvent, RecipeTagManagerState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
-  StreamSubscription subscription;
+  StreamSubscription? subscription;
 
   List<StringIntTuple> selectedTags = [];
 
   RecipeTagManagerBloc(
-      {@required this.recipeManagerBloc, List<StringIntTuple> selectedTags})
+      {required this.recipeManagerBloc,
+      List<StringIntTuple> selectedTags = const []})
       : super(LoadingRecipeTagManager()) {
-    if (selectedTags != null)
-      this.selectedTags = List<StringIntTuple>.from(selectedTags);
+    this.selectedTags = List<StringIntTuple>.from(selectedTags);
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeTagManager) {
         if (rmState is RM.AddRecipeTagsState) {
@@ -65,7 +65,7 @@ class RecipeTagManagerBloc
 
     on<UpdateRecipeTag>((event, emit) async {
       if (state is LoadedRecipeTagManager) {
-        final List<StringIntTuple/*!*/> recipeTags =
+        final List<StringIntTuple> recipeTags =
             (state as LoadedRecipeTagManager).recipeTags.map((recipeTag) {
           if (recipeTag == event.oldRecipeTag) {
             return event.updatedRecipeTag;

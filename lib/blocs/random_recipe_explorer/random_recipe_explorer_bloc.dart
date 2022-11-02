@@ -14,16 +14,16 @@ part 'random_recipe_explorer_state.dart';
 class RandomRecipeExplorerBloc
     extends Bloc<RandomRecipeExplorerEvent, RandomRecipeExplorerState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
-  StreamSubscription subscription;
+  late StreamSubscription subscription;
 
-  RandomRecipeExplorerBloc({@required this.recipeManagerBloc})
+  RandomRecipeExplorerBloc({required this.recipeManagerBloc})
       : super(LoadingRandomRecipeExplorer()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRandomRecipeExplorer) {
         final List<String> categories =
             (this.state as LoadedRandomRecipeExplorer).categories;
         final int selectedIndex =
-            (this.state as LoadedRandomRecipeExplorer).selectedCategory;
+            (this.state as LoadedRandomRecipeExplorer).selectedCategory!;
         final String selectedCategory = categories[selectedIndex];
 
         if (rmState is RM.AddRecipesState) {
@@ -54,9 +54,9 @@ class RandomRecipeExplorerBloc
         } else if (rmState is RM.DeleteRecipeTagState ||
             rmState is RM.UpdateRecipeTagState) {
           add(InitializeRandomRecipeExplorer(
-              selectedCategory:
-                  (state as LoadedRandomRecipeExplorer).categories[
-                      (state as LoadedRandomRecipeExplorer).selectedCategory]));
+              selectedCategory: (state as LoadedRandomRecipeExplorer)
+                      .categories[
+                  (state as LoadedRandomRecipeExplorer).selectedCategory!]));
         } else if (rmState is RM.MoveCategoryState) {
           add(MoveCategory(rmState.oldIndex, rmState.newIndex));
         }
@@ -67,18 +67,19 @@ class RandomRecipeExplorerBloc
       final List<String> categories = HiveProvider().getCategoryNames()
         ..insert(0, 'all categories');
 
-      List<Recipe/*!*/> randomRecipes = [];
+      List<Recipe> randomRecipes = [];
       for (int i = 0; i < 50; i++) {
-        randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory(
+        Recipe? randomRecipe = await (HiveProvider().getRandomRecipeOfCategory(
           category: event.selectedCategory == "all categories"
               ? null
               : event.selectedCategory,
           excludedRecipe: randomRecipes.isNotEmpty ? randomRecipes.last : null,
         ));
+        if (randomRecipe != null) {
+          randomRecipes.add(randomRecipe);
+        }
       }
-      emit(LoadedRandomRecipeExplorer(
-          randomRecipes[0] == null ? [] : randomRecipes,
-          categories,
+      emit(LoadedRandomRecipeExplorer(randomRecipes, categories,
           categories.indexOf(event.selectedCategory)));
     });
 
@@ -102,20 +103,24 @@ class RandomRecipeExplorerBloc
       if (state is LoadedRandomRecipeExplorer) {
         List<String> categories =
             List<String>.from((state as LoadedRandomRecipeExplorer).categories);
-        int selectedIndex =
+        int? selectedIndex =
             (state as LoadedRandomRecipeExplorer).selectedCategory;
         if (categories.indexOf(event.category) == selectedIndex) {
           List<Recipe> randomRecipes = [];
           for (int i = 0; i < 10; i++) {
-            randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory());
+            Recipe? randomRecipe =
+                await HiveProvider().getRandomRecipeOfCategory();
+            if (randomRecipe != null) {
+              randomRecipes.add(randomRecipe);
+            }
           }
 
           emit(LoadedRandomRecipeExplorer(
-            randomRecipes[0] == null ? [] : randomRecipes,
+            randomRecipes,
             List<String>.from(categories)..remove(event.category),
             selectedIndex,
           ));
-        } else if (categories.indexOf(event.category) < selectedIndex) {
+        } else if (categories.indexOf(event.category) < selectedIndex!) {
           emit(LoadedRandomRecipeExplorer(
             (state as LoadedRandomRecipeExplorer).randomRecipes,
             List<String>.from(categories)..remove(event.category),
@@ -161,12 +166,12 @@ class RandomRecipeExplorerBloc
             (state as LoadedRandomRecipeExplorer).randomRecipes;
         List<String> categories =
             (state as LoadedRandomRecipeExplorer).categories;
-        int selectedIndex =
+        int? selectedIndex =
             (state as LoadedRandomRecipeExplorer).selectedCategory;
 
         if (await HiveProvider().getRandomRecipeOfCategory(
                 category:
-                    selectedIndex == 0 ? null : categories[selectedIndex]) ==
+                    selectedIndex == 0 ? null : categories[selectedIndex!]) ==
             null) {
           emit(LoadedRandomRecipeExplorer([], categories, selectedIndex));
           return;
@@ -174,10 +179,11 @@ class RandomRecipeExplorerBloc
 
         bool updated = false;
         while (randomRecipes.contains(event.recipe)) {
-          randomRecipes[randomRecipes.indexOf(event.recipe)] =
-              await HiveProvider().getRandomRecipeOfCategory(
-                  category:
-                      selectedIndex == 0 ? null : categories[selectedIndex]);
+          Recipe? randomRecipe = await HiveProvider().getRandomRecipeOfCategory(
+              category: selectedIndex == 0 ? null : categories[selectedIndex!]);
+          if (randomRecipe != null) {
+            randomRecipes[randomRecipes.indexOf(event.recipe)] = randomRecipe;
+          }
           updated = true;
         }
         if (updated) {
@@ -220,19 +226,22 @@ class RandomRecipeExplorerBloc
         final List<String> categories =
             (state as LoadedRandomRecipeExplorer).categories;
         final int selectedCategory =
-            (state as LoadedRandomRecipeExplorer).selectedCategory;
+            (state as LoadedRandomRecipeExplorer).selectedCategory!;
         final List<Recipe> randomRecipes = [];
 
         emit(LoadingRecipes(categories, selectedCategory));
 
         for (int i = 0; i < 50; i++) {
-          randomRecipes.add(await HiveProvider().getRandomRecipeOfCategory(
+          Recipe? randomRecipe = await HiveProvider().getRandomRecipeOfCategory(
               category:
-                  selectedCategory == 0 ? null : categories[selectedCategory]));
+                  selectedCategory == 0 ? null : categories[selectedCategory]);
+          if (randomRecipe != null) {
+            randomRecipes.add(randomRecipe);
+          }
         }
 
         emit(LoadedRandomRecipeExplorer(
-          randomRecipes[0] == null ? null : randomRecipes,
+          randomRecipes,
           categories,
           selectedCategory,
         ));

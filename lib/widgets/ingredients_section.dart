@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_recipe_book/blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
+import 'package:my_recipe_book/screens/recipe_screen.dart';
 import 'package:my_recipe_book/widgets/dialogs/are_you_sure_dialog.dart';
 import 'package:reorderables/reorderables.dart';
 
@@ -31,13 +32,13 @@ class Ingredients extends StatefulWidget {
 
 class _IngredientsState extends State<Ingredients> {
   bool initializedServingsNameController = false;
-  Flushbar _flush;
+  Flushbar? _flush;
 
   @override
   Widget build(BuildContext context) {
     if (!initializedServingsNameController &&
         widget.servingsNameController.text == "") {
-      widget.servingsNameController.text = I18n.of(context).servings;
+      widget.servingsNameController.text = I18n.of(context)!.servings;
       initializedServingsNameController = true;
     }
 
@@ -57,14 +58,14 @@ class _IngredientsState extends State<Ingredients> {
                   controller: widget.servingsController,
                   keyboardType: TextInputType.number,
                   validator: (value) {
-                    if (getDoubleFromString(value) == null && value != "") {
-                      return I18n.of(context).no_valid_number;
+                    if (getDoubleFromString(value!) == null && value != "") {
+                      return I18n.of(context)!.no_valid_number;
                     }
                     return null;
                   },
                   decoration: InputDecoration(
                     filled: true,
-                    labelText: I18n.of(context).amount,
+                    labelText: I18n.of(context)!.amount,
                     icon: Icon(Icons.local_dining),
                   ),
                 ),
@@ -78,13 +79,13 @@ class _IngredientsState extends State<Ingredients> {
                   controller: widget.servingsNameController,
                   validator: (value) {
                     if (value == "") {
-                      return I18n.of(context).field_must_not_be_empty;
+                      return I18n.of(context)!.field_must_not_be_empty;
                     }
                     return null;
                   },
                   decoration: InputDecoration(
                     filled: true,
-                    labelText: I18n.of(context).servings,
+                    labelText: I18n.of(context)!.servings,
                   ),
                 ),
               ),
@@ -94,7 +95,7 @@ class _IngredientsState extends State<Ingredients> {
         Padding(
           padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
           child: Text(
-            I18n.of(context).ingredients + ':',
+            I18n.of(context)!.ingredients + ':',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -180,13 +181,12 @@ class _IngredientsState extends State<Ingredients> {
                                                           null)
                                               ? null
                                               : Text(
-                                                  "${currentIngred.amount == null ? "" : cutDouble(currentIngred.amount)}" +
+                                                  "${currentIngred.amount == null ? "" : cutDouble(currentIngred.amount!)}" +
                                                       " ${currentIngred.unit ?? ""}",
                                                   style: TextStyle(
                                                       color: Colors.grey),
                                                 ),
-                                        ]..removeWhere(
-                                            (element) => element == null)),
+                                        ].whereType<Widget>().toList()),
                                     Spacer(),
                                     IconButton(
                                         icon: Icon(Icons.delete),
@@ -213,7 +213,7 @@ class _IngredientsState extends State<Ingredients> {
                                     context: context,
                                     builder: (bContext) => TextFieldDialog(
                                       validation: (title) => title == ""
-                                          ? I18n.of(context)
+                                          ? I18n.of(context)!
                                               .field_must_not_be_empty
                                           : null,
                                       prefilledText: state.sectionTitles[index],
@@ -242,9 +242,9 @@ class _IngredientsState extends State<Ingredients> {
                                           context: context,
                                           builder: (bcontext) =>
                                               AreYouSureDialog(
-                                                  I18n.of(context)
+                                                  I18n.of(context)!
                                                       .delete_section,
-                                                  I18n.of(context)
+                                                  I18n.of(context)!
                                                       .delete_section_desc, () {
                                             BlocProvider.of<
                                                         IngredientsSectionBloc>(
@@ -266,20 +266,20 @@ class _IngredientsState extends State<Ingredients> {
                                 ),
                               )
                             : state.ingredients.first.isEmpty
-                                ? null
+                                ? Container()
                                 : OutlinedButton.icon(
                                     icon: Icon(Icons.add_circle_outline),
                                     label: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 8.0),
-                                      child: Text(I18n.of(context).add_title),
+                                      child: Text(I18n.of(context)!.add_title),
                                     ),
                                     onPressed: () {
                                       showDialog(
                                         context: context,
                                         builder: (bContext) => TextFieldDialog(
                                           validation: (title) => title == ""
-                                              ? I18n.of(context)
+                                              ? I18n.of(context)!
                                                   .field_must_not_be_empty
                                               : null,
                                           save: (title) => BlocProvider.of<
@@ -292,9 +292,13 @@ class _IngredientsState extends State<Ingredients> {
                                       );
                                     },
                                     style: ButtonStyle(
+                                      foregroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.white),
                                       backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.orange[900]),
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.orange[900] ??
+                                                  Colors.orange),
                                       shape: MaterialStateProperty.all(
                                         RoundedRectangleBorder(
                                           borderRadius:
@@ -321,7 +325,7 @@ class _IngredientsState extends State<Ingredients> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8.0),
                                 child:
-                                    Text(I18n.of(context).add_ingredient("")),
+                                    Text(I18n.of(context)!.add_ingredient("")),
                               ),
                               onPressed: () {
                                 showDialog(
@@ -339,8 +343,12 @@ class _IngredientsState extends State<Ingredients> {
                                 );
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    Colors.orange[900]),
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.orange[900] ?? Colors.orange),
                                 shape: MaterialStateProperty.all(
                                   RoundedRectangleBorder(
                                     borderRadius:
@@ -351,14 +359,13 @@ class _IngredientsState extends State<Ingredients> {
                             ),
                           ],
                         ),
-                      )
-                      ..removeWhere((element) => element == null),
+                      ),
                   );
-                })
+                }).whereType<Widget>().toList()
                   ..add(
                     state.ingredients.length == 1 &&
                             state.ingredients.first.isEmpty
-                        ? null
+                        ? Container()
                         : Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: OutlinedButton.icon(
@@ -366,18 +373,18 @@ class _IngredientsState extends State<Ingredients> {
                               label: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(I18n.of(context).add_section("")),
+                                child: Text(I18n.of(context)!.add_section("")),
                               ),
                               onPressed: () {
                                 if (state.sectionTitles.isEmpty) {
-                                  _showFlushInfo(I18n.of(context).add_title,
-                                      I18n.of(context).add_title_desc);
+                                  _showFlushInfo(I18n.of(context)!.add_title,
+                                      I18n.of(context)!.add_title_desc);
                                 } else {
                                   showDialog(
                                     context: context,
                                     builder: (bContext) => TextFieldDialog(
                                       validation: (title) => title == ""
-                                          ? I18n.of(context)
+                                          ? I18n.of(context)!
                                               .field_must_not_be_empty
                                           : null,
                                       save: (title) => BlocProvider.of<
@@ -390,8 +397,12 @@ class _IngredientsState extends State<Ingredients> {
                                 }
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    Colors.orange[900]),
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.orange[900] ?? Colors.orange),
                                 shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(
                                         borderRadius:
@@ -399,8 +410,7 @@ class _IngredientsState extends State<Ingredients> {
                               ),
                             ),
                           ),
-                  )
-                  ..removeWhere((element) => (element == null)),
+                  ),
               );
             } else {
               return Text(state.toString());
@@ -412,7 +422,7 @@ class _IngredientsState extends State<Ingredients> {
   }
 
   void _showFlushInfo(String title, String body) {
-    if (_flush != null && _flush.isShowing()) {
+    if (_flush != null && _flush!.isShowing()) {
     } else {
       _flush = Flushbar<bool>(
         animationDuration: Duration(milliseconds: 300),
@@ -423,9 +433,9 @@ class _IngredientsState extends State<Ingredients> {
           Icons.info_outline,
           color: Colors.blue,
         ),
-        mainButton: FlatButton(
+        mainButton: TextButton(
           onPressed: () {
-            _flush.dismiss(true); // result = true
+            _flush!.dismiss(true); // result = true
           },
           child: Text(
             "OK",

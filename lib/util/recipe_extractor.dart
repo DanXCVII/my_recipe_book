@@ -12,9 +12,9 @@ import 'package:my_recipe_book/util/helper.dart';
 ///  Gew\u00fcrzmischung
 /// Wasser
 Ingredient getIngredientFromString(String ingredientInfo) {
-  double/*!*//*?*/ amount;
-  String unit;
-  String name;
+  double? amount;
+  String? unit;
+  late String name;
 
   ingredientInfo = ingredientInfo.replaceAll(RegExp(r"\s+"), " ");
   try {
@@ -26,7 +26,7 @@ Ingredient getIngredientFromString(String ingredientInfo) {
             ingredientInfo.substring(0, ingredientInfo.indexOf(" "))) !=
         null) {
       amount = getNumberOfString(
-          ingredientInfo.substring(0, ingredientInfo.indexOf(" ")));
+          ingredientInfo.substring(0, ingredientInfo.indexOf(" ")))!;
 
       if (ingredientInfo.contains(" ", ingredientInfo.indexOf(" ") + 1)) {
         String remainingIngredInfo =
@@ -41,7 +41,7 @@ Ingredient getIngredientFromString(String ingredientInfo) {
         String secondSubString =
             remainingIngredInfo.substring(0, remainingIngredInfo.indexOf(" "));
         if (getNumberOfString(secondSubString) != null) {
-          amount += getNumberOfString(secondSubString);
+          amount += getNumberOfString(secondSubString)!;
           if (remainingIngredInfo[remainingIngredInfo.indexOf(" ") + 1] ==
               " ") {
             return Ingredient(
@@ -69,7 +69,7 @@ Ingredient getIngredientFromString(String ingredientInfo) {
       String searchedIngredInfo = ingredientInfo.trim();
       while (indexOfSpace != -1) {
         amount =
-            getNumberOfString(searchedIngredInfo.substring(0, indexOfSpace));
+            getNumberOfString(searchedIngredInfo.substring(0, indexOfSpace))!;
         if (amount != null) {
           name = ingredientInfo
               .substring(0, ingredientInfo.indexOf(searchedIngredInfo))
@@ -103,14 +103,14 @@ List<String> getRecipeNamesFromMRB(String xmlData) {
   return recipeNames;
 }
 
-List<Tuple2<Recipe, String>> getRecipeData(
+List<Tuple2<Recipe, String?>> getRecipeData(
     List<String> recipeNames, String xmlData) {
-  List<Tuple2<Recipe, String>> recipeData = [];
+  List<Tuple2<Recipe, String?>> recipeData = [];
 
   String iteratedXmlData = xmlData;
 
   while (iteratedXmlData.contains("<recipe>")) {
-    Tuple2<Recipe, String> recipe = getRecipeFromMRB(
+    Tuple2<Recipe, String?>? recipe = getRecipeFromMRB(
       iteratedXmlData.substring(iteratedXmlData.indexOf("<recipe>") + 8,
           iteratedXmlData.indexOf("</recipe>")),
     );
@@ -121,7 +121,7 @@ List<Tuple2<Recipe, String>> getRecipeData(
   return recipeData;
 }
 
-Tuple2<Recipe, String> getSpecifiedRecipeFromMRB(
+Tuple2<Recipe, String?>? getSpecifiedRecipeFromMRB(
     String xmlData, String recipeName) {
   int recipeStartIndex = 0;
   if (xmlData.indexOf("<recipe>") < xmlData.indexOf(recipeName)) {
@@ -134,14 +134,14 @@ Tuple2<Recipe, String> getSpecifiedRecipeFromMRB(
   return getRecipeFromMRB(recipeXML);
 }
 
-Tuple2<Recipe, String> getRecipeFromMRB(String xmlData) {
+Tuple2<Recipe, String?>? getRecipeFromMRB(String xmlData) {
   List<Ingredient> ingredients = getIngredientsFromMRB(xmlData);
   List<String> steps = getStepsFromMRB(xmlData);
-  Map<String, double> times = getTimesFromMRB(xmlData);
-  String recipeName = getRecipeNameFromMRB(xmlData);
+  Map<String, double?> times = getTimesFromMRB(xmlData);
+  String? recipeName = getRecipeNameFromMRB(xmlData);
 
   if (recipeName != "" && recipeName != null) {
-    return Tuple2<Recipe, String>(
+    return Tuple2<Recipe, String?>(
       Recipe(
         name: recipeName,
         servings: getServingsFromMRB(xmlData),
@@ -185,7 +185,7 @@ List<Ingredient> getIngredientsFromMRB(String xmlData) {
   return ingredients;
 }
 
-String getSourceFromMRB(String xmlData) {
+String? getSourceFromMRB(String xmlData) {
   if (xmlData.contains("<url>")) {
     return xmlData.substring(
         xmlData.indexOf("<url>") + 5, xmlData.indexOf("</url>"));
@@ -210,7 +210,7 @@ List<String> getCategoriesFromMRB(String xmlData) {
   return categories;
 }
 
-String getRecipeNameFromMRB(String xmlData) {
+String? getRecipeNameFromMRB(String xmlData) {
   if (xmlData.contains("<title>")) {
     return xmlData.substring(
       xmlData.indexOf("<title>") + 7,
@@ -241,7 +241,7 @@ List<String> getStepsFromMRB(String xmlData) {
   return steps..removeWhere((i) => i == "" || i == null);
 }
 
-String getImageNameFromMRB(String xmlData) {
+String? getImageNameFromMRB(String xmlData) {
   if (xmlData.contains("<imagepath>")) {
     String recipeImageNamePart =
         (xmlData.substring(0, xmlData.indexOf("</imagepath>"))).trim();
@@ -255,8 +255,8 @@ String getImageNameFromMRB(String xmlData) {
   }
 }
 
-Map<String, double> getTimesFromMRB(String xmlData) {
-  Map<String, double> times = {
+Map<String, double?> getTimesFromMRB(String xmlData) {
+  Map<String, double?> times = {
     "prepTime": null,
     "cookTime": null,
     "totalTime": null,
@@ -316,7 +316,7 @@ List<Nutrition> getNutritionsFromMRB(String xmlData) {
   return nutritions;
 }
 
-String getURLfromMRB(String xmlData) {
+String? getURLfromMRB(String xmlData) {
   if (xmlData.contains("<url>")) {
     return xmlData
         .substring(
@@ -328,7 +328,7 @@ String getURLfromMRB(String xmlData) {
   return null;
 }
 
-double getServingsFromMRB(String xmlData) {
+double? getServingsFromMRB(String xmlData) {
   if (xmlData.contains("<quantity>")) {
     return getFirstFullNumber(xmlData.substring(
       xmlData.indexOf("<quantity>"),
@@ -341,10 +341,10 @@ double getServingsFromMRB(String xmlData) {
 /// test.77.60kk => 77.60
 /// 7 k => 7.0
 /// 7.99.99 => 7.99
-double getFirstFullNumber(String text) {
+double? getFirstFullNumber(String text) {
   bool foundDot = false;
   bool foundNumber = false;
-  int startIndex;
+  int? startIndex;
 
   for (int i = 0; i < text.length; i++) {
     if (startIndex == null && double.tryParse(text[i]) != null) {

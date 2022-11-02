@@ -24,9 +24,9 @@ part 'splash_screen_event.dart';
 part 'splash_screen_state.dart';
 
 class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
-  bool _recipeCategoryOverview;
-  bool _showIntro;
-  bool _showShoppingCartSummary = false;
+  bool? _recipeCategoryOverview;
+  bool? _showIntro;
+  bool? _showShoppingCartSummary = false;
   bool _splashScreenFinished = false;
   bool _initialized = false;
 
@@ -34,7 +34,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     on<SPInitializeData>((event, emit) async {
       print("started initialization");
       bool showIntro = false;
-      bool recipeCategoryOverview;
+      bool? recipeCategoryOverview;
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -42,11 +42,11 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       if (prefs.containsKey("shoppingCartSummary")) {
         _showShoppingCartSummary = prefs.getBool("shoppingCartSummary");
       } else {
-        await prefs.setBool("shoppingCartSummary", _showShoppingCartSummary);
+        await prefs.setBool("shoppingCartSummary", _showShoppingCartSummary!);
       }
       // check if showSummary for shoppingCart
       if (!prefs.containsKey(Constants.showDecimal)) {
-        await prefs.setBool(Constants.showDecimal, _showShoppingCartSummary);
+        await prefs.setBool(Constants.showDecimal, _showShoppingCartSummary!);
       }
 
       recipeCategoryOverview = _initRecipeOverviewScreen(prefs);
@@ -73,12 +73,12 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
         await _initializeFirstStartData(event.context);
       } else {
         GlobalSettings()
-            .enableAnimations(prefs.getBool(Constants.enableAnimations));
-        GlobalSettings().hasSeenStepIntro(!prefs.getBool('showStepsIntro'));
+            .enableAnimations(prefs.getBool(Constants.enableAnimations)!);
+        GlobalSettings().hasSeenStepIntro(!prefs.getBool('showStepsIntro')!);
         GlobalSettings()
-            .disableStandby(prefs.getBool(Constants.disableStandby));
+            .disableStandby(prefs.getBool(Constants.disableStandby)!);
         GlobalSettings()
-            .shouldShowDecimal(prefs.getBool(Constants.showDecimal));
+            .shouldShowDecimal(prefs.getBool(Constants.showDecimal)!);
         await initHive(false);
       }
       // TODO: getPermission
@@ -137,7 +137,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     });
   }
 
-  bool _initRecipeOverviewScreen(SharedPreferences prefs) {
+  bool? _initRecipeOverviewScreen(SharedPreferences prefs) {
     if (prefs.containsKey('recipeCatOverview')) {
       return prefs.getBool('recipeCatOverview');
     }
@@ -155,7 +155,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   }
 
   void _initTheme(SharedPreferences prefs, BuildContext context) {
-    int theme = 2;
+    int? theme = 2;
     if (prefs.containsKey('theme')) {
       theme = prefs.getInt('theme');
     }
@@ -163,18 +163,18 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       case 0:
         var brightness = MediaQuery.of(context).platformBrightness;
         if (brightness == Brightness.dark)
-          CustomTheme.instanceOf(context).changeTheme(MyThemeKeys.DARK);
+          CustomTheme.instanceOf(context)!.changeTheme(MyThemeKeys.DARK);
         else
-          CustomTheme.instanceOf(context).changeTheme(MyThemeKeys.LIGHT);
+          CustomTheme.instanceOf(context)!.changeTheme(MyThemeKeys.LIGHT);
         return;
       case 1:
-        CustomTheme.instanceOf(context).changeTheme(MyThemeKeys.LIGHT);
+        CustomTheme.instanceOf(context)!.changeTheme(MyThemeKeys.LIGHT);
         return;
       case 2:
-        CustomTheme.instanceOf(context).changeTheme(MyThemeKeys.DARK);
+        CustomTheme.instanceOf(context)!.changeTheme(MyThemeKeys.DARK);
         return;
       case 3:
-        CustomTheme.instanceOf(context).changeTheme(MyThemeKeys.OLEDBLACK);
+        CustomTheme.instanceOf(context)!.changeTheme(MyThemeKeys.OLEDBLACK);
         return;
       default:
     }
@@ -192,7 +192,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
                 buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
 
     List<Recipe> importRecipeData = await IO.importFirstStartRecipes(
-        recipesFile, I18n.of(context).two_char_locale);
+        recipesFile, I18n.of(context)!.two_char_locale);
     for (Recipe r in importRecipeData) {
       await HiveProvider().saveRecipe(r);
     }

@@ -16,11 +16,11 @@ class ImageSelector extends StatefulWidget {
   final Function onCancel;
 
   ImageSelector({
-    @required this.prefilledImage,
-    @required this.onNewImage,
-    @required this.circleSize,
-    @required this.color,
-    @required this.onCancel,
+    required this.prefilledImage,
+    required this.onNewImage,
+    required this.circleSize,
+    required this.color,
+    required this.onCancel,
   });
 
   @override
@@ -30,7 +30,7 @@ class ImageSelector extends StatefulWidget {
 }
 
 class _ImageSelectorState extends State<ImageSelector> {
-  File selectedImageFile;
+  File? selectedImageFile;
 
   @override
   void initState() {
@@ -85,7 +85,7 @@ class _ImageSelectorState extends State<ImageSelector> {
                         child: Container(
                           child: Image.file(
                             // widget.imageWrapper.getSelectedImage(),
-                            selectedImageFile,
+                            selectedImageFile!,
                             fit: BoxFit.cover,
                           ),
                           width: widget.circleSize,
@@ -143,7 +143,7 @@ class _ImageSelectorState extends State<ImageSelector> {
     final _picker = ImagePicker();
     File pictureFile = File((await _picker.getImage(
       source: ImageSource.gallery,
-    ))
+    ))!
         .path);
 
     if (pictureFile != null) {

@@ -4,14 +4,14 @@ class IconInfoMessage extends StatelessWidget {
   final Widget iconWidget;
   final String description;
   final bool backgroundText;
-  final Color textColor;
+  final Color? textColor;
 
   const IconInfoMessage({
-    @required this.iconWidget,
-    @required this.description,
+    required this.iconWidget,
+    required this.description,
     this.backgroundText = false,
     this.textColor,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
