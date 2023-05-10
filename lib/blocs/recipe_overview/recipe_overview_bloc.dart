@@ -4,8 +4,7 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
-import 'package:my_recipe_book/models/string_int_tuple.dart';
+import '../../models/string_int_tuple.dart';
 
 import '../../util/helper.dart';
 import '../../local_storage/hive.dart';
@@ -232,7 +231,8 @@ class RecipeOverviewBloc
           recipes: List<Recipe>.from(unfilteredRecipes)
             ..removeWhere((recipe) {
               for (String recipeTagName in currentRecipeTagFilter) {
-                if (recipe.tags.firstWhereOrNull((tag) => tag.text == recipeTagName) ==
+                if (recipe.tags
+                        .firstWhereOrNull((tag) => tag.text == recipeTagName) ==
                     null) {
                   return true;
                 }
@@ -310,7 +310,8 @@ class RecipeOverviewBloc
           recipes: List<Recipe>.from(unfilteredRecipes)
             ..removeWhere((recipe) {
               for (String recipeTagName in event.recipeTags) {
-                if (recipe.tags.firstWhereOrNull((tag) => tag.text == recipeTagName) ==
+                if (recipe.tags
+                        .firstWhereOrNull((tag) => tag.text == recipeTagName) ==
                     null) {
                   return true;
                 }
@@ -382,13 +383,11 @@ class RecipeOverviewBloc
           ..sort((a, b) => recipeSort.ascending!
               ? a.name.compareTo(b.name)
               : b.name.compareTo((a.name)));
-        break;
       case RecipeSort.BY_EFFORT:
         return recipes
           ..sort((a, b) => recipeSort.ascending!
               ? a.effort!.compareTo(b.effort!)
               : b.effort!.compareTo(a.effort!));
-        break;
       case RecipeSort.BY_INGREDIENT_COUNT:
         return recipes
           ..sort((a, b) => recipeSort.ascending!
@@ -396,25 +395,14 @@ class RecipeOverviewBloc
                   .compareTo(getIngredientCount(b.ingredients))
               : getIngredientCount(b.ingredients)
                   .compareTo(getIngredientCount(a.ingredients)));
-        break;
       case RecipeSort.BY_LAST_MODIFIED:
         return recipes
           ..sort((a, b) => recipeSort.ascending!
-              ? DateTime.parse(a.lastModified == null
-                      ? DateTime.now().toString()
-                      : a.lastModified!)
-                  .compareTo(DateTime.parse(b.lastModified == null
-                      ? DateTime.now().toString()
-                      : b.lastModified!))
-              : DateTime.parse(b.lastModified == null
-                      ? DateTime.now().toString()
-                      : b.lastModified!)
-                  .compareTo(DateTime.parse(a.lastModified == null
-                      ? DateTime.now().toString()
-                      : a.lastModified!)));
-        break;
+              ? DateTime.parse(a.lastModified)
+                  .compareTo(DateTime.parse(b.lastModified))
+              : DateTime.parse(b.lastModified)
+                  .compareTo(DateTime.parse(a.lastModified)));
     }
-    return recipes;
   }
 
   @override

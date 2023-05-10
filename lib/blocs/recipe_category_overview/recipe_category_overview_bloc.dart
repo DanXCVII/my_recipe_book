@@ -1,15 +1,14 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/category_overview/category_overview_bloc.dart';
-import 'package:my_recipe_book/blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 
 import '../../local_storage/hive.dart';
 import '../../models/recipe.dart';
 import '../../models/tuple.dart';
+import '../category_overview/category_overview_bloc.dart';
+import '../random_recipe_explorer/random_recipe_explorer_bloc.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;
 
 part 'recipe_category_overview_event.dart';
@@ -88,9 +87,8 @@ class RecipeCategoryOverviewBloc
         final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVone =
             _removeRecipeFromOverview(
                 event.oldRecipe,
-                List<Tuple2<String, List<Recipe>>>.from((state
-                        as LoadedRecipeCategoryOverview)
-                    .rCategoryOverview)) as List<Tuple2<String, List<Recipe>>>;
+                List<Tuple2<String, List<Recipe>>>.from(
+                    (state as LoadedRecipeCategoryOverview).rCategoryOverview));
         final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVtwo =
             _addRecipesToOverview([
           event.updatedRecipe
@@ -177,8 +175,7 @@ class RecipeCategoryOverviewBloc
                 )
                 .toList(),
           );
-        }).toList())
-              ..removeWhere((item) => item == null);
+        }).toList());
 
         emit(LoadedRecipeCategoryOverview(recipeCategoryOverview));
       }

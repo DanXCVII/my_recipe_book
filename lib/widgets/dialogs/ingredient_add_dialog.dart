@@ -120,7 +120,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
       children: <Widget>[
         Text(
           I18n.of(context)!.add_ingredient(""),
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         SizedBox(height: 12),
         Flexible(
@@ -171,7 +171,6 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
               Form(
                 key: formKey,
                 child: AnimatedSize(
-                  vsync: this,
                   duration: Duration(milliseconds: 150),
                   curve: Curves.fastOutSlowIn,
                   child: Column(
@@ -256,7 +255,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
               ),
               style: TextButton.styleFrom(
                 backgroundColor:
-                    Theme.of(context).backgroundColor == Colors.white
+                    Theme.of(context).colorScheme.background == Colors.white
                         ? null
                         : Colors.amber,
               ),

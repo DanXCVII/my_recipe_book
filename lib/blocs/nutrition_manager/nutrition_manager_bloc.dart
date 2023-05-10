@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -24,11 +22,9 @@ class NutritionManagerBloc
                 .map((n) => n.name)
                 .toList();
 
-        if (editingRecipeNutritions != null) {
-          for (String nutrition in editingRecipeNutritions) {
-            if (!nutritions.contains(nutrition)) {
-              modifiedRecipeNutritions.add(nutrition);
-            }
+        for (String nutrition in editingRecipeNutritions) {
+          if (!nutritions.contains(nutrition)) {
+            modifiedRecipeNutritions.add(nutrition);
           }
         }
       }

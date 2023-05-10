@@ -5,13 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:my_recipe_book/blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/screens/recipe_calendar_screen.dart';
+import 'package:my_recipe_book/blocs/g_drive/g_drive_sign_in/g_drive_sign_in_bloc.dart';
+import 'package:my_recipe_book/blocs/g_drive/g_drive_sync/g_drive_bloc.dart';
+import 'package:my_recipe_book/blocs/recipe_mods/recipe_mods_bloc.dart';
+import 'blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
+import 'blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import 'screens/recipe_calendar_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:showcaseview/showcaseview.dart';
 
-import './theming.dart';
+import 'theming.dart';
 import 'ad_related/ad.dart';
 import 'blocs/ad_manager/ad_manager_bloc.dart';
 import 'blocs/animated_stepper/animated_stepper_bloc.dart';
@@ -100,6 +103,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<AdManagerBloc>(
           create: (context) => AdManagerBloc()..add(InitializeAds()),
         ),
+        BlocProvider<RecipeModsBloc>(
+          create: (context) => RecipeModsBloc(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -181,6 +187,13 @@ class MyApp extends StatelessWidget {
                           BlocProvider.of<RecipeManagerBloc>(context))
                         ..add(LoadRecipeCalendarEvent()),
                     ),
+                    BlocProvider<GDriveSignInBloc>(
+                      create: (context) =>
+                          GDriveSignInBloc()..add(GDriveSilentSignIn()),
+                    ),
+                    BlocProvider<GDriveSyncBloc>(
+                      create: (context) => GDriveSyncBloc(context),
+                    )
                   ],
                   child: ShowCaseWidget(
                     builder: Builder(
@@ -317,7 +330,7 @@ class MyApp extends StatelessWidget {
                         ..add(
                           InitializeStepImages(
                             args!.modifiedRecipe.steps,
-                            args.modifiedRecipe.stepTitles!,
+                            args.modifiedRecipe.stepTitles ?? [],
                             stepImages: args.modifiedRecipe.stepImages,
                           ),
                         ),
@@ -542,7 +555,6 @@ class MyApp extends StatelessWidget {
                   ),
                 );
               }
-              break;
 
             case "/manage-nutritions":
               Ads.showBottomBannerAd();

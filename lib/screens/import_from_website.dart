@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../ad_related/ad.dart';
@@ -128,7 +128,9 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                           child: Container(
                               decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Theme.of(context).backgroundColor ==
+                                  color: Theme.of(context)
+                                              .colorScheme
+                                              .background ==
                                           Colors.white
                                       ? Colors.grey[100]
                                       : Colors.grey[900]),
@@ -251,12 +253,12 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
           : MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
-        color: Theme.of(context).backgroundColor == Colors.white
+        color: Theme.of(context).colorScheme.background == Colors.white
             ? Colors.grey[100]
             : Colors.grey[800],
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).backgroundColor == Colors.white
+            color: Theme.of(context).colorScheme.background == Colors.white
                 ? Colors.black12
                 : Colors.black45,
             blurRadius: 2.0,
@@ -377,7 +379,7 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-        color: Theme.of(context).backgroundColor == Colors.white
+        color: Theme.of(context).colorScheme.background == Colors.white
             ? Colors.grey[100]
             : Colors.grey[800],
       ),
@@ -418,7 +420,6 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
             ],
           ),
           AnimatedSize(
-            vsync: this,
             duration: Duration(milliseconds: 150),
             curve: Curves.fastOutSlowIn,
             child: _isExpanded
@@ -439,8 +440,8 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                                         color: Colors.blue, fontSize: 16),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        launch(_websiteUrls[
-                                            (index / 2).round() - 1]);
+                                        launchUrl(Uri.parse(_websiteUrls[
+                                            (index / 2).round() - 1]));
                                       },
                                   ),
                                 ),

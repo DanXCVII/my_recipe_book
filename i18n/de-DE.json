@@ -309,5 +309,13 @@
   "friday": "Freitag",
   "saturday": "Samstag",
   "sunday": "Sonntag",
-  "steps_info_desc": "Wenn du mehere Schritte hinzugefügt hast, kannst du sie verschieben, indem du einen Schritt gedrückt hältst. Die Funktion Schritte zu verschieben oder Schritte aus der Mitte zu entfernen ist nur verfügbar, wenn den Schritten keine Bilder hinzgefügt wurden."
+  "steps_info_desc": "Wenn du mehere Schritte hinzugefügt hast, kannst du sie verschieben, indem du einen Schritt gedrückt hältst. Die Funktion Schritte zu verschieben oder Schritte aus der Mitte zu entfernen ist nur verfügbar, wenn den Schritten keine Bilder hinzgefügt wurden.",
+  "sync_recipes_drive": "Synchronisiere Rezepte mit Google Drive",
+  "syncing_recipes_drive": "Synchronisiere Rezepte mit Google Drive",
+  "importing_recipe_drive": "importiere Rezept: {recipeName}",
+  "uploading_recipe_drive": "Lade Rezept hoch: {recipeName}",
+  "deleteing_recipe_drive": "Lösche Rezept online: {recipeName}",
+  "deleting_recipe_local": "Lösche Rezept lokal: {recipeName}",
+  "successfully_synced_drive": "Rezepte erfolgreich synchronisiert",
+  "cancelling_sync": "Synchronisierung abbrechen..."
 }

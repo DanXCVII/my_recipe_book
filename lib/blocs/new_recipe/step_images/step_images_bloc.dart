@@ -1,11 +1,10 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
 
+import '../../../constants/global_constants.dart' as Constants;
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../local_storage/local_paths.dart';
 
@@ -22,8 +21,7 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
   StepImagesBloc() : super(LoadedStepImages([[]], [], [], [])) {
     on<InitializeStepImages>((event, emit) async {
       // This is required for old recipes which don't have recipeTitles
-      List<String> stepTitles =
-          event.stepTitles == null ? [] : event.stepTitles;
+      List<String> stepTitles = event.stepTitles;
       for (int i = stepTitles.length; i < event.steps.length; i++) {
         stepTitles.add("");
       }

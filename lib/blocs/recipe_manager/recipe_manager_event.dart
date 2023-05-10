@@ -14,7 +14,7 @@ class RMAddRecipes extends RecipeManagerEvent {
 }
 
 class RMDeleteRecipe extends RecipeManagerEvent {
-  final String/*!*/ recipeName;
+  final String /*!*/ recipeName;
   final bool deleteFiles;
 
   const RMDeleteRecipe(this.recipeName, {required this.deleteFiles});
@@ -98,7 +98,7 @@ class RMAddRecipeTag extends RecipeManagerEvent {
 }
 
 class RMDeleteRecipeTag extends RecipeManagerEvent {
-  final StringIntTuple/*!*/ recipeTag;
+  final StringIntTuple /*!*/ recipeTag;
 
   const RMDeleteRecipeTag(this.recipeTag);
 

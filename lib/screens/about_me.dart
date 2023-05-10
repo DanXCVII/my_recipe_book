@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gdpr_dialog/gdpr_dialog.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:fraction/fraction.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -136,10 +134,10 @@ class AboutMeScreen extends StatelessWidget {
                       child: Card(
                         child: InkWell(
                           onTap: () async {
-                            if (await canLaunch(
-                                "mailto:daniel.weissen.developer@gmail.com")) {
-                              await launch(
-                                  "mailto:daniel.weissen.developer@gmail.com");
+                            if (await canLaunchUrl(Uri.parse(
+                                "mailto:daniel.weissen.developer@gmail.com"))) {
+                              await launchUrl(Uri.parse(
+                                  "mailto:daniel.weissen.developer@gmail.com"));
                             }
                           },
                           child: Container(

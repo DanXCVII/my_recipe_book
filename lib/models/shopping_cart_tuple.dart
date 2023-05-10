@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 
 import 'ingredient.dart';
-import 'package:hive/hive.dart';
 
 part 'shopping_cart_tuple.g.dart';
 

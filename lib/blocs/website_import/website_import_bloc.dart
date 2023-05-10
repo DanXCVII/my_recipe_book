@@ -5,9 +5,9 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:http/http.dart' as httpc;
 import 'package:http/io_client.dart';
-import 'package:image_downloader/image_downloader.dart';
 
 import '../../constants/global_constants.dart';
 import '../../local_storage/hive.dart';
@@ -70,7 +70,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
           ioc.badCertificateCallback =
               (X509Certificate cert, String host, int port) => true;
           final http = new IOClient(ioc);
-          http.get(Uri.parse(filteredURL));
+          response = await http.get(Uri.parse(filteredURL));
         } catch (e) {
           emit(InvalidUrl());
           return;
@@ -145,7 +145,6 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
         _getIngredientStringFromAllRecipes(httpRecipeContent)
             .map((item) => getIngredientFromString(item))
             .toList()
-          ..removeWhere((item) => item == null)
       ];
       List<double?> times = _getTimesFromHttpData(
         httpRecipeContent.substring(
@@ -179,37 +178,25 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
         }
       }
 
-      String importRecipeImagePath =
-          await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
+      // String importRecipeImagePath =
+      //     await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
 
-      String? imgId = await ImageDownloader.downloadImage(
-          _getRecipeImageStringFromAllRecipes(httpRecipeContent),
-          destination: AndroidDestinationType.custom(
-              inPublicDir: false, directory: "tmp"));
-      if (imgId != null) {
-        var path = await ImageDownloader.findPath(imgId);
-        if (path != null) {
-          await IO.saveRecipeImage(File(path), newRecipeLocalPathString);
+      File? imageFile = await FileDownloader.downloadFile(
+          url: _getRecipeImageStringFromAllRecipes(httpRecipeContent));
+      if (imageFile != null) {
+        await IO.saveRecipeImage(imageFile, newRecipeLocalPathString);
 
-          finalRecipe = importRecipe.copyWith(
-            imagePath: await PathProvider.pP
-                .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
-            imagePreviewPath: await PathProvider.pP
-                .getRecipeImagePreviewPathFull(
-                    newRecipeLocalPathString, ".jpg"),
-          );
+        finalRecipe = importRecipe.copyWith(
+          imagePath: await PathProvider.pP
+              .getRecipeImagePathFull(newRecipeLocalPathString, ".jpg"),
+          imagePreviewPath: await PathProvider.pP
+              .getRecipeImagePreviewPathFull(newRecipeLocalPathString, ".jpg"),
+        );
 
-          if (finalRecipe == null) {
-            return Tuple2<ImportState, Recipe?>(
-              ImportState.FAIL,
-              null,
-            );
-          }
-          return Tuple2<ImportState, Recipe>(
-            ImportState.SUCCESS,
-            finalRecipe,
-          );
-        }
+        return Tuple2<ImportState, Recipe>(
+          ImportState.SUCCESS,
+          finalRecipe,
+        );
       }
       return Tuple2<ImportState, Recipe>(
         ImportState.SUCCESS,
@@ -228,9 +215,6 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
   /// "image": url...
   Future<List<String>?> _getImageFromSchemaRecipe(
       Map<String, dynamic> recipeMap) async {
-    String importRecipeImagePath =
-        await PathProvider.pP.getImportDir() + "/importRecipeImage.jpg";
-
     String? recipeImageUrl;
 
     bool gotImage = false;
@@ -259,14 +243,9 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
     }
 
     if (gotImage) {
-      String? imgId = await ImageDownloader.downloadImage(recipeImageUrl!,
-          destination: AndroidDestinationType.custom(
-              inPublicDir: false, directory: "tmp"));
-      if (imgId != null) {
-        String? path = await (ImageDownloader.findPath(imgId));
-        if (path != null) {
-          await IO.saveRecipeImage(File(path), newRecipeLocalPathString);
-        }
+      File? imageFile = await FileDownloader.downloadFile(url: recipeImageUrl!);
+      if (imageFile != null) {
+        await IO.saveRecipeImage(imageFile, newRecipeLocalPathString);
 
         return [
           await PathProvider.pP
@@ -275,6 +254,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
               .getRecipeImagePreviewPathFull(newRecipeLocalPathString, ".jpg")
         ];
       }
+      return null;
     } else {
       return null;
     }
@@ -288,7 +268,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
     }
 
     try {
-      Map<String, double?> recipeTimes = _getTimesFromSchemaRecipe(recipeMap);
+      Map<String, double> recipeTimes = _getTimesFromSchemaRecipe(recipeMap);
       List<String> recipeImagePaths =
           (await _getImageFromSchemaRecipe(recipeMap)) ?? [];
       List<Nutrition> recipeNutritions =
@@ -549,12 +529,12 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
   /// Result Map has all the keys:
   /// "prepTime", "cookTime" and "totalTime" with it's values null,
   /// if no information could be extracted out of the recipe map
-  Map<String, double?> _getTimesFromSchemaRecipe(
+  Map<String, double> _getTimesFromSchemaRecipe(
       Map<String, dynamic> recipeMapData) {
-    Map<String, double?> times = {
-      "prepTime": null,
-      "cookTime": null,
-      "totalTime": null,
+    Map<String, double> times = {
+      "prepTime": 0,
+      "cookTime": 0,
+      "totalTime": 0,
     };
 
     if (recipeMapData.containsKey("prepTime")) {

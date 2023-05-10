@@ -1,10 +1,9 @@
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
 
+import '../../../ad_related/ad.dart';
 import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import '../../../constants/routes.dart';

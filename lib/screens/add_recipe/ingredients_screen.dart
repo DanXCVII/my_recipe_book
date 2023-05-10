@@ -1,9 +1,8 @@
 import 'package:another_flushbar/flushbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import '../../blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
@@ -204,11 +203,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
   /// prefills the textfields with the data of the given recipe and the
   /// radio button with the selected vegetable
   void _initializeData(Recipe recipe) {
-    if (recipe.vegetable != null) {
-      selectedRecipeVegetable.setVegetableStatus(recipe.vegetable);
-    } else {
-      selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
-    }
+    selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
 
     if (recipe.servingName != null) {
       servingsNameController.text = recipe.servingName!;
@@ -217,18 +212,17 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
     if (recipe.servings != null)
       servingsController.text = recipe.servings.toString();
 
-    if (recipe.vegetable != null)
-      switch (recipe.vegetable) {
-        case Vegetable.NON_VEGETARIAN:
-          selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
-          break;
-        case Vegetable.VEGETARIAN:
-          selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGETARIAN);
-          break;
-        case Vegetable.VEGAN:
-          selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGAN);
-          break;
-      }
+    switch (recipe.vegetable) {
+      case Vegetable.NON_VEGETARIAN:
+        selectedRecipeVegetable.setVegetableStatus(Vegetable.NON_VEGETARIAN);
+        break;
+      case Vegetable.VEGETARIAN:
+        selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGETARIAN);
+        break;
+      case Vegetable.VEGAN:
+        selectedRecipeVegetable.setVegetableStatus(Vegetable.VEGAN);
+        break;
+    }
   }
 
   /// validates the info with the RecipeValidator() class and shows a

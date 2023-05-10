@@ -49,7 +49,7 @@ class ImportPcInfo extends StatelessWidget {
                   ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      launch('https://danxcvii.github.io/#/');
+                      launchUrl(Uri.parse('https://danxcvii.github.io/#/'));
                     },
                 ),
                 TextSpan(

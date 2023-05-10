@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 
 import '../../../constants/global_constants.dart' as Constants;

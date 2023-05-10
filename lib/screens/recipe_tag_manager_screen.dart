@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
@@ -209,7 +209,7 @@ class RecipeTagManager extends StatelessWidget {
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -221,7 +221,7 @@ class RecipeTagManager extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               backgroundColor: Colors.red[600],
-              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
             onPressed: () {
               BlocProvider.of<RecipeManagerBloc>(context)

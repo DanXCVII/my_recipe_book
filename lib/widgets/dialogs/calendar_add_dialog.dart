@@ -1,14 +1,12 @@
-import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:another_flushbar/flushbar.dart';
+import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
+import '../../ad_related/ad.dart';
 import '../../generated/i18n.dart';
 import '../../local_storage/hive.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 
 class CalendarAddDialog extends StatelessWidget {
@@ -84,7 +82,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
       children: <Widget>[
         Text(
           I18n.of(context)!.add_to_calendar,
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         SizedBox(height: 16),
         SimpleAutoCompleteTextField(
@@ -131,10 +129,10 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                       borderRadius: BorderRadius.all(Radius.circular(3)),
                       border: Border.all(
                           width: 1,
-                          color:
-                              Theme.of(context).backgroundColor == Colors.white
-                                  ? Colors.grey[500]!
-                                  : Colors.white),
+                          color: Theme.of(context).colorScheme.background ==
+                                  Colors.white
+                              ? Colors.grey[500]!
+                              : Colors.white),
                     ),
                     child: Text(
                       "${selectedDate!.day}.${selectedDate!.month}.${selectedDate!.year}",
@@ -163,7 +161,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
               ),
               style: TextButton.styleFrom(
                 backgroundColor:
-                    Theme.of(context).backgroundColor == Colors.white
+                    Theme.of(context).colorScheme.background == Colors.white
                         ? null
                         : Colors.amber,
               ),
@@ -219,7 +217,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
         DateTime.now().month,
         DateTime.now().day,
       ),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       primaryColor: Theme.of(context).primaryColor,
       tabTextColor: Theme.of(context).brightness == Brightness.dark
           ? Colors.white

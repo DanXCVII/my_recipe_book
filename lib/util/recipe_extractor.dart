@@ -1,8 +1,8 @@
-import 'package:my_recipe_book/models/ingredient.dart';
-import 'package:my_recipe_book/models/nutrition.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/models/tuple.dart';
-import 'package:my_recipe_book/util/helper.dart';
+import '../models/ingredient.dart';
+import '../models/nutrition.dart';
+import '../models/recipe.dart';
+import '../models/tuple.dart';
+import 'helper.dart';
 
 /// ingredient info can have form of:
 /// 1 1/2 g Butter
@@ -69,7 +69,7 @@ Ingredient getIngredientFromString(String ingredientInfo) {
       String searchedIngredInfo = ingredientInfo.trim();
       while (indexOfSpace != -1) {
         amount =
-            getNumberOfString(searchedIngredInfo.substring(0, indexOfSpace))!;
+            getNumberOfString(searchedIngredInfo.substring(0, indexOfSpace));
         if (amount != null) {
           name = ingredientInfo
               .substring(0, ingredientInfo.indexOf(searchedIngredInfo))
@@ -238,7 +238,7 @@ List<String> getStepsFromMRB(String xmlData) {
     }
   }
 
-  return steps..removeWhere((i) => i == "" || i == null);
+  return steps..removeWhere((i) => i == "");
 }
 
 String? getImageNameFromMRB(String xmlData) {

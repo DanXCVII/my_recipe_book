@@ -1,11 +1,10 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_recipe_book/blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 
+import '../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 
 class ImageSelector extends StatefulWidget {
@@ -35,8 +34,7 @@ class _ImageSelectorState extends State<ImageSelector> {
   @override
   void initState() {
     super.initState();
-    if (widget.prefilledImage != null &&
-        widget.prefilledImage != Constants.noRecipeImage) {
+    if (widget.prefilledImage != Constants.noRecipeImage) {
       selectedImageFile = File(widget.prefilledImage);
     }
   }
@@ -141,17 +139,15 @@ class _ImageSelectorState extends State<ImageSelector> {
 
   Future _askUser() async {
     final _picker = ImagePicker();
-    File pictureFile = File((await _picker.getImage(
+    File pictureFile = File((await _picker.pickImage(
       source: ImageSource.gallery,
     ))!
         .path);
 
-    if (pictureFile != null) {
-      widget.onNewImage(pictureFile);
-      setState(() {
-        selectedImageFile = pictureFile;
-      });
-    }
+    widget.onNewImage(pictureFile);
+    setState(() {
+      selectedImageFile = pictureFile;
+    });
   }
 }
 

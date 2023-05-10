@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/widgets/tinder_card.dart';
+import '../widgets/tinder_card.dart';
 
 import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
 import '../generated/i18n.dart';
@@ -202,8 +202,7 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                     Expanded(
                       child: Container(
                         height: MediaQuery.of(context).size.height,
-                        child: state.randomRecipes == null ||
-                                state.randomRecipes.isEmpty
+                        child: state.randomRecipes.isEmpty
                             ? Center(
                                 child: IconInfoMessage(
                                 iconWidget: Icon(

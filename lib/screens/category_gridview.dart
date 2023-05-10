@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../ad_related/ad.dart';
@@ -102,7 +102,7 @@ class CategoryGridTile extends StatelessWidget {
           arguments: RecipeGridViewArguments(
             shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
             recipeCalendarBloc: BlocProvider.of<RecipeCalendarBloc>(context),
-            category: category == null ? Constants.noCategory : category,
+            category: category,
           ),
         ).then((_) => Ads.hideBottomBannerAd());
       },
@@ -112,7 +112,9 @@ class CategoryGridTile extends StatelessWidget {
             : Image.file(File(randomCategoryImage), fit: BoxFit.cover),
         footer: GridTileBar(
           title: Text(
-            category == "no category" ? I18n.of(context)!.no_category : category,
+            category == "no category"
+                ? I18n.of(context)!.no_category
+                : category,
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.black45,

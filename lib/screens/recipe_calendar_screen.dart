@@ -1,27 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/util/pdf_calendar_share.dart';
-import 'package:my_recipe_book/util/pdf_share.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'package:my_recipe_book/constants/global_settings.dart';
-import 'package:my_recipe_book/constants/routes.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
-import 'package:my_recipe_book/models/recipe.dart';
-import 'package:my_recipe_book/models/tuple.dart';
-import 'package:my_recipe_book/screens/recipe_screen.dart';
-import 'package:my_recipe_book/util/helper.dart';
-import 'package:my_recipe_book/widgets/dialogs/calendar_add_dialog.dart';
-import 'package:my_recipe_book/widgets/dialogs/calendar_recipe_add_dialog.dart';
-import 'package:my_recipe_book/widgets/recipe_image_hero.dart';
-import 'package:pdf/pdf.dart';
-import 'package:printing/printing.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:wakelock/wakelock.dart';
+
+import '../ad_related/ad.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_settings.dart';
+import '../constants/routes.dart';
+import '../generated/i18n.dart';
+import '../models/recipe.dart';
+import '../models/tuple.dart';
+import '../util/helper.dart';
+import '../widgets/dialogs/calendar_add_dialog.dart';
+import '../widgets/dialogs/calendar_recipe_add_dialog.dart';
+import '../widgets/recipe_image_hero.dart';
+import 'recipe_screen.dart';
 
 double deviceWidthMedium = 700;
 
@@ -132,8 +129,8 @@ class RecipeCalendarContent extends StatefulWidget {
 class _RecipeCalendarContentState extends State<RecipeCalendarContent>
     with TickerProviderStateMixin {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime? _firstDay;
-  DateTime? _lastDay;
+  // DateTime? _firstDay;
+  // DateTime? _lastDay;
 
   @override
   Widget build(BuildContext context) {

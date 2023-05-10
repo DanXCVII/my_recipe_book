@@ -2,12 +2,13 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/local_storage/hive.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart'
     as RM;
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/tuple.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../local_storage/hive.dart';
 
 part 'recipe_calendar_event.dart';
 part 'recipe_calendar_state.dart';

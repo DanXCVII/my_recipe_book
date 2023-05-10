@@ -25,7 +25,7 @@ class IconInfoMessage extends StatelessWidget {
           width: 110,
           height: 110,
           decoration: BoxDecoration(
-            color: Theme.of(context).backgroundColor == Colors.white
+            color: Theme.of(context).colorScheme.background == Colors.white
                 ? Color.fromRGBO(0, 0, 0, 0.4)
                 : Color.fromRGBO(0, 0, 0, 0.5),
             shape: BoxShape.circle,
@@ -55,7 +55,7 @@ class IconInfoMessage extends StatelessWidget {
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
                   color: textColor == null
-                      ? Theme.of(context).backgroundColor == Colors.white
+                      ? Theme.of(context).colorScheme.background == Colors.white
                           ? Colors.grey[800]
                           : Colors.white
                       : textColor,

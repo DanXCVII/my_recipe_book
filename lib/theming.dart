@@ -47,14 +47,15 @@ class CustomTheme extends StatefulWidget {
 class MyThemes {
   static final ThemeData lightTheme = ThemeData(
     primaryColor: Color(0xFF790604), // maybe brown[700]
-    backgroundColor: Colors.white,
+
     scaffoldBackgroundColor: Colors.grey[200],
     canvasColor: Colors.white,
     // cardColor: Color(0xffFFE8C2),
-
+    focusColor: Colors.grey[800],
     colorScheme: ColorScheme.fromSwatch().copyWith(
       secondary: Colors.orange[700],
       brightness: Brightness.light,
+      background: Colors.white,
     ),
     //  textSelectionColor: Colors.white,
     //      hintColor: Colors.white,
@@ -71,15 +72,17 @@ class MyThemes {
             SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
         iconTheme: IconThemeData(color: Colors.white)),
     textTheme: TextTheme(
-        headline2: TextStyle(color: Colors.grey[400]),
-        subtitle1: TextStyle(color: Colors.grey[100])),
+        displayMedium: TextStyle(color: Colors.grey[400]),
+        titleMedium: TextStyle(color: Colors.grey[100])),
     cardColor: Color(0xff34363D),
     focusColor: Colors.white,
-    backgroundColor: Color(0xff212225),
     scaffoldBackgroundColor: Color(0xff212225),
-    colorScheme: ThemeData()
-        .colorScheme
-        .copyWith(primary: Colors.amber, brightness: Brightness.dark),
+    colorScheme: ThemeData().colorScheme.copyWith(
+          primary: Colors.amber,
+          secondary: Colors.orange[700],
+          brightness: Brightness.dark,
+          background: Color(0xff212225),
+        ),
   );
 
   static final ThemeData oledblackTheme = ThemeData(
@@ -89,13 +92,17 @@ class MyThemes {
             SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
         iconTheme: IconThemeData(color: Colors.white)),
     toggleableActiveColor: Colors.orange,
-    textTheme: TextTheme(subtitle1: TextStyle(color: Colors.grey[100])),
+    textTheme: TextTheme(titleMedium: TextStyle(color: Colors.grey[100])),
     unselectedWidgetColor: Colors.grey[100],
     cardColor: Color(0xff34363D),
-    backgroundColor: Colors.black,
+    focusColor: Colors.white,
     scaffoldBackgroundColor: Colors.black,
-    colorScheme: ColorScheme.fromSwatch()
-        .copyWith(primary: Colors.amber, brightness: Brightness.dark),
+    colorScheme: ColorScheme.fromSwatch().copyWith(
+      primary: Colors.amber,
+      secondary: Colors.orange[700],
+      brightness: Brightness.dark,
+      background: Colors.black,
+    ),
   );
 
   static ThemeData getThemeFromKey(MyThemeKeys? themeKey) {

@@ -1,12 +1,17 @@
 import 'dart:io';
+import 'dart:convert';
+import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' as parser;
+import 'package:http/http.dart' as http;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gdpr_dialog/gdpr_dialog.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import 'package:my_recipe_book/network_storage/g_drive_sync.dart';
+import 'package:my_recipe_book/widgets/gsync_listtile.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -31,6 +36,7 @@ class Settings extends StatelessWidget {
     return Container(
       child: ListView(
         children: <Widget>[
+          GSyncListtile(),
           BlocListener<AdManagerBloc, AdManagerState>(
             listener: (context, state) {
               if (state is NotConnected) {
@@ -48,7 +54,6 @@ class Settings extends StatelessWidget {
               } else {
                 return Column(
                   children: <Widget>[
-                    Divider(),
                     ListTile(
                         leading: Icon(
                           MdiIcons.crown,
@@ -63,7 +68,7 @@ class Settings extends StatelessWidget {
                     ListTile(
                         title: Text(
                           I18n.of(context)!.watch_video_remove_ads,
-                          style: Theme.of(context).textTheme.subtitle1,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                         leading: Icon(Icons.movie),
                         trailing: state is ShowAds
@@ -103,16 +108,8 @@ class Settings extends StatelessWidget {
                     ListTile(
                         leading: Icon(Icons.person),
                         onTap: () {
-                          GdprDialog.instance.resetDecision();
-                          GdprDialog.instance
-                              .showDialog(
-                            isForTest: true,
-                            testDeviceId: '',
-                          )
-                              .then((onValue) {
-                            Ads.initialize(Ads.shouldShowAds(),
-                                personalized: onValue);
-                          });
+                          Ads.initialize(Ads.shouldShowAds(),
+                              personalized: false);
                         },
                         title: Text(I18n.of(context)!.change_ad_preferences)),
                   ],
@@ -210,7 +207,7 @@ class Settings extends StatelessWidget {
                                 width: 1,
                                 color: Theme.of(context)
                                     .textTheme
-                                    .bodyText2!
+                                    .bodyMedium!
                                     .color!),
                             color: Colors.grey[100],
                           ),
@@ -226,7 +223,7 @@ class Settings extends StatelessWidget {
                                   width: 1,
                                   color: Theme.of(context)
                                       .textTheme
-                                      .bodyText2!
+                                      .bodyMedium!
                                       .color!),
                               color: Color(0xff454545),
                             ),
@@ -248,7 +245,7 @@ class Settings extends StatelessWidget {
                         border: Border.all(
                             width: 1,
                             color:
-                                Theme.of(context).textTheme.bodyText2!.color!),
+                                Theme.of(context).textTheme.bodyMedium!.color!),
                         color: Colors.grey[100],
                       ),
                     ),
@@ -266,7 +263,7 @@ class Settings extends StatelessWidget {
                         border: Border.all(
                             width: 1,
                             color:
-                                Theme.of(context).textTheme.bodyText2!.color!),
+                                Theme.of(context).textTheme.bodyMedium!.color!),
                         color: Color(0xff454545),
                       ),
                     ),
@@ -284,7 +281,7 @@ class Settings extends StatelessWidget {
                         border: Border.all(
                             width: 1,
                             color:
-                                Theme.of(context).textTheme.bodyText2!.color!),
+                                Theme.of(context).textTheme.bodyMedium!.color!),
                         color: Colors.black,
                       ),
                     ),
@@ -367,8 +364,8 @@ class Settings extends StatelessWidget {
           Divider(),
           ListTile(
               onTap: () {
-                launch(
-                    "http://play.google.com/store/apps/details?id=com.release.my_recipe_book");
+                launchUrl(Uri.parse(
+                    "http://play.google.com/store/apps/details?id=com.release.my_recipe_book"));
               },
               leading: Icon(Icons.star),
               title: Text(I18n.of(context)!.rate_app)),
@@ -463,6 +460,7 @@ class Settings extends StatelessWidget {
 
   Future<void> _importSingleRecipe(BuildContext ctxt) async {
     bool storagePermissionDenied = false;
+
     if (await Permission.storage.isDenied) {
       showDialog(
         context: ctxt,
@@ -594,4 +592,57 @@ class _AnimationCheckboxState extends State<AnimationCheckbox> {
       },
     );
   }
+}
+
+//////////////// test code for extraction of recipes from websites ////////////////
+
+String extractText(dom.Element element) {
+  StringBuffer buffer = StringBuffer();
+
+  void extractTextRecursively(dom.Element element) {
+    for (dom.Node node in element.nodes) {
+      if (node is dom.Text) {
+        final text = node.text.trim();
+        if (text.isNotEmpty) {
+          buffer.write(' ');
+          buffer.write(text);
+        }
+      } else if (node is dom.Element) {
+        if (!['style', 'script'].contains(node.localName)) {
+          extractTextRecursively(node);
+        }
+      }
+    }
+  }
+
+  extractTextRecursively(element);
+
+  return buffer.toString().trim();
+}
+
+Future<String> fetchHtml(String url) async {
+  final response = await http.get(Uri.parse(url));
+  if (response.statusCode == 200) {
+    return response.body;
+  } else {
+    throw Exception('Failed to load HTML from $url');
+  }
+}
+
+String extractJsonLdText(dom.Document htmlDocument) {
+  StringBuffer buffer = StringBuffer();
+  final elements =
+      htmlDocument.querySelectorAll('script[type="application/ld+json"]');
+
+  for (var element in elements) {
+    final jsonLdText = element.text.trim();
+    if (jsonLdText.isNotEmpty) {
+      if (buffer.isNotEmpty) {
+        buffer.write('\n');
+      }
+      buffer.write(jsonLdText);
+    }
+  }
+
+  return buffer.toString();
 }

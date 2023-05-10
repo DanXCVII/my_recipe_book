@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/app/app_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/constants/global_settings.dart';
+import '../blocs/app/app_bloc.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../constants/global_settings.dart';
 import 'package:share/share.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -33,10 +33,11 @@ class FancyShoppingCartScreen extends StatelessWidget {
         height: MediaQuery.of(context).size.height - kToolbarHeight,
         width: MediaQuery.of(context).size.width,
         child: Opacity(
-          opacity:
-              Theme.of(context).backgroundColor == Colors.white ? 0.5 : 0.6,
+          opacity: Theme.of(context).colorScheme.background == Colors.white
+              ? 0.5
+              : 0.6,
           child: Image.asset(
-            Theme.of(context).backgroundColor == Colors.white
+            Theme.of(context).colorScheme.background == Colors.white
                 ? "images/vegetables.png"
                 : "images/vegetablesBright.png",
             repeat: ImageRepeat.repeat,

@@ -29,9 +29,10 @@ class InfoDialog extends StatelessWidget {
           child:
               okText == null ? Text(I18n.of(context)!.alright) : Text(okText!),
           style: TextButton.styleFrom(
-            foregroundColor: Theme.of(context).backgroundColor == Colors.white
-                ? null
-                : Colors.amber,
+            foregroundColor:
+                Theme.of(context).colorScheme.background == Colors.white
+                    ? null
+                    : Colors.amber,
           ),
           onPressed: () {
             if (onPressedOk != null) {

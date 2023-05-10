@@ -1,18 +1,13 @@
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/models/tuple.dart';
-import 'package:my_recipe_book/widgets/dialogs/number_dialog.dart';
-import 'package:my_recipe_book/widgets/recipe_screen/animated_nutritions_fab.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
@@ -25,7 +20,9 @@ import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/animated_stepper/animated_stepper_bloc.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../blocs/recipe_mods/recipe_mods_bloc.dart';
 import '../blocs/recipe_screen/recipe_screen_bloc.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -40,6 +37,7 @@ import '../models/enums.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
+import '../models/tuple.dart';
 import '../screens/recipe_overview.dart';
 import '../util/helper.dart';
 import '../util/my_wrapper.dart';
@@ -47,14 +45,17 @@ import '../util/pdf_share.dart';
 import '../widgets/animated_stepper.dart';
 import '../widgets/animated_vegetable.dart';
 import '../widgets/category_circle_image.dart';
+import '../widgets/dialogs/number_dialog.dart';
 import '../widgets/gallery_view.dart';
 import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_info_vertical.dart';
+import '../widgets/recipe_screen/animated_nutritions_fab.dart';
 import '../widgets/recipe_screen/complexity_wave.dart';
 import '../widgets/recipe_screen/recipe_tag_wrap.dart';
 import '../widgets/recipe_screen/time_complexity_compressed.dart';
 import '../widgets/recipe_screen/time_info.dart';
 import '../widgets/recipe_screen/time_info_chart.dart';
+import '../widgets/spinning_sync_icon.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 
 const double timeTextsize = 15;
@@ -270,6 +271,9 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           icon: Icon(MdiIcons.calendarPlus),
           onPressed: () {
             showOmniDateTimePicker(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              calendarTextColor: Theme.of(context).focusColor,
+              buttonTextColor: Theme.of(context).focusColor,
               context: context,
               startInitialDate: DateTime(
                 DateTime.now().year,
@@ -347,27 +351,37 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           BlocProvider.of<RecipeManagerBloc>(context)
               .add(RMRemoveFavorite(recipe));
         }),
-        IconButton(
-          icon: Icon(Icons.edit),
-          tooltip: 'edit',
-          onPressed: () {
-            Ads.hideBottomBannerAd();
+        BlocBuilder<RecipeModsBloc, RecipeModsState>(
+            builder: (context, recipeModsState) {
+          if (recipeModsState is UnblockModsState) {
+            return IconButton(
+              icon: Icon(Icons.edit),
+              tooltip: 'edit',
+              onPressed: () {
+                Ads.hideBottomBannerAd();
 
-            HiveProvider().saveTmpEditingRecipe(recipe).then((_) {
-              BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
-              Navigator.pushNamed(
-                context,
-                RouteNames.addRecipeGeneralInfo,
-                arguments: GeneralInfoArguments(
-                  recipe,
-                  BlocProvider.of<ShoppingCartBloc>(context),
-                  BlocProvider.of<RecipeCalendarBloc>(context),
-                  editingRecipeName: recipe.name,
-                ),
-              ).then((_) => Ads.showBottomBannerAd());
-            });
-          },
-        ),
+                HiveProvider().saveTmpEditingRecipe(recipe).then((_) {
+                  BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.addRecipeGeneralInfo,
+                    arguments: GeneralInfoArguments(
+                      recipe,
+                      BlocProvider.of<ShoppingCartBloc>(context),
+                      BlocProvider.of<RecipeCalendarBloc>(context),
+                      editingRecipeName: recipe.name,
+                    ),
+                  ).then((_) => Ads.showBottomBannerAd());
+                });
+              },
+            );
+          } else {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: SpinningSyncIcon(),
+            );
+          }
+        }),
         PopupMenuButton<PopupOptionsMore>(
           icon: Icon(Icons.more_vert),
           onSelected: (value) => _choiceActionMore(value, context),
@@ -377,7 +391,8 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                 value: PopupOptionsMore.DELETE,
                 child: Row(children: [
                   Icon(Icons.delete,
-                      color: Theme.of(context).backgroundColor == Colors.white
+                      color: Theme.of(context).colorScheme.background ==
+                              Colors.white
                           ? Colors.grey
                           : Colors.white),
                   SizedBox(width: 10),
@@ -388,7 +403,8 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                 value: PopupOptionsMore.SHARE,
                 child: Row(children: [
                   Icon(Icons.share,
-                      color: Theme.of(context).backgroundColor == Colors.white
+                      color: Theme.of(context).colorScheme.background ==
+                              Colors.white
                           ? Colors.grey
                           : Colors.white),
                   SizedBox(width: 10),
@@ -399,7 +415,8 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                 value: PopupOptionsMore.PRINT,
                 child: Row(children: [
                   Icon(Icons.print,
-                      color: Theme.of(context).backgroundColor == Colors.white
+                      color: Theme.of(context).colorScheme.background ==
+                              Colors.white
                           ? Colors.grey
                           : Colors.white),
                   SizedBox(width: 10),
@@ -520,7 +537,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           TextButton(
             child: Text(I18n.of(context)!.no),
             style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).textTheme.bodyText1!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyLarge!.color,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -529,19 +546,17 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           TextButton(
             child: Text(I18n.of(context)!.yes),
             style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).textTheme.bodyText1!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyLarge!.color,
               backgroundColor: Colors.red[600],
             ),
             onPressed: () {
-              if (recipe != null) {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                BlocProvider.of<RecipeManagerBloc>(context)
-                    .add(RMDeleteRecipe(recipe.name, deleteFiles: true));
-                Future.delayed(Duration(milliseconds: 60)).then((_) async {
-                  await IO.deleteRecipeData(recipe.name);
-                });
-              }
+              Navigator.pop(context);
+              Navigator.pop(context);
+              BlocProvider.of<RecipeManagerBloc>(context)
+                  .add(RMDeleteRecipe(recipe.name, deleteFiles: true));
+              Future.delayed(Duration(milliseconds: 60)).then((_) async {
+                await IO.deleteRecipeData(recipe.name);
+              });
             },
           ),
         ],
@@ -611,7 +626,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
       }
     }
 
-    if (recipe.tags != null && recipe.tags.isNotEmpty) {
+    if (recipe.tags.isNotEmpty) {
       recipeText += '====================\n${I18n.of(context)!.tags}: ';
       for (StringIntTuple tag in recipe.tags) {
         if (!(tag == recipe.tags.last)) {
@@ -621,7 +636,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
         }
       }
     }
-    if (recipe.notes != null && recipe.notes != '') {
+    if (recipe.notes != '') {
       recipeText += '====================\n';
       recipeText += '${I18n.of(context)!.notes}: ${recipe.notes}\n';
     }
@@ -1026,7 +1041,7 @@ class RecipeSource extends StatelessWidget {
                     style: TextStyle(color: Colors.blue),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launch(source!);
+                        launchUrl(Uri.parse(source!));
                       },
                   )),
                 )
@@ -1125,9 +1140,9 @@ bool _showComplexTopArea(
     double preperationTime, double cookingTime, double totalTime) {
   int validator = 0;
 
-  if (preperationTime != 0 && preperationTime != null) validator++;
-  if (cookingTime != 0 && cookingTime != null) validator++;
-  if (totalTime != 0 && totalTime != null) validator++;
+  if (preperationTime != 0) validator++;
+  if (cookingTime != 0) validator++;
+  if (totalTime != 0) validator++;
   if (preperationTime == totalTime || cookingTime == totalTime) return false;
   if (validator > 1) return true;
   return false;
@@ -1176,9 +1191,7 @@ class CategoriesSection extends StatelessWidget {
                                 context,
                                 RouteNames.recipeCategories,
                                 arguments: RecipeGridViewArguments(
-                                  category: categories[index] == null
-                                      ? Constants.noCategory
-                                      : categories[index],
+                                  category: categories[index],
                                   shoppingCartBloc:
                                       BlocProvider.of<ShoppingCartBloc>(
                                           context),

@@ -209,7 +209,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
             onPressed: () {
               Navigator.pop(context, false);
@@ -220,7 +220,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
               backgroundColor: Colors.red[600],
             ),
             onPressed: () {

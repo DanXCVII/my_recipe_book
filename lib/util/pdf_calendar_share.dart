@@ -1,19 +1,12 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
-import 'package:my_recipe_book/models/enums.dart';
-import 'package:my_recipe_book/models/tuple.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import '../generated/i18n.dart';
+import '../models/tuple.dart';
 import 'helper.dart';
-import '../models/recipe.dart';
-import '../models/string_int_tuple.dart';
 
 const double weekDayWidth = 177;
 const double weekDayHeight = 182;
@@ -30,9 +23,9 @@ Future<Uint8List> getRecipeCalendarPdf(
 
   ByteData quicksandData = await rootBundle.load("fonts/Quicksand-Regular.ttf");
   final quicksandBuffer = quicksandData.buffer;
-  Uint8List quicksandFont = quicksandBuffer.asUint8List(
-      quicksandData.offsetInBytes, quicksandData.lengthInBytes);
-  final quicksandTtf = pw.Font.ttf(quicksandFont.buffer.asByteData());
+  // Uint8List quicksandFont = quicksandBuffer.asUint8List(
+  //     quicksandData.offsetInBytes, quicksandData.lengthInBytes);
+  // final quicksandTtf = pw.Font.ttf(quicksandFont.buffer.asByteData());
 
   const imageProvider = const AssetImage('images/iconIosStyle.png');
   final pdfIconImage = await flutterImageProvider(imageProvider);
@@ -155,8 +148,7 @@ Future<Uint8List> getRecipeCalendarPdf(
                                   }),
                                 );
                               }
-                            })
-                              ..removeWhere((e) => e == null),
+                            }),
                           ),
                       ),
                     );

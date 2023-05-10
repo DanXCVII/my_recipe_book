@@ -1,15 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gdpr_dialog/gdpr_dialog.dart';
-import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
-import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
-import 'package:my_recipe_book/models/recipe.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,7 +13,10 @@ import '../../constants/global_constants.dart' as Constants;
 import '../../constants/global_settings.dart';
 import '../../generated/i18n.dart';
 import '../../local_storage/hive.dart';
+import '../../local_storage/io_operations.dart' as IO;
+import '../../models/recipe.dart';
 import '../../theming.dart';
+import '../ad_manager/ad_manager_bloc.dart';
 
 part 'splash_screen_event.dart';
 part 'splash_screen_state.dart';
@@ -93,16 +91,9 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
         try {
           final result = await InternetAddress.lookup('example.com');
           if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-            await GdprDialog.instance
-                .showDialog(
-              isForTest: true,
-              testDeviceId: '',
-            )
-                .then((onValue) {
-              Ads.initialize(true, personalized: onValue);
-              Ads.adHeight =
-                  MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
-            });
+            Ads.initialize(true, personalized: false);
+            Ads.adHeight =
+                MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
           }
         } on SocketException catch (_) {
           Ads.initialize(true, personalized: false);

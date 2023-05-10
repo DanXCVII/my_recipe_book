@@ -1,19 +1,18 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
-import 'package:my_recipe_book/models/enums.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import '../constants/global_constants.dart' as Constants;
 import '../generated/i18n.dart';
-import 'helper.dart';
+import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
+import 'helper.dart';
 
 Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
   final pw.Document doc = pw.Document();
@@ -733,7 +732,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                   ].whereType<pw.Widget>().toList()),
                 ),
               ].whereType<pw.Widget>().toList()
-                ..addAll(stepWidgets as Iterable<pw.Widget>)
+                ..addAll(stepWidgets)
                 ..addAll(
                   [
                     recipe.notes != ""
@@ -803,10 +802,10 @@ List<pw.Widget> _getSteps(
               style: pw.TextStyle(font: latoTtf, fontSize: 11),
             ),
           ),
-        ]..removeWhere((item) => item == null),
+        ],
       ),
     ),
-  )..removeWhere((item) => item == null);
+  );
 
   for (int i = stepImages.length - 1; i >= 0; i--) {
     if (stepImages[i].isNotEmpty) {

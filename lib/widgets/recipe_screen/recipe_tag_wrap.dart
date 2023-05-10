@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
-import 'package:my_recipe_book/constants/routes.dart';
-import 'package:my_recipe_book/models/string_int_tuple.dart';
-import 'package:my_recipe_book/screens/recipe_overview.dart';
+import '../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../../constants/routes.dart';
+import '../../models/string_int_tuple.dart';
+import '../../screens/recipe_overview.dart';
 
 // must be in context of shoppingCartBloc
 class RecipeTagWrap extends StatelessWidget {

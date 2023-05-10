@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/constants/global_constants.dart';
-import 'package:my_recipe_book/models/string_int_tuple.dart';
+import '../../../constants/global_constants.dart';
+import '../../../models/string_int_tuple.dart';
 
 import '../../../util/helper.dart';
 import '../../../local_storage/hive.dart';

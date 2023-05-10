@@ -2,8 +2,8 @@ import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
-import 'package:my_recipe_book/local_storage/hive.dart';
+import '../../generated/i18n.dart';
+import '../../local_storage/hive.dart';
 
 class Consts {
   Consts._();

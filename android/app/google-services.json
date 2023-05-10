@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "669547151513-gsrtco2m2sjdi5olalhu1ca3o3lon800.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.release.my_recipe_book",
+            "certificate_hash": "2fbfe62a3140ac6c5ba026c09a3a7b32960799d9"
+          }
+        },
+        {
           "client_id": "669547151513-ohedt0clf1unes8nm6ekq5c5gn72eiji.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -35,7 +43,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "669547151513-nq7b315n2tip3fapeq4vq3r0o4k8vldk.apps.googleusercontent.com",
+              "client_id": "669547151513-2r5davas11vl5k4d9uqq0gqc84p6b134.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

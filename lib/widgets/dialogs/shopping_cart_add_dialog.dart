@@ -86,7 +86,7 @@ class _ShoppingCartAddDialogContentState
           children: <Widget>[
             Text(
               I18n.of(context)!.add_ingredient(""),
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             IconButton(
               icon: Icon(
@@ -107,7 +107,6 @@ class _ShoppingCartAddDialogContentState
               Form(
                 key: formKey,
                 child: AnimatedSize(
-                  vsync: this,
                   duration: Duration(milliseconds: 150),
                   curve: Curves.fastOutSlowIn,
                   child: isExpanded
@@ -209,7 +208,7 @@ class _ShoppingCartAddDialogContentState
               ),
               style: TextButton.styleFrom(
                 backgroundColor:
-                    Theme.of(context).backgroundColor == Colors.white
+                    Theme.of(context).colorScheme.background == Colors.white
                         ? null
                         : Colors.amber,
               ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/widgets/icon_info_message.dart';
+import '../widgets/icon_info_message.dart';
 
 import '../blocs/category_manager/category_manager_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -166,7 +166,7 @@ class CategoryManager extends StatelessWidget {
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -178,7 +178,7 @@ class CategoryManager extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               backgroundColor: Colors.red[600],
-              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
             child: Text(I18n.of(context)!.yes),
             onPressed: () {

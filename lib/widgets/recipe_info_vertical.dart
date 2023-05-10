@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/widgets/recipe_screen/time_complexity_compressed.dart';
 
 import '../ad_related/ad.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -12,6 +11,7 @@ import 'animated_vegetable.dart';
 import 'gallery_view.dart';
 import 'recipe_screen/complexity_wave.dart';
 import 'recipe_screen/recipe_tag_wrap.dart';
+import 'recipe_screen/time_complexity_compressed.dart';
 import 'recipe_screen/time_info.dart';
 import 'recipe_screen/time_info_chart.dart';
 

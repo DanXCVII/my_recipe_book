@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/ad_manager/ad_manager_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/constants/global_settings.dart';
-import 'package:my_recipe_book/widgets/icon_info_message.dart';
+import '../../blocs/ad_manager/ad_manager_bloc.dart';
+import '../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../../constants/global_settings.dart';
+import '../../widgets/icon_info_message.dart';
 import 'package:wakelock/wakelock.dart';
 
 import '../../ad_related/ad.dart';
@@ -20,7 +20,6 @@ import '../../generated/i18n.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
 import '../../widgets/dialogs/textfield_dialog.dart';
-import '../../widgets/icon_info_message.dart';
 import '../recipe_screen.dart';
 
 /// arguments which are provided to the route, when pushing to it

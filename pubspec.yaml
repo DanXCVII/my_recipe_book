@@ -11,10 +11,10 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.4.0+123
+version: 1.4.0+132
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -28,7 +28,7 @@ dependencies:
 
   image_picker: ^0.8.5+3 # Apache 2.0
   path_provider: ^2.0.11 # BSD
-  image: ^3.2.0 # Apache 2.0
+  image: ^4.0.15 # Apache 2.0
   transparent_image: ^2.0.0 # MIT
   photo_view: ^0.14.0 # MIT
   flutter_image_compress: ^1.1.2 # MIT
@@ -41,9 +41,9 @@ dependencies:
   autocomplete_textfield_ns: ^2.0.0  # MIT
   hive: ^2.2.3 # Apache 2.0
   build_runner: ^2.2.0 # BSD
-  flutter_bloc: ^8.1.1 # MIT
+  flutter_bloc: ^8.1.2 # MIT
   equatable: ^2.0.5 # MIT
-  flutter_launcher_icons: ^0.10.0 # MIT
+  flutter_launcher_icons: ^0.13.0 # MIT
   like_button: ^2.0.4 # MIT
   flutter_staggered_grid_view: ^0.6.2 # MIT
   flutter_staggered_animations: ^1.1.1 # MIT
@@ -58,32 +58,36 @@ dependencies:
   url_launcher: ^6.1.5 # BSD
   pull_to_refresh: ^2.0.0 # MIT
   showcaseview: ^1.1.8 # BSD
-  in_app_purchase: ^3.0.7 # BSD
+  in_app_purchase: ^3.0.8 # BSD
   video_player: ^2.4.7 # BSD
   permission_handler: ^10.0.0 # MIT
   flutter_sequence_animation: ^4.0.0-nullsafety # MIT
   flutter_native_splash: ^2.2.8 # MIT
   flutter_colorpicker: ^1.0.3 # MIT
-  image_downloader: ^0.31.0 # MIT
+  flutter_file_downloader: ^1.1.1 # BSD-3
   wakelock: ^0.6.2 # BSD
   pdf: ^3.8.3 # Apache 2.0
-  printing: ^5.9.3 # Apache 2.0
+  printing: ^5.10.3 # Apache 2.0
   # buy_me_a_coffee_widget: ^2.0.0-nullsafety.0 # MIT
   rate_my_app: ^1.1.3 # MIT
   # google_fonts: ^1.0.0 # Apache 2.0
   animated_text_kit: ^4.2.2 # MIT
   page_transition: ^2.0.9 # BSD
-  reorderables: ^0.5.0 # MIT
+  reorderables: ^0.6.0 # MIT
   table_calendar: ^3.0.7
   omni_datetime_picker: ^0.1.2 # MIT
   fraction: ^4.1.2 # MIT
   dio: ^4.0.6
+  googleapis: ^10.1.0
+  google_sign_in: ^6.1.0 # BSD-3
+  http_parser: ^4.0.0
+  googleapis_auth: ^1.4.0
+  flutter_secure_storage: ^8.0.0
   google_mobile_ads:
     git:
       url: https://github.com/SuaMusica/googleads-mobile-flutter.git
       path: packages/google_mobile_ads
       ref: feature/suamusica
-  gdpr_dialog: ^2.1.1 # MIT
   collection: ^1.15.0-nullsafety.4
 
 dev_dependencies:
@@ -143,6 +147,7 @@ flutter:
     - images/hearts.png
     - images/vegetables.png
     - images/vegetablesBright.png
+    - images/google_logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

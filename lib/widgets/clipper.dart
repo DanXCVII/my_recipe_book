@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class NutritionDraggableClipper extends CustomClipper<Path> {

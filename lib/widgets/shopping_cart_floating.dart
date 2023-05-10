@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as Constants;
+import '../constants/global_constants.dart' as Constants;
 
 import '../blocs/app/app_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -52,7 +52,6 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
         child: Material(
           color: Colors.transparent,
           child: AnimatedSize(
-            vsync: this,
             duration: Duration(milliseconds: 150),
             curve: Curves.fastOutSlowIn,
             child: visible
@@ -90,7 +89,6 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
 
   Widget _getShoppingCartContent(
       Map<Recipe, List<CheckableIngredient>> shoppingCart, bool showSummary) {
-    if (shoppingCart == null) return Container();
     Recipe? _summaryRecipe;
 
     if (showSummary) {
@@ -110,13 +108,14 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
                     offset: Offset(1, 1),
                     blurRadius: 2,
                     spreadRadius: 1,
-                    color: Theme.of(context).backgroundColor == Colors.white
-                        ? Colors.grey[400]!
-                        : Colors.black,
+                    color:
+                        Theme.of(context).colorScheme.background == Colors.white
+                            ? Colors.grey[400]!
+                            : Colors.black,
                   ),
                 ],
                 borderRadius: BorderRadius.all(Radius.circular(5)),
-                color: Theme.of(context).backgroundColor == Colors.white
+                color: Theme.of(context).colorScheme.background == Colors.white
                     ? Colors.grey[200]
                     : Colors.grey[800]),
             height: MediaQuery.of(context).size.height > 500
@@ -197,7 +196,7 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
           padding: EdgeInsets.only(left: 383, top: 25),
           child: Container(
             decoration: BoxDecoration(
-                color: Theme.of(context).backgroundColor == Colors.white
+                color: Theme.of(context).colorScheme.background == Colors.white
                     ? Colors.grey[900]
                     : Colors.grey[200],
                 shape: BoxShape.circle),
@@ -215,9 +214,10 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
               child: IconButton(
                 icon: Icon(
                   Icons.cancel,
-                  color: Theme.of(context).backgroundColor == Colors.white
-                      ? Colors.grey[400]
-                      : Colors.grey[900],
+                  color:
+                      Theme.of(context).colorScheme.background == Colors.white
+                          ? Colors.grey[400]
+                          : Colors.grey[900],
                   size: 36,
                 ),
                 onPressed: () {

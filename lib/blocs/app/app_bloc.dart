@@ -1,9 +1,7 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import '../../generated/i18n.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'app_event.dart';

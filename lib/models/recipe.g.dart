@@ -35,7 +35,7 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       nutritions: (fields[14] as List).cast<Nutrition>(),
       isFavorite: fields[15] as bool,
       effort: fields[16] as int?,
-      lastModified: fields[17] as String?,
+      lastModified: (fields[17] as String?) ?? firstModified,
       rating: fields[18] as int?,
       tags: (fields[19] as List).cast<StringIntTuple>(),
       source: fields[20] as String?,

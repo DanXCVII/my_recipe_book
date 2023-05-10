@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 import 'enums.dart';
@@ -8,6 +7,8 @@ import 'nutrition.dart';
 import 'string_int_tuple.dart';
 
 part 'recipe.g.dart';
+
+const String firstModified = "2000-01-01 00:00:00.000";
 
 @HiveType(typeId: 7)
 class Recipe extends Equatable {
@@ -46,7 +47,7 @@ class Recipe extends Equatable {
   @HiveField(16)
   final int? effort;
   @HiveField(17)
-  final String? lastModified;
+  final String lastModified;
   @HiveField(18)
   final int? rating;
   @HiveField(19)
@@ -77,7 +78,7 @@ class Recipe extends Equatable {
     this.nutritions = const [],
     this.isFavorite = false,
     this.effort,
-    this.lastModified,
+    this.lastModified = firstModified,
     this.rating,
     this.tags = const [],
     this.source,
@@ -112,7 +113,7 @@ class Recipe extends Equatable {
         'stepTitles: $stepTitles');
   }
 
-  factory Recipe.fromMap(Map<String, dynamic> json) {
+  factory Recipe.fromMap(Map<String, dynamic> json, {bool? keepDateTime}) {
     Vegetable vegetable;
     if (json['vegetable'] == Vegetable.NON_VEGETARIAN.toString()) {
       vegetable = Vegetable.NON_VEGETARIAN;
@@ -148,7 +149,8 @@ class Recipe extends Equatable {
       nutritions: List<dynamic>.from(json['nutritions'])
           .map((n) => Nutrition.fromMap(n))
           .toList(),
-      lastModified: DateTime.now().toString(),
+      lastModified:
+          keepDateTime == null ? DateTime.now().toString() : json['notes'],
       rating: json.containsKey('rating') ? json['rating'] : null,
       tags: json.containsKey('keywords')
           ? List<dynamic>.from(json['keywords'])

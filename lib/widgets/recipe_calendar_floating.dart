@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/screens/recipe_calendar_screen.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../screens/recipe_calendar_screen.dart';
 
 import '../blocs/app/app_bloc.dart';
 import 'dialogs/calendar_add_dialog.dart';
@@ -49,7 +49,6 @@ class _RecipeCalendarFloatingState extends State<RecipeCalendarFloating>
         child: Material(
           color: Colors.transparent,
           child: AnimatedSize(
-            vsync: this,
             duration: Duration(milliseconds: 150),
             curve: Curves.fastOutSlowIn,
             child: visible
@@ -80,14 +79,16 @@ class _RecipeCalendarFloatingState extends State<RecipeCalendarFloating>
                       offset: Offset(1, 1),
                       blurRadius: 2,
                       spreadRadius: 1,
-                      color: Theme.of(context).backgroundColor == Colors.white
+                      color: Theme.of(context).colorScheme.background ==
+                              Colors.white
                           ? Colors.grey[400]!
                           : Colors.black,
                     ),
                   ],
-                  color: Theme.of(context).backgroundColor == Colors.white
-                      ? Colors.grey[200]
-                      : Colors.grey[800]),
+                  color:
+                      Theme.of(context).colorScheme.background == Colors.white
+                          ? Colors.grey[200]
+                          : Colors.grey[800]),
               height: height,
               width: width,
               child: Padding(
@@ -169,9 +170,10 @@ class _RecipeCalendarFloatingState extends State<RecipeCalendarFloating>
             padding: EdgeInsets.only(left: 383, top: 25),
             child: Container(
               decoration: BoxDecoration(
-                  color: Theme.of(context).backgroundColor == Colors.white
-                      ? Colors.grey[900]
-                      : Colors.grey[200],
+                  color:
+                      Theme.of(context).colorScheme.background == Colors.white
+                          ? Colors.grey[900]
+                          : Colors.grey[200],
                   shape: BoxShape.circle),
               width: 25,
               height: 25,
@@ -187,9 +189,10 @@ class _RecipeCalendarFloatingState extends State<RecipeCalendarFloating>
                 child: IconButton(
                   icon: Icon(
                     Icons.cancel,
-                    color: Theme.of(context).backgroundColor == Colors.white
-                        ? Colors.grey[400]
-                        : Colors.grey[900],
+                    color:
+                        Theme.of(context).colorScheme.background == Colors.white
+                            ? Colors.grey[400]
+                            : Colors.grey[900],
                     size: 36,
                   ),
                   onPressed: () {

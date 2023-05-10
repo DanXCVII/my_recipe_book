@@ -80,7 +80,7 @@ class _ImportDialogState extends State<ImportDialog> {
                     animationDuration: 500,
                     percent: percentageDone,
                     center: Text("${percentageDone * 100}%"),
-                    linearStrokeCap: LinearStrokeCap.roundAll,
+                    barRadius: Radius.circular(15),
                     progressColor: Colors.green,
                   ),
                 );

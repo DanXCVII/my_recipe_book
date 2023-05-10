@@ -1,11 +1,10 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -118,10 +117,11 @@ class RecipeCard extends StatelessWidget {
                           topRight: Radius.circular(15),
                         ),
                         child: FadeInImage(
-                          image:
-                              (recipe!.imagePreviewPath == Constants.noRecipeImage
+                          image: (recipe!.imagePreviewPath ==
+                                      Constants.noRecipeImage
                                   ? AssetImage(recipe!.imagePreviewPath)
-                                  : FileImage(File(recipe!.imagePreviewPath))) as ImageProvider<Object>,
+                                  : FileImage(File(recipe!.imagePreviewPath)))
+                              as ImageProvider<Object>,
                           placeholder: MemoryImage(kTransparentImage),
                           fadeInDuration: Duration(milliseconds: 250),
                           fit: BoxFit.cover,
@@ -161,9 +161,7 @@ class RecipeCard extends StatelessWidget {
                                   Container(
                                     width: width - 27,
                                     child: Text(
-                                      (recipe!.totalTime != null
-                                              ? "${getTimeHoursMinutes(recipe!.totalTime)} • "
-                                              : "") +
+                                      ("${getTimeHoursMinutes(recipe!.totalTime)} • ") +
                                           ("${getIngredientCount(recipe!.ingredients)} ${I18n.of(context)!.ingredients}"),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
@@ -181,12 +179,14 @@ class RecipeCard extends StatelessWidget {
                                     child: Row(
                                       children: List<Widget>.generate(5,
                                           (index) {
-                                        if (recipe!.effort! >= (index + 1) * 2) {
+                                        if (recipe!.effort! >=
+                                            (index + 1) * 2) {
                                           return Icon(
                                             MdiIcons.knife,
                                             size: 18,
                                             color: Theme.of(context)
-                                                        .backgroundColor ==
+                                                        .colorScheme
+                                                        .background ==
                                                     Colors.white
                                                 ? Colors.grey[400]
                                                 : Colors.grey[200],
@@ -200,7 +200,8 @@ class RecipeCard extends StatelessWidget {
                                                     MdiIcons.knife,
                                                     size: 18,
                                                     color: Theme.of(context)
-                                                                .backgroundColor ==
+                                                                .colorScheme
+                                                                .background ==
                                                             Colors.white
                                                         ? Colors.grey[900]
                                                         : Colors.black,
@@ -214,7 +215,8 @@ class RecipeCard extends StatelessWidget {
                                                       MdiIcons.knife,
                                                       size: 18,
                                                       color: Theme.of(context)
-                                                                  .backgroundColor ==
+                                                                  .colorScheme
+                                                                  .background ==
                                                               Colors.white
                                                           ? Colors.grey[400]
                                                           : Colors.grey[200],
@@ -228,7 +230,8 @@ class RecipeCard extends StatelessWidget {
                                               MdiIcons.knife,
                                               size: 18,
                                               color: Theme.of(context)
-                                                          .backgroundColor ==
+                                                          .colorScheme
+                                                          .background ==
                                                       Colors.white
                                                   ? Colors.grey[900]
                                                   : Colors.black,
@@ -363,7 +366,6 @@ class RecipeCard extends StatelessWidget {
 
   /// returns the image for the icon which is displayed at the bottom left corner
   /// of the recipe depending on whether recipe is vegetarian, vegan, etc.
-
 }
 
 String getRecipeTypeImage(Vegetable vegetable) {

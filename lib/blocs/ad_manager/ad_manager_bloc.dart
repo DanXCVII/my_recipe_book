@@ -5,8 +5,8 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ad_related/ad.dart';
 
@@ -211,9 +211,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     });
 
     on<PurchaseProVersion>((event, emit) async {
-      if (_products != null && _products.isNotEmpty) {
-        final PurchaseParam purchaseParam = GooglePlayPurchaseParam(
-            productDetails: _products.first, applicationUserName: null);
+      if (_products.isNotEmpty) {
+        final PurchaseParam purchaseParam =
+            GooglePlayPurchaseParam(productDetails: _products.first);
 
         await _iap.buyNonConsumable(purchaseParam: purchaseParam);
       }
@@ -244,7 +244,7 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
     Set<String> ids = ['pro_version'].toSet();
     ProductDetailsResponse response = await _iap.queryProductDetails(ids);
 
-    List<String> _notFoundIds = response.notFoundIDs;
+    // List<String> _notFoundIds = response.notFoundIDs;
 
     _products = response.productDetails;
   }
@@ -259,12 +259,10 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       await _sP!.setBool('pro_version', true);
       Ads.showAds(false);
       Ads.showBannerAds(false);
-      if (details != null) {
-        await _iap.completePurchase(details);
-      }
+      await _iap.completePurchase(details);
+
       add(_PurchaseSuccessfull());
-    } else if (details != null &&
-        details.error!.message == "BillingResponse.itemAlreadyOwned") {
+    } else if (details.error!.message == "BillingResponse.itemAlreadyOwned") {
       _sP ??= await SharedPreferences.getInstance();
       await _sP!.setBool('pro_version', true);
       Ads.showAds(false);

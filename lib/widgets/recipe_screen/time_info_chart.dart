@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/constants/global_settings.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import '../../constants/global_settings.dart';
+import '../../generated/i18n.dart';
 
 import '../../util/helper.dart';
 

@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wakelock/wakelock.dart';
@@ -161,7 +160,8 @@ class RecipeRow extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 20,
-                        color: Theme.of(context).backgroundColor == Colors.white
+                        color: Theme.of(context).colorScheme.background ==
+                                Colors.white
                             ? Colors.black
                             : Colors.grey[200]),
                   ),
@@ -512,9 +512,7 @@ class RecipeImageItemSmall extends StatelessWidget {
                   shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
                   recipeCalendarBloc:
                       BlocProvider.of<RecipeCalendarBloc>(context),
-                  category: categoryName == null
-                      ? Constants.noCategory
-                      : categoryName,
+                  category: categoryName,
                 ),
               ).then((_) => Ads.hideBottomBannerAd());
             },
@@ -572,7 +570,9 @@ class RecipeImageItemSmall extends StatelessWidget {
                                   offset: Offset(1, 1),
                                   blurRadius: 2,
                                   spreadRadius: 1,
-                                  color: Theme.of(context).backgroundColor ==
+                                  color: Theme.of(context)
+                                              .colorScheme
+                                              .background ==
                                           Colors.white
                                       ? Colors.grey[400]!
                                       : Colors.black,
@@ -613,10 +613,10 @@ class RecipeImageItemSmall extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color:
-                              Theme.of(context).backgroundColor == Colors.white
-                                  ? Colors.grey[800]
-                                  : Colors.grey[300]),
+                          color: Theme.of(context).colorScheme.background ==
+                                  Colors.white
+                              ? Colors.grey[800]
+                              : Colors.grey[300]),
                     ),
                   ),
                 ],

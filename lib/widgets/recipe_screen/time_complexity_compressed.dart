@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import '../../generated/i18n.dart';
 
 import '../../util/helper.dart';
 
@@ -28,9 +28,7 @@ class TimeComplexityCompressed extends StatelessWidget {
       runSpacing: 10,
       spacing: 10,
       children: [
-        ((preperationTime != 0 && preperationTime != null) ||
-                (cookingTime != 0 && cookingTime != null) ||
-                (totalTime != 0 && totalTime != null))
+        ((preperationTime != 0) || (cookingTime != 0) || (totalTime != 0))
             ? Container(
                 decoration: BoxDecoration(
                   boxShadow: [
@@ -136,10 +134,10 @@ class TimeComplexityCompressed extends StatelessWidget {
 
   String _getTimeString(double preperationTime, double cookingTime,
       double totalTime, BuildContext context) {
-    if (totalTime != 0 && totalTime != null)
+    if (totalTime != 0)
       return "${I18n.of(context)!.total_time}: " +
           getTimeHoursMinutes(totalTime);
-    if (cookingTime != 0 && cookingTime != null)
+    if (cookingTime != 0)
       return "${I18n.of(context)!.cook_time}: " +
           getTimeHoursMinutes(cookingTime);
     return "${I18n.of(context)!.prep_time}: " +

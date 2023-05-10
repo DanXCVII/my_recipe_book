@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/local_storage/hive.dart';
-import 'package:my_recipe_book/models/string_int_tuple.dart';
+import '../local_storage/hive.dart';
+import '../models/string_int_tuple.dart';
 
 import '../generated/i18n.dart';
 import '../models/enums.dart';
@@ -69,7 +69,7 @@ class _RecipeFilterState extends State<RecipeFilter>
             ],
             borderRadius: BorderRadius.all(Radius.circular(10)),
             gradient: LinearGradient(
-              colors: Theme.of(context).backgroundColor != Colors.white
+              colors: Theme.of(context).colorScheme.background != Colors.white
                   ? [Colors.grey[800]!, Colors.grey[800]!]
                   : [Colors.grey[200]!, Colors.grey[200]!],
               stops: [0, 0.5],
@@ -197,7 +197,6 @@ class _RecipeFilterState extends State<RecipeFilter>
                 ),
               ),
               AnimatedSize(
-                vsync: this,
                 duration: Duration(milliseconds: 150),
                 curve: Curves.fastOutSlowIn,
                 child: _isExpanded
@@ -291,13 +290,11 @@ class _RecipeFilterState extends State<RecipeFilter>
         gradient: LinearGradient(colors: backgroundColors),
       ),
       child: Center(
-        child: iconData == null
-            ? null
-            : Icon(
-                iconData,
-                color: iconColor,
-                size: 22,
-              ),
+        child: Icon(
+          iconData,
+          color: iconColor,
+          size: 22,
+        ),
       ),
     );
   }

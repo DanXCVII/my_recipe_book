@@ -160,7 +160,7 @@ class TextColorDialogState extends State<TextColorDialog> {
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
             onPressed: () {
               Navigator.pop(context);

@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../ad_related/ad.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wakelock/wakelock.dart';
 
-import './recipe_card.dart';
+import 'recipe_card.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -90,9 +90,10 @@ class RecipeCardBig extends StatelessWidget {
                 BoxShadow(
                   blurRadius: 5,
                   spreadRadius: 2,
-                  color: Theme.of(context).backgroundColor == Colors.white
-                      ? Colors.grey[400]!
-                      : Colors.black,
+                  color:
+                      Theme.of(context).colorScheme.background == Colors.white
+                          ? Colors.grey[400]!
+                          : Colors.black,
                 )
               ]),
           child: Padding(
@@ -212,12 +213,10 @@ class RecipeCardBig extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              recipe.preperationTime != null &&
-                                      recipe.preperationTime != 0
+                              recipe.preperationTime != 0
                                   ? Expanded(
                                       child: Align(
-                                        alignment: recipe.cookingTime != null &&
-                                                recipe.cookingTime != 0
+                                        alignment: recipe.cookingTime != 0
                                             ? Alignment.centerLeft
                                             : Alignment.center,
                                         child: Column(
@@ -240,8 +239,7 @@ class RecipeCardBig extends StatelessWidget {
                                       ),
                                     )
                                   : Container(),
-                              recipe.cookingTime != null &&
-                                      recipe.cookingTime != 0
+                              recipe.cookingTime != 0
                                   ? Expanded(
                                       child: Column(
                                         crossAxisAlignment:
@@ -262,16 +260,14 @@ class RecipeCardBig extends StatelessWidget {
                                       ),
                                     )
                                   : Container(),
-                              recipe.totalTime != null && recipe.totalTime != 0
+                              recipe.totalTime != 0
                                   ? Expanded(
                                       child: Align(
-                                        alignment: recipe.preperationTime !=
-                                                    null &&
-                                                recipe.preperationTime != 0 &&
-                                                recipe.cookingTime != null &&
-                                                recipe.cookingTime != 0
-                                            ? Alignment.centerRight
-                                            : Alignment.center,
+                                        alignment:
+                                            recipe.preperationTime != 0 &&
+                                                    recipe.cookingTime != 0
+                                                ? Alignment.centerRight
+                                                : Alignment.center,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,

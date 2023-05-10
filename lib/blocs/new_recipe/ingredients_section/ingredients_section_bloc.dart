@@ -1,8 +1,8 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
-import 'package:my_recipe_book/models/ingredient.dart';
+
+import '../../../models/ingredient.dart';
 
 part 'ingredients_section_event.dart';
 part 'ingredients_section_state.dart';
@@ -75,8 +75,7 @@ class IngredientsSectionBloc
     });
 
     on<EditIngredient>((event, emit) async {
-      if (event.newSectionIndex != null &&
-          event.sectionIndex != event.newSectionIndex) {
+      if (event.sectionIndex != event.newSectionIndex) {
         ingredients[event.sectionIndex].removeAt(event.index);
         ingredients[event.newSectionIndex].add(event.newIngredient);
       } else {

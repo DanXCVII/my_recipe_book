@@ -1,8 +1,6 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/models/enums.dart';
+import '../../models/enums.dart';
 
 import '../../constants/global_constants.dart' as Constants;
 import '../../local_storage/hive.dart';

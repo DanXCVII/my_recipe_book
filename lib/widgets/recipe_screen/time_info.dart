@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import '../../generated/i18n.dart';
 
 import '../../util/helper.dart';
 
@@ -31,59 +31,57 @@ class TimeInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         preperationTime != 0
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                    height: 35,
-                    width: 35,
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black45,
-                          blurRadius: 2.0,
-                          spreadRadius: 1.0,
-                          offset: Offset(
-                            0,
-                            1.0,
-                          ),
-                        ),
-                      ],
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Colors.pink, Colors.pink[800]!]),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Icon(
-                      MdiIcons.knife,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        "${I18n.of(context)!.prep_time}:",
-                        style: TextStyle(
-                          color: textColor,
-                          fontFamily: fontFamily,
-                          fontSize: 12,
+            ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                Container(
+                  height: 35,
+                  width: 35,
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black45,
+                        blurRadius: 2.0,
+                        spreadRadius: 1.0,
+                        offset: Offset(
+                          0,
+                          1.0,
                         ),
                       ),
-                      Text(
-                        getTimeHoursMinutes(preperationTime),
-                        style: TextStyle(
-                          color: textColor,
-                          fontFamily: fontFamily,
-                          fontSize: 16,
-                        ),
-                      )
                     ],
-                  )
-                ]..removeWhere((item) => item == null))
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.pink, Colors.pink[800]!]),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Icon(
+                    MdiIcons.knife,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(width: 10),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "${I18n.of(context)!.prep_time}:",
+                      style: TextStyle(
+                        color: textColor,
+                        fontFamily: fontFamily,
+                        fontSize: 12,
+                      ),
+                    ),
+                    Text(
+                      getTimeHoursMinutes(preperationTime),
+                      style: TextStyle(
+                        color: textColor,
+                        fontFamily: fontFamily,
+                        fontSize: 16,
+                      ),
+                    )
+                  ],
+                )
+              ])
             : null,
         SizedBox(height: 10),
         cookingTime != 0

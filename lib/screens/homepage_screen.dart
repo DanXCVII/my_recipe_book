@@ -2,29 +2,26 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:another_flushbar/flushbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gdpr_dialog/gdpr_dialog.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as GC;
-import 'package:my_recipe_book/widgets/recipe_calendar_floating.dart';
+import 'package:my_recipe_book/blocs/recipe_mods/recipe_mods_bloc.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
-import './recipe_calendar_screen.dart';
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/app/app_bloc.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/global_constants.dart' as GC;
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../local_storage/hive.dart';
@@ -34,8 +31,10 @@ import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/dialogs/shopping_cart_add_dialog.dart';
 import '../widgets/recipe_bubble.dart';
+import '../widgets/recipe_calendar_floating.dart';
 import '../widgets/search.dart';
 import '../widgets/shopping_cart_floating.dart';
+import '../widgets/spinning_sync_icon.dart';
 import '../widgets/vertical_side_bar.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 import 'category_gridview.dart';
@@ -44,6 +43,7 @@ import 'import_from_website.dart';
 import 'ingredient_search.dart';
 import 'r_category_overview.dart';
 import 'random_recipe.dart';
+import 'recipe_calendar_screen.dart';
 import 'settings_screen.dart';
 import 'shopping_cart_fancy.dart';
 
@@ -252,23 +252,35 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       builder: (context) => Stack(
         children: [
           BlocBuilder<AppBloc, AppState>(
-            builder: (context, state) {
-              if (state is LoadingState) {
+            builder: (context, appBlocState) {
+              if (appBlocState is LoadingState) {
                 return _getSplashScreen();
-              } else if (state is LoadedState) {
+              } else if (appBlocState is LoadedState) {
                 return Scaffold(
-                  appBar: _buildAppBar(state.selectedIndex,
-                      state.recipeCategoryOverview, state.title),
-                  floatingActionButton: state.selectedIndex == 0
-                      ? FloatingActionButtonMenu(
-                          _introKeyOne,
-                          _introKeyTwo,
-                          _introKeyThree,
-                          showIntro: showIntro,
-                          shoppingCartAdd:
-                              state.selectedIndex == 2 ? true : false,
-                        )
-                      : state.selectedIndex == 2
+                  appBar: _buildAppBar(appBlocState.selectedIndex,
+                      appBlocState.recipeCategoryOverview, appBlocState.title),
+                  floatingActionButton: appBlocState.selectedIndex == 0
+                      ? BlocBuilder<RecipeModsBloc, RecipeModsState>(
+                          builder: (context, recipeModsState) {
+                          if (recipeModsState is UnblockModsState) {
+                            return FloatingActionButtonMenu(
+                              _introKeyOne,
+                              _introKeyTwo,
+                              _introKeyThree,
+                              showIntro: showIntro,
+                              shoppingCartAdd: appBlocState.selectedIndex == 2
+                                  ? true
+                                  : false,
+                            );
+                          } else {
+                            return FloatingActionButton(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              child: SpinningSyncIcon(),
+                              onPressed: () {},
+                            );
+                          }
+                        })
+                      : appBlocState.selectedIndex == 2
                           ? FloatingActionButton(
                               backgroundColor: Theme.of(context).primaryColor,
                               child: Icon(Icons.add_shopping_cart,
@@ -289,20 +301,20 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     children: ([
                       MediaQuery.of(context).size.width > GC.sideBarWidth
                           ? VerticalSideBar(
-                              state.selectedIndex == 2
+                              appBlocState.selectedIndex == 2
                                   ? 0
-                                  : state.selectedIndex,
-                              state.shoppingCartOpen,
-                              state.recipeCalendarOpen,
+                                  : appBlocState.selectedIndex,
+                              appBlocState.shoppingCartOpen,
+                              appBlocState.recipeCalendarOpen,
                             )
                           : null,
                       Expanded(
                         child: IndexedStack(
-                          index: state.selectedIndex,
+                          index: appBlocState.selectedIndex,
                           children: [
                             AnimatedSwitcher(
                               duration: Duration(milliseconds: 200),
-                              child: state.recipeCategoryOverview == true
+                              child: appBlocState.recipeCategoryOverview == true
                                   ? RecipeCategoryOverview()
                                   : CategoryGridView(),
                             ),
@@ -317,13 +329,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       ),
                     ].whereType<Widget>().toList()),
                   ),
-                  backgroundColor: _getBackgroundColor(state.selectedIndex),
+                  backgroundColor:
+                      _getBackgroundColor(appBlocState.selectedIndex),
                   bottomNavigationBar: MediaQuery.of(context).size.width <=
                           GC.sideBarWidth
                       ? MediaQuery.of(context).size.width < 346
                           ? BottomNavigationBar(
                               backgroundColor: Color(0xff232323),
-                              currentIndex: state.selectedIndex,
+                              currentIndex: appBlocState.selectedIndex,
                               onTap: (index) => _onItemTapped(index, context),
                               items: [
                                 BottomNavigationBarItem(
@@ -373,7 +386,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                               child: BottomNavyBar(
                                 backgroundColor: Color(0xff232323),
                                 animationDuration: Duration(milliseconds: 150),
-                                selectedIndex: state.selectedIndex,
+                                selectedIndex: appBlocState.selectedIndex,
                                 showElevation: true,
                                 onItemSelected: (index) =>
                                     _onItemTapped(index, context),
@@ -411,7 +424,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       : null,
                 );
               } else {
-                return Text(state.toString());
+                return Text(appBlocState.toString());
               }
             },
           ),
@@ -553,10 +566,10 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       return Theme.of(context).scaffoldBackgroundColor;
     } else if (selectedIndex == 1) {
       // if bright theme
-      if (Theme.of(context).backgroundColor == Colors.white) {
+      if (Theme.of(context).colorScheme.background == Colors.white) {
         return Theme.of(context).scaffoldBackgroundColor;
       } // if dark theme
-      else if (Theme.of(context).backgroundColor == Color(0xff212225)) {
+      else if (Theme.of(context).colorScheme.background == Color(0xff212225)) {
         return Color(0xff58153D);
       } // if oledBlack theme
       else {
@@ -889,16 +902,13 @@ class BottomNavyBar extends StatelessWidget {
     required this.onItemSelected,
     this.curve = Curves.linear,
   }) {
-    assert(items != null);
     assert(items.length >= 2 && items.length <= 5);
-    assert(onItemSelected != null);
-    assert(curve != null);
   }
 
   @override
   Widget build(BuildContext context) {
     final bgColor = (backgroundColor == null)
-        ? Theme.of(context).bottomAppBarColor
+        ? Theme.of(context).bottomAppBarTheme.color
         : backgroundColor;
 
     return Container(
@@ -962,14 +972,7 @@ class _ItemWidget extends StatelessWidget {
     required this.itemCornerRadius,
     required this.iconSize,
     this.curve = Curves.linear,
-  })  : assert(isSelected != null),
-        assert(item != null),
-        assert(backgroundColor != null),
-        assert(animationDuration != null),
-        assert(itemCornerRadius != null),
-        assert(iconSize != null),
-        assert(curve != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1050,8 +1053,5 @@ class BottomNavyBarItem {
     this.activeColor = Colors.blue,
     this.textAlign,
     this.inactiveColor,
-  }) {
-    assert(icon != null);
-    assert(title != null);
-  }
+  });
 }

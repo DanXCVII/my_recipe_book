@@ -140,7 +140,8 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                         child: DraggableScrollbar.semicircle(
                           controller: _controller,
                           backgroundColor:
-                              Theme.of(context).backgroundColor == Colors.white
+                              Theme.of(context).colorScheme.background ==
+                                      Colors.white
                                   ? Colors.white
                                   : Colors.grey[800]!,
                           labelTextBuilder: (offset) {
@@ -222,7 +223,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
             child: Text(I18n.of(context)!.no),
             onPressed: () {
@@ -234,7 +235,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              foregroundColor: Theme.of(context).textTheme.bodyText2!.color,
+              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
               backgroundColor: Colors.red[600],
             ),
             onPressed: () {

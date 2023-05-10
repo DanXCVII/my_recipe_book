@@ -1,29 +1,27 @@
 import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import '../blocs/ad_manager/ad_manager_bloc.dart';
-import '../models/enums.dart';
-import 'package:my_recipe_book/constants/global_settings.dart';
-import 'package:my_recipe_book/models/enums.dart';
-import 'package:my_recipe_book/models/tuple.dart';
-import 'package:my_recipe_book/screens/recipe_screen.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:wakelock/wakelock.dart';
 
+import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/ingredient_search/ingredient_search_bloc.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
+import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/i18n.dart';
 import '../local_storage/hive.dart';
+import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
+import '../models/tuple.dart';
 import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_image_hero.dart';
-import './recipe_screen.dart';
+import 'recipe_screen.dart';
 
 const double showExpandedSearch = 770;
 
@@ -131,7 +129,6 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                               color: Color.fromRGBO(70, 70, 70, 1),
                             ),
                             child: AnimatedSize(
-                              vsync: this,
                               duration: Duration(milliseconds: 150),
                               curve: Curves.fastOutSlowIn,
                               child: _isMinimized

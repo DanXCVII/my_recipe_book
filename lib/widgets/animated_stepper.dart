@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/ad_related/ad.dart';
-import 'package:my_recipe_book/constants/global_settings.dart';
-import 'package:my_recipe_book/widgets/clipper.dart';
+import '../ad_related/ad.dart';
+import '../constants/global_settings.dart';
+import 'clipper.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/animated_stepper/animated_stepper_bloc.dart';

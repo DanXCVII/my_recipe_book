@@ -1,16 +1,15 @@
 import "dart:io";
 
-import 'package:collection/collection.dart' show IterableNullableExtension;
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:image_picker/image_picker.dart";
-import 'package:my_recipe_book/widgets/dialogs/are_you_sure_dialog.dart';
-import 'package:my_recipe_book/widgets/dialogs/textfield_dialog.dart';
 import 'package:reorderables/reorderables.dart';
 
 import '../../../blocs/new_recipe/step_images/step_images_bloc.dart';
 import '../../../constants/global_constants.dart' as Constants;
 import '../../../generated/i18n.dart';
+import '../../../widgets/dialogs/are_you_sure_dialog.dart';
+import '../../../widgets/dialogs/textfield_dialog.dart';
 
 class Steps extends StatefulWidget {
   final String? editRecipeName;
@@ -279,7 +278,7 @@ class Step extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        stepTitle == "" || stepTitle == null
+        stepTitle == ""
             ? OutlinedButton.icon(
                 icon: Icon(Icons.add_circle),
                 label: Padding(
@@ -494,14 +493,12 @@ class AddImageBox extends StatelessWidget {
 
   Future _askUser(BuildContext context) async {
     final _picker = ImagePicker();
-    File newImage = File((await _picker.getImage(
+    File newImage = File((await _picker.pickImage(
       source: ImageSource.gallery,
     ))!
         .path);
 
-    if (newImage != null) {
-      onNewImage(newImage);
-    }
+    onNewImage(newImage);
   }
 }
 

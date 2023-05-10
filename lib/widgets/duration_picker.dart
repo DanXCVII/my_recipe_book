@@ -4,9 +4,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 const Duration _kDialAnimateDuration = const Duration(milliseconds: 200);
 
@@ -21,8 +18,8 @@ const double _kPiByTwo = math.pi / 2;
 
 const double _kCircleTop = _kPiByTwo;
 const double _kCircleBottom = 3 * math.pi / 2;
-const double _kCircleRight = 0.0;
-const double _kCircleRightComplete = _kTwoPi;
+// const double _kCircleRight = 0.0;
+// const double _kCircleRightComplete = _kTwoPi;
 const double _kCircleLeft = math.pi;
 
 class _DialPainter extends CustomPainter {
@@ -72,7 +69,7 @@ class _DialPainter extends CustomPainter {
 
     // Draw the inner background circle
     canvas.drawCircle(centerPoint, radius * 0.88,
-        Paint()..color = Theme.of(context).backgroundColor);
+        Paint()..color = Theme.of(context).colorScheme.background);
 
     // Get the offset point for an angle value of theta, and a distance of _radius
     Offset getOffsetForTheta(double theta, double _radius) {
@@ -95,7 +92,7 @@ class _DialPainter extends CustomPainter {
             text: '$hours${minutes > 0 ? minutes : ""}',
             style: Theme.of(context)
                 .textTheme
-                .headline2!
+                .displayMedium!
                 .copyWith(fontSize: size.shortestSide * 0.15)),
         textDirection: TextDirection.ltr)
       ..layout();
@@ -108,7 +105,7 @@ class _DialPainter extends CustomPainter {
         textAlign: TextAlign.center,
         text: TextSpan(
             text: 'min.', //th: ${theta}',
-            style: Theme.of(context).textTheme.bodyText2),
+            style: Theme.of(context).textTheme.bodyMedium),
         textDirection: TextDirection.ltr)
       ..layout();
     textMinPainter.paint(
@@ -140,7 +137,6 @@ class _DialPainter extends CustomPainter {
 
     // Paint the labels (the minute strings)
     void paintLabels(List<TextPainter> labels) {
-      if (labels == null) return;
       final double labelThetaIncrement = -_kTwoPi / labels.length;
       double labelTheta = _kPiByTwo;
 
@@ -169,8 +165,7 @@ class _DialPainter extends CustomPainter {
 
 class _Dial extends StatefulWidget {
   const _Dial(
-      {required this.duration, required this.onChanged, this.snapToMins = 1.0})
-      : assert(duration != null);
+      {required this.duration, required this.onChanged, this.snapToMins = 1.0});
 
   final Duration duration;
   final ValueChanged<Duration> onChanged;
@@ -365,7 +360,7 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
   }
 
   List<TextPainter> _buildMinutes(TextTheme textTheme) {
-    final TextStyle? style = textTheme.subtitle1;
+    final TextStyle? style = textTheme.titleMedium;
 
     const List<Duration> _minuteMarkerValues = const <Duration>[
       const Duration(hours: 0, minutes: 0),
@@ -401,7 +396,7 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
         backgroundColor = Colors.grey[200];
         break;
       case Brightness.dark:
-        backgroundColor = themeData.backgroundColor;
+        backgroundColor = themeData.colorScheme.background;
         break;
     }
 
@@ -423,7 +418,7 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
             selectedValue: selectedDialValue,
             labels: _buildMinutes(theme.textTheme),
             backgroundColor: backgroundColor,
-            accentColor: themeData.accentColor,
+            accentColor: themeData.colorScheme.secondary,
             theta: _theta.value,
             textDirection: Directionality.of(context),
           ),
@@ -443,8 +438,7 @@ class _DurationPickerDialog extends StatefulWidget {
   /// [initialTime] must not be null.
   const _DurationPickerDialog(
       {Key? key, required this.initialTime, this.snapToMins})
-      : assert(initialTime != null),
-        super(key: key);
+      : super(key: key);
 
   /// The duration initially selected when the dialog is shown.
   final Duration initialTime;
@@ -513,49 +507,54 @@ class _DurationPickerDialogState extends State<_DurationPickerDialog> {
       ],
     );
 
-    final Dialog dialog = Dialog(child: OrientationBuilder(
+    final Dialog dialog = Dialog(
+      child: OrientationBuilder(
         builder: (BuildContext context, Orientation orientation) {
-      final Widget pickerAndActions = Container(
-        color: theme.dialogBackgroundColor,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Expanded(
-                child:
-                    picker), // picker grows and shrinks with the available space
-            actions,
-          ],
-        ),
-      );
+          final Widget pickerAndActions = Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: theme.dialogBackgroundColor,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(
+                    child:
+                        picker), // picker grows and shrinks with the available space
+                actions,
+              ],
+            ),
+          );
 
-      assert(orientation != null);
-      switch (orientation) {
-        case Orientation.portrait:
-          return SizedBox(
-              width: _kDurationPickerWidthPortrait,
-              height: _kDurationPickerHeightPortrait,
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Expanded(
-                      child: pickerAndActions,
-                    ),
-                  ]));
-        case Orientation.landscape:
-          return SizedBox(
-              width: _kDurationPickerWidthLandscape,
-              height: _kDurationPickerHeightLandscape,
-              child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Flexible(
-                      child: pickerAndActions,
-                    ),
-                  ]));
-      }
-    }));
+          switch (orientation) {
+            case Orientation.portrait:
+              return SizedBox(
+                  width: _kDurationPickerWidthPortrait,
+                  height: _kDurationPickerHeightPortrait,
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Expanded(
+                          child: pickerAndActions,
+                        ),
+                      ]));
+            case Orientation.landscape:
+              return SizedBox(
+                  width: _kDurationPickerWidthLandscape,
+                  height: _kDurationPickerHeightLandscape,
+                  child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Flexible(
+                          child: pickerAndActions,
+                        ),
+                      ]));
+          }
+        },
+      ),
+    );
 
     return Theme(
       data: theme.copyWith(
@@ -588,9 +587,6 @@ Future<Duration?> showDurationPicker(
     {required BuildContext context,
     required Duration initialTime,
     double? snapToMins}) async {
-  assert(context != null);
-  assert(initialTime != null);
-
   return await showDialog<Duration>(
     context: context,
     builder: (BuildContext context) =>

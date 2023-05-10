@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -12,8 +10,7 @@ class IngredientsManagerBloc
     extends Bloc<IngredientsManagerEvent, IngredientsManagerState> {
   IngredientsManagerBloc() : super(IngredientsManagerInitial()) {
     on<LoadIngredientsManager>((event, emit) async {
-      final List<String > ingredients = HiveProvider()
-          .getIngredientNames()
+      final List<String> ingredients = HiveProvider().getIngredientNames()
         ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
       emit(LoadedIngredientsManager(ingredients));

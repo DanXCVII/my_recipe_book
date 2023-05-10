@@ -14,7 +14,8 @@ class FavoriteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
       Opacity(
-        opacity: Theme.of(context).backgroundColor == Colors.white ? 0.3 : 1,
+        opacity:
+            Theme.of(context).colorScheme.background == Colors.white ? 0.3 : 1,
         child: Container(
           height: MediaQuery.of(context).size.height - kToolbarHeight,
           width: MediaQuery.of(context).size.width,
@@ -56,7 +57,8 @@ class FavoriteScreen extends StatelessWidget {
 class FavoriteRecipeCards extends StatelessWidget {
   final List<Recipe> favoriteRecipes;
 
-  const FavoriteRecipeCards({required this.favoriteRecipes, Key? key}) : super(key: key);
+  const FavoriteRecipeCards({required this.favoriteRecipes, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

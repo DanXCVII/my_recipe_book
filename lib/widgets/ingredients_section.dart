@@ -1,14 +1,13 @@
 import 'package:another_flushbar/flushbar.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
-import 'package:my_recipe_book/models/ingredient.dart';
-import 'package:my_recipe_book/screens/recipe_screen.dart';
-import 'package:my_recipe_book/widgets/dialogs/are_you_sure_dialog.dart';
 import 'package:reorderables/reorderables.dart';
 
+import '../blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
 import '../generated/i18n.dart';
+import '../models/ingredient.dart';
 import '../util/helper.dart';
+import 'dialogs/are_you_sure_dialog.dart';
 import 'dialogs/ingredient_add_dialog.dart';
 import 'dialogs/textfield_dialog.dart';
 

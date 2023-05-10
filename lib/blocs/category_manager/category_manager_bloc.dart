@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 import '../../local_storage/hive.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;

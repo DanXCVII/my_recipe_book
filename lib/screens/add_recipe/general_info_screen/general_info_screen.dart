@@ -1,18 +1,15 @@
 import 'dart:io';
 
 import 'package:another_flushbar/flushbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/util/my_wrapper.dart';
-import 'package:my_recipe_book/widgets/duration_picker.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import '../../../blocs/new_recipe/general_info/general_info_bloc.dart';
+import '../../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../../../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
@@ -21,8 +18,10 @@ import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
 import '../../../util/helper.dart';
+import '../../../util/my_wrapper.dart';
 import '../../../widgets/dialogs/are_you_sure_dialog.dart';
 import '../../../widgets/dialogs/info_dialog.dart';
+import '../../../widgets/duration_picker.dart';
 import '../../../widgets/image_selector.dart' as IS;
 import '../ingredients_screen.dart';
 import 'categories_section.dart';
@@ -369,13 +368,11 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
 
   /// prefills the textfields with the data of the given recipe
   void _initializeData(Recipe recipe) {
-    if (recipe.name != null) nameController.text = recipe.name;
-    if (recipe.preperationTime != null && recipe.preperationTime != 0.0)
+    nameController.text = recipe.name;
+    if (recipe.preperationTime != 0.0)
       preperationTime.myDouble = recipe.preperationTime;
-    if (recipe.cookingTime != null && recipe.cookingTime != 0.0)
-      cookingTime.myDouble = recipe.cookingTime;
-    if (recipe.totalTime != null && recipe.totalTime != 0.0)
-      totalTime.myDouble = recipe.totalTime;
+    if (recipe.cookingTime != 0.0) cookingTime.myDouble = recipe.cookingTime;
+    if (recipe.totalTime != 0.0) totalTime.myDouble = recipe.totalTime;
     if (recipe.source != null) {
       sourceController.text = recipe.source!;
     }

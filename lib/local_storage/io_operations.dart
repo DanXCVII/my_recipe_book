@@ -5,11 +5,11 @@ import 'dart:math';
 import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image/image.dart';
-import 'package:my_recipe_book/models/tuple.dart';
-import 'package:my_recipe_book/local_storage/io_operations.dart' as IO;
+import '../models/tuple.dart';
+import 'io_operations.dart' as IO;
 import 'package:path_provider/path_provider.dart';
 
-import './local_paths.dart';
+import 'local_paths.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../util/helper.dart';
 import '../local_storage/hive.dart';
@@ -303,6 +303,7 @@ Future<List<String>> getBackupedRecipenames() async {
   return recipeFileNames;
 }
 
+// creates a recipe zig of the corresponding recipe with the given name at the given path and returns the path to the file
 Future<String> saveRecipeZip(String targetDir, String recipeName) async {
   Recipe? recipe = await HiveProvider().getRecipeByName(recipeName);
 
@@ -430,10 +431,9 @@ Future<String> saveStepImage(File newImage, int stepNumber,
 /// saves the given image under the given targetPath in the given resolution.
 Future<void> saveImage(File image, String targetPath, bool preview) async {
   // image must be non null and have one of the following datatypes: .jpg, .png, jpeg
-  if (image != null &&
-      (image.path.endsWith(".jpg") ||
-          image.path.endsWith(".png") ||
-          image.path.endsWith(".jpeg"))) {
+  if (image.path.endsWith(".jpg") ||
+      image.path.endsWith(".png") ||
+      image.path.endsWith(".jpeg")) {
     String tmpImageName =
         (await getTemporaryDirectory()).path + "/tmpImage.jpg";
     if (File(tmpImageName).existsSync()) {
@@ -466,7 +466,8 @@ Future<void> saveImage(File image, String targetPath, bool preview) async {
 /// extracts the given .zip to the tmp directory and if the recipe/s data is valid,
 /// returns the name of the .zip with the recipe data, otherwise: name of .zip with
 /// null
-Future<Map<String, Recipe?>> importRecipesToTmp(File recipeZip) async {
+Future<Map<String, Recipe?>> importRecipesToTmp(
+    File recipeZip, bool keepTime) async {
   await Directory(await PathProvider.pP.getImportDir()).delete(recursive: true);
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
@@ -487,13 +488,14 @@ Future<Map<String, Recipe?>> importRecipesToTmp(File recipeZip) async {
 
     for (FileSystemEntity f in importZips as Iterable<FileSystemEntity>) {
       if (f.path.endsWith('.zip')) {
-        recipes.addAll(await importRecipeToTmp(File(f.path)));
+        recipes.addAll(await importRecipeToTmp(File(f.path), keepTime));
       }
     }
     // await recipeZip.delete();
     return recipes;
   } else {
-    Map<String, Recipe?> importedRecipes = await importRecipeToTmp(recipeZip);
+    Map<String, Recipe?> importedRecipes =
+        await importRecipeToTmp(recipeZip, keepTime);
     return importedRecipes;
   }
 }
@@ -512,7 +514,7 @@ Future<void> clearCache() async {
 /// returns the name of the .zip with the recipe data, otherwise: name of .zip with
 /// null
 /// the json which contains the recipe object will be deleted afterwards
-Future<Map<String, Recipe?>> importRecipeToTmp(File recipeZip,
+Future<Map<String, Recipe?>> importRecipeToTmp(File recipeZip, bool keepTime,
     {String? locale}) async {
   Directory importDir = Directory(await PathProvider.pP.getImportDir());
   // extract selected zip and save it to the importDir
@@ -525,7 +527,8 @@ Future<Map<String, Recipe?>> importRecipeToTmp(File recipeZip,
     // stop if json found
     if (file.path.endsWith('.json')) {
       try {
-        importRecipe = await getRecipeFromJson(file as File);
+        importRecipe =
+            await getRecipeFromJson(file as File, keepTime: keepTime);
       } catch (e) {
         // if json doesn't contain a valid recipe
         importRecipe = null;
@@ -732,8 +735,7 @@ bool checkIfImportRecipeDataIsValid(
               importRecipe.imagePreviewPath.indexOf(recipeDirName) +
                   recipeDirName.length));
       if (!importRecipeImageDir.existsSync() ||
-          !importRecipeImagePreviewDir.existsSync() ||
-          importRecipe.stepImages == null) {
+          !importRecipeImagePreviewDir.existsSync()) {
         return false;
       }
     }
@@ -776,10 +778,10 @@ Future<List<Recipe>> getRecipesFromJson(File jsonFile) async {
   return recipes;
 }
 
-Future<Recipe> getRecipeFromJson(File jsonFile) async {
+Future<Recipe> getRecipeFromJson(File jsonFile, {bool? keepTime}) async {
   String json = await jsonFile.readAsString();
   Map<String, dynamic> jsonMap = jsonDecode(json);
-  Recipe importRecipe = Recipe.fromMap(jsonMap);
+  Recipe importRecipe = Recipe.fromMap(jsonMap, keepDateTime: keepTime);
   return await PathProvider.pP.addLocalDirRecipeFiles(importRecipe);
 }
 

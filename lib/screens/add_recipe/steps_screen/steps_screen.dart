@@ -1,18 +1,17 @@
 import 'package:another_flushbar/flushbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
 
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
+import '../../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
 import '../../../generated/i18n.dart';
 import '../../../models/recipe.dart';
 import '../../../util/my_wrapper.dart';
 import '../../../widgets/complexity_section.dart';
+import '../../../widgets/dialogs/info_dialog.dart';
 import '../nutritions.dart';
 import 'steps_section.dart';
 
@@ -267,8 +266,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
 
   /// prefills the textfields with the data of the given recipe
   void _initializeData(Recipe? recipe) {
-    if (widget.modifiedRecipe!.notes != null)
-      notesController.text = widget.modifiedRecipe!.notes;
+    notesController.text = widget.modifiedRecipe!.notes;
 
     // case new recipe with no steps
     if (widget.modifiedRecipe!.steps.isEmpty) {
@@ -287,13 +285,12 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
     if (widget.modifiedRecipe!.effort != null)
       complexity.myDouble = widget.modifiedRecipe!.effort!.toDouble();
 
-    if (widget.modifiedRecipe!.steps != null)
-      for (int i = 0; i < widget.modifiedRecipe!.steps.length; i++) {
-        if (i > 0) {
-          stepsDescController.add(TextEditingController());
-        }
-
-        stepsDescController[i].text = widget.modifiedRecipe!.steps[i];
+    for (int i = 0; i < widget.modifiedRecipe!.steps.length; i++) {
+      if (i > 0) {
+        stepsDescController.add(TextEditingController());
       }
+
+      stepsDescController[i].text = widget.modifiedRecipe!.steps[i];
+    }
   }
 }

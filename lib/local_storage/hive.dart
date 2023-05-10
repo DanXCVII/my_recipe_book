@@ -4,7 +4,8 @@ import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:hive/hive.dart';
-import 'package:my_recipe_book/models/string_int_tuple.dart';
+import 'package:my_recipe_book/models/string_string_tuple.dart';
+import '../models/string_int_tuple.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../models/enums.dart';
@@ -32,6 +33,7 @@ class BoxNames {
   static final recipeTags = "recipeTags";
   static final recipeTagsList = "recipeTagsList";
   static final recipeCalendar = "recipeCalendar";
+  static final syncDeletionRecipes = "syncDeletionRecipes";
   // static final recipeBubbles = "recipeBubbles";
   static final vegetarian = Vegetable.VEGETARIAN.toString();
   static final vegan = Vegetable.VEGAN.toString();
@@ -49,6 +51,7 @@ Future<void> initHive(bool firstTime) async {
   Hive.registerAdapter(RSortAdapter());
   Hive.registerAdapter(RecipeAdapter());
   Hive.registerAdapter(StringIntTupleAdapter());
+  Hive.registerAdapter(StringStringTupleAdapter());
 
   await Future.wait([
     Hive.openLazyBox<Recipe>(BoxNames.recipes),
@@ -69,6 +72,7 @@ Future<void> initHive(bool firstTime) async {
     Hive.openBox<List<String>>(BoxNames.recipeTagsList),
     Hive.openBox<List<String>>(BoxNames.ratings),
     Hive.openBox<String>(BoxNames.recipeCalendar),
+    Hive.openBox<StringStringTuple>(BoxNames.syncDeletionRecipes),
   ]);
 
   // initializing with the must have values
@@ -129,6 +133,7 @@ class HiveProvider {
     Hive.box<List<String>>(BoxNames.recipeTagsList),
     Hive.box<List<String>>(BoxNames.ratings),
     Hive.box<String>(BoxNames.recipeCalendar),
+    Hive.box<StringStringTuple>(BoxNames.syncDeletionRecipes),
     // Hive.box<String>(BoxNames.recipeBubbles),
   );
 
@@ -152,6 +157,7 @@ class HiveProvider {
   Box<List<String>?> boxRecipeTagsList;
   Box<List<String>> boxRatings;
   Box<String> boxRecipeCalendar;
+  Box<StringStringTuple> boxSyncDeletionRecipes;
 
   factory HiveProvider() {
     return _singleton;
@@ -175,6 +181,7 @@ class HiveProvider {
     this.boxRecipeTagsList,
     this.boxRatings,
     this.boxRecipeCalendar,
+    this.boxSyncDeletionRecipes,
     // this.boxRecipeBubbles,
   );
 
@@ -196,6 +203,7 @@ class HiveProvider {
     await boxRecipeTagsList.close();
     await boxRatings.close();
     await boxRecipeCalendar.close();
+    await boxSyncDeletionRecipes.close();
 
     boxNonVegetarian =
         await Hive.openBox<String>(Vegetable.NON_VEGETARIAN.toString());
@@ -217,12 +225,16 @@ class HiveProvider {
     boxRecipeNames = await Hive.openBox<String>(BoxNames.recipeNames);
     boxRatings = await Hive.openBox<List<String>>(BoxNames.ratings);
     boxRecipeCalendar = await Hive.openBox<String>(BoxNames.recipeCalendar);
+    boxSyncDeletionRecipes =
+        await Hive.openBox<StringStringTuple>(BoxNames.syncDeletionRecipes);
   }
 
   ////////////// single recipe related //////////////
   Future<void> saveRecipe(Recipe newRecipe) async {
     // add recipe to recipes
     String hiveRecipeKey = getHiveKey(newRecipe.name);
+
+    await boxSyncDeletionRecipes.delete(hiveRecipeKey);
 
     // add recipeTags to boxes
     List<StringIntTuple> newColorRecipeTags = [];
@@ -394,13 +406,21 @@ class HiveProvider {
     await boxTmpRecipe.put(tmpRecipeKey, Recipe(name: "", servings: null));
   }
 
-  Future<void> deleteRecipe(String recipeName) async {
+  Future<void> deleteRecipe(String recipeName, {String? deletionDate}) async {
     String hiveRecipeKey = getHiveKey(recipeName);
     Recipe? removeRecipe = await lazyBoxRecipes.get(hiveRecipeKey);
 
     await boxRecipeNames.delete(hiveRecipeKey);
     await boxFavorites.delete(hiveRecipeKey);
+    await boxSyncDeletionRecipes.put(
+      hiveRecipeKey,
+      StringStringTuple(
+        name: recipeName,
+        value: deletionDate ?? DateTime.now().toString(),
+      ),
+    );
 
+    // delete the reference to the recipe from all assigned categories including the full recipe itself
     if (removeRecipe != null) {
       // delete recipe from categories
       if (removeRecipe.categories.isNotEmpty) {
@@ -452,6 +472,41 @@ class HiveProvider {
         await lazyBoxRecipes.delete(hiveRecipeKey);
       }
     }
+  }
+
+  ////////////// sync related //////////////
+  bool wasDeletedBefore(String recipeName) {
+    String hiveRecipeKey = getHiveKey(recipeName);
+
+    return (boxSyncDeletionRecipes.containsKey(hiveRecipeKey));
+  }
+
+  // returns the history of deleted recipes
+  DateTime? getDeletionDate(String recipeName) {
+    String hiveRecipeKey = getHiveKey(recipeName);
+
+    if (boxSyncDeletionRecipes.containsKey(hiveRecipeKey)) {
+      return DateTime.parse((boxSyncDeletionRecipes.get(hiveRecipeKey))!.value);
+    } else {
+      return null;
+    }
+  }
+
+  Map<String, DateTime> getDeletions() {
+    Map<String, DateTime> deletions = {};
+
+    for (var key in boxSyncDeletionRecipes.keys) {
+      StringStringTuple? interatedEntry = boxSyncDeletionRecipes.get(key);
+      if (interatedEntry != null) {
+        deletions[interatedEntry.name] = DateTime.parse(interatedEntry.value);
+      }
+    }
+
+    return deletions;
+  }
+
+  Future<void> clearDeletions() async {
+    await boxSyncDeletionRecipes.clear();
   }
 
   ////////////// category related //////////////
@@ -587,9 +642,8 @@ class HiveProvider {
       Recipe? currentRecipe = await lazyBoxRecipes.get(key);
 
       if (currentRecipe != null) {
-        if (currentRecipe.tags != null &&
-            currentRecipe.tags.firstWhereOrNull((tag) => tag.text == tagName) !=
-                null) {
+        if (currentRecipe.tags.firstWhereOrNull((tag) => tag.text == tagName) !=
+            null) {
           List<StringIntTuple>.from(currentRecipe.tags)
               .removeWhere((tag) => tag.text == tagName);
 
@@ -622,11 +676,10 @@ class HiveProvider {
       Recipe? currentRecipe = await lazyBoxRecipes.get(key);
 
       if (currentRecipe != null) {
-        if (currentRecipe.tags != null &&
-            currentRecipe.tags
-                .map((tag) => tag.text)
-                .toList()
-                .contains(oldTagName)) {
+        if (currentRecipe.tags
+            .map((tag) => tag.text)
+            .toList()
+            .contains(oldTagName)) {
           currentRecipe.tags
             ..removeWhere((tag) => tag.text == oldTagName)
             ..add(StringIntTuple(text: newTagName, number: newColor));
@@ -788,14 +841,10 @@ class HiveProvider {
       {Recipe? excludedRecipe}) async {
     List<String> recipeKeys = [];
 
-    if (vegetable == null) {
-      recipeKeys = lazyBoxRecipes.keys.map((key) => key as String).toList();
-    } else {
-      Box<String> boxVegetable = _getBoxVegetable(vegetable);
+    Box<String> boxVegetable = _getBoxVegetable(vegetable);
 
-      for (var key in boxVegetable.keys) {
-        recipeKeys.add(boxVegetable.get(key)!);
-      }
+    for (var key in boxVegetable.keys) {
+      recipeKeys.add(boxVegetable.get(key)!);
     }
 
     return await getRandomRecipeFromKeyList(recipeKeys,
@@ -806,13 +855,9 @@ class HiveProvider {
       {Recipe? excludedRecipe}) async {
     List<String> recipeKeys;
 
-    if (recipeTag == null) {
-      recipeKeys = lazyBoxRecipes.keys.map((key) => key as String).toList();
-    } else {
-      String recipeTagKey = getHiveKey(recipeTag);
+    String recipeTagKey = getHiveKey(recipeTag);
 
-      recipeKeys = List<String>.from(boxRecipeTagsList.get(recipeTagKey)!);
-    }
+    recipeKeys = List<String>.from(boxRecipeTagsList.get(recipeTagKey)!);
 
     return await getRandomRecipeFromKeyList(recipeKeys,
         excludedRecipe: excludedRecipe);
@@ -980,7 +1025,7 @@ class HiveProvider {
     await addSingleIngredientToCart(recipeName, ingredient);
   }
 
-// see removeAndAddIngredient
+  // see removeAndAddIngredient
   Future<void> removeAndAddIngredients(
       String recipeName, List<Ingredient> ingredients) async {
     for (Ingredient i in ingredients) {
@@ -1272,7 +1317,6 @@ class HiveProvider {
   /// existing and otherwise null
   int? _getSuitingIngredientRecipe(
       Ingredient ingredient, List<CheckableIngredient> ingredients) {
-    if (ingredients == null) return null;
     for (int i = 0; i < ingredients.length; i++) {
       if (ingredient.name == ingredients[i].name &&
           ingredient.unit == ingredients[i].unit) return i;

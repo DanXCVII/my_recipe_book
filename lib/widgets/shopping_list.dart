@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/constants/global_settings.dart';
+import '../constants/global_settings.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -116,8 +116,7 @@ class ShoppingList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Recipe> recipes = ingredients.keys.toList();
-    if (ingredients == null ||
-        ingredients.keys.isEmpty ||
+    if (ingredients.keys.isEmpty ||
         ingredients[ingredients.keys.first]!.isEmpty) {
       return displayNothingAdded(context);
     }
@@ -303,7 +302,7 @@ class ShoppingCartListTile extends StatelessWidget {
                                   color: (ingredientTextColor == null)
                                       ? Theme.of(context)
                                           .textTheme
-                                          .bodyText2!
+                                          .bodyMedium!
                                           .color
                                       : ingredientTextColor,
                                 ),
@@ -332,7 +331,7 @@ class ShoppingCartListTile extends StatelessWidget {
                                         color: (ingredientTextColor == null)
                                             ? Theme.of(context)
                                                 .textTheme
-                                                .bodyText2!
+                                                .bodyMedium!
                                                 .color
                                             : ingredientTextColor,
                                       ),

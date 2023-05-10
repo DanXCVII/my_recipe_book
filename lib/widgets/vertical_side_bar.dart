@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/blocs/app/app_bloc.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import '../blocs/app/app_bloc.dart';
+import '../generated/i18n.dart';
 
 class VerticalSideBar extends StatelessWidget {
   final int selectedIndex;

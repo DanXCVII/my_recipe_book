@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:fraction/fraction.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import '../generated/i18n.dart';
 
 import '../models/ingredient.dart';
 
@@ -110,7 +110,7 @@ String getTimeHoursMinutes(double min) {
 int getIngredientCount(List<List<Ingredient>> ingredients) {
   int ingredientCount = 0;
   for (final List<Ingredient> i in ingredients) {
-    if (i != null) ingredientCount += i.length;
+    ingredientCount += i.length;
   }
   return ingredientCount;
 }

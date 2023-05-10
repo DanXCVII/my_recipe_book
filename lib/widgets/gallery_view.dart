@@ -59,8 +59,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
               pageController: widget.pageController,
               onPageChanged: onPageChanged,
             ),
-            widget.descriptions[currentIndex] == null ||
-                    widget.descriptions[currentIndex] == ''
+            widget.descriptions[currentIndex] == ''
                 ? Container()
                 : Container(
                     width: MediaQuery.of(context).size.width,
@@ -91,8 +90,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     return PhotoViewGalleryPageOptions(
       imageProvider: (widget.galleryImagePaths[index] == Constants.noRecipeImage
-          ? AssetImage(widget.galleryImagePaths[index])
-          : FileImage(File(widget.galleryImagePaths[index]))) as ImageProvider<Object>?,
+              ? AssetImage(widget.galleryImagePaths[index])
+              : FileImage(File(widget.galleryImagePaths[index])))
+          as ImageProvider<Object>?,
       initialScale: PhotoViewComputedScale.contained,
       minScale: PhotoViewComputedScale.contained * (1.0),
       maxScale: PhotoViewComputedScale.covered * 1.5,

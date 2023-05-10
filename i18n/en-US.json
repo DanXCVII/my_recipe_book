@@ -310,5 +310,13 @@
   "friday": "Friday",
   "saturday": "Saturday",
   "sunday": "Sunday",
-  "steps_info_desc": "If you added multiple steps, you can move them by tapping and holding one step. This feature is only available, if no images for the steps are added. The same with removing steps from the middle."
+  "steps_info_desc": "If you added multiple steps, you can move them by tapping and holding one step. This feature is only available, if no images for the steps are added. The same with removing steps from the middle.",
+  "sync_recipes_drive": "sync recipes with Google Drive",
+  "syncing_recipes_drive": "syncing recipes with Google Drive",
+  "importing_recipe_drive": "importing recipe: {recipeName}",
+  "uploading_recipe_drive": "uploading recipe: {recipeName}",
+  "deleting_recipe_drive": "deleting recipe in cloud: {recipeName}",
+  "deleting_recipe_local": "deleting local recipe: {recipeName}",
+  "successfully_synced_drive": "successfully synced recipes with Google Drive",
+  "cancelling_sync": "Cancelling Sync..."
 }

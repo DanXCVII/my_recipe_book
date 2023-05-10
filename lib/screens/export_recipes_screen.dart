@@ -5,7 +5,7 @@ import 'package:archive/archive_io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
-import 'package:my_recipe_book/widgets/dialogs/info_dialog.dart';
+import '../widgets/dialogs/info_dialog.dart';
 import 'package:share_extend/share_extend.dart';
 
 import '../generated/i18n.dart';

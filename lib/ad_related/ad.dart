@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
+import '../generated/i18n.dart';
 
 import 'ad_id.dart';
 

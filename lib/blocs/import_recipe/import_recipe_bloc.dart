@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:my_recipe_book/local_storage/local_paths.dart';
+import '../../local_storage/local_paths.dart';
 
 import '../../local_storage/hive.dart';
 import '../../local_storage/io_operations.dart' as IO;
@@ -79,22 +79,18 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
             Recipe importedRecipeData =
                 (await (IO.importMRBrecipeFromTmp(event.recipes[i].name)))!;
             // .. and if it succeeded ..
-            if (importedRecipeData != null) {
-              List<String /*!*/ > categories =
-                  HiveProvider().getCategoryNames();
-              List<String> newCategories = [];
-              for (String category in importedRecipeData.categories) {
-                if (!categories.contains(category) &&
-                    !importCategories.contains(category)) {
-                  newCategories.add(category);
-                }
+
+            List<String /*!*/ > categories = HiveProvider().getCategoryNames();
+            List<String> newCategories = [];
+            for (String category in importedRecipeData.categories) {
+              if (!categories.contains(category) &&
+                  !importCategories.contains(category)) {
+                newCategories.add(category);
               }
-              // add recipe to recipeManager
-              importCategories.addAll(newCategories);
-              importRecipes.add(importedRecipeData);
-            } else {
-              failedRecipes.add(importedRecipeData);
             }
+            // add recipe to recipeManager
+            importCategories.addAll(newCategories);
+            importRecipes.add(importedRecipeData);
           } else {
             // if the recipe is already saved in hive, add it to the alreadyExisting list
             alreadyExisting.add(
@@ -158,7 +154,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
 
       if (event.importZipFile.path.endsWith("zip")) {
         fileEndingLastImport = "zip";
-        if (event.delay != null) await Future.delayed(event.delay);
+        await Future.delayed(event.delay);
 
         List<Recipe> importRecipes = [];
         List<String> failedZips = [];
@@ -167,8 +163,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         bool failedImporting = false;
         Map<String, Recipe?>? recipes;
         try {
-          recipes = await IO.importRecipesToTmp(event.importZipFile);
-          if (recipes == null) failedImporting = true;
+          recipes = await IO.importRecipesToTmp(event.importZipFile, false);
         } catch (e) {
           failedImporting = true;
         }
@@ -220,7 +215,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         //   await HiveProvider().deleteRecipe("Vegane Gemüsepfanne mit Reis");
 
         fileEndingLastImport = "mcb";
-        if (event.delay != null) await Future.delayed(event.delay);
+        await Future.delayed(event.delay);
 
         emit(ImportingRecipes(0.5));
 
@@ -229,7 +224,6 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         try {
           recipeNames =
               (await (IO.extractMRBzipGetNames(event.importZipFile))) ?? [];
-          if (recipeNames == null) failedImporting = true;
         } catch (e) {
           failedImporting = true;
         }
@@ -240,11 +234,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
           for (String recipeName in recipeNames) {
             Recipe hiveRecipe =
                 (await HiveProvider().getRecipeByName(recipeName))!;
-            if (hiveRecipe != null) {
-              alreadyExisting.add(hiveRecipe);
-            } else {
-              importRecipes.add(Recipe(name: recipeName));
-            }
+            alreadyExisting.add(hiveRecipe);
           }
 
           emit(MultipleRecipes(importRecipes, [], alreadyExisting));

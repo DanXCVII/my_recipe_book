@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:my_recipe_book/generated/i18n.dart';
-import 'package:my_recipe_book/models/nutrition.dart';
+
+import '../../generated/i18n.dart';
+import '../../models/nutrition.dart';
 
 class AnimatedNutritionsFab extends StatefulWidget {
   final List<Nutrition> recipeNutritions;
@@ -85,7 +86,6 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
                 borderRadius: BorderRadius.circular(30),
               ),
               child: AnimatedSize(
-                vsync: this,
                 duration: Duration(milliseconds: 150),
                 curve: Curves.fastOutSlowIn,
                 child: isMinimized

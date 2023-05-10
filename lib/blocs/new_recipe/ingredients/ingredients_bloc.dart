@@ -1,11 +1,9 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:my_recipe_book/models/enums.dart';
-import 'package:my_recipe_book/models/ingredient.dart';
 
 import '../../../local_storage/hive.dart';
+import '../../../models/enums.dart';
+import '../../../models/ingredient.dart';
 import '../../../models/recipe.dart';
 
 part 'ingredients_event.dart';
@@ -27,7 +25,8 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
       List<String>? recipeIngredientSections = [];
       List<List<Ingredient>>? recipeIngredients = [[]];
 
-      if (event.ingredients!.isNotEmpty && event.ingredients!.first.isNotEmpty) {
+      if (event.ingredients!.isNotEmpty &&
+          event.ingredients!.first.isNotEmpty) {
         recipeIngredientSections = event.ingredientsGlossary;
         recipeIngredients = event.ingredients;
       }

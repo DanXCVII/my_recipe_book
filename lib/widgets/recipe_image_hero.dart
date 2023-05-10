@@ -2,15 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_recipe_book/blocs/recipe_calendar/recipe_calendar_bloc.dart';
-import 'package:my_recipe_book/constants/global_settings.dart';
+import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
+import '../constants/global_settings.dart';
 import 'package:wakelock/wakelock.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
-import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../models/recipe.dart';
 import '../screens/recipe_screen.dart';
