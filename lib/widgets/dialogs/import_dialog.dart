@@ -6,7 +6,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../blocs/import_recipe/import_recipe_bloc.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../local_storage/io_operations.dart';
 import '../../models/recipe.dart';
 
@@ -31,10 +31,10 @@ class _ImportDialogState extends State<ImportDialog> {
     return AlertDialog(
       contentPadding: EdgeInsets.all(12),
       title: Text(importStatus == ImportStatus.Finished
-          ? I18n.of(context)!.finished
+          ? S.of(context).finished
           : importStatus == ImportStatus.Loading
-              ? I18n.of(context)!.import_recipe_s
-              : I18n.of(context)!.select_recipes_to_import),
+              ? S.of(context).import_recipe_s
+              : S.of(context).select_recipes_to_import),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       content: Container(
         width: MediaQuery.of(context).size.width > 320 ? 320 : null,
@@ -101,7 +101,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               ),
                             ),
                             child: ListTile(
-                              title: Text(I18n.of(context)!.select_all),
+                              title: Text(S.of(context).select_all),
                               trailing: Checkbox(
                                 value: listEquals(selectedRecipes,
                                     state.readyToImportRecipes),
@@ -238,7 +238,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context)!.ready} ',
+                              ' ${S.of(context).ready} ',
                               style: TextStyle(fontSize: 12),
                             ),
                             Icon(
@@ -247,7 +247,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context)!.duplicate} ',
+                              ' ${S.of(context).duplicate} ',
                               style: TextStyle(fontSize: 12),
                             ),
                             Icon(
@@ -256,7 +256,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context)!.failed}',
+                              ' ${S.of(context).failed}',
                               style: TextStyle(fontSize: 12),
                             ),
                           ],
@@ -270,7 +270,7 @@ class _ImportDialogState extends State<ImportDialog> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
                           TextButton(
-                              child: Text(I18n.of(context)!.cancel),
+                              child: Text(S.of(context).cancel),
                               onPressed: () {
                                 clearCache().then((_) {});
 
@@ -283,7 +283,7 @@ class _ImportDialogState extends State<ImportDialog> {
                             width: 6,
                           ),
                           TextButton(
-                            child: Text(I18n.of(context)!.import),
+                            child: Text(S.of(context).import),
                             onPressed: () => selectedRecipes.isNotEmpty
                                 ? BlocProvider.of<ImportRecipeBloc>(context)
                                     .add(FinishImportRecipes(selectedRecipes))
@@ -365,7 +365,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context)!.successful} ',
+                              ' ${S.of(context).successful} ',
                               style: TextStyle(fontSize: 12),
                             ),
                             Icon(
@@ -374,7 +374,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context)!.duplicate} ',
+                              ' ${S.of(context).duplicate} ',
                               style: TextStyle(fontSize: 12),
                             ),
                             Icon(
@@ -383,7 +383,7 @@ class _ImportDialogState extends State<ImportDialog> {
                               size: 14,
                             ),
                             Text(
-                              ' ${I18n.of(context)!.failed}',
+                              ' ${S.of(context).failed}',
                               style: TextStyle(fontSize: 12),
                             ),
                           ],
@@ -413,11 +413,11 @@ class _ImportDialogState extends State<ImportDialog> {
                   ],
                 );
               } else if (state is InvalidDataType) {
-                return _getShowInfoStringWidget(I18n.of(context)!
-                    .datatype_not_supported(state.fileExtension));
+                return _getShowInfoStringWidget(
+                    S.of(context).datatype_not_supported(state.fileExtension));
               } else if (state is InvalidFile) {
                 return _getShowInfoStringWidget(
-                    I18n.of(context)!.file_not_supported(state.fileName));
+                    S.of(context).file_not_supported(state.fileName));
               } else {
                 return Text(state.toString());
               }

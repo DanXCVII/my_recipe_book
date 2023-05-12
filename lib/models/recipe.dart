@@ -149,8 +149,9 @@ class Recipe extends Equatable {
       nutritions: List<dynamic>.from(json['nutritions'])
           .map((n) => Nutrition.fromMap(n))
           .toList(),
-      lastModified:
-          keepDateTime == null ? DateTime.now().toString() : json['notes'],
+      lastModified: keepDateTime == null
+          ? DateTime.now().toString()
+          : json['lastModified'],
       rating: json.containsKey('rating') ? json['rating'] : null,
       tags: json.containsKey('keywords')
           ? List<dynamic>.from(json['keywords'])

@@ -4,7 +4,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/tuple.dart';
 import 'helper.dart';
 
@@ -160,7 +160,7 @@ Future<Uint8List> getRecipeCalendarPdf(
                         mainAxisSize: pw.MainAxisSize.min,
                         mainAxisAlignment: pw.MainAxisAlignment.center,
                         children: [
-                          pw.Text(I18n.of(bContext)!.notes),
+                          pw.Text(S.of(bContext)!.notes),
                         ]..addAll(
                             List.generate(
                               10,

@@ -314,7 +314,7 @@
   "syncing_recipes_drive": "Synchronisiere Rezepte mit Google Drive",
   "importing_recipe_drive": "importiere Rezept: {recipeName}",
   "uploading_recipe_drive": "Lade Rezept hoch: {recipeName}",
-  "deleteing_recipe_drive": "Lösche Rezept online: {recipeName}",
+  "deleting_recipe_drive": "Lösche Rezept online: {recipeName}",
   "deleting_recipe_local": "Lösche Rezept lokal: {recipeName}",
   "successfully_synced_drive": "Rezepte erfolgreich synchronisiert",
   "cancelling_sync": "Synchronisierung abbrechen..."

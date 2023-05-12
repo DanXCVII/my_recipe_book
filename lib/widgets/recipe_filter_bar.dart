@@ -3,7 +3,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../local_storage/hive.dart';
 import '../models/string_int_tuple.dart';
 
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/enums.dart';
 import '../screens/recipe_overview.dart';
 
@@ -121,15 +121,15 @@ class _RecipeFilterState extends State<RecipeFilter>
                                       : 170,
                               child: Text(
                                 value == RecipeSort.BY_NAME
-                                    ? I18n.of(context)!.by_name
+                                    ? S.of(context).by_name
                                     : value == RecipeSort.BY_EFFORT
-                                        ? I18n.of(context)!.by_effort
+                                        ? S.of(context).by_effort
                                         : value ==
                                                 RecipeSort.BY_INGREDIENT_COUNT
-                                            ? I18n.of(context)!
+                                            ? S
+                                                .of(context)!
                                                 .by_ingredientsamount
-                                            : I18n.of(context)!
-                                                .by_last_modified,
+                                            : S.of(context).by_last_modified,
                                 style: TextStyle(
                                     fontSize:
                                         MediaQuery.of(context).size.width -

@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../local_storage/hive.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
@@ -114,11 +113,15 @@ class RecipeGridView extends StatelessWidget {
             );
           } else {
             return Scaffold(
-                appBar: NewGradientAppBar(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xffAF1E1E), Color(0xff641414)],
+                appBar: AppBar(
+                  backgroundColor: Colors.black,
+                  flexibleSpace: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                    ),
                   ),
                   title: Text(title!),
                 ),
@@ -221,7 +224,8 @@ class RecipeGridView extends StatelessWidget {
                                       color: Colors.white,
                                       size: 70.0,
                                     ),
-                                    description: I18n.of(context)!
+                                    description: S
+                                        .of(context)!
                                         .no_recipes_fit_your_filter,
                                   ),
                                 ),
@@ -257,11 +261,15 @@ class RecipeGridView extends StatelessWidget {
             );
           } else {
             return Scaffold(
-                appBar: NewGradientAppBar(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xffAF1E1E), Color(0xff641414)],
+                appBar: AppBar(
+                  backgroundColor: Colors.black,
+                  flexibleSpace: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                    ),
                   ),
                   title: Text(title!),
                 ),
@@ -298,19 +306,19 @@ class RecipeGridView extends StatelessWidget {
       Vegetable? vegetable, StringIntTuple? recipeTag) {
     if (category != null) {
       if (category == Constants.noCategory) {
-        return I18n.of(context)!.no_category;
+        return S.of(context).no_category;
       } else if (category == Constants.allCategories) {
-        return I18n.of(context)!.all_categories;
+        return S.of(context).all_categories;
       } else {
         return category;
       }
     } else if (vegetable != null) {
       if (vegetable == Vegetable.NON_VEGETARIAN) {
-        return I18n.of(context)!.with_meat;
+        return S.of(context).with_meat;
       } else if (vegetable == Vegetable.VEGETARIAN) {
-        return I18n.of(context)!.vegetarian;
+        return S.of(context).vegetarian;
       } else if (vegetable == Vegetable.VEGAN) {
-        return I18n.of(context)!.vegan;
+        return S.of(context).vegan;
       } else {
         return null;
       }
@@ -344,8 +352,8 @@ class NoRecipeCategory extends StatelessWidget {
             size: 70.0,
           ),
           description: recipeTag
-              ? I18n.of(context)!.no_recipes_with_this_tag
-              : I18n.of(context)!.no_recipes_under_this_category),
+              ? S.of(context).no_recipes_with_this_tag
+              : S.of(context).no_recipes_under_this_category),
     );
   }
 }

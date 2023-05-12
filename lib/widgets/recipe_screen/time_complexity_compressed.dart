@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 
 import '../../util/helper.dart';
 
@@ -91,7 +91,7 @@ class TimeComplexityCompressed extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
                   child: Text(
-                    "${I18n.of(context)!.complexity}: $effort",
+                    "${S.of(context).complexity}: $effort",
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
@@ -135,12 +135,10 @@ class TimeComplexityCompressed extends StatelessWidget {
   String _getTimeString(double preperationTime, double cookingTime,
       double totalTime, BuildContext context) {
     if (totalTime != 0)
-      return "${I18n.of(context)!.total_time}: " +
-          getTimeHoursMinutes(totalTime);
+      return "${S.of(context).total_time}: " + getTimeHoursMinutes(totalTime);
     if (cookingTime != 0)
-      return "${I18n.of(context)!.cook_time}: " +
-          getTimeHoursMinutes(cookingTime);
-    return "${I18n.of(context)!.prep_time}: " +
+      return "${S.of(context).cook_time}: " + getTimeHoursMinutes(cookingTime);
+    return "${S.of(context).prep_time}: " +
         getTimeHoursMinutes(preperationTime);
   }
 }

@@ -68,8 +68,9 @@ class MyThemes {
     unselectedWidgetColor: Colors.grey[100],
     toggleableActiveColor: Colors.orange,
     appBarTheme: AppBarTheme(
+        foregroundColor: Colors.white,
         systemOverlayStyle:
-            SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
+            SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
         iconTheme: IconThemeData(color: Colors.white)),
     textTheme: TextTheme(
         displayMedium: TextStyle(color: Colors.grey[400]),
@@ -87,7 +88,14 @@ class MyThemes {
 
   static final ThemeData oledblackTheme = ThemeData(
     primaryColor: Color(0xff363636),
+    snackBarTheme: SnackBarThemeData(
+      actionBackgroundColor: Colors.red,
+      backgroundColor: Colors.red,
+      disabledActionTextColor: Colors.red,
+      disabledActionBackgroundColor: Colors.red,
+    ),
     appBarTheme: AppBarTheme(
+        foregroundColor: Colors.white,
         systemOverlayStyle:
             SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
         iconTheme: IconThemeData(color: Colors.white)),

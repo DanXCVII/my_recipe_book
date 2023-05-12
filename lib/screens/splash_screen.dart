@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/splash_screen/splash_screen_bloc.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../constants/routes.dart';
 import '../screens/homepage_screen.dart';
 
@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: FittedBox(
                     fit: BoxFit.fill,
                     child: Text(
-                      I18n.of(context)!.recipe_bible,
+                      S.of(context).recipe_bible,
                       style: TextStyle(
                         fontFamily: "Righteous",
                         color: Colors.black,
@@ -95,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 Spacer(),
                 Text(
-                  I18n.of(context)!.loading_data,
+                  S.of(context).loading_data,
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w800,

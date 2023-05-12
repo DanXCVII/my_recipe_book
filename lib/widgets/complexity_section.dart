@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../util/my_wrapper.dart';
 
 class ComplexitySection extends StatefulWidget {
@@ -22,7 +22,7 @@ class ComplexitySectionState extends State<ComplexitySection> {
           padding:
               const EdgeInsets.only(right: 12, top: 12, left: 56, bottom: 12),
           child: Text(
-            I18n.of(context)!.complexity_effort,
+            S.of(context).complexity_effort,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,

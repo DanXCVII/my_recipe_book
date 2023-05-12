@@ -7,7 +7,7 @@ import '../../../ad_related/ad.dart';
 import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import '../../../constants/routes.dart';
-import '../../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../../models/string_int_tuple.dart';
 import '../../../widgets/dialogs/text_color_dialog.dart';
 import '../../recipe_tag_manager_screen.dart';
@@ -42,7 +42,7 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      I18n.of(context)!.select_recipe_tags,
+                      S.of(context).select_recipe_tags,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -59,11 +59,9 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                               if (state.recipeTags.firstWhereOrNull(
                                       (element) => element.text == name) !=
                                   null) {
-                                return I18n.of(context)!
-                                    .recipe_tag_already_exists;
+                                return S.of(context).recipe_tag_already_exists;
                               } else if (name == "") {
-                                return I18n.of(context)!
-                                    .field_must_not_be_empty;
+                                return S.of(context).field_must_not_be_empty;
                               } else {
                                 return null;
                               }
@@ -77,7 +75,7 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                                     ]),
                                   );
                             },
-                            hintText: I18n.of(context)!.recipe_tag,
+                            hintText: S.of(context).recipe_tag,
                           ),
                         );
                       },

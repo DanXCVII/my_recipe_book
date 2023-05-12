@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/g_drive/g_drive_sign_in/g_drive_sign_in_bloc.dart';
 import '../blocs/g_drive/g_drive_sync/g_drive_bloc.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 
 class GSyncListtile extends StatelessWidget {
   const GSyncListtile({super.key});
@@ -36,7 +36,10 @@ class GSyncListtile extends StatelessWidget {
                           shape: BoxShape.circle,
                           color: Colors.white,
                         ),
-                        child: Image.network(iUrl),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(iUrl),
+                        ),
                       ),
                 trailing: IconButton(
                   icon: Icon(Icons.logout),
@@ -57,7 +60,7 @@ class GSyncListtile extends StatelessWidget {
                           .add(GDriveStartSync(DateTime.now()));
                     },
                     leading: Icon(Icons.cloud_sync),
-                    title: Text(I18n.of(context)!.sync_recipes_drive),
+                    title: Text(S.of(context).sync_recipes_drive),
                   );
                 } else if (state is GDriveSyncing) {
                   return ListTile(
@@ -70,7 +73,7 @@ class GSyncListtile extends StatelessWidget {
                       },
                     ),
                     title: LinearProgressIndicator(value: 0),
-                    subtitle: Text(I18n.of(context)!.syncing_recipes_drive),
+                    subtitle: Text(S.of(context).syncing_recipes_drive),
                   );
                 } else if (state is GDriveImporting) {
                   return ListTile(
@@ -85,7 +88,8 @@ class GSyncListtile extends StatelessWidget {
                     title: LinearProgressIndicator(
                         value:
                             state.importingRecipeNumber / state.totalImporting),
-                    subtitle: Text(I18n.of(context)!
+                    subtitle: Text(S
+                        .of(context)!
                         .importing_recipe_drive(state.recipeName)),
                   );
                 } else if (state is GDriveUploading) {
@@ -101,7 +105,8 @@ class GSyncListtile extends StatelessWidget {
                       },
                     ),
                     title: LinearProgressIndicator(value: progress),
-                    subtitle: Text(I18n.of(context)!
+                    subtitle: Text(S
+                        .of(context)!
                         .uploading_recipe_drive(state.recipeName)),
                   );
                 } else if (state is GDriveCloudDeleting) {
@@ -117,8 +122,8 @@ class GSyncListtile extends StatelessWidget {
                     title: LinearProgressIndicator(
                         value:
                             state.deletingRecipeNumber / state.totalDeleting),
-                    subtitle: Text(I18n.of(context)!
-                        .deleting_recipe_drive(state.recipeName)),
+                    subtitle: Text(
+                        S.of(context).deleting_recipe_drive(state.recipeName)),
                   );
                 } else if (state is GDriveLocalDeleting) {
                   return ListTile(
@@ -133,8 +138,8 @@ class GSyncListtile extends StatelessWidget {
                     title: LinearProgressIndicator(
                         value:
                             state.deletingRecipeNumber / state.totalDeleting),
-                    subtitle: Text(I18n.of(context)!
-                        .deleting_recipe_local(state.recipeName)),
+                    subtitle: Text(
+                        S.of(context).deleting_recipe_local(state.recipeName)),
                   );
                 } else if (state is GDriveCancellingSync) {
                   return ListTile(
@@ -143,12 +148,12 @@ class GSyncListtile extends StatelessWidget {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator()),
-                    title: Text("Cancelling Sync"),
+                    title: Text(S.of(context).cancelling_sync),
                   );
                 } else if (state is GDriveSuccessfullySynced) {
                   return ListTile(
                     leading: Icon(Icons.cloud_done),
-                    title: Text(I18n.of(context)!.successfully_synced_drive),
+                    title: Text(S.of(context).successfully_synced_drive),
                     trailing: IconButton(
                       icon: Icon(Icons.sync),
                       onPressed: () {
@@ -177,7 +182,7 @@ class GSyncListtile extends StatelessWidget {
                 ),
                 child: Image.asset("images/google_logo.png"),
               ),
-              title: Text(I18n.of(context)!.sync_recipes_drive),
+              title: Text(S.of(context).sync_recipes_drive),
               onTap: () {
                 BlocProvider.of<GDriveSignInBloc>(context).add(GDriveSignIn());
               },

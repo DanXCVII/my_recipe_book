@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 
 class Consts {
   Consts._();
@@ -119,12 +119,12 @@ class TextColorDialogState extends State<TextColorDialog> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     TextButton(
-                        child: Text(I18n.of(context)!.cancel),
+                        child: Text(S.of(context).cancel),
                         onPressed: () {
                           Navigator.pop(context);
                         }),
                     TextButton(
-                      child: Text(I18n.of(context)!.save),
+                      child: Text(S.of(context).save),
                       onPressed: () {
                         validateAddModifyItem();
                       },
@@ -145,7 +145,7 @@ class TextColorDialogState extends State<TextColorDialog> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context)!.delete_category),
+        title: Text(S.of(context).delete_category),
         content: BlockPicker(
           pickerColor: Color(selectedColor),
           onColorChanged: (color) {

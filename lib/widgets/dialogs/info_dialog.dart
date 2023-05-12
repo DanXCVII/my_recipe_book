@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 
 class InfoDialog extends StatelessWidget {
   final String title;
@@ -26,8 +26,7 @@ class InfoDialog extends StatelessWidget {
           child: Text(body)),
       actions: <Widget>[
         TextButton(
-          child:
-              okText == null ? Text(I18n.of(context)!.alright) : Text(okText!),
+          child: okText == null ? Text(S.of(context).alright) : Text(okText!),
           style: TextButton.styleFrom(
             foregroundColor:
                 Theme.of(context).colorScheme.background == Colors.white

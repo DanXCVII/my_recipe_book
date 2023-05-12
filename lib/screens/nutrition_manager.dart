@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/nutrition_manager/nutrition_manager_bloc.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/recipe.dart';
 import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/dialogs/textfield_dialog.dart';
@@ -65,13 +64,17 @@ class _NutritionManagerState extends State<NutritionManager> {
             return _getNutritionManagerLoadingScreen();
           } else if (state is LoadedNutritionManager) {
             return Scaffold(
-              appBar: NewGradientAppBar(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xffAF1E1E), Color(0xff641414)],
+              appBar: AppBar(
+                backgroundColor: Colors.black,
+                flexibleSpace: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                  ),
                 ),
-                title: Text(I18n.of(context)!.manage_nutritions),
+                title: Text(S.of(context).manage_nutritions),
                 actions: <Widget>[
                   IconButton(
                     icon: Icon(Icons.help_outline),
@@ -79,8 +82,8 @@ class _NutritionManagerState extends State<NutritionManager> {
                       showDialog(
                         context: context,
                         builder: (context) => InfoDialog(
-                          title: I18n.of(context)!.info,
-                          body: I18n.of(context)!.nutrition_manager_description,
+                          title: S.of(context).info,
+                          body: S.of(context).nutrition_manager_description,
                         ),
                       );
                     },
@@ -99,9 +102,9 @@ class _NutritionManagerState extends State<NutritionManager> {
                       builder: (_) => TextFieldDialog(
                         validation: (String? name) {
                           if (state.nutritions.contains(name)) {
-                            return I18n.of(context)!.nutrition_already_exists;
+                            return S.of(context).nutrition_already_exists;
                           } else if (name == "") {
-                            return I18n.of(context)!.field_must_not_be_empty;
+                            return S.of(context).field_must_not_be_empty;
                           } else {
                             return null;
                           }
@@ -114,7 +117,7 @@ class _NutritionManagerState extends State<NutritionManager> {
                           dismissibleKeys.add(Key('D-$name'));
                           listTileKeys.add(Key(name));
                         },
-                        hintText: I18n.of(context)!.nutrition,
+                        hintText: S.of(context).nutrition,
                       ),
                     );
                   }),
@@ -126,7 +129,7 @@ class _NutritionManagerState extends State<NutritionManager> {
                         color: Colors.grey[200],
                         size: 70.0,
                       ),
-                      description: I18n.of(context)!.you_have_no_nutritions,
+                      description: S.of(context).you_have_no_nutritions,
                     ))
                   : Form(
                       key: _formKey,
@@ -177,13 +180,17 @@ class _NutritionManagerState extends State<NutritionManager> {
 
   Widget _getNutritionManagerLoadingScreen() {
     return Scaffold(
-        appBar: NewGradientAppBar(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+            ),
           ),
-          title: Text(I18n.of(context)!.manage_nutritions),
+          title: Text(S.of(context).manage_nutritions),
         ),
         body: Center(
           child: CircularProgressIndicator(),
@@ -200,12 +207,12 @@ class _NutritionManagerState extends State<NutritionManager> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context)!.delete_nutrition),
-        content: Text(I18n.of(context)!.sure_you_want_to_delete_this_nutrition +
+        title: Text(S.of(context).delete_nutrition),
+        content: Text(S.of(context).sure_you_want_to_delete_this_nutrition +
             " $nutritionName"),
         actions: <Widget>[
           TextButton(
-            child: Text(I18n.of(context)!.no),
+            child: Text(S.of(context).no),
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
@@ -216,7 +223,7 @@ class _NutritionManagerState extends State<NutritionManager> {
             },
           ),
           TextButton(
-            child: Text(I18n.of(context)!.yes),
+            child: Text(S.of(context).yes),
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
@@ -293,9 +300,9 @@ class _NutritionManagerState extends State<NutritionManager> {
             builder: (_) => TextFieldDialog(
               validation: (String? name) {
                 if (nutritions.contains(name)) {
-                  return I18n.of(context)!.nutrition_already_exists;
+                  return S.of(context).nutrition_already_exists;
                 } else if (name == "") {
-                  return I18n.of(context)!.field_must_not_be_empty;
+                  return S.of(context).field_must_not_be_empty;
                 } else {
                   return null;
                 }
@@ -305,7 +312,7 @@ class _NutritionManagerState extends State<NutritionManager> {
                   UpdateNutrition(nutritionName, name),
                 );
               },
-              hintText: I18n.of(context)!.nutrition,
+              hintText: S.of(context).nutrition,
               prefilledText: nutritionName,
             ),
           );

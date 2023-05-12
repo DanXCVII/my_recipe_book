@@ -7,7 +7,7 @@ import 'package:share/share.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../local_storage/hive.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
@@ -69,8 +69,8 @@ class FancyShoppingCartScreen extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (_) => InfoDialog(
-                      title: I18n.of(context)!.shopping_cart_help,
-                      body: I18n.of(context)!.shopping_cart_help_desc,
+                      title: S.of(context).shopping_cart_help,
+                      body: S.of(context).shopping_cart_help_desc,
                     ),
                   );
                 },
@@ -83,7 +83,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
                         _getShoppingCartAsString(state.shoppingCart, context);
                     if (shoppingCartString != "") {
                       Share.share(shoppingCartString,
-                          subject: I18n.of(context)!.shopping_list);
+                          subject: S.of(context).shopping_list);
                     }
                   }
                 },
@@ -109,7 +109,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
-              title: Text(I18n.of(context)!.shoppingcart),
+              title: Text(S.of(context).shoppingcart),
               background: shoppingCartImage,
             ),
           ),
@@ -150,7 +150,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
 
     for (Recipe key in shoppingCart.keys) {
       if (key.name == Constants.summary && shoppingCart[key]!.isNotEmpty) {
-        shoppingCartString += ("${I18n.of(context)!.shopping_list}:\n");
+        shoppingCartString += ("${S.of(context).shopping_list}:\n");
         for (CheckableIngredient ingredient in shoppingCart[key]!) {
           shoppingCartString += "${ingredient.checked ? "✅ " : ""}";
           shoppingCartString += ingredient.amount != null
@@ -313,7 +313,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
               color: Colors.brown,
               size: 70.0,
             ),
-            description: I18n.of(context)!.shopping_cart_is_empty),
+            description: S.of(context).shopping_cart_is_empty),
       ),
     );
   }

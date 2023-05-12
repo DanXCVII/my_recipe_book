@@ -1,14 +1,13 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import '../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import '../../blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../constants/routes.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../local_storage/hive.dart';
 import '../../models/enums.dart';
 import '../../models/ingredient.dart';
@@ -96,19 +95,23 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
         return false;
       },
       child: Scaffold(
-        appBar: NewGradientAppBar(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+            ),
           ),
-          title: Text(I18n.of(context)!.add_ingredients_info),
+          title: Text(S.of(context).add_ingredients_info),
           actions: <Widget>[
             BlocListener<IngredientsBloc, IngredientsState>(
               listener: (context, state) {
                 if (state is IEditingFinishedGoBack) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(I18n.of(context)!.saving_your_input)));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(S.of(context).saving_your_input)));
                 } else if (state is ISaved) {
                   BlocProvider.of<IngredientsBloc>(context).add(SetCanSave());
 
@@ -181,7 +184,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                     padding:
                         const EdgeInsets.only(left: 56, top: 12, bottom: 12),
                     child: Text(
-                      I18n.of(context)!.category + ":",
+                      S.of(context).category + ":",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -231,8 +234,8 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
   void _finishedEditingIngredients() {
     if (!_formKey.currentState!.validate()) {
       _showFlushInfo(
-        I18n.of(context)!.check_filled_in_information,
-        I18n.of(context)!.check_red_fields_desc,
+        S.of(context).check_filled_in_information,
+        S.of(context).check_red_fields_desc,
       );
     } else {
       _saveIngredientsData(false);

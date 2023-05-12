@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -11,7 +10,7 @@ import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/recipe.dart';
 import '../models/tuple.dart';
 import '../util/helper.dart';
@@ -50,13 +49,17 @@ class _RecipeCalendarScreenState extends State<RecipeCalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: NewGradientAppBar(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xffAF1E1E), Color(0xff641414)],
+        appBar: AppBar(
+            backgroundColor: Colors.black,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+              ),
             ),
-            title: Text(I18n.of(context)!.recipe_planer),
+            title: Text(S.of(context).recipe_planer),
             actions: [
               BlocBuilder<RecipeCalendarBloc, RecipeCalendarState>(
                   builder: (context, state) {
@@ -280,7 +283,7 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
       firstDay: DateTime(DateTime.now().year - 1, 1, 1),
       lastDay: DateTime(DateTime.now().year + 1, 13, 0),
       calendarFormat: _calendarFormat,
-      locale: I18n.of(context)!.locale_full,
+      locale: S.of(context).locale_full,
       focusedDay: stateSelectedDay,
       eventLoader: (day) {
         return events[DateTime(day.year, day.month, day.day)] ?? [];

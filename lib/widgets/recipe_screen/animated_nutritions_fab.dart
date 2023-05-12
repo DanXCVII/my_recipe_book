@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../models/nutrition.dart';
 
 class AnimatedNutritionsFab extends StatefulWidget {
@@ -117,7 +117,7 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
                                 child: Row(
                                   children: [
                                     Spacer(),
-                                    Text(I18n.of(context)!.nutritions,
+                                    Text(S.of(context).nutritions,
                                         style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,

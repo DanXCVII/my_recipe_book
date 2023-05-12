@@ -8,7 +8,7 @@ import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../local_storage/hive.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
@@ -84,8 +84,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe?> {
     if (recipeNames.isEmpty && recipeTags.isEmpty && categories.isEmpty) {
       return Container(
           height: 70,
-          child:
-              Center(child: Text(I18n.of(context)!.nothing_to_search_through)));
+          child: Center(child: Text(S.of(context).nothing_to_search_through)));
     }
     List<String> resultCategories = categories
         .where(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants/global_settings.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 
 import '../../util/helper.dart';
 
@@ -36,7 +36,7 @@ class TimeInfoChart extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Text(
-          "${I18n.of(context)!.total_time}:",
+          "${S.of(context).total_time}:",
           style: TextStyle(
             color: textColor,
             fontFamily: fontFamily,

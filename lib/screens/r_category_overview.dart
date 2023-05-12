@@ -16,7 +16,7 @@ import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/recipe.dart';
 import '../models/tuple.dart';
 import 'recipe_overview.dart';
@@ -89,7 +89,7 @@ class RecipeCategoryOverview extends StatelessWidget {
           await Future.delayed(Duration(milliseconds: 200));
           BlocProvider.of<RecipeCategoryOverviewBloc>(context).add(
               RCOLoadRecipeCategoryOverview(
-                  reopenBoxes: true, categoryOverviewContext: context));
+                  reopenBoxes: false, categoryOverviewContext: context));
           refreshController.refreshCompleted();
         },
         child: ListView.builder(
@@ -154,7 +154,7 @@ class RecipeRow extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     category == "no category"
-                        ? I18n.of(context)!.no_category
+                        ? S.of(context).no_category
                         : category,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -332,7 +332,7 @@ class RecipeImageItemBig extends StatelessWidget {
                                           padding: const EdgeInsets.fromLTRB(
                                               8, 8, 8, 8),
                                           child: Text(
-                                            I18n.of(context)!.show_overview,
+                                            S.of(context).show_overview,
                                             textAlign: TextAlign.center,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,

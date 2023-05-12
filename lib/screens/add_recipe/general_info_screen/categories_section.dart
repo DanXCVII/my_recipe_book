@@ -6,7 +6,7 @@ import '../../../ad_related/ad.dart';
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../../constants/routes.dart';
-import '../../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../../widgets/dialogs/textfield_dialog.dart';
 import '../../category_manager.dart';
 
@@ -40,7 +40,7 @@ class _CategorySectionState extends State<CategorySection> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      I18n.of(context)!.select_subcategories,
+                      S.of(context).select_subcategories,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -55,11 +55,9 @@ class _CategorySectionState extends State<CategorySection> {
                           builder: (_) => TextFieldDialog(
                             validation: (String? name) {
                               if (state.categories.contains(name)) {
-                                return I18n.of(context)!
-                                    .category_already_exists;
+                                return S.of(context).category_already_exists;
                               } else if (name == "") {
-                                return I18n.of(context)!
-                                    .field_must_not_be_empty;
+                                return S.of(context).field_must_not_be_empty;
                               } else {
                                 return null;
                               }
@@ -69,7 +67,7 @@ class _CategorySectionState extends State<CategorySection> {
                                   .recipeManagerBloc
                                   .add(RMAddCategories([name]));
                             },
-                            hintText: I18n.of(context)!.categoryname,
+                            hintText: S.of(context).categoryname,
                           ),
                         );
                       },

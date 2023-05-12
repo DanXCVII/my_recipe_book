@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../blocs/ad_manager/ad_manager_bloc.dart';
 import '../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
@@ -16,7 +15,7 @@ import '../../blocs/nutrition_manager/nutrition_manager_bloc.dart';
 import '../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../constants/routes.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
 import '../../widgets/dialogs/textfield_dialog.dart';
@@ -122,20 +121,22 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
             } else if (state is LoadedNutritionManager) {
               return Scaffold(
                 resizeToAvoidBottomInset: false,
-                appBar: NewGradientAppBar(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xffAF1E1E), Color(0xff641414)],
+                appBar: AppBar(
+                  flexibleSpace: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                    ),
                   ),
-                  title: Text(I18n.of(context)!.add_nutritions),
+                  title: Text(S.of(context).add_nutritions),
                   actions: <Widget>[
                     BlocListener<NutritionsBloc, NutritionsState>(
                       listener: (context, state) {
                         if (state is NEditingFinishedGoBack) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content:
-                                  Text(I18n.of(context)!.saving_your_input)));
+                              content: Text(S.of(context).saving_your_input)));
                         } else if (state is NSavedGoBack) {
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           Navigator.pop(context);
@@ -236,9 +237,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                       builder: (_) => TextFieldDialog(
                         validation: (String? name) {
                           if (state.nutritions.contains(name)) {
-                            return I18n.of(context)!.nutrition_already_exists;
+                            return S.of(context).nutrition_already_exists;
                           } else if (name == "") {
-                            return I18n.of(context)!.field_must_not_be_empty;
+                            return S.of(context).field_must_not_be_empty;
                           } else {
                             return null;
                           }
@@ -251,7 +252,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           BlocProvider.of<NutritionManagerBloc>(context)
                               .add(AddNutrition(name));
                         },
-                        hintText: I18n.of(context)!.nutrition,
+                        hintText: S.of(context).nutrition,
                       ),
                     );
                   },
@@ -264,7 +265,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           color: Colors.grey[200],
                           size: 70.0,
                         ),
-                        description: I18n.of(context)!.you_have_no_nutritions,
+                        description: S.of(context).you_have_no_nutritions,
                       ))
                     : Form(
                         key: _formKey,
@@ -361,13 +362,16 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
   Widget _getNutritionManagerLoadingScreen() {
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: NewGradientAppBar(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+        appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+            ),
           ),
-          title: Text(I18n.of(context)!.add_nutritions),
+          title: Text(S.of(context).add_nutritions),
         ),
         body: Center(
           child: CircularProgressIndicator(),
@@ -405,9 +409,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
             builder: (_) => TextFieldDialog(
               validation: (String? name) {
                 if (nutritions.contains(name)) {
-                  return I18n.of(context)!.nutrition_already_exists;
+                  return S.of(context).nutrition_already_exists;
                 } else if (name == "") {
-                  return I18n.of(context)!.field_must_not_be_empty;
+                  return S.of(context).field_must_not_be_empty;
                 } else {
                   return null;
                 }
@@ -419,7 +423,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                 BlocProvider.of<NutritionManagerBloc>(context)
                     .add(UpdateNutrition(nutritionName, name));
               },
-              hintText: I18n.of(context)!.nutrition,
+              hintText: S.of(context).nutrition,
               prefilledText: nutritionName,
             ),
           );
@@ -433,7 +437,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
           controller: nutritionsController[nutritionName],
           decoration: InputDecoration(
             filled: true,
-            hintText: I18n.of(context)!.amnt,
+            hintText: S.of(context).amnt,
           ),
         ),
       ),

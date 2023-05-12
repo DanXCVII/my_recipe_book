@@ -14,7 +14,7 @@ import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../util/helper.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
@@ -223,7 +223,7 @@ class RecipeCardBig extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: <Widget>[
-                                            Text(I18n.of(context)!.prep_time,
+                                            Text(S.of(context).prep_time,
                                                 textScaleFactor: scaleFactor,
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
@@ -245,7 +245,7 @@ class RecipeCardBig extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          Text(I18n.of(context)!.cook_time,
+                                          Text(S.of(context).cook_time,
                                               textScaleFactor: scaleFactor,
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -272,7 +272,7 @@ class RecipeCardBig extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: <Widget>[
-                                            Text(I18n.of(context)!.total_time,
+                                            Text(S.of(context).total_time,
                                                 textScaleFactor: scaleFactor,
                                                 style: smallHeading),
                                             SizedBox(height: 5),
@@ -300,7 +300,7 @@ class RecipeCardBig extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                '${getIngredientCount(recipe.ingredients)} ${I18n.of(context)!.ingredients}:',
+                                '${getIngredientCount(recipe.ingredients)} ${S.of(context).ingredients}:',
                                 textScaleFactor: scaleFactor,
                                 style: smallHeading,
                               ),
@@ -320,7 +320,7 @@ class RecipeCardBig extends StatelessWidget {
                               alignment: WrapAlignment.start,
                               direction: Axis.vertical,
                               children: <Widget>[
-                                Text(I18n.of(context)!.steps,
+                                Text(S.of(context).steps,
                                     textScaleFactor: scaleFactor,
                                     style: smallHeading),
                                 Text(
@@ -340,7 +340,7 @@ class RecipeCardBig extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Text(I18n.of(context)!.categories,
+                                      Text(S.of(context).categories,
                                           textScaleFactor: scaleFactor,
                                           style: smallHeading),
                                       Text(
@@ -360,7 +360,7 @@ class RecipeCardBig extends StatelessWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
-                                Text(I18n.of(context)!.complexity,
+                                Text(S.of(context).complexity,
                                     textScaleFactor: scaleFactor,
                                     style: smallHeading),
                                 Text(
@@ -388,7 +388,7 @@ class RecipeCardBig extends StatelessWidget {
       List<String> categories, BuildContext context) {
     String categoryString = '';
     if (categories.isEmpty) {
-      return I18n.of(context)!.none;
+      return S.of(context).none;
     }
     for (String c in categories) {
       if (categories.last != c) {

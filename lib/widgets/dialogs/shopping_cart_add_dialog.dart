@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../util/helper.dart';
 import '../../local_storage/hive.dart';
 import '../../models/ingredient.dart';
@@ -85,7 +85,7 @@ class _ShoppingCartAddDialogContentState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              I18n.of(context)!.add_ingredient(""),
+              S.of(context).add_ingredient(""),
               style: Theme.of(context).textTheme.titleLarge,
             ),
             IconButton(
@@ -116,7 +116,7 @@ class _ShoppingCartAddDialogContentState
                               controller: recipeNameController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: I18n.of(context)!.recipe_name,
+                                labelText: S.of(context).recipe_name,
                               ),
                             ),
                             Container(height: 3),
@@ -128,10 +128,10 @@ class _ShoppingCartAddDialogContentState
                               controller: ingredientNameController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: I18n.of(context)!.ingredient,
+                                labelText: S.of(context).ingredient,
                               ),
                               textCapitalization:
-                                  I18n.of(context)!.two_char_locale == "EN"
+                                  S.of(context).two_char_locale == "EN"
                                       ? TextCapitalization.none
                                       : TextCapitalization.sentences,
                             ),
@@ -144,14 +144,14 @@ class _ShoppingCartAddDialogContentState
                                     keyboardType: TextInputType.number,
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(),
-                                      labelText: I18n.of(context)!.amnt,
+                                      labelText: S.of(context).amnt,
                                     ),
                                     validator: (value) {
                                       if (value == "" ||
                                           getDoubleFromString(value!) != null) {
                                         return null;
                                       }
-                                      return I18n.of(context)!.no_valid_number;
+                                      return S.of(context).no_valid_number;
                                     },
                                   ),
                                 ),
@@ -161,7 +161,7 @@ class _ShoppingCartAddDialogContentState
                                     controller: ingredientUnitController,
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(),
-                                      labelText: I18n.of(context)!.unit,
+                                      labelText: S.of(context).unit,
                                     ),
                                   ),
                                 ),
@@ -176,10 +176,10 @@ class _ShoppingCartAddDialogContentState
                           controller: ingredientNameController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: I18n.of(context)!.ingredient,
+                            labelText: S.of(context).ingredient,
                           ),
                           textCapitalization:
-                              I18n.of(context)!.two_char_locale == "EN"
+                              S.of(context).two_char_locale == "EN"
                                   ? TextCapitalization.none
                                   : TextCapitalization.sentences,
                         ),
@@ -195,7 +195,7 @@ class _ShoppingCartAddDialogContentState
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             TextButton(
-              child: Text(I18n.of(context)!.cancel),
+              child: Text(S.of(context).cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -203,7 +203,7 @@ class _ShoppingCartAddDialogContentState
             SizedBox(width: 6),
             TextButton(
               child: Text(
-                I18n.of(context)!.add,
+                S.of(context).add,
                 style: TextStyle(color: Colors.black),
               ),
               style: TextButton.styleFrom(

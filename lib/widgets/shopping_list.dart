@@ -5,7 +5,7 @@ import '../constants/global_settings.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../util/helper.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
@@ -180,7 +180,7 @@ class ShoppingList extends StatelessWidget {
               color: Colors.brown,
               size: 70.0,
             ),
-            description: I18n.of(context)!.shopping_cart_is_empty),
+            description: S.of(context).shopping_cart_is_empty),
       ),
     );
   }
@@ -222,7 +222,7 @@ class ShoppingCartListTile extends StatelessWidget {
                 ),
           title: Text(
             recipe.name == Constants.summary
-                ? I18n.of(context)!.summary
+                ? S.of(context).summary
                 : recipe.name,
           ),
           children: ingredients!.map((ingredient) {

@@ -152,7 +152,7 @@ class HiveProvider {
   Box<List<String>> boxOrder;
   Box<RSort> boxRecipeSort;
   Box<List> boxShoppingCart;
-  Box<List<String> /*?*/ /*?*/ > boxRecipeCategories;
+  Box<List<String>> boxRecipeCategories;
   Box<StringIntTuple> boxRecipeTags;
   Box<List<String>?> boxRecipeTagsList;
   Box<List<String>> boxRatings;

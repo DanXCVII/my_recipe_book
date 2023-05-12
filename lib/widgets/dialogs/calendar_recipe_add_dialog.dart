@@ -2,7 +2,7 @@ import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../local_storage/hive.dart';
 
 class Consts {
@@ -83,7 +83,7 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
                           },
                           decoration: InputDecoration(
                             // border: OutlineInputBorder(),
-                            hintText: I18n.of(context)!.recipe_name,
+                            hintText: S.of(context).recipe_name,
                           ),
                         ),
                       ),
@@ -119,7 +119,7 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
         forwardAnimationCurve: Curves.elasticOut,
         duration: Duration(seconds: 4),
         icon: Icon(Icons.info),
-        messageText: Text(I18n.of(context)!.no_recipe_with_this_name),
+        messageText: Text(S.of(context).no_recipe_with_this_name),
       )..show(context);
     }
   }

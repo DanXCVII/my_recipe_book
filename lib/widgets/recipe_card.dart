@@ -14,7 +14,7 @@ import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../util/helper.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
@@ -162,7 +162,7 @@ class RecipeCard extends StatelessWidget {
                                     width: width - 27,
                                     child: Text(
                                       ("${getTimeHoursMinutes(recipe!.totalTime)} • ") +
-                                          ("${getIngredientCount(recipe!.ingredients)} ${I18n.of(context)!.ingredients}"),
+                                          ("${getIngredientCount(recipe!.ingredients)} ${S.of(context).ingredients}"),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
                                       style: TextStyle(

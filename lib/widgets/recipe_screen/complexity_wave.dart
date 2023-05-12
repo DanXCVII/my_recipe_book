@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 
 class ComplexityWave extends StatelessWidget {
   final Color textColor;
@@ -18,7 +18,7 @@ class ComplexityWave extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Text(I18n.of(context)!.complexity + ':',
+        Text(S.of(context).complexity + ':',
             style: TextStyle(
               fontSize: 15,
               color: textColor,

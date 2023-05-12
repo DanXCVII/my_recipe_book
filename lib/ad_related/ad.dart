@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 
 import 'ad_id.dart';
 
@@ -249,7 +249,7 @@ class Ads {
                       type: MaterialType.transparency,
                       child: Center(
                         child: Text(
-                          I18n.of(context)!.remove_ads_upgrade_in_settings,
+                          S.of(context).remove_ads_upgrade_in_settings,
                           style: TextStyle(fontSize: 18, color: Colors.white),
                           textAlign: TextAlign.center,
                         ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 
 import '../../util/helper.dart';
 
@@ -64,7 +64,7 @@ class TimeInfo extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "${I18n.of(context)!.prep_time}:",
+                      "${S.of(context).prep_time}:",
                       style: TextStyle(
                         color: textColor,
                         fontFamily: fontFamily,
@@ -120,7 +120,7 @@ class TimeInfo extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "${I18n.of(context)!.cook_time}:",
+                        "${S.of(context).cook_time}:",
                         style: TextStyle(
                           color: textColor,
                           fontFamily: fontFamily,
@@ -179,7 +179,7 @@ class TimeInfo extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              "${I18n.of(context)!.remaining_time}:",
+                              "${S.of(context).remaining_time}:",
                               style: TextStyle(
                                 color: textColor,
                                 fontFamily: fontFamily,

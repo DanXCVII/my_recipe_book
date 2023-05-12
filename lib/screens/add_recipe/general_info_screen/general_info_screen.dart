@@ -4,7 +4,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
@@ -13,7 +13,6 @@ import '../../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../../../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
-import '../../../generated/i18n.dart';
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
@@ -110,13 +109,16 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
         return false;
       },
       child: Scaffold(
-        appBar: NewGradientAppBar(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+        appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+            ),
           ),
-          title: Text(I18n.of(context)!.add_general_info),
+          title: Text(S.of(context).add_general_info),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.info_outline),
@@ -124,9 +126,9 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                 showDialog(
                     context: context,
                     builder: (context) => InfoDialog(
-                          title: I18n.of(context)!.info,
-                          body: I18n.of(context)!
-                              .general_info_changes_will_be_saved,
+                          title: S.of(context).info,
+                          body:
+                              S.of(context).general_info_changes_will_be_saved,
                         ));
               },
             ),
@@ -148,8 +150,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                       builder: (bcontext) => BlocProvider.value(
                         value: BlocProvider.of<ClearRecipeBloc>(context),
                         child: AreYouSureDialog(
-                          I18n.of(context)!.clean_recipe_info,
-                          I18n.of(context)!.clean_recipe_info_desc,
+                          S.of(context).clean_recipe_info,
+                          S.of(context).clean_recipe_info_desc,
                           () {
                             BlocProvider.of<ClearRecipeBloc>(context).add(
                               Clear(
@@ -166,8 +168,8 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
             BlocListener<GeneralInfoBloc, GeneralInfoState>(
               listener: (context, state) {
                 if (state is GEditingFinishedGoBack) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(I18n.of(context)!.saving_your_input)));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(S.of(context).saving_your_input)));
                 } else if (state is GSaved) {
                   BlocProvider.of<GeneralInfoBloc>(context).add(SetCanSave());
 
@@ -261,7 +263,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                           textCapitalization: TextCapitalization.sentences,
                           decoration: InputDecoration(
                             filled: true,
-                            labelText: I18n.of(context)!.name + "*",
+                            labelText: S.of(context).name + "*",
                             icon: Icon(MdiIcons.notebook),
                           ),
                         ),
@@ -273,11 +275,11 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                           alignment: WrapAlignment.center,
                           children: <Widget>[
                             _getTimeSelector(
-                                preperationTime, I18n.of(context)!.prep_time),
+                                preperationTime, S.of(context).prep_time),
                             _getTimeSelector(
-                                cookingTime, I18n.of(context)!.cook_time),
+                                cookingTime, S.of(context).cook_time),
                             _getTimeSelector(
-                                totalTime, I18n.of(context)!.total_time)
+                                totalTime, S.of(context).total_time)
                           ],
                         ),
                       ),
@@ -289,7 +291,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                           controller: sourceController,
                           decoration: InputDecoration(
                             filled: true,
-                            labelText: I18n.of(context)!.source,
+                            labelText: S.of(context).source,
                           ),
                         ),
                       ),
@@ -399,14 +401,14 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
       switch (v) {
         case Validator.REQUIRED_FIELDS:
           _showFlushInfo(
-            I18n.of(context)!.check_filled_in_information,
-            I18n.of(context)!.check_filled_in_information_description,
+            S.of(context).check_filled_in_information,
+            S.of(context).check_filled_in_information_description,
           );
 
           break;
         case Validator.NAME_TAKEN:
-          _showFlushInfo(I18n.of(context)!.recipename_taken,
-              I18n.of(context)!.recipename_taken_description);
+          _showFlushInfo(S.of(context).recipename_taken,
+              S.of(context).recipename_taken_description);
           break;
 
         default:
@@ -462,12 +464,12 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   /// because the name will be used as a directory for the recipe images
   String? _validateRecipeName(String? recipeName) {
     if (recipeName!.isEmpty) {
-      return I18n.of(context)!.please_enter_a_name;
+      return S.of(context).please_enter_a_name;
     }
     if (recipeName.contains('/') ||
         recipeName.contains('.') ||
         recipeName.length >= 70) {
-      return I18n.of(context)!.invalid_name;
+      return S.of(context).invalid_name;
     } else {
       try {
         PathProvider.pP.getRecipeDirFull(recipeName).then((path) {

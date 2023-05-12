@@ -1,13 +1,12 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 
 import '../../../blocs/new_recipe/steps/steps_bloc.dart';
 import '../../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
-import '../../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../../models/recipe.dart';
 import '../../../util/my_wrapper.dart';
 import '../../../widgets/complexity_section.dart';
@@ -94,13 +93,16 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
         return false;
       },
       child: Scaffold(
-        appBar: NewGradientAppBar(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+        appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+            ),
           ),
-          title: Text(I18n.of(context)!.add_steps),
+          title: Text(S.of(context).add_steps),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.info_outline),
@@ -108,8 +110,8 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                 showDialog(
                   context: context,
                   builder: (context) => InfoDialog(
-                    title: I18n.of(context)!.info,
-                    body: I18n.of(context)!.steps_info_desc,
+                    title: S.of(context).info,
+                    body: S.of(context).steps_info_desc,
                   ),
                 );
               },
@@ -117,8 +119,8 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
             BlocListener<StepsBloc, StepsState>(
               listener: (context, state) {
                 if (state is SEditingFinishedGoBack) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(I18n.of(context)!.saving_your_input)));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(S.of(context).saving_your_input)));
                 } else if (state is SSaved) {
                   BlocProvider.of<StepsBloc>(context).add(SetCanSave());
 
@@ -137,8 +139,8 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                   Navigator.pop(context);
                 } else if (state is SCanSave && state.isValid == false) {
                   _showFlushInfo(
-                    I18n.of(context)!.too_many_images_for_the_steps,
-                    I18n.of(context)!.too_many_images_for_the_steps_description,
+                    S.of(context).too_many_images_for_the_steps,
+                    S.of(context).too_many_images_for_the_steps_description,
                   );
                 }
               },
@@ -198,7 +200,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                       controller: notesController,
                       textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
-                        labelText: I18n.of(context)!.notes,
+                        labelText: S.of(context).notes,
                         filled: true,
                         icon: Icon(Icons.assignment),
                       ),

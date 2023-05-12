@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../widgets/dialogs/info_dialog.dart';
 
 class AboutMeScreen extends StatelessWidget {
@@ -13,13 +12,17 @@ class AboutMeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: NewGradientAppBar(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xffAF1E1E), Color(0xff641414)],
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+          ),
         ),
-        title: Text(I18n.of(context)!.about_me),
+        title: Text(S.of(context).about_me),
       ),
       body: Center(
         child: Column(
@@ -37,7 +40,7 @@ class AboutMeScreen extends StatelessWidget {
               ),
             ),
             Text(
-              I18n.of(context)!.recipe_bible,
+              S.of(context).recipe_bible,
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
             ),
             SizedBox(height: 10),
@@ -49,7 +52,7 @@ class AboutMeScreen extends StatelessWidget {
                   context: context,
                   builder: (context) => InfoDialog(
                     title: "Disclaimer",
-                    body: I18n.of(context)!.disclaimer_description,
+                    body: S.of(context).disclaimer_description,
                   ),
                 );
               },
@@ -71,10 +74,9 @@ class AboutMeScreen extends StatelessWidget {
                         child: InkWell(
                           onTap: () {
                             Share.share(
-                                I18n.of(context)!.share_this_app_desc(
+                                S.of(context).share_this_app_desc(
                                     "http://play.google.com/store/apps/details?id=com.release.my_recipe_book"),
-                                subject:
-                                    I18n.of(context)!.share_this_app_title);
+                                subject: S.of(context).share_this_app_title);
                           },
                           child: Container(
                             height: 160,
@@ -84,7 +86,7 @@ class AboutMeScreen extends StatelessWidget {
                                   padding: const EdgeInsets.all(12.0),
                                   child: Center(
                                     child: Text(
-                                      I18n.of(context)!.share_this_app,
+                                      S.of(context).share_this_app,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 16,
@@ -148,7 +150,7 @@ class AboutMeScreen extends StatelessWidget {
                                   padding: const EdgeInsets.all(12.0),
                                   child: Center(
                                     child: Text(
-                                      I18n.of(context)!.contact_me,
+                                      S.of(context).contact_me,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,

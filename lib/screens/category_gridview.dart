@@ -11,7 +11,7 @@ import '../blocs/category_overview/category_overview_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../constants/routes.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/tuple.dart';
 import 'recipe_overview.dart';
 
@@ -112,9 +112,7 @@ class CategoryGridTile extends StatelessWidget {
             : Image.file(File(randomCategoryImage), fit: BoxFit.cover),
         footer: GridTileBar(
           title: Text(
-            category == "no category"
-                ? I18n.of(context)!.no_category
-                : category,
+            category == "no category" ? S.of(context).no_category : category,
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.black45,

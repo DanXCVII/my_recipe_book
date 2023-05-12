@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_button/like_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
@@ -29,7 +28,7 @@ import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../local_storage/hive.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
@@ -180,7 +179,7 @@ class _RecipeScreenState extends State<RecipeScreen>
         return Scaffold(
           appBar: AppBar(
             iconTheme: IconThemeData(color: Colors.white),
-            title: Text(I18n.of(context)!.recipe_screen),
+            title: Text(S.of(context)!.recipe_screen),
           ),
           body: Center(
             child: Padding(
@@ -191,7 +190,7 @@ class _RecipeScreenState extends State<RecipeScreen>
                     color: Colors.red,
                     size: 70.0,
                   ),
-                  description: I18n.of(context)!.recipe_edited_or_deleted),
+                  description: S.of(context)!.recipe_edited_or_deleted),
             ),
           ),
         );
@@ -219,7 +218,7 @@ class NotesSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              I18n.of(context)!.notes,
+              S.of(context)!.notes,
               style: TextStyle(
                 color: textColor,
                 fontSize: 24,
@@ -243,7 +242,7 @@ class NotesSection extends StatelessWidget {
   }
 }
 
-class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
+class MyGradientAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Recipe /*!*/ /*!*/ recipe;
 
   MyGradientAppBar(
@@ -256,14 +255,18 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NewGradientAppBar(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomCenter,
-        colors: [
-          Color(vegetableColor[recipe.vegetable]![0]),
-          Color(vegetableColor[recipe.vegetable]![1]),
-        ],
+    return AppBar(
+      backgroundColor: Colors.black,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(vegetableColor[recipe.vegetable]![0]),
+                Color(vegetableColor[recipe.vegetable]![1])
+              ]),
+        ),
       ),
       leading: BackButton(color: Colors.white),
       actions: <Widget>[
@@ -307,10 +310,10 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(I18n.of(context)!
-                            .maximum_recipe_pin_count_exceeded),
+                        content: Text(
+                            S.of(context)!.maximum_recipe_pin_count_exceeded),
                         action: SnackBarAction(
-                          label: I18n.of(context)!.dismiss,
+                          label: S.of(context)!.dismiss,
                           onPressed:
                               ScaffoldMessenger.of(context).hideCurrentSnackBar,
                         ),
@@ -327,10 +330,9 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content:
-                            Text(I18n.of(context)!.recipe_pinned_to_overview),
+                        content: Text(S.of(context)!.recipe_pinned_to_overview),
                         action: SnackBarAction(
-                          label: I18n.of(context)!.dismiss,
+                          label: S.of(context)!.dismiss,
                           onPressed:
                               ScaffoldMessenger.of(context).hideCurrentSnackBar,
                         ),
@@ -396,7 +398,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                           ? Colors.grey
                           : Colors.white),
                   SizedBox(width: 10),
-                  Text(I18n.of(context)!.delete_recipe)
+                  Text(S.of(context)!.delete_recipe)
                 ]),
               ),
               PopupMenuItem(
@@ -408,7 +410,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                           ? Colors.grey
                           : Colors.white),
                   SizedBox(width: 10),
-                  Text(I18n.of(context)!.share_recipe)
+                  Text(S.of(context)!.share_recipe)
                 ]),
               ),
               PopupMenuItem(
@@ -420,7 +422,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
                           ? Colors.grey
                           : Colors.white),
                   SizedBox(width: 10),
-                  Text(I18n.of(context)!.print_recipe)
+                  Text(S.of(context)!.print_recipe)
                 ]),
               ),
             ];
@@ -444,7 +446,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           PopupMenuItem(
             value: PopupOptionsShare.EXPORT_TEXT,
             child: getMenuListItem(
-              I18n.of(context)!.export_text,
+              S.of(context)!.export_text,
               Icon(MdiIcons.formatColorText),
               PopupOptionsShare.EXPORT_TEXT,
               context,
@@ -453,7 +455,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           PopupMenuItem(
             value: PopupOptionsShare.EXPORT_ZIP,
             child: getMenuListItem(
-              I18n.of(context)!.export_zip,
+              S.of(context)!.export_zip,
               Icon(MdiIcons.package),
               PopupOptionsShare.EXPORT_ZIP,
               context,
@@ -462,7 +464,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
           PopupMenuItem(
             value: PopupOptionsShare.EXPORT_PDF,
             child: getMenuListItem(
-              I18n.of(context)!.export_pdf,
+              S.of(context)!.export_pdf,
               Icon(MdiIcons.fileDocument),
               PopupOptionsShare.EXPORT_PDF,
               context,
@@ -530,12 +532,12 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context)!.delete_recipe),
-        content: Text(I18n.of(context)!.sure_you_want_to_delete_this_recipe +
+        title: Text(S.of(context)!.delete_recipe),
+        content: Text(S.of(context)!.sure_you_want_to_delete_this_recipe +
             " $recipeName"),
         actions: <Widget>[
           TextButton(
-            child: Text(I18n.of(context)!.no),
+            child: Text(S.of(context)!.no),
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).textTheme.bodyLarge!.color,
             ),
@@ -544,7 +546,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
             },
           ),
           TextButton(
-            child: Text(I18n.of(context)!.yes),
+            child: Text(S.of(context)!.yes),
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).textTheme.bodyLarge!.color,
               backgroundColor: Colors.red[600],
@@ -565,27 +567,27 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
   }
 
   String _getRecipeAsString(Recipe recipe, BuildContext context) {
-    String recipeText = '${I18n.of(context)!.recipe_name}: ${recipe.name}\n';
+    String recipeText = '${S.of(context)!.recipe_name}: ${recipe.name}\n';
     if (recipe.preperationTime != 0 ||
         recipe.cookingTime != 0 ||
         recipe.totalTime != 0) recipeText += '====================\n';
     if (recipe.preperationTime != 0)
       recipeText +=
-          '${I18n.of(context)!.prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n';
+          '${S.of(context)!.prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n';
     if (recipe.cookingTime != 0)
       recipeText +=
-          '${I18n.of(context)!.cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n';
+          '${S.of(context)!.cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n';
     if (recipe.totalTime != 0)
       recipeText +=
-          '${I18n.of(context)!.total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
+          '${S.of(context)!.total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
                   '====================\n' +
               (recipe.servings == null
-                  ? I18n.of(context)!.ingredients + ":"
-                  : '${I18n.of(context)!.ingredients_for} ${recipe.servings} ${recipe.servingName ?? I18n.of(context)!.servings}:\n');
+                  ? S.of(context)!.ingredients + ":"
+                  : '${S.of(context)!.ingredients_for} ${recipe.servings} ${recipe.servingName ?? S.of(context)!.servings}:\n');
     if (recipe.ingredientsGlossary.isNotEmpty) {
       for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
         recipeText +=
-            '${I18n.of(context)!.ingredients}: ${recipe.ingredientsGlossary[i]}:\n';
+            '${S.of(context)!.ingredients}: ${recipe.ingredientsGlossary[i]}:\n';
         for (int j = 0; j < recipe.ingredients[i].length; j++) {
           recipeText += '${recipe.ingredients[i][j].amount ?? ""} '
               '${recipe.ingredients[i][j].unit ?? ""} '
@@ -627,7 +629,7 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     }
 
     if (recipe.tags.isNotEmpty) {
-      recipeText += '====================\n${I18n.of(context)!.tags}: ';
+      recipeText += '====================\n${S.of(context)!.tags}: ';
       for (StringIntTuple tag in recipe.tags) {
         if (!(tag == recipe.tags.last)) {
           recipeText += '${tag.text}, ';
@@ -638,11 +640,11 @@ class MyGradientAppBar extends StatelessWidget with PreferredSizeWidget {
     }
     if (recipe.notes != '') {
       recipeText += '====================\n';
-      recipeText += '${I18n.of(context)!.notes}: ${recipe.notes}\n';
+      recipeText += '${S.of(context)!.notes}: ${recipe.notes}\n';
     }
     if (recipe.source != null && recipe.source != '') {
       recipeText += '====================\n';
-      recipeText += '${I18n.of(context)!.source}: ${recipe.source}\n';
+      recipeText += '${S.of(context)!.source}: ${recipe.source}\n';
     }
 
     return recipeText;
@@ -684,14 +686,14 @@ class RecipePage extends StatelessWidget {
         if (addedRecipe != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(I18n.of(context)!.undo_added_to_planner_description(
-                addedRecipe.item2,
-                addedRecipe.item1.year.toString(),
-                addedRecipe.item1.month.toString(),
-                addedRecipe.item1.day.toString(),
-              )),
+              content: Text(S.of(context)!.undo_added_to_planner_description(
+                    addedRecipe.item2,
+                    addedRecipe.item1.year.toString(),
+                    addedRecipe.item1.month.toString(),
+                    addedRecipe.item1.day.toString(),
+                  )),
               action: SnackBarAction(
-                label: I18n.of(context)!.undo,
+                label: S.of(context)!.undo,
                 onPressed: () {
                   BlocProvider.of<RecipeCalendarBloc>(context).add(
                       RemoveRecipeFromDateEvent(
@@ -1170,7 +1172,7 @@ class CategoriesSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                I18n.of(context)!.categories,
+                S.of(context)!.categories,
                 style: TextStyle(
                   color: textColor,
                   fontSize: 24,
@@ -1257,7 +1259,7 @@ class StepsSection extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Text(
-                            I18n.of(context)!.directions,
+                            S.of(context)!.directions,
                             style: TextStyle(
                               color: textColor,
                               fontSize: headingSize,
@@ -1322,7 +1324,7 @@ class _StepsIntroState extends State<StepsIntro> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        I18n.of(context)!.steps_intro,
+                        S.of(context)!.steps_intro,
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: recipeScreenFontFamily,
@@ -1514,7 +1516,7 @@ class IngredientsScreen extends StatelessWidget {
                 icon: sectionCheck![i]
                     ? Icon(Icons.shopping_cart)
                     : Icon(Icons.add_shopping_cart),
-                tooltip: I18n.of(context)!.add_to_cart,
+                tooltip: S.of(context)!.add_to_cart,
                 onPressed: () {
                   _pressAddSection(
                       sectionIngredients
@@ -1579,7 +1581,7 @@ class IngredientsScreen extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12.0),
                                     child: Text(
-                                      I18n.of(context)!.ingredients,
+                                      S.of(context)!.ingredients,
                                       style: TextStyle(
                                         color: textColor,
                                         fontSize: headingSize,
@@ -1590,7 +1592,7 @@ class IngredientsScreen extends StatelessWidget {
                                 ]
                               : <Widget>[
                                   Text(
-                                    I18n.of(context)!.ingredients_for,
+                                    S.of(context)!.ingredients_for,
                                     style: TextStyle(
                                       color: textColor,
                                       fontSize: headingSize,
@@ -1600,8 +1602,7 @@ class IngredientsScreen extends StatelessWidget {
                                   IconButton(
                                     icon: Icon(Icons.remove_circle_outline,
                                         color: Colors.white),
-                                    tooltip:
-                                        I18n.of(context)!.decrease_servings,
+                                    tooltip: S.of(context)!.decrease_servings,
                                     onPressed: () {
                                       _updateServings(
                                         state.servings,
@@ -1623,7 +1624,8 @@ class IngredientsScreen extends StatelessWidget {
                                                 null) {
                                               return null;
                                             } else {
-                                              return I18n.of(context)!
+                                              return S
+                                                  .of(context)!
                                                   .no_valid_number;
                                             }
                                           },
@@ -1649,8 +1651,7 @@ class IngredientsScreen extends StatelessWidget {
                                   IconButton(
                                     icon: Icon(Icons.add_circle_outline,
                                         color: Colors.white),
-                                    tooltip:
-                                        I18n.of(context)!.increase_servings,
+                                    tooltip: S.of(context)!.increase_servings,
                                     onPressed: () {
                                       _updateServings(state.servings,
                                           state.servings! + 1, context);
@@ -1661,7 +1662,7 @@ class IngredientsScreen extends StatelessWidget {
                                         vertical: 8.0),
                                     child: Text(
                                       currentRecipe.servingName ??
-                                          I18n.of(context)!.servings,
+                                          S.of(context)!.servings,
                                       style: TextStyle(
                                         color: textColor,
                                         fontSize: headingSize,

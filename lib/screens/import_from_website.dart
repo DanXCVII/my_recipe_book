@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -13,7 +12,7 @@ import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../blocs/website_import/website_import_bloc.dart';
 import '../constants/routes.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/icon_info_message.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
@@ -44,13 +43,17 @@ class ImportFromWebsiteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: NewGradientAppBar(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xffAF1E1E), Color(0xff641414)],
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+          ),
         ),
-        title: Text(I18n.of(context)!.import_from_website_short),
+        title: Text(S.of(context).import_from_website_short),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.info_outline),
@@ -58,8 +61,8 @@ class ImportFromWebsiteScreen extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) => InfoDialog(
-                  title: I18n.of(context)!.info,
-                  body: I18n.of(context)!.website_import_info,
+                  title: S.of(context).info,
+                  body: S.of(context).website_import_info,
                 ),
               );
             },
@@ -148,7 +151,8 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                               color: Colors.lightBlue[100],
                               size: 70.0,
                             ),
-                            description: I18n.of(context)!
+                            description: S
+                                .of(context)!
                                 .recipe_already_exists(state.recipeName),
                             backgroundText: true,
                             textColor: Colors.white,
@@ -163,7 +167,8 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                               color: Colors.red,
                               size: 70.0,
                             ),
-                            description: I18n.of(context)!
+                            description: S
+                                .of(context)!
                                 .failed_to_import_recipe_unknown_reason,
                             backgroundText: true,
                             textColor: Colors.white,
@@ -178,8 +183,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                               color: Colors.orange,
                               size: 70.0,
                             ),
-                            description:
-                                I18n.of(context)!.failed_to_connect_to_url,
+                            description: S.of(context).failed_to_connect_to_url,
                             backgroundText: true,
                             textColor: Colors.white,
                           ),
@@ -193,7 +197,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                               color: Colors.red[800],
                               size: 70.0,
                             ),
-                            description: I18n.of(context)!.invalid_url,
+                            description: S.of(context).invalid_url,
                             backgroundText: true,
                             textColor: Colors.white,
                           ),
@@ -276,14 +280,14 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              I18n.of(context)!.enter_url,
+              S.of(context).enter_url,
               style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
             ),
             SizedBox(height: 10),
             TextFormField(
               controller: _urlController,
               decoration: InputDecoration(
-                hintText: I18n.of(context)!.recipe_url,
+                hintText: S.of(context).recipe_url,
                 border: OutlineInputBorder(),
                 focusedBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(50)),
@@ -397,7 +401,7 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                 ),
               ),
               Expanded(
-                child: Text(I18n.of(context)!.supported_websites),
+                child: Text(S.of(context).supported_websites),
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
@@ -451,15 +455,15 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                           0,
                           ListTile(
                             title: Text(
-                              I18n.of(context)!.standardized_format,
+                              S.of(context).standardized_format,
                               style: TextStyle(
                                 fontSize: 11,
                               ),
                             ),
                           ),
                         )
-                        ..add(ListTile(
-                            title: Text(I18n.of(context)!.and_many_more))),
+                        ..add(
+                            ListTile(title: Text(S.of(context).and_many_more))),
                     ),
                   )
                 : Container(),

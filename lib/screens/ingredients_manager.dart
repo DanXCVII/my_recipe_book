@@ -2,11 +2,10 @@ import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../blocs/ingredinets_manager/ingredients_manager_bloc.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/recipe.dart';
 import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/dialogs/textfield_dialog.dart';
@@ -71,13 +70,17 @@ class _IngredientsManagerState extends State<IngredientsManager> {
             return _getIngredientManagerLoadingScreen();
           } else if (state is LoadedIngredientsManager) {
             return Scaffold(
-              appBar: NewGradientAppBar(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xffAF1E1E), Color(0xff641414)],
+              appBar: AppBar(
+                backgroundColor: Colors.black,
+                flexibleSpace: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                  ),
                 ),
-                title: Text(I18n.of(context)!.manage_ingredients),
+                title: Text(S.of(context).manage_ingredients),
                 actions: <Widget>[
                   IconButton(
                     icon: Icon(Icons.help_outline),
@@ -85,9 +88,8 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                       showDialog(
                         context: context,
                         builder: (context) => InfoDialog(
-                          title: I18n.of(context)!.info,
-                          body:
-                              I18n.of(context)!.ingredient_manager_description,
+                          title: S.of(context).info,
+                          body: S.of(context).ingredient_manager_description,
                         ),
                       );
                     },
@@ -108,11 +110,11 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                         builder: (_) => TextFieldDialog(
                               validation: (String? name) {
                                 if (state.ingredients.contains(name)) {
-                                  return I18n.of(context)!
+                                  return S
+                                      .of(context)!
                                       .ingredient_already_exists;
                                 } else if (name == "") {
-                                  return I18n.of(context)!
-                                      .field_must_not_be_empty;
+                                  return S.of(context).field_must_not_be_empty;
                                 } else {
                                   return null;
                                 }
@@ -121,7 +123,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                                 BlocProvider.of<IngredientsManagerBloc>(context)
                                     .add(AddIngredient(name));
                               },
-                              hintText: I18n.of(context)!.ingredient,
+                              hintText: S.of(context).ingredient,
                             ));
                   }),
               body: state.ingredients.isEmpty
@@ -132,7 +134,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                         color: Colors.grey[300],
                         size: 70.0,
                       ),
-                      description: I18n.of(context)!.you_have_no_ingredients,
+                      description: S.of(context).you_have_no_ingredients,
                     ))
                   : AnimationLimiter(
                       child: Form(
@@ -195,14 +197,18 @@ class _IngredientsManagerState extends State<IngredientsManager> {
 
   Widget _getIngredientManagerLoadingScreen() {
     return Scaffold(
-        appBar: NewGradientAppBar(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+            ),
           ),
           title: Text(
-            I18n.of(context)!.manage_ingredients,
+            S.of(context).manage_ingredients,
           ),
         ),
         body: Center(
@@ -215,8 +221,8 @@ class _IngredientsManagerState extends State<IngredientsManager> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context)!.delete_ingredient),
-        content: Text(I18n.of(context)!.sure_you_want_to_delete_this_nutrition +
+        title: Text(S.of(context).delete_ingredient),
+        content: Text(S.of(context).sure_you_want_to_delete_this_nutrition +
             " $ingredientName"),
         actions: <Widget>[
           TextButton(
@@ -225,13 +231,13 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                   borderRadius: BorderRadius.circular(16)),
               foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
-            child: Text(I18n.of(context)!.no),
+            child: Text(S.of(context).no),
             onPressed: () {
               Navigator.pop(context, false);
             },
           ),
           TextButton(
-            child: Text(I18n.of(context)!.yes),
+            child: Text(S.of(context).yes),
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
@@ -262,7 +268,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
             builder: (_) => TextFieldDialog(
               validation: (String? name) {
                 if (ingredients.contains(name)) {
-                  return I18n.of(context)!.ingredient_already_exists;
+                  return S.of(context).ingredient_already_exists;
                 } else {
                   return null;
                 }
@@ -272,7 +278,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                   UpdateIngredient(ingredientName, name),
                 );
               },
-              hintText: I18n.of(context)!.ingredient,
+              hintText: S.of(context).ingredient,
               prefilledText: ingredientName,
             ),
           );

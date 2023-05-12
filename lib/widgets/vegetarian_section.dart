@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/enums.dart';
 import '../util/my_wrapper.dart';
 
@@ -68,7 +68,7 @@ class _VegetarianState extends State<Vegetarian> {
                 ),
               ),
               Text(
-                I18n.of(context)!.with_meat,
+                S.of(context).with_meat,
                 style: TextStyle(fontSize: 16),
               ),
             ]),
@@ -83,7 +83,7 @@ class _VegetarianState extends State<Vegetarian> {
                   ),
                 ),
                 Text(
-                  I18n.of(context)!.vegetarian,
+                  S.of(context).vegetarian,
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -99,7 +99,7 @@ class _VegetarianState extends State<Vegetarian> {
                   ),
                 ),
                 Text(
-                  I18n.of(context)!.vegan,
+                  S.of(context).vegan,
                   style: TextStyle(fontSize: 16),
                 ),
               ],

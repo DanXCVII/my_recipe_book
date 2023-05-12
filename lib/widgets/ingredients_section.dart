@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reorderables/reorderables.dart';
 
 import '../blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/ingredient.dart';
 import '../util/helper.dart';
 import 'dialogs/are_you_sure_dialog.dart';
@@ -37,7 +37,7 @@ class _IngredientsState extends State<Ingredients> {
   Widget build(BuildContext context) {
     if (!initializedServingsNameController &&
         widget.servingsNameController.text == "") {
-      widget.servingsNameController.text = I18n.of(context)!.servings;
+      widget.servingsNameController.text = S.of(context).servings;
       initializedServingsNameController = true;
     }
 
@@ -58,13 +58,13 @@ class _IngredientsState extends State<Ingredients> {
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (getDoubleFromString(value!) == null && value != "") {
-                      return I18n.of(context)!.no_valid_number;
+                      return S.of(context).no_valid_number;
                     }
                     return null;
                   },
                   decoration: InputDecoration(
                     filled: true,
-                    labelText: I18n.of(context)!.amount,
+                    labelText: S.of(context).amount,
                     icon: Icon(Icons.local_dining),
                   ),
                 ),
@@ -78,13 +78,13 @@ class _IngredientsState extends State<Ingredients> {
                   controller: widget.servingsNameController,
                   validator: (value) {
                     if (value == "") {
-                      return I18n.of(context)!.field_must_not_be_empty;
+                      return S.of(context).field_must_not_be_empty;
                     }
                     return null;
                   },
                   decoration: InputDecoration(
                     filled: true,
-                    labelText: I18n.of(context)!.servings,
+                    labelText: S.of(context).servings,
                   ),
                 ),
               ),
@@ -94,7 +94,7 @@ class _IngredientsState extends State<Ingredients> {
         Padding(
           padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
           child: Text(
-            I18n.of(context)!.ingredients + ':',
+            S.of(context).ingredients + ':',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -212,7 +212,8 @@ class _IngredientsState extends State<Ingredients> {
                                     context: context,
                                     builder: (bContext) => TextFieldDialog(
                                       validation: (title) => title == ""
-                                          ? I18n.of(context)!
+                                          ? S
+                                              .of(context)!
                                               .field_must_not_be_empty
                                           : null,
                                       prefilledText: state.sectionTitles[index],
@@ -241,9 +242,9 @@ class _IngredientsState extends State<Ingredients> {
                                           context: context,
                                           builder: (bcontext) =>
                                               AreYouSureDialog(
-                                                  I18n.of(context)!
-                                                      .delete_section,
-                                                  I18n.of(context)!
+                                                  S.of(context).delete_section,
+                                                  S
+                                                      .of(context)!
                                                       .delete_section_desc, () {
                                             BlocProvider.of<
                                                         IngredientsSectionBloc>(
@@ -271,14 +272,15 @@ class _IngredientsState extends State<Ingredients> {
                                     label: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 8.0),
-                                      child: Text(I18n.of(context)!.add_title),
+                                      child: Text(S.of(context).add_title),
                                     ),
                                     onPressed: () {
                                       showDialog(
                                         context: context,
                                         builder: (bContext) => TextFieldDialog(
                                           validation: (title) => title == ""
-                                              ? I18n.of(context)!
+                                              ? S
+                                                  .of(context)!
                                                   .field_must_not_be_empty
                                               : null,
                                           save: (title) => BlocProvider.of<
@@ -323,8 +325,7 @@ class _IngredientsState extends State<Ingredients> {
                               label: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8.0),
-                                child:
-                                    Text(I18n.of(context)!.add_ingredient("")),
+                                child: Text(S.of(context).add_ingredient("")),
                               ),
                               onPressed: () {
                                 showDialog(
@@ -372,18 +373,19 @@ class _IngredientsState extends State<Ingredients> {
                               label: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(I18n.of(context)!.add_section("")),
+                                child: Text(S.of(context).add_section("")),
                               ),
                               onPressed: () {
                                 if (state.sectionTitles.isEmpty) {
-                                  _showFlushInfo(I18n.of(context)!.add_title,
-                                      I18n.of(context)!.add_title_desc);
+                                  _showFlushInfo(S.of(context).add_title,
+                                      S.of(context).add_title_desc);
                                 } else {
                                   showDialog(
                                     context: context,
                                     builder: (bContext) => TextFieldDialog(
                                       validation: (title) => title == ""
-                                          ? I18n.of(context)!
+                                          ? S
+                                              .of(context)!
                                               .field_must_not_be_empty
                                           : null,
                                       save: (title) => BlocProvider.of<

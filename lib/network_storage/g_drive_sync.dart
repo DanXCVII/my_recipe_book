@@ -4,16 +4,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart' as signIn;
 import 'package:googleapis/analytics/v3.dart';
 import 'package:googleapis/drive/v3.dart' as GD;
-import 'package:http_parser/http_parser.dart';
-import '../local_storage/local_paths.dart';
-import 'package:google_sign_in/google_sign_in.dart' as signIn;
 import 'package:http/http.dart' as http;
-import 'package:googleapis_auth/auth_io.dart';
 
 import '../local_storage/hive.dart';
 import '../local_storage/io_operations.dart' as IO;
+import '../local_storage/local_paths.dart';
 import '../models/recipe.dart';
 import '../models/tuple.dart';
 import '../util/helper.dart';
@@ -40,16 +38,13 @@ class DriveSyncStatus {
   );
 }
 
-// TODO: add saving login credentials to hive with scilent sign in
-
-// first DateTime, second Recipe
-
 class GDriveSync {
   Map<String, Map<String, DateTime>>? driveModificationHistory;
   signIn.GoogleSignInAccount? driveAccount;
   String? jsonModificationId;
-  signIn.GoogleSignIn? googleSignIn =
-      signIn.GoogleSignIn.standard(scopes: [GD.DriveApi.driveFileScope]);
+  signIn.GoogleSignIn? googleSignIn = signIn.GoogleSignIn.standard(scopes: [
+    GD.DriveApi.driveAppdataScope
+  ]); // .driveFileScope for public access
   FlutterSecureStorage? storage;
 
   GDriveSync._();
@@ -57,11 +52,12 @@ class GDriveSync {
 
   /// signs in the user to google drive
   Future<signIn.GoogleSignInAccount?> signInGDrive() async {
-    googleSignIn = signIn.GoogleSignIn.standard(
-        scopes: [GD.DriveApi.driveFileScope]); // TODO: .driveAppdataScope]);
+    googleSignIn =
+        signIn.GoogleSignIn.standard(scopes: [GD.DriveApi.driveAppdataScope]);
 
     try {
       driveAccount = await googleSignIn!.signIn();
+      print(await googleSignIn!.requestScopes([GD.DriveApi.driveAppdataScope]));
     } catch (e) {}
 
     if (driveAccount != null) {
@@ -80,14 +76,13 @@ class GDriveSync {
   Future<signIn.GoogleSignInAccount?> signInSilently() async {
     try {
       googleSignIn =
-          signIn.GoogleSignIn.standard(scopes: [GD.DriveApi.driveFileScope]);
+          signIn.GoogleSignIn.standard(scopes: [GD.DriveApi.driveAppdataScope]);
       storage ??= new FlutterSecureStorage();
       String? signedIn = await storage!.read(key: 'signedIn');
 
       if (signedIn == "true") {
-        final signIn.GoogleSignInAccount? account =
-            await googleSignIn!.signInSilently(); // TODO: check if works
-        driveAccount = account;
+        final signIn.GoogleSignInAccount? account = await googleSignIn!
+            .signInSilently(suppressErrors: false); // TODO: check if works
         return account;
       }
     } catch (e) {
@@ -249,7 +244,7 @@ class GDriveSync {
       return "success"; // TODO: better use enum
     } else {
       /// TODO: Maybe delete the recipe, if it was not found? Could be problematic
-      /// if the download value is also sometimes null, it it fails, due to the
+      /// if the download value is also sometimes null, if it fails, due to the
       /// internet connection but should not be the case
       return "failed";
     }
@@ -283,9 +278,8 @@ class GDriveSync {
     var driveApi = await getDriveApi();
 
     // Search for the file named 'recipes'
-    var searchFiles = (await driveApi.files.list(
-            //TODO: spaces: 'appDataFolder',
-            q: "name='$fileName'"))
+    var searchFiles = (await driveApi.files
+            .list(spaces: 'appDataFolder', q: "name='$fileName'"))
         .files;
 
     // If the file is found, download it and save it as a local file
@@ -410,7 +404,7 @@ class GDriveSync {
       // Create a File object with the updated metadata
       var recipesJson = GD.File();
       recipesJson.name = 'recipes.json';
-      // TODO: recipesJson.parents = ["appDataFolder"];
+      recipesJson.parents = ["appDataFolder"];
 
       // Upload the file content in Google Drive
       var driveApi = await getDriveApi();
@@ -423,6 +417,7 @@ class GDriveSync {
         var jsonFile = await recipes.item2!.readAsString();
         fileId = recipes.item1;
         Map<String, dynamic> jsonMap = json.decode(jsonFile);
+        print(jsonMap);
 
         recipeMap.addAll(jsonMap.map((key, value) {
           Map<String, DateTime> innerMap =
@@ -490,8 +485,10 @@ class GDriveSync {
     // Create a Media object with the updated content
     var updatedMedia = Media(
       Stream.fromIterable([updatedBytes.cast<int>()]),
-      updatedJsonString.length,
+      updatedBytes.length,
     );
+
+    print(updatedJsonString.length);
 
     // Create a File object with the updated metadata
     var updateRequest = GD.File();
@@ -509,9 +506,8 @@ class GDriveSync {
     var driveApi = await getDriveApi();
 
     // Search for the file named 'recipes'
-    var searchFiles = (await driveApi.files.list(
-            //TODO: spaces: 'appDataFolder',
-            q: "name='$fileName'"))
+    var searchFiles = (await driveApi.files
+            .list(spaces: 'appDataFolder', q: "name='$fileName'"))
         .files;
 
     // If the file is found, delete it
@@ -540,7 +536,7 @@ class GDriveSync {
     // Create a new File object with the file name
     var driveFile = new GD.File();
     driveFile.name = uploadFile.path.split('/').last;
-    // TODO: driveFile.parents = ["appDataFolder"];
+    driveFile.parents = ["appDataFolder"];
 
     // Upload the file to Google Drive and return the file ID
     var driveApi = await getDriveApi();

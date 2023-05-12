@@ -8,7 +8,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import '../constants/global_constants.dart' as Constants;
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
@@ -84,7 +84,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
             padding: pw.EdgeInsets.only(top: 8),
             child: pw.Row(children: [
               pw.Text(
-                I18n.of(bContext)!.directions,
+                S.of(bContext)!.directions,
                 style: pw.TextStyle(
                   font: quandoTtf,
                   color: PdfColors.red900,
@@ -239,7 +239,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
                           pw.Text(
-                            I18n.of(bContext)!.general_infos,
+                            S.of(bContext)!.general_infos,
                             style: pw.TextStyle(
                               font: quandoTtf,
                               color: PdfColors.red900,
@@ -254,8 +254,8 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text: I18n.of(bContext)!.categories +
-                                              ": ",
+                                          text:
+                                              S.of(bContext)!.categories + ": ",
                                           style: pw.TextStyle(
                                               color: PdfColors.grey700,
                                               font: latoTtf,
@@ -280,7 +280,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text: I18n.of(bContext)!.tags + ": ",
+                                          text: S.of(bContext)!.tags + ": ",
                                           style: pw.TextStyle(
                                               font: latoTtf,
                                               color: PdfColors.grey700,
@@ -305,9 +305,9 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text: I18n.of(bContext)!
-                                                  .preperation_time +
-                                              ": ",
+                                          text:
+                                              S.of(bContext)!.preperation_time +
+                                                  ": ",
                                           style: pw.TextStyle(
                                               font: latoTtf,
                                               color: PdfColors.grey700,
@@ -333,8 +333,8 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text: I18n.of(bContext)!.cook_time +
-                                              ": ",
+                                          text:
+                                              S.of(bContext)!.cook_time + ": ",
                                           style: pw.TextStyle(
                                               font: latoTtf,
                                               color: PdfColors.grey700,
@@ -360,8 +360,8 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text: I18n.of(bContext)!.total_time +
-                                              ": ",
+                                          text:
+                                              S.of(bContext)!.total_time + ": ",
                                           style: pw.TextStyle(
                                               font: latoTtf,
                                               color: PdfColors.grey700,
@@ -387,8 +387,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                     text: pw.TextSpan(
                                       children: [
                                         pw.TextSpan(
-                                          text:
-                                              I18n.of(bContext)!.for_word + " ",
+                                          text: S.of(bContext)!.for_word + " ",
                                           style: pw.TextStyle(
                                               font: latoTtf,
                                               color: PdfColors.grey700,
@@ -398,7 +397,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                           text: recipe.servings.toString() +
                                               " " +
                                               (recipe.servingName ??
-                                                  I18n.of(bContext)!.persons),
+                                                  S.of(bContext)!.persons),
                                           style: pw.TextStyle(
                                               font: latoBTtf,
                                               fontSize: 11,
@@ -415,7 +414,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                               text: pw.TextSpan(
                                 children: [
                                   pw.TextSpan(
-                                    text: I18n.of(bContext)!.effort + ": ",
+                                    text: S.of(bContext)!.effort + ": ",
                                     style: pw.TextStyle(
                                         font: latoTtf,
                                         color: PdfColors.grey700,
@@ -440,7 +439,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                         pw.CrossAxisAlignment.start,
                                     children: [
                                       pw.Text(
-                                        I18n.of(bContext)!.source + ": ",
+                                        S.of(bContext)!.source + ": ",
                                         style: pw.TextStyle(
                                             font: latoTtf,
                                             color: PdfColors.grey700,
@@ -474,8 +473,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                   text: pw.TextSpan(
                                     children: [
                                       pw.TextSpan(
-                                        text: I18n.of(bContext)!.ingredients +
-                                            " ",
+                                        text: S.of(bContext)!.ingredients + " ",
                                         style: pw.TextStyle(
                                           font: quandoTtf,
                                           color: PdfColors.red900,
@@ -486,13 +484,11 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                         text: "(" +
                                             (recipe.vegetable ==
                                                     Vegetable.NON_VEGETARIAN
-                                                ? I18n.of(bContext)!.with_meat
+                                                ? S.of(bContext)!.with_meat
                                                 : recipe.vegetable ==
                                                         Vegetable.VEGETARIAN
-                                                    ? I18n.of(bContext)!
-                                                        .vegetarian
-                                                    : I18n.of(bContext)!
-                                                        .vegan) +
+                                                    ? S.of(bContext)!.vegetarian
+                                                    : S.of(bContext)!.vegan) +
                                             ")",
                                         style: pw.TextStyle(
                                           font: latoTtf,
@@ -674,7 +670,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                               pw.Padding(
                                 padding: pw.EdgeInsets.only(top: 8, bottom: 8),
                                 child: pw.Text(
-                                  I18n.of(bContext)!.nutritions,
+                                  S.of(bContext)!.nutritions,
                                   style: pw.TextStyle(
                                     font: quandoTtf,
                                     color: PdfColors.red900,
@@ -744,7 +740,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
                                   child: pw.Padding(
                                     padding: pw.EdgeInsets.only(top: 8),
                                     child: pw.Text(
-                                      I18n.of(bContext)!.notes,
+                                      S.of(bContext)!.notes,
                                       style: pw.TextStyle(
                                         font: quandoTtf,
                                         color: PdfColors.red900,

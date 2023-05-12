@@ -7,7 +7,7 @@ import 'package:reorderables/reorderables.dart';
 
 import '../../../blocs/new_recipe/step_images/step_images_bloc.dart';
 import '../../../constants/global_constants.dart' as Constants;
-import '../../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../../widgets/dialogs/are_you_sure_dialog.dart';
 import '../../../widgets/dialogs/textfield_dialog.dart';
 
@@ -44,7 +44,7 @@ class _StepsState extends State<Steps> {
             Padding(
               padding: const EdgeInsets.only(left: 56, top: 12, bottom: 12),
               child: Text(
-                I18n.of(context)!.steps + ':',
+                S.of(context).steps + ':',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
@@ -117,7 +117,7 @@ class _StepsState extends State<Steps> {
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     filled: true,
-                    labelText: I18n.of(context)!.description,
+                    labelText: S.of(context).description,
                   ),
                   minLines: 3,
                   maxLines: 10,
@@ -138,7 +138,7 @@ class _StepsState extends State<Steps> {
                               label: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(I18n.of(context)!.remove_step(
+                                child: Text(S.of(context).remove_step(
                                     MediaQuery.of(context).size.width < 412
                                         ? "\n"
                                         : "")),
@@ -158,7 +158,7 @@ class _StepsState extends State<Steps> {
                       icon: Icon(Icons.add_circle),
                       label: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(I18n.of(context)!.add_step(
+                        child: Text(S.of(context).add_step(
                             MediaQuery.of(context).size.width < 412
                                 ? "\n"
                                 : "")),
@@ -283,7 +283,7 @@ class Step extends StatelessWidget {
                 icon: Icon(Icons.add_circle),
                 label: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(I18n.of(context)!.add_title),
+                  child: Text(S.of(context).add_title),
                 ),
                 onPressed: () {
                   showDialog(
@@ -293,7 +293,7 @@ class Step extends StatelessWidget {
                       save: (String name) {
                         onEditTitle(name);
                       },
-                      hintText: I18n.of(context)!.categoryname,
+                      hintText: S.of(context).categoryname,
                     ),
                   );
                 },
@@ -323,7 +323,7 @@ class Step extends StatelessWidget {
                                 onEditTitle(name);
                               },
                               prefilledText: stepTitle,
-                              hintText: I18n.of(context)!.categoryname,
+                              hintText: S.of(context).categoryname,
                             ),
                           );
                         },
@@ -357,7 +357,7 @@ class Step extends StatelessWidget {
                       .add(EditStep(newStep, stepIndex));
                 },
                 prefilledText: step,
-                hintText: I18n.of(context)!.categoryname,
+                hintText: S.of(context).categoryname,
                 showExpanded: true,
               ),
             );
@@ -405,8 +405,8 @@ class Step extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (cntxt) => AreYouSureDialog(
-                            I18n.of(context)!.remove_step("") + "?",
-                            I18n.of(context)!.remove_step_desc,
+                            S.of(context).remove_step("") + "?",
+                            S.of(context).remove_step_desc,
                             () {
                               onRemoveStep();
                               Navigator.pop(context);

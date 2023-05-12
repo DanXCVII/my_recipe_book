@@ -2,7 +2,7 @@ import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../local_storage/hive.dart';
 import '../../models/ingredient.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';
@@ -119,7 +119,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          I18n.of(context)!.add_ingredient(""),
+          S.of(context).add_ingredient(""),
           style: Theme.of(context).textTheme.titleLarge,
         ),
         SizedBox(height: 12),
@@ -182,10 +182,10 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                         controller: ingredientNameController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: I18n.of(context)!.ingredient,
+                          labelText: S.of(context).ingredient,
                         ),
                         textCapitalization:
-                            I18n.of(context)!.two_char_locale == "EN"
+                            S.of(context).two_char_locale == "EN"
                                 ? TextCapitalization.none
                                 : TextCapitalization.sentences,
                       ),
@@ -199,18 +199,18 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: I18n.of(context)!.amnt,
+                                labelText: S.of(context).amnt,
                               ),
                               validator: (value) {
                                 if (value == "" ||
                                     getDoubleFromString(value!) != null) {
                                   if (value == "" &&
                                       ingredientUnitController.text != "") {
-                                    return I18n.of(context)!.fill_remove_unit;
+                                    return S.of(context).fill_remove_unit;
                                   }
                                   return null;
                                 }
-                                return I18n.of(context)!.no_valid_number;
+                                return S.of(context).no_valid_number;
                               },
                             ),
                           ),
@@ -220,7 +220,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                               controller: ingredientUnitController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: I18n.of(context)!.unit,
+                                labelText: S.of(context).unit,
                               ),
                             ),
                           ),
@@ -240,7 +240,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             TextButton(
-              child: Text(I18n.of(context)!.cancel),
+              child: Text(S.of(context).cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -249,8 +249,8 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
             TextButton(
               child: Text(
                 dropdownItems.isNotEmpty
-                    ? I18n.of(context)!.save
-                    : I18n.of(context)!.add,
+                    ? S.of(context).save
+                    : S.of(context).add,
                 style: TextStyle(color: Colors.black),
               ),
               style: TextButton.styleFrom(

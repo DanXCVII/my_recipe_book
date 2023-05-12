@@ -4,7 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../blocs/favorite_recipes/favorite_recipes_bloc.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/recipe.dart';
 import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_card.dart';
@@ -39,7 +39,7 @@ class FavoriteScreen extends StatelessWidget {
                     color: Colors.pink,
                     size: 70.0,
                   ),
-                  description: I18n.of(context)!.no_added_favorites_yet,
+                  description: S.of(context).no_added_favorites_yet,
                 ),
               ),
             );

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../widgets/icon_info_message.dart';
 
 import '../blocs/category_manager/category_manager_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../widgets/dialogs/textfield_dialog.dart';
 
 class CategoryManagerArguments {
@@ -28,13 +27,17 @@ class CategoryManager extends StatelessWidget {
           return _getLoadedScreen(context);
         } else if (state is LoadedCategoryManager) {
           return Scaffold(
-            appBar: NewGradientAppBar(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffAF1E1E), Color(0xff641414)],
+            appBar: AppBar(
+              backgroundColor: Colors.black,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                ),
               ),
-              title: Text(I18n.of(context)!.manage_categories),
+              title: Text(S.of(context).manage_categories),
             ),
             floatingActionButton: FloatingActionButton(
                 backgroundColor: Color(0xFF790604),
@@ -48,11 +51,9 @@ class CategoryManager extends StatelessWidget {
                       builder: (_) => TextFieldDialog(
                             validation: (String? name) {
                               if (state.categories.contains(name)) {
-                                return I18n.of(context)!
-                                    .category_already_exists;
+                                return S.of(context).category_already_exists;
                               } else if (name == "") {
-                                return I18n.of(context)!
-                                    .field_must_not_be_empty;
+                                return S.of(context).field_must_not_be_empty;
                               } else {
                                 return null;
                               }
@@ -62,7 +63,7 @@ class CategoryManager extends StatelessWidget {
                                   .recipeManagerBloc
                                   .add(RMAddCategories([name]));
                             },
-                            hintText: I18n.of(context)!.categoryname,
+                            hintText: S.of(context).categoryname,
                           ));
                 }),
             body: state.categories.length == 1
@@ -75,7 +76,7 @@ class CategoryManager extends StatelessWidget {
                         color: Colors.grey[300],
                         size: 70.0,
                       ),
-                      description: I18n.of(context)!.you_have_no_categories,
+                      description: S.of(context).you_have_no_categories,
                     )),
                   )
                 : ReorderableListView(
@@ -95,10 +96,12 @@ class CategoryManager extends StatelessWidget {
                               builder: (_) => TextFieldDialog(
                                 validation: (String? name) {
                                   if (state.categories.contains(name)) {
-                                    return I18n.of(context)!
+                                    return S
+                                        .of(context)!
                                         .category_already_exists;
                                   } else if (name == "") {
-                                    return I18n.of(context)!
+                                    return S
+                                        .of(context)!
                                         .field_must_not_be_empty;
                                   } else {
                                     return null;
@@ -111,7 +114,7 @@ class CategoryManager extends StatelessWidget {
                                         RMUpdateCategory(categoryName, name),
                                       );
                                 },
-                                hintText: I18n.of(context)!.categoryname,
+                                hintText: S.of(context).categoryname,
                                 prefilledText: categoryName,
                               ),
                             );
@@ -139,13 +142,17 @@ class CategoryManager extends StatelessWidget {
 
   Widget _getLoadedScreen(BuildContext context) {
     return Scaffold(
-      appBar: NewGradientAppBar(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xffAF1E1E), Color(0xff641414)],
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+          ),
         ),
-        title: Text(I18n.of(context)!.manage_categories),
+        title: Text(S.of(context).manage_categories),
       ),
       body: Center(
         child: CircularProgressIndicator(),
@@ -158,8 +165,8 @@ class CategoryManager extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context)!.delete_category),
-        content: Text(I18n.of(context)!.sure_you_want_to_delete_this_category +
+        title: Text(S.of(context).delete_category),
+        content: Text(S.of(context).sure_you_want_to_delete_this_category +
             " $categoryName"),
         actions: <Widget>[
           TextButton(
@@ -171,7 +178,7 @@ class CategoryManager extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text(I18n.of(context)!.no),
+            child: Text(S.of(context).no),
           ),
           TextButton(
             style: TextButton.styleFrom(
@@ -180,7 +187,7 @@ class CategoryManager extends StatelessWidget {
               backgroundColor: Colors.red[600],
               foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
-            child: Text(I18n.of(context)!.yes),
+            child: Text(S.of(context).yes),
             onPressed: () {
               BlocProvider.of<RecipeManagerBloc>(context)
                   .add(RMDeleteCategory(categoryName));

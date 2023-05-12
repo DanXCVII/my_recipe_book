@@ -43,7 +43,7 @@ import 'blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen_bloc.dart';
 import 'blocs/website_import/website_import_bloc.dart';
-import 'generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import 'screens/splash_screen.dart';
 import 'screens/about_me.dart';
 import 'screens/import_pc_info.dart';
@@ -75,7 +75,7 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 void main() {
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
   HttpOverrides.global = new MyHttpOverrides();
 
   runApp(
@@ -110,12 +110,12 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         localizationsDelegates: [
-          I18n.delegate,
+          S.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
         color: Colors.amber,
-        supportedLocales: I18n.delegate.supportedLocales,
+        supportedLocales: S.delegate.supportedLocales,
         showPerformanceOverlay: false,
         theme: CustomTheme.of(context),
         initialRoute: "/",

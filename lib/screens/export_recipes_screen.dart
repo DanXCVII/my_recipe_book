@@ -4,11 +4,10 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import '../widgets/dialogs/info_dialog.dart';
 import 'package:share_extend/share_extend.dart';
 
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../local_storage/hive.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
@@ -32,13 +31,17 @@ class _ExportRecipesState extends State<ExportRecipes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: NewGradientAppBar(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xffAF1E1E), Color(0xff641414)],
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+          ),
         ),
-        title: Text(I18n.of(context)!.select_recipes),
+        title: Text(S.of(context).select_recipes),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.help_outline),
@@ -46,8 +49,8 @@ class _ExportRecipesState extends State<ExportRecipes> {
               showDialog(
                   context: context,
                   builder: (_) => InfoDialog(
-                        title: I18n.of(context)!.share_recipes_settings,
-                        body: I18n.of(context)!.share_recipes_settings_desc,
+                        title: S.of(context).share_recipes_settings,
+                        body: S.of(context).share_recipes_settings_desc,
                       ));
             },
           ),
@@ -71,7 +74,7 @@ class _ExportRecipesState extends State<ExportRecipes> {
             color: Color.fromRGBO(0, 0, 0, 0.3),
             child: CheckboxListTile(
               value: listEquals(exportRecipeNames, recipeNames),
-              title: Text(I18n.of(context)!.select_all),
+              title: Text(S.of(context).select_all),
               onChanged: (value) {
                 if (value!) {
                   setState(() {
@@ -165,8 +168,8 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
             ),
             Container(width: 20),
             Text(finished
-                ? I18n.of(context)!.almost_done
-                : '${I18n.of(context)!.exporting_recipe} $_exportRecipe ${I18n.of(context)!.out_of} ${widget.exportRecipes.length}'),
+                ? S.of(context).almost_done
+                : '${S.of(context).exporting_recipe} $_exportRecipe ${S.of(context).out_of} ${widget.exportRecipes.length}'),
             Container(width: 20),
           ],
         ),

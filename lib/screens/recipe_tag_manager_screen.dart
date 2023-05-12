@@ -2,11 +2,10 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/string_int_tuple.dart';
 import '../widgets/dialogs/text_color_dialog.dart';
 import '../widgets/icon_info_message.dart';
@@ -30,13 +29,17 @@ class RecipeTagManager extends StatelessWidget {
           return _getLoadedScreen(context);
         } else if (state is LoadedRecipeTagManager) {
           return Scaffold(
-            appBar: NewGradientAppBar(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffAF1E1E), Color(0xff641414)],
+            appBar: AppBar(
+              backgroundColor: Colors.black,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                ),
               ),
-              title: Text(I18n.of(context)!.manage_recipe_tags),
+              title: Text(S.of(context).manage_recipe_tags),
             ),
             floatingActionButton: FloatingActionButton(
                 backgroundColor: Color(0xFF790604),
@@ -52,9 +55,9 @@ class RecipeTagManager extends StatelessWidget {
                         if (state.recipeTags.firstWhereOrNull(
                                 (element) => element.text == name) !=
                             null) {
-                          return I18n.of(context)!.recipe_tag_already_exists;
+                          return S.of(context).recipe_tag_already_exists;
                         } else if (name == "") {
-                          return I18n.of(context)!.field_must_not_be_empty;
+                          return S.of(context).field_must_not_be_empty;
                         } else {
                           return null;
                         }
@@ -67,7 +70,7 @@ class RecipeTagManager extends StatelessWidget {
                                   [StringIntTuple(text: name, number: color)]),
                             );
                       },
-                      hintText: I18n.of(context)!.recipe_tag,
+                      hintText: S.of(context).recipe_tag,
                     ),
                   );
                 }),
@@ -79,7 +82,7 @@ class RecipeTagManager extends StatelessWidget {
                       color: Colors.grey[300],
                       size: 70.0,
                     ),
-                    description: I18n.of(context)!.you_have_no_recipe_tags,
+                    description: S.of(context).you_have_no_recipe_tags,
                   ))
                 : ListView(
                     children: List<Widget>.generate(
@@ -132,13 +135,17 @@ class RecipeTagManager extends StatelessWidget {
 
   Widget _getLoadedScreen(BuildContext context) {
     return Scaffold(
-      appBar: NewGradientAppBar(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xffAF1E1E), Color(0xff641414)],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+          ),
         ),
-        title: Text(I18n.of(context)!.manage_recipe_tags),
+        title: Text(S.of(context).manage_recipe_tags),
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.check),
@@ -164,9 +171,9 @@ class RecipeTagManager extends StatelessWidget {
           if (otherRecipeTags
                   .firstWhereOrNull((element) => element.text == name) !=
               null) {
-            return I18n.of(context)!.recipe_tag_already_exists;
+            return S.of(context).recipe_tag_already_exists;
           } else if (name == "") {
-            return I18n.of(context)!.field_must_not_be_empty;
+            return S.of(context).field_must_not_be_empty;
           } else {
             return null;
           }
@@ -188,7 +195,7 @@ class RecipeTagManager extends StatelessWidget {
                 );
           }
         },
-        hintText: I18n.of(context)!.recipe_tag,
+        hintText: S.of(context).recipe_tag,
         prefilledText: currentTag.text,
       ),
     );
@@ -199,13 +206,12 @@ class RecipeTagManager extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(I18n.of(context)!.delete_recipe_tag),
-        content: Text(
-            I18n.of(context)!.sure_you_want_to_delete_this_recipe_tag +
-                " ${recipeTag.text}"),
+        title: Text(S.of(context).delete_recipe_tag),
+        content: Text(S.of(context).sure_you_want_to_delete_this_recipe_tag +
+            " ${recipeTag.text}"),
         actions: <Widget>[
           TextButton(
-            child: Text(I18n.of(context)!.no),
+            child: Text(S.of(context).no),
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
@@ -216,7 +222,7 @@ class RecipeTagManager extends StatelessWidget {
             },
           ),
           TextButton(
-            child: Text(I18n.of(context)!.yes),
+            child: Text(S.of(context).yes),
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),

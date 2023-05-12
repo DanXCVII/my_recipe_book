@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import 'package:video_player/video_player.dart';
 
 class IngredinetSearchPreviewScreen extends StatelessWidget {
@@ -24,13 +23,17 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: NewGradientAppBar(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xffAF1E1E), Color(0xff641414)],
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+          ),
         ),
-        title: Text(I18n.of(context)!.professional_search),
+        title: Text(S.of(context).professional_search),
       ),
       body: Stack(
         children: <Widget>[
@@ -124,7 +127,7 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
-                                    Text(I18n.of(context)!.buy_pro_version,
+                                    Text(S.of(context).buy_pro_version,
                                         style: TextStyle(
                                           fontSize: 19,
                                           fontWeight: FontWeight.w600,
@@ -134,7 +137,7 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                                       height: 6,
                                     ),
                                     Text(
-                                      I18n.of(context)!.pro_version_desc,
+                                      S.of(context).pro_version_desc,
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: Colors.white,

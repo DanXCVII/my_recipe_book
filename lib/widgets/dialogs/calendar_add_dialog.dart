@@ -2,10 +2,11 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 import '../../ad_related/ad.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../local_storage/hive.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 
@@ -81,7 +82,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          I18n.of(context)!.add_to_calendar,
+          S.of(context).add_to_calendar,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         SizedBox(height: 16),
@@ -92,7 +93,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
           controller: recipeNameController,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
-            labelText: I18n.of(context)!.recipe_name,
+            labelText: S.of(context).recipe_name,
           ),
         ),
         SizedBox(
@@ -104,7 +105,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                   icon: Icon(Icons.add_circle),
                   label: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(I18n.of(context)!.add_date),
+                    child: Text(S.of(context).add_date),
                   ),
                   onPressed: () async {
                     _onSelectDate();
@@ -148,7 +149,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             TextButton(
-              child: Text(I18n.of(context)!.cancel),
+              child: Text(S.of(context).cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -156,7 +157,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
             SizedBox(width: 6),
             TextButton(
               child: Text(
-                I18n.of(context)!.add,
+                S.of(context).add,
                 style: TextStyle(color: Colors.black),
               ),
               style: TextButton.styleFrom(
@@ -182,7 +183,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                       forwardAnimationCurve: Curves.elasticOut,
                       duration: Duration(seconds: 4),
                       icon: Icon(Icons.info),
-                      messageText: Text(I18n.of(context)!.select_a_date_first),
+                      messageText: Text(S.of(context).select_a_date_first),
                     )..show(context);
                   }
                 } else {
@@ -194,8 +195,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                     forwardAnimationCurve: Curves.elasticOut,
                     duration: Duration(seconds: 4),
                     icon: Icon(Icons.info),
-                    messageText:
-                        Text(I18n.of(context)!.no_recipe_with_this_name),
+                    messageText: Text(S.of(context).no_recipe_with_this_name),
                   )..show(context);
                 }
               },

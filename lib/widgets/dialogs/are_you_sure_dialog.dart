@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 
 class AreYouSureDialog extends StatelessWidget {
   final String title;
@@ -24,7 +24,7 @@ class AreYouSureDialog extends StatelessWidget {
         ),
         actions: <Widget>[
           TextButton(
-              child: Text(I18n.of(context)!.no),
+              child: Text(S.of(context).no),
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).textTheme.bodyLarge!.color,
               ),
@@ -32,7 +32,7 @@ class AreYouSureDialog extends StatelessWidget {
                 Navigator.pop(context);
               }),
           TextButton(
-              child: Text(I18n.of(context)!.yes),
+              child: Text(S.of(context).yes),
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).textTheme.bodyLarge!.color,
                 backgroundColor: Colors.red,

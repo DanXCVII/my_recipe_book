@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_recipe_book/blocs/recipe_mods/recipe_mods_bloc.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rate_my_app/rate_my_app.dart';
@@ -23,7 +22,7 @@ import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as GC;
 import '../constants/routes.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../local_storage/hive.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../util/my_wrapper.dart';
@@ -136,16 +135,16 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             : intentSharedText == "failedWriting"
                 ? "Error #2:"
                 : "Error #3:";
-        _showFlushInfo(I18n.of(context)!.failed_import,
-            "$error" + I18n.of(context)!.failed_import_desc);
+        _showFlushInfo(S.of(context).failed_import,
+            "$error" + S.of(context).failed_import_desc);
       } // if error occured and the storage permission is not granted and not set to neverShowAgain
       else if (await Permission.storage.isDenied) {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (context) => InfoDialog(
-            title: I18n.of(context)!.need_to_access_storage,
-            body: I18n.of(context)!.need_to_access_storage_desc,
+            title: S.of(context).need_to_access_storage,
+            body: S.of(context).need_to_access_storage_desc,
             onPressedOk: () async {
               Permission.storage.request().then((updatedPermissions) {
                 if (updatedPermissions.isGranted) {
@@ -241,11 +240,11 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         if (rateMyApp.shouldOpenDialog) {
           rateMyApp.showRateDialog(
             context,
-            title: I18n.of(context)!.rate_this_app,
-            message: I18n.of(context)!.rate_this_app_desc,
-            laterButton: I18n.of(context)!.maybe_later,
-            rateButton: I18n.of(context)!.rate,
-            noButton: I18n.of(context)!.no_thanks,
+            title: S.of(context).rate_this_app,
+            message: S.of(context).rate_this_app_desc,
+            laterButton: S.of(context).maybe_later,
+            rateButton: S.of(context).rate,
+            noButton: S.of(context).no_thanks,
           );
         }
       },
@@ -341,7 +340,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                               items: [
                                 BottomNavigationBarItem(
                                   icon: Icon(MdiIcons.notebook),
-                                  label: I18n.of(context)!.recipes,
+                                  label: S.of(context).recipes,
                                   activeIcon: Icon(
                                     MdiIcons.notebook,
                                     color: Colors.orange,
@@ -349,7 +348,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 ),
                                 BottomNavigationBarItem(
                                   icon: Icon(Icons.favorite),
-                                  label: I18n.of(context)!.favorites,
+                                  label: S.of(context).favorites,
                                   activeIcon: Icon(
                                     Icons.favorite,
                                     color: Colors.pink,
@@ -357,14 +356,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 ),
                                 BottomNavigationBarItem(
                                     icon: Icon(Icons.shopping_basket),
-                                    label: I18n.of(context)!.basket,
+                                    label: S.of(context).basket,
                                     activeIcon: Icon(
                                       Icons.shopping_basket,
                                       color: Colors.brown[300],
                                     )),
                                 BottomNavigationBarItem(
                                   icon: Icon(MdiIcons.diceMultiple),
-                                  label: I18n.of(context)!.explore,
+                                  label: S.of(context).explore,
                                   activeIcon: Icon(
                                     MdiIcons.diceMultiple,
                                     color: Colors.green,
@@ -372,7 +371,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 ),
                                 BottomNavigationBarItem(
                                   icon: Icon(Icons.settings),
-                                  label: I18n.of(context)!.settings,
+                                  label: S.of(context).settings,
                                   activeIcon: Icon(
                                     Icons.settings,
                                     color: Colors.grey,
@@ -393,29 +392,29 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 items: [
                                   BottomNavyBarItem(
                                       icon: Icon(MdiIcons.notebook),
-                                      title: Text(I18n.of(context)!.recipes),
+                                      title: Text(S.of(context).recipes),
                                       activeColor: Colors.orange,
                                       inactiveColor: Colors.white),
                                   BottomNavyBarItem(
                                     icon: Icon(Icons.favorite),
-                                    title: Text(I18n.of(context)!.favorites),
+                                    title: Text(S.of(context).favorites),
                                     activeColor: Colors.pink,
                                     inactiveColor: Colors.white,
                                   ),
                                   BottomNavyBarItem(
                                       icon: Icon(Icons.shopping_basket),
-                                      title: Text(I18n.of(context)!.basket),
+                                      title: Text(S.of(context).basket),
                                       activeColor: Colors.brown[300],
                                       inactiveColor: Colors.white),
                                   BottomNavyBarItem(
                                     icon: Icon(MdiIcons.diceMultiple),
-                                    title: Text(I18n.of(context)!.explore),
+                                    title: Text(S.of(context).explore),
                                     activeColor: Colors.green,
                                     inactiveColor: Colors.white,
                                   ),
                                   BottomNavyBarItem(
                                       icon: Icon(Icons.settings),
-                                      title: Text(I18n.of(context)!.settings),
+                                      title: Text(S.of(context).settings),
                                       activeColor: Colors.grey[100],
                                       inactiveColor: Colors.white)
                                 ],
@@ -467,7 +466,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     );
   }
 
-  NewGradientAppBar? _buildAppBar(
+  AppBar? _buildAppBar(
       int currentIndex, bool recipeCategoryOverview, String title) {
     // if shoppingCartPage with sliverAppBar
 
@@ -476,12 +475,16 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     } else if (currentIndex == 3 && MediaQuery.of(context).size.height < 730)
       return null;
     else {
-      return NewGradientAppBar(
+      return AppBar(
           iconTheme: IconThemeData(color: Colors.white),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xffAF1E1E), Color(0xff641414)],
+          backgroundColor: Colors.black,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+            ),
           ),
           title: Text(title),
           actions: ([
@@ -659,7 +662,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
                           child: Text(
-                              I18n.of(context)!.tap_here_to_manage_categories,
+                              S.of(context).tap_here_to_manage_categories,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600)),
@@ -674,7 +677,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                       RouteNames.manageCategories,
                     ).then((_) => Ads.hideBottomBannerAd());
                   }, Icon(MdiIcons.apps, color: Theme.of(context).primaryColor),
-                      3, I18n.of(context)!.import_from_website),
+                      3, S.of(context).import_from_website),
                 ),
                 Showcase.withWidget(
                   key: widget._introKeyTwo,
@@ -691,8 +694,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
                           child: Text(
-                              I18n.of(context)!
-                                  .tap_here_to_import_recipe_online,
+                              S.of(context).tap_here_to_import_recipe_online,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600)),
@@ -720,7 +722,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     Icon(MdiIcons.cloudDownload,
                         color: Theme.of(context).primaryColor),
                     2,
-                    I18n.of(context)!.manage_categories,
+                    S.of(context).manage_categories,
                   ),
                 ),
                 Showcase.withWidget(
@@ -737,7 +739,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
-                          child: Text(I18n.of(context)!.tap_here_to_add_recipe,
+                          child: Text(S.of(context).tap_here_to_add_recipe,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600)),
@@ -765,7 +767,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     },
                     Icon(Icons.edit, color: Theme.of(context).primaryColor),
                     1,
-                    I18n.of(context)!.add_recipe,
+                    S.of(context).add_recipe,
                   ),
                 ),
               ]

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:flutter/gestures.dart';
@@ -17,19 +16,23 @@ class ImportPcInfo extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: NewGradientAppBar(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xffAF1E1E), Color(0xff641414)],
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+          ),
         ),
-        title: Text(I18n.of(context)!.import_from_website_short),
+        title: Text(S.of(context).import_from_website_short),
       ),
       body: ListView(
         padding: EdgeInsets.all(22),
         children: [
           Text(
-            I18n.of(context)!.recipe_import_pc_title,
+            S.of(context).recipe_import_pc_title,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
@@ -39,7 +42,7 @@ class ImportPcInfo extends StatelessWidget {
           RichText(
             text: TextSpan(
               children: [
-                TextSpan(text: I18n.of(context)!.visit, style: style),
+                TextSpan(text: S.of(context).visit, style: style),
                 TextSpan(
                   text: "https://danxcvii.github.io/#/ ",
                   style: TextStyle(
@@ -54,7 +57,7 @@ class ImportPcInfo extends StatelessWidget {
                 ),
                 TextSpan(
                   style: style,
-                  text: I18n.of(context)!.import_computer_info,
+                  text: S.of(context).import_computer_info,
                 ),
               ],
             ),

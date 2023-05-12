@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../ad_related/ad.dart';
 import '../../constants/global_constants.dart' as Constants;
 import '../../constants/global_settings.dart';
-import '../../generated/i18n.dart';
+import 'package:my_recipe_book/generated/l10n.dart';
 import '../../local_storage/hive.dart';
 import '../../local_storage/io_operations.dart' as IO;
 import '../../models/recipe.dart';
@@ -183,7 +183,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
                 buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
 
     List<Recipe> importRecipeData = await IO.importFirstStartRecipes(
-        recipesFile, I18n.of(context)!.two_char_locale);
+        recipesFile, S.of(context).two_char_locale);
     for (Recipe r in importRecipeData) {
       await HiveProvider().saveRecipe(r);
     }

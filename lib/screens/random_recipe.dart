@@ -4,7 +4,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../widgets/tinder_card.dart';
 
 import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
-import '../generated/i18n.dart';
+import '../generated/l10n.dart';
 import '../models/recipe.dart';
 import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_card_big.dart';
@@ -58,9 +58,9 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
           //           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           //           child: Text(
           //             currentCategory == "no category"
-          //                 ? I18n.of(context).no_category
+          //                 ? S.of(context).no_category
           //                 : currentCategory == "all categories"
-          //                     ? I18n.of(context).all_categories
+          //                     ? S.of(context).all_categories
           //                     : currentCategory,
           //             textAlign: TextAlign.center,
           //             style: TextStyle(
@@ -88,9 +88,9 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                   .add(ChangeCategory(currentCategory));
             },
             child: Text(currentCategory == "no category"
-                ? I18n.of(context)!.no_category
+                ? S.of(context).no_category
                 : currentCategory == "all categories"
-                    ? I18n.of(context)!.all_categories
+                    ? S.of(context).all_categories
                     : currentCategory),
           );
         } else {
@@ -117,10 +117,10 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                   child: ListTile(
                     title: Text(
                         categoryNames[(index / 2).floor()] == "no category"
-                            ? I18n.of(context)!.no_category
+                            ? S.of(context).no_category
                             : categoryNames[(index / 2).floor()] ==
                                     "all categories"
-                                ? I18n.of(context)!.all_categories
+                                ? S.of(context).all_categories
                                 : categoryNames[(index / 2).floor()],
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
@@ -210,7 +210,8 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                                   color: Colors.white,
                                   size: 70.0,
                                 ),
-                                description: I18n.of(context)!
+                                description: S
+                                    .of(context)!
                                     .no_recipes_under_this_category,
                               ))
                             : TweenAnimationBuilder(
@@ -288,7 +289,7 @@ class _SwypingCardsState extends State<SwypingCards>
                     .add(ReloadRandomRecipeExplorer());
               },
             ),
-            description: I18n.of(context)!.you_made_it_to_the_end,
+            description: S.of(context).you_made_it_to_the_end,
           ),
         ),
       )),
