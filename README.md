@@ -7,10 +7,6 @@ My RecipeBible is a cookbook app developed with flutter. The app was created bec
 I tried some different state management solutions during the development of the app and at the end stuck with the **Bloc Pattern** (also recommended by Google).
 In this App, every screen has it's own Bloc and additional Blocs exist. The most interesting one may be the <em>RecipeManager</em> which is placed above the <em>MaterialApp</em> because recipes are shown on many different places in the app and therefore, it's easiest to implement one top Bloc of which all other screen-specific Blocs are listening when changes are made.
 
-## Remaining Tasks
-
-- Testing: Although test-driven development is valuable, due to time constraints, I have prioritized launching the app. With Bloc in place, core functionality should still be easy to test later.
-
 ## About the App
 
 With the My RecipeBible App, you can store your recipes digitally on your mobile phone and always have them with you. This probably raises the question:
