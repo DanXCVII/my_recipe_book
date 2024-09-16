@@ -7,9 +7,9 @@ My RecipeBible is a cookbook app developed with flutter. The app was created bec
 I tried some different state management solutions during the development of the app and at the end stuck with the **Bloc Pattern** (also recommended by Google).
 In this App, every screen has it's own Bloc and additional Blocs exist. The most interesting one may be the <em>RecipeManager</em> which is placed above the <em>MaterialApp</em> because recipes are shown on many different places in the app and therefore, it's easiest to implement one top Bloc of which all other screen-specific Blocs are listening when changes are made.
 
-## What still needs to be done?
+## Remaining Tasks
 
-- <em>tests, tests, tests ... </em>: I know how important test-driven development is, but due to my lack of time, I had to decide, whether I want to publish the app in the near future or let it take much more time which I may not have. It's a bit sad however, due to the implementation of Bloc, must functionality shouldn't be so hard to test.
+- Testing: Although test-driven development is valuable, due to time constraints, I have prioritized launching the app. With Bloc in place, core functionality should still be easy to test later.
 
 ## About the App
 
