@@ -9,6 +9,18 @@ In this App, every screen has it's own Bloc and additional Blocs exist. The most
 
 ## About the App
 
+### Screenshots
+
+| ![image1](https://github.com/DanXCVII/my_recipe_book/blob/master/release%20images/choose-design.webp)    | ![image2](https://github.com/DanXCVII/my_recipe_book/blob/master/release%20images/create-pc.webp)     | ![image3](https://github.com/DanXCVII/my_recipe_book/blob/master/release%20images/import-recipes-online.webp) | ![image4](https://github.com/DanXCVII/my_recipe_book/blob/master/release%20images/ingredient-filter.webp) |
+| -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| ![image5](https://github.com/DanXCVII/my_recipe_book/blob/master/release%20images/optimized-format.webp) | ![image6](https://github.com/DanXCVII/my_recipe_book/blob/master/release%20images/shopping-list.webp) | ![image7](https://github.com/DanXCVII/my_recipe_book/blob/master/release%20images/swipe-recipes.webp)         | ![image8](https://github.com/DanXCVII/my_recipe_book/blob/master/release%20images/view.webp)              |
+
+### Demo-video
+
+![video](https://github.com/DanXCVII/my_recipe_book/blob/master/release%20images/demo.mp4)
+
+### Description
+
 With the My RecipeBible App, you can store your recipes digitally on your mobile phone and always have them with you. This probably raises the question:
 
 What added value do I have compared to a conventional cookbook?
