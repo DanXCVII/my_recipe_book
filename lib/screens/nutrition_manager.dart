@@ -134,9 +134,14 @@ class _NutritionManagerState extends State<NutritionManager> {
                   : Form(
                       key: _formKey,
                       child: ReorderableListView(
-                        onReorder: (oldIndex, newIndex) {
+                        onReorderItem: (oldIndex, newIndex) {
+                          // The Bloc still expects the legacy pre-removal
+                          // destination index.
                           BlocProvider.of<NutritionManagerBloc>(context)
-                              .add(MoveNutrition(oldIndex, newIndex));
+                              .add(MoveNutrition(
+                                oldIndex,
+                                newIndex > oldIndex ? newIndex + 1 : newIndex,
+                              ));
                         },
                         children: List.generate(
                           dismissibleKeys.length,

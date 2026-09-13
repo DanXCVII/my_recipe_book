@@ -1013,13 +1013,13 @@ class _ItemWidget extends StatelessWidget {
       curve: curve,
       decoration: BoxDecoration(
         color: isSelected
-            ? item.activeColor!.withOpacity(0.2)
+            ? item.activeColor!.withValues(alpha: 0.2)
             : Colors.transparent,
         gradient: LinearGradient(
           colors: isSelected
               ? [
                   item.activeColor!,
-                  item.activeColor!.withOpacity(0.8),
+                  item.activeColor!.withValues(alpha: 0.8),
                 ]
               : [Colors.transparent, Colors.transparent],
         ),
@@ -1040,7 +1040,7 @@ class _ItemWidget extends StatelessWidget {
                 data: IconThemeData(
                   size: iconSize,
                   color: isSelected
-                      ? item.activeColor!.withOpacity(1)
+                      ? item.activeColor
                       : item.inactiveColor == null
                           ? item.activeColor
                           : item.inactiveColor,

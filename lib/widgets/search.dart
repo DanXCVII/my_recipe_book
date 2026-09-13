@@ -39,7 +39,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe?> {
         brightness: Brightness.light,
         primaryTextTheme: theme.textTheme,
         appBarTheme: AppBarTheme(
-          color: Colors.white,
+          backgroundColor: Colors.white,
           iconTheme: IconThemeData(color: Colors.grey[800]),
         ),
       );
@@ -50,7 +50,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe?> {
         brightness: Brightness.dark,
         primaryTextTheme: theme.textTheme,
         appBarTheme: AppBarTheme(
-          color: Colors.grey[800],
+          backgroundColor: Colors.grey[800],
           iconTheme: IconThemeData(color: Colors.grey[200]),
         ),
       );

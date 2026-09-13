@@ -90,10 +90,12 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        _finishedEditingNutritions(true);
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _finishedEditingNutritions(true);
+        }
       },
       child: BlocListener<NutritionManagerBloc, NutritionManagerState>(
         listener: (context, state) {
@@ -270,9 +272,16 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                     : Form(
                         key: _formKey,
                         child: ReorderableListView(
-                          onReorder: (oldIndex, newIndex) {
+                          onReorderItem: (oldIndex, newIndex) {
+                            // The Bloc still expects the legacy pre-removal
+                            // destination index.
                             BlocProvider.of<NutritionManagerBloc>(context)
-                                .add(MoveNutrition(oldIndex, newIndex));
+                                .add(MoveNutrition(
+                                  oldIndex,
+                                  newIndex > oldIndex
+                                      ? newIndex + 1
+                                      : newIndex,
+                                ));
                           },
                           children: List<Widget>.generate(
                             dismissibleKeys.length,

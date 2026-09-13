@@ -89,10 +89,12 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        _saveIngredientsData(true);
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _saveIngredientsData(true);
+        }
       },
       child: Scaffold(
         appBar: AppBar(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -110,27 +109,28 @@ class AboutMeScreen extends StatelessWidget {
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Icon(
-                                          MdiIcons.whatsapp,
+                                          Icons.chat,
                                           size: 30,
                                         ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Icon(
-                                          MdiIcons.facebook,
+                                          Icons.facebook,
                                           size: 30,
                                         ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Icon(
-                                          MdiIcons.instagram,
+                                          Icons.photo_camera,
                                           size: 30,
                                         ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Icon(MdiIcons.twitter, size: 30),
+                                        child: Icon(Icons.alternate_email,
+                                            size: 30),
                                       ),
                                     ],
                                   ),

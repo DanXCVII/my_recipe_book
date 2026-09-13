@@ -87,10 +87,12 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        _finishedEditingSteps(true);
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _finishedEditingSteps(true);
+        }
       },
       child: Scaffold(
         appBar: AppBar(

@@ -103,10 +103,12 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   @override
   Widget build(BuildContext context) {
     print(MediaQuery.of(context).size.width);
-    return WillPopScope(
-      onWillPop: () async {
-        _saveGeneralInfoData(context, true);
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _saveGeneralInfoData(context, true);
+        }
       },
       child: Scaffold(
         appBar: AppBar(

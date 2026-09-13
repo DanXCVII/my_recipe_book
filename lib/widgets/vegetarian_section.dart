@@ -55,7 +55,10 @@ class _VegetarianState extends State<Vegetarian> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 6),
-      child: Column(
+      child: RadioGroup<int>(
+        groupValue: _radioValue,
+        onChanged: _handleRadioValueChange,
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Row(children: <Widget>[
@@ -63,8 +66,6 @@ class _VegetarianState extends State<Vegetarian> {
                 padding: const EdgeInsets.only(left: 4.0, right: 4.0),
                 child: Radio(
                   value: 0,
-                  groupValue: _radioValue,
-                  onChanged: _handleRadioValueChange,
                 ),
               ),
               Text(
@@ -78,8 +79,6 @@ class _VegetarianState extends State<Vegetarian> {
                   padding: const EdgeInsets.only(left: 4.0, right: 4.0),
                   child: Radio(
                     value: 1,
-                    groupValue: _radioValue,
-                    onChanged: _handleRadioValueChange,
                   ),
                 ),
                 Text(
@@ -94,8 +93,6 @@ class _VegetarianState extends State<Vegetarian> {
                   padding: const EdgeInsets.only(left: 4.0, right: 4.0),
                   child: Radio(
                     value: 2,
-                    groupValue: _radioValue,
-                    onChanged: _handleRadioValueChange,
                   ),
                 ),
                 Text(
@@ -105,6 +102,7 @@ class _VegetarianState extends State<Vegetarian> {
               ],
             )
           ]),
+      ),
     );
   }
 }

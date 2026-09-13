@@ -80,11 +80,15 @@ class CategoryManager extends StatelessWidget {
                     )),
                   )
                 : ReorderableListView(
-                    onReorder: (oldIndex, newIndex) {
+                    onReorderItem: (oldIndex, newIndex) {
+                      // The Bloc still expects the legacy pre-removal
+                      // destination index.
                       BlocProvider.of<CategoryManagerBloc>(context)
                           .recipeManagerBloc
                           .add(RMMoveCategory(
-                              oldIndex, newIndex, DateTime.now()));
+                              oldIndex,
+                              newIndex > oldIndex ? newIndex + 1 : newIndex,
+                              DateTime.now()));
                     },
                     children: state.categories.map((categoryName) {
                       return ListTile(
