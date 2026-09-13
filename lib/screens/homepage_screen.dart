@@ -675,8 +675,6 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
             ? [
                 Showcase.withWidget(
                   key: widget._introKeyThree,
-                  height: 50,
-                  width: 200,
                   container: Column(
                     children: <Widget>[
                       Container(
@@ -707,8 +705,6 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                 ),
                 Showcase.withWidget(
                   key: widget._introKeyTwo,
-                  height: 50,
-                  width: 200,
                   container: Column(
                     children: <Widget>[
                       Container(
@@ -753,8 +749,6 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                 ),
                 Showcase.withWidget(
                   key: widget._introKeyOne,
-                  height: 50,
-                  width: 200,
                   container: Column(
                     children: <Widget>[
                       Container(

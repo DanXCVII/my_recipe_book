@@ -56,7 +56,7 @@ dependencies:
   flutter_sticky_header: ^0.8.0 # MIT
   url_launcher: ^6.1.5 # BSD
   pull_to_refresh: ^2.0.0 # MIT
-  showcaseview: ^4.0.1 # BSD
+  showcaseview: ^5.1.0 # BSD
   in_app_purchase: ^3.0.8 # BSD
   video_player: ^2.4.7 # BSD
   permission_handler: ^11.4.0 # MIT
