@@ -5,7 +5,6 @@ import 'dart:typed_data';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart' as signIn;
-import 'package:googleapis/analytics/v3.dart';
 import 'package:googleapis/drive/v3.dart' as GD;
 import 'package:http/http.dart' as http;
 
@@ -290,7 +289,7 @@ class GDriveSync {
 
       // Download the file using its ID and save it as a local file
       GD.Media fileStream = (await driveApi.files.get(fileId!,
-          downloadOptions: DownloadOptions.fullMedia)) as GD.Media;
+          downloadOptions: GD.DownloadOptions.fullMedia)) as GD.Media;
       final File finalFile =
           File(await PathProvider.pP.getTmpRecipeDir() + fileName);
 
@@ -397,7 +396,7 @@ class GDriveSync {
       var updatedBytes = utf8.encode(updatedJsonString);
 
       // Create a Media object with the updated content
-      var updatedMedia = Media(
+      var updatedMedia = GD.Media(
         Stream.fromIterable([updatedBytes.cast<int>()]),
         updatedJsonString.length,
       );
@@ -484,7 +483,7 @@ class GDriveSync {
     var updatedBytes = utf8.encode(updatedJsonString);
 
     // Create a Media object with the updated content
-    var updatedMedia = Media(
+    var updatedMedia = GD.Media(
       Stream.fromIterable([updatedBytes.cast<int>()]),
       updatedBytes.length,
     );
