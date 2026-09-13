@@ -59,7 +59,7 @@ dependencies:
   showcaseview: ^5.1.0 # BSD
   in_app_purchase: ^3.0.8 # BSD
   video_player: ^2.4.7 # BSD
-  permission_handler: ^11.4.0 # MIT
+  permission_handler: ^13.0.2 # MIT
   flutter_sequence_animation: ^4.0.0-nullsafety # MIT
   flutter_native_splash: ^2.4.8 # MIT
   flutter_colorpicker: ^1.0.3 # MIT

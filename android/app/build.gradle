@@ -20,7 +20,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace 'com.release.my_recipe_book'
-    compileSdk flutter.compileSdkVersion
+    compileSdk 37
     ndkVersion flutter.ndkVersion
 
     compileOptions {
