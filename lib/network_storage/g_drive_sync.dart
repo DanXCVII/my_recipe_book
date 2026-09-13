@@ -38,33 +38,35 @@ class DriveSyncStatus {
 }
 
 class GDriveSync {
+  static const List<String> _driveScopes = [GD.DriveApi.driveAppdataScope];
+  static const String _serverClientId =
+      '669547151513-nq7b315n2tip3fapeq4vq3r0o4k8vldk.apps.googleusercontent.com';
+
   Map<String, Map<String, DateTime>>? driveModificationHistory;
   signIn.GoogleSignInAccount? driveAccount;
   String? jsonModificationId;
-  signIn.GoogleSignIn? googleSignIn = signIn.GoogleSignIn.standard(scopes: [
-    GD.DriveApi.driveAppdataScope
-  ]); // .driveFileScope for public access
+  final signIn.GoogleSignIn googleSignIn = signIn.GoogleSignIn.instance;
+  late final Future<void> _googleSignInInitialization;
   FlutterSecureStorage? storage;
 
-  GDriveSync._();
+  GDriveSync._() {
+    _googleSignInInitialization = googleSignIn.initialize(
+      serverClientId: _serverClientId,
+    );
+  }
+
   static final GDriveSync gD = GDriveSync._();
 
   /// signs in the user to google drive
   Future<signIn.GoogleSignInAccount?> signInGDrive() async {
-    googleSignIn =
-        signIn.GoogleSignIn.standard(scopes: [GD.DriveApi.driveAppdataScope]);
+    await _googleSignInInitialization;
 
     try {
-      driveAccount = await googleSignIn!.signIn();
-      print(await googleSignIn!.requestScopes([GD.DriveApi.driveAppdataScope]));
+      driveAccount = await googleSignIn.authenticate(scopeHint: _driveScopes);
+      await driveAccount!.authorizationClient.authorizeScopes(_driveScopes);
     } catch (e) {}
 
     if (driveAccount != null) {
-      // not used but if silentSignIn is not working, check how to use it
-      signIn.GoogleSignInAuthentication authentication =
-          await driveAccount!.authentication;
-      authentication.accessToken;
-
       storage ??= new FlutterSecureStorage();
       await storage!.write(key: 'signedIn', value: "true");
     }
@@ -74,14 +76,15 @@ class GDriveSync {
 
   Future<signIn.GoogleSignInAccount?> signInSilently() async {
     try {
-      googleSignIn =
-          signIn.GoogleSignIn.standard(scopes: [GD.DriveApi.driveAppdataScope]);
+      await _googleSignInInitialization;
       storage ??= new FlutterSecureStorage();
       String? signedIn = await storage!.read(key: 'signedIn');
 
       if (signedIn == "true") {
-        final signIn.GoogleSignInAccount? account = await googleSignIn!
-            .signInSilently(suppressErrors: false); // TODO: check if works
+        final lightweightAuthentication = googleSignIn
+            .attemptLightweightAuthentication(reportAllExceptions: true);
+        final signIn.GoogleSignInAccount? account =
+            await lightweightAuthentication;
         driveAccount = account;
         return account;
       }
@@ -94,18 +97,24 @@ class GDriveSync {
 
   /// signs out the user from google drive
   Future<void> signOutFromGoogle() async {
-    if (googleSignIn != null) {
-      await googleSignIn!.signOut();
+    await _googleSignInInitialization;
+    await googleSignIn.signOut();
+    driveAccount = null;
 
-      storage ??= new FlutterSecureStorage();
-      await storage!.write(key: 'signedIn', value: "false");
-    }
+    storage ??= new FlutterSecureStorage();
+    await storage!.write(key: 'signedIn', value: "false");
   }
 
   Future<GD.DriveApi> getDriveApi() async {
     signIn.GoogleSignInAccount? account = driveAccount ?? await signInGDrive();
 
-    final authHeaders = await account!.authHeaders;
+    final authHeaders = await account!.authorizationClient.authorizationHeaders(
+      _driveScopes,
+      promptIfNecessary: true,
+    );
+    if (authHeaders == null) {
+      throw StateError('Google Drive access was not authorized.');
+    }
     final authenticateClient = GoogleAuthClient(authHeaders);
     final driveApi = GD.DriveApi(authenticateClient);
 
