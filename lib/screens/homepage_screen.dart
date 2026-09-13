@@ -104,6 +104,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    ShowcaseView.register();
     shoppingCartImage = Image.asset(
       'images/cuisine.jpg',
       fit: BoxFit.cover,
@@ -112,6 +113,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     // Listen to lifecycle events.
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    ShowcaseView.get().unregister();
+    super.dispose();
   }
 
   @override
@@ -813,7 +821,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
           if (_controller.isDismissed) {
             setState(() {
               if (widget.showIntro!.myBool!) {
-                ShowCaseWidget.of(context).startShowCase([
+                ShowcaseView.get().startShowCase([
                   widget._introKeyOne,
                   widget._introKeyTwo,
                   widget._introKeyThree,

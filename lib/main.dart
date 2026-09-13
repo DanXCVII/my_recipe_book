@@ -12,7 +12,6 @@ import 'blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
 import 'blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'screens/recipe_calendar_screen.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:showcaseview/showcaseview.dart';
 
 import 'theming.dart';
 import 'ad_related/ad.dart';
@@ -195,10 +194,8 @@ class MyApp extends StatelessWidget {
                       create: (context) => GDriveSyncBloc(context),
                     )
                   ],
-                  child: ShowCaseWidget(
-                    builder: (context) => MyHomePage(
-                      showIntro: args!.showIntro,
-                    ),
+                  child: MyHomePage(
+                    showIntro: args!.showIntro,
                   ),
                 ),
               );
