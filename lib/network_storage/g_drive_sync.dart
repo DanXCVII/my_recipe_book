@@ -83,6 +83,7 @@ class GDriveSync {
       if (signedIn == "true") {
         final signIn.GoogleSignInAccount? account = await googleSignIn!
             .signInSilently(suppressErrors: false); // TODO: check if works
+        driveAccount = account;
         return account;
       }
     } catch (e) {
@@ -125,6 +126,12 @@ class GDriveSync {
 
     int recipeCount = 0;
     for (String recipeName in updateProcess[0]) {
+      await HiveProvider().deleteRecipe(recipeName,
+          deletionDate: driveMods.item2[recipeName]!['-'].toString());
+      Future.delayed(Duration(milliseconds: 60)).then((_) async {
+        await IO.deleteRecipeData(recipeName);
+      });
+
       yield DriveSyncStatus(
         Status.DELETED_LOCAL,
         updateProcess[0].length,
@@ -132,16 +139,13 @@ class GDriveSync {
         recipeName,
       );
       recipeCount = recipeCount + 1;
-
-      await HiveProvider().deleteRecipe(recipeName,
-          deletionDate: driveMods.item2[recipeName]!['-'].toString());
-      Future.delayed(Duration(milliseconds: 60)).then((_) async {
-        await IO.deleteRecipeData(recipeName);
-      });
     }
 
     recipeCount = 0;
     for (String recipeName in updateProcess[1]) {
+      await deleteGDriveRecipeIfExists(
+          recipeName, HiveProvider().getDeletionDate(recipeName));
+
       yield DriveSyncStatus(
         Status.DELETED_ONLINE,
         updateProcess[1].length,
@@ -149,13 +153,12 @@ class GDriveSync {
         recipeName,
       );
       recipeCount = recipeCount + 1;
-
-      await deleteGDriveRecipeIfExists(
-          recipeName, HiveProvider().getDeletionDate(recipeName));
     }
 
     recipeCount = 0;
     for (String recipeName in updateProcess[2]) {
+      await importRecipeFromGDrive(recipeName);
+
       yield DriveSyncStatus(
         Status.IMPORTED_LOCAL,
         updateProcess[2].length,
@@ -163,12 +166,12 @@ class GDriveSync {
         recipeName,
       );
       recipeCount = recipeCount + 1;
-
-      await importRecipeFromGDrive(recipeName);
     }
 
     recipeCount = 0;
     for (String recipeName in updateProcess[3]) {
+      await addGDriveRecipe(recipeName);
+
       yield DriveSyncStatus(
         Status.UPLOADED,
         updateProcess[3].length,
@@ -176,8 +179,6 @@ class GDriveSync {
         recipeName,
       );
       recipeCount = recipeCount + 1;
-
-      await addGDriveRecipe(recipeName);
     }
 
     yield DriveSyncStatus(Status.FINISHED, 0, 0, "");

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import '../local_storage/hive.dart';
 import '../models/string_int_tuple.dart';
 
@@ -69,7 +69,7 @@ class _RecipeFilterState extends State<RecipeFilter>
             ],
             borderRadius: BorderRadius.all(Radius.circular(10)),
             gradient: LinearGradient(
-              colors: Theme.of(context).colorScheme.background != Colors.white
+              colors: Theme.of(context).colorScheme.surface != Colors.white
                   ? [Colors.grey[800]!, Colors.grey[800]!]
                   : [Colors.grey[200]!, Colors.grey[200]!],
               stops: [0, 0.5],
@@ -127,7 +127,7 @@ class _RecipeFilterState extends State<RecipeFilter>
                                         : value ==
                                                 RecipeSort.BY_INGREDIENT_COUNT
                                             ? S
-                                                .of(context)!
+                                                .of(context)
                                                 .by_ingredientsamount
                                             : S.of(context).by_last_modified,
                                 style: TextStyle(

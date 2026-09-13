@@ -13,7 +13,7 @@ class Consts {
 class TextColorDialog extends StatefulWidget {
   // only needs to be specified when editing an item
   final String? prefilledText;
-  final int selectedColor;
+  final Color selectedColor;
   final String? hintText;
   final String? Function(String? name) validation;
   final void Function(String name, int color) save;
@@ -22,7 +22,7 @@ class TextColorDialog extends StatefulWidget {
   TextColorDialog({
     required this.validation,
     required this.save,
-    this.selectedColor = 4278238420,
+    this.selectedColor = Colors.white,
     this.hintText,
     this.prefilledText,
   });
@@ -35,9 +35,9 @@ class TextColorDialog extends StatefulWidget {
 
 class TextColorDialogState extends State<TextColorDialog> {
   TextEditingController? nameController;
-  late int selectedColor;
+  late Color selectedColor;
 
-  TextColorDialogState(int /*!*/ wSelectedColor) {
+  TextColorDialogState(Color /*!*/ wSelectedColor) {
     selectedColor = wSelectedColor;
   }
 
@@ -68,7 +68,7 @@ class TextColorDialogState extends State<TextColorDialog> {
         borderRadius: BorderRadius.circular(Consts.padding),
       ),
       elevation: 0.0,
-      backgroundColor: Theme.of(context).dialogBackgroundColor,
+      backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
       child: Container(
         width: MediaQuery.of(context).size.width > 360 ? 360 : null,
         child: Padding(
@@ -107,7 +107,7 @@ class TextColorDialogState extends State<TextColorDialog> {
                           width: 35,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Color(selectedColor),
+                            color: selectedColor,
                           ),
                         ),
                       ),
@@ -147,10 +147,10 @@ class TextColorDialogState extends State<TextColorDialog> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(S.of(context).delete_category),
         content: BlockPicker(
-          pickerColor: Color(selectedColor),
+          pickerColor: selectedColor,
           onColorChanged: (color) {
             setState(() {
-              selectedColor = color.value;
+              selectedColor = color;
             });
           },
         ),
@@ -173,7 +173,7 @@ class TextColorDialogState extends State<TextColorDialog> {
 
   void validateAddModifyItem() {
     if (_formKey.currentState!.validate()) {
-      widget.save(nameController!.text, selectedColor);
+      widget.save(nameController!.text, selectedColor.toARGB32());
       Future.delayed(Duration(milliseconds: 100))
           .then((_) => Navigator.pop(context));
     }

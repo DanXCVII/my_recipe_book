@@ -160,7 +160,7 @@ Future<Uint8List> getRecipeCalendarPdf(
                         mainAxisSize: pw.MainAxisSize.min,
                         mainAxisAlignment: pw.MainAxisAlignment.center,
                         children: [
-                          pw.Text(S.of(bContext)!.notes),
+                          pw.Text(S.of(bContext).notes),
                         ]..addAll(
                             List.generate(
                               10,

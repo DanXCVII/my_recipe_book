@@ -213,7 +213,7 @@ class _IngredientsState extends State<Ingredients> {
                                     builder: (bContext) => TextFieldDialog(
                                       validation: (title) => title == ""
                                           ? S
-                                              .of(context)!
+                                              .of(context)
                                               .field_must_not_be_empty
                                           : null,
                                       prefilledText: state.sectionTitles[index],
@@ -244,7 +244,7 @@ class _IngredientsState extends State<Ingredients> {
                                               AreYouSureDialog(
                                                   S.of(context).delete_section,
                                                   S
-                                                      .of(context)!
+                                                      .of(context)
                                                       .delete_section_desc, () {
                                             BlocProvider.of<
                                                         IngredientsSectionBloc>(
@@ -280,7 +280,7 @@ class _IngredientsState extends State<Ingredients> {
                                         builder: (bContext) => TextFieldDialog(
                                           validation: (title) => title == ""
                                               ? S
-                                                  .of(context)!
+                                                  .of(context)
                                                   .field_must_not_be_empty
                                               : null,
                                           save: (title) => BlocProvider.of<
@@ -294,13 +294,12 @@ class _IngredientsState extends State<Ingredients> {
                                     },
                                     style: ButtonStyle(
                                       foregroundColor:
-                                          MaterialStateProperty.all<Color>(
+                                          WidgetStateProperty.all<Color>(
                                               Colors.white),
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Colors.orange[900] ??
-                                                  Colors.orange),
-                                      shape: MaterialStateProperty.all(
+                                      backgroundColor: WidgetStateProperty.all<
+                                              Color>(
+                                          Colors.orange[900] ?? Colors.orange),
+                                      shape: WidgetStateProperty.all(
                                         RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(5.0),
@@ -343,13 +342,11 @@ class _IngredientsState extends State<Ingredients> {
                                 );
                               },
                               style: ButtonStyle(
-                                foregroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white),
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.orange[900] ?? Colors.orange),
-                                shape: MaterialStateProperty.all(
+                                foregroundColor: WidgetStateProperty.all<Color>(
+                                    Colors.white),
+                                backgroundColor: WidgetStateProperty.all<Color>(
+                                    Colors.orange[900] ?? Colors.orange),
+                                shape: WidgetStateProperty.all(
                                   RoundedRectangleBorder(
                                     borderRadius:
                                         new BorderRadius.circular(5.0),
@@ -385,7 +382,7 @@ class _IngredientsState extends State<Ingredients> {
                                     builder: (bContext) => TextFieldDialog(
                                       validation: (title) => title == ""
                                           ? S
-                                              .of(context)!
+                                              .of(context)
                                               .field_must_not_be_empty
                                           : null,
                                       save: (title) => BlocProvider.of<
@@ -398,13 +395,11 @@ class _IngredientsState extends State<Ingredients> {
                                 }
                               },
                               style: ButtonStyle(
-                                foregroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white),
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.orange[900] ?? Colors.orange),
-                                shape: MaterialStateProperty.all(
+                                foregroundColor: WidgetStateProperty.all<Color>(
+                                    Colors.white),
+                                backgroundColor: WidgetStateProperty.all<Color>(
+                                    Colors.orange[900] ?? Colors.orange),
+                                shape: WidgetStateProperty.all(
                                     RoundedRectangleBorder(
                                         borderRadius:
                                             new BorderRadius.circular(5.0))),

@@ -63,13 +63,17 @@ class _DialPainter extends CustomPainter {
 
     // Draw a translucent circle for every hour
     for (int i = 0; i < multiplier; i = i + 1) {
-      canvas.drawCircle(centerPoint, radius,
-          Paint()..color = accentColor.withOpacity((i == 0) ? 0.3 : 0.1));
+      canvas.drawCircle(
+          centerPoint,
+          radius,
+          Paint()
+            ..color = accentColor.withAlpha(
+                (i == 0) ? (0.3 * 255).round() : (0.1 * 255).round()));
     }
 
     // Draw the inner background circle
     canvas.drawCircle(centerPoint, radius * 0.88,
-        Paint()..color = Theme.of(context).colorScheme.background);
+        Paint()..color = Theme.of(context).colorScheme.surface);
 
     // Get the offset point for an angle value of theta, and a distance of _radius
     Offset getOffsetForTheta(double theta, double _radius) {
@@ -120,7 +124,7 @@ class _DialPainter extends CustomPainter {
     var elapsedPainter = Paint()
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..color = accentColor.withOpacity(0.3)
+      ..color = accentColor.withAlpha((0.3 * 255).round())
       ..isAntiAlias = true
       ..strokeWidth = radius * 0.12;
 
@@ -396,7 +400,7 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
         backgroundColor = Colors.grey[200];
         break;
       case Brightness.dark:
-        backgroundColor = themeData.colorScheme.background;
+        backgroundColor = themeData.colorScheme.surface;
         break;
     }
 
@@ -495,7 +499,7 @@ class _DurationPickerDialogState extends State<_DurationPickerDialog> {
               snapToMins: widget.snapToMins,
             )));
 
-    final Widget actions = ButtonBar(
+    final Widget actions = OverflowBar(
       children: <Widget>[
         TextButton(
             child: Text(localizations.cancelButtonLabel),
@@ -513,7 +517,7 @@ class _DurationPickerDialogState extends State<_DurationPickerDialog> {
           final Widget pickerAndActions = Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: theme.dialogBackgroundColor,
+              color: theme.dialogTheme.backgroundColor,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -558,7 +562,7 @@ class _DurationPickerDialogState extends State<_DurationPickerDialog> {
 
     return Theme(
       data: theme.copyWith(
-        dialogBackgroundColor: Colors.transparent,
+        dialogTheme: DialogThemeData(backgroundColor: Colors.transparent),
       ),
       child: dialog,
     );

@@ -29,15 +29,15 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m3(datatype) =>
       "the datatype of the selected file \"${datatype}\" is not supported\nsupported formats: \".zip\", \".mcb\"";
 
-  static String m4(recipeName) => "deleting recipe in cloud: ${recipeName}";
+  static String m4(recipeName) => "deleted recipe in cloud: ${recipeName}";
 
-  static String m5(recipeName) => "deleting local recipe: ${recipeName}";
+  static String m5(recipeName) => "deleted local recipe: ${recipeName}";
 
   static String m6(fileName) => "the file is not supported ${fileName}.";
 
   static String m15(number) => "for \"${number}\" persons";
 
-  static String m7(recipeName) => "importing recipe: ${recipeName}";
+  static String m7(recipeName) => "imported recipe: ${recipeName}";
 
   static String m8(name) => "recipe with name \"${name}\" already exists";
 
@@ -53,7 +53,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m13(recipeName, year, month, day) =>
       "You added ${recipeName} to your the recipe planner for the following date:\n ${year}-${month}-${day}";
 
-  static String m14(recipeName) => "uploading recipe: ${recipeName}";
+  static String m14(recipeName) => "uploaded recipe: ${recipeName}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -198,6 +198,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("failed loading ad"),
         "failed_loading_ad_desc": MessageLookupByLibrary.simpleMessage(
             "solutions can be: better internet connection, tapping \"watch\" again or restarting the app"),
+        "failed_sign_in": MessageLookupByLibrary.simpleMessage(
+            "failed to sign in maybe due to no internet"),
+        "failed_syncing": MessageLookupByLibrary.simpleMessage(
+            "error occured during syncing, maybe due to bad internet"),
         "failed_to_connect_to_url": MessageLookupByLibrary.simpleMessage(
             "failed to connect to given url"),
         "failed_to_import_recipe_unknown_reason":

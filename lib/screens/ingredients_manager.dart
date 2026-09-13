@@ -2,7 +2,7 @@ import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 
 import '../blocs/ingredinets_manager/ingredients_manager_bloc.dart';
 import '../generated/l10n.dart';
@@ -111,7 +111,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                               validation: (String? name) {
                                 if (state.ingredients.contains(name)) {
                                   return S
-                                      .of(context)!
+                                      .of(context)
                                       .ingredient_already_exists;
                                 } else if (name == "") {
                                   return S.of(context).field_must_not_be_empty;
@@ -142,7 +142,7 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                         child: DraggableScrollbar.semicircle(
                           controller: _controller,
                           backgroundColor:
-                              Theme.of(context).colorScheme.background ==
+                              Theme.of(context).colorScheme.surface ==
                                       Colors.white
                                   ? Colors.white
                                   : Colors.grey[800]!,

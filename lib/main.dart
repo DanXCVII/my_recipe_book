@@ -196,10 +196,8 @@ class MyApp extends StatelessWidget {
                     )
                   ],
                   child: ShowCaseWidget(
-                    builder: Builder(
-                      builder: (context) => MyHomePage(
-                        showIntro: args!.showIntro,
-                      ),
+                    builder: (context) => MyHomePage(
+                      showIntro: args!.showIntro,
                     ),
                   ),
                 ),

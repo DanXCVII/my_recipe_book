@@ -133,9 +133,12 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
               child: BlocBuilder<IngredientsBloc, IngredientsState>(
                 builder: (context, state) {
                   if (state is ISavingTmpData) {
-                    return Icon(
-                      Icons.arrow_forward,
-                      color: Colors.grey,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Icon(
+                        Icons.arrow_forward,
+                        color: Colors.grey,
+                      ),
                     );
                   } else if (state is ICanSave) {
                     return IconButton(

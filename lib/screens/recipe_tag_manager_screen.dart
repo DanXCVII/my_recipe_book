@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
@@ -178,7 +178,12 @@ class RecipeTagManager extends StatelessWidget {
             return null;
           }
         },
-        selectedColor: currentTag.number,
+        selectedColor: Color.fromARGB(
+          (currentTag.number >> 24) & 0xFF,
+          (currentTag.number >> 16) & 0xFF,
+          (currentTag.number >> 8) & 0xFF,
+          currentTag.number & 0xFF,
+        ),
         save: (String name, int number) {
           StringIntTuple newTag = StringIntTuple(text: name, number: number);
           if (newTag != currentTag) {

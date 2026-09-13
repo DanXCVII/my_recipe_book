@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 import '../widgets/dialogs/info_dialog.dart';
-import 'package:share_extend/share_extend.dart';
+
+import 'package:share_plus/share_plus.dart';
 
 import '../generated/l10n.dart';
 import '../local_storage/hive.dart';
@@ -36,9 +38,10 @@ class _ExportRecipesState extends State<ExportRecipes> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffAF1E1E), Color(0xff641414)],
+            ),
           ),
         ),
         title: Text(S.of(context).select_recipes),
@@ -47,11 +50,12 @@ class _ExportRecipesState extends State<ExportRecipes> {
             icon: Icon(Icons.help_outline),
             onPressed: () {
               showDialog(
-                  context: context,
-                  builder: (_) => InfoDialog(
-                        title: S.of(context).share_recipes_settings,
-                        body: S.of(context).share_recipes_settings_desc,
-                      ));
+                context: context,
+                builder: (_) => InfoDialog(
+                  title: S.of(context).share_recipes_settings,
+                  body: S.of(context).share_recipes_settings_desc,
+                ),
+              );
             },
           ),
           IconButton(
@@ -60,12 +64,11 @@ class _ExportRecipesState extends State<ExportRecipes> {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (_) => SaveExportRecipes(
-                  exportRecipes: exportRecipeNames,
-                ),
+                builder: (_) =>
+                    SaveExportRecipes(exportRecipes: exportRecipeNames),
               );
             },
-          )
+          ),
         ],
       ),
       body: Column(
@@ -103,9 +106,7 @@ class _ExportRecipesState extends State<ExportRecipes> {
                       }
                     });
                   },
-                  title: Text(
-                    recipeNames[index],
-                  ),
+                  title: Text(recipeNames[index]),
                 );
               },
             ),
@@ -119,10 +120,7 @@ class _ExportRecipesState extends State<ExportRecipes> {
 class SaveExportRecipes extends StatefulWidget {
   final List<String> exportRecipes;
 
-  SaveExportRecipes({
-    required this.exportRecipes,
-    Key? key,
-  }) : super(key: key);
+  SaveExportRecipes({required this.exportRecipes, Key? key}) : super(key: key);
 
   _SaveExportRecipesState createState() => _SaveExportRecipesState();
 }
@@ -143,9 +141,7 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         height: 90,
         child: Row(
@@ -156,8 +152,12 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
               future: exportZipFile,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  ShareExtend.share(snapshot.data!, "file",
-                      subject: "mrb-recipes.zip");
+                  SharePlus.instance.share(
+                    ShareParams(
+                      files: [XFile(snapshot.data!)],
+                      subject: "mrb-recipes.zip",
+                    ),
+                  );
                   myCallback(() {
                     Navigator.pop(context);
                     Navigator.pop(context);
@@ -167,9 +167,11 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
               },
             ),
             Container(width: 20),
-            Text(finished
-                ? S.of(context).almost_done
-                : '${S.of(context).exporting_recipe} $_exportRecipe ${S.of(context).out_of} ${widget.exportRecipes.length}'),
+            Text(
+              finished
+                  ? S.of(context).almost_done
+                  : '${S.of(context).exporting_recipe} $_exportRecipe ${S.of(context).out_of} ${widget.exportRecipes.length}',
+            ),
             Container(width: 20),
           ],
         ),
@@ -202,14 +204,16 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
 
     var exportFiles = Directory(exportMultiDir).listSync();
     var encoder = ZipFileEncoder();
-    String finalZipFilePath =
-        PathProvider.pP.getZipFilePath('mrb-recipes', exportMultiDir);
+    String finalZipFilePath = PathProvider.pP.getZipFilePath(
+      'mrb-recipes',
+      exportMultiDir,
+    );
     encoder.create(finalZipFilePath);
     for (FileSystemEntity f in exportFiles) {
-      encoder.addFile(f as File);
-      f.deleteSync();
+      await encoder.addFile(f as File);
+      await f.delete();
     }
-    encoder.close();
+    await encoder.close();
 
     return finalZipFilePath;
   }

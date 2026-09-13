@@ -3191,40 +3191,40 @@ class S {
     );
   }
 
-  /// `importing recipe: {recipeName}`
+  /// `imported recipe: {recipeName}`
   String importing_recipe_drive(Object recipeName) {
     return Intl.message(
-      'importing recipe: $recipeName',
+      'imported recipe: $recipeName',
       name: 'importing_recipe_drive',
       desc: '',
       args: [recipeName],
     );
   }
 
-  /// `uploading recipe: {recipeName}`
+  /// `uploaded recipe: {recipeName}`
   String uploading_recipe_drive(Object recipeName) {
     return Intl.message(
-      'uploading recipe: $recipeName',
+      'uploaded recipe: $recipeName',
       name: 'uploading_recipe_drive',
       desc: '',
       args: [recipeName],
     );
   }
 
-  /// `deleting recipe in cloud: {recipeName}`
+  /// `deleted recipe in cloud: {recipeName}`
   String deleting_recipe_drive(Object recipeName) {
     return Intl.message(
-      'deleting recipe in cloud: $recipeName',
+      'deleted recipe in cloud: $recipeName',
       name: 'deleting_recipe_drive',
       desc: '',
       args: [recipeName],
     );
   }
 
-  /// `deleting local recipe: {recipeName}`
+  /// `deleted local recipe: {recipeName}`
   String deleting_recipe_local(Object recipeName) {
     return Intl.message(
-      'deleting local recipe: $recipeName',
+      'deleted local recipe: $recipeName',
       name: 'deleting_recipe_local',
       desc: '',
       args: [recipeName],
@@ -3246,6 +3246,26 @@ class S {
     return Intl.message(
       'Cancelling Sync...',
       name: 'cancelling_sync',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `failed to sign in maybe due to no internet`
+  String get failed_sign_in {
+    return Intl.message(
+      'failed to sign in maybe due to no internet',
+      name: 'failed_sign_in',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `error occured during syncing, maybe due to bad internet`
+  String get failed_syncing {
+    return Intl.message(
+      'error occured during syncing, maybe due to bad internet',
+      name: 'failed_syncing',
       desc: '',
       args: [],
     );

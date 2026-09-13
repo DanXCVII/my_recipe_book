@@ -1,15 +1,13 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:my_recipe_book/blocs/recipe_mods/recipe_mods_bloc.dart';
-import 'package:my_recipe_book/network_storage/g_drive_sync.dart';
 
+import '../../../network_storage/g_drive_sync.dart';
+import '../../random_recipe_explorer/random_recipe_explorer_bloc.dart';
 import '../../recipe_category_overview/recipe_category_overview_bloc.dart';
-import '../g_drive_sign_in/g_drive_sign_in_bloc.dart';
+import '../../recipe_mods/recipe_mods_bloc.dart';
 
 part 'g_drive_event.dart';
 part 'g_drive_state.dart';
@@ -23,45 +21,55 @@ class GDriveSyncBloc extends Bloc<GDriveSyncEvent, GDriveSyncState> {
       emit(GDriveSyncing());
       BlocProvider.of<RecipeModsBloc>(context).add(BlockMods());
 
-      listener = GDriveSync.gD.synchornizeGDrive().listen((i) async {
-        switch (i.status) {
-          case Status.DELETED_LOCAL:
-            add(InternGDriveLocalDeletingEvent(
-              i.recipeName,
-              i.currentRecipeNumber,
-              i.totalRecipes,
-            ));
-            break;
-          case Status.DELETED_ONLINE:
-            add(InternGDriveCloudDeletingEvent(
-              i.recipeName,
-              i.currentRecipeNumber,
-              i.totalRecipes,
-            ));
-            break;
-          case Status.IMPORTED_LOCAL:
-            add(InternGDriveImportingEvent(
-              i.recipeName,
-              i.currentRecipeNumber,
-              i.totalRecipes,
-            ));
-            break;
-          case Status.UPLOADED:
-            add(InternGDriveUploadingEvent(
-              i.recipeName,
-              i.currentRecipeNumber,
-              i.totalRecipes,
-            ));
-            break;
-          case Status.FINISHED:
-            await Future.delayed(Duration(milliseconds: 200));
-            add(InternGDriveSuccessfullySyncedEvent());
-            await cancelStream();
-            BlocProvider.of<RecipeModsBloc>(context).add(UnblockMods());
-            break;
-          default:
-        }
-      });
+      listener = GDriveSync.gD.synchornizeGDrive().listen(
+        (i) async {
+          switch (i.status) {
+            case Status.DELETED_LOCAL:
+              add(InternGDriveLocalDeletingEvent(
+                i.recipeName,
+                i.currentRecipeNumber,
+                i.totalRecipes,
+              ));
+              break;
+            case Status.DELETED_ONLINE:
+              add(InternGDriveCloudDeletingEvent(
+                i.recipeName,
+                i.currentRecipeNumber,
+                i.totalRecipes,
+              ));
+              break;
+            case Status.IMPORTED_LOCAL:
+              add(InternGDriveImportingEvent(
+                i.recipeName,
+                i.currentRecipeNumber,
+                i.totalRecipes,
+              ));
+              break;
+            case Status.UPLOADED:
+              add(InternGDriveUploadingEvent(
+                i.recipeName,
+                i.currentRecipeNumber,
+                i.totalRecipes,
+              ));
+              break;
+            case Status.FINISHED:
+              await Future.delayed(Duration(milliseconds: 200));
+              add(InternGDriveSuccessfullySyncedEvent());
+              await cancelStream();
+              BlocProvider.of<RecipeModsBloc>(context).add(UnblockMods());
+              break;
+            default:
+          }
+        },
+        onError: (_) {
+          add(InternGDriveErrorSyncingEvent());
+          BlocProvider.of<RecipeModsBloc>(context).add(UnblockMods());
+        },
+      );
+    });
+
+    on<InternGDriveErrorSyncingEvent>((event, emit) async {
+      emit(GDriveErrorSyncing());
     });
 
     on<InternGDriveCloudDeletingEvent>((event, emit) async {
@@ -109,5 +117,7 @@ class GDriveSyncBloc extends Bloc<GDriveSyncEvent, GDriveSyncState> {
     BlocProvider.of<RecipeCategoryOverviewBloc>(context).add(
         RCOLoadRecipeCategoryOverview(
             reopenBoxes: false, categoryOverviewContext: context));
+    BlocProvider.of<RandomRecipeExplorerBloc>(context)
+        .add(InitializeRandomRecipeExplorer());
   }
 }

@@ -2,7 +2,7 @@ import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:my_recipe_book/generated/l10n.dart';
@@ -21,7 +21,7 @@ class ShoppingCartAddDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(Consts.padding),
       ),
       elevation: 0.0,
-      backgroundColor: Theme.of(context).dialogBackgroundColor,
+      backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
       child: Container(
         width: MediaQuery.of(context).size.width > 360 ? 360 : null,
         child: Padding(
@@ -208,7 +208,7 @@ class _ShoppingCartAddDialogContentState
               ),
               style: TextButton.styleFrom(
                 backgroundColor:
-                    Theme.of(context).colorScheme.background == Colors.white
+                    Theme.of(context).colorScheme.surface == Colors.white
                         ? null
                         : Colors.amber,
               ),

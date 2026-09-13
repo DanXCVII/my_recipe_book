@@ -1,8 +1,8 @@
 import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/ingredient_search/ingredient_search_bloc.dart';
@@ -243,7 +243,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
               : ListTile(
                   onTap: () {
                     if (GlobalSettings().standbyDisabled()) {
-                      Wakelock.enable();
+                      WakelockPlus.enable();
                     }
                     Navigator.pushNamed(
                       context,
@@ -255,7 +255,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                         currentRecipe.name,
                         BlocProvider.of<RecipeManagerBloc>(context),
                       ),
-                    ).then((_) => Wakelock.disable());
+                    ).then((_) => WakelockPlus.disable());
                   },
                   title: Text(recipeMatches[recipeIndex].item2.name),
                   subtitle: recipeMatches[recipeIndex].item1 == 0 &&

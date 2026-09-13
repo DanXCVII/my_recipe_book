@@ -5,17 +5,18 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:my_recipe_book/blocs/recipe_mods/recipe_mods_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rate_my_app/rate_my_app.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../blocs/app/app_bloc.dart';
+import '../blocs/g_drive/g_drive_sign_in/g_drive_sign_in_bloc.dart';
+import '../blocs/g_drive/g_drive_sync/g_drive_bloc.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
@@ -230,7 +231,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         rateMyApp.conditions.forEach((condition) {
           if (condition is DebuggableCondition) {
             print(condition
-                .valuesAsString); // We iterate through our list of conditions and we print all debuggable ones.
+                .toString()); // We iterate through our list of conditions and we print all debuggable ones.
           }
         });
 
@@ -488,6 +489,31 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           ),
           title: Text(title),
           actions: ([
+            BlocBuilder<GDriveSignInBloc, GDriveSignInState>(
+                builder: (context, state) {
+              if (state is GDriveSignedIn) {
+                return BlocBuilder<GDriveSyncBloc, GDriveSyncState>(
+                    builder: (context, state) {
+                  if (state is GDriveIdle ||
+                      state is GDriveSuccessfullySynced) {
+                    return IconButton(
+                      icon: Icon(Icons.sync),
+                      onPressed: () {
+                        BlocProvider.of<GDriveSyncBloc>(context)
+                            .add(GDriveStartSync(DateTime.now()));
+                      },
+                    );
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: SpinningSyncIcon(),
+                    );
+                  }
+                });
+              } else {
+                return Container();
+              }
+            }),
             MediaQuery.of(context).size.width > GC.sideBarWidth
                 ? null
                 : IconButton(
@@ -569,10 +595,10 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       return Theme.of(context).scaffoldBackgroundColor;
     } else if (selectedIndex == 1) {
       // if bright theme
-      if (Theme.of(context).colorScheme.background == Colors.white) {
+      if (Theme.of(context).colorScheme.surface == Colors.white) {
         return Theme.of(context).scaffoldBackgroundColor;
       } // if dark theme
-      else if (Theme.of(context).colorScheme.background == Color(0xff212225)) {
+      else if (Theme.of(context).colorScheme.surface == Color(0xff212225)) {
         return Color(0xff58153D);
       } // if oledBlack theme
       else {
@@ -614,7 +640,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late AnimationController _controllerFAB;
-  static const List<IconData> icons = const [
+  static List<IconData> icons = [
     MdiIcons.apps,
     Icons.description,
   ];
@@ -670,7 +696,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                       ),
                     ],
                   ),
-                  shapeBorder: CircleBorder(),
+                  // shapeBorder: CircleBorder(),
                   child: _getFloatingItem(() {
                     Navigator.pushNamed(
                       context,
@@ -702,7 +728,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                       ),
                     ],
                   ),
-                  shapeBorder: CircleBorder(),
+                  // shapeBorder: CircleBorder(),
                   child: _getFloatingItem(
                     () {
                       getTemporaryDirectory().then((dir) {
@@ -747,7 +773,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                       ),
                     ],
                   ),
-                  shapeBorder: CircleBorder(),
+                  // shapeBorder: CircleBorder(),
                   child: _getFloatingItem(
                     () {
                       getTemporaryDirectory().then((dir) {

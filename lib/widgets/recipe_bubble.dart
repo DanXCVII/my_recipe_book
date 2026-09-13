@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../constants/global_settings.dart';
-import 'package:wakelock/wakelock.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -58,7 +58,7 @@ class _RecipeBubbleState extends State<RecipeBubble> {
     return GestureDetector(
       onTap: () {
         if (GlobalSettings().standbyDisabled()) {
-          Wakelock.enable();
+          WakelockPlus.enable();
         }
         Navigator.pushNamed(
           context,
@@ -71,7 +71,7 @@ class _RecipeBubbleState extends State<RecipeBubble> {
             BlocProvider.of<RecipeManagerBloc>(context),
           ),
         ).then((_) {
-          Wakelock.disable();
+          WakelockPlus.disable();
           Ads.hideBottomBannerAd();
         });
       },
@@ -87,7 +87,7 @@ class _RecipeBubbleState extends State<RecipeBubble> {
                 offset: Offset(1, 1),
                 blurRadius: 2,
                 spreadRadius: 1,
-                color: Theme.of(context).colorScheme.background == Colors.white
+                color: Theme.of(context).colorScheme.surface == Colors.white
                     ? Colors.grey[400]!
                     : Colors.black,
               ),

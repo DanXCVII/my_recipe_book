@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import '../blocs/app/app_bloc.dart';
 import '../generated/l10n.dart';
 
@@ -120,7 +120,7 @@ class SideBarItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: selectedColor!.withOpacity(0.3),
+        color: selectedColor!.withAlpha((0.3 * 255).round()),
         borderRadius: BorderRadius.all(Radius.circular(30)),
       ),
       child: ClipRRect(
@@ -131,7 +131,7 @@ class SideBarItem extends StatelessWidget {
             onTap: () {
               onPressed();
             },
-            splashColor: selectedColor!.withOpacity(0.3),
+            splashColor: selectedColor!.withAlpha((0.3 * 255).round()),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Container(

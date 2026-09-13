@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import '../widgets/icon_info_message.dart';
 
 import '../blocs/category_manager/category_manager_bloc.dart';
@@ -97,11 +97,11 @@ class CategoryManager extends StatelessWidget {
                                 validation: (String? name) {
                                   if (state.categories.contains(name)) {
                                     return S
-                                        .of(context)!
+                                        .of(context)
                                         .category_already_exists;
                                   } else if (name == "") {
                                     return S
-                                        .of(context)!
+                                        .of(context)
                                         .field_must_not_be_empty;
                                   } else {
                                     return null;

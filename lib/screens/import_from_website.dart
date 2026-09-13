@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -133,7 +133,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                                   shape: BoxShape.circle,
                                   color: Theme.of(context)
                                               .colorScheme
-                                              .background ==
+                                              .surface ==
                                           Colors.white
                                       ? Colors.grey[100]
                                       : Colors.grey[900]),
@@ -152,7 +152,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                               size: 70.0,
                             ),
                             description: S
-                                .of(context)!
+                                .of(context)
                                 .recipe_already_exists(state.recipeName),
                             backgroundText: true,
                             textColor: Colors.white,
@@ -168,7 +168,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                               size: 70.0,
                             ),
                             description: S
-                                .of(context)!
+                                .of(context)
                                 .failed_to_import_recipe_unknown_reason,
                             backgroundText: true,
                             textColor: Colors.white,
@@ -257,12 +257,12 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
           : MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
-        color: Theme.of(context).colorScheme.background == Colors.white
+        color: Theme.of(context).colorScheme.surface == Colors.white
             ? Colors.grey[100]
             : Colors.grey[800],
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.background == Colors.white
+            color: Theme.of(context).colorScheme.surface == Colors.white
                 ? Colors.black12
                 : Colors.black45,
             blurRadius: 2.0,
@@ -383,7 +383,7 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-        color: Theme.of(context).colorScheme.background == Colors.white
+        color: Theme.of(context).colorScheme.surface == Colors.white
             ? Colors.grey[100]
             : Colors.grey[800],
       ),

@@ -6,8 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -37,32 +36,36 @@ class Settings extends StatelessWidget {
           BlocListener<AdManagerBloc, AdManagerState>(
             listener: (context, state) {
               if (state is NotConnected) {
-                _showInfoFlushBar(S.of(context).no_internet_connection,
-                    S.of(context).no_internet_connection_desc, context);
+                _showInfoFlushBar(
+                  S.of(context).no_internet_connection,
+                  S.of(context).no_internet_connection_desc,
+                  context,
+                );
               } else if (state is FailedLoadingRewardedVideo) {
-                _showInfoFlushBar(S.of(context).failed_loading_ad,
-                    S.of(context).failed_loading_ad_desc, context);
+                _showInfoFlushBar(
+                  S.of(context).failed_loading_ad,
+                  S.of(context).failed_loading_ad_desc,
+                  context,
+                );
               }
             },
             child: BlocBuilder<AdManagerBloc, AdManagerState>(
-                builder: (context, state) {
-              if (state is IsPurchased) {
-                return Container();
-              } else {
-                return Column(
-                  children: <Widget>[
-                    ListTile(
-                        leading: Icon(
-                          MdiIcons.crown,
-                          color: Colors.amber,
-                        ),
+              builder: (context, state) {
+                if (state is IsPurchased) {
+                  return Container();
+                } else {
+                  return Column(
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(MdiIcons.crown, color: Colors.amber),
                         title: Text(S.of(context).purchase_pro),
                         onTap: () {
                           BlocProvider.of<AdManagerBloc>(context)
                               .add(PurchaseProVersion());
-                        }),
-                    Divider(),
-                    ListTile(
+                        },
+                      ),
+                      Divider(),
+                      ListTile(
                         title: Text(
                           S.of(context).watch_video_remove_ads,
                           style: Theme.of(context).textTheme.titleMedium,
@@ -71,18 +74,18 @@ class Settings extends StatelessWidget {
                         trailing: state is ShowAds
                             ? null
                             : state is AdFreeUntil
-                                ? Text(
-                                    "${S.of(context).ad_free_until}:\n${state.time.hour}:" +
-                                        (state.time.minute < 10
-                                            ? "0${state.time.minute}"
-                                            : "${state.time.minute}"),
-                                    textAlign: TextAlign.center,
-                                  )
-                                : state is LoadingVideo
-                                    ? CircularProgressIndicator()
-                                    : state is FailedLoadingRewardedVideo
-                                        ? Icon(Icons.cancel, color: Colors.red)
-                                        : null,
+                            ? Text(
+                                "${S.of(context).ad_free_until}:\n${state.time.hour}:" +
+                                    (state.time.minute < 10
+                                        ? "0${state.time.minute}"
+                                        : "${state.time.minute}"),
+                                textAlign: TextAlign.center,
+                              )
+                            : state is LoadingVideo
+                            ? CircularProgressIndicator()
+                            : state is FailedLoadingRewardedVideo
+                            ? Icon(Icons.cancel, color: Colors.red)
+                            : null,
                         onTap: () {
                           showDialog(
                             context: context,
@@ -90,31 +93,36 @@ class Settings extends StatelessWidget {
                               title: S.of(context).video_to_remove_ads,
                               body: S.of(context).video_to_remove_ads_desc,
                               onPressedOk: () {
-                                BlocProvider.of<AdManagerBloc>(context)
-                                    .add(StartWatchingVideo(
-                                  DateTime.now(),
-                                  true,
-                                  true,
-                                ));
+                                BlocProvider.of<AdManagerBloc>(context).add(
+                                  StartWatchingVideo(
+                                    DateTime.now(),
+                                    true,
+                                    true,
+                                  ),
+                                );
                               },
                               okText: S.of(context).watch,
                             ),
                           );
-                        }),
-                    Divider(),
-                    ListTile(
-                      leading: Icon(Icons.person),
-                      onTap: () {
-                        Ads.initialize(Ads.shouldShowAds(),
-                            personalized: false);
-                      },
-                      title: Text(S.of(context).change_ad_preferences),
-                    ),
-                    Divider(),
-                  ],
-                );
-              }
-            }),
+                        },
+                      ),
+                      Divider(),
+                      ListTile(
+                        leading: Icon(Icons.person),
+                        onTap: () {
+                          Ads.initialize(
+                            Ads.shouldShowAds(),
+                            personalized: false,
+                          );
+                        },
+                        title: Text(S.of(context).change_ad_preferences),
+                      ),
+                      Divider(),
+                    ],
+                  );
+                }
+              },
+            ),
           ),
           ListTile(
             leading: Icon(MdiIcons.export),
@@ -132,8 +140,10 @@ class Settings extends StatelessWidget {
             ),
             title: Text(S.of(context).export_recipe_s),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ExportRecipes()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ExportRecipes()),
+              );
             },
           ),
           Divider(),
@@ -162,12 +172,15 @@ class Settings extends StatelessWidget {
             title: Text(S.of(context).import_from_website),
             onTap: () {
               BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
-              Navigator.pushNamed(context, RouteNames.importFromWebsite,
-                  arguments: ImportFromWebsiteArguments(
-                    BlocProvider.of<ShoppingCartBloc>(context),
-                    BlocProvider.of<RecipeCalendarBloc>(context),
-                    BlocProvider.of<AdManagerBloc>(context),
-                  )).then((_) => Ads.hideBottomBannerAd());
+              Navigator.pushNamed(
+                context,
+                RouteNames.importFromWebsite,
+                arguments: ImportFromWebsiteArguments(
+                  BlocProvider.of<ShoppingCartBloc>(context),
+                  BlocProvider.of<RecipeCalendarBloc>(context),
+                  BlocProvider.of<AdManagerBloc>(context),
+                ),
+              ).then((_) => Ads.hideBottomBannerAd());
             },
           ),
           Divider(),
@@ -175,10 +188,7 @@ class Settings extends StatelessWidget {
             leading: Icon(MdiIcons.laptop),
             title: Text(S.of(context).import_pc_title_info),
             onTap: () {
-              Navigator.pushNamed(
-                context,
-                RouteNames.computerImportInfo,
-              );
+              Navigator.pushNamed(context, RouteNames.computerImportInfo);
             },
           ),
           Divider(),
@@ -202,11 +212,12 @@ class Settings extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                                width: 1,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .color!),
+                              width: 1,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .color!,
+                            ),
                             color: Colors.grey[100],
                           ),
                         ),
@@ -218,15 +229,16 @@ class Settings extends StatelessWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                  width: 1,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .color!),
+                                width: 1,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .color!,
+                              ),
                               color: Color(0xff454545),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -241,9 +253,9 @@ class Settings extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                            width: 1,
-                            color:
-                                Theme.of(context).textTheme.bodyMedium!.color!),
+                          width: 1,
+                          color: Theme.of(context).textTheme.bodyMedium!.color!,
+                        ),
                         color: Colors.grey[100],
                       ),
                     ),
@@ -259,9 +271,9 @@ class Settings extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                            width: 1,
-                            color:
-                                Theme.of(context).textTheme.bodyMedium!.color!),
+                          width: 1,
+                          color: Theme.of(context).textTheme.bodyMedium!.color!,
+                        ),
                         color: Color(0xff454545),
                       ),
                     ),
@@ -277,9 +289,9 @@ class Settings extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                            width: 1,
-                            color:
-                                Theme.of(context).textTheme.bodyMedium!.color!),
+                          width: 1,
+                          color: Theme.of(context).textTheme.bodyMedium!.color!,
+                        ),
                         color: Colors.black,
                       ),
                     ),
@@ -290,27 +302,35 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-              leading: Icon(MdiIcons.nutrition),
-              title: Text(S.of(context).manage_nutritions),
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.manageNutritions)
-                    .then((_) => Ads.hideBottomBannerAd());
-              }),
+            leading: Icon(MdiIcons.nutrition),
+            title: Text(S.of(context).manage_nutritions),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                RouteNames.manageNutritions,
+              ).then((_) => Ads.hideBottomBannerAd());
+            },
+          ),
           Divider(),
           ListTile(
-              leading: Icon(MdiIcons.fruitPineapple),
-              title: Text(S.of(context).manage_ingredients),
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.manageIngredients)
-                    .then((_) => Ads.hideBottomBannerAd());
-              }),
+            leading: Icon(MdiIcons.fruitPineapple),
+            title: Text(S.of(context).manage_ingredients),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                RouteNames.manageIngredients,
+              ).then((_) => Ads.hideBottomBannerAd());
+            },
+          ),
           Divider(),
           ListTile(
             leading: Icon(MdiIcons.tag),
             title: Text(S.of(context).manage_recipe_tags),
             onTap: () {
-              Navigator.pushNamed(context, RouteNames.manageRecipeTags)
-                  .then((_) => Ads.hideBottomBannerAd());
+              Navigator.pushNamed(
+                context,
+                RouteNames.manageRecipeTags,
+              ).then((_) => Ads.hideBottomBannerAd());
             },
           ),
           Divider(),
@@ -354,19 +374,24 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-              leading: Icon(Icons.info),
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.aboutMe);
-              },
-              title: Text(S.of(context).about_me)),
+            leading: Icon(Icons.info),
+            onTap: () {
+              Navigator.pushNamed(context, RouteNames.aboutMe);
+            },
+            title: Text(S.of(context).about_me),
+          ),
           Divider(),
           ListTile(
-              onTap: () {
-                launchUrl(Uri.parse(
-                    "http://play.google.com/store/apps/details?id=com.release.my_recipe_book"));
-              },
-              leading: Icon(Icons.star),
-              title: Text(S.of(context).rate_app)),
+            onTap: () {
+              launchUrl(
+                Uri.parse(
+                  "http://play.google.com/store/apps/details?id=com.release.my_recipe_book",
+                ),
+              );
+            },
+            leading: Icon(Icons.star),
+            title: Text(S.of(context).rate_app),
+          ),
           Divider(),
         ],
       ),
@@ -435,69 +460,44 @@ class Settings extends StatelessWidget {
     late Flushbar flush;
     flush = Flushbar<bool>(
       margin: EdgeInsets.only(
-          bottom: Ads.shouldShowBannerAds() ? Ads.adHeight! : 0),
+        bottom: Ads.shouldShowBannerAds() ? Ads.adHeight! : 0,
+      ),
       animationDuration: Duration(milliseconds: 300),
       leftBarIndicatorColor: Colors.blue[300],
       title: S.of(context).failed_loading_ad,
       message: S.of(context).failed_loading_ad_desc,
-      icon: Icon(
-        Icons.info_outline,
-        color: Colors.blue,
-      ),
+      icon: Icon(Icons.info_outline, color: Colors.blue),
       mainButton: TextButton(
         onPressed: () {
           flush.dismiss(true); // result = true
         },
-        child: Text(
-          "OK",
-          style: TextStyle(color: Colors.amber),
-        ),
+        child: Text("OK", style: TextStyle(color: Colors.amber)),
       ),
     )..show(context).then((result) {});
   }
 
   Future<void> _importSingleRecipe(BuildContext ctxt) async {
-    bool storagePermissionDenied = false;
+    FilePicker.pickFile(type: FileType.any).then((result) {
+      String? _path;
 
-    if (await Permission.storage.isDenied) {
+      if (result == null) return;
+      _path = result.path;
+      if (_path == null) return;
+
       showDialog(
         context: ctxt,
-        barrierDismissible: false,
-        builder: (context) => InfoDialog(
-          title: S.of(context).need_to_access_storage,
-          body: S.of(context).need_to_access_storage_desc,
-          onPressedOk: () async {
-            Permission.storage.request().then((updatedPermissions) {
-              if (updatedPermissions.isGranted) {
-                print("Permission Granted");
-                // Let the user select the .zip file
-                FilePicker.platform
-                    .pickFiles(type: FileType.any)
-                    .then((result) {
-                  String? _path;
-
-                  if (result == null) return;
-                  _path = result.files.single.path;
-                  if (_path == null) return;
-
-                  showDialog(
-                    context: ctxt,
-                    builder: (context) => BlocProvider<ImportRecipeBloc>.value(
-                      value: BlocProvider.of<ImportRecipeBloc>(ctxt)
-                        ..add(StartImportRecipes(File(_path!),
-                            delay: Duration(milliseconds: 1000))),
-                      child: ImportDialog(),
-                    ),
-                  );
-                });
-              } else {
-                print(updatedPermissions.toString());
-              }
-            });
-          },
+        builder: (context) => BlocProvider<ImportRecipeBloc>.value(
+          value: BlocProvider.of<ImportRecipeBloc>(ctxt)
+            ..add(
+              StartImportRecipes(
+                File(_path!),
+                delay: Duration(milliseconds: 1000),
+              ),
+            ),
+          child: ImportDialog(),
         ),
       );
-    }
+    });
   }
 }
 
@@ -555,14 +555,12 @@ class _DecimalCheckboxState extends State<DecimalCheckbox> {
     return Checkbox(
       value: GlobalSettings().showDecimal(),
       onChanged: (value) {
-        setState(
-          () {
-            SharedPreferences.getInstance().then((prefs) {
-              prefs.setBool("showDecimal", value!);
-              GlobalSettings().shouldShowDecimal(value);
-            });
-          },
-        );
+        setState(() {
+          SharedPreferences.getInstance().then((prefs) {
+            prefs.setBool("showDecimal", value!);
+            GlobalSettings().shouldShowDecimal(value);
+          });
+        });
       },
     );
   }
@@ -629,8 +627,9 @@ Future<String> fetchHtml(String url) async {
 
 String extractJsonLdText(dom.Document htmlDocument) {
   StringBuffer buffer = StringBuffer();
-  final elements =
-      htmlDocument.querySelectorAll('script[type="application/ld+json"]');
+  final elements = htmlDocument.querySelectorAll(
+    'script[type="application/ld+json"]',
+  );
 
   for (var element in elements) {
     final jsonLdText = element.text.trim();

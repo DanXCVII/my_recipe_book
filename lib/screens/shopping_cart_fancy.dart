@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../blocs/app/app_bloc.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../constants/global_settings.dart';
-import 'package:share/share.dart';
+
+import 'package:share_plus/share_plus.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as Constants;
@@ -20,111 +22,123 @@ import '../widgets/shopping_list.dart';
 class FancyShoppingCartScreen extends StatelessWidget {
   final Image? shoppingCartImage;
 
-  const FancyShoppingCartScreen(
-    this.shoppingCartImage, {
-    Key? key,
-  }) : super(key: key);
+  const FancyShoppingCartScreen(this.shoppingCartImage, {Key? key})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double scaleFactor = MediaQuery.of(context).size.height / 800;
-    return Stack(children: [
-      Container(
-        height: MediaQuery.of(context).size.height - kToolbarHeight,
-        width: MediaQuery.of(context).size.width,
-        child: Opacity(
-          opacity: Theme.of(context).colorScheme.background == Colors.white
-              ? 0.5
-              : 0.6,
-          child: Image.asset(
-            Theme.of(context).colorScheme.background == Colors.white
-                ? "images/vegetables.png"
-                : "images/vegetablesBright.png",
-            repeat: ImageRepeat.repeat,
-          ),
-        ),
-      ),
-      BlocBuilder<ShoppingCartBloc, ShoppingCartState>(
-          builder: (context, state) {
-        return CustomScrollView(slivers: <Widget>[
-          SliverAppBar(
-            centerTitle: false,
-            actions: <Widget>[
-              BlocBuilder<AppBloc, AppState>(builder: (context, state) {
-                if (state is LoadedState) {
-                  return Switch(
-                    value: state.showShoppingCartSummary,
-                    onChanged: (value) {
-                      BlocProvider.of<AppBloc>(context)
-                          .add(ShoppingCartShowSummary(value));
-                    },
-                  );
-                } else {
-                  return CircularProgressIndicator();
-                }
-              }),
-              IconButton(
-                icon: Icon(Icons.help_outline),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => InfoDialog(
-                      title: S.of(context).shopping_cart_help,
-                      body: S.of(context).shopping_cart_help_desc,
-                    ),
-                  );
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.share),
-                onPressed: () {
-                  if (state is LoadedShoppingCart) {
-                    String shoppingCartString =
-                        _getShoppingCartAsString(state.shoppingCart, context);
-                    if (shoppingCartString != "") {
-                      Share.share(shoppingCartString,
-                          subject: S.of(context).shopping_list);
-                    }
-                  }
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () {
-                  showSearch(
-                      context: context,
-                      delegate: RecipeSearch(
-                        HiveProvider().getRecipeNames(),
-                        BlocProvider.of<ShoppingCartBloc>(context),
-                        BlocProvider.of<RecipeCalendarBloc>(context),
-                        HiveProvider().getRecipeTags(),
-                        HiveProvider().getCategoryNames()
-                          ..remove('no category'),
-                      ));
-                },
-              ),
-            ],
-            expandedHeight: scaleFactor * 200.0,
-            floating: false,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: false,
-              title: Text(S.of(context).shoppingcart),
-              background: shoppingCartImage,
+    return Stack(
+      children: [
+        Container(
+          height: MediaQuery.of(context).size.height - kToolbarHeight,
+          width: MediaQuery.of(context).size.width,
+          child: Opacity(
+            opacity: Theme.of(context).colorScheme.surface == Colors.white
+                ? 0.5
+                : 0.6,
+            child: Image.asset(
+              Theme.of(context).colorScheme.surface == Colors.white
+                  ? "images/vegetables.png"
+                  : "images/vegetablesBright.png",
+              repeat: ImageRepeat.repeat,
             ),
           ),
-          SliverPadding(
-              padding: EdgeInsets.all(
-                  // Padding only when recipes are shown, otherwise none
-                  (BlocProvider.of<AppBloc>(context).state as LoadedState)
-                          .showShoppingCartSummary
-                      ? 0
-                      : 12),
-              sliver: (state is LoadingShoppingCart)
-                  ? SliverList(
-                      delegate: SliverChildListDelegate(
-                          [Center(child: CircularProgressIndicator())]))
-                  : (state is LoadedShoppingCart)
+        ),
+        BlocBuilder<ShoppingCartBloc, ShoppingCartState>(
+          builder: (context, state) {
+            return CustomScrollView(
+              slivers: <Widget>[
+                SliverAppBar(
+                  centerTitle: false,
+                  actions: <Widget>[
+                    BlocBuilder<AppBloc, AppState>(
+                      builder: (context, state) {
+                        if (state is LoadedState) {
+                          return Switch(
+                            value: state.showShoppingCartSummary,
+                            onChanged: (value) {
+                              BlocProvider.of<AppBloc>(context)
+                                  .add(ShoppingCartShowSummary(value));
+                            },
+                          );
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.help_outline),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => InfoDialog(
+                            title: S.of(context).shopping_cart_help,
+                            body: S.of(context).shopping_cart_help_desc,
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.share),
+                      onPressed: () {
+                        if (state is LoadedShoppingCart) {
+                          String shoppingCartString = _getShoppingCartAsString(
+                            state.shoppingCart,
+                            context,
+                          );
+                          if (shoppingCartString != "") {
+                            SharePlus.instance.share(
+                              ShareParams(
+                                text: shoppingCartString,
+                                subject: S.of(context).shopping_list,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () {
+                        showSearch(
+                          context: context,
+                          delegate: RecipeSearch(
+                            HiveProvider().getRecipeNames(),
+                            BlocProvider.of<ShoppingCartBloc>(context),
+                            BlocProvider.of<RecipeCalendarBloc>(context),
+                            HiveProvider().getRecipeTags(),
+                            HiveProvider().getCategoryNames()
+                              ..remove('no category'),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                  expandedHeight: scaleFactor * 200.0,
+                  floating: false,
+                  pinned: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    centerTitle: false,
+                    title: Text(S.of(context).shoppingcart),
+                    background: shoppingCartImage,
+                  ),
+                ),
+                SliverPadding(
+                  padding: EdgeInsets.all(
+                    // Padding only when recipes are shown, otherwise none
+                    (BlocProvider.of<AppBloc>(context).state as LoadedState)
+                            .showShoppingCartSummary
+                        ? 0
+                        : 12,
+                  ),
+                  sliver: (state is LoadingShoppingCart)
+                      ? SliverList(
+                          delegate: SliverChildListDelegate([
+                            Center(child: CircularProgressIndicator()),
+                          ]),
+                        )
+                      : (state is LoadedShoppingCart)
                       ? SliverList(
                           delegate: SliverChildListDelegate(
                             getRecipeShoppingList(
@@ -137,15 +151,20 @@ class FancyShoppingCartScreen extends StatelessWidget {
                             ),
                           ),
                         )
-                      : Text(state.toString())),
-        ]);
-      }),
-    ]);
+                      : Text(state.toString()),
+                ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
   }
 
   String _getShoppingCartAsString(
-      Map<Recipe, List<CheckableIngredient>> shoppingCart,
-      BuildContext context) {
+    Map<Recipe, List<CheckableIngredient>> shoppingCart,
+    BuildContext context,
+  ) {
     String shoppingCartString = "";
 
     for (Recipe key in shoppingCart.keys) {
@@ -156,8 +175,9 @@ class FancyShoppingCartScreen extends StatelessWidget {
           shoppingCartString += ingredient.amount != null
               ? "${(GlobalSettings().showDecimal() ? cutDouble(ingredient.amount!) : getFractionDouble(ingredient.amount!))} "
               : "";
-          shoppingCartString +=
-              ingredient.unit != "" ? "${ingredient.unit} " : "";
+          shoppingCartString += ingredient.unit != ""
+              ? "${ingredient.unit} "
+              : "";
           shoppingCartString += "${ingredient.name}\n";
         }
       }
@@ -175,13 +195,12 @@ class FancyShoppingCartScreen extends StatelessWidget {
 
     if (ingredients.keys.isEmpty ||
         ingredients[ingredients.keys.first]!.isEmpty) {
-      return [
-        displayNothingAdded(context, scaleFactor),
-      ];
+      return [displayNothingAdded(context, scaleFactor)];
     }
 
-    Recipe summaryRecipe =
-        recipes.firstWhere((recipe) => recipe.name == Constants.summary);
+    Recipe summaryRecipe = recipes.firstWhere(
+      (recipe) => recipe.name == Constants.summary,
+    );
 
     if (summaryRecipe != recipes.first) {
       recipes.removeWhere((recipe) => recipe.name == "summary");
@@ -197,34 +216,35 @@ class FancyShoppingCartScreen extends StatelessWidget {
 
           return Dismissible(
             key: Key(
-                '${currentIngred.name}${currentIngred.name}${currentIngred.unit}'),
+              '${currentIngred.name}${currentIngred.name}${currentIngred.unit}',
+            ),
             onDismissed: (_) {
-              BlocProvider.of<ShoppingCartBloc>(context).add(RemoveIngredients(
-                  [currentIngred.getIngredient()], summaryRecipe));
+              BlocProvider.of<ShoppingCartBloc>(context).add(
+                RemoveIngredients([
+                  currentIngred.getIngredient(),
+                ], summaryRecipe),
+              );
             },
             background: PrimaryBackgroundDismissable(),
             secondaryBackground: SecondaryBackgroundDismissible(),
             child: ListTile(
               onTap: () {
-                BlocProvider.of<ShoppingCartBloc>(context).add(
-                  CheckIngredients(
-                    [currentIngred],
-                    summaryRecipe,
-                  ),
-                );
+                BlocProvider.of<ShoppingCartBloc>(context)
+                    .add(CheckIngredients([currentIngred], summaryRecipe));
               },
               // tileColor: Theme.of(context).scaffoldBackgroundColor,
               title: Text(
                 "${currentIngred.name}",
                 style: TextStyle(
-                  decoration:
-                      currentIngred.checked ? TextDecoration.lineThrough : null,
+                  decoration: currentIngred.checked
+                      ? TextDecoration.lineThrough
+                      : null,
                 ),
               ),
               trailing: currentIngred.amount == null && currentIngred.unit == ""
                   ?
-                  // needs size, otherwise error
-                  Container(width: 1, height: 1)
+                    // needs size, otherwise error
+                    Container(width: 1, height: 1)
                   : Text(
                       "${currentIngred.amount != null ? (GlobalSettings().showDecimal() ? cutDouble(currentIngred.amount!) : getFractionDouble(currentIngred.amount!)) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit!}",
                       style: TextStyle(
@@ -239,12 +259,8 @@ class FancyShoppingCartScreen extends StatelessWidget {
                 shape: CircleBorder(),
                 materialTapTargetSize: MaterialTapTargetSize.padded,
                 onChanged: (bool? x) {
-                  BlocProvider.of<ShoppingCartBloc>(context).add(
-                    CheckIngredients(
-                      [currentIngred],
-                      summaryRecipe,
-                    ),
-                  );
+                  BlocProvider.of<ShoppingCartBloc>(context)
+                      .add(CheckIngredients([currentIngred], summaryRecipe));
                 },
               ),
             ),
@@ -261,8 +277,8 @@ class FancyShoppingCartScreen extends StatelessWidget {
     return recipes.map((recipe) {
       Color? ingredBackgroundColor =
           Theme.of(context).brightness == Brightness.dark
-              ? Color(0xff40392F)
-              : Colors.grey[100];
+          ? Color(0xff40392F)
+          : Colors.grey[100];
       if (recipe.name == 'summary') {
         return Center(
           child: Container(
@@ -298,8 +314,7 @@ class FancyShoppingCartScreen extends StatelessWidget {
           ),
         );
       }
-    }).toList()
-      ..add(Center(child: Container(height: 60)));
+    }).toList()..add(Center(child: Container(height: 60)));
   }
 
   Widget displayNothingAdded(BuildContext context, double scaleFactor) {
@@ -308,12 +323,13 @@ class FancyShoppingCartScreen extends StatelessWidget {
       height: deviceHeight / 2,
       child: Center(
         child: IconInfoMessage(
-            iconWidget: Icon(
-              Icons.shopping_basket,
-              color: Colors.brown,
-              size: 70.0,
-            ),
-            description: S.of(context).shopping_cart_is_empty),
+          iconWidget: Icon(
+            Icons.shopping_basket,
+            color: Colors.brown,
+            size: 70.0,
+          ),
+          description: S.of(context).shopping_cart_is_empty,
+        ),
       ),
     );
   }

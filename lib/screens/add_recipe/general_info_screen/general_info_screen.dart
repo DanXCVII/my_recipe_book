@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:my_recipe_book/generated/l10n.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
@@ -191,9 +191,12 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
               child: BlocBuilder<GeneralInfoBloc, GeneralInfoState>(
                 builder: (context, state) {
                   if (state is GSavingTmpData) {
-                    return Icon(
-                      Icons.arrow_forward,
-                      color: Colors.grey,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Icon(
+                        Icons.arrow_forward,
+                        color: Colors.grey,
+                      ),
                     );
                   } else if (state is GCanSave) {
                     return IconButton(
@@ -344,7 +347,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                 _onTapDuration(time);
               },
               style: ButtonStyle(
-                shape: MaterialStateProperty.all(
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),

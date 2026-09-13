@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -14,29 +16,42 @@ class GDriveSignInBloc extends Bloc<GDriveSignInEvent, GDriveSignInState> {
     });
 
     on<GDriveSignIn>((event, emit) async {
-      GoogleSignInAccount? account = await GDriveSync.gD.signInGDrive();
-      if (account != null) {
-        emit(GDriveSignedIn(
-          account.displayName ?? "",
-          account.email,
-          account.photoUrl,
-        ));
+      emit(GDriveSigningIn());
+
+      bool connectedToInternet = await checkInternet();
+      if (connectedToInternet) {
+        GoogleSignInAccount? account = await GDriveSync.gD.signInGDrive();
+        if (account != null) {
+          emit(GDriveSignedIn(
+            account.displayName ?? "",
+            account.email,
+            account.photoUrl,
+          ));
+        } else {
+          emit(GDriveNoInternet());
+        }
       } else {
-        // TODO: case login failed
+        emit(GDriveNoInternet());
       }
     });
 
     on<GDriveSilentSignIn>((event, emit) async {
       emit(GDriveSigningIn());
-      GoogleSignInAccount? account = await GDriveSync.gD.signInSilently();
-      if (account != null) {
-        emit(GDriveSignedIn(
-          account.displayName ?? "",
-          account.email,
-          account.photoUrl,
-        ));
+
+      bool connectedToInternet = await checkInternet();
+      if (connectedToInternet) {
+        GoogleSignInAccount? account = await GDriveSync.gD.signInSilently();
+        if (account != null) {
+          emit(GDriveSignedIn(
+            account.displayName ?? "",
+            account.email,
+            account.photoUrl,
+          ));
+        } else {
+          emit(GDriveSignedOut());
+        }
       } else {
-        emit(GDriveSignedOut());
+        emit(GDriveNoInternet());
       }
     });
 
@@ -45,5 +60,18 @@ class GDriveSignInBloc extends Bloc<GDriveSignInEvent, GDriveSignInState> {
       await GDriveSync.gD.signOutFromGoogle();
       emit(GDriveSignedOut());
     });
+  }
+
+  Future<bool> checkInternet() async {
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } on SocketException catch (_) {
+      return false;
+    }
   }
 }

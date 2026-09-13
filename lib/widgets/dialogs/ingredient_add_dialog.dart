@@ -30,7 +30,7 @@ class IngredientAddDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(Consts.padding),
       ),
       elevation: 0.0,
-      backgroundColor: Theme.of(context).dialogBackgroundColor,
+      backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
       child: Container(
         width: MediaQuery.of(context).size.width > 360 ? 360 : null,
         child: Padding(
@@ -255,7 +255,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
               ),
               style: TextButton.styleFrom(
                 backgroundColor:
-                    Theme.of(context).colorScheme.background == Colors.white
+                    Theme.of(context).colorScheme.surface == Colors.white
                         ? null
                         : Colors.amber,
               ),

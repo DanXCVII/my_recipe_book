@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 import '../generated/l10n.dart';
 
 import 'ad_id.dart';
@@ -26,11 +27,7 @@ class Ads {
     _showAds = showAds;
     if (!_showAds) return;
     _adRequest = AdRequest(
-      keywords: [
-        'recipes',
-        'kitchen',
-        'cooking',
-      ],
+      keywords: ['recipes', 'kitchen', 'cooking'],
       nonPersonalizedAds: !personalized,
     );
   }
@@ -48,13 +45,14 @@ class Ads {
         size: _wideBottomBannerAd ? AdSize.fullBanner : AdSize.banner,
         request: _adRequest,
         listener: BannerAdListener(
-            onAdLoaded: (_) {},
-            onAdFailedToLoad: (_, __) {
-              _bottomBannerAd[_bottomBannerAd.length - 1].dispose();
-            },
-            onAdClosed: (_) {
-              _bottomBannerAd[_bottomBannerAd.length - 1].dispose();
-            }),
+          onAdLoaded: (_) {},
+          onAdFailedToLoad: (_, __) {
+            _bottomBannerAd[_bottomBannerAd.length - 1].dispose();
+          },
+          onAdClosed: (_) {
+            _bottomBannerAd[_bottomBannerAd.length - 1].dispose();
+          },
+        ),
       ),
     );
   }
@@ -118,24 +116,25 @@ class Ads {
     if (!_showAds) return;
 
     InterstitialAd.load(
-        adUnitId: InterstitialAd.testAdUnitId,
-        request: _adRequest,
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (InterstitialAd ad) {
-            print('$ad loaded');
-            _interstitialAd = ad;
-            _numInterstitialLoadAttempts = 0;
-            _interstitialAd!.setImmersiveMode(true);
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            print('InterstitialAd failed to load: $error.');
-            _numInterstitialLoadAttempts += 1;
-            _interstitialAd = null;
-            if (_numInterstitialLoadAttempts <= maxFailedLoadAttempts) {
-              loadInterstitialAd();
-            }
-          },
-        ));
+      adUnitId: getInterstitialAdUnitId(),
+      request: _adRequest,
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          print('$ad loaded');
+          _interstitialAd = ad;
+          _numInterstitialLoadAttempts = 0;
+          _interstitialAd!.setImmersiveMode(true);
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          print('InterstitialAd failed to load: $error.');
+          _numInterstitialLoadAttempts += 1;
+          _interstitialAd = null;
+          if (_numInterstitialLoadAttempts <= maxFailedLoadAttempts) {
+            loadInterstitialAd();
+          }
+        },
+      ),
+    );
   }
 
   static void showBottomBannerAd([State? state]) {
@@ -192,18 +191,16 @@ class Ads {
   }
 
   static Future<void> showRewardedVideoAd(
-      void Function()? onRewardedAdUserEarnedReward) async {
+    void Function()? onRewardedAdUserEarnedReward,
+  ) async {
     if (_rewardedAd == null) {
-      loadRewardedVideo(
-        true,
-        () {},
-        () {},
-        onRewardedAdUserEarnedReward!,
-      );
+      loadRewardedVideo(true, () {}, () {}, onRewardedAdUserEarnedReward!);
     } else {
-      _rewardedAd!.show(onUserEarnedReward: (_, __) {
-        onRewardedAdUserEarnedReward!();
-      });
+      _rewardedAd!.show(
+        onUserEarnedReward: (_, __) {
+          onRewardedAdUserEarnedReward!();
+        },
+      );
     }
 
     return;
@@ -241,9 +238,7 @@ class Ads {
                       height: Ads.adHeight,
                       width: double.infinity,
                       color: Colors.brown,
-                      child: Image.asset(
-                        "images/bannerAd.png",
-                      ),
+                      child: Image.asset("images/bannerAd.png"),
                     ),
                     Material(
                       type: MaterialType.transparency,
@@ -255,12 +250,10 @@ class Ads {
                         ),
                       ),
                     ),
-                    AdWidget(
-                      ad: _bottomBannerAd.last,
-                    )
+                    AdWidget(ad: _bottomBannerAd.last),
                   ],
                 ),
-              )
+              ),
             ],
           )
         : page;

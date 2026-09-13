@@ -55,7 +55,7 @@ class MyThemes {
     colorScheme: ColorScheme.fromSwatch().copyWith(
       secondary: Colors.orange[700],
       brightness: Brightness.light,
-      background: Colors.white,
+      surface: Colors.white,
     ),
     //  textSelectionColor: Colors.white,
     //      hintColor: Colors.white,
@@ -66,7 +66,6 @@ class MyThemes {
   static final ThemeData darkTheme = ThemeData(
     primaryColor: Color(0xFF790604),
     unselectedWidgetColor: Colors.grey[100],
-    toggleableActiveColor: Colors.orange,
     appBarTheme: AppBarTheme(
         foregroundColor: Colors.white,
         systemOverlayStyle:
@@ -82,7 +81,7 @@ class MyThemes {
           primary: Colors.amber,
           secondary: Colors.orange[700],
           brightness: Brightness.dark,
-          background: Color(0xff212225),
+          surface: Color(0xff212225),
         ),
   );
 
@@ -99,7 +98,6 @@ class MyThemes {
         systemOverlayStyle:
             SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
         iconTheme: IconThemeData(color: Colors.white)),
-    toggleableActiveColor: Colors.orange,
     textTheme: TextTheme(titleMedium: TextStyle(color: Colors.grey[100])),
     unselectedWidgetColor: Colors.grey[100],
     cardColor: Color(0xff34363D),
@@ -109,7 +107,7 @@ class MyThemes {
       primary: Colors.amber,
       secondary: Colors.orange[700],
       brightness: Brightness.dark,
-      background: Colors.black,
+      surface: Colors.black,
     ),
   );
 

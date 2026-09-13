@@ -43,16 +43,17 @@ class CategoryCircle extends StatelessWidget {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: (imageName != Constants.noRecipeImage
-                        ? FileImage(File(imageName))
-                        : AssetImage(Constants.noRecipeImage)) as ImageProvider<Object>,
+                            ? FileImage(File(imageName))
+                            : AssetImage(Constants.noRecipeImage))
+                        as ImageProvider<Object>,
                     fit: BoxFit.cover,
                   ),
                 ),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
                   child: Container(
-                    decoration:
-                        BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                    decoration: BoxDecoration(
+                        color: Colors.white.withAlpha((0.0 * 255).round())),
                   ),
                 ),
               ),

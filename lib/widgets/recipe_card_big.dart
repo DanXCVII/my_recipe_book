@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../ad_related/ad.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wakelock/wakelock.dart';
 
 import 'recipe_card.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
@@ -54,7 +54,7 @@ class RecipeCardBig extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           if (GlobalSettings().standbyDisabled()) {
-            Wakelock.enable();
+            WakelockPlus.enable();
           }
           Navigator.pushNamed(
             context,
@@ -67,7 +67,7 @@ class RecipeCardBig extends StatelessWidget {
               BlocProvider.of<RecipeManagerBloc>(context),
             ),
           ).then((_) {
-            Wakelock.disable();
+            WakelockPlus.disable();
             Ads.hideBottomBannerAd();
           });
         },
@@ -90,10 +90,9 @@ class RecipeCardBig extends StatelessWidget {
                 BoxShadow(
                   blurRadius: 5,
                   spreadRadius: 2,
-                  color:
-                      Theme.of(context).colorScheme.background == Colors.white
-                          ? Colors.grey[400]!
-                          : Colors.black,
+                  color: Theme.of(context).colorScheme.surface == Colors.white
+                      ? Colors.grey[400]!
+                      : Colors.black,
                 )
               ]),
           child: Padding(
@@ -124,8 +123,10 @@ class RecipeCardBig extends StatelessWidget {
                         alignment: Alignment.bottomCenter,
                         child: Container(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? Theme.of(context).cardColor.withOpacity(0.6)
-                              : Colors.white.withOpacity(0.6),
+                              ? Theme.of(context)
+                                  .cardColor
+                                  .withAlpha((0.6 * 255).round())
+                              : Colors.white.withAlpha((0.6 * 255).round()),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,7 +139,7 @@ class RecipeCardBig extends StatelessWidget {
                                     recipe.name,
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
-                                    textScaleFactor: scaleFactor,
+                                    textScaler: TextScaler.linear(scaleFactor),
                                     style: TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.w700,
@@ -224,7 +225,8 @@ class RecipeCardBig extends StatelessWidget {
                                               CrossAxisAlignment.center,
                                           children: <Widget>[
                                             Text(S.of(context).prep_time,
-                                                textScaleFactor: scaleFactor,
+                                                textScaler: TextScaler.linear(
+                                                    scaleFactor),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: smallHeading),
@@ -232,7 +234,8 @@ class RecipeCardBig extends StatelessWidget {
                                             Text(
                                                 getTimeHoursMinutes(
                                                     recipe.preperationTime),
-                                                textScaleFactor: scaleFactor,
+                                                textScaler: TextScaler.linear(
+                                                    scaleFactor),
                                                 style: timeStyle),
                                           ],
                                         ),
@@ -246,7 +249,8 @@ class RecipeCardBig extends StatelessWidget {
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
                                           Text(S.of(context).cook_time,
-                                              textScaleFactor: scaleFactor,
+                                              textScaler: TextScaler.linear(
+                                                  scaleFactor),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                               style: smallHeading),
@@ -254,7 +258,8 @@ class RecipeCardBig extends StatelessWidget {
                                           Text(
                                               getTimeHoursMinutes(
                                                   recipe.cookingTime),
-                                              textScaleFactor: scaleFactor,
+                                              textScaler: TextScaler.linear(
+                                                  scaleFactor),
                                               style: timeStyle),
                                         ],
                                       ),
@@ -273,13 +278,15 @@ class RecipeCardBig extends StatelessWidget {
                                               CrossAxisAlignment.center,
                                           children: <Widget>[
                                             Text(S.of(context).total_time,
-                                                textScaleFactor: scaleFactor,
+                                                textScaler: TextScaler.linear(
+                                                    scaleFactor),
                                                 style: smallHeading),
                                             SizedBox(height: 5),
                                             Text(
                                                 getTimeHoursMinutes(
                                                     recipe.totalTime),
-                                                textScaleFactor: scaleFactor,
+                                                textScaler: TextScaler.linear(
+                                                    scaleFactor),
                                                 style: timeStyle),
                                           ],
                                         ),
@@ -301,7 +308,7 @@ class RecipeCardBig extends StatelessWidget {
                             children: <Widget>[
                               Text(
                                 '${getIngredientCount(recipe.ingredients)} ${S.of(context).ingredients}:',
-                                textScaleFactor: scaleFactor,
+                                textScaler: TextScaler.linear(scaleFactor),
                                 style: smallHeading,
                               ),
                               buildIngredients(
@@ -321,11 +328,11 @@ class RecipeCardBig extends StatelessWidget {
                               direction: Axis.vertical,
                               children: <Widget>[
                                 Text(S.of(context).steps,
-                                    textScaleFactor: scaleFactor,
+                                    textScaler: TextScaler.linear(scaleFactor),
                                     style: smallHeading),
                                 Text(
                                   recipe.steps.length.toString(),
-                                  textScaleFactor: scaleFactor,
+                                  textScaler: TextScaler.linear(scaleFactor),
                                   style: stepNumberStyle,
                                 ),
                               ],
@@ -341,14 +348,16 @@ class RecipeCardBig extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(S.of(context).categories,
-                                          textScaleFactor: scaleFactor,
+                                          textScaler:
+                                              TextScaler.linear(scaleFactor),
                                           style: smallHeading),
                                       Text(
                                         _getRecipeCategoriesString(
                                           recipe.categories,
                                           context,
                                         ),
-                                        textScaleFactor: scaleFactor,
+                                        textScaler:
+                                            TextScaler.linear(scaleFactor),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       )
@@ -361,11 +370,11 @@ class RecipeCardBig extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
                                 Text(S.of(context).complexity,
-                                    textScaleFactor: scaleFactor,
+                                    textScaler: TextScaler.linear(scaleFactor),
                                     style: smallHeading),
                                 Text(
                                   recipe.effort.toString(),
-                                  textScaleFactor: scaleFactor,
+                                  textScaler: TextScaler.linear(scaleFactor),
                                   style: complexityNumberStyle,
                                 ),
                               ],
@@ -428,7 +437,7 @@ class RecipeCardBig extends StatelessWidget {
           flatIngredients[i].name,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          textScaleFactor: scaleFactor,
+          textScaler: TextScaler.linear(scaleFactor),
           style: ingredientsStyle,
         ));
         if (flatIngredients[i].amount != null) {
@@ -441,7 +450,7 @@ class RecipeCardBig extends StatelessWidget {
                     ? flatIngredients[i].unit!
                     : ''),
             maxLines: 1,
-            textScaleFactor: scaleFactor,
+            textScaler: TextScaler.linear(scaleFactor),
             style: ingredientsStyle,
           ));
         } else {
@@ -452,7 +461,7 @@ class RecipeCardBig extends StatelessWidget {
         rightIngredientColumn.children.add(Text(
           flatIngredients[i].name,
           maxLines: 1,
-          textScaleFactor: scaleFactor,
+          textScaler: TextScaler.linear(scaleFactor),
           style: ingredientsStyle,
         ));
         if (flatIngredients[i].amount != null) {
@@ -465,7 +474,7 @@ class RecipeCardBig extends StatelessWidget {
                     ? flatIngredients[i].unit!
                     : ''),
             maxLines: 1,
-            textScaleFactor: scaleFactor,
+            textScaler: TextScaler.linear(scaleFactor),
             style: ingredientsStyle,
           ));
         } else {
@@ -486,7 +495,7 @@ class RecipeCardBig extends StatelessWidget {
         leftIngredientColumn.children.add(Text(
           flatIngredients[i].name,
           maxLines: 1,
-          textScaleFactor: scaleFactor,
+          textScaler: TextScaler.linear(scaleFactor),
           style: ingredientsStyle,
         ));
         if (flatIngredients[i].amount != null) {
@@ -499,7 +508,7 @@ class RecipeCardBig extends StatelessWidget {
                     ? flatIngredients[i].unit!
                     : ''),
             maxLines: 1,
-            textScaleFactor: scaleFactor,
+            textScaler: TextScaler.linear(scaleFactor),
             style: ingredientsStyle,
           ));
         } else {

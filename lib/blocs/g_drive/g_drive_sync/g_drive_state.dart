@@ -99,3 +99,8 @@ class GDriveCancellingSync extends GDriveSyncState {
   @override
   List<Object?> get props => [];
 }
+
+class GDriveErrorSyncing extends GDriveSyncState {
+  @override
+  List<Object?> get props => [];
+}

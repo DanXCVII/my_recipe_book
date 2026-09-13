@@ -101,6 +101,13 @@ class InternGDriveIdleEvent extends GDriveSyncEvent {
   List<Object> get props => [];
 }
 
+class InternGDriveErrorSyncingEvent extends GDriveSyncEvent {
+  InternGDriveErrorSyncingEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
 class GDriveStartSync extends GDriveSyncEvent {
   final DateTime time;
 

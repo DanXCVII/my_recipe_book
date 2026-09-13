@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
@@ -119,7 +119,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe?> {
                     .then((recipe) {
                   close(context, null);
                   if (GlobalSettings().standbyDisabled()) {
-                    Wakelock.enable();
+                    WakelockPlus.enable();
                   }
                   Navigator.pushNamed(
                     context,
@@ -131,7 +131,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe?> {
                       'heroTag',
                       BlocProvider.of<RecipeManagerBloc>(context),
                     ),
-                  ).then((_) => Wakelock.disable());
+                  ).then((_) => WakelockPlus.disable());
                 });
               },
             );

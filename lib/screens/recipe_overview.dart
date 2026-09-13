@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 
 import '../blocs/recipe_overview/recipe_overview_bloc.dart';
@@ -92,7 +92,8 @@ class RecipeGridView extends StatelessWidget {
                           filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
                           child: Container(
                             decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.0)),
+                                color: Colors.white
+                                    .withAlpha((0.0 * 255).round())),
                           ),
                         ),
                       ),
@@ -183,7 +184,8 @@ class RecipeGridView extends StatelessWidget {
                           filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
                           child: Container(
                             decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.0)),
+                                color: Colors.white
+                                    .withAlpha((0.0 * 255).round())),
                           ),
                         ),
                       )),
@@ -225,7 +227,7 @@ class RecipeGridView extends StatelessWidget {
                                       size: 70.0,
                                     ),
                                     description: S
-                                        .of(context)!
+                                        .of(context)
                                         .no_recipes_fit_your_filter,
                                   ),
                                 ),

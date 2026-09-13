@@ -147,9 +147,12 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
               child: BlocBuilder<StepsBloc, StepsState>(
                 builder: (context, state) {
                   if (state is SSavingTmpData) {
-                    return Icon(
-                      Icons.arrow_forward,
-                      color: Colors.grey,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Icon(
+                        Icons.arrow_forward,
+                        color: Colors.grey,
+                      ),
                     );
                   } else if (state is SCanSave) {
                     return IconButton(

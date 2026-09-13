@@ -4,10 +4,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wakelock/wakelock.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/recipe_category_overview/recipe_category_overview_bloc.dart';
@@ -160,7 +160,7 @@ class RecipeRow extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 20,
-                        color: Theme.of(context).colorScheme.background ==
+                        color: Theme.of(context).colorScheme.surface ==
                                 Colors.white
                             ? Colors.black
                             : Colors.grey[200]),
@@ -323,7 +323,8 @@ class RecipeImageItemBig extends StatelessWidget {
                                 filter:
                                     ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
                                 child: Container(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black
+                                      .withAlpha((0.3 * 255).round()),
                                   child: Center(
                                     child: Container(
                                       height: 50,
@@ -344,7 +345,8 @@ class RecipeImageItemBig extends StatelessWidget {
                                         ),
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.3),
+                                        color: Colors.black
+                                            .withAlpha((0.3 * 255).round()),
                                       ),
                                     ),
                                   ),
@@ -463,7 +465,7 @@ class RecipeImageItemBig extends StatelessWidget {
   void _pushRecipeRoute(
       BuildContext context, String heroImageTag, Recipe recipe) {
     if (GlobalSettings().standbyDisabled()) {
-      Wakelock.enable();
+      WakelockPlus.enable();
     }
     Navigator.pushNamed(
       context,
@@ -476,7 +478,7 @@ class RecipeImageItemBig extends StatelessWidget {
         BlocProvider.of<RecipeManagerBloc>(context),
       ),
     ).then((_) {
-      Wakelock.disable();
+      WakelockPlus.disable();
       Ads.hideBottomBannerAd();
     });
   }
@@ -570,12 +572,11 @@ class RecipeImageItemSmall extends StatelessWidget {
                                   offset: Offset(1, 1),
                                   blurRadius: 2,
                                   spreadRadius: 1,
-                                  color: Theme.of(context)
-                                              .colorScheme
-                                              .background ==
-                                          Colors.white
-                                      ? Colors.grey[400]!
-                                      : Colors.black,
+                                  color:
+                                      Theme.of(context).colorScheme.surface ==
+                                              Colors.white
+                                          ? Colors.grey[400]!
+                                          : Colors.black,
                                 ),
                               ]),
                           height: 90,
@@ -613,7 +614,7 @@ class RecipeImageItemSmall extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.background ==
+                          color: Theme.of(context).colorScheme.surface ==
                                   Colors.white
                               ? Colors.grey[800]
                               : Colors.grey[300]),
@@ -628,7 +629,7 @@ class RecipeImageItemSmall extends StatelessWidget {
   void _pushRecipeRoute(
       BuildContext context, String heroImageTag, Recipe recipe) {
     if (GlobalSettings().standbyDisabled()) {
-      Wakelock.enable();
+      WakelockPlus.enable();
     }
     Navigator.pushNamed(
       context,
@@ -642,7 +643,7 @@ class RecipeImageItemSmall extends StatelessWidget {
       ),
     ).then((_) {
       Ads.hideBottomBannerAd();
-      Wakelock.disable();
+      WakelockPlus.disable();
     });
   }
 }

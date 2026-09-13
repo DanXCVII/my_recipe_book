@@ -22,10 +22,13 @@
 **/doc/api/
 .dart_tool/
 .flutter-plugins
+/.flutter-plugins-dependencies*
 .packages
 .pub-cache/
 .pub/
 /build/
+/.gradle/
+/android/build/
 
 # Android related
 **/android/**/gradle-wrapper.jar
@@ -56,6 +59,9 @@
 **/ios/Flutter/App.framework
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/Generated*.xcconfig
+**/ios/Flutter/flutter_export_environment*.sh
+**/ios/Flutter/ephemeral/
 **/ios/Flutter/app.flx
 **/ios/Flutter/app.zip
 **/ios/Flutter/flutter_assets/
@@ -80,3 +86,8 @@
 *.jks
 **/ad_id.dart
 **/AndroidManifest.xml
+
+# Required application sources. AdMob IDs are public identifiers; signing
+# credentials and local Android configuration remain ignored above.
+!lib/ad_related/ad_id.dart
+!android/app/src/main/AndroidManifest.xml

@@ -29,3 +29,8 @@ class GDriveSignedOut extends GDriveSignInState {
   @override
   List<Object?> get props => [];
 }
+
+class GDriveNoInternet extends GDriveSignInState {
+  @override
+  List<Object?> get props => [];
+}

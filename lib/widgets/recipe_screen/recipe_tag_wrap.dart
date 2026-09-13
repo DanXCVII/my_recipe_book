@@ -52,7 +52,7 @@ class RecipeTagWrap extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     Color(recipeTags[index].number),
-                    Color(recipeTags[index].number).withOpacity(0.6)
+                    Color(recipeTags[index].number).withValues(alpha: 0.6)
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,

@@ -55,7 +55,7 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
         borderRadius: BorderRadius.circular(Consts.padding),
       ),
       elevation: 0.0,
-      backgroundColor: Theme.of(context).dialogBackgroundColor,
+      backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
       child: Stack(
         children: <Widget>[
           Container(

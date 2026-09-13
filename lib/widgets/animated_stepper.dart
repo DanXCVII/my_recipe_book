@@ -159,7 +159,8 @@ class AnimatedStepper extends StatelessWidget {
                                         ? [Color(0xffBE4400), Color(0xffFF7A00)]
                                         : [
                                             Color(0xff933500),
-                                            Color(0xff933500).withOpacity(0.3)
+                                            Color(0xff933500)
+                                                .withAlpha((0.3 * 255).round())
                                           ],
                                   ),
                                   // color: stepsColors[i % (stepsColors.length)],

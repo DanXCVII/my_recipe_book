@@ -22,17 +22,17 @@ class IntroScreen extends StatelessWidget {
       // List slides
       renderSkipBtn: renderSkipBtn(),
       renderNextBtn: renderNextBtn(), renderDoneBtn: renderDoneBtn(),
-      slides: [
-        Slide(
+
+      listContentConfig: [
+        ContentConfig(
           title: S.of(context).choose_a_theme,
           maxLineTitle: 3,
           styleTitle: titleStyle.copyWith(color: Colors.black),
           styleDescription: descStyle,
           backgroundImage: "images/theme.png",
           backgroundImageFit: BoxFit.cover,
-          backgroundOpacity: 0,
         ),
-        Slide(
+        ContentConfig(
           title: S.of(context).swype_your_recipes,
           maxLineTitle: 3,
           styleTitle: titleStyle,
@@ -44,7 +44,7 @@ class IntroScreen extends StatelessWidget {
           widthImage: MediaQuery.of(context).size.width / 2,
           heightImage: MediaQuery.of(context).size.height / 2.2,
         ),
-        Slide(
+        ContentConfig(
           title: S.of(context).export_as_text_or_zip,
           maxLineTitle: 3,
           styleTitle: titleStyle,
@@ -55,7 +55,7 @@ class IntroScreen extends StatelessWidget {
           colorBegin: Color(0xff00CCF9),
           colorEnd: Color(0xff0087A5),
         ),
-        Slide(
+        ContentConfig(
           title: S.of(context).add_to_shoppingcart,
           maxLineTitle: 3,
           colorBegin: Color(0xff59CA00),
@@ -69,7 +69,7 @@ class IntroScreen extends StatelessWidget {
           pathImage: "images/bag.png",
         ),
         GlobalSettings().isFirstStart()
-            ? Slide(
+            ? ContentConfig(
                 title: S.of(context).first_start_recipes,
                 maxLineTitle: 3,
                 colorBegin: Color(0xff009EF8),
@@ -82,7 +82,7 @@ class IntroScreen extends StatelessWidget {
                 pathImage: "images/finishFlag.png",
               )
             : null,
-      ].whereType<Slide>().toList(),
+      ].whereType<ContentConfig>().toList(),
       onDonePress: () {
         Navigator.pop(context);
       },

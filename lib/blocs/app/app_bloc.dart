@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:my_recipe_book/generated/l10n.dart';
-import 'package:my_recipe_book/generated/l10n.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../generated/l10n.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -21,7 +21,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         false,
         event.showSummary,
         0,
-        S.of(event.context)!.recipes,
+        S.of(event.context).recipes,
       ));
     });
 
@@ -32,16 +32,16 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           title = S.of(event.context).recipes;
           break;
         case 1:
-          title = S.of(event.context)!.favorites;
+          title = S.of(event.context).favorites;
           break;
         case 2:
-          title = S.of(event.context)!.shoppingcart;
+          title = S.of(event.context).shoppingcart;
           break;
         case 3:
-          title = S.of(event.context)!.roll_the_dice;
+          title = S.of(event.context).roll_the_dice;
           break;
         case 4:
-          title = S.of(event.context)!.settings;
+          title = S.of(event.context).settings;
           break;
         default:
           break;

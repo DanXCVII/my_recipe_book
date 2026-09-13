@@ -79,7 +79,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
               child: Opacity(
                 opacity: 0.5,
                 child: AppBar(
-                  backgroundColor: Colors.black..withOpacity(0.3),
+                  backgroundColor: Colors.black..withAlpha((0.3 * 255).round()),
                 ),
               ),
             )

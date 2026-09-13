@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:share/share.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../generated/l10n.dart';
@@ -17,9 +17,10 @@ class AboutMeScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffAF1E1E), Color(0xff641414)],
+            ),
           ),
         ),
         title: Text(S.of(context).about_me),
@@ -73,10 +74,16 @@ class AboutMeScreen extends StatelessWidget {
                       child: Card(
                         child: InkWell(
                           onTap: () {
-                            Share.share(
-                                S.of(context).share_this_app_desc(
-                                    "http://play.google.com/store/apps/details?id=com.release.my_recipe_book"),
-                                subject: S.of(context).share_this_app_title);
+                            SharePlus.instance.share(
+                              ShareParams(
+                                text: S
+                                    .of(context)
+                                    .share_this_app_desc(
+                                      "http://play.google.com/store/apps/details?id=com.release.my_recipe_book",
+                                    ),
+                                subject: S.of(context).share_this_app_title,
+                              ),
+                            );
                           },
                           child: Container(
                             height: 160,
@@ -102,18 +109,24 @@ class AboutMeScreen extends StatelessWidget {
                                     children: <Widget>[
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child:
-                                            Icon(MdiIcons.whatsapp, size: 30),
+                                        child: Icon(
+                                          MdiIcons.whatsapp,
+                                          size: 30,
+                                        ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child:
-                                            Icon(MdiIcons.facebook, size: 30),
+                                        child: Icon(
+                                          MdiIcons.facebook,
+                                          size: 30,
+                                        ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child:
-                                            Icon(MdiIcons.instagram, size: 30),
+                                        child: Icon(
+                                          MdiIcons.instagram,
+                                          size: 30,
+                                        ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
@@ -122,7 +135,7 @@ class AboutMeScreen extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 12)
+                                SizedBox(height: 12),
                               ],
                             ),
                           ),
@@ -136,10 +149,16 @@ class AboutMeScreen extends StatelessWidget {
                       child: Card(
                         child: InkWell(
                           onTap: () async {
-                            if (await canLaunchUrl(Uri.parse(
-                                "mailto:daniel.weissen.developer@gmail.com"))) {
-                              await launchUrl(Uri.parse(
-                                  "mailto:daniel.weissen.developer@gmail.com"));
+                            if (await canLaunchUrl(
+                              Uri.parse(
+                                "mailto:daniel.weissen.developer@gmail.com",
+                              ),
+                            )) {
+                              await launchUrl(
+                                Uri.parse(
+                                  "mailto:daniel.weissen.developer@gmail.com",
+                                ),
+                              );
                             }
                           },
                           child: Container(
@@ -158,24 +177,24 @@ class AboutMeScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 15,
-                                ),
+                                SizedBox(height: 15),
                                 Container(
                                   width: 60,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                        width: 2,
-                                        color:
-                                            Theme.of(context).backgroundColor ==
-                                                    Colors.white
-                                                ? Colors.grey[500]!
-                                                : Colors.white),
+                                      width: 2,
+                                      color:
+                                          Theme.of(context)
+                                                  .scaffoldBackgroundColor ==
+                                              Colors.white
+                                          ? Colors.grey[500]!
+                                          : Colors.white,
+                                    ),
                                   ),
                                   child: Icon(Icons.mail, size: 40),
-                                )
+                                ),
                               ],
                             ),
                           ),
@@ -193,7 +212,7 @@ class AboutMeScreen extends StatelessWidget {
                 "- MADE WITH ❤ IN MÜNSTER -",
                 style: TextStyle(fontWeight: FontWeight.w300),
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import '../widgets/tinder_card.dart';
 
 import '../blocs/random_recipe_explorer/random_recipe_explorer_bloc.dart';
@@ -211,7 +211,7 @@ class _SwypingCardsScreenState extends State<SwypingCardsScreen> {
                                   size: 70.0,
                                 ),
                                 description: S
-                                    .of(context)!
+                                    .of(context)
                                     .no_recipes_under_this_category,
                               ))
                             : TweenAnimationBuilder(

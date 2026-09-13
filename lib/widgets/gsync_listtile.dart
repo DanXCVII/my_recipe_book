@@ -88,9 +88,8 @@ class GSyncListtile extends StatelessWidget {
                     title: LinearProgressIndicator(
                         value:
                             state.importingRecipeNumber / state.totalImporting),
-                    subtitle: Text(S
-                        .of(context)!
-                        .importing_recipe_drive(state.recipeName)),
+                    subtitle: Text(
+                        S.of(context).importing_recipe_drive(state.recipeName)),
                   );
                 } else if (state is GDriveUploading) {
                   double progress =
@@ -105,9 +104,8 @@ class GSyncListtile extends StatelessWidget {
                       },
                     ),
                     title: LinearProgressIndicator(value: progress),
-                    subtitle: Text(S
-                        .of(context)!
-                        .uploading_recipe_drive(state.recipeName)),
+                    subtitle: Text(
+                        S.of(context).uploading_recipe_drive(state.recipeName)),
                   );
                 } else if (state is GDriveCloudDeleting) {
                   return ListTile(
@@ -162,6 +160,18 @@ class GSyncListtile extends StatelessWidget {
                       },
                     ),
                   );
+                } else if (state is GDriveErrorSyncing) {
+                  return ListTile(
+                    leading: Icon(Icons.error),
+                    title: Text(S.of(context).failed_syncing),
+                    trailing: IconButton(
+                      icon: Icon(Icons.sync),
+                      onPressed: () {
+                        BlocProvider.of<GDriveSyncBloc>(context)
+                            .add(GDriveStartSync(DateTime.now()));
+                      },
+                    ),
+                  );
                 } else {
                   return Container();
                 }
@@ -190,9 +200,37 @@ class GSyncListtile extends StatelessWidget {
             Divider(),
           ],
         );
-      } else {
-        return Container();
       }
+      return Column(
+        children: [
+          ListTile(
+            leading: Container(
+              height: 32,
+              width: 32,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+                color: Colors.white,
+              ),
+              child: Image.asset("images/google_logo.png"),
+            ),
+            title: Text(S.of(context).sync_recipes_drive),
+            subtitle: (state is GDriveNoInternet)
+                ? Text(S.of(context).failed_sign_in)
+                : null,
+            trailing: (state is GDriveNoInternet)
+                ? Icon(Icons.sync)
+                : Container(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(),
+                  ),
+            onTap: () {
+              BlocProvider.of<GDriveSignInBloc>(context).add(GDriveSignIn());
+            },
+          ),
+          Divider(),
+        ],
+      );
     });
   }
 }

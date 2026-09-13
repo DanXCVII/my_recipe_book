@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../blocs/ad_manager/ad_manager_bloc.dart';
 import '../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../../constants/global_settings.dart';
 import '../../widgets/icon_info_message.dart';
-import 'package:wakelock/wakelock.dart';
 
 import '../../ad_related/ad.dart';
 import '../../blocs/new_recipe/nutritions/nutritions_bloc.dart';
@@ -168,7 +168,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                             Future.delayed(Duration(milliseconds: 300))
                                 .then((_) {
                               if (GlobalSettings().standbyDisabled()) {
-                                Wakelock.enable();
+                                WakelockPlus.enable();
                               }
                               Navigator.pushNamedAndRemoveUntil(
                                 context,
@@ -182,7 +182,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                   BlocProvider.of<RecipeManagerBloc>(context),
                                 ),
                               ).then((_) {
-                                Wakelock.disable();
+                                WakelockPlus.disable();
                                 Ads.hideBottomBannerAd();
                               });
                             });

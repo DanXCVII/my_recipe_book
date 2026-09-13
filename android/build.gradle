@@ -1,26 +1,23 @@
-buildscript {
-    ext.kotlin_version = '1.8.20'
-    repositories {
-        google()
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
 rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+
+    // Some AGP 9-ready plugins assume built-in Kotlin solely from the AGP
+    // version. This project must keep compatibility mode while older plugins
+    // still apply kotlin-android themselves, so ensure every Android library
+    // gets the Kotlin plugin in that mode.
+    project.pluginManager.withPlugin('com.android.library') {
+        if (!project.plugins.hasPlugin('org.jetbrains.kotlin.android')) {
+            project.pluginManager.apply('org.jetbrains.kotlin.android')
+        }
+    }
 }
 subprojects {
     project.evaluationDependsOn(':app')
@@ -29,4 +26,3 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
-

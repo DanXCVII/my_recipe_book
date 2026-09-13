@@ -6,7 +6,6 @@ import 'package:my_recipe_book/generated/l10n.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 import '../../ad_related/ad.dart';
-import 'package:my_recipe_book/generated/l10n.dart';
 import '../../local_storage/hive.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 
@@ -25,7 +24,7 @@ class CalendarAddDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(Consts.padding),
       ),
       elevation: 0.0,
-      backgroundColor: Theme.of(context).dialogBackgroundColor,
+      backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
       child: Container(
         width: MediaQuery.of(context).size.width > 360 ? 360 : null,
         child: Padding(
@@ -111,7 +110,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                     _onSelectDate();
                   },
                   style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),
@@ -130,7 +129,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                       borderRadius: BorderRadius.all(Radius.circular(3)),
                       border: Border.all(
                           width: 1,
-                          color: Theme.of(context).colorScheme.background ==
+                          color: Theme.of(context).colorScheme.surface ==
                                   Colors.white
                               ? Colors.grey[500]!
                               : Colors.white),
@@ -162,7 +161,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
               ),
               style: TextButton.styleFrom(
                 backgroundColor:
-                    Theme.of(context).colorScheme.background == Colors.white
+                    Theme.of(context).colorScheme.surface == Colors.white
                         ? null
                         : Colors.amber,
               ),
@@ -212,22 +211,32 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
     // TODO: fix
     showOmniDateTimePicker(
       context: context,
-      startInitialDate: DateTime(
+      initialDate: DateTime(
         DateTime.now().year,
         DateTime.now().month,
         DateTime.now().day,
       ),
-      backgroundColor: Theme.of(context).colorScheme.background,
-      primaryColor: Theme.of(context).primaryColor,
-      tabTextColor: Theme.of(context).brightness == Brightness.dark
-          ? Colors.white
-          : Colors.black,
-      calendarTextColor: Theme.of(context).brightness == Brightness.dark
-          ? Colors.white
-          : Colors.black,
-      buttonTextColor: Theme.of(context).brightness == Brightness.dark
-          ? Colors.white
-          : Colors.black,
+      theme: Theme.of(context).brightness == Brightness.dark
+          ? Theme.of(context).copyWith(
+              primaryColor: Theme.of(context).colorScheme.primary,
+              colorScheme: Theme.of(context).colorScheme,
+              scaffoldBackgroundColor: Theme.of(context).colorScheme.surface,
+            )
+          : Theme.of(context).copyWith(
+              primaryColor: Theme.of(context).colorScheme.primary,
+              colorScheme: Theme.of(context).colorScheme,
+            ),
+      // backgroundColor: Theme.of(context).colorScheme.surface,
+      // primaryColor: Theme.of(context).primaryColor,
+      // tabTextColor: Theme.of(context).brightness == Brightness.dark
+      //     ? Colors.white
+      //     : Colors.black,
+      // calendarTextColor: Theme.of(context).brightness == Brightness.dark
+      //     ? Colors.white
+      //     : Colors.black,
+      // buttonTextColor: Theme.of(context).brightness == Brightness.dark
+      //     ? Colors.white
+      //     : Colors.black,
       is24HourMode: true,
     ).then((DateTime? date) => date != null
         ? setState(() {

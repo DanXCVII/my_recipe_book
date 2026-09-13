@@ -15,7 +15,7 @@ class FavoriteScreen extends StatelessWidget {
     return Stack(children: <Widget>[
       Opacity(
         opacity:
-            Theme.of(context).colorScheme.background == Colors.white ? 0.3 : 1,
+            Theme.of(context).colorScheme.surface == Colors.white ? 0.3 : 1,
         child: Container(
           height: MediaQuery.of(context).size.height - kToolbarHeight,
           width: MediaQuery.of(context).size.width,

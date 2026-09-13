@@ -29,13 +29,13 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m3(datatype) =>
       "Der ausgewählte Datentyp \"${datatype}\" wird nicht unterstützt.\nUnterstützte Formate: \".zip\", \".mcb\"";
 
-  static String m4(recipeName) => "Lösche Rezept online: ${recipeName}";
+  static String m4(recipeName) => "Rezept online gelöscht: ${recipeName}";
 
-  static String m5(recipeName) => "Lösche Rezept lokal: ${recipeName}";
+  static String m5(recipeName) => "Rezept lokal gelöscht: ${recipeName}";
 
   static String m6(fileName) => "Die ausgewählte Datei wird nicht unterstützt.";
 
-  static String m7(recipeName) => "importiere Rezept: ${recipeName}";
+  static String m7(recipeName) => "Rezept importiert: ${recipeName}";
 
   static String m8(name) =>
       "Rezept mit demselben Namen \"${name}\" bereits vorhanden";
@@ -52,7 +52,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m13(recipeName, year, month, day) =>
       "${recipeName} zum Rezepteplaner hinzugefügt: \n${day}.${month}.${year}";
 
-  static String m14(recipeName) => "Lade Rezept hoch: ${recipeName}";
+  static String m14(recipeName) => "Rezept hochgeladen: ${recipeName}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -200,6 +200,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Laden fehlgeschlagen"),
         "failed_loading_ad_desc": MessageLookupByLibrary.simpleMessage(
             "Mögliche Lösungen: Bessere Internetverbindung, erneut versuchen zu laden oder ein Neustart der App."),
+        "failed_sign_in": MessageLookupByLibrary.simpleMessage(
+            "login fehlgeschlagen evtl. aufgrund von nicht vorhandenem Internet"),
+        "failed_syncing": MessageLookupByLibrary.simpleMessage(
+            "Fehler bei der Synchronisierung evtl. durch schlechtes Internet"),
         "failed_to_connect_to_url": MessageLookupByLibrary.simpleMessage(
             "Verbindung mit URL fehlgeschlagen"),
         "failed_to_import_recipe_unknown_reason":
