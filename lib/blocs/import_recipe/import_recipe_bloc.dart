@@ -114,8 +114,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
               null) {
             // import recipe data to app ..
             PathProvider.pP.getRecipeDirFull(event.recipes[i].name);
-            bool importedRecipeData =
-                await IO.importRecipeFromTmp(event.recipes[i]);
+            await IO.importRecipeFromTmp(event.recipes[i]);
             // .. and if it succeeded ..
             List<String> categories = HiveProvider().getCategoryNames();
             List<String> newCategories = [];

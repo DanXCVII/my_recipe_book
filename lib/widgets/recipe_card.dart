@@ -359,8 +359,6 @@ class RecipeCard extends StatelessWidget {
         return Color(0xff487D1F);
       case Vegetable.VEGETARIAN:
         return Color(0xff78B000);
-      default:
-        return Color(0x00000000);
     }
   }
 
@@ -376,8 +374,6 @@ String getRecipeTypeImage(Vegetable vegetable) {
       return "milk";
     case Vegetable.VEGAN:
       return "tomato";
-    default:
-      return "no valid input at getRecipeTypeImage()";
   }
 }
 

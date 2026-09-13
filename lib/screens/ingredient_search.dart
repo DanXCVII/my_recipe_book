@@ -626,10 +626,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                               S.of(context).with_meat,
                               vegetable,
                             );
-                          default:
-                            return null;
                         }
-                      }).toList() as List<Widget>,
+                      }).toList(),
                     ),
                     Text(
                       S.of(context).categories,

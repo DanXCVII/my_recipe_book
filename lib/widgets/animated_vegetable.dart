@@ -89,8 +89,6 @@ class AnimatedVegetable extends StatelessWidget {
         return Color(0xff569912);
       case Vegetable.VEGAN:
         return Color(0xff138600);
-      default:
-        return null;
     }
   }
 }

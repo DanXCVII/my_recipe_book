@@ -1363,8 +1363,6 @@ class HiveProvider {
         return boxVegan;
       case Vegetable.VEGETARIAN:
         return boxVegetarian;
-      default:
-        throw (ArgumentError);
     }
   }
 }

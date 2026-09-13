@@ -298,35 +298,6 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
     }
   }
 
-  /// creating list of list of ingredients with the data of the
-  /// textEditingControllers. All lists must be the same size.
-  /// The amount will be converted to a double, because the recipe
-  /// saves the amount as a double
-  List<List<Ingredient>> _getIngredientsList(
-      List<List<TextEditingController>> ingredientNamesContr,
-      List<List<TextEditingController>> amountContr,
-      List<List<TextEditingController>> unitContr) {
-    List<List<Ingredient>> ingredients = [];
-
-    for (int i = 0; i < ingredientNamesContr.length; i++) {
-      ingredients.add([]);
-      for (int j = 0; j < ingredientNamesContr[i].length; j++) {
-        String ingredientName = ingredientNamesContr[i][j].text;
-        double? amount = amountContr[i][j].text == "0"
-            ? null
-            : getDoubleFromString(amountContr[i][j].text) != null
-                ? getDoubleFromString(
-                    amountContr[i][j].text.replaceAll(new RegExp(r','), '.'))
-                : null;
-        String unit = unitContr[i][j].text;
-        ingredients[i]
-            .add(Ingredient(name: ingredientName, amount: amount, unit: unit));
-      }
-    }
-
-    return ingredients;
-  }
-
   void _showFlushInfo(String title, String body) {
     if (_flush != null && _flush!.isShowing()) {
     } else {

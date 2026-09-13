@@ -21,12 +21,6 @@ Future<Uint8List> getRecipeCalendarPdf(
       righteousData.offsetInBytes, righteousData.lengthInBytes);
   final righteousTtf = pw.Font.ttf(righteousFont.buffer.asByteData());
 
-  ByteData quicksandData = await rootBundle.load("fonts/Quicksand-Regular.ttf");
-  final quicksandBuffer = quicksandData.buffer;
-  // Uint8List quicksandFont = quicksandBuffer.asUint8List(
-  //     quicksandData.offsetInBytes, quicksandData.lengthInBytes);
-  // final quicksandTtf = pw.Font.ttf(quicksandFont.buffer.asByteData());
-
   const imageProvider = const AssetImage('images/iconIosStyle.png');
   final pdfIconImage = await flutterImageProvider(imageProvider);
 

@@ -451,7 +451,6 @@ class Settings extends StatelessWidget {
             ),
           );
           return;
-        default:
       }
     });
   }

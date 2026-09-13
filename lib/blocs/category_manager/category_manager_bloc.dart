@@ -114,11 +114,11 @@ class CategoryManagerBloc
     on<UnselectCategory>((event, emit) async {
       selectedCategories.remove(event.categoryName);
     });
+  }
 
-    @override
-    Future<void> close() {
-      subscription.cancel();
-      return super.close();
-    }
+  @override
+  Future<void> close() {
+    subscription.cancel();
+    return super.close();
   }
 }

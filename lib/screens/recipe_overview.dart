@@ -393,18 +393,3 @@ class OneThirdClipperLeft extends CustomClipper<Path> {
   @override
   bool shouldReclip(OneThirdClipperLeft oldClipper) => true;
 }
-
-@override
-Path getClip(Size size) {
-  final Path path = new Path()
-    ..lineTo(size.width / 2, 0)
-    ..lineTo(size.width / 2, size.height)
-    ..lineTo(size.width, size.height)
-    ..lineTo(size.width, 0);
-  return path;
-}
-
-@override
-bool shouldReclip(CustomClipper<Path> oldClipper) {
-  return true;
-}

@@ -58,7 +58,6 @@ class GDriveSyncBloc extends Bloc<GDriveSyncEvent, GDriveSyncState> {
               await cancelStream();
               BlocProvider.of<RecipeModsBloc>(context).add(UnblockMods());
               break;
-            default:
           }
         },
         onError: (_) {
