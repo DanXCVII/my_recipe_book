@@ -14,6 +14,7 @@ In this App, every screen has it's own Bloc and additional Blocs exist. The most
 ## What still needs to be done?
 
 - <em>tests, tests, tests ... </em>: I know how important test-driven development is, but due to my lack of time, I had to decide, whether I want to publish the app in the near future or let it take much more time which I may not have. It's a bit sad however, due to the implementation of Bloc, must functionality shouldn't be so hard to test.
+- Complete the [deferred validation and release checklist](docs/RELEASE_READINESS.md) before publishing another release.
 
 ## About the App
 
