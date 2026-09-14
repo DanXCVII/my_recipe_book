@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/recipe.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;
 
@@ -13,9 +13,13 @@ part 'random_recipe_explorer_state.dart';
 class RandomRecipeExplorerBloc
     extends Bloc<RandomRecipeExplorerEvent, RandomRecipeExplorerState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
   late StreamSubscription subscription;
 
-  RandomRecipeExplorerBloc({required this.recipeManagerBloc})
+  RandomRecipeExplorerBloc({
+    required this.recipeManagerBloc,
+    required this.repository,
+  })
       : super(LoadingRandomRecipeExplorer()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRandomRecipeExplorer) {
@@ -63,12 +67,12 @@ class RandomRecipeExplorerBloc
     });
 
     on<InitializeRandomRecipeExplorer>((event, emit) async {
-      final List<String> categories = HiveProvider().getCategoryNames()
+      final List<String> categories = repository.getCategoryNames()
         ..insert(0, 'all categories');
 
       List<Recipe> randomRecipes = [];
       for (int i = 0; i < 50; i++) {
-        Recipe? randomRecipe = await (HiveProvider().getRandomRecipeOfCategory(
+        Recipe? randomRecipe = await (repository.getRandomRecipeOfCategory(
           category: event.selectedCategory == "all categories"
               ? null
               : event.selectedCategory,
@@ -108,7 +112,7 @@ class RandomRecipeExplorerBloc
           List<Recipe> randomRecipes = [];
           for (int i = 0; i < 10; i++) {
             Recipe? randomRecipe =
-                await HiveProvider().getRandomRecipeOfCategory();
+                await repository.getRandomRecipeOfCategory();
             if (randomRecipe != null) {
               randomRecipes.add(randomRecipe);
             }
@@ -168,7 +172,7 @@ class RandomRecipeExplorerBloc
         int? selectedIndex =
             (state as LoadedRandomRecipeExplorer).selectedCategory;
 
-        if (await HiveProvider().getRandomRecipeOfCategory(
+        if (await repository.getRandomRecipeOfCategory(
                 category:
                     selectedIndex == 0 ? null : categories[selectedIndex!]) ==
             null) {
@@ -178,7 +182,7 @@ class RandomRecipeExplorerBloc
 
         bool updated = false;
         while (randomRecipes.contains(event.recipe)) {
-          Recipe? randomRecipe = await HiveProvider().getRandomRecipeOfCategory(
+          Recipe? randomRecipe = await repository.getRandomRecipeOfCategory(
               category: selectedIndex == 0 ? null : categories[selectedIndex!]);
           if (randomRecipe != null) {
             randomRecipes[randomRecipes.indexOf(event.recipe)] = randomRecipe;
@@ -231,7 +235,7 @@ class RandomRecipeExplorerBloc
         emit(LoadingRecipes(categories, selectedCategory));
 
         for (int i = 0; i < 50; i++) {
-          Recipe? randomRecipe = await HiveProvider().getRandomRecipeOfCategory(
+          Recipe? randomRecipe = await repository.getRandomRecipeOfCategory(
               category:
                   selectedCategory == 0 ? null : categories[selectedCategory]);
           if (randomRecipe != null) {

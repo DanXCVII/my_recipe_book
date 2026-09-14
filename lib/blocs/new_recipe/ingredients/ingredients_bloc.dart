@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../local_storage/hive.dart';
+import '../../../local_storage/local_repository.dart';
 import '../../../models/enums.dart';
 import '../../../models/ingredient.dart';
 import '../../../models/recipe.dart';
@@ -10,7 +10,7 @@ part 'ingredients_event.dart';
 part 'ingredients_state.dart';
 
 class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
-  IngredientsBloc() : super(ICanSave()) {
+  IngredientsBloc(this.repository) : super(ICanSave()) {
     on<SetCanSave>((event, emit) async {
       emit(ICanSave());
     });
@@ -33,23 +33,23 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
 
       Recipe newRecipe;
       if (!event.editingRecipe!) {
-        newRecipe = HiveProvider().getTmpRecipe()!.copyWith(
+        newRecipe = repository.getTmpRecipe()!.copyWith(
               servings: event.servings,
               servingName: event.servingName,
               ingredients: recipeIngredients,
               ingredientsGlossary: recipeIngredientSections,
               vegetable: event.vegetable,
             );
-        await HiveProvider().saveTmpRecipe(newRecipe);
+        await repository.saveTmpRecipe(newRecipe);
       } else {
-        newRecipe = HiveProvider().getTmpEditingRecipe()!.copyWith(
+        newRecipe = repository.getTmpEditingRecipe()!.copyWith(
               servings: event.servings,
               servingName: event.servingName,
               ingredients: recipeIngredients,
               ingredientsGlossary: recipeIngredientSections,
               vegetable: event.vegetable,
             );
-        await HiveProvider().saveTmpEditingRecipe(newRecipe);
+        await repository.saveTmpEditingRecipe(newRecipe);
       }
 
       if (event.goBack!) {
@@ -59,4 +59,6 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
       }
     });
   }
+
+  final LocalRepository repository;
 }

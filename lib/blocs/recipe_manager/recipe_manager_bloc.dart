@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../local_storage/io_operations.dart' as IO;
 import '../../models/recipe.dart';
 import '../../models/string_int_tuple.dart';
@@ -10,7 +10,7 @@ part 'recipe_manager_event.dart';
 part 'recipe_manager_state.dart';
 
 class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
-  RecipeManagerBloc() : super(InitialRecipeManagerState()) {
+  RecipeManagerBloc(this.repository) : super(InitialRecipeManagerState()) {
     on<RMAddRecipes>((event, emit) async {
       List<Recipe> newRecipes = [];
 
@@ -19,20 +19,20 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
         Recipe fixedStepsRecipe = _fixRecipeSteps(newRecipe);
 
         newRecipes.add(fixedStepsRecipe);
-        await HiveProvider().saveRecipe(fixedStepsRecipe);
+        await repository.saveRecipe(fixedStepsRecipe);
       }
 
-      await IO.updateBackup();
+      await IO.updateBackup(repository);
 
       emit(AddRecipesState(newRecipes));
     });
 
     on<RMDeleteRecipe>((event, emit) async {
       Recipe? deletedRecipe =
-          await HiveProvider().getRecipeByName(event.recipeName);
+          await repository.getRecipeByName(event.recipeName);
 
       if (deletedRecipe != null) {
-        await HiveProvider().deleteRecipe(deletedRecipe.name);
+        await repository.deleteRecipe(deletedRecipe.name);
 
         emit(DeleteRecipeState(deletedRecipe));
       }
@@ -40,39 +40,39 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
 
     on<RMAddCategories>((event, emit) async {
       for (String category in event.categories) {
-        await HiveProvider().addCategory(category);
+        await repository.addCategory(category);
       }
 
       emit(AddCategoriesState(event.categories));
     });
 
     on<RMDeleteCategory>((event, emit) async {
-      await HiveProvider().deleteCategory(event.category);
+      await repository.deleteCategory(event.category);
 
       emit(DeleteCategoryState(event.category));
     });
 
     on<RMUpdateCategory>((event, emit) async {
-      await HiveProvider()
+      await repository
           .renameCategory(event.oldCategory, event.updatedCategory);
 
       emit(UpdateCategoryState(event.oldCategory, event.updatedCategory));
     });
 
     on<RMAddFavorite>((event, emit) async {
-      await HiveProvider().addToFavorites(event.recipe);
+      await repository.addToFavorites(event.recipe);
 
       emit(AddFavoriteState(event.recipe.copyWith(isFavorite: true)));
     });
 
     on<RMRemoveFavorite>((event, emit) async {
-      await HiveProvider().removeFromFavorites(event.recipe);
+      await repository.removeFromFavorites(event.recipe);
 
       emit(RemoveFavoriteState(event.recipe.copyWith(isFavorite: false)));
     });
 
     on<RMMoveCategory>((event, emit) async {
-      await HiveProvider().moveCategory(event.oldIndex, event.newIndex);
+      await repository.moveCategory(event.oldIndex, event.newIndex);
 
       emit(MoveCategoryState(
         event.oldIndex,
@@ -83,25 +83,27 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
 
     on<RMAddRecipeTag>((event, emit) async {
       for (StringIntTuple recipeTag in event.recipeTags) {
-        await HiveProvider().addRecipeTag(recipeTag.text, recipeTag.number);
+        await repository.addRecipeTag(recipeTag.text, recipeTag.number);
       }
 
       emit(AddRecipeTagsState(event.recipeTags));
     });
 
     on<RMDeleteRecipeTag>((event, emit) async {
-      await HiveProvider().deleteRecipeTag(event.recipeTag.text);
+      await repository.deleteRecipeTag(event.recipeTag.text);
 
       emit(DeleteRecipeTagState(event.recipeTag));
     });
 
     on<RMUpdateRecipeTag>((event, emit) async {
-      await HiveProvider().updateRecipeTag(event.oldRecipeTag.text,
+      await repository.updateRecipeTag(event.oldRecipeTag.text,
           event.updatedRecipeTag.text, event.updatedRecipeTag.number);
 
       emit(UpdateRecipeTagState(event.oldRecipeTag, event.updatedRecipeTag));
     });
   }
+
+  final LocalRepository repository;
 
   /// Updates the stepImages and stepTitles to fit the length of steps.
   /// stepsImages and stepTitles can also be null.

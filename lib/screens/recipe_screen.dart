@@ -28,7 +28,7 @@ import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/l10n.dart';
-import '../local_storage/hive.dart';
+import '../local_storage/local_repository.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
 import '../models/enums.dart';
@@ -368,7 +368,7 @@ class MyGradientAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () {
                   Ads.hideBottomBannerAd();
 
-                  HiveProvider().saveTmpEditingRecipe(recipe).then((_) {
+                  context.read<LocalRepository>().saveTmpEditingRecipe(recipe).then((_) {
                     BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
                     Navigator.pushNamed(
                       context,
@@ -534,7 +534,7 @@ class MyGradientAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       );
     } else if (value == PopupOptionsShare.EXPORT_ZIP) {
-      _exportRecipe(recipe).then((_) {});
+      _exportRecipe(recipe, context).then((_) {});
     } else if (value == PopupOptionsShare.EXPORT_PDF) {
       getRecipePdf(recipe, context).then(
         (pdf) => Printing.sharePdf(
@@ -545,10 +545,11 @@ class MyGradientAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
   }
 
-  Future<bool> _exportRecipe(Recipe recipe) async {
+  Future<bool> _exportRecipe(Recipe recipe, BuildContext context) async {
     String zipFilePath = await IO.saveRecipeZip(
       await PathProvider.pP.getShareDir(),
       recipe.name,
+      context.read<LocalRepository>(),
     );
 
     SharePlus.instance.share(
@@ -1823,7 +1824,7 @@ class Favorite extends StatelessWidget {
   Widget build(BuildContext context) {
     return LikeButton(
       size: iconSize == null ? 24 : iconSize!,
-      isLiked: HiveProvider().isRecipeFavorite(recipe.name),
+      isLiked: context.read<LocalRepository>().isRecipeFavorite(recipe.name),
       likeBuilder: (bool isFavorite) {
         return Icon(
           isFavorite ? Icons.favorite : Icons.favorite_border,

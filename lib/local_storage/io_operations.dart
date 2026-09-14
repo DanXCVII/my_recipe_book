@@ -14,7 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'local_paths.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../util/helper.dart';
-import '../local_storage/hive.dart';
+import '../local_storage/local_repository.dart';
 import '../models/recipe.dart';
 import '../util/recipe_extractor.dart';
 
@@ -315,8 +315,8 @@ String getStepImageName(String selectedImagePath) {
 
 /// backs up all new recipes under exteralDir/backup/ and deletes the backed
 /// up recipes which are not in the database
-Future<void> updateBackup() async {
-  List<String> savedRecipes = (HiveProvider().getRecipeNames())
+Future<void> updateBackup(LocalRepository repository) async {
+  List<String> savedRecipes = (repository.getRecipeNames())
       .map((e) => e)
       .toList();
   List<String> savedRecipeDirNames = savedRecipes
@@ -330,6 +330,7 @@ Future<void> updateBackup() async {
       await IO.saveRecipeZip(
         (await PathProvider.pP.getExternalAppDir()).path,
         savedRecipes[i],
+        repository,
       );
     }
   }
@@ -361,8 +362,12 @@ Future<List<String>> getBackupedRecipenames() async {
 }
 
 // creates a recipe zig of the corresponding recipe with the given name at the given path and returns the path to the file
-Future<String> saveRecipeZip(String targetDir, String recipeName) async {
-  Recipe? recipe = await HiveProvider().getRecipeByName(recipeName);
+Future<String> saveRecipeZip(
+  String targetDir,
+  String recipeName,
+  LocalRepository repository,
+) async {
+  Recipe? recipe = await repository.getRecipeByName(recipeName);
 
   if (recipe == null) return "";
   Recipe exportRecipe = await PathProvider.pP.removeLocalDirRecipeFiles(recipe);

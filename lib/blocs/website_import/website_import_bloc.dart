@@ -9,7 +9,7 @@ import 'package:http/http.dart' as httpc;
 import 'package:http/io_client.dart';
 
 import '../../constants/global_constants.dart';
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../local_storage/io_operations.dart' as IO;
 import '../../local_storage/local_paths.dart';
 import '../../models/enums.dart';
@@ -27,8 +27,10 @@ enum ImportState { SUCCESS, DUPLICATE, FAIL }
 
 class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
   final RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
 
-  WebsiteImportBloc(this.recipeManagerBloc) : super(ReadyToImport()) {
+  WebsiteImportBloc(this.recipeManagerBloc, this.repository)
+      : super(ReadyToImport()) {
     on<ImportRecipe>((event, emit) async {
       emit(ImportingRecipe());
 
@@ -113,7 +115,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
         } else if (importRecipe.item1 == ImportState.DUPLICATE) {
           emit(AlreadyExists(importRecipe.item2!.name));
         } else {
-          await HiveProvider().saveTmpRecipe(importRecipe.item2!);
+          await repository.saveTmpRecipe(importRecipe.item2!);
 
           emit(ImportedRecipe(importRecipe.item2!));
           return;
@@ -139,10 +141,10 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
         httpRecipeContent.indexOf(">") + 1,
         httpRecipeContent.indexOf("<", 3),
       );
-      if (HiveProvider().getRecipeNames().contains(recipeName)) {
+      if (repository.getRecipeNames().contains(recipeName)) {
         return Tuple2<ImportState, Recipe>(
           ImportState.DUPLICATE,
-          (await HiveProvider().getRecipeByName(recipeName))!,
+          (await repository.getRecipeByName(recipeName))!,
         ); // should never be null since we checked for the name
       }
 
@@ -185,10 +187,10 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
         source: url,
       );
 
-      List<String> savedNutritions = HiveProvider().getNutritions();
+      List<String> savedNutritions = repository.getNutritions();
       for (Nutrition n in recipeNutritions) {
         if (!savedNutritions.contains(n.name)) {
-          await HiveProvider().addNutrition(n.name);
+          await repository.addNutrition(n.name);
         }
       }
 
@@ -299,10 +301,10 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
     Map<String, dynamic> recipeMap,
     String url,
   ) async {
-    if (HiveProvider().getRecipeNames().contains(recipeMap["name"])) {
+    if (repository.getRecipeNames().contains(recipeMap["name"])) {
       return Tuple2<ImportState, Recipe>(
         ImportState.DUPLICATE,
-        (await HiveProvider().getRecipeByName(recipeMap["name"]))!,
+        (await repository.getRecipeByName(recipeMap["name"]))!,
       );
     }
 
@@ -314,10 +316,10 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
         recipeMap,
       );
 
-      List<String> savedNutritions = HiveProvider().getNutritions();
+      List<String> savedNutritions = repository.getNutritions();
       for (Nutrition? n in recipeNutritions) {
         if (!savedNutritions.contains(n!.name)) {
-          await HiveProvider().addNutrition(n.name);
+          await repository.addNutrition(n.name);
         }
       }
       List<String> recipeSteps = _getStepsFromSchemaRecipe(recipeMap);

@@ -18,6 +18,10 @@
 # Visual Studio Code related
 .vscode/
 
+# Local coding-agent configuration and installed skills
+.agents/
+.codex/
+
 # Flutter/Dart/Pub related
 **/doc/api/
 .dart_tool/

@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/recipe.dart';
 import '../recipe_manager/recipe_manager_bloc.dart';
 
@@ -15,8 +15,9 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
   final Recipe recipe;
   late StreamSubscription rmListener;
   RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
 
-  RecipeScreenBloc(this.recipe, this.recipeManagerBloc)
+  RecipeScreenBloc(this.recipe, this.recipeManagerBloc, this.repository)
       : super(
           RecipeScreenInfo(
             recipe,
@@ -36,7 +37,7 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
       List<String> categoryImages = [];
       for (String category in recipe.categories) {
         categoryImages.add(
-            (await HiveProvider().getRandomRecipeOfCategory(category: category))!
+            (await repository.getRandomRecipeOfCategory(category: category))!
                 .imagePreviewPath);
       }
 

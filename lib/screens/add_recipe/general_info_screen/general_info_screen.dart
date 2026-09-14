@@ -13,6 +13,7 @@ import '../../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../../../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
+import '../../../local_storage/local_repository.dart';
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
@@ -396,7 +397,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   /// suitable dialog if the info is somehow not valid. If it is, it
   /// calls _saveGeneralInfoData(..)
   void _finishedEditingGeneralInfo() {
-    RecipeValidator()
+    RecipeValidator(context.read<LocalRepository>())
         .validateGeneralInfo(
       _formKey,
       widget.editingRecipeName != null ? true : false,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../blocs/splash_screen/splash_screen_bloc.dart';
 import '../generated/l10n.dart';
@@ -21,8 +22,9 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 1200)).then(
-        (_) => BlocProvider.of<SplashScreenBloc>(context).add(SPFinished()));
+    Future.delayed(
+      Duration(milliseconds: 1200),
+    ).then((_) => BlocProvider.of<SplashScreenBloc>(context).add(SPFinished()));
   }
 
   @override
@@ -34,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen>
       Ads.showWideBannerAds();
     }
 
-    return BlocListener<SplashScreenBloc, SplashScreenState>(
+    return BlocConsumer<SplashScreenBloc, SplashScreenState>(
       listener: (context, state) {
         if (state is InitializedData) {
           Future.delayed(Duration(milliseconds: 100)).then((value) {
@@ -54,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen>
           });
         }
       },
-      child: Scaffold(
+      builder: (context, state) => Scaffold(
         body: Container(
           color: Colors.amber,
           child: Center(
@@ -95,16 +97,51 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 Spacer(),
                 Text(
-                  S.of(context).loading_data,
+                  state is StorageMigrationFailed
+                      ? 'Your recipes are safe. The storage upgrade needs to be retried.'
+                      : state is MigratingData
+                      ? 'Upgrading recipe storage…'
+                      : S.of(context).loading_data,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16),
+                    color: Colors.black,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                  ),
                 ),
                 SizedBox(height: 12),
-                CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color?>(Colors.red[900]),
-                ),
+                if (state is StorageMigrationFailed)
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => context.read<SplashScreenBloc>().add(
+                          SPRetryMigration(context),
+                        ),
+                        child: const Text('Retry'),
+                      ),
+                      TextButton.icon(
+                        onPressed: () => SharePlus.instance.share(
+                          ShareParams(
+                            text:
+                                'My Recipe Book storage migration failed: ${state.errorCode}',
+                          ),
+                        ),
+                        icon: const Icon(Icons.share, color: Colors.black),
+                        label: const Text(
+                          'Share report',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  CircularProgressIndicator(
+                    value: state is MigratingData && state.progress.total > 0
+                        ? state.progress.current / state.progress.total
+                        : null,
+                    valueColor: AlwaysStoppedAnimation<Color?>(Colors.red[900]),
+                  ),
                 Spacer(flex: 2),
               ],
             ),

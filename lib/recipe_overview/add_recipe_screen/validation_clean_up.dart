@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../util/helper.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/ingredient.dart';
 
 enum Validator {
@@ -13,13 +13,9 @@ enum Validator {
 }
 
 class RecipeValidator {
-  static final RecipeValidator _rValidator = new RecipeValidator._internal();
+  RecipeValidator(this.repository);
 
-  factory RecipeValidator() {
-    return _rValidator;
-  }
-
-  RecipeValidator._internal();
+  final LocalRepository repository;
 
   Validator validateIngredientsData(
     GlobalKey<FormState> formKey,
@@ -53,7 +49,7 @@ class RecipeValidator {
     if (!formKey.currentState!.validate())
       return Validator.REQUIRED_FIELDS;
     else if (!editingRecipe &&
-        await HiveProvider().getRecipeByName(recipeName) != null)
+        await repository.getRecipeByName(recipeName) != null)
       return Validator.NAME_TAKEN;
     else
       return Validator.VALID;
@@ -83,7 +79,7 @@ class RecipeValidator {
       ingredientGlossaryController,
     ))
       return Validator.GLOSSARY_NOT_VALID;
-    else if (!editingRecipe && await HiveProvider().doesRecipeExist(recipeName))
+    else if (!editingRecipe && await repository.doesRecipeExist(recipeName))
       return Validator.NAME_TAKEN;
     else
       return Validator.VALID;

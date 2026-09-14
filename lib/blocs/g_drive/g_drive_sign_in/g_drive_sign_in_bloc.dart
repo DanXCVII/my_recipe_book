@@ -10,7 +10,7 @@ part 'g_drive_sign_in_event.dart';
 part 'g_drive_sign_in_state.dart';
 
 class GDriveSignInBloc extends Bloc<GDriveSignInEvent, GDriveSignInState> {
-  GDriveSignInBloc() : super(GDriveSignedOut()) {
+  GDriveSignInBloc(this.driveSync) : super(GDriveSignedOut()) {
     on<GDriveSignInEvent>((event, emit) {
       // TODO: implement event handler
     });
@@ -20,7 +20,7 @@ class GDriveSignInBloc extends Bloc<GDriveSignInEvent, GDriveSignInState> {
 
       bool connectedToInternet = await checkInternet();
       if (connectedToInternet) {
-        GoogleSignInAccount? account = await GDriveSync.gD.signInGDrive();
+        GoogleSignInAccount? account = await driveSync.signInGDrive();
         if (account != null) {
           emit(GDriveSignedIn(
             account.displayName ?? "",
@@ -40,7 +40,7 @@ class GDriveSignInBloc extends Bloc<GDriveSignInEvent, GDriveSignInState> {
 
       bool connectedToInternet = await checkInternet();
       if (connectedToInternet) {
-        GoogleSignInAccount? account = await GDriveSync.gD.signInSilently();
+        GoogleSignInAccount? account = await driveSync.signInSilently();
         if (account != null) {
           emit(GDriveSignedIn(
             account.displayName ?? "",
@@ -57,10 +57,12 @@ class GDriveSignInBloc extends Bloc<GDriveSignInEvent, GDriveSignInState> {
 
     on<GDriveSignOut>((event, emit) async {
       emit(GDriveSigningOut());
-      await GDriveSync.gD.signOutFromGoogle();
+      await driveSync.signOutFromGoogle();
       emit(GDriveSignedOut());
     });
   }
+
+  final GDriveSync driveSync;
 
   Future<bool> checkInternet() async {
     try {

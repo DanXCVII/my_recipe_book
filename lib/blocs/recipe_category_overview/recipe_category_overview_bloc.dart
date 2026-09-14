@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/recipe.dart';
 import '../../models/tuple.dart';
 import '../category_overview/category_overview_bloc.dart';
@@ -17,9 +17,13 @@ part 'recipe_category_overview_state.dart';
 class RecipeCategoryOverviewBloc
     extends Bloc<RecipeCategoryOverviewEvent, RecipeCategoryOverviewState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
   late StreamSubscription subscription;
 
-  RecipeCategoryOverviewBloc({required this.recipeManagerBloc})
+  RecipeCategoryOverviewBloc({
+    required this.recipeManagerBloc,
+    required this.repository,
+  })
       : super(LoadingRecipeCategoryOverviewState()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeCategoryOverview) {
@@ -45,14 +49,14 @@ class RecipeCategoryOverviewBloc
     });
 
     on<RCOLoadRecipeCategoryOverview>((event, emit) async {
-      if (event.reopenBoxes) await HiveProvider().reopenBoxes();
+      if (event.reopenBoxes) await repository.reopenBoxes();
 
       List<Tuple2<String, List<Recipe>>> categoryRecipes = [];
-      final List<String> categories = HiveProvider().getCategoryNames();
+      final List<String> categories = repository.getCategoryNames();
 
       for (String category in categories) {
         List<Recipe> categoryRecipeList =
-            await HiveProvider().getCategoryRecipes(category);
+            await repository.getCategoryRecipes(category);
         if (category == "no category" && categoryRecipeList.isEmpty) {
         } else {
           categoryRecipes.add(Tuple2(category, categoryRecipeList));

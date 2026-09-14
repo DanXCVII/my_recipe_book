@@ -1,16 +1,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 
 part 'ingredients_manager_event.dart';
 part 'ingredients_manager_state.dart';
 
 class IngredientsManagerBloc
     extends Bloc<IngredientsManagerEvent, IngredientsManagerState> {
-  IngredientsManagerBloc() : super(IngredientsManagerInitial()) {
+  IngredientsManagerBloc(this.repository) : super(IngredientsManagerInitial()) {
     on<LoadIngredientsManager>((event, emit) async {
-      final List<String> ingredients = HiveProvider().getIngredientNames()
+      final List<String> ingredients = repository.getIngredientNames()
         ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
       emit(LoadedIngredientsManager(ingredients));
@@ -18,7 +18,7 @@ class IngredientsManagerBloc
 
     on<AddIngredient>((event, emit) async {
       if (state is LoadedIngredientsManager) {
-        await HiveProvider().addIngredient(event.ingredient);
+        await repository.addIngredient(event.ingredient);
 
         List<String> ingredients =
             List<String>.from((state as LoadedIngredientsManager).ingredients)
@@ -31,7 +31,7 @@ class IngredientsManagerBloc
 
     on<DeleteIngredient>((event, emit) async {
       if (state is LoadedIngredientsManager) {
-        await HiveProvider().deleteIngredient(event.ingredient);
+        await repository.deleteIngredient(event.ingredient);
         final List<String> ingredients =
             List<String>.from((state as LoadedIngredientsManager).ingredients)
               ..remove(event.ingredient);
@@ -42,8 +42,8 @@ class IngredientsManagerBloc
 
     on<UpdateIngredient>((event, emit) async {
       if (state is LoadedIngredientsManager) {
-        await HiveProvider().deleteIngredient(event.oldIngredient);
-        await HiveProvider().addIngredient(event.updatedIngredient);
+        await repository.deleteIngredient(event.oldIngredient);
+        await repository.addIngredient(event.updatedIngredient);
         final List<String /*!*/ > ingredients =
             (state as LoadedIngredientsManager).ingredients
               ..remove(event.oldIngredient)
@@ -54,4 +54,6 @@ class IngredientsManagerBloc
       }
     });
   }
+
+  final LocalRepository repository;
 }

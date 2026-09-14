@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../../models/enums.dart';
 
 import '../../constants/global_constants.dart' as Constants;
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/recipe.dart';
 import '../../models/string_int_tuple.dart';
 import '../../models/tuple.dart';
@@ -13,14 +13,14 @@ part 'ingredient_search_state.dart';
 
 class IngredientSearchBloc
     extends Bloc<IngredientSearchEvent, IngredientSearchState> {
-  IngredientSearchBloc() : super(IngredientSearchInitial()) {
+  IngredientSearchBloc(this.repository) : super(IngredientSearchInitial()) {
     on<SearchRecipes>((event, emit) async {
       emit(SearchingRecipes());
 
       List<Tuple2<int, Recipe>> filteredRecipes = [];
 
       if (event.ingredients.isNotEmpty) {
-        filteredRecipes = (await HiveProvider()
+        filteredRecipes = (await repository
             .getRecipesWithIngredients(event.ingredients))
           ..sort((a, b) => b.item1.compareTo(a.item1));
       }
@@ -46,7 +46,7 @@ class IngredientSearchBloc
               (tuple) => !(tuple.item2.vegetable == event.vegetable));
         }
       } else {
-        List<Recipe> allRecipes = await HiveProvider().getAllRecipes();
+        List<Recipe> allRecipes = await repository.getAllRecipes();
         if (event.recipeTags.isNotEmpty ||
             event.categories.isNotEmpty ||
             event.vegetable != null) {
@@ -83,4 +83,6 @@ class IngredientSearchBloc
       ));
     });
   }
+
+  final LocalRepository repository;
 }

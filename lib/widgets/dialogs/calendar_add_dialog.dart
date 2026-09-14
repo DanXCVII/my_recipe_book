@@ -1,12 +1,13 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:my_recipe_book/generated/l10n.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 import '../../ad_related/ad.dart';
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 
 class CalendarAddDialog extends StatelessWidget {
@@ -88,7 +89,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
         SimpleAutoCompleteTextField(
           key: autoCompletionTextField,
           focusNode: widget.focus,
-          suggestions: HiveProvider().getRecipeNames(),
+          suggestions: context.read<LocalRepository>().getRecipeNames(),
           controller: recipeNameController,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
@@ -166,7 +167,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                         : Colors.amber,
               ),
               onPressed: () {
-                if (HiveProvider()
+                if (context.read<LocalRepository>()
                     .getRecipeNames()
                     .contains(recipeNameController.text)) {
                   if (selectedDate != null) {

@@ -9,7 +9,7 @@ import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/l10n.dart';
-import '../local_storage/hive.dart';
+import '../local_storage/local_repository.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
 import '../screens/recipe_overview.dart';
@@ -114,7 +114,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe?> {
             return ListTile(
               title: Text(resultRecipeNames[index ~/ 2]),
               onTap: () {
-                HiveProvider()
+                context.read<LocalRepository>()
                     .getRecipeByName(resultRecipeNames[index ~/ 2])
                     .then((recipe) {
                   close(context, null);

@@ -17,3 +17,11 @@ class SPInitializeData extends SplashScreenEvent {
 }
 
 class SPFinished extends SplashScreenEvent {}
+
+class SPRetryMigration extends SplashScreenEvent {
+  const SPRetryMigration(this.context);
+  final BuildContext context;
+
+  @override
+  List<Object> get props => [context];
+}

@@ -4,13 +4,14 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/dialogs/info_dialog.dart';
 
 import 'package:share_plus/share_plus.dart';
 
 import '../generated/l10n.dart';
-import '../local_storage/hive.dart';
+import '../local_storage/local_repository.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
 
@@ -27,7 +28,7 @@ class _ExportRecipesState extends State<ExportRecipes> {
   @override
   void initState() {
     super.initState();
-    recipeNames = HiveProvider().getRecipeNames();
+    recipeNames = context.read<LocalRepository>().getRecipeNames();
   }
 
   @override
@@ -191,7 +192,11 @@ class _SaveExportRecipesState extends State<SaveExportRecipes> {
     await Directory(exportMultiDir).delete(recursive: true);
     exportMultiDir = await PathProvider.pP.getShareMultiDir();
     for (String r in widget.exportRecipes) {
-      await IO.saveRecipeZip(exportMultiDir, r);
+      await IO.saveRecipeZip(
+        exportMultiDir,
+        r,
+        context.read<LocalRepository>(),
+      );
       if (widget.exportRecipes.last != r) {
         setState(() {
           _exportRecipe++;

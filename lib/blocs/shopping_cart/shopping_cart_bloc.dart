@@ -6,7 +6,7 @@ import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart'
     as RM;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
 
@@ -15,10 +15,12 @@ part 'shopping_cart_state.dart';
 
 class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
   late SharedPreferences prefs;
   late StreamSubscription subscription;
 
-  ShoppingCartBloc(this.recipeManagerBloc) : super(LoadingShoppingCart()) {
+  ShoppingCartBloc(this.recipeManagerBloc, this.repository)
+      : super(LoadingShoppingCart()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedShoppingCart) {
         if (rmState is RM.DeleteRecipeState) {
@@ -33,48 +35,48 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
     });
 
     on<LoadShoppingCart>((event, emit) async {
-      emit(LoadedShoppingCart(await HiveProvider().getShoppingCart()));
+      emit(LoadedShoppingCart(await repository.getShoppingCart()));
     });
 
     on<CleanAddIngredients>((event, emit) async {
       for (Ingredient ingredient in event.ingredients) {
-        if (!HiveProvider().getIngredientNames().contains(ingredient.name)) {
-          await HiveProvider().addIngredient(ingredient.name);
+        if (!repository.getIngredientNames().contains(ingredient.name)) {
+          await repository.addIngredient(ingredient.name);
         }
       }
-      await HiveProvider()
+      await repository
           .removeAndAddIngredients(event.recipeName, event.ingredients);
 
-      emit(LoadedShoppingCart(await HiveProvider().getShoppingCart()));
+      emit(LoadedShoppingCart(await repository.getShoppingCart()));
     });
 
     on<CheckIngredients>((event, emit) async {
       for (CheckableIngredient i in event.ingredients) {
-        await HiveProvider().checkIngredient(
+        await repository.checkIngredient(
             event.recipeName.name, i.copyWith(checked: !i.checked));
       }
 
       Map<Recipe, List<CheckableIngredient>> shoppingList =
-          await HiveProvider().getShoppingCart();
+          await repository.getShoppingCart();
 
       emit(LoadedShoppingCart(shoppingList));
     });
 
     on<RemoveIngredients>((event, emit) async {
       if (event.ingredients == null) {
-        await HiveProvider().removeRecipeFromCart(event.recipeName.name);
+        await repository.removeRecipeFromCart(event.recipeName.name);
       } else {
-        await HiveProvider().removeIngredientsFromCart(
+        await repository.removeIngredientsFromCart(
             event.recipeName.name, event.ingredients!);
       }
 
-      emit(LoadedShoppingCart(await HiveProvider().getShoppingCart()));
+      emit(LoadedShoppingCart(await repository.getShoppingCart()));
     });
   }
 
   Future<Map<Recipe, List<CheckableIngredient>>> getSortedShoppingList() async {
     Map<Recipe, List<CheckableIngredient>> shoppingCart =
-        await HiveProvider().getShoppingCart();
+        await repository.getShoppingCart();
 
     return shoppingCart.map((key, ingredientList) {
       List<CheckableIngredient> copyList =

@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart'
     as RM;
-import 'package:my_recipe_book/local_storage/hive.dart';
+import 'package:my_recipe_book/local_storage/local_repository.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
 
 part 'recipe_tag_manager_event.dart';
@@ -13,12 +13,14 @@ part 'recipe_tag_manager_state.dart';
 class RecipeTagManagerBloc
     extends Bloc<RecipeTagManagerEvent, RecipeTagManagerState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
   StreamSubscription? subscription;
 
   List<StringIntTuple> selectedTags = [];
 
   RecipeTagManagerBloc(
       {required this.recipeManagerBloc,
+      required this.repository,
       List<StringIntTuple> selectedTags = const []})
       : super(LoadingRecipeTagManager()) {
     this.selectedTags = List<StringIntTuple>.from(selectedTags);
@@ -35,7 +37,7 @@ class RecipeTagManagerBloc
     });
 
     on<InitializeRecipeTagManager>((event, emit) async {
-      final List<StringIntTuple> recipeTags = HiveProvider().getRecipeTags();
+      final List<StringIntTuple> recipeTags = repository.getRecipeTags();
 
       emit(LoadedRecipeTagManager(recipeTags));
     });

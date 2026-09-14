@@ -11,8 +11,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../ad_related/ad.dart';
 import '../../constants/global_constants.dart' as Constants;
 import '../../constants/global_settings.dart';
+
 import 'package:my_recipe_book/generated/l10n.dart';
-import '../../local_storage/hive.dart';
+
+import '../../local_storage/local_repository.dart';
+import '../../local_storage/storage_migration.dart';
 import '../../local_storage/io_operations.dart' as IO;
 import '../../models/recipe.dart';
 import '../../theming.dart';
@@ -27,9 +30,15 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   bool? _showShoppingCartSummary = false;
   bool _splashScreenFinished = false;
   bool _initialized = false;
+  int _migrationWarningCount = 0;
+  final StorageMigrationCoordinator migrationCoordinator;
+  LocalRepository get repository => migrationCoordinator.repository;
 
-  SplashScreenBloc() : super(InitializingData()) {
-    on<SPInitializeData>((event, emit) async {
+  SplashScreenBloc(this.migrationCoordinator) : super(InitializingData()) {
+    Future<void> initialize(
+      BuildContext context,
+      Emitter<SplashScreenState> emit,
+    ) async {
       print("started initialization");
       bool showIntro = false;
       bool? recipeCategoryOverview;
@@ -48,7 +57,7 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       }
 
       recipeCategoryOverview = _initRecipeOverviewScreen(prefs);
-      _initTheme(prefs, event.context);
+      _initTheme(prefs, context);
       await _initAds();
 
       await IO.clearCache();
@@ -57,7 +66,8 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
       // await getTemporaryDirectory()
       //  ..delete(recursive: true);
 
-      if (!prefs.containsKey('showIntro')) {
+      final firstPreferenceLaunch = !prefs.containsKey('showIntro');
+      if (firstPreferenceLaunch) {
         showIntro = true;
         GlobalSettings().thisIsFirstStart(true);
         await prefs.setBool('shoppingCartSummary', false);
@@ -66,39 +76,57 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
         await prefs.setBool(Constants.enableAnimations, true);
         await prefs.setBool(Constants.disableStandby, true);
         GlobalSettings().enableAnimations(true);
-        await initHive(true);
-        await prefs.setBool('pro_version', false);
-        await _initializeFirstStartData(event.context);
       } else {
-        GlobalSettings()
-            .enableAnimations(prefs.getBool(Constants.enableAnimations)!);
+        GlobalSettings().enableAnimations(
+          prefs.getBool(Constants.enableAnimations)!,
+        );
         GlobalSettings().hasSeenStepIntro(!prefs.getBool('showStepsIntro')!);
-        GlobalSettings()
-            .disableStandby(prefs.getBool(Constants.disableStandby)!);
-        GlobalSettings()
-            .shouldShowDecimal(prefs.getBool(Constants.showDecimal)!);
-        await initHive(false);
+        GlobalSettings().disableStandby(
+          prefs.getBool(Constants.disableStandby)!,
+        );
+        GlobalSettings().shouldShowDecimal(
+          prefs.getBool(Constants.showDecimal)!,
+        );
+      }
+
+      try {
+        final migration = await migrationCoordinator.initialize(
+          onProgress: (progress) => emit(MigratingData(progress)),
+        );
+        _migrationWarningCount = migration.skippedEntries;
+        await prefs.setInt(
+          'storageMigrationWarningCount',
+          _migrationWarningCount,
+        );
+        if (migration.isFreshInstall) {
+          await _initializeFirstStartData(context);
+          await migrationCoordinator.repository.markFreshSeedComplete();
+        }
+      } on StorageMigrationException catch (error) {
+        emit(StorageMigrationFailed(error.code));
+        return;
+      }
+      if (!prefs.containsKey('pro_version')) {
+        await prefs.setBool('pro_version', false);
       }
       // TODO: getPermission
       // Map<PermissionGroup, PermissionStatus> permissions =
       //     await PermissionHandler().requestPermissions([PermissionGroup.storage]);
-      await IO.updateBackup();
+      await IO.updateBackup(repository);
 
       if (prefs.getBool('pro_version') == true ||
-          BlocProvider.of<AdManagerBloc>(event.context).state is IsPurchased) {
+          BlocProvider.of<AdManagerBloc>(context).state is IsPurchased) {
         Ads.initialize(false);
       } else {
         try {
           final result = await InternetAddress.lookup('example.com');
           if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
             Ads.initialize(true, personalized: false);
-            Ads.adHeight =
-                MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
+            Ads.adHeight = MediaQuery.of(context).size.width > 480 ? 60 : 50;
           }
         } on SocketException catch (_) {
           Ads.initialize(true, personalized: false);
-          Ads.adHeight =
-              MediaQuery.of(event.context).size.width > 480 ? 60 : 50;
+          Ads.adHeight = MediaQuery.of(context).size.width > 480 ? 60 : 50;
         }
       }
 
@@ -109,21 +137,30 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
 
       print("finished initialization");
       if (_splashScreenFinished)
-        emit(InitializedData(
-          recipeCategoryOverview,
-          _showShoppingCartSummary,
-          showIntro,
-        ));
-    });
+        emit(
+          InitializedData(
+            recipeCategoryOverview,
+            _showShoppingCartSummary,
+            showIntro,
+            _migrationWarningCount,
+          ),
+        );
+    }
+
+    on<SPInitializeData>((event, emit) => initialize(event.context, emit));
+    on<SPRetryMigration>((event, emit) => initialize(event.context, emit));
 
     on<SPFinished>((event, emit) async {
       _splashScreenFinished = true;
       if (_initialized) {
-        emit(InitializedData(
-          _recipeCategoryOverview,
-          _showShoppingCartSummary,
-          _showIntro,
-        ));
+        emit(
+          InitializedData(
+            _recipeCategoryOverview,
+            _showShoppingCartSummary,
+            _showIntro,
+            _migrationWarningCount,
+          ),
+        );
       }
     });
   }
@@ -139,8 +176,8 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (!prefs.containsKey('noAdsUntil')) {
-      String noAdsUntil =
-          (DateTime.now().subtract(Duration(days: 1000))).toString();
+      String noAdsUntil = (DateTime.now().subtract(Duration(days: 1000)))
+          .toString();
       await prefs.setString('noAdsUntil', noAdsUntil);
     }
   }
@@ -177,15 +214,16 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
     final buffer = data.buffer;
     await Directory((await getTemporaryDirectory()).path)
         .create(recursive: true);
-    File recipesFile =
-        await File((await getTemporaryDirectory()).path + "/assetRecipes.zip")
-            .writeAsBytes(
-                buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    File recipesFile = await File(
+      (await getTemporaryDirectory()).path + "/assetRecipes.zip",
+    ).writeAsBytes(buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
 
     List<Recipe> importRecipeData = await IO.importFirstStartRecipes(
-        recipesFile, S.of(context).two_char_locale);
+      recipesFile,
+      S.of(context).two_char_locale,
+    );
     for (Recipe r in importRecipeData) {
-      await HiveProvider().saveRecipe(r);
+      await repository.saveRecipe(r);
     }
   }
 }

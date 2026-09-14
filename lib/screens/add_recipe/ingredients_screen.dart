@@ -8,7 +8,7 @@ import '../../blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../constants/routes.dart';
 import 'package:my_recipe_book/generated/l10n.dart';
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/enums.dart';
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
@@ -182,7 +182,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                     child: Ingredients(
                       servingsController,
                       servingsNameController,
-                      HiveProvider().getIngredientNames(),
+                      context.read<LocalRepository>().getIngredientNames(),
                     ),
                   ),
                   Padding(

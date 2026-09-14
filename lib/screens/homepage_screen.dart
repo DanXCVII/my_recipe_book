@@ -24,7 +24,7 @@ import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as GC;
 import '../constants/routes.dart';
 import '../generated/l10n.dart';
-import '../local_storage/hive.dart';
+import '../local_storage/local_repository.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../util/my_wrapper.dart';
 import '../widgets/dialogs/import_dialog.dart';
@@ -576,11 +576,11 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 showSearch(
                     context: context,
                     delegate: RecipeSearch(
-                      HiveProvider().getRecipeNames(),
+                      context.read<LocalRepository>().getRecipeNames(),
                       BlocProvider.of<ShoppingCartBloc>(context),
                       BlocProvider.of<RecipeCalendarBloc>(context),
-                      HiveProvider().getRecipeTags(),
-                      HiveProvider().getCategoryNames()..remove('no category'),
+                      context.read<LocalRepository>().getRecipeTags(),
+                      context.read<LocalRepository>().getCategoryNames()..remove('no category'),
                     ));
               },
             ),
@@ -786,7 +786,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                           context,
                           RouteNames.addRecipeGeneralInfo,
                           arguments: GeneralInfoArguments(
-                            HiveProvider().getTmpRecipe(),
+                            context.read<LocalRepository>().getTmpRecipe(),
                             BlocProvider.of<ShoppingCartBloc>(context),
                             BlocProvider.of<RecipeCalendarBloc>(context),
                           ),

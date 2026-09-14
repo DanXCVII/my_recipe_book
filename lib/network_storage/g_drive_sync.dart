@@ -8,7 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart' as signIn;
 import 'package:googleapis/drive/v3.dart' as GD;
 import 'package:http/http.dart' as http;
 
-import '../local_storage/hive.dart';
+import '../local_storage/local_repository.dart';
 import '../local_storage/io_operations.dart' as IO;
 import '../local_storage/local_paths.dart';
 import '../models/recipe.dart';
@@ -48,14 +48,13 @@ class GDriveSync {
   final signIn.GoogleSignIn googleSignIn = signIn.GoogleSignIn.instance;
   late final Future<void> _googleSignInInitialization;
   FlutterSecureStorage? storage;
+  final LocalRepository repository;
 
-  GDriveSync._() {
+  GDriveSync(this.repository) {
     _googleSignInInitialization = googleSignIn.initialize(
       serverClientId: _serverClientId,
     );
   }
-
-  static final GDriveSync gD = GDriveSync._();
 
   /// signs in the user to google drive
   Future<signIn.GoogleSignInAccount?> signInGDrive() async {
@@ -134,7 +133,7 @@ class GDriveSync {
 
     int recipeCount = 0;
     for (String recipeName in updateProcess[0]) {
-      await HiveProvider().deleteRecipe(recipeName,
+      await repository.deleteRecipe(recipeName,
           deletionDate: driveMods.item2[recipeName]!['-'].toString());
       Future.delayed(Duration(milliseconds: 60)).then((_) async {
         await IO.deleteRecipeData(recipeName);
@@ -152,7 +151,7 @@ class GDriveSync {
     recipeCount = 0;
     for (String recipeName in updateProcess[1]) {
       await deleteGDriveRecipeIfExists(
-          recipeName, HiveProvider().getDeletionDate(recipeName));
+          recipeName, repository.getDeletionDate(recipeName));
 
       yield DriveSyncStatus(
         Status.DELETED_ONLINE,
@@ -197,14 +196,14 @@ class GDriveSync {
   Future<Map<String, Map<String, DateTime>>> getLocalModifications() async {
     Map<String, Map<String, DateTime>> localMods = {};
 
-    HiveProvider().getDeletions().forEach((recipeName, delDate) {
+    repository.getDeletions().forEach((recipeName, delDate) {
       localMods.addAll({
         recipeName: {'-': delDate}
       });
     });
 
-    for (String recipeName in HiveProvider().getRecipeNames()) {
-      Recipe? recipe = await HiveProvider().getRecipeByName(recipeName);
+    for (String recipeName in repository.getRecipeNames()) {
+      Recipe? recipe = await repository.getRecipeByName(recipeName);
 
       // if the recipe exists, which should always be the case
       if (recipe != null) {
@@ -213,7 +212,7 @@ class GDriveSync {
         });
       } // delete the recipe otherwise becaue it would just be causing issues
       else {
-        await HiveProvider().deleteRecipe(recipeName);
+        await repository.deleteRecipe(recipeName);
       }
     }
 
@@ -248,7 +247,7 @@ class GDriveSync {
 
       await IO.importRecipeFromTmp(recipeImport[recipeImport.keys.first]!);
 
-      await HiveProvider().saveRecipe(recipeImport[recipeImport.keys.first]!);
+      await repository.saveRecipe(recipeImport[recipeImport.keys.first]!);
 
       return "success"; // TODO: better use enum
     } else {
@@ -446,14 +445,19 @@ class GDriveSync {
   Future<void> addGDriveRecipe(String recipeName) async {
     assert(driveModificationHistory != null);
 
-    Recipe? uploadRecipe = await HiveProvider().getRecipeByName(recipeName);
+    Recipe? uploadRecipe = await repository.getRecipeByName(recipeName);
     if (uploadRecipe != null) {
       String recipeFolder =
           (await PathProvider.pP.getRecipeDirFull(recipeName)).split('/').last;
       await deleteFileDriveIfExists(recipeFolder + ".zip");
       // Save the recipe data to a ZIP file
-      File recipeZip = File(await IO.saveRecipeZip(
-          await PathProvider.pP.getTmpRecipeDir(), uploadRecipe.name));
+      File recipeZip = File(
+        await IO.saveRecipeZip(
+          await PathProvider.pP.getTmpRecipeDir(),
+          uploadRecipe.name,
+          repository,
+        ),
+      );
 
       // Upload the recipe ZIP file to Google Drive
       await uploadFile(recipeZip.path.split('/').last, recipeZip, "zip");

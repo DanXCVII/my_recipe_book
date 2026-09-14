@@ -8,6 +8,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../ad_related/ad.dart';
@@ -20,6 +21,8 @@ import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/l10n.dart';
 import '../theming.dart';
+import '../local_storage/local_repository.dart';
+import '../local_storage/storage_migration.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/gsync_listtile.dart';
@@ -32,6 +35,7 @@ class Settings extends StatelessWidget {
     return Container(
       child: ListView(
         children: <Widget>[
+          const _MigrationRecoveryNotice(),
           GSyncListtile(),
           BlocListener<AdManagerBloc, AdManagerState>(
             listener: (context, state) {
@@ -497,6 +501,102 @@ class Settings extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class _MigrationRecoveryNotice extends StatefulWidget {
+  const _MigrationRecoveryNotice();
+
+  @override
+  State<_MigrationRecoveryNotice> createState() =>
+      _MigrationRecoveryNoticeState();
+}
+
+class _MigrationRecoveryNoticeState extends State<_MigrationRecoveryNotice> {
+  late Future<List<MigrationIssueSummary>> _issues;
+  bool _retrying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _issues = context.read<LocalRepository>().migrationIssues();
+  }
+
+  void _reload() {
+    setState(() {
+      _issues = context.read<LocalRepository>().migrationIssues();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<MigrationIssueSummary>>(
+      future: _issues,
+      builder: (context, snapshot) {
+        final issues = snapshot.data ?? const <MigrationIssueSummary>[];
+        if (issues.isEmpty) return const SizedBox.shrink();
+        return Card(
+          margin: const EdgeInsets.all(12),
+          color: Theme.of(context).colorScheme.errorContainer,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Some legacy recipe data still needs attention',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${issues.length} item${issues.length == 1 ? '' : 's'} could not be read. '
+                  'The legacy backup will be kept until this is resolved.',
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    TextButton.icon(
+                      onPressed: _retrying
+                          ? null
+                          : () async {
+                              setState(() => _retrying = true);
+                              await context
+                                  .read<StorageMigrationCoordinator>()
+                                  .retrySkippedRecipes();
+                              if (!mounted) return;
+                              setState(() => _retrying = false);
+                              _reload();
+                            },
+                      icon: _retrying
+                          ? const SizedBox.square(
+                              dimension: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {
+                        final report = [
+                          'My Recipe Book storage migration report',
+                          ...issues.map(
+                            (issue) => '${issue.errorCode}: ${issue.legacyKey}',
+                          ),
+                        ].join('\n');
+                        SharePlus.instance.share(ShareParams(text: report));
+                      },
+                      icon: const Icon(Icons.share),
+                      label: const Text('Share report'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 

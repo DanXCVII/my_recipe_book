@@ -8,7 +8,7 @@ import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/tuple.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 
 part 'recipe_calendar_event.dart';
 part 'recipe_calendar_state.dart';
@@ -16,13 +16,15 @@ part 'recipe_calendar_state.dart';
 class RecipeCalendarBloc
     extends Bloc<RecipeCalendarEvent, RecipeCalendarState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
   bool? isVertical;
   late DateTime overviewSelectedDay;
   DateTime? verticalSelectedWeek;
   late StreamSubscription subscription;
   SharedPreferences? prefs;
 
-  RecipeCalendarBloc(this.recipeManagerBloc) : super(LoadingRecipeCalendar()) {
+  RecipeCalendarBloc(this.recipeManagerBloc, this.repository)
+      : super(LoadingRecipeCalendar()) {
     overviewSelectedDay = DateTime.now();
     verticalSelectedWeek = DateTime(
       DateTime.now().year,
@@ -62,7 +64,7 @@ class RecipeCalendarBloc
 
     on<UpdateRecipeEvent>((event, emit) async {
       Map<DateTime, List<String>> recipeCalendar =
-          await HiveProvider().getRecipeCalendar();
+          await repository.getRecipeCalendar();
       // times, for which the recipe is added
       List<DateTime> times = [];
 
@@ -74,7 +76,7 @@ class RecipeCalendarBloc
       add(RemoveRecipeFromCalendarEvent(event.oldRecipeName));
 
       for (DateTime time in times) {
-        await HiveProvider().addRecipeToCalendar(time, event.newRecipeName);
+        await repository.addRecipeToCalendar(time, event.newRecipeName);
       }
 
       emit(await _refreshCalendar());
@@ -88,7 +90,7 @@ class RecipeCalendarBloc
     });
 
     on<AddRecipeToCalendarEvent>((event, emit) async {
-      await HiveProvider().addRecipeToCalendar(event.date, event.recipeName);
+      await repository.addRecipeToCalendar(event.date, event.recipeName);
 
       emit(await _refreshCalendar(
         addedRecipe: Tuple2<DateTime, String>(event.date, event.recipeName),
@@ -96,7 +98,7 @@ class RecipeCalendarBloc
     });
 
     on<RemoveRecipeFromCalendarEvent>((event, emit) async {
-      await HiveProvider().removeRecipeFromCalendar(event.recipeName);
+      await repository.removeRecipeFromCalendar(event.recipeName);
 
       emit(await _refreshCalendar());
     });
@@ -131,7 +133,7 @@ class RecipeCalendarBloc
   Future<RecipeCalendarState> _refreshCalendar(
       {Tuple2<DateTime, String>? addedRecipe}) async {
     Map<DateTime, List<String>> recipeCalendar =
-        await HiveProvider().getRecipeCalendar();
+        await repository.getRecipeCalendar();
 
     if (isVertical == true) {
       Map<DateTime, List<Tuple2<DateTime, Recipe>>> dateRecipes =
@@ -206,9 +208,9 @@ class RecipeCalendarBloc
     selectedKeys.sort();
     for (int i = 0; i < selectedKeys.length; i++) {
       for (String recipeName in recipeCalendar[selectedKeys[i]]!) {
-        if (await HiveProvider().doesRecipeExist(recipeName)) {
+        if (await repository.doesRecipeExist(recipeName)) {
           dateRecipes.add(Tuple2<DateTime, Recipe>(selectedKeys[i],
-              (await HiveProvider().getRecipeByName(recipeName))!));
+              (await repository.getRecipeByName(recipeName))!));
         }
       }
     }

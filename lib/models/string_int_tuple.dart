@@ -1,36 +1,18 @@
 import 'package:equatable/equatable.dart';
-import 'package:hive/hive.dart';
 
-part 'string_int_tuple.g.dart';
-
-@HiveType(typeId: 9)
 class StringIntTuple extends Equatable {
-  @HiveField(0)
   final String text;
-  @HiveField(1)
   final int number;
 
-  StringIntTuple({
-    required this.text,
-    required this.number,
-  });
+  const StringIntTuple({required this.text, required this.number});
 
   factory StringIntTuple.fromMap(Map<String, dynamic> json) =>
-      new StringIntTuple(
-        text: json['text'],
-        number: json['number'],
-      );
+      new StringIntTuple(text: json['text'], number: json['number']);
 
-  Map<String, dynamic> toMap() => {
-        'text': text,
-        'number': number,
-      };
+  Map<String, dynamic> toMap() => {'text': text, 'number': number};
 
   @override
-  List<Object> get props => [
-        text,
-        number,
-      ];
+  List<Object> get props => [text, number];
 
   @override
   String toString() {

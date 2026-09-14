@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
-import '../local_storage/hive.dart';
+import '../local_storage/local_repository.dart';
 import '../models/string_int_tuple.dart';
 
 import '../generated/l10n.dart';
@@ -45,7 +46,7 @@ class _RecipeFilterState extends State<RecipeFilter>
   void initState() {
     super.initState();
     if (widget.showRecipeTagFilter) {
-      recipeTags = HiveProvider().getRecipeTags();
+      recipeTags = context.read<LocalRepository>().getRecipeTags();
     }
     dropdownValue = widget.initialRecipeSort;
   }

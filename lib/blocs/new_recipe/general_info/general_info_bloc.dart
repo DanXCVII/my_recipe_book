@@ -6,7 +6,7 @@ import '../../../constants/global_constants.dart';
 import '../../../models/string_int_tuple.dart';
 
 import '../../../util/helper.dart';
-import '../../../local_storage/hive.dart';
+import '../../../local_storage/local_repository.dart';
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
@@ -15,7 +15,7 @@ part 'general_info_event.dart';
 part 'general_info_state.dart';
 
 class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
-  GeneralInfoBloc() : super(GCanSave()) {
+  GeneralInfoBloc(this.repository) : super(GCanSave()) {
     on<SetCanSave>((event, emit) async {
       emit(GCanSave());
     });
@@ -24,7 +24,7 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       emit(GSavingTmpData());
 
       if (event.isEditing) {
-        await HiveProvider().deleteTmpEditingRecipe();
+        await repository.deleteTmpEditingRecipe();
       }
 
       emit(GCanSave());
@@ -50,15 +50,15 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
           .getRecipeImagePreviewPathFull(recipeName, newImageDataType);
 
       if (!event.editingRecipe) {
-        await HiveProvider().saveTmpRecipe(
-          HiveProvider().getTmpRecipe()!.copyWith(
+        await repository.saveTmpRecipe(
+          repository.getTmpRecipe()!.copyWith(
                 imagePath: recipeImagePathFull,
                 imagePreviewPath: recipeImagePreviewPathFull,
               ),
         );
       } else {
-        await HiveProvider().saveTmpEditingRecipe(
-          HiveProvider().getTmpEditingRecipe()!.copyWith(
+        await repository.saveTmpEditingRecipe(
+          repository.getTmpEditingRecipe()!.copyWith(
                 imagePath: recipeImagePathFull,
                 imagePreviewPath: recipeImagePreviewPathFull,
               ),
@@ -77,7 +77,7 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
 
       Recipe newRecipe;
       if (!event.editingRecipe!) {
-        newRecipe = HiveProvider().getTmpRecipe()!.copyWith(
+        newRecipe = repository.getTmpRecipe()!.copyWith(
             name: event.recipeName,
             preperationTime: event.preperationTime,
             cookingTime: event.cookingTime,
@@ -85,9 +85,9 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
             categories: event.categories,
             tags: event.recipeTags,
             source: event.source);
-        await HiveProvider().saveTmpRecipe(newRecipe);
+        await repository.saveTmpRecipe(newRecipe);
       } else {
-        newRecipe = HiveProvider().getTmpEditingRecipe()!.copyWith(
+        newRecipe = repository.getTmpEditingRecipe()!.copyWith(
               name: event.recipeName,
               preperationTime: event.preperationTime,
               cookingTime: event.cookingTime,
@@ -96,7 +96,7 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
               tags: event.recipeTags,
               source: event.source,
             );
-        await HiveProvider().saveTmpEditingRecipe(newRecipe);
+        await repository.saveTmpEditingRecipe(newRecipe);
       }
 
       if (event.goBack!) {
@@ -110,8 +110,8 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       if (!event.editingRecipe) {
         await IO.deleteRecipeImageIfExists(newRecipeLocalPathString);
 
-        await HiveProvider().saveTmpRecipe(
-          HiveProvider().getTmpRecipe()!.copyWith(
+        await repository.saveTmpRecipe(
+          repository.getTmpRecipe()!.copyWith(
                 imagePath: noRecipeImage,
                 imagePreviewPath: noRecipeImage,
               ),
@@ -119,8 +119,8 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       } else {
         await IO.deleteRecipeImageIfExists(editRecipeLocalPathString);
 
-        await HiveProvider().saveTmpEditingRecipe(
-          HiveProvider().getTmpEditingRecipe()!.copyWith(
+        await repository.saveTmpEditingRecipe(
+          repository.getTmpEditingRecipe()!.copyWith(
                 imagePath: noRecipeImage,
                 imagePreviewPath: noRecipeImage,
               ),
@@ -128,4 +128,6 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
       }
     });
   }
+
+  final LocalRepository repository;
 }

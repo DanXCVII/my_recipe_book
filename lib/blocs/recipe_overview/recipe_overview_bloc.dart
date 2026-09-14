@@ -7,7 +7,7 @@ import 'package:equatable/equatable.dart';
 import '../../models/string_int_tuple.dart';
 
 import '../../util/helper.dart';
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/enums.dart';
 import '../../models/recipe.dart';
 import '../../models/recipe_sort.dart';
@@ -19,6 +19,7 @@ part 'recipe_overview_state.dart';
 class RecipeOverviewBloc
     extends Bloc<RecipeOverviewEvent, RecipeOverviewState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
   late StreamSubscription subscription;
 
   Vegetable? currentVegetableFilter;
@@ -26,7 +27,10 @@ class RecipeOverviewBloc
 
   List<Recipe> unfilteredRecipes = [];
 
-  RecipeOverviewBloc({required this.recipeManagerBloc})
+  RecipeOverviewBloc({
+    required this.recipeManagerBloc,
+    required this.repository,
+  })
       : super(LoadingRecipeOverview()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeOverview) {
@@ -53,7 +57,7 @@ class RecipeOverviewBloc
     });
 
     on<LoadCategoryRecipeOverview>((event, emit) async {
-      final Recipe? randomRecipe = (await HiveProvider()
+      final Recipe? randomRecipe = (await repository
           .getRandomRecipeOfCategory(category: event.category));
       final String? randomRecipeImage =
           randomRecipe != null ? randomRecipe.imagePreviewPath : null;
@@ -64,9 +68,9 @@ class RecipeOverviewBloc
       ));
 
       final RSort categorySort =
-          await HiveProvider().getSortOrder(event.category);
+          await repository.getSortOrder(event.category);
       final List<Recipe> recipes =
-          await HiveProvider().getCategoryRecipes(event.category);
+          await repository.getCategoryRecipes(event.category);
       final List<Recipe> sortedRecipes = sortRecipes(categorySort, recipes);
 
       unfilteredRecipes = List<Recipe>.from(sortedRecipes);
@@ -81,7 +85,7 @@ class RecipeOverviewBloc
 
     on<LoadVegetableRecipeOverview>((event, emit) async {
       final Recipe? randomRecipe =
-          await HiveProvider().getRandomRecipeOfVegetable(event.vegetable);
+          await repository.getRandomRecipeOfVegetable(event.vegetable);
       final String? randomRecipeImage =
           randomRecipe != null ? randomRecipe.imagePreviewPath : null;
 
@@ -91,7 +95,7 @@ class RecipeOverviewBloc
       ));
 
       final List<Recipe> recipes =
-          await HiveProvider().getVegetableRecipes(event.vegetable);
+          await repository.getVegetableRecipes(event.vegetable);
 
       unfilteredRecipes = List<Recipe>.from(recipes);
 
@@ -113,7 +117,7 @@ class RecipeOverviewBloc
         unfilteredRecipes = sortedRecipes;
 
         if ((state as LoadedRecipeOverview).category != null) {
-          await HiveProvider().changeSortOrder(
+          await repository.changeSortOrder(
               newRecipeSort, (state as LoadedRecipeOverview).category!);
         }
 
@@ -264,7 +268,7 @@ class RecipeOverviewBloc
         unfilteredRecipes = sortedRecipes;
 
         if ((state as LoadedRecipeOverview).category != null) {
-          await HiveProvider().changeSortOrder(
+          await repository.changeSortOrder(
               newRecipeSort, (state as LoadedRecipeOverview).category!);
         }
 
@@ -281,7 +285,7 @@ class RecipeOverviewBloc
 
     on<LoadRecipeTagRecipeOverview>((event, emit) async {
       final Recipe? randomRecipe =
-          await HiveProvider().getRandomRecipeOfRecipeTag(event.recipeTag.text);
+          await repository.getRandomRecipeOfRecipeTag(event.recipeTag.text);
       final String? randomRecipeImage =
           randomRecipe != null ? randomRecipe.imagePreviewPath : null;
 
@@ -291,7 +295,7 @@ class RecipeOverviewBloc
       ));
 
       final List<Recipe> recipes =
-          await HiveProvider().getRecipeTagRecipes(event.recipeTag.text);
+          await repository.getRecipeTagRecipes(event.recipeTag.text);
       unfilteredRecipes = List<Recipe>.from(recipes);
 
       emit(LoadedRecipeOverview(

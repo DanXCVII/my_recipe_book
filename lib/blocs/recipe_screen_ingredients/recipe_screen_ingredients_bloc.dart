@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/ingredient.dart';
 import '../shopping_cart/shopping_cart_bloc.dart';
 
@@ -11,8 +11,12 @@ part 'recipe_screen_ingredients_state.dart';
 class RecipeScreenIngredientsBloc
     extends Bloc<RecipeScreenIngredientsEvent, RecipeScreenIngredientsState> {
   final ShoppingCartBloc shoppingCartBloc;
+  final LocalRepository repository;
 
-  RecipeScreenIngredientsBloc({required this.shoppingCartBloc})
+  RecipeScreenIngredientsBloc({
+    required this.shoppingCartBloc,
+    required this.repository,
+  })
       : super(InitialRecipeScreenIngredientsState()) {
     on<InitializeIngredients>((event, emit) async {
       List<List<CheckableIngredient>> checkableIngredients = [[]];
@@ -24,7 +28,7 @@ class RecipeScreenIngredientsBloc
             ingred.name,
             ingred.amount,
             ingred.unit,
-            HiveProvider().checkForRecipeIngredient(event.recipeName, ingred),
+            repository.checkForRecipeIngredient(event.recipeName, ingred),
           ));
         }
       }
@@ -41,7 +45,7 @@ class RecipeScreenIngredientsBloc
 
     on<AddToCart>((event, emit) async {
       if (state is LoadedRecipeIngredients) {
-        await HiveProvider()
+        await repository
             .addMultipleIngredientsToCart(event.recipeName, event.ingredients);
 
         List<Ingredient> checkedIngredients = event.ingredients;
@@ -74,7 +78,7 @@ class RecipeScreenIngredientsBloc
 
     on<RemoveFromCart>((event, emit) async {
       if (state is LoadedRecipeIngredients) {
-        await HiveProvider()
+        await repository
             .removeIngredientsFromCart(event.recipeName, event.ingredients);
 
         List<Ingredient> checkedIngredients = event.ingredients;

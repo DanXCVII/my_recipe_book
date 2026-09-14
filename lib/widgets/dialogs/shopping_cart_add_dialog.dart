@@ -7,7 +7,7 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'package:my_recipe_book/generated/l10n.dart';
 import '../../util/helper.dart';
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/ingredient.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 
@@ -124,7 +124,7 @@ class _ShoppingCartAddDialogContentState
                             Container(height: 3),
                             SimpleAutoCompleteTextField(
                               key: autoCompletionTextField,
-                              suggestions: HiveProvider().getIngredientNames(),
+                              suggestions: context.read<LocalRepository>().getIngredientNames(),
                               controller: ingredientNameController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
@@ -172,7 +172,7 @@ class _ShoppingCartAddDialogContentState
                       : SimpleAutoCompleteTextField(
                           key: autoCompletionTextField,
                           focusNode: widget.focus,
-                          suggestions: HiveProvider().getIngredientNames(),
+                          suggestions: context.read<LocalRepository>().getIngredientNames(),
                           controller: ingredientNameController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),

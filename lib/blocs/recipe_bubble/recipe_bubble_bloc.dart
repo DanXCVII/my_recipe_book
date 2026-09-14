@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/recipe.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;
 
@@ -12,9 +12,13 @@ part 'recipe_bubble_state.dart';
 
 class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
   late StreamSubscription subscription;
 
-  RecipeBubbleBloc({required this.recipeManagerBloc})
+  RecipeBubbleBloc({
+    required this.recipeManagerBloc,
+    required this.repository,
+  })
       : super(LoadedRecipeBubbles([])) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeBubbles) {
@@ -67,7 +71,7 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
         for (int i = 0;
             i < (state as LoadedRecipeBubbles).recipes.length;
             i++) {
-          Recipe? recipe = await HiveProvider()
+          Recipe? recipe = await repository
               .getRecipeByName((state as LoadedRecipeBubbles).recipes[i].name);
           if (recipe != null) {
             newRecipeList.add(recipe);

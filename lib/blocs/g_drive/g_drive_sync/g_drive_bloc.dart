@@ -15,13 +15,14 @@ part 'g_drive_state.dart';
 class GDriveSyncBloc extends Bloc<GDriveSyncEvent, GDriveSyncState> {
   late StreamSubscription<DriveSyncStatus> listener;
   final BuildContext context;
+  final GDriveSync driveSync;
 
-  GDriveSyncBloc(this.context) : super(GDriveIdle()) {
+  GDriveSyncBloc(this.context, this.driveSync) : super(GDriveIdle()) {
     on<GDriveStartSync>((event, emit) async {
       emit(GDriveSyncing());
       BlocProvider.of<RecipeModsBloc>(context).add(BlockMods());
 
-      listener = GDriveSync.gD.synchornizeGDrive().listen(
+      listener = driveSync.synchornizeGDrive().listen(
         (i) async {
           switch (i.status) {
             case Status.DELETED_LOCAL:

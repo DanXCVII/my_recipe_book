@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 
 part 'nutrition_manager_event.dart';
 part 'nutrition_manager_state.dart';
@@ -9,15 +9,16 @@ part 'nutrition_manager_state.dart';
 class NutritionManagerBloc
     extends Bloc<NutritionManagerEvent, NutritionManagerState> {
   List<String> modifiedRecipeNutritions = [];
+  final LocalRepository repository;
 
-  NutritionManagerBloc() : super(InitialNutritionManagerState()) {
+  NutritionManagerBloc(this.repository) : super(InitialNutritionManagerState()) {
     on<LoadNutritionManager>((event, emit) async {
       final List<String> nutritions =
-          List<String>.from(HiveProvider().getNutritions());
+          List<String>.from(repository.getNutritions());
 
       if (event.modifiedRecipe != null) {
         List<String> editingRecipeNutritions =
-            (await HiveProvider().getRecipeByName(event.modifiedRecipe!))!
+            (await repository.getRecipeByName(event.modifiedRecipe!))!
                 .nutritions
                 .map((n) => n.name)
                 .toList();
@@ -37,7 +38,7 @@ class NutritionManagerBloc
 
     on<AddNutrition>((event, emit) async {
       if (state is LoadedNutritionManager) {
-        await HiveProvider().addNutrition(event.nutrition);
+        await repository.addNutrition(event.nutrition);
 
         final List<String> nutritions =
             List<String>.from((state as LoadedNutritionManager).nutritions);
@@ -50,7 +51,7 @@ class NutritionManagerBloc
     on<DeleteNutrition>((event, emit) async {
       if (state is LoadedNutritionManager) {
         if (!modifiedRecipeNutritions.contains(event.nutrition)) {
-          await HiveProvider().deleteNutrition(event.nutrition);
+          await repository.deleteNutrition(event.nutrition);
         }
         final List<String> nutritions =
             List<String>.from((state as LoadedNutritionManager).nutritions)
@@ -64,9 +65,9 @@ class NutritionManagerBloc
       if (state is LoadedNutritionManager) {
         if (modifiedRecipeNutritions.contains(event.oldNutrition)) {
           modifiedRecipeNutritions.remove(event.oldNutrition);
-          await HiveProvider().addNutrition(event.updatedNutrition);
+          await repository.addNutrition(event.updatedNutrition);
         } else {
-          await HiveProvider()
+          await repository
               .renameNutrition(event.oldNutrition, event.updatedNutrition);
         }
         final List<String> nutritions = (state as LoadedNutritionManager)
@@ -82,7 +83,7 @@ class NutritionManagerBloc
 
     on<MoveNutrition>((event, emit) async {
       if (state is LoadedNutritionManager) {
-        await HiveProvider().moveNutrition(event.oldIndex, event.newIndex);
+        await repository.moveNutrition(event.oldIndex, event.newIndex);
 
         List<String> newNutritionList =
             List<String>.from((state as LoadedNutritionManager).nutritions);

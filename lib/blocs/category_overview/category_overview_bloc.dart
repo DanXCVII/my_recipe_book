@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/recipe.dart';
 import '../../models/tuple.dart';
 import '../random_recipe_explorer/random_recipe_explorer_bloc.dart';
@@ -17,9 +17,13 @@ part 'category_overview_state.dart';
 class CategoryOverviewBloc
     extends Bloc<CategoryOverviewEvent, CategoryOverviewState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
   late StreamSubscription subscription;
 
-  CategoryOverviewBloc({required this.recipeManagerBloc})
+  CategoryOverviewBloc({
+    required this.recipeManagerBloc,
+    required this.repository,
+  })
       : super(LoadingCategoryOverview()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedCategoryOverview) {
@@ -43,7 +47,7 @@ class CategoryOverviewBloc
     });
 
     on<COLoadCategoryOverview>((event, emit) async {
-      if (event.reopenBoxes) await HiveProvider().reopenBoxes();
+      if (event.reopenBoxes) await repository.reopenBoxes();
 
       final List<Tuple2<String, String>> categoryRandomImageList =
           await _getCategoriesRandomImage();
@@ -140,7 +144,7 @@ class CategoryOverviewBloc
       // if the current category shows the image of the to be deleted recipe
       if (t.item2 == recipe.imagePath) {
         // get a new randomImage
-        Recipe? randomRecipe = await HiveProvider().getRandomRecipeOfCategory(
+        Recipe? randomRecipe = await repository.getRandomRecipeOfCategory(
             category: t.item1, excludedRecipe: recipe);
 
         String? newRandomImage =
@@ -162,12 +166,12 @@ class CategoryOverviewBloc
   }
 
   Future<List<Tuple2<String, String>>> _getCategoriesRandomImage() async {
-    final List<String> categories = HiveProvider().getCategoryNames();
+    final List<String> categories = repository.getCategoryNames();
     final List<Tuple2<String, String>> categoryRandomImageList = [];
 
     for (String category in categories) {
       Recipe? randomRecipe =
-          await HiveProvider().getRandomRecipeOfCategory(category: category);
+          await repository.getRandomRecipeOfCategory(category: category);
       String? randomImage =
           randomRecipe == null ? null : randomRecipe.imagePath;
       if (randomImage != null) {
@@ -202,7 +206,7 @@ class CategoryOverviewBloc
           // add the category with the image of the recipe
           categoryRandomImageList.add(Tuple2<String, String>(
               category,
-              (await HiveProvider()
+              (await repository
                       .getRandomRecipeOfCategory(category: category))!
                   .imagePath));
         }

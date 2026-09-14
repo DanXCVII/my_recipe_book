@@ -13,7 +13,7 @@ import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/l10n.dart';
-import '../local_storage/hive.dart';
+import '../local_storage/local_repository.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
 import '../models/string_int_tuple.dart';
@@ -63,8 +63,8 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
   Vegetable? _selectedVegetable;
 
   _IngredientSearchScreenState() {
-    _recipeTags = HiveProvider().getRecipeTags();
-    _categories = HiveProvider().getCategoryNames();
+    _recipeTags = context.read<LocalRepository>().getRecipeTags();
+    _categories = context.read<LocalRepository>().getCategoryNames();
   }
 
   @override
@@ -297,7 +297,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                       EdgeInsets.only(bottom: 10.0, top: index == 0 ? 5 : 0),
                   child: SimpleAutoCompleteTextField(
                     key: _autoCompletionKeys[index],
-                    suggestions: HiveProvider().getIngredientNames(),
+                    suggestions: context.read<LocalRepository>().getIngredientNames(),
                     controller: _controllers[index],
                     // style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
@@ -430,7 +430,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
               padding: EdgeInsets.fromLTRB(20, index == 0 ? 20 : 0, 20, 10),
               child: SimpleAutoCompleteTextField(
                 key: _autoCompletionKeys[index],
-                suggestions: HiveProvider().getIngredientNames(),
+                suggestions: context.read<LocalRepository>().getIngredientNames(),
                 controller: _controllers[index],
                 style: new TextStyle(color: Colors.white),
                 decoration: InputDecoration(

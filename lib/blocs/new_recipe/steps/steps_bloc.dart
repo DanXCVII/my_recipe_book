@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../local_storage/hive.dart';
+import '../../../local_storage/local_repository.dart';
 import '../../../models/recipe.dart';
 import '../step_images/step_images_bloc.dart';
 
@@ -15,8 +15,9 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
   List<String> stepTitles = [""];
   List<String> steps = [];
   late StreamSubscription subscription;
+  final LocalRepository repository;
 
-  StepsBloc(StepImagesBloc stepImagesBloc)
+  StepsBloc(StepImagesBloc stepImagesBloc, this.repository)
       : super(SCanSave(isValid: true, time: DateTime.now())) {
     subscription = stepImagesBloc.stream.listen((siState) {
       if (state is SCanSave) {
@@ -64,23 +65,23 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
 
         Recipe newRecipe;
         if (!event.editingRecipe) {
-          newRecipe = HiveProvider().getTmpRecipe()!.copyWith(
+          newRecipe = repository.getTmpRecipe()!.copyWith(
                 notes: event.notes,
                 stepImages: stepImages,
                 effort: event.complexity,
                 steps: recipeSteps,
                 stepTitles: recipeStepTitles,
               );
-          await HiveProvider().saveTmpRecipe(newRecipe);
+          await repository.saveTmpRecipe(newRecipe);
         } else {
-          newRecipe = HiveProvider().getTmpEditingRecipe()!.copyWith(
+          newRecipe = repository.getTmpEditingRecipe()!.copyWith(
                 notes: event.notes,
                 stepImages: stepImages,
                 effort: event.complexity,
                 steps: recipeSteps,
                 stepTitles: recipeStepTitles,
               );
-          await HiveProvider().saveTmpEditingRecipe(newRecipe);
+          await repository.saveTmpEditingRecipe(newRecipe);
         }
 
         if (event.goBack) {

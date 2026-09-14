@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import '../../../models/nutrition.dart';
 
-import '../../../local_storage/hive.dart';
+import '../../../local_storage/local_repository.dart';
 import '../../../local_storage/io_operations.dart' as IO;
 import '../../../models/recipe.dart';
 import '../../recipe_manager/recipe_manager_bloc.dart';
@@ -13,8 +13,9 @@ import 'nutritions_state.dart';
 
 class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
   bool finishedEditing = false;
+  final LocalRepository repository;
 
-  NutritionsBloc() : super(NCanSave()) {
+  NutritionsBloc(this.repository) : super(NCanSave()) {
     on<SetCanSave>((event, emit) async {
       emit(NCanSave());
     });
@@ -27,31 +28,31 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
         emit(NEditingFinishedGoBack());
       } else {
         for (Nutrition n in event.nutritions) {
-          await HiveProvider().addNutrition(n.name);
+          await repository.addNutrition(n.name);
         }
         emit(NEditingFinished());
       }
 
       Recipe? newRecipe;
       if (event.editingRecipeName == null) {
-        Recipe nutritionRecipe = HiveProvider().getTmpRecipe()!.copyWith(
+        Recipe nutritionRecipe = repository.getTmpRecipe()!.copyWith(
               nutritions: event.nutritions,
             );
 
         if (event.goBack) {
-          await HiveProvider().saveTmpRecipe(nutritionRecipe);
+          await repository.saveTmpRecipe(nutritionRecipe);
         } else {
           newRecipe = (await IO.fixImagePaths(nutritionRecipe));
-          await HiveProvider().resetTmpRecipe();
+          await repository.resetTmpRecipe();
           await IO.deleteRecipeData("tmp");
           event.recipeManagerBloc.add(RMAddRecipes([newRecipe]));
         }
       } else {
-        Recipe nutritionRecipe = HiveProvider().getTmpEditingRecipe()!.copyWith(
+        Recipe nutritionRecipe = repository.getTmpEditingRecipe()!.copyWith(
               nutritions: event.nutritions,
             );
         if (event.goBack) {
-          await HiveProvider().saveTmpEditingRecipe(nutritionRecipe);
+          await repository.saveTmpEditingRecipe(nutritionRecipe);
         }
 
         if (!event.goBack) {
@@ -66,7 +67,7 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
               await IO.deleteRecipeData(event.editingRecipeName!);
             }
             imageCache.clear();
-            await HiveProvider().deleteTmpEditingRecipe();
+            await repository.deleteTmpEditingRecipe();
             event.recipeManagerBloc.add(RMAddRecipes([newRecipe]));
           }
         }

@@ -1,9 +1,10 @@
 import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:my_recipe_book/generated/l10n.dart';
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 
 class Consts {
   Consts._();
@@ -76,7 +77,7 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
                           key: autoCompletionTextField,
                           focusNode: widget.focus,
                           submitOnSuggestionTap: true,
-                          suggestions: HiveProvider().getRecipeNames(),
+                          suggestions: context.read<LocalRepository>().getRecipeNames(),
                           controller: recipeNameController,
                           textSubmitted: (_) {
                             validateAddModifyItem();
@@ -106,7 +107,7 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
   }
 
   void validateAddModifyItem() {
-    if (HiveProvider().getRecipeNames().contains(recipeNameController!.text)) {
+    if (context.read<LocalRepository>().getRecipeNames().contains(recipeNameController!.text)) {
       widget.save(recipeNameController!.text);
       Future.delayed(Duration(milliseconds: 100))
           .then((_) => Navigator.pop(context));

@@ -8,9 +8,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_recipe_book/blocs/g_drive/g_drive_sign_in/g_drive_sign_in_bloc.dart';
 import 'package:my_recipe_book/blocs/g_drive/g_drive_sync/g_drive_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_mods/recipe_mods_bloc.dart';
+
 import 'blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
 import 'blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import 'screens/recipe_calendar_screen.dart';
+
 import 'package:page_transition/page_transition.dart';
 
 import 'theming.dart';
@@ -42,7 +44,9 @@ import 'blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen_bloc.dart';
 import 'blocs/website_import/website_import_bloc.dart';
+
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import 'screens/splash_screen.dart';
 import 'screens/about_me.dart';
 import 'screens/import_pc_info.dart';
@@ -61,6 +65,10 @@ import 'screens/nutrition_manager.dart';
 import 'screens/recipe_overview.dart';
 import 'screens/recipe_screen.dart';
 import 'screens/recipe_tag_manager_screen.dart';
+import 'local_storage/local_repository.dart';
+import 'local_storage/storage_migration.dart';
+import 'network_storage/g_drive_sync.dart';
+import 'services/migration_monitor.dart';
 
 /// for some devices, if accessing certain domains causes a 'certificate expired' error..
 /// this seems to be the only fix
@@ -68,567 +76,651 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (
+        X509Certificate cert,
+        String host,
+        int port,
+      ) => true;
   }
 }
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
   HttpOverrides.global = new MyHttpOverrides();
+
+  final repository = DriftRepository();
+  final monitor = await MigrationMonitor.initialize();
+  final migrationCoordinator = StorageMigrationCoordinator(repository, monitor);
+  final driveSync = GDriveSync(repository);
 
   runApp(
     CustomTheme(
       initialThemeKey: MyThemeKeys.LIGHT,
-      child: MyApp(),
+      child: MyApp(
+        repository: repository,
+        migrationCoordinator: migrationCoordinator,
+        driveSync: driveSync,
+      ),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  MyApp();
+  const MyApp({
+    super.key,
+    required this.repository,
+    required this.migrationCoordinator,
+    required this.driveSync,
+  });
+
+  final LocalRepository repository;
+  final StorageMigrationCoordinator migrationCoordinator;
+  final GDriveSync driveSync;
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiRepositoryProvider(
       providers: [
-        BlocProvider<RecipeManagerBloc>(
-          create: (context) => RecipeManagerBloc(),
-        ),
-        BlocProvider<RecipeBubbleBloc>(
-          create: (context) => RecipeBubbleBloc(
-              recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(context)),
-        ),
-        BlocProvider<AdManagerBloc>(
-          create: (context) => AdManagerBloc()..add(InitializeAds()),
-        ),
-        BlocProvider<RecipeModsBloc>(
-          create: (context) => RecipeModsBloc(),
+        RepositoryProvider<LocalRepository>.value(value: repository),
+        RepositoryProvider<StorageMigrationCoordinator>.value(
+          value: migrationCoordinator,
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: [
-          S.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<RecipeManagerBloc>(
+            create: (context) => RecipeManagerBloc(repository),
+          ),
+          BlocProvider<RecipeBubbleBloc>(
+            create: (context) => RecipeBubbleBloc(
+              recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(context),
+              repository: repository,
+            ),
+          ),
+          BlocProvider<AdManagerBloc>(
+            create: (context) => AdManagerBloc()..add(InitializeAds()),
+          ),
+          BlocProvider<RecipeModsBloc>(create: (context) => RecipeModsBloc()),
         ],
-        color: Colors.amber,
-        supportedLocales: S.delegate.supportedLocales,
-        showPerformanceOverlay: false,
-        theme: CustomTheme.of(context),
-        initialRoute: "/",
-        onGenerateRoute: (settings) {
-          switch (settings.name) {
-            case "/":
-              return PageRouteBuilder(
-                pageBuilder: (context, animation1, animation2) =>
-                    BlocProvider<SplashScreenBloc>(
-                  create: (context) => SplashScreenBloc()
-                    ..add(
-                      SPInitializeData(context),
-                    ),
-                  child: SplashScreen(),
-                ),
-              );
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          localizationsDelegates: [
+            S.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          color: Colors.amber,
+          supportedLocales: S.delegate.supportedLocales,
+          showPerformanceOverlay: false,
+          theme: CustomTheme.of(context),
+          initialRoute: "/",
+          onGenerateRoute: (settings) {
+            switch (settings.name) {
+              case "/":
+                return PageRouteBuilder(
+                  pageBuilder: (context, animation1, animation2) =>
+                      BlocProvider<SplashScreenBloc>(
+                        create: (context) =>
+                            SplashScreenBloc(migrationCoordinator)
+                              ..add(SPInitializeData(context)),
+                        child: SplashScreen(),
+                      ),
+                );
 
-            case "/home":
-              final MyHomePageArguments? args =
-                  settings.arguments as MyHomePageArguments?;
+              case "/home":
+                final MyHomePageArguments? args =
+                    settings.arguments as MyHomePageArguments?;
 
-              return PageTransition(
-                type: PageTransitionType.fade,
-                settings: RouteSettings(name: "recipeRoute"),
-                child: MultiBlocProvider(
-                  providers: [
-                    BlocProvider<AppBloc>(
-                      create: (context) => AppBloc()
-                        ..add(InitializeData(
-                          args!.context,
-                          args.recipeCategoryOverview!,
-                          args.showShoppingCartSummary!,
-                          args.showIntro!,
-                        )),
-                    ),
-                    BlocProvider<CategoryOverviewBloc>(
-                      create: (context) => CategoryOverviewBloc(
-                        recipeManagerBloc:
-                            BlocProvider.of<RecipeManagerBloc>(context),
-                      )..add(COLoadCategoryOverview()),
-                    ),
-                    BlocProvider<RecipeCategoryOverviewBloc>(
-                      create: (context) => RecipeCategoryOverviewBloc(
-                        recipeManagerBloc:
-                            BlocProvider.of<RecipeManagerBloc>(context),
-                      )..add(RCOLoadRecipeCategoryOverview()),
-                    ),
-                    BlocProvider<FavoriteRecipesBloc>(
+                return PageTransition(
+                  type: PageTransitionType.fade,
+                  settings: RouteSettings(name: "recipeRoute"),
+                  child: MultiBlocProvider(
+                    providers: [
+                      BlocProvider<AppBloc>(
+                        create: (context) => AppBloc()
+                          ..add(
+                            InitializeData(
+                              args!.context,
+                              args.recipeCategoryOverview!,
+                              args.showShoppingCartSummary!,
+                              args.showIntro!,
+                            ),
+                          ),
+                      ),
+                      BlocProvider<CategoryOverviewBloc>(
+                        create: (context) => CategoryOverviewBloc(
+                          recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                            context,
+                          ),
+                          repository: repository,
+                        )..add(COLoadCategoryOverview()),
+                      ),
+                      BlocProvider<RecipeCategoryOverviewBloc>(
+                        create: (context) => RecipeCategoryOverviewBloc(
+                          recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                            context,
+                          ),
+                          repository: repository,
+                        )..add(RCOLoadRecipeCategoryOverview()),
+                      ),
+                      BlocProvider<FavoriteRecipesBloc>(
                         create: (context) => FavoriteRecipesBloc(
-                              recipeManagerBloc:
-                                  BlocProvider.of<RecipeManagerBloc>(context),
-                            )..add(LoadFavorites())),
-                    BlocProvider<RandomRecipeExplorerBloc>(
-                      create: (context) => RandomRecipeExplorerBloc(
-                        recipeManagerBloc:
-                            BlocProvider.of<RecipeManagerBloc>(context),
-                      )..add(InitializeRandomRecipeExplorer()),
-                    ),
-                    BlocProvider<ImportRecipeBloc>(
+                          recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                            context,
+                          ),
+                          repository: repository,
+                        )..add(LoadFavorites()),
+                      ),
+                      BlocProvider<RandomRecipeExplorerBloc>(
+                        create: (context) => RandomRecipeExplorerBloc(
+                          recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                            context,
+                          ),
+                          repository: repository,
+                        )..add(InitializeRandomRecipeExplorer()),
+                      ),
+                      BlocProvider<ImportRecipeBloc>(
                         create: (context) => ImportRecipeBloc(
-                            BlocProvider.of<RecipeManagerBloc>(context))),
-                    BlocProvider<ShoppingCartBloc>(
-                      create: (context) => ShoppingCartBloc(
-                          BlocProvider.of<RecipeManagerBloc>(context))
-                        ..add(LoadShoppingCart()),
-                    ),
-                    BlocProvider<RecipeCalendarBloc>(
-                      create: (context) => RecipeCalendarBloc(
-                          BlocProvider.of<RecipeManagerBloc>(context))
-                        ..add(LoadRecipeCalendarEvent()),
-                    ),
-                    BlocProvider<GDriveSignInBloc>(
-                      create: (context) =>
-                          GDriveSignInBloc()..add(GDriveSilentSignIn()),
-                    ),
-                    BlocProvider<GDriveSyncBloc>(
-                      create: (context) => GDriveSyncBloc(context),
-                    )
-                  ],
-                  child: MyHomePage(
-                    showIntro: args!.showIntro,
+                          BlocProvider.of<RecipeManagerBloc>(context),
+                          repository,
+                        ),
+                      ),
+                      BlocProvider<ShoppingCartBloc>(
+                        create: (context) => ShoppingCartBloc(
+                          BlocProvider.of<RecipeManagerBloc>(context),
+                          repository,
+                        )..add(LoadShoppingCart()),
+                      ),
+                      BlocProvider<RecipeCalendarBloc>(
+                        create: (context) => RecipeCalendarBloc(
+                          BlocProvider.of<RecipeManagerBloc>(context),
+                          repository,
+                        )..add(LoadRecipeCalendarEvent()),
+                      ),
+                      BlocProvider<GDriveSignInBloc>(
+                        create: (context) =>
+                            GDriveSignInBloc(driveSync)
+                              ..add(GDriveSilentSignIn()),
+                      ),
+                      BlocProvider<GDriveSyncBloc>(
+                        create: (context) => GDriveSyncBloc(context, driveSync),
+                      ),
+                    ],
+                    child: MyHomePage(showIntro: args!.showIntro),
                   ),
-                ),
-              );
+                );
 
-            case "/recipe-screen":
-              final RecipeScreenArguments? args =
-                  settings.arguments as RecipeScreenArguments?;
+              case "/recipe-screen":
+                final RecipeScreenArguments? args =
+                    settings.arguments as RecipeScreenArguments?;
 
-              Ads.showBottomBannerAd();
+                Ads.showBottomBannerAd();
 
-              return MaterialPageRoute(
-                settings: RouteSettings(name: "recipe-screen"),
-                builder: (context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<RecipeScreenBloc>(
+                return MaterialPageRoute(
+                  settings: RouteSettings(name: "recipe-screen"),
+                  builder: (context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider<RecipeScreenBloc>(
                         create: (context) => RecipeScreenBloc(
-                              args!.recipe!,
-                              args.recipeManagerBloc,
-                            )..add(InitRecipeScreen(
-                                args.recipe!,
-                              ))),
-                    BlocProvider<RecipeScreenIngredientsBloc>(
-                        create: (context) => RecipeScreenIngredientsBloc(
-                            shoppingCartBloc: args!.shoppingCartBloc)
-                          ..add(InitializeIngredients(
-                            args.recipe!.name,
-                            args.recipe!.servings,
-                            args.recipe!.ingredients,
-                          ))),
-                    BlocProvider<AnimatedStepperBloc>(
-                      create: (context) => AnimatedStepperBloc(
-                          initialStep: args!.initialSelectedStep),
-                    ),
-                    BlocProvider<ShoppingCartBloc>.value(
-                        value: args!.shoppingCartBloc),
-                    BlocProvider<RecipeCalendarBloc>.value(
-                        value: args.recipeCalendarBloc),
-                  ],
-                  child: Ads().getAdPage(
+                          args!.recipe!,
+                          args.recipeManagerBloc,
+                          repository,
+                        )..add(InitRecipeScreen(args.recipe!)),
+                      ),
+                      BlocProvider<RecipeScreenIngredientsBloc>(
+                        create: (context) =>
+                            RecipeScreenIngredientsBloc(
+                              shoppingCartBloc: args!.shoppingCartBloc,
+                              repository: repository,
+                            )..add(
+                              InitializeIngredients(
+                                args.recipe!.name,
+                                args.recipe!.servings,
+                                args.recipe!.ingredients,
+                              ),
+                            ),
+                      ),
+                      BlocProvider<AnimatedStepperBloc>(
+                        create: (context) => AnimatedStepperBloc(
+                          initialStep: args!.initialSelectedStep,
+                        ),
+                      ),
+                      BlocProvider<ShoppingCartBloc>.value(
+                        value: args!.shoppingCartBloc,
+                      ),
+                      BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc,
+                      ),
+                    ],
+                    child: Ads().getAdPage(
                       RecipeScreen(
                         heroImageTag: args.heroImageTag,
                         initialScrollOffset: args.initialScrollOffset,
                       ),
-                      context),
-                ),
-              );
-            case "/add-recipe/general-info":
-              final GeneralInfoArguments? args =
-                  settings.arguments as GeneralInfoArguments?;
-
-              return MaterialPageRoute(
-                builder: (context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<ClearRecipeBloc>(
-                      create: (context) => ClearRecipeBloc(),
+                      context,
                     ),
-                    BlocProvider<GeneralInfoBloc>(
-                      create: (context) => GeneralInfoBloc(),
-                    ),
-                    BlocProvider<CategoryManagerBloc>(
-                      create: (context) => CategoryManagerBloc(
-                          recipeManagerBloc:
-                              BlocProvider.of<RecipeManagerBloc>(context),
-                          selectedCategories: args!.modifiedRecipe!.categories)
-                        ..add(InitializeCategoryManager()),
-                    ),
-                    BlocProvider<RecipeTagManagerBloc>(
-                      create: (context) => RecipeTagManagerBloc(
-                          recipeManagerBloc:
-                              BlocProvider.of<RecipeManagerBloc>(context),
-                          selectedTags: args!.modifiedRecipe!.tags)
-                        ..add(
-                          InitializeRecipeTagManager(),
-                        ),
-                    ),
-                    BlocProvider<ShoppingCartBloc>.value(
-                        value: args!.shoppingCartBloc),
-                    BlocProvider<RecipeCalendarBloc>.value(
-                        value: args.recipeCalendarBloc),
-                  ],
-                  child: GeneralInfoScreen(
-                    modifiedRecipe: args.modifiedRecipe,
-                    editingRecipeName: args.editingRecipeName,
                   ),
-                ),
-              );
+                );
+              case "/add-recipe/general-info":
+                final GeneralInfoArguments? args =
+                    settings.arguments as GeneralInfoArguments?;
 
-            case "/add-recipe/ingredients":
-              final IngredientsArguments? args =
-                  settings.arguments as IngredientsArguments?;
-
-              return MaterialPageRoute(
-                builder: (context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<IngredientsBloc>(
-                        create: (context) => IngredientsBloc()),
-                    BlocProvider<ShoppingCartBloc>.value(
-                        value: args!.shoppingCartBloc),
-                    BlocProvider<RecipeCalendarBloc>.value(
-                        value: args.recipeCalendarBloc),
-                    BlocProvider<IngredientsSectionBloc>(
-                      create: (context) => IngredientsSectionBloc()
-                        ..add(
-                          InitializeIngredientsSection(
-                            args.modifiedRecipe.ingredientsGlossary,
-                            args.modifiedRecipe.ingredients,
-                          ),
-                        ),
-                    ),
-                  ],
-                  child: IngredientsAddScreen(
-                    modifiedRecipe: args.modifiedRecipe,
-                    editingRecipeName: args.editingRecipeName,
-                  ),
-                ),
-              );
-
-            case "/add-recipe/steps":
-              final StepsArguments? args =
-                  settings.arguments as StepsArguments?;
-
-              return MaterialPageRoute(
-                builder: (context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<StepImagesBloc>(
-                      create: (context) => StepImagesBloc()
-                        ..add(
-                          InitializeStepImages(
-                            args!.modifiedRecipe.steps,
-                            args.modifiedRecipe.stepTitles ?? [],
-                            stepImages: args.modifiedRecipe.stepImages,
-                          ),
-                        ),
-                    ),
-                    BlocProvider<StepsBloc>(
-                      create: (context) =>
-                          StepsBloc(BlocProvider.of<StepImagesBloc>(context)),
-                    ),
-                    BlocProvider<ShoppingCartBloc>.value(
-                        value: args!.shoppingCartBloc),
-                    BlocProvider<RecipeCalendarBloc>.value(
-                        value: args.recipeCalendarBloc),
-                  ],
-                  child: StepsScreen(
-                    modifiedRecipe: args.modifiedRecipe,
-                    editingRecipeName: args.editingRecipeName,
-                  ),
-                ),
-              );
-
-            case "/recipe-categories":
-              final RecipeGridViewArguments? args =
-                  settings.arguments as RecipeGridViewArguments?;
-
-              Ads.showBottomBannerAd();
-
-              return CupertinoPageRoute(
-                  settings: RouteSettings(name: "recipeRoute"),
-                  builder: (BuildContext context) => MultiBlocProvider(
-                        providers: [
-                          BlocProvider<ShoppingCartBloc>.value(
-                              value: args!.shoppingCartBloc),
-                          BlocProvider<RecipeCalendarBloc>.value(
-                              value: args.recipeCalendarBloc),
-                          BlocProvider<RecipeOverviewBloc>(
-                            create: (context) => RecipeOverviewBloc(
-                                recipeManagerBloc:
-                                    BlocProvider.of<RecipeManagerBloc>(context))
-                              ..add(
-                                LoadCategoryRecipeOverview(args.category!),
-                              ),
-                          ),
-                        ],
-                        child: Ads().getAdPage(RecipeGridView(), context),
-                      ));
-
-            case "/vegetable-recipes-oveview":
-              final RecipeGridViewArguments? args =
-                  settings.arguments as RecipeGridViewArguments?;
-
-              Ads.showBottomBannerAd();
-
-              return CupertinoPageRoute(
-                settings: RouteSettings(name: "recipeRoute"),
-                builder: (BuildContext context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<ShoppingCartBloc>.value(
-                        value: args!.shoppingCartBloc),
-                    BlocProvider<RecipeCalendarBloc>.value(
-                        value: args.recipeCalendarBloc),
-                    BlocProvider<RecipeOverviewBloc>(
-                      create: (context) => RecipeOverviewBloc(
-                          recipeManagerBloc:
-                              BlocProvider.of<RecipeManagerBloc>(context))
-                        ..add(
-                          LoadVegetableRecipeOverview(args.vegetable!),
-                        ),
-                    ),
-                  ],
-                  child: Ads().getAdPage(RecipeGridView(), context),
-                ),
-              );
-
-            case "/recipe-tag-recipes-overview":
-              final RecipeGridViewArguments? args =
-                  settings.arguments as RecipeGridViewArguments?;
-
-              Ads.showBottomBannerAd();
-
-              return CupertinoPageRoute(
-                settings: RouteSettings(name: "recipeRoute"),
-                builder: (BuildContext context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<ShoppingCartBloc>.value(
-                        value: args!.shoppingCartBloc),
-                    BlocProvider<RecipeCalendarBloc>.value(
-                        value: args.recipeCalendarBloc),
-                    BlocProvider<RecipeOverviewBloc>(
-                      create: (context) => RecipeOverviewBloc(
-                          recipeManagerBloc:
-                              BlocProvider.of<RecipeManagerBloc>(context))
-                        ..add(
-                          LoadRecipeTagRecipeOverview(args.recipeTag!),
-                        ),
-                    ),
-                  ],
-                  child: Ads().getAdPage(RecipeGridView(), context),
-                ),
-              );
-
-            case "/recipe-calendar":
-              final RecipeCalendarScreenArguments? args =
-                  settings.arguments as RecipeCalendarScreenArguments?;
-
-              Ads.showBottomBannerAd();
-
-              return MaterialPageRoute(
-                settings: RouteSettings(name: "recipeRoute"),
-                builder: (BuildContext context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<RecipeCalendarBloc>.value(
-                        value: args!.recipeCalendarBloc),
-                    BlocProvider<ShoppingCartBloc>.value(
-                        value: args.shoppingCartBloc),
-                  ],
-                  child: Ads().getAdPage(RecipeCalendarScreen(), context),
-                ),
-              );
-
-            case "/add-recipe/nutritions":
-              final AddRecipeNutritionsArguments? args =
-                  settings.arguments as AddRecipeNutritionsArguments?;
-
-              return MaterialPageRoute(
-                builder: (context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<NutritionManagerBloc>(
-                      create: (context) => NutritionManagerBloc()
-                        ..add(
-                          LoadNutritionManager(args!.editingRecipeName),
-                        ),
-                    ),
-                    BlocProvider<NutritionsBloc>(
-                      create: (context) => NutritionsBloc(),
-                    ),
-                    BlocProvider<ShoppingCartBloc>.value(
-                        value: args!.shoppingCartBloc),
-                    BlocProvider<RecipeCalendarBloc>.value(
-                        value: args.recipeCalendarBloc),
-                  ],
-                  child: AddRecipeNutritions(
-                    modifiedRecipe: args.modifiedRecipe,
-                    editingRecipeName: args.editingRecipeName,
-                  ),
-                ),
-              );
-
-            case "/ingredient-search":
-              final IngredientSearchScreenArguments args =
-                  settings.arguments as IngredientSearchScreenArguments;
-
-              if (args.hasPremium) {
                 return MaterialPageRoute(
-                  settings: RouteSettings(name: "recipeRoute"),
                   builder: (context) => MultiBlocProvider(
                     providers: [
-                      BlocProvider<IngredientSearchBloc>(
-                        create: (context) => IngredientSearchBloc(),
+                      BlocProvider<ClearRecipeBloc>(
+                        create: (context) => ClearRecipeBloc(repository),
+                      ),
+                      BlocProvider<GeneralInfoBloc>(
+                        create: (context) => GeneralInfoBloc(repository),
+                      ),
+                      BlocProvider<CategoryManagerBloc>(
+                        create: (context) => CategoryManagerBloc(
+                          recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                            context,
+                          ),
+                          repository: repository,
+                          selectedCategories: args!.modifiedRecipe!.categories,
+                        )..add(InitializeCategoryManager()),
+                      ),
+                      BlocProvider<RecipeTagManagerBloc>(
+                        create: (context) => RecipeTagManagerBloc(
+                          recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                            context,
+                          ),
+                          repository: repository,
+                          selectedTags: args!.modifiedRecipe!.tags,
+                        )..add(InitializeRecipeTagManager()),
                       ),
                       BlocProvider<ShoppingCartBloc>.value(
-                          value: args.shoppingCartBloc),
+                        value: args!.shoppingCartBloc,
+                      ),
                       BlocProvider<RecipeCalendarBloc>.value(
-                          value: args.recipeCalendarBloc)
+                        value: args.recipeCalendarBloc,
+                      ),
                     ],
-                    child: IngredientSearchScreen(),
-                  ),
-                );
-              } else {
-                return MaterialPageRoute(
-                  builder: (context) => BlocProvider<AdManagerBloc>.value(
-                      value: args.adManagerBloc,
-                      child: IngredinetSearchPreviewScreen()),
-                );
-              }
-
-            case "/manage-categories":
-              Ads.showBottomBannerAd();
-              final CategoryManagerArguments? args =
-                  settings.arguments as CategoryManagerArguments?;
-
-              if (args != null) {
-                return MaterialPageRoute(
-                  builder: (context) => BlocProvider<CategoryManagerBloc>.value(
-                    value: args.categoryManagerBloc!,
-                    child: Ads().getAdPage(CategoryManager(), context),
-                  ),
-                );
-              } else {
-                return MaterialPageRoute(
-                  builder: (context) => BlocProvider<CategoryManagerBloc>(
-                    create: (context) => CategoryManagerBloc(
-                      recipeManagerBloc:
-                          BlocProvider.of<RecipeManagerBloc>(context),
-                      selectedCategories: [],
-                    )..add(InitializeCategoryManager()),
-                    child: Ads().getAdPage(CategoryManager(), context),
-                  ),
-                );
-              }
-
-            case "/manage-recipe-tags":
-              Ads.showBottomBannerAd();
-              final RecipeTagManagerArguments? args =
-                  settings.arguments as RecipeTagManagerArguments?;
-
-              if (args != null) {
-                return MaterialPageRoute(
-                  builder: (context) =>
-                      BlocProvider<RecipeTagManagerBloc>.value(
-                    value: args.recipeTagManagerBloc!,
-                    child: Ads().getAdPage(RecipeTagManager(), context),
-                  ),
-                );
-              } else {
-                return MaterialPageRoute(
-                  builder: (context) => BlocProvider<RecipeTagManagerBloc>(
-                    create: (context) => RecipeTagManagerBloc(
-                      recipeManagerBloc:
-                          BlocProvider.of<RecipeManagerBloc>(context),
-                    )..add(InitializeRecipeTagManager()),
-                    child: Ads().getAdPage(RecipeTagManager(), context),
-                  ),
-                );
-              }
-
-            case "/manage-nutritions":
-              Ads.showBottomBannerAd();
-
-              return MaterialPageRoute(
-                builder: (context) => BlocProvider<NutritionManagerBloc>(
-                  create: (context) =>
-                      NutritionManagerBloc()..add(LoadNutritionManager()),
-                  child: Ads().getAdPage(NutritionManager(), context),
-                ),
-              );
-
-            case "/manage-ingredients":
-              Ads.showBottomBannerAd();
-
-              return MaterialPageRoute(
-                builder: (context) => BlocProvider<IngredientsManagerBloc>(
-                  create: (context) =>
-                      IngredientsManagerBloc()..add(LoadIngredientsManager()),
-                  child: Ads().getAdPage(IngredientsManager(), context),
-                ),
-              );
-
-            case "/import-recipes-from-website":
-              final ImportFromWebsiteArguments? args =
-                  settings.arguments as ImportFromWebsiteArguments?;
-
-              return MaterialPageRoute(
-                builder: (context) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<WebsiteImportBloc>(create: (_) {
-                      if (args!.initialWebsite != null) {
-                        return WebsiteImportBloc(
-                            BlocProvider.of<RecipeManagerBloc>(context))
-                          ..add(args.initialWebsite == null
-                              ? null
-                              : ImportRecipe(args.initialWebsite!));
-                      }
-
-                      return WebsiteImportBloc(
-                          BlocProvider.of<RecipeManagerBloc>(context));
-                    }),
-                    BlocProvider<ShoppingCartBloc>.value(
-                      value: args!.shoppingCartBloc,
+                    child: GeneralInfoScreen(
+                      modifiedRecipe: args.modifiedRecipe,
+                      editingRecipeName: args.editingRecipeName,
                     ),
-                    BlocProvider<AdManagerBloc>.value(
-                      value: args.adManagerBloc,
-                    ),
-                    BlocProvider<RecipeCalendarBloc>.value(
-                      value: args.recipeCalendarBloc,
-                    )
-                  ],
-                  child: ImportFromWebsiteScreen(
-                    initialWebsite: args.initialWebsite ?? "",
                   ),
-                ),
-              );
+                );
 
-            case "/intro":
-              return MaterialPageRoute(
-                builder: (context) => IntroScreen(),
-              );
+              case "/add-recipe/ingredients":
+                final IngredientsArguments? args =
+                    settings.arguments as IngredientsArguments?;
 
-            case "/computer-import-info":
-              return MaterialPageRoute(
-                builder: (context) => ImportPcInfo(),
-              );
+                return MaterialPageRoute(
+                  builder: (context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider<IngredientsBloc>(
+                        create: (context) => IngredientsBloc(repository),
+                      ),
+                      BlocProvider<ShoppingCartBloc>.value(
+                        value: args!.shoppingCartBloc,
+                      ),
+                      BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc,
+                      ),
+                      BlocProvider<IngredientsSectionBloc>(
+                        create: (context) => IngredientsSectionBloc()
+                          ..add(
+                            InitializeIngredientsSection(
+                              args.modifiedRecipe.ingredientsGlossary,
+                              args.modifiedRecipe.ingredients,
+                            ),
+                          ),
+                      ),
+                    ],
+                    child: IngredientsAddScreen(
+                      modifiedRecipe: args.modifiedRecipe,
+                      editingRecipeName: args.editingRecipeName,
+                    ),
+                  ),
+                );
 
-            case "/about-me":
-              return MaterialPageRoute(
-                builder: (context) => AboutMeScreen(),
-              );
+              case "/add-recipe/steps":
+                final StepsArguments? args =
+                    settings.arguments as StepsArguments?;
 
-            default:
-              return MaterialPageRoute(
-                builder: (context) => Text("failllll kek"),
-              );
-          }
-        },
+                return MaterialPageRoute(
+                  builder: (context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider<StepImagesBloc>(
+                        create: (context) => StepImagesBloc()
+                          ..add(
+                            InitializeStepImages(
+                              args!.modifiedRecipe.steps,
+                              args.modifiedRecipe.stepTitles ?? [],
+                              stepImages: args.modifiedRecipe.stepImages,
+                            ),
+                          ),
+                      ),
+                      BlocProvider<StepsBloc>(
+                        create: (context) => StepsBloc(
+                          BlocProvider.of<StepImagesBloc>(context),
+                          repository,
+                        ),
+                      ),
+                      BlocProvider<ShoppingCartBloc>.value(
+                        value: args!.shoppingCartBloc,
+                      ),
+                      BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc,
+                      ),
+                    ],
+                    child: StepsScreen(
+                      modifiedRecipe: args.modifiedRecipe,
+                      editingRecipeName: args.editingRecipeName,
+                    ),
+                  ),
+                );
+
+              case "/recipe-categories":
+                final RecipeGridViewArguments? args =
+                    settings.arguments as RecipeGridViewArguments?;
+
+                Ads.showBottomBannerAd();
+
+                return CupertinoPageRoute(
+                  settings: RouteSettings(name: "recipeRoute"),
+                  builder: (BuildContext context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider<ShoppingCartBloc>.value(
+                        value: args!.shoppingCartBloc,
+                      ),
+                      BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc,
+                      ),
+                      BlocProvider<RecipeOverviewBloc>(
+                        create: (context) => RecipeOverviewBloc(
+                          recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                            context,
+                          ),
+                          repository: repository,
+                        )..add(LoadCategoryRecipeOverview(args.category!)),
+                      ),
+                    ],
+                    child: Ads().getAdPage(RecipeGridView(), context),
+                  ),
+                );
+
+              case "/vegetable-recipes-oveview":
+                final RecipeGridViewArguments? args =
+                    settings.arguments as RecipeGridViewArguments?;
+
+                Ads.showBottomBannerAd();
+
+                return CupertinoPageRoute(
+                  settings: RouteSettings(name: "recipeRoute"),
+                  builder: (BuildContext context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider<ShoppingCartBloc>.value(
+                        value: args!.shoppingCartBloc,
+                      ),
+                      BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc,
+                      ),
+                      BlocProvider<RecipeOverviewBloc>(
+                        create: (context) => RecipeOverviewBloc(
+                          recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                            context,
+                          ),
+                          repository: repository,
+                        )..add(LoadVegetableRecipeOverview(args.vegetable!)),
+                      ),
+                    ],
+                    child: Ads().getAdPage(RecipeGridView(), context),
+                  ),
+                );
+
+              case "/recipe-tag-recipes-overview":
+                final RecipeGridViewArguments? args =
+                    settings.arguments as RecipeGridViewArguments?;
+
+                Ads.showBottomBannerAd();
+
+                return CupertinoPageRoute(
+                  settings: RouteSettings(name: "recipeRoute"),
+                  builder: (BuildContext context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider<ShoppingCartBloc>.value(
+                        value: args!.shoppingCartBloc,
+                      ),
+                      BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc,
+                      ),
+                      BlocProvider<RecipeOverviewBloc>(
+                        create: (context) => RecipeOverviewBloc(
+                          recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                            context,
+                          ),
+                          repository: repository,
+                        )..add(LoadRecipeTagRecipeOverview(args.recipeTag!)),
+                      ),
+                    ],
+                    child: Ads().getAdPage(RecipeGridView(), context),
+                  ),
+                );
+
+              case "/recipe-calendar":
+                final RecipeCalendarScreenArguments? args =
+                    settings.arguments as RecipeCalendarScreenArguments?;
+
+                Ads.showBottomBannerAd();
+
+                return MaterialPageRoute(
+                  settings: RouteSettings(name: "recipeRoute"),
+                  builder: (BuildContext context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider<RecipeCalendarBloc>.value(
+                        value: args!.recipeCalendarBloc,
+                      ),
+                      BlocProvider<ShoppingCartBloc>.value(
+                        value: args.shoppingCartBloc,
+                      ),
+                    ],
+                    child: Ads().getAdPage(RecipeCalendarScreen(), context),
+                  ),
+                );
+
+              case "/add-recipe/nutritions":
+                final AddRecipeNutritionsArguments? args =
+                    settings.arguments as AddRecipeNutritionsArguments?;
+
+                return MaterialPageRoute(
+                  builder: (context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider<NutritionManagerBloc>(
+                        create: (context) => NutritionManagerBloc(repository)
+                          ..add(LoadNutritionManager(args!.editingRecipeName)),
+                      ),
+                      BlocProvider<NutritionsBloc>(
+                        create: (context) => NutritionsBloc(repository),
+                      ),
+                      BlocProvider<ShoppingCartBloc>.value(
+                        value: args!.shoppingCartBloc,
+                      ),
+                      BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc,
+                      ),
+                    ],
+                    child: AddRecipeNutritions(
+                      modifiedRecipe: args.modifiedRecipe,
+                      editingRecipeName: args.editingRecipeName,
+                    ),
+                  ),
+                );
+
+              case "/ingredient-search":
+                final IngredientSearchScreenArguments args =
+                    settings.arguments as IngredientSearchScreenArguments;
+
+                if (args.hasPremium) {
+                  return MaterialPageRoute(
+                    settings: RouteSettings(name: "recipeRoute"),
+                    builder: (context) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider<IngredientSearchBloc>(
+                          create: (context) => IngredientSearchBloc(repository),
+                        ),
+                        BlocProvider<ShoppingCartBloc>.value(
+                          value: args.shoppingCartBloc,
+                        ),
+                        BlocProvider<RecipeCalendarBloc>.value(
+                          value: args.recipeCalendarBloc,
+                        ),
+                      ],
+                      child: IngredientSearchScreen(),
+                    ),
+                  );
+                } else {
+                  return MaterialPageRoute(
+                    builder: (context) => BlocProvider<AdManagerBloc>.value(
+                      value: args.adManagerBloc,
+                      child: IngredinetSearchPreviewScreen(),
+                    ),
+                  );
+                }
+
+              case "/manage-categories":
+                Ads.showBottomBannerAd();
+                final CategoryManagerArguments? args =
+                    settings.arguments as CategoryManagerArguments?;
+
+                if (args != null) {
+                  return MaterialPageRoute(
+                    builder: (context) =>
+                        BlocProvider<CategoryManagerBloc>.value(
+                          value: args.categoryManagerBloc!,
+                          child: Ads().getAdPage(CategoryManager(), context),
+                        ),
+                  );
+                } else {
+                  return MaterialPageRoute(
+                    builder: (context) => BlocProvider<CategoryManagerBloc>(
+                      create: (context) => CategoryManagerBloc(
+                        recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                          context,
+                        ),
+                        repository: repository,
+                        selectedCategories: [],
+                      )..add(InitializeCategoryManager()),
+                      child: Ads().getAdPage(CategoryManager(), context),
+                    ),
+                  );
+                }
+
+              case "/manage-recipe-tags":
+                Ads.showBottomBannerAd();
+                final RecipeTagManagerArguments? args =
+                    settings.arguments as RecipeTagManagerArguments?;
+
+                if (args != null) {
+                  return MaterialPageRoute(
+                    builder: (context) =>
+                        BlocProvider<RecipeTagManagerBloc>.value(
+                          value: args.recipeTagManagerBloc!,
+                          child: Ads().getAdPage(RecipeTagManager(), context),
+                        ),
+                  );
+                } else {
+                  return MaterialPageRoute(
+                    builder: (context) => BlocProvider<RecipeTagManagerBloc>(
+                      create: (context) => RecipeTagManagerBloc(
+                        recipeManagerBloc: BlocProvider.of<RecipeManagerBloc>(
+                          context,
+                        ),
+                        repository: repository,
+                      )..add(InitializeRecipeTagManager()),
+                      child: Ads().getAdPage(RecipeTagManager(), context),
+                    ),
+                  );
+                }
+
+              case "/manage-nutritions":
+                Ads.showBottomBannerAd();
+
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider<NutritionManagerBloc>(
+                    create: (context) =>
+                        NutritionManagerBloc(repository)
+                          ..add(LoadNutritionManager()),
+                    child: Ads().getAdPage(NutritionManager(), context),
+                  ),
+                );
+
+              case "/manage-ingredients":
+                Ads.showBottomBannerAd();
+
+                return MaterialPageRoute(
+                  builder: (context) => BlocProvider<IngredientsManagerBloc>(
+                    create: (context) =>
+                        IngredientsManagerBloc(repository)
+                          ..add(LoadIngredientsManager()),
+                    child: Ads().getAdPage(IngredientsManager(), context),
+                  ),
+                );
+
+              case "/import-recipes-from-website":
+                final ImportFromWebsiteArguments? args =
+                    settings.arguments as ImportFromWebsiteArguments?;
+
+                return MaterialPageRoute(
+                  builder: (context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider<WebsiteImportBloc>(
+                        create: (_) {
+                          if (args!.initialWebsite != null) {
+                            return WebsiteImportBloc(
+                              BlocProvider.of<RecipeManagerBloc>(context),
+                              repository,
+                            )..add(
+                              args.initialWebsite == null
+                                  ? null
+                                  : ImportRecipe(args.initialWebsite!),
+                            );
+                          }
+
+                          return WebsiteImportBloc(
+                            BlocProvider.of<RecipeManagerBloc>(context),
+                            repository,
+                          );
+                        },
+                      ),
+                      BlocProvider<ShoppingCartBloc>.value(
+                        value: args!.shoppingCartBloc,
+                      ),
+                      BlocProvider<AdManagerBloc>.value(
+                        value: args.adManagerBloc,
+                      ),
+                      BlocProvider<RecipeCalendarBloc>.value(
+                        value: args.recipeCalendarBloc,
+                      ),
+                    ],
+                    child: ImportFromWebsiteScreen(
+                      initialWebsite: args.initialWebsite ?? "",
+                    ),
+                  ),
+                );
+
+              case "/intro":
+                return MaterialPageRoute(builder: (context) => IntroScreen());
+
+              case "/computer-import-info":
+                return MaterialPageRoute(builder: (context) => ImportPcInfo());
+
+              case "/about-me":
+                return MaterialPageRoute(builder: (context) => AboutMeScreen());
+
+              default:
+                return MaterialPageRoute(
+                  builder: (context) => Text("failllll kek"),
+                );
+            }
+          },
+        ),
       ),
     );
   }

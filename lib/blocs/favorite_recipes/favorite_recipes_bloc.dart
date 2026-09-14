@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/recipe.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;
 
@@ -13,9 +13,13 @@ part 'favorite_recipes_state.dart';
 class FavoriteRecipesBloc
     extends Bloc<FavoriteRecipesEvent, FavoriteRecipesState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
   late StreamSubscription subscription;
 
-  FavoriteRecipesBloc({required this.recipeManagerBloc})
+  FavoriteRecipesBloc({
+    required this.recipeManagerBloc,
+    required this.repository,
+  })
       : super(LoadingFavorites()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (rmState is RM.AddFavoriteState) {
@@ -34,7 +38,7 @@ class FavoriteRecipesBloc
     });
 
     on<LoadFavorites>((event, emit) async {
-      final favoriteRecipes = await HiveProvider().getFavoriteRecipes();
+      final favoriteRecipes = await repository.getFavoriteRecipes();
 
       emit(LoadedFavorites(favoriteRecipes));
     });

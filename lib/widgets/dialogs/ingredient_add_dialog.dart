@@ -1,9 +1,10 @@
 import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'package:my_recipe_book/generated/l10n.dart';
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../../models/ingredient.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 import '../../util/helper.dart';
@@ -178,7 +179,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                       SimpleAutoCompleteTextField(
                         key: autoCompletionTextField,
                         focusNode: widget.focus,
-                        suggestions: HiveProvider().getIngredientNames(),
+                        suggestions: context.read<LocalRepository>().getIngredientNames(),
                         controller: ingredientNameController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),

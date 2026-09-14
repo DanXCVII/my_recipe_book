@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../local_storage/hive.dart';
+import '../../local_storage/local_repository.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;
 
 part 'category_manager_event.dart';
@@ -12,12 +12,14 @@ part 'category_manager_state.dart';
 class CategoryManagerBloc
     extends Bloc<CategoryManagerEvent, CategoryManagerState> {
   final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
   late StreamSubscription subscription;
 
   List<String> selectedCategories = [];
 
   CategoryManagerBloc(
       {required this.recipeManagerBloc,
+      required this.repository,
       required List<String> selectedCategories})
       : super(LoadingCategoryManager()) {
     if (selectedCategories.isNotEmpty)
@@ -37,7 +39,7 @@ class CategoryManagerBloc
     });
 
     on<InitializeCategoryManager>((event, emit) async {
-      final List<String> categories = HiveProvider().getCategoryNames();
+      final List<String> categories = repository.getCategoryNames();
 
       emit(LoadedCategoryManager(categories));
     });
@@ -91,7 +93,7 @@ class CategoryManagerBloc
 
     on<MoveCategory>((event, emit) async {
       if (state is LoadedCategoryManager) {
-        // List in HiveProvider()Provider() is already updated of the recipeManager
+        // List in repositoryProvider() is already updated of the recipeManager
 
         final List<String> it1 = List<String>.from(
             (state as LoadedCategoryManager).categories
