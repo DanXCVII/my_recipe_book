@@ -19,14 +19,15 @@ class ComplexitySectionState extends State<ComplexitySection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding:
-              const EdgeInsets.only(right: 12, top: 12, left: 56, bottom: 12),
+          padding: const EdgeInsets.only(
+            right: 12,
+            top: 12,
+            left: 56,
+            bottom: 12,
+          ),
           child: Text(
             S.of(context).complexity_effort,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
         Padding(
@@ -43,7 +44,7 @@ class ComplexitySectionState extends State<ComplexitySection> {
             min: 1,
             max: 10,
           ),
-        )
+        ),
       ],
     );
   }

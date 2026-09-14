@@ -18,11 +18,11 @@ class RecipeTagManagerBloc
 
   List<StringIntTuple> selectedTags = [];
 
-  RecipeTagManagerBloc(
-      {required this.recipeManagerBloc,
-      required this.repository,
-      List<StringIntTuple> selectedTags = const []})
-      : super(LoadingRecipeTagManager()) {
+  RecipeTagManagerBloc({
+    required this.recipeManagerBloc,
+    required this.repository,
+    List<StringIntTuple> selectedTags = const [],
+  }) : super(LoadingRecipeTagManager()) {
     this.selectedTags = List<StringIntTuple>.from(selectedTags);
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeTagManager) {
@@ -46,17 +46,25 @@ class RecipeTagManagerBloc
       if (state is LoadedRecipeTagManager) {
         selectedTags.addAll(event.recipeTags);
 
-        emit(LoadedRecipeTagManager(List<StringIntTuple>.from(
-            (state as LoadedRecipeTagManager).recipeTags)
-          ..addAll(event.recipeTags)));
+        emit(
+          LoadedRecipeTagManager(
+            List<StringIntTuple>.from(
+              (state as LoadedRecipeTagManager).recipeTags,
+            )..addAll(event.recipeTags),
+          ),
+        );
       }
     });
 
     on<DeleteRecipeTag>((event, emit) async {
       if (state is LoadedRecipeTagManager) {
-        emit(LoadedRecipeTagManager(List<StringIntTuple>.from(
-            (state as LoadedRecipeTagManager).recipeTags)
-          ..remove(event.recipeTag)));
+        emit(
+          LoadedRecipeTagManager(
+            List<StringIntTuple>.from(
+              (state as LoadedRecipeTagManager).recipeTags,
+            )..remove(event.recipeTag),
+          ),
+        );
 
         if (selectedTags.contains(event.recipeTag)) {
           selectedTags.remove(event.recipeTag);
@@ -68,12 +76,12 @@ class RecipeTagManagerBloc
       if (state is LoadedRecipeTagManager) {
         final List<StringIntTuple> recipeTags =
             (state as LoadedRecipeTagManager).recipeTags.map((recipeTag) {
-          if (recipeTag == event.oldRecipeTag) {
-            return event.updatedRecipeTag;
-          } else {
-            return recipeTag;
-          }
-        }).toList();
+              if (recipeTag == event.oldRecipeTag) {
+                return event.updatedRecipeTag;
+              } else {
+                return recipeTag;
+              }
+            }).toList();
 
         if (selectedTags.contains(event.oldRecipeTag)) {
           selectedTags[selectedTags.indexOf(event.oldRecipeTag)] =

@@ -28,9 +28,9 @@ class FinishedEditing extends NutritionsEvent {
 
   @override
   List<Object?> get props => [
-        editingRecipeName,
-        goBack,
-        nutritions,
-        recipeManagerBloc,
-      ];
+    editingRecipeName,
+    goBack,
+    nutritions,
+    recipeManagerBloc,
+  ];
 }

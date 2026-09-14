@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+
 import '../blocs/app/app_bloc.dart';
 import '../generated/l10n.dart';
 
@@ -139,18 +140,15 @@ class SideBarItem extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Icon(
-                      icon,
-                      size: 24,
-                      color: selectedColor,
-                    ),
+                    Icon(icon, size: 24, color: selectedColor),
                     SizedBox(width: 10),
                     Text(
                       title,
                       style: TextStyle(
-                          color: selectedColor,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 14),
+                        color: selectedColor,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14,
+                      ),
                     ),
                     SizedBox(width: 7),
                   ],

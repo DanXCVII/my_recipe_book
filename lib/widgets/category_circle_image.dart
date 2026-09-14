@@ -42,10 +42,11 @@ class CategoryCircle extends StatelessWidget {
                 height: 100,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: (imageName != Constants.noRecipeImage
-                            ? FileImage(File(imageName))
-                            : AssetImage(Constants.noRecipeImage))
-                        as ImageProvider<Object>,
+                    image:
+                        (imageName != Constants.noRecipeImage
+                                ? FileImage(File(imageName))
+                                : AssetImage(Constants.noRecipeImage))
+                            as ImageProvider<Object>,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -53,30 +54,29 @@ class CategoryCircle extends StatelessWidget {
                   filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
                   child: Container(
                     decoration: BoxDecoration(
-                        color: Colors.white.withAlpha((0.0 * 255).round())),
+                      color: Colors.white.withAlpha((0.0 * 255).round()),
+                    ),
                   ),
                 ),
               ),
               Container(
-                  margin: EdgeInsets.only(top: 30),
-                  decoration:
-                      BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.4)),
-                  width: 100,
-                  height: 40,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        categoryName,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                margin: EdgeInsets.only(top: 30),
+                decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.4)),
+                width: 100,
+                height: 40,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      categoryName,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ))
+                  ),
+                ),
+              ),
             ],
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+
 import '../constants/global_settings.dart';
 
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
@@ -16,11 +17,8 @@ class ShoppingListSummary extends StatelessWidget {
   final Recipe /*?*/ summaryRecipe;
   final List<CheckableIngredient>? ingredients;
 
-  const ShoppingListSummary(
-    this.ingredients,
-    this.summaryRecipe, {
-    Key? key,
-  }) : super(key: key);
+  const ShoppingListSummary(this.ingredients, this.summaryRecipe, {Key? key})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,22 +33,21 @@ class ShoppingListSummary extends StatelessWidget {
 
             return Dismissible(
               key: Key(
-                  '${currentIngred.name}${currentIngred.name}${currentIngred.unit}'),
+                '${currentIngred.name}${currentIngred.name}${currentIngred.unit}',
+              ),
               onDismissed: (_) {
                 BlocProvider.of<ShoppingCartBloc>(context).add(
-                    RemoveIngredients(
-                        [currentIngred.getIngredient()], summaryRecipe));
+                  RemoveIngredients([
+                    currentIngred.getIngredient(),
+                  ], summaryRecipe),
+                );
               },
               background: PrimaryBackgroundDismissable(),
               secondaryBackground: SecondaryBackgroundDismissible(),
               child: ListTile(
                 onTap: () {
-                  BlocProvider.of<ShoppingCartBloc>(context).add(
-                    CheckIngredients(
-                      [currentIngred],
-                      summaryRecipe,
-                    ),
-                  );
+                  BlocProvider.of<ShoppingCartBloc>(context)
+                      .add(CheckIngredients([currentIngred], summaryRecipe));
                 },
                 //  tileColor: Theme.of(context).scaffoldBackgroundColor,
                 title: Text(
@@ -63,29 +60,25 @@ class ShoppingListSummary extends StatelessWidget {
                 ),
                 trailing:
                     currentIngred.amount == null && currentIngred.unit == ""
-                        ?
-                        // needs size, otherwise error
-                        Container(width: 1, height: 1)
-                        : Text(
-                            "${currentIngred.amount != null ? (GlobalSettings().showDecimal() ? cutDouble(currentIngred.amount!) : getFractionDouble(currentIngred.amount!)) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit!}",
-                            style: TextStyle(
-                              decoration: currentIngred.checked
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                            ),
-                          ),
+                    ?
+                      // needs size, otherwise error
+                      Container(width: 1, height: 1)
+                    : Text(
+                        "${currentIngred.amount != null ? (GlobalSettings().showDecimal() ? cutDouble(currentIngred.amount!) : getFractionDouble(currentIngred.amount!)) : ""}${currentIngred.unit == null ? "" : " " + currentIngred.unit!}",
+                        style: TextStyle(
+                          decoration: currentIngred.checked
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
                 leading: Checkbox(
                   activeColor: Colors.green[700],
                   shape: CircleBorder(),
                   value: currentIngred.checked,
                   materialTapTargetSize: MaterialTapTargetSize.padded,
                   onChanged: (bool? x) {
-                    BlocProvider.of<ShoppingCartBloc>(context).add(
-                      CheckIngredients(
-                        [currentIngred],
-                        summaryRecipe,
-                      ),
-                    );
+                    BlocProvider.of<ShoppingCartBloc>(context)
+                        .add(CheckIngredients([currentIngred], summaryRecipe));
                   },
                 ),
               ),
@@ -107,11 +100,8 @@ class ShoppingList extends StatelessWidget {
 
   final Map<Recipe, List<CheckableIngredient>> ingredients;
 
-  const ShoppingList(
-    this.ingredients, {
-    this.roundBorders = false,
-    Key? key,
-  }) : super(key: key);
+  const ShoppingList(this.ingredients, {this.roundBorders = false, Key? key})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -120,16 +110,17 @@ class ShoppingList extends StatelessWidget {
         ingredients[ingredients.keys.first]!.isEmpty) {
       return displayNothingAdded(context);
     }
-    Recipe summaryRecipe =
-        recipes.firstWhere((recipe) => recipe.name == Constants.summary);
+    Recipe summaryRecipe = recipes.firstWhere(
+      (recipe) => recipe.name == Constants.summary,
+    );
     if (summaryRecipe != recipes.first) {
       recipes.removeWhere((recipe) => recipe.name == "summary");
       recipes.insert(0, summaryRecipe);
     }
     Color? ingredBackgroundColor =
         Theme.of(context).brightness == Brightness.dark
-            ? Color(0xff40392F)
-            : Colors.grey[100];
+        ? Color(0xff40392F)
+        : Colors.grey[100];
 
     return MediaQuery.removePadding(
       context: context,
@@ -163,8 +154,7 @@ class ShoppingList extends StatelessWidget {
               ),
             );
           }
-        }).toList()
-          ..add(Center(child: Container(height: 60))),
+        }).toList()..add(Center(child: Container(height: 60))),
       ),
     );
   }
@@ -175,12 +165,13 @@ class ShoppingList extends StatelessWidget {
       height: deviceHeight / 2,
       child: Center(
         child: IconInfoMessage(
-            iconWidget: Icon(
-              Icons.shopping_basket,
-              color: Colors.brown,
-              size: 70.0,
-            ),
-            description: S.of(context).shopping_cart_is_empty),
+          iconWidget: Icon(
+            Icons.shopping_basket,
+            color: Colors.brown,
+            size: 70.0,
+          ),
+          description: S.of(context).shopping_cart_is_empty,
+        ),
       ),
     );
   }
@@ -215,11 +206,7 @@ class ShoppingCartListTile extends StatelessWidget {
         child: ExpansionTile(
           leading: recipe.name == Constants.summary || recipe.notes == "noLink"
               ? null
-              : RecipeImageHero(
-                  recipe,
-                  "${recipe.name}s",
-                  showAds: true,
-                ),
+              : RecipeImageHero(recipe, "${recipe.name}s", showAds: true),
           title: Text(
             recipe.name == Constants.summary
                 ? S.of(context).summary
@@ -229,13 +216,15 @@ class ShoppingCartListTile extends StatelessWidget {
             return Dismissible(
               key: Key('${recipe.name}${ingredient.name}${ingredient.unit}'),
               onDismissed: (_) {
-                BlocProvider.of<ShoppingCartBloc>(context)
-                    .add(RemoveIngredients([
-                  Ingredient(
+                BlocProvider.of<ShoppingCartBloc>(context).add(
+                  RemoveIngredients([
+                    Ingredient(
                       name: ingredient.name,
                       amount: ingredient.amount,
-                      unit: ingredient.unit)
-                ], recipe));
+                      unit: ingredient.unit,
+                    ),
+                  ], recipe),
+                );
               },
               background: PrimaryBackgroundDismissable(
                 roundBottomBorder:
@@ -253,94 +242,91 @@ class ShoppingCartListTile extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            ingredients!.last == ingredient && roundBorders
-                                ? BorderRadius.only(
-                                    bottomRight: Radius.circular(15),
-                                    bottomLeft: Radius.circular(15))
-                                : BorderRadius.zero,
-                        color: backgroundColor,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(),
-                            child: Center(
-                              child: Checkbox(
-                                activeColor: Colors.green[700],
-                                value: ingredient.checked,
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.padded,
-                                onChanged: (bool? x) {
-                                  BlocProvider.of<ShoppingCartBloc>(context)
-                                      .add(
-                                    CheckIngredients(
-                                      [ingredient],
-                                      recipe,
-                                    ),
-                                  );
-                                },
-                              ),
+                    decoration: BoxDecoration(
+                      borderRadius:
+                          ingredients!.last == ingredient && roundBorders
+                          ? BorderRadius.only(
+                              bottomRight: Radius.circular(15),
+                              bottomLeft: Radius.circular(15),
+                            )
+                          : BorderRadius.zero,
+                      color: backgroundColor,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(),
+                          child: Center(
+                            child: Checkbox(
+                              activeColor: Colors.green[700],
+                              value: ingredient.checked,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.padded,
+                              onChanged: (bool? x) {
+                                BlocProvider.of<ShoppingCartBloc>(
+                                  context,
+                                ).add(CheckIngredients([ingredient], recipe));
+                              },
                             ),
                           ),
-                          Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 10),
-                              child: Text(
-                                //'SpaghettiSauce von der Kuh mit ganz viel ',
-                                '${ingredient.name}',
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  decoration: ingredient.checked
-                                      ? TextDecoration.lineThrough
-                                      : null,
-                                  color: (ingredientTextColor == null)
-                                      ? Theme.of(context)
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text(
+                              //'SpaghettiSauce von der Kuh mit ganz viel ',
+                              '${ingredient.name}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 18,
+                                decoration: ingredient.checked
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                                color: (ingredientTextColor == null)
+                                    ? Theme.of(context)
                                           .textTheme
                                           .bodyMedium!
                                           .color
-                                      : ingredientTextColor,
-                                ),
+                                    : ingredientTextColor,
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          ingredient.amount != null
-                              ? Container(
-                                  padding: EdgeInsets.all(3),
-                                  height: 50,
-                                  width: 99,
-                                  decoration: BoxDecoration(),
-                                  child: Center(
-                                    child: Text(
-                                      '${(GlobalSettings().showDecimal() ? cutDouble(ingredient.amount!) : getFractionDouble(ingredient.amount!))} ${ingredient.unit == null ? "" : ingredient.unit}',
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        decoration: ingredient.checked
-                                            ? TextDecoration.lineThrough
-                                            : null,
-                                        color: (ingredientTextColor == null)
-                                            ? Theme.of(context)
+                        ),
+                        SizedBox(width: 10),
+                        ingredient.amount != null
+                            ? Container(
+                                padding: EdgeInsets.all(3),
+                                height: 50,
+                                width: 99,
+                                decoration: BoxDecoration(),
+                                child: Center(
+                                  child: Text(
+                                    '${(GlobalSettings().showDecimal() ? cutDouble(ingredient.amount!) : getFractionDouble(ingredient.amount!))} ${ingredient.unit == null ? "" : ingredient.unit}',
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      decoration: ingredient.checked
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      color: (ingredientTextColor == null)
+                                          ? Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium!
                                                 .color
-                                            : ingredientTextColor,
-                                      ),
-                                      maxLines: 2,
+                                          : ingredientTextColor,
                                     ),
-                                  ))
-                              : null
-                        ].whereType<Widget>().toList(),
-                      )),
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              )
+                            : null,
+                      ].whereType<Widget>().toList(),
+                    ),
+                  ),
                 ),
               ),
             );
@@ -354,30 +340,26 @@ class ShoppingCartListTile extends StatelessWidget {
 class PrimaryBackgroundDismissable extends StatelessWidget {
   final bool roundBottomBorder;
 
-  const PrimaryBackgroundDismissable({
-    this.roundBottomBorder = false,
-    Key? key,
-  }) : super(key: key);
+  const PrimaryBackgroundDismissable({this.roundBottomBorder = false, Key? key})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.only(
-            bottomLeft: roundBottomBorder ? Radius.circular(15) : Radius.zero,
-            bottomRight: roundBottomBorder ? Radius.circular(15) : Radius.zero,
-          )),
+        color: Colors.red,
+        borderRadius: BorderRadius.only(
+          bottomLeft: roundBottomBorder ? Radius.circular(15) : Radius.zero,
+          bottomRight: roundBottomBorder ? Radius.circular(15) : Radius.zero,
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
-            child: Icon(
-              MdiIcons.deleteSweep,
-              color: Colors.white,
-            ),
-          )
+            child: Icon(MdiIcons.deleteSweep, color: Colors.white),
+          ),
         ],
       ),
     );
@@ -393,21 +375,19 @@ class SecondaryBackgroundDismissible extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.only(
-            bottomLeft: roundBottomBorder ? Radius.circular(15) : Radius.zero,
-            bottomRight: roundBottomBorder ? Radius.circular(15) : Radius.zero,
-          )),
+        color: Colors.red,
+        borderRadius: BorderRadius.only(
+          bottomLeft: roundBottomBorder ? Radius.circular(15) : Radius.zero,
+          bottomRight: roundBottomBorder ? Radius.circular(15) : Radius.zero,
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Icon(
-              MdiIcons.deleteSweep,
-              color: Colors.white,
-            ),
-          )
+            child: Icon(MdiIcons.deleteSweep, color: Colors.white),
+          ),
         ],
       ),
     );

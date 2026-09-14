@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../constants/global_constants.dart' as Constants;
 
 import '../blocs/app/app_bloc.dart';
@@ -12,10 +13,8 @@ import 'shopping_list.dart';
 class ShoppingCartFloating extends StatefulWidget {
   final Offset initialPosition;
 
-  ShoppingCartFloating({
-    required this.initialPosition,
-    Key? key,
-  }) : super(key: key);
+  ShoppingCartFloating({required this.initialPosition, Key? key})
+    : super(key: key);
 
   @override
   _ShoppingCartFloatingState createState() => _ShoppingCartFloatingState();
@@ -57,30 +56,30 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
             child: visible
                 ? BlocBuilder<ShoppingCartBloc, ShoppingCartState>(
                     builder: (context, state) {
-                    if (state is LoadingShoppingCart) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (state is LoadedShoppingCart) {
-                      if (shoppingCart != state.shoppingCart) {
-                        shoppingCart = state.shoppingCart;
-                      }
-                      return BlocBuilder<AppBloc, AppState>(
-                          builder: (context, appState) {
-                        if (appState is LoadedState) {
-                          return _getShoppingCartContent(state.shoppingCart,
-                              appState.showShoppingCartSummary);
-                        } else {
-                          return Container();
+                      if (state is LoadingShoppingCart) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (state is LoadedShoppingCart) {
+                        if (shoppingCart != state.shoppingCart) {
+                          shoppingCart = state.shoppingCart;
                         }
-                      });
-                    } else {
-                      return Text(state.toString());
-                    }
-                  })
-                : Container(
-                    height: 550,
-                  ),
+                        return BlocBuilder<AppBloc, AppState>(
+                          builder: (context, appState) {
+                            if (appState is LoadedState) {
+                              return _getShoppingCartContent(
+                                state.shoppingCart,
+                                appState.showShoppingCartSummary,
+                              );
+                            } else {
+                              return Container();
+                            }
+                          },
+                        );
+                      } else {
+                        return Text(state.toString());
+                      }
+                    },
+                  )
+                : Container(height: 550),
           ),
         ),
       ),
@@ -88,13 +87,15 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
   }
 
   Widget _getShoppingCartContent(
-      Map<Recipe, List<CheckableIngredient>> shoppingCart, bool showSummary) {
+    Map<Recipe, List<CheckableIngredient>> shoppingCart,
+    bool showSummary,
+  ) {
     Recipe? _summaryRecipe;
 
     if (showSummary) {
-      _summaryRecipe = shoppingCart.keys
-          .toList()
-          .firstWhere((recipe) => recipe.name == Constants.summary);
+      _summaryRecipe = shoppingCart.keys.toList().firstWhere(
+        (recipe) => recipe.name == Constants.summary,
+      );
     }
 
     return Stack(
@@ -103,21 +104,21 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
           padding: const EdgeInsets.only(top: 32),
           child: Container(
             decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(1, 1),
-                    blurRadius: 2,
-                    spreadRadius: 1,
-                    color:
-                        Theme.of(context).colorScheme.surface == Colors.white
-                            ? Colors.grey[400]!
-                            : Colors.black,
-                  ),
-                ],
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                color: Theme.of(context).colorScheme.surface == Colors.white
-                    ? Colors.grey[200]
-                    : Colors.grey[800]),
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(1, 1),
+                  blurRadius: 2,
+                  spreadRadius: 1,
+                  color: Theme.of(context).colorScheme.surface == Colors.white
+                      ? Colors.grey[400]!
+                      : Colors.black,
+                ),
+              ],
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              color: Theme.of(context).colorScheme.surface == Colors.white
+                  ? Colors.grey[200]
+                  : Colors.grey[800],
+            ),
             height: MediaQuery.of(context).size.height > 500
                 ? 500
                 : MediaQuery.of(context).size.height,
@@ -131,10 +132,7 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
                           shoppingCart[_summaryRecipe!],
                           _summaryRecipe,
                         )
-                      : ShoppingList(
-                          shoppingCart,
-                          roundBorders: false,
-                        ),
+                      : ShoppingList(shoppingCart, roundBorders: false),
                   Align(
                     alignment: Alignment.bottomLeft,
                     child: Container(
@@ -153,29 +151,27 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
                         borderRadius: BorderRadius.all(Radius.circular(30)),
                       ),
                       child: BlocBuilder<AppBloc, AppState>(
-                          builder: (context, state) {
-                        if (state is LoadedState) {
-                          return Switch(
-                            value: state.showShoppingCartSummary,
-                            onChanged: (value) {
-                              BlocProvider.of<AppBloc>(context)
-                                  .add(ShoppingCartShowSummary(value));
-                            },
-                          );
-                        } else {
-                          return CircularProgressIndicator();
-                        }
-                      }),
+                        builder: (context, state) {
+                          if (state is LoadedState) {
+                            return Switch(
+                              value: state.showShoppingCartSummary,
+                              onChanged: (value) {
+                                BlocProvider.of<AppBloc>(context)
+                                    .add(ShoppingCartShowSummary(value));
+                              },
+                            );
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        },
+                      ),
                     ),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: FloatingActionButton(
                       backgroundColor: Theme.of(context).primaryColor,
-                      child: Icon(
-                        Icons.add_shopping_cart,
-                        color: Colors.white,
-                      ),
+                      child: Icon(Icons.add_shopping_cart, color: Colors.white),
                       onPressed: () {
                         showDialog(
                           context: context,
@@ -186,7 +182,7 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
                         );
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -196,10 +192,11 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
           padding: EdgeInsets.only(left: 383, top: 25),
           child: Container(
             decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface == Colors.white
-                    ? Colors.grey[900]
-                    : Colors.grey[200],
-                shape: BoxShape.circle),
+              color: Theme.of(context).colorScheme.surface == Colors.white
+                  ? Colors.grey[900]
+                  : Colors.grey[200],
+              shape: BoxShape.circle,
+            ),
             width: 25,
             height: 25,
           ),
@@ -214,10 +211,9 @@ class _ShoppingCartFloatingState extends State<ShoppingCartFloating>
               child: IconButton(
                 icon: Icon(
                   Icons.cancel,
-                  color:
-                      Theme.of(context).colorScheme.surface == Colors.white
-                          ? Colors.grey[400]
-                          : Colors.grey[900],
+                  color: Theme.of(context).colorScheme.surface == Colors.white
+                      ? Colors.grey[400]
+                      : Colors.grey[900],
                   size: 36,
                 ),
                 onPressed: () {

@@ -51,7 +51,9 @@ class PathProvider {
   }
 
   Future<String> getRecipeStepNumberDirFull(
-      String recipeName, int stepNumber) async {
+    String recipeName,
+    int stepNumber,
+  ) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String? imageLocalPath = await localPath;
@@ -73,13 +75,15 @@ class PathProvider {
   }
 
   Future<String> getRecipeStepPreviewNumberDirFull(
-      String recipeName, int stepNumber) async {
+    String recipeName,
+    int stepNumber,
+  ) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String? imageLocalPath = await localPath;
     await Directory(
-            '$imageLocalPath/$cRecipeName/preview/stepImages/p-$stepNumber')
-        .create(recursive: true);
+      '$imageLocalPath/$cRecipeName/preview/stepImages/p-$stepNumber',
+    ).create(recursive: true);
     return '$imageLocalPath/$cRecipeName/preview/stepImages/p-$stepNumber';
   }
 
@@ -92,15 +96,17 @@ class PathProvider {
   Future<Directory> getExternalAppDir() async {
     String externalPath = (await getExternalStorageDirectory())!.path;
     return await Directory(
-            externalPath.substring(0, externalPath.lastIndexOf("/") + 1) +
-                "backup")
-        .create(recursive: true);
+      externalPath.substring(0, externalPath.lastIndexOf("/") + 1) + "backup",
+    ).create(recursive: true);
   }
 
   //////////// Paths to the ORIGINAL quality pictures ////////////
 
   Future<String> getRecipeOldPathFull(
-      String oldRecipeName, String newRecipeName, String ending) async {
+    String oldRecipeName,
+    String newRecipeName,
+    String ending,
+  ) async {
     String cOldRecipeName = stringReplaceSpaceUnderscore(oldRecipeName);
     String cNewRecipeName = stringReplaceSpaceUnderscore(newRecipeName);
 
@@ -109,7 +115,10 @@ class PathProvider {
   }
 
   Future<String> getRecipePreviewOldPathFull(
-      String oldRecipeName, String newRecipeName, String ending) async {
+    String oldRecipeName,
+    String newRecipeName,
+    String ending,
+  ) async {
     String cOldRecipeName = stringReplaceSpaceUnderscore(oldRecipeName);
     String cNewRecipeName = stringReplaceSpaceUnderscore(newRecipeName);
 
@@ -117,14 +126,17 @@ class PathProvider {
     return '$imageLocalPath/$cNewRecipeName/preview/p-$cOldRecipeName' + ending;
   }
 
-  Future<String> getRecipeImagePathFull(String recipeName, String ending,
-      {String? targetDir}) async {
+  Future<String> getRecipeImagePathFull(
+    String recipeName,
+    String ending, {
+    String? targetDir,
+  }) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String? imageLocalPath = await localPath;
     await Directory(
-            '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName')
-        .create(recursive: true);
+      '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName',
+    ).create(recursive: true);
     return '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName/$cRecipeName' +
         ending;
   }
@@ -137,14 +149,17 @@ class PathProvider {
 
   //////////// Paths to the PREVIEW quality pictures ////////////
 
-  Future<String> getRecipeImagePreviewPathFull(String recipeName, String ending,
-      {String? targetDir}) async {
+  Future<String> getRecipeImagePreviewPathFull(
+    String recipeName,
+    String ending, {
+    String? targetDir,
+  }) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     String? imageLocalPath = await localPath;
     await Directory(
-            '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName/preview')
-        .create(recursive: true);
+      '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName/preview',
+    ).create(recursive: true);
     return '${targetDir == null ? imageLocalPath : targetDir}/$cRecipeName/preview/p-$cRecipeName' +
         ending;
   }
@@ -164,7 +179,9 @@ class PathProvider {
 
   // returns a list of the paths to the preview stepimages of the recipe
   Future<List<List<String>>> getRecipeStepPreviewPathList(
-      List<List<String>> stepImages, String recipeName) async {
+    List<List<String>> stepImages,
+    String recipeName,
+  ) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
 
     if (!Directory(await getRecipeDirFull(recipeName)).existsSync())
@@ -176,10 +193,14 @@ class PathProvider {
       output.add([]);
       for (int j = 0; j < stepImages[i].length; j++) {
         String currentImage = stepImages[i][j];
-        output[i].add(dir +
-            '/p-' +
-            currentImage.substring(
-                currentImage.lastIndexOf('/') + 1, currentImage.length));
+        output[i].add(
+          dir +
+              '/p-' +
+              currentImage.substring(
+                currentImage.lastIndexOf('/') + 1,
+                currentImage.length,
+              ),
+        );
       }
     }
 
@@ -255,8 +276,9 @@ class PathProvider {
         stepImages.add([]);
       }
       for (int j = 0; j < recipe.stepImages[i].length; j++) {
-        stepImages[i]
-            .add(recipe.stepImages[i][j].replaceFirst(removeString, ''));
+        stepImages[i].add(
+          recipe.stepImages[i][j].replaceFirst(removeString, ''),
+        );
       }
     }
 

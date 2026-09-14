@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import '../../local_storage/local_repository.dart';
 
 class Consts {
@@ -17,9 +18,7 @@ class CalendarRecipeAddDialog extends StatefulWidget {
   final void Function(String name) save;
   final focus = FocusNode();
 
-  CalendarRecipeAddDialog({
-    required this.save,
-  });
+  CalendarRecipeAddDialog({required this.save});
 
   @override
   State<StatefulWidget> createState() {
@@ -77,7 +76,9 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
                           key: autoCompletionTextField,
                           focusNode: widget.focus,
                           submitOnSuggestionTap: true,
-                          suggestions: context.read<LocalRepository>().getRecipeNames(),
+                          suggestions: context
+                              .read<LocalRepository>()
+                              .getRecipeNames(),
                           controller: recipeNameController,
                           textSubmitted: (_) {
                             validateAddModifyItem();
@@ -97,7 +98,7 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
                     validateAddModifyItem();
                   },
                 ),
-                SizedBox(width: 8)
+                SizedBox(width: 8),
               ],
             ),
           ),
@@ -107,7 +108,9 @@ class CalendarRecipeAddDialogState extends State<CalendarRecipeAddDialog> {
   }
 
   void validateAddModifyItem() {
-    if (context.read<LocalRepository>().getRecipeNames().contains(recipeNameController!.text)) {
+    if (context.read<LocalRepository>().getRecipeNames().contains(
+      recipeNameController!.text,
+    )) {
       widget.save(recipeNameController!.text);
       Future.delayed(Duration(milliseconds: 100))
           .then((_) => Navigator.pop(context));

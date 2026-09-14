@@ -41,10 +41,7 @@ class TimeComplexityCompressed extends StatelessWidget {
                   ],
                   borderRadius: BorderRadius.all(Radius.circular(25)),
                   gradient: LinearGradient(
-                    colors: [
-                      Colors.grey[700]!,
-                      Colors.grey[800]!,
-                    ],
+                    colors: [Colors.grey[700]!, Colors.grey[800]!],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -132,8 +129,12 @@ class TimeComplexityCompressed extends StatelessWidget {
     }
   }
 
-  String _getTimeString(double preperationTime, double cookingTime,
-      double totalTime, BuildContext context) {
+  String _getTimeString(
+    double preperationTime,
+    double cookingTime,
+    double totalTime,
+    BuildContext context,
+  ) {
     if (totalTime != 0)
       return "${S.of(context).total_time}: " + getTimeHoursMinutes(totalTime);
     if (cookingTime != 0)

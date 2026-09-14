@@ -8,10 +8,7 @@ class AddIngredient extends IngredientsSectionEvent {
   final Ingredient ingredient;
   final int index;
 
-  const AddIngredient(
-    this.ingredient,
-    this.index,
-  );
+  const AddIngredient(this.ingredient, this.index);
 }
 
 class EditIngredient extends IngredientsSectionEvent {
@@ -33,19 +30,13 @@ class MoveIngredient extends IngredientsSectionEvent {
   final int oldIndex;
   final int newIndex;
 
-  MoveIngredient(
-    this.sectionIndex,
-    this.oldIndex,
-    this.newIndex,
-  );
+  MoveIngredient(this.sectionIndex, this.oldIndex, this.newIndex);
 }
 
 class AddSectionTitle extends IngredientsSectionEvent {
   final String title;
 
-  const AddSectionTitle(
-    this.title,
-  );
+  const AddSectionTitle(this.title);
 }
 
 class RemoveSection extends IngredientsSectionEvent {
@@ -58,28 +49,19 @@ class EditSectionTitle extends IngredientsSectionEvent {
   final String newTitle;
   final int sectionIndex;
 
-  const EditSectionTitle(
-    this.newTitle,
-    this.sectionIndex,
-  );
+  const EditSectionTitle(this.newTitle, this.sectionIndex);
 }
 
 class RemoveIngredient extends IngredientsSectionEvent {
   final int sectionIndex;
   final int index;
 
-  RemoveIngredient(
-    this.sectionIndex,
-    this.index,
-  );
+  RemoveIngredient(this.sectionIndex, this.index);
 }
 
 class InitializeIngredientsSection extends IngredientsSectionEvent {
   final List<String> sectionTitles;
   final List<List<Ingredient>> ingredients;
 
-  const InitializeIngredientsSection(
-    this.sectionTitles,
-    this.ingredients,
-  );
+  const InitializeIngredientsSection(this.sectionTitles, this.ingredients);
 }

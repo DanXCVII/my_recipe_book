@@ -11,8 +11,10 @@ class COLoadCategoryOverview extends CategoryOverviewEvent {
   final bool reopenBoxes;
   final BuildContext? categoryOverviewContext;
 
-  COLoadCategoryOverview(
-      {this.reopenBoxes = false, this.categoryOverviewContext});
+  COLoadCategoryOverview({
+    this.reopenBoxes = false,
+    this.categoryOverviewContext,
+  });
 
   @override
   List<Object?> get props => [reopenBoxes, categoryOverviewContext];

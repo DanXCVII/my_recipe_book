@@ -130,7 +130,7 @@
     "snackbar_midnight_theme_applied": "schwarzes Theme angewendet",
     "by_name": "nach Name",
     "by_effort": "nach Aufwand",
-    "by_ingredientsamount": "nach Zutatenmenge",
+    "by_ingredientsamount": "nach Zutatenanzahl",
     "category_already_exists": "Kategorie schon vorhanden",
     "categoryname": "Kategoriename",
     "category": "Kategorie",
@@ -319,5 +319,78 @@
     "successfully_synced_drive": "Rezepte erfolgreich synchronisiert",
     "cancelling_sync": "Synchronisierung abbrechen...",
     "failed_sign_in": "login fehlgeschlagen evtl. aufgrund von nicht vorhandenem Internet",
-    "failed_syncing": "Fehler bei der Synchronisierung evtl. durch schlechtes Internet"
-  }
+    "failed_syncing": "Fehler bei der Synchronisierung evtl. durch schlechtes Internet",
+    "grid_view": "Raster",
+    "list_view": "Liste",
+    "filter_recipes": "Rezepte filtern...",
+    "sort_by": "Sortierung: {sort}",
+    "all_recipes_filter": "Alle",
+    "more_filters": "Filter",
+    "clear_filters": "Filter löschen",
+    "clear_search": "Suche löschen",
+    "average_effort": "Ø Aufwand",
+    "recipe_count": "{count, plural, =0{Keine Rezepte} =1{1 Rezept} other{{count} Rezepte}}",
+    "@recipe_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "recipe_summary_with_effort": "{count, plural, =0{Keine Rezepte} =1{1 Rezept} other{{count} Rezepte}} • Ø Aufwand {effort}",
+    "@recipe_summary_with_effort": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "effort": {
+                "type": "String"
+            }
+        }
+    },
+    "add_to_favorites": "Zu Favoriten hinzufügen",
+    "remove_from_favorites": "Aus Favoriten entfernen",
+    "ascending": "Aufsteigend",
+    "descending": "Absteigend",
+    "no_recipes_in_collection": "Hier sind noch keine Rezepte",
+    "no_filtered_recipes": "Keine Rezepte passen zu diesen Filtern",
+    "no_recipes_for_diet": "Du hast keine Rezepte für diese Ernährungsform",
+    "recipe_overview_failed": "Rezepte konnten nicht geladen werden",
+    "recipe_overview_failed_description": "Überprüfe deinen Speicher und versuche es erneut.",
+    "retry": "Erneut versuchen",
+    "shopping_market_provisions": "EINKAUFSPLAN",
+    "shopping_item_count": "{count, plural, =0{Keine Einträge} =1{1 Eintrag} other{{count} Einträge}}",
+    "@shopping_item_count": {"placeholders": {"count": {"type": "int"}}},
+    "shopping_for_recipes": "{count, plural, =1{Einkauf für 1 Rezept} other{Einkauf für {count} Rezepte}}",
+    "@shopping_for_recipes": {"placeholders": {"count": {"type": "int"}}},
+    "shopping_adjust_servings": "Portionen anpassen",
+    "shopping_progress": "{checked} von {total} Einträgen erledigt",
+    "@shopping_progress": {"placeholders": {"checked": {"type": "int"}, "total": {"type": "int"}}},
+    "shopping_percent_gathered": "{percent}% erledigt",
+    "@shopping_percent_gathered": {"placeholders": {"percent": {"type": "int"}}},
+    "shopping_plain_list": "Einfache Liste",
+    "shopping_by_recipe": "Nach Rezept",
+    "shopping_quick_add_hint": "Zutat hinzufügen…",
+    "shopping_add_details": "Zutat mit Menge, Einheit oder Rezept hinzufügen",
+    "shopping_other_items": "Weitere Einträge",
+    "shopping_mode": "Einkaufsmodus",
+    "shopping_mode_active": "Bildschirm bleibt an",
+    "shopping_remove_checked": "Erledigte Einträge entfernen",
+    "shopping_remove_checked_title": "Erledigte Einträge entfernen?",
+    "shopping_remove_checked_description": "{count, plural, =1{Damit wird 1 erledigter Eintrag aus der Liste entfernt.} other{Damit werden {count} erledigte Einträge aus der Liste entfernt.}}",
+    "@shopping_remove_checked_description": {"placeholders": {"count": {"type": "int"}}},
+    "shopping_removed_items": "{count, plural, =1{1 Eintrag entfernt} other{{count} Einträge entfernt}}",
+    "@shopping_removed_items": {"placeholders": {"count": {"type": "int"}}},
+    "shopping_action_failed": "Die Einkaufsliste konnte nicht aktualisiert werden. Versuche es erneut.",
+    "shopping_load_failed": "Deine Einkaufsliste konnte nicht geladen werden",
+    "shopping_load_failed_description": "Überprüfe deinen Speicher und versuche es erneut.",
+    "shopping_empty_description": "Füge hier oder direkt aus einem Rezept Zutaten hinzu.",
+    "shopping_serving_value": "{value} Portionen",
+    "@shopping_serving_value": {"placeholders": {"value": {"type": "String"}}},
+    "shopping_invalid_servings": "Gib eine Zahl größer als null ein",
+    "share_shopping_list": "Einkaufsliste teilen",
+    "shopping_more_actions": "Weitere Aktionen für die Einkaufsliste",
+    "shopping_search_recipes": "Rezepte durchsuchen",
+    "shopping_remove_item": "{item} entfernen",
+    "@shopping_remove_item": {"placeholders": {"item": {"type": "String"}}}
+}

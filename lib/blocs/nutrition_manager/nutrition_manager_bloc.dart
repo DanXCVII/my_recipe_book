@@ -11,10 +11,12 @@ class NutritionManagerBloc
   List<String> modifiedRecipeNutritions = [];
   final LocalRepository repository;
 
-  NutritionManagerBloc(this.repository) : super(InitialNutritionManagerState()) {
+  NutritionManagerBloc(this.repository)
+    : super(InitialNutritionManagerState()) {
     on<LoadNutritionManager>((event, emit) async {
-      final List<String> nutritions =
-          List<String>.from(repository.getNutritions());
+      final List<String> nutritions = List<String>.from(
+        repository.getNutritions(),
+      );
 
       if (event.modifiedRecipe != null) {
         List<String> editingRecipeNutritions =
@@ -40,8 +42,9 @@ class NutritionManagerBloc
       if (state is LoadedNutritionManager) {
         await repository.addNutrition(event.nutrition);
 
-        final List<String> nutritions =
-            List<String>.from((state as LoadedNutritionManager).nutritions);
+        final List<String> nutritions = List<String>.from(
+          (state as LoadedNutritionManager).nutritions,
+        );
         nutritions.add(event.nutrition);
 
         emit(LoadedNutritionManager(nutritions));
@@ -53,9 +56,9 @@ class NutritionManagerBloc
         if (!modifiedRecipeNutritions.contains(event.nutrition)) {
           await repository.deleteNutrition(event.nutrition);
         }
-        final List<String> nutritions =
-            List<String>.from((state as LoadedNutritionManager).nutritions)
-              ..remove(event.nutrition);
+        final List<String> nutritions = List<String>.from(
+          (state as LoadedNutritionManager).nutritions,
+        )..remove(event.nutrition);
 
         emit(LoadedNutritionManager(nutritions));
       }
@@ -67,14 +70,18 @@ class NutritionManagerBloc
           modifiedRecipeNutritions.remove(event.oldNutrition);
           await repository.addNutrition(event.updatedNutrition);
         } else {
-          await repository
-              .renameNutrition(event.oldNutrition, event.updatedNutrition);
+          await repository.renameNutrition(
+            event.oldNutrition,
+            event.updatedNutrition,
+          );
         }
         final List<String> nutritions = (state as LoadedNutritionManager)
             .nutritions
-            .map((nutrition) => nutrition == event.oldNutrition
-                ? event.updatedNutrition
-                : nutrition)
+            .map(
+              (nutrition) => nutrition == event.oldNutrition
+                  ? event.updatedNutrition
+                  : nutrition,
+            )
             .toList();
 
         emit(LoadedNutritionManager(nutritions));
@@ -85,14 +92,17 @@ class NutritionManagerBloc
       if (state is LoadedNutritionManager) {
         await repository.moveNutrition(event.oldIndex, event.newIndex);
 
-        List<String> newNutritionList =
-            List<String>.from((state as LoadedNutritionManager).nutritions);
+        List<String> newNutritionList = List<String>.from(
+          (state as LoadedNutritionManager).nutritions,
+        );
 
         newNutritionList
           ..insert(event.newIndex, newNutritionList[event.oldIndex])
-          ..removeAt(event.oldIndex > event.newIndex
-              ? event.oldIndex + 1
-              : event.oldIndex);
+          ..removeAt(
+            event.oldIndex > event.newIndex
+                ? event.oldIndex + 1
+                : event.oldIndex,
+          );
 
         emit(LoadedNutritionManager(newNutritionList));
       }

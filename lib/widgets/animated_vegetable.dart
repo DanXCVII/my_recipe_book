@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_settings.dart';
@@ -13,11 +14,8 @@ class AnimatedVegetable extends StatelessWidget {
   final Vegetable vegetable;
   final bool small;
 
-  const AnimatedVegetable(
-    this.vegetable, {
-    this.small = false,
-    Key? key,
-  }) : super(key: key);
+  const AnimatedVegetable(this.vegetable, {this.small = false, Key? key})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,38 +34,37 @@ class AnimatedVegetable extends StatelessWidget {
       child: TweenAnimationBuilder(
         tween: Tween<double>(begin: -3, end: 1),
         duration: Duration(
-            milliseconds: GlobalSettings().animationsEnabled() ? 500 : 0),
+          milliseconds: GlobalSettings().animationsEnabled() ? 500 : 0,
+        ),
         curve: Curves.easeOutQuad,
         builder: (_, double size, myChild) => Container(
           height: size < 0
               ? 0
               : small
-                  ? size * 50
-                  : size * 65,
+              ? size * 50
+              : size * 65,
           width: size < 0
               ? 0
               : small
-                  ? size * 50
-                  : size * 65,
+              ? size * 50
+              : size * 65,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(40),
-                topRight: Radius.circular(40),
-                bottomLeft: Radius.circular(40),
-                bottomRight: Radius.circular(15),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(40),
+              topRight: Radius.circular(40),
+              bottomLeft: Radius.circular(40),
+              bottomRight: Radius.circular(15),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black45,
+                blurRadius: 2.0,
+                spreadRadius: 1.0,
+                offset: Offset(0, 1.0),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black45,
-                  blurRadius: 2.0,
-                  spreadRadius: 1.0,
-                  offset: Offset(
-                    0,
-                    1.0,
-                  ),
-                ),
-              ],
-              color: _getVegetableCircleColor(vegetable)),
+            ],
+            color: _getVegetableCircleColor(vegetable),
+          ),
           child: Center(
             child: Image.asset(
               "images/${getRecipeTypeImage(vegetable)}.png",

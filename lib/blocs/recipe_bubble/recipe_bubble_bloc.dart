@@ -15,11 +15,8 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
   final LocalRepository repository;
   late StreamSubscription subscription;
 
-  RecipeBubbleBloc({
-    required this.recipeManagerBloc,
-    required this.repository,
-  })
-      : super(LoadedRecipeBubbles([])) {
+  RecipeBubbleBloc({required this.recipeManagerBloc, required this.repository})
+    : super(LoadedRecipeBubbles([])) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeBubbles) {
         if (rmState is RM.DeleteRecipeState) {
@@ -27,9 +24,9 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
             add(RemoveRecipeBubble([rmState.recipe]));
           }
         } else if (rmState is RM.UpdateRecipeState) {
-          if ((state as LoadedRecipeBubbles)
-              .recipes
-              .contains(rmState.oldRecipe)) {
+          if ((state as LoadedRecipeBubbles).recipes.contains(
+            rmState.oldRecipe,
+          )) {
             add(RemoveRecipeBubble([rmState.oldRecipe]));
           }
         } else if (rmState is RM.UpdateCategoryState ||
@@ -43,9 +40,9 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
 
     on<AddRecipeBubble>((event, emit) async {
       if ((state as LoadedRecipeBubbles).recipes.length < 3) {
-        List<Recipe> recipes =
-            List<Recipe>.from((state as LoadedRecipeBubbles).recipes)
-              ..addAll(event.recipes);
+        List<Recipe> recipes = List<Recipe>.from(
+          (state as LoadedRecipeBubbles).recipes,
+        )..addAll(event.recipes);
 
         emit(LoadedRecipeBubbles(recipes));
       }
@@ -53,8 +50,9 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
 
     on<RemoveRecipeBubble>((event, emit) async {
       if (state is LoadedRecipeBubbles) {
-        List<Recipe> newRecipeList =
-            List<Recipe>.from((state as LoadedRecipeBubbles).recipes);
+        List<Recipe> newRecipeList = List<Recipe>.from(
+          (state as LoadedRecipeBubbles).recipes,
+        );
 
         for (Recipe r in event.recipes) {
           newRecipeList.remove(r);
@@ -68,11 +66,14 @@ class RecipeBubbleBloc extends Bloc<RecipeBubbleEvent, RecipeBubbleState> {
       if (state is LoadedRecipeBubbles) {
         List<Recipe> newRecipeList = [];
 
-        for (int i = 0;
-            i < (state as LoadedRecipeBubbles).recipes.length;
-            i++) {
-          Recipe? recipe = await repository
-              .getRecipeByName((state as LoadedRecipeBubbles).recipes[i].name);
+        for (
+          int i = 0;
+          i < (state as LoadedRecipeBubbles).recipes.length;
+          i++
+        ) {
+          Recipe? recipe = await repository.getRecipeByName(
+            (state as LoadedRecipeBubbles).recipes[i].name,
+          );
           if (recipe != null) {
             newRecipeList.add(recipe);
           }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../constants/global_settings.dart';
 
@@ -18,11 +19,8 @@ class RecipeBubble extends StatefulWidget {
   final Offset initialPosition;
   final Recipe recipe;
 
-  RecipeBubble({
-    required this.initialPosition,
-    required this.recipe,
-    Key? key,
-  }) : super(key: key);
+  RecipeBubble({required this.initialPosition, required this.recipe, Key? key})
+    : super(key: key);
 
   @override
   _RecipeBubbleState createState() => _RecipeBubbleState();
@@ -97,10 +95,16 @@ class _RecipeBubbleState extends State<RecipeBubble> {
           height: 70,
           child: ClipOval(
             child: widget.recipe.imagePath == Constants.noRecipeImage
-                ? Image.asset(Constants.noRecipeImage,
-                    width: double.infinity, fit: BoxFit.cover)
-                : Image.file(File(widget.recipe.imagePath),
-                    width: double.infinity, fit: BoxFit.cover),
+                ? Image.asset(
+                    Constants.noRecipeImage,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                : Image.file(
+                    File(widget.recipe.imagePath),
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
           ),
         ),
       ),

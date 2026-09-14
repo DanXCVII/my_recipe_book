@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
+
 import '../constants/global_settings.dart';
 
 import '../generated/l10n.dart';
@@ -11,17 +12,15 @@ class IntroScreen extends StatelessWidget {
     fontSize: 22,
     fontWeight: FontWeight.bold,
   );
-  final TextStyle descStyle = TextStyle(
-    color: Colors.white,
-    fontSize: 20,
-  );
+  final TextStyle descStyle = TextStyle(color: Colors.white, fontSize: 20);
 
   @override
   Widget build(BuildContext context) {
     return IntroSlider(
       // List slides
       renderSkipBtn: renderSkipBtn(),
-      renderNextBtn: renderNextBtn(), renderDoneBtn: renderDoneBtn(),
+      renderNextBtn: renderNextBtn(),
+      renderDoneBtn: renderDoneBtn(),
 
       listContentConfig: [
         ContentConfig(
@@ -61,8 +60,9 @@ class IntroScreen extends StatelessWidget {
           colorBegin: Color(0xff59CA00),
           colorEnd: Color(0xff347600),
           styleTitle: titleStyle,
-          description:
-              S.of(context).for_more_relaxed_shopping_add_to_shoppingcart,
+          description: S
+              .of(context)
+              .for_more_relaxed_shopping_add_to_shoppingcart,
           styleDescription: descStyle,
           widthImage: MediaQuery.of(context).size.width / 2,
           heightImage: MediaQuery.of(context).size.height / 3,
@@ -94,24 +94,14 @@ class IntroScreen extends StatelessWidget {
   }
 
   Widget renderNextBtn() {
-    return Icon(
-      Icons.navigate_next,
-      color: Color(0xffF3B4BA),
-      size: 35.0,
-    );
+    return Icon(Icons.navigate_next, color: Color(0xffF3B4BA), size: 35.0);
   }
 
   Widget renderDoneBtn() {
-    return Icon(
-      Icons.done,
-      color: Color(0xffF3B4BA),
-    );
+    return Icon(Icons.done, color: Color(0xffF3B4BA));
   }
 
   Widget renderSkipBtn() {
-    return Icon(
-      Icons.skip_next,
-      color: Color(0xffF3B4BA),
-    );
+    return Icon(Icons.skip_next, color: Color(0xffF3B4BA));
   }
 }

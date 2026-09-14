@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../generated/l10n.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:flutter/gestures.dart';
@@ -21,9 +23,10 @@ class ImportPcInfo extends StatelessWidget {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffAF1E1E), Color(0xff641414)],
+            ),
           ),
         ),
         title: Text(S.of(context).import_from_website_short),
@@ -36,9 +39,7 @@ class ImportPcInfo extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
-          Container(
-            height: 22,
-          ),
+          Container(height: 22),
           RichText(
             text: TextSpan(
               children: [
@@ -61,7 +62,7 @@ class ImportPcInfo extends StatelessWidget {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

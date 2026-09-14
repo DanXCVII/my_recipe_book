@@ -52,10 +52,10 @@ class MultipleRecipes extends ImportRecipeState {
 
   @override
   List<Object> get props => [
-        readyToImportRecipes,
-        failedZips,
-        alreadyExistingRecipes,
-      ];
+    readyToImportRecipes,
+    failedZips,
+    alreadyExistingRecipes,
+  ];
 }
 
 class ImportedRecipes extends ImportRecipeState {
@@ -74,8 +74,8 @@ class ImportedRecipes extends ImportRecipeState {
 
   @override
   List<Object> get props => [
-        importedRecipes,
-        failedRecipes,
-        alreadyExistingRecipes,
-      ];
+    importedRecipes,
+    failedRecipes,
+    alreadyExistingRecipes,
+  ];
 }

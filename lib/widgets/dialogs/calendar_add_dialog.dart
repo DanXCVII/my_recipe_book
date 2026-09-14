@@ -13,10 +13,7 @@ import '../../screens/add_recipe/general_info_screen/categories_section.dart';
 class CalendarAddDialog extends StatelessWidget {
   final void Function(DateTime date, String recipeName) onFinished;
 
-  const CalendarAddDialog(
-    this.onFinished, {
-    Key? key,
-  }) : super(key: key);
+  const CalendarAddDialog(this.onFinished, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +27,11 @@ class CalendarAddDialog extends StatelessWidget {
         width: MediaQuery.of(context).size.width > 360 ? 360 : null,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
-              Consts.padding, Consts.padding, Consts.padding, 7),
+            Consts.padding,
+            Consts.padding,
+            Consts.padding,
+            7,
+          ),
           child: CalendarAddDialogContent(onFinished),
         ),
       ),
@@ -42,10 +43,7 @@ class CalendarAddDialogContent extends StatefulWidget {
   final void Function(DateTime date, String recipeName) onFinished;
   final focus = FocusNode();
 
-  CalendarAddDialogContent(
-    this.onFinished, {
-    Key? key,
-  }) : super(key: key);
+  CalendarAddDialogContent(this.onFinished, {Key? key}) : super(key: key);
 
   @override
   _CalendarAddDialogContentState createState() =>
@@ -96,9 +94,7 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
             labelText: S.of(context).recipe_name,
           ),
         ),
-        SizedBox(
-          height: 12,
-        ),
+        SizedBox(height: 12),
         selectedDate == null
             ? Center(
                 child: OutlinedButton.icon(
@@ -129,11 +125,13 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(3)),
                       border: Border.all(
-                          width: 1,
-                          color: Theme.of(context).colorScheme.surface ==
-                                  Colors.white
-                              ? Colors.grey[500]!
-                              : Colors.white),
+                        width: 1,
+                        color:
+                            Theme.of(context).colorScheme.surface ==
+                                Colors.white
+                            ? Colors.grey[500]!
+                            : Colors.white,
+                      ),
                     ),
                     child: Text(
                       "${selectedDate!.day}.${selectedDate!.month}.${selectedDate!.year}",
@@ -163,13 +161,13 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
               style: TextButton.styleFrom(
                 backgroundColor:
                     Theme.of(context).colorScheme.surface == Colors.white
-                        ? null
-                        : Colors.amber,
+                    ? null
+                    : Colors.amber,
               ),
               onPressed: () {
-                if (context.read<LocalRepository>()
-                    .getRecipeNames()
-                    .contains(recipeNameController.text)) {
+                if (context.read<LocalRepository>().getRecipeNames().contains(
+                  recipeNameController.text,
+                )) {
                   if (selectedDate != null) {
                     widget.onFinished(selectedDate!, recipeNameController.text);
 
@@ -199,9 +197,9 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
                   )..show(context);
                 }
               },
-            )
+            ),
           ],
-        )
+        ),
       ],
     );
   }
@@ -239,11 +237,13 @@ class _CalendarAddDialogContentState extends State<CalendarAddDialogContent>
       //     ? Colors.white
       //     : Colors.black,
       is24HourMode: true,
-    ).then((DateTime? date) => date != null
-        ? setState(() {
-            selectedDate = date;
-          })
-        : null);
+    ).then(
+      (DateTime? date) => date != null
+          ? setState(() {
+              selectedDate = date;
+            })
+          : null,
+    );
 
     // DatePicker.showDateTimePicker(
     //   context,

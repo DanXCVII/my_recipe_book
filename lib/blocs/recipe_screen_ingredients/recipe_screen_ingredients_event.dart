@@ -25,11 +25,12 @@ class InitializeIngredients extends RecipeScreenIngredientsEvent {
 class AddToCart extends RecipeScreenIngredientsEvent {
   final String recipeName;
   final List<Ingredient> ingredients;
+  final double? servings;
 
-  const AddToCart(this.recipeName, this.ingredients);
+  const AddToCart(this.recipeName, this.ingredients, {this.servings});
 
   @override
-  List<Object> get props => [recipeName, ingredients];
+  List<Object?> get props => [recipeName, ingredients, servings];
 
   @override
   String toString() =>
@@ -54,14 +55,8 @@ class UpdateServings extends RecipeScreenIngredientsEvent {
   final double? oldServings;
   final double newServings;
 
-  const UpdateServings(
-    this.oldServings,
-    this.newServings,
-  );
+  const UpdateServings(this.oldServings, this.newServings);
 
   @override
-  List<Object?> get props => [
-        oldServings,
-        newServings,
-      ];
+  List<Object?> get props => [oldServings, newServings];
 }

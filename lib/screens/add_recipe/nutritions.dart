@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
 import '../../blocs/ad_manager/ad_manager_bloc.dart';
 import '../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../../constants/global_settings.dart';
@@ -15,7 +16,9 @@ import '../../blocs/nutrition_manager/nutrition_manager_bloc.dart';
 import '../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../constants/routes.dart';
+
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
 import '../../widgets/dialogs/textfield_dialog.dart';
@@ -40,10 +43,7 @@ class AddRecipeNutritions extends StatefulWidget {
   final Recipe? modifiedRecipe;
   final String? editingRecipeName;
 
-  AddRecipeNutritions({
-    this.modifiedRecipe,
-    this.editingRecipeName,
-  });
+  AddRecipeNutritions({this.modifiedRecipe, this.editingRecipeName});
 
   @override
   _AddRecipeNutritionsState createState() => _AddRecipeNutritionsState();
@@ -107,8 +107,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
               });
             } else {
               if (state.nutritions.length > listTileKeys.length) {
-                nutritionsController
-                    .addAll({state.nutritions.last: TextEditingController()});
+                nutritionsController.addAll({
+                  state.nutritions.last: TextEditingController(),
+                });
                 listTileKeys.add(Key(state.nutritions.last));
                 dismissibleKeys.add(Key('D-${state.nutritions.last}'));
               }
@@ -127,9 +128,10 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                   flexibleSpace: Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomCenter,
-                          colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xffAF1E1E), Color(0xff641414)],
+                      ),
                     ),
                   ),
                   title: Text(S.of(context).add_nutritions),
@@ -137,8 +139,11 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                     BlocListener<NutritionsBloc, NutritionsState>(
                       listener: (context, state) {
                         if (state is NEditingFinishedGoBack) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(S.of(context).saving_your_input)));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(S.of(context).saving_your_input),
+                            ),
+                          );
                         } else if (state is NSavedGoBack) {
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           Navigator.pop(context);
@@ -146,29 +151,33 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           if (widget.editingRecipeName == null) {
                             Future.delayed(Duration(milliseconds: 200))
                                 .then((_) {
-                              Navigator.of(context)
-                                  .pushNamedAndRemoveUntil(
-                                    RouteNames.recipeScreen,
-                                    (route) => route.isFirst,
-                                    arguments: RecipeScreenArguments(
-                                      BlocProvider.of<ShoppingCartBloc>(
-                                          context),
-                                      BlocProvider.of<RecipeCalendarBloc>(
-                                          context),
-                                      state.recipe,
-                                      'heroImageTag',
-                                      BlocProvider.of<RecipeManagerBloc>(
-                                          context),
-                                    ),
-                                  )
-                                  .then((_) => Ads.hideBottomBannerAd());
-                            });
+                                  Navigator.of(context)
+                                      .pushNamedAndRemoveUntil(
+                                        RouteNames.recipeScreen,
+                                        (route) => route.isFirst,
+                                        arguments: RecipeScreenArguments(
+                                          BlocProvider.of<ShoppingCartBloc>(
+                                            context,
+                                          ),
+                                          BlocProvider.of<RecipeCalendarBloc>(
+                                            context,
+                                          ),
+                                          state.recipe,
+                                          'heroImageTag',
+                                          BlocProvider.of<RecipeManagerBloc>(
+                                            context,
+                                          ),
+                                        ),
+                                      )
+                                      .then((_) => Ads.hideBottomBannerAd());
+                                });
                             BlocProvider.of<AdManagerBloc>(context).add(
-                                StartWatchingVideo(
-                                    DateTime.now(), false, false));
+                              StartWatchingVideo(DateTime.now(), false, false),
+                            );
                           } else {
-                            Future.delayed(Duration(milliseconds: 300))
-                                .then((_) {
+                            Future.delayed(Duration(milliseconds: 300)).then((
+                              _,
+                            ) {
                               if (GlobalSettings().standbyDisabled()) {
                                 WakelockPlus.enable();
                               }
@@ -194,10 +203,7 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                       child: BlocBuilder<NutritionsBloc, NutritionsState>(
                         builder: (context, state) {
                           if (state is NSavingTmpData) {
-                            return Icon(
-                              Icons.check,
-                              color: Colors.grey,
-                            );
+                            return Icon(Icons.check, color: Colors.grey);
                           } else if (state is NCanSave || state is NSaved) {
                             return IconButton(
                               icon: Icon(Icons.check),
@@ -214,9 +220,10 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                               child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 10),
                                 child: Container(
-                                    width: 25,
-                                    height: 25,
-                                    child: CircularProgressIndicator()),
+                                  width: 25,
+                                  height: 25,
+                                  child: CircularProgressIndicator(),
+                                ),
                               ),
                             );
                           } else {
@@ -224,15 +231,12 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           }
                         },
                       ),
-                    )
+                    ),
                   ],
                 ),
                 floatingActionButton: FloatingActionButton(
                   backgroundColor: Color(0xFF790604),
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                  ),
+                  child: Icon(Icons.add, color: Colors.white),
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -247,8 +251,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                           }
                         },
                         save: (String name) {
-                          nutritionsController
-                              .addAll({name: TextEditingController()});
+                          nutritionsController.addAll({
+                            name: TextEditingController(),
+                          });
                           listTileKeys.add(Key(name));
                           dismissibleKeys.add(Key('D-$name'));
                           BlocProvider.of<NutritionManagerBloc>(context)
@@ -262,26 +267,26 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                 body: state.nutritions.isEmpty
                     ? Center(
                         child: IconInfoMessage(
-                        iconWidget: Icon(
-                          MdiIcons.nutrition,
-                          color: Colors.grey[200],
-                          size: 70.0,
+                          iconWidget: Icon(
+                            MdiIcons.nutrition,
+                            color: Colors.grey[200],
+                            size: 70.0,
+                          ),
+                          description: S.of(context).you_have_no_nutritions,
                         ),
-                        description: S.of(context).you_have_no_nutritions,
-                      ))
+                      )
                     : Form(
                         key: _formKey,
                         child: ReorderableListView(
                           onReorderItem: (oldIndex, newIndex) {
                             // The Bloc still expects the legacy pre-removal
                             // destination index.
-                            BlocProvider.of<NutritionManagerBloc>(context)
-                                .add(MoveNutrition(
-                                  oldIndex,
-                                  newIndex > oldIndex
-                                      ? newIndex + 1
-                                      : newIndex,
-                                ));
+                            BlocProvider.of<NutritionManagerBloc>(context).add(
+                              MoveNutrition(
+                                oldIndex,
+                                newIndex > oldIndex ? newIndex + 1 : newIndex,
+                              ),
+                            );
                           },
                           children: List<Widget>.generate(
                             dismissibleKeys.length,
@@ -294,17 +299,22 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                                 BlocProvider.of<NutritionManagerBloc>(context)
                                     .add(DeleteNutrition(state.nutritions[i]));
                                 setState(() {
-                                  dismissibleKeys =
-                                      (List<Key>.from(dismissibleKeys))
-                                        ..removeAt(i);
+                                  dismissibleKeys = (List<Key>.from(
+                                    dismissibleKeys,
+                                  ))..removeAt(i);
                                   listTileKeys = (List<Key>.from(listTileKeys))
                                     ..removeAt(i);
-                                  nutritionsController
-                                      .remove(state.nutritions[i]);
+                                  nutritionsController.remove(
+                                    state.nutritions[i],
+                                  );
                                 });
                               },
-                              child: _getNutritionListTile(state.nutritions[i],
-                                  context, listTileKeys[i], state.nutritions),
+                              child: _getNutritionListTile(
+                                state.nutritions[i],
+                                context,
+                                listTileKeys[i],
+                                state.nutritions,
+                              ),
                             ),
                           ),
                         ),
@@ -327,11 +337,8 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
-            child: Icon(
-              MdiIcons.deleteSweep,
-              color: Colors.white,
-            ),
-          )
+            child: Icon(MdiIcons.deleteSweep, color: Colors.white),
+          ),
         ],
       ),
     );
@@ -345,11 +352,8 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Icon(
-              MdiIcons.deleteSweep,
-              color: Colors.white,
-            ),
-          )
+            child: Icon(MdiIcons.deleteSweep, color: Colors.white),
+          ),
         ],
       ),
     );
@@ -370,30 +374,33 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
 
   Widget _getNutritionManagerLoadingScreen() {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffAF1E1E), Color(0xff641414)],
             ),
           ),
-          title: Text(S.of(context).add_nutritions),
         ),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ));
+        title: Text(S.of(context).add_nutritions),
+      ),
+      body: Center(child: CircularProgressIndicator()),
+    );
   }
 
   Future<void> _finishedEditingNutritions(bool goBack) async {
     List<Nutrition> recipeNutritions = nutritionsController.keys
-        .map((nutritionName) => nutritionsController[nutritionName]!.text == ''
-            ? null
-            : Nutrition(
-                name: nutritionName,
-                amountUnit: nutritionsController[nutritionName]!.text))
+        .map(
+          (nutritionName) => nutritionsController[nutritionName]!.text == ''
+              ? null
+              : Nutrition(
+                  name: nutritionName,
+                  amountUnit: nutritionsController[nutritionName]!.text,
+                ),
+        )
         .whereType<Nutrition>()
         .toList();
 
@@ -407,8 +414,12 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
     );
   }
 
-  Widget _getNutritionListTile(String nutritionName, BuildContext context,
-      Key key, List<String> nutritions) {
+  Widget _getNutritionListTile(
+    String nutritionName,
+    BuildContext context,
+    Key key,
+    List<String> nutritions,
+  ) {
     return ListTile(
       key: key,
       title: GestureDetector(
@@ -426,8 +437,9 @@ class _AddRecipeNutritionsState extends State<AddRecipeNutritions>
                 }
               },
               save: (String name) {
-                nutritionsController
-                    .addAll({name: nutritionsController[nutritionName]});
+                nutritionsController.addAll({
+                  name: nutritionsController[nutritionName],
+                });
                 nutritionsController.remove(nutritionName);
                 BlocProvider.of<NutritionManagerBloc>(context)
                     .add(UpdateNutrition(nutritionName, name));

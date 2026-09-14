@@ -25,21 +25,14 @@ class RecipeCalendarScreenArguments {
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
 
-  RecipeCalendarScreenArguments(
-    this.recipeCalendarBloc,
-    this.shoppingCartBloc,
-  );
+  RecipeCalendarScreenArguments(this.recipeCalendarBloc, this.shoppingCartBloc);
 }
 
 class RecipeCalendarScreen extends StatefulWidget {
   final double? width;
   final double? height;
 
-  RecipeCalendarScreen({
-    this.width,
-    this.height,
-    Key? key,
-  }) : super(key: key);
+  RecipeCalendarScreen({this.width, this.height, Key? key}) : super(key: key);
 
   @override
   _RecipeCalendarScreenState createState() => _RecipeCalendarScreenState();
@@ -49,69 +42,69 @@ class _RecipeCalendarScreenState extends State<RecipeCalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            backgroundColor: Colors.black,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xffAF1E1E), Color(0xff641414)]),
-              ),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffAF1E1E), Color(0xff641414)],
             ),
-            title: Text(S.of(context).recipe_planer),
-            actions: [
-              BlocBuilder<RecipeCalendarBloc, RecipeCalendarState>(
-                  builder: (context, state) {
-                if (state is LoadingRecipeCalendar) {
-                  return Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Container(
-                          width: 25,
-                          height: 25,
-                          child: CircularProgressIndicator()),
-                    ),
-                  );
-                } else if (state is LoadedRecipeCalendarOverview) {
-                  return IconButton(
-                    icon: Icon(Icons.view_day_outlined),
-                    onPressed: () {
-                      BlocProvider.of<RecipeCalendarBloc>(context)
-                          .add(ChangeRecipeCalendarViewEvent(true));
-                    },
-                  );
-                } else {
-                  return IconButton(
-                    icon: Icon(Icons.calendar_today_outlined),
-                    onPressed: () {
-                      BlocProvider.of<RecipeCalendarBloc>(context)
-                          .add(ChangeRecipeCalendarViewEvent(false));
-                      BlocProvider.of<RecipeCalendarBloc>(context)
-                          .add(ChangeSelectedDateEvent(DateTime.now()));
-                    },
-                  );
-                }
-              })
-            ]),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (contxt) => CalendarAddDialog(
-                (date, recipeName) {
-                  BlocProvider.of<RecipeCalendarBloc>(context)
-                      .add(AddRecipeToCalendarEvent(date, recipeName));
-                },
-              ),
-            );
-          },
-          child: Icon(MdiIcons.calendarPlus),
+          ),
         ),
-        body: RecipeCalendarContent(
-          height: widget.height,
-          width: widget.width,
-        ));
+        title: Text(S.of(context).recipe_planer),
+        actions: [
+          BlocBuilder<RecipeCalendarBloc, RecipeCalendarState>(
+            builder: (context, state) {
+              if (state is LoadingRecipeCalendar) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Container(
+                      width: 25,
+                      height: 25,
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                );
+              } else if (state is LoadedRecipeCalendarOverview) {
+                return IconButton(
+                  icon: Icon(Icons.view_day_outlined),
+                  onPressed: () {
+                    BlocProvider.of<RecipeCalendarBloc>(context)
+                        .add(ChangeRecipeCalendarViewEvent(true));
+                  },
+                );
+              } else {
+                return IconButton(
+                  icon: Icon(Icons.calendar_today_outlined),
+                  onPressed: () {
+                    BlocProvider.of<RecipeCalendarBloc>(context)
+                        .add(ChangeRecipeCalendarViewEvent(false));
+                    BlocProvider.of<RecipeCalendarBloc>(context)
+                        .add(ChangeSelectedDateEvent(DateTime.now()));
+                  },
+                );
+              }
+            },
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (contxt) => CalendarAddDialog((date, recipeName) {
+              BlocProvider.of<RecipeCalendarBloc>(context)
+                  .add(AddRecipeToCalendarEvent(date, recipeName));
+            }),
+          );
+        },
+        child: Icon(MdiIcons.calendarPlus),
+      ),
+      body: RecipeCalendarContent(height: widget.height, width: widget.width),
+    );
   }
 }
 
@@ -119,11 +112,8 @@ class RecipeCalendarContent extends StatefulWidget {
   final double? height;
   final double? width;
 
-  RecipeCalendarContent({
-    required this.height,
-    required this.width,
-    Key? key,
-  }) : super(key: key);
+  RecipeCalendarContent({required this.height, required this.width, Key? key})
+    : super(key: key);
 
   @override
   _RecipeCalendarContentState createState() => _RecipeCalendarContentState();
@@ -140,14 +130,13 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
     double? height = widget.height == null
         ? MediaQuery.of(context).size.height
         : widget.height;
-    double? width =
-        widget.width == null ? MediaQuery.of(context).size.width : widget.width;
+    double? width = widget.width == null
+        ? MediaQuery.of(context).size.width
+        : widget.width;
     return BlocBuilder<RecipeCalendarBloc, RecipeCalendarState>(
       builder: (context, state) {
         if (state is LoadingRecipeCalendar) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return Center(child: CircularProgressIndicator());
         } else if (state is LoadedRecipeCalendarOverview) {
           return Column(
             mainAxisSize: MainAxisSize.max,
@@ -174,13 +163,12 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                           Expanded(
                             flex: 3,
                             child: _buildTableCalendar(
-                                state.events, state.selectedDay),
+                              state.events,
+                              state.selectedDay,
+                            ),
                           ),
                           SizedBox(width: 8),
-                          Expanded(
-                            flex: 5,
-                            child: _buildEventList(),
-                          )
+                          Expanded(flex: 5, child: _buildEventList()),
                         ],
                       ),
                     )
@@ -190,7 +178,9 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                             ? 450
                             : MediaQuery.of(context).size.width,
                         child: _buildTableCalendar(
-                            state.events, state.selectedDay),
+                          state.events,
+                          state.selectedDay,
+                        ),
                       ),
                     ),
               // _buildTableCalendarWithBuilders(),
@@ -228,7 +218,9 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                       state.from.add(Duration(days: 7)).day.toString() +
                       ". " +
                       getMonthString(
-                          state.from.add(Duration(days: 7)).month, context) +
+                        state.from.add(Duration(days: 7)).month,
+                        context,
+                      ) +
                       " " +
                       state.from.add(Duration(days: 7)).year.toString(),
                   style: TextStyle(fontSize: 16),
@@ -245,9 +237,12 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
             ),
           );
           for (int i = 0; i < state.days; i++) {
-            verticalDaysWithRecipes.addAll(_getDayWithRecipes(
+            verticalDaysWithRecipes.addAll(
+              _getDayWithRecipes(
                 state.from.add(Duration(days: i)),
-                state.recipes[state.from.add(Duration(days: i))]!));
+                state.recipes[state.from.add(Duration(days: i))]!,
+              ),
+            );
           }
           return ListView(
             padding: EdgeInsets.zero,
@@ -260,9 +255,7 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                   child: Column(
                     children: verticalDaysWithRecipes
                       ..add(
-                        Container(
-                          height: 60,
-                        ), // Added Container, so that the FAB doesn't cover a recipe
+                        Container(height: 60), // Added Container, so that the FAB doesn't cover a recipe
                       ),
                   ),
                 ),
@@ -278,7 +271,9 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
 
   // Simple TableCalendar configuration (using Styles)
   Widget _buildTableCalendar(
-      Map<DateTime, List<String>> events, DateTime stateSelectedDay) {
+    Map<DateTime, List<String>> events,
+    DateTime stateSelectedDay,
+  ) {
     return TableCalendar<String>(
       firstDay: DateTime(DateTime.now().year - 1, 1, 1),
       lastDay: DateTime(DateTime.now().year + 1, 13, 0),
@@ -295,17 +290,25 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
       },
       startingDayOfWeek: StartingDayOfWeek.monday,
       calendarStyle: CalendarStyle(
-        selectedDecoration:
-            BoxDecoration(color: Colors.orange[900], shape: BoxShape.circle),
-        todayDecoration:
-            BoxDecoration(color: Colors.orange[700], shape: BoxShape.circle),
-        markerDecoration:
-            BoxDecoration(color: Colors.amber[500], shape: BoxShape.circle),
+        selectedDecoration: BoxDecoration(
+          color: Colors.orange[900],
+          shape: BoxShape.circle,
+        ),
+        todayDecoration: BoxDecoration(
+          color: Colors.orange[700],
+          shape: BoxShape.circle,
+        ),
+        markerDecoration: BoxDecoration(
+          color: Colors.amber[500],
+          shape: BoxShape.circle,
+        ),
         outsideDaysVisible: false,
       ),
       headerStyle: HeaderStyle(
-        formatButtonTextStyle:
-            TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
+        formatButtonTextStyle: TextStyle().copyWith(
+          color: Colors.white,
+          fontSize: 15.0,
+        ),
         formatButtonDecoration: BoxDecoration(
           color: Colors.deepOrange[400],
           borderRadius: BorderRadius.circular(16.0),
@@ -320,33 +323,35 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
 
   Widget _buildEventList() {
     return BlocBuilder<RecipeCalendarBloc, RecipeCalendarState>(
-        builder: (context, state) {
-      if (state is LoadingRecipeCalendar) {
-        return Center(child: CircularProgressIndicator());
-      } else if (state is LoadedRecipeCalendarOverview) {
-        return ListView(
-          children: List.generate(state.currentRecipes.length * 2, (index) {
-            if (index % 2 == 0) {
-              Tuple2<DateTime, Recipe> dateRecipeTuple =
-                  state.currentRecipes[index ~/ 2];
-              return _getRecipeListTile(dateRecipeTuple, index);
-            } else {
-              return Divider();
-            }
-          })
-            ..add(
-              Container(
-                  height:
-                      60), // Just so that the floatingActionButton doen't cover a recipe
-            ),
-        );
-      }
-      return Container();
-    });
+      builder: (context, state) {
+        if (state is LoadingRecipeCalendar) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is LoadedRecipeCalendarOverview) {
+          return ListView(
+            children:
+                List.generate(state.currentRecipes.length * 2, (index) {
+                  if (index % 2 == 0) {
+                    Tuple2<DateTime, Recipe> dateRecipeTuple =
+                        state.currentRecipes[index ~/ 2];
+                    return _getRecipeListTile(dateRecipeTuple, index);
+                  } else {
+                    return Divider();
+                  }
+                })..add(
+                  Container(height: 60), // Just so that the floatingActionButton doen't cover a recipe
+                ),
+          );
+        }
+        return Container();
+      },
+    );
   }
 
   void _onDaySelected(
-      DateTime selectedDay, DateTime focusedDay, DateTime stateSelectedDay) {
+    DateTime selectedDay,
+    DateTime focusedDay,
+    DateTime stateSelectedDay,
+  ) {
     if (!isSameDay(stateSelectedDay, selectedDay)) {
       BlocProvider.of<RecipeCalendarBloc>(context)
           .add(ChangeSelectedDateEvent(selectedDay));
@@ -354,7 +359,9 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
   }
 
   List<Widget> _getDayWithRecipes(
-      DateTime date, List<Tuple2<DateTime, Recipe>> recipes) {
+    DateTime date,
+    List<Tuple2<DateTime, Recipe>> recipes,
+  ) {
     List<Widget> dayWithRecipes = [];
 
     dayWithRecipes.add(
@@ -376,9 +383,13 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                           offset: Offset(0.0, 1.5),
                         ),
                       ],
-                      color: (date ==
-                              DateTime(DateTime.now().year,
-                                  DateTime.now().month, DateTime.now().day))
+                      color:
+                          (date ==
+                              DateTime(
+                                DateTime.now().year,
+                                DateTime.now().month,
+                                DateTime.now().day,
+                              ))
                           ? Colors.red[900]
                           : Colors.orange[900],
                       borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -389,10 +400,7 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                     child: Center(
                       child: Text(
                         getWeekdayString(date.weekday, context),
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
+                        style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
                   ),
@@ -409,9 +417,13 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                         offset: Offset(0.0, 1.5),
                       ),
                     ],
-                    color: (date ==
-                            DateTime(DateTime.now().year, DateTime.now().month,
-                                DateTime.now().day))
+                    color:
+                        (date ==
+                            DateTime(
+                              DateTime.now().year,
+                              DateTime.now().month,
+                              DateTime.now().day,
+                            ))
                         ? Colors.deepOrange[900]
                         : Colors.orange[700],
                     borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -428,15 +440,14 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                             color: Colors.white,
                           ),
                         ),
-                        Text(getMonthAbbrevString(date.month, context),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
-                            )),
+                        Text(
+                          getMonthAbbrevString(date.month, context),
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        ),
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
             Spacer(),
@@ -447,14 +458,13 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
                   context: context,
                   builder: (contxt) => CalendarRecipeAddDialog(
                     save: (recipeName) {
-                      BlocProvider.of<RecipeCalendarBloc>(context).add(
-                        AddRecipeToCalendarEvent(date, recipeName),
-                      );
+                      BlocProvider.of<RecipeCalendarBloc>(context)
+                          .add(AddRecipeToCalendarEvent(date, recipeName));
                     },
                   ),
                 );
               },
-            )
+            ),
           ],
         ),
       ),
@@ -473,7 +483,9 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
   }
 
   ListTile _getRecipeListTile(
-      Tuple2<DateTime, Recipe> dateRecipeTuple, int uniqueNumber) {
+    Tuple2<DateTime, Recipe> dateRecipeTuple,
+    int uniqueNumber,
+  ) {
     return ListTile(
       onTap: () {
         if (GlobalSettings().standbyDisabled()) {
@@ -496,11 +508,12 @@ class _RecipeCalendarContentState extends State<RecipeCalendarContent>
           if (Ads.shouldShowBannerAds()) Ads.hideBottomBannerAd();
         });
       },
-      subtitle: dateRecipeTuple.item1.hour == 0 &&
-              dateRecipeTuple.item1.minute == 0
+      subtitle:
+          dateRecipeTuple.item1.hour == 0 && dateRecipeTuple.item1.minute == 0
           ? null
           : Text(
-              "${dateRecipeTuple.item1.hour < 10 ? "0" : ""}${dateRecipeTuple.item1.hour.toString()}:${dateRecipeTuple.item1.minute < 10 ? "0" : ""}${dateRecipeTuple.item1.minute.toString()}"),
+              "${dateRecipeTuple.item1.hour < 10 ? "0" : ""}${dateRecipeTuple.item1.hour.toString()}:${dateRecipeTuple.item1.minute < 10 ? "0" : ""}${dateRecipeTuple.item1.minute.toString()}",
+            ),
       title: Text(dateRecipeTuple.item2.name),
       leading: RecipeImageHero(
         dateRecipeTuple.item2,

@@ -33,17 +33,13 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
       editingStepTitles = event.stepTitles;
       editingSteps = event.steps;
 
-      emit(LoadedStepImages(
-        event.stepImages,
-        event.steps,
-        stepTitles,
-        stepKeys,
-      ));
+      emit(
+        LoadedStepImages(event.stepImages, event.steps, stepTitles, stepKeys),
+      );
     });
 
     on<AddImage>((event, emit) async {
-      final List<List<String>> images = (state as LoadedStepImages)
-          .stepImages
+      final List<List<String>> images = (state as LoadedStepImages).stepImages
           .map((list) => list.map((item) => item).toList())
           .toList();
 
@@ -57,79 +53,77 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
         ),
       );
 
-      emit(LoadedStepImages(
-        images,
-        (state as LoadedStepImages).steps,
-        (state as LoadedStepImages).stepTitles,
-        (state as LoadedStepImages).stepKeys,
-      ));
+      emit(
+        LoadedStepImages(
+          images,
+          (state as LoadedStepImages).steps,
+          (state as LoadedStepImages).stepTitles,
+          (state as LoadedStepImages).stepKeys,
+        ),
+      );
     });
 
     on<RemoveImage>((event, emit) async {
       String stepImagePath = (state as LoadedStepImages)
           .stepImages[event.stepNumber][event.stepImageIndex];
-      String stepImageName =
-          stepImagePath.substring(stepImagePath.lastIndexOf('/') + 1);
+      String stepImageName = stepImagePath.substring(
+        stepImagePath.lastIndexOf('/') + 1,
+      );
 
-      final List<List<String>> images = (state as LoadedStepImages)
-          .stepImages
+      final List<List<String>> images = (state as LoadedStepImages).stepImages
           .map((list) => list.map((item) => item).toList())
           .toList();
       images[event.stepNumber].removeAt(event.stepImageIndex);
 
-      emit(LoadedStepImages(
-        images,
-        (state as LoadedStepImages).steps,
-        (state as LoadedStepImages).stepTitles,
-        (state as LoadedStepImages).stepKeys,
-      ));
+      emit(
+        LoadedStepImages(
+          images,
+          (state as LoadedStepImages).steps,
+          (state as LoadedStepImages).stepTitles,
+          (state as LoadedStepImages).stepKeys,
+        ),
+      );
 
       if (!editingStepImages.contains(stepImagePath)) {
         if (!event.editingRecipe) {
-          await IO.deleteStepImage(
-            'tmp',
-            event.stepNumber,
-            stepImageName,
-          );
+          await IO.deleteStepImage('tmp', event.stepNumber, stepImageName);
         }
       }
     });
 
     on<AddStep>((event, emit) async {
-      List<List<String>> stepImages = (state as LoadedStepImages)
-          .stepImages
-          .map((e) => e.map((e) => e).toList())
-          .toList()
-        ..add([]);
-      List<String> steps = (state as LoadedStepImages)
-          .steps
-          .map((e) => e)
-          .toList()
-        ..add(event.step);
-      List<String> stepTitles = (state as LoadedStepImages)
-          .stepTitles
-          .map((e) => e)
-          .toList()
-        ..add("");
+      List<List<String>> stepImages =
+          (state as LoadedStepImages).stepImages
+              .map((e) => e.map((e) => e).toList())
+              .toList()
+            ..add([]);
+      List<String> steps =
+          (state as LoadedStepImages).steps.map((e) => e).toList()
+            ..add(event.step);
+      List<String> stepTitles =
+          (state as LoadedStepImages).stepTitles.map((e) => e).toList()
+            ..add("");
 
-      emit(LoadedStepImages(
-        stepImages,
-        steps,
-        stepTitles,
-        stepKeys..add(Key(stepKeys.length.toString())),
-      ));
+      emit(
+        LoadedStepImages(
+          stepImages,
+          steps,
+          stepTitles,
+          stepKeys..add(Key(stepKeys.length.toString())),
+        ),
+      );
     });
 
     on<RemoveStep>((event, emit) async {
       if (event.stepNumber != null) {
-        if ((state as LoadedStepImages)
-            .stepImages
-            .every((element) => element.isEmpty)) {
+        if ((state as LoadedStepImages).stepImages.every(
+          (element) => element.isEmpty,
+        )) {
           /// No need to modify or remove images in storage, because this option is only available
           /// if there are no images added yet.
-          emit(LoadedStepImages(
-              (state as LoadedStepImages)
-                  .stepImages
+          emit(
+            LoadedStepImages(
+              (state as LoadedStepImages).stepImages
                   .map((e) => e.map((e) => e).toList())
                   .toList()
                 ..removeAt(event.stepNumber!),
@@ -137,56 +131,66 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
                 ..removeAt(event.stepNumber!),
               (state as LoadedStepImages).stepTitles.map((e) => e).toList()
                 ..removeAt(event.stepNumber!),
-              stepKeys.map((e) => e).toList()..removeAt(event.stepNumber!)));
+              stepKeys.map((e) => e).toList()..removeAt(event.stepNumber!),
+            ),
+          );
         }
       } else {
         String stepPath = await PathProvider.pP.getRecipeStepNumberDirFull(
-            event.recipeName,
-            (state as LoadedStepImages).stepImages.length - 1);
+          event.recipeName,
+          (state as LoadedStepImages).stepImages.length - 1,
+        );
         await Directory(stepPath).delete(recursive: true);
 
         String stepPreviewPath = await PathProvider.pP
-            .getRecipeStepPreviewNumberDirFull(event.recipeName,
-                (state as LoadedStepImages).stepImages.length - 1);
+            .getRecipeStepPreviewNumberDirFull(
+              event.recipeName,
+              (state as LoadedStepImages).stepImages.length - 1,
+            );
         await Directory(stepPreviewPath).delete(recursive: true);
 
-        emit(LoadedStepImages(
-          (state as LoadedStepImages)
-              .stepImages
-              .map((e) => e.map((e) => e).toList())
-              .toList()
-            ..removeLast(),
-          (state as LoadedStepImages).steps.map((e) => e).toList()
-            ..removeLast(),
-          (state as LoadedStepImages).stepTitles.map((e) => e).toList()
-            ..removeLast(),
-          stepKeys.map((e) => e).toList()..removeLast(),
-        ));
+        emit(
+          LoadedStepImages(
+            (state as LoadedStepImages).stepImages
+                .map((e) => e.map((e) => e).toList())
+                .toList()
+              ..removeLast(),
+            (state as LoadedStepImages).steps.map((e) => e).toList()
+              ..removeLast(),
+            (state as LoadedStepImages).stepTitles.map((e) => e).toList()
+              ..removeLast(),
+            stepKeys.map((e) => e).toList()..removeLast(),
+          ),
+        );
       }
     });
 
     on<EditStepTitle>((event, emit) async {
-      List<String> stepTitles =
-          (state as LoadedStepImages).stepTitles.map((e) => e).toList();
+      List<String> stepTitles = (state as LoadedStepImages).stepTitles
+          .map((e) => e)
+          .toList();
       stepTitles[event.stepIndex] = event.stepTitle;
 
-      emit(LoadedStepImages(
-        (state as LoadedStepImages).stepImages,
-        (state as LoadedStepImages).steps,
-        stepTitles,
-        stepKeys,
-      ));
+      emit(
+        LoadedStepImages(
+          (state as LoadedStepImages).stepImages,
+          (state as LoadedStepImages).steps,
+          stepTitles,
+          stepKeys,
+        ),
+      );
     });
 
     on<MoveStep>((event, emit) async {
-      List<List<String>> stepImages = (state as LoadedStepImages)
-          .stepImages
+      List<List<String>> stepImages = (state as LoadedStepImages).stepImages
           .map((e) => e.map((e) => e).toList())
           .toList();
-      List<String> steps =
-          (state as LoadedStepImages).steps.map((e) => e).toList();
-      List<String> stepTitles =
-          (state as LoadedStepImages).stepTitles.map((e) => e).toList();
+      List<String> steps = (state as LoadedStepImages).steps
+          .map((e) => e)
+          .toList();
+      List<String> stepTitles = (state as LoadedStepImages).stepTitles
+          .map((e) => e)
+          .toList();
       List<Key> copyStepKeys = stepKeys.map((e) => e).toList();
 
       _move(steps, event.oldIndex, event.newIndex);
@@ -194,25 +198,23 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
       _move(copyStepKeys, event.oldIndex, event.newIndex);
       _move(stepImages, event.oldIndex, event.newIndex);
 
-      emit(LoadedStepImages(
-        stepImages,
-        steps,
-        stepTitles,
-        stepKeys,
-      ));
+      emit(LoadedStepImages(stepImages, steps, stepTitles, stepKeys));
     });
 
     on<EditStep>((event, emit) async {
-      List<String> steps =
-          (state as LoadedStepImages).steps.map((e) => e).toList();
+      List<String> steps = (state as LoadedStepImages).steps
+          .map((e) => e)
+          .toList();
       steps[event.stepIndex] = event.step;
 
-      emit(LoadedStepImages(
-        (state as LoadedStepImages).stepImages,
-        steps,
-        (state as LoadedStepImages).stepTitles,
-        stepKeys,
-      ));
+      emit(
+        LoadedStepImages(
+          (state as LoadedStepImages).stepImages,
+          steps,
+          (state as LoadedStepImages).stepTitles,
+          stepKeys,
+        ),
+      );
     });
   }
 

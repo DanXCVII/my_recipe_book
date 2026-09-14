@@ -129,7 +129,7 @@
     "snackbar_midnight_theme_applied": "midnight theme applied",
     "by_name": "by name",
     "by_effort": "by effort",
-    "by_ingredientsamount": "by ingredientsamount",
+    "by_ingredientsamount": "by ingredient count",
     "category_already_exists": "category already exists",
     "categoryname": "category name",
     "category": "category",
@@ -320,5 +320,78 @@
     "successfully_synced_drive": "successfully synced recipes with Google Drive",
     "cancelling_sync": "Cancelling Sync...",
     "failed_sign_in": "failed to sign in maybe due to no internet",
-    "failed_syncing": "error occured during syncing, maybe due to bad internet"
-  }
+    "failed_syncing": "error occured during syncing, maybe due to bad internet",
+    "grid_view": "Grid",
+    "list_view": "List",
+    "filter_recipes": "Filter recipes...",
+    "sort_by": "Sort: {sort}",
+    "all_recipes_filter": "All",
+    "more_filters": "Filters",
+    "clear_filters": "Clear filters",
+    "clear_search": "Clear search",
+    "average_effort": "Avg effort",
+    "recipe_count": "{count, plural, =0{No recipes} =1{1 recipe} other{{count} recipes}}",
+    "@recipe_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "recipe_summary_with_effort": "{count, plural, =0{No recipes} =1{1 recipe} other{{count} recipes}} • Avg effort {effort}",
+    "@recipe_summary_with_effort": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "effort": {
+                "type": "String"
+            }
+        }
+    },
+    "add_to_favorites": "Add to favorites",
+    "remove_from_favorites": "Remove from favorites",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "no_recipes_in_collection": "No recipes here yet",
+    "no_filtered_recipes": "No recipes match these filters",
+    "no_recipes_for_diet": "You have no recipes for this dietary selection",
+    "recipe_overview_failed": "Recipes couldn't be loaded",
+    "recipe_overview_failed_description": "Check your storage and try again.",
+    "retry": "Retry",
+    "shopping_market_provisions": "MARKET PROVISIONS",
+    "shopping_item_count": "{count, plural, =0{No items} =1{1 item} other{{count} items}}",
+    "@shopping_item_count": {"placeholders": {"count": {"type": "int"}}},
+    "shopping_for_recipes": "{count, plural, =1{Gathering for 1 recipe} other{Gathering for {count} recipes}}",
+    "@shopping_for_recipes": {"placeholders": {"count": {"type": "int"}}},
+    "shopping_adjust_servings": "Adjust servings",
+    "shopping_progress": "{checked} of {total} items gathered",
+    "@shopping_progress": {"placeholders": {"checked": {"type": "int"}, "total": {"type": "int"}}},
+    "shopping_percent_gathered": "{percent}% gathered",
+    "@shopping_percent_gathered": {"placeholders": {"percent": {"type": "int"}}},
+    "shopping_plain_list": "Plain list",
+    "shopping_by_recipe": "By recipe",
+    "shopping_quick_add_hint": "Add an ingredient…",
+    "shopping_add_details": "Add ingredient with amount, unit, or recipe",
+    "shopping_other_items": "Other items",
+    "shopping_mode": "Shopping mode",
+    "shopping_mode_active": "Screen stays awake",
+    "shopping_remove_checked": "Remove checked items",
+    "shopping_remove_checked_title": "Remove gathered items?",
+    "shopping_remove_checked_description": "{count, plural, =1{This removes 1 checked item from your list.} other{This removes {count} checked items from your list.}}",
+    "@shopping_remove_checked_description": {"placeholders": {"count": {"type": "int"}}},
+    "shopping_removed_items": "{count, plural, =1{1 item removed} other{{count} items removed}}",
+    "@shopping_removed_items": {"placeholders": {"count": {"type": "int"}}},
+    "shopping_action_failed": "The shopping list could not be updated. Try again.",
+    "shopping_load_failed": "Your shopping list could not be loaded",
+    "shopping_load_failed_description": "Check your storage and try again.",
+    "shopping_empty_description": "Add ingredients here or from one of your recipes.",
+    "shopping_serving_value": "{value} servings",
+    "@shopping_serving_value": {"placeholders": {"value": {"type": "String"}}},
+    "shopping_invalid_servings": "Enter a number greater than zero",
+    "share_shopping_list": "Share shopping list",
+    "shopping_more_actions": "More shopping-list actions",
+    "shopping_search_recipes": "Search recipes",
+    "shopping_remove_item": "Remove {item}",
+    "@shopping_remove_item": {"placeholders": {"item": {"type": "String"}}}
+}

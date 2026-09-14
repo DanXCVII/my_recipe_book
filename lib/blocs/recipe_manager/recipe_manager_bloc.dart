@@ -28,8 +28,9 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
     });
 
     on<RMDeleteRecipe>((event, emit) async {
-      Recipe? deletedRecipe =
-          await repository.getRecipeByName(event.recipeName);
+      Recipe? deletedRecipe = await repository.getRecipeByName(
+        event.recipeName,
+      );
 
       if (deletedRecipe != null) {
         await repository.deleteRecipe(deletedRecipe.name);
@@ -53,8 +54,7 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
     });
 
     on<RMUpdateCategory>((event, emit) async {
-      await repository
-          .renameCategory(event.oldCategory, event.updatedCategory);
+      await repository.renameCategory(event.oldCategory, event.updatedCategory);
 
       emit(UpdateCategoryState(event.oldCategory, event.updatedCategory));
     });
@@ -74,11 +74,7 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
     on<RMMoveCategory>((event, emit) async {
       await repository.moveCategory(event.oldIndex, event.newIndex);
 
-      emit(MoveCategoryState(
-        event.oldIndex,
-        event.newIndex,
-        event.time,
-      ));
+      emit(MoveCategoryState(event.oldIndex, event.newIndex, event.time));
     });
 
     on<RMAddRecipeTag>((event, emit) async {
@@ -96,8 +92,11 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
     });
 
     on<RMUpdateRecipeTag>((event, emit) async {
-      await repository.updateRecipeTag(event.oldRecipeTag.text,
-          event.updatedRecipeTag.text, event.updatedRecipeTag.number);
+      await repository.updateRecipeTag(
+        event.oldRecipeTag.text,
+        event.updatedRecipeTag.text,
+        event.updatedRecipeTag.number,
+      );
 
       emit(UpdateRecipeTagState(event.oldRecipeTag, event.updatedRecipeTag));
     });
@@ -138,9 +137,6 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
       }
     }
 
-    return r.copyWith(
-      stepImages: stepImages,
-      stepTitles: stepTitles,
-    );
+    return r.copyWith(stepImages: stepImages, stepTitles: stepTitles);
   }
 }

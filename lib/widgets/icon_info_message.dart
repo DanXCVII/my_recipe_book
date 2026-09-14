@@ -41,10 +41,9 @@ class IconInfoMessage extends StatelessWidget {
           child: Container(
             decoration: backgroundText
                 ? BoxDecoration(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(5),
-                    ),
-                    color: Colors.black45)
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    color: Colors.black45,
+                  )
                 : null,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -56,8 +55,8 @@ class IconInfoMessage extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   color: textColor == null
                       ? Theme.of(context).colorScheme.surface == Colors.white
-                          ? Colors.grey[800]
-                          : Colors.white
+                            ? Colors.grey[800]
+                            : Colors.white
                       : textColor,
                 ),
               ),

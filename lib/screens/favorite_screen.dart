@@ -12,45 +12,44 @@ import '../widgets/recipe_card.dart';
 class FavoriteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      Opacity(
-        opacity:
-            Theme.of(context).colorScheme.surface == Colors.white ? 0.3 : 1,
-        child: Container(
-          height: MediaQuery.of(context).size.height - kToolbarHeight,
-          width: MediaQuery.of(context).size.width,
-          child: Image.asset(
-            "images/hearts.png",
-            repeat: ImageRepeat.repeat,
+    return Stack(
+      children: <Widget>[
+        Opacity(
+          opacity: Theme.of(context).colorScheme.surface == Colors.white
+              ? 0.3
+              : 1,
+          child: Container(
+            height: MediaQuery.of(context).size.height - kToolbarHeight,
+            width: MediaQuery.of(context).size.width,
+            child: Image.asset("images/hearts.png", repeat: ImageRepeat.repeat),
           ),
         ),
-      ),
-      BlocBuilder<FavoriteRecipesBloc, FavoriteRecipesState>(
+        BlocBuilder<FavoriteRecipesBloc, FavoriteRecipesState>(
           builder: (context, state) {
-        if (state is LoadingFavorites) {
-          return Center(child: CircularProgressIndicator());
-        } else if (state is LoadedFavorites) {
-          if (state.recipes.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: IconInfoMessage(
-                  iconWidget: SpinKitPumpingHeart(
-                    color: Colors.pink,
-                    size: 70.0,
+            if (state is LoadingFavorites) {
+              return Center(child: CircularProgressIndicator());
+            } else if (state is LoadedFavorites) {
+              if (state.recipes.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: IconInfoMessage(
+                      iconWidget: SpinKitPumpingHeart(
+                        color: Colors.pink,
+                        size: 70.0,
+                      ),
+                      description: S.of(context).no_added_favorites_yet,
+                    ),
                   ),
-                  description: S.of(context).no_added_favorites_yet,
-                ),
-              ),
-            );
-          }
-          return FavoriteRecipeCards(
-            favoriteRecipes: state.recipes,
-          );
-        }
-        return Text(state.toString());
-      })
-    ]);
+                );
+              }
+              return FavoriteRecipeCards(favoriteRecipes: state.recipes);
+            }
+            return Text(state.toString());
+          },
+        ),
+      ],
+    );
   }
 }
 
@@ -58,7 +57,7 @@ class FavoriteRecipeCards extends StatelessWidget {
   final List<Recipe> favoriteRecipes;
 
   const FavoriteRecipeCards({required this.favoriteRecipes, Key? key})
-      : super(key: key);
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -85,192 +85,200 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
       });
     }
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffAF1E1E), Color(0xff641414)],
             ),
           ),
-          title: Text(S.of(context).professional_search),
         ),
-        body: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width > 420
-                  ? 420
-                  : MediaQuery.of(context).size.width,
-              child: Column(
-                  crossAxisAlignment:
-                      MediaQuery.of(context).size.width > showExpandedSearch
-                          ? CrossAxisAlignment.start
-                          : CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width > 420
-                          ? 420
-                          : MediaQuery.of(context).size.width,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Color.fromRGBO(70, 70, 70, 1),
-                                  Color.fromRGBO(60, 60, 60, 1)
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(25),
-                              color: Color.fromRGBO(70, 70, 70, 1),
-                            ),
-                            child: AnimatedSize(
-                              duration: Duration(milliseconds: 150),
-                              curve: Curves.fastOutSlowIn,
-                              child: _isMinimized
-                                  ? _getMinimized()
-                                  : !_isExpanded
-                                      ? _getNonExpanded()
-                                      : LayoutBuilder(
-                                          builder: (context, constraints) {
-                                          double height;
-                                          if (_showTagCatFilter) {
-                                            height = MediaQuery.of(context)
-                                                            .size
-                                                            .height -
-                                                        100 >
-                                                    550
-                                                ? 550
-                                                : MediaQuery.of(context)
-                                                        .size
-                                                        .height -
-                                                    100;
-                                          } else {
-                                            height = 275;
-                                          }
-
-                                          return Container(
-                                            height: height,
-                                            child: _getExpanded(
-                                                constraints.maxHeight,
-                                                constraints.maxWidth),
-                                          );
-                                        }),
-                            ),
+        title: Text(S.of(context).professional_search),
+      ),
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width > 420
+                ? 420
+                : MediaQuery.of(context).size.width,
+            child: Column(
+              crossAxisAlignment:
+                  MediaQuery.of(context).size.width > showExpandedSearch
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width > 420
+                      ? 420
+                      : MediaQuery.of(context).size.width,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color.fromRGBO(70, 70, 70, 1),
+                              Color.fromRGBO(60, 60, 60, 1),
+                            ],
                           ),
+                          borderRadius: BorderRadius.circular(25),
+                          color: Color.fromRGBO(70, 70, 70, 1),
+                        ),
+                        child: AnimatedSize(
+                          duration: Duration(milliseconds: 150),
+                          curve: Curves.fastOutSlowIn,
+                          child: _isMinimized
+                              ? _getMinimized()
+                              : !_isExpanded
+                              ? _getNonExpanded()
+                              : LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    double height;
+                                    if (_showTagCatFilter) {
+                                      height =
+                                          MediaQuery.of(context).size.height -
+                                                  100 >
+                                              550
+                                          ? 550
+                                          : MediaQuery.of(context).size.height -
+                                                100;
+                                    } else {
+                                      height = 275;
+                                    }
+
+                                    return Container(
+                                      height: height,
+                                      child: _getExpanded(
+                                        constraints.maxHeight,
+                                        constraints.maxWidth,
+                                      ),
+                                    );
+                                  },
+                                ),
                         ),
                       ),
                     ),
-                    MediaQuery.of(context).size.width > showExpandedSearch
-                        ? null
-                        : Expanded(child: _getResultWidget())
-                  ].whereType<Widget>().toList()),
+                  ),
+                ),
+                MediaQuery.of(context).size.width > showExpandedSearch
+                    ? null
+                    : Expanded(child: _getResultWidget()),
+              ].whereType<Widget>().toList(),
             ),
-            MediaQuery.of(context).size.width > showExpandedSearch
-                ? Expanded(child: _getResultWidget())
-                : null
-          ].whereType<Widget>().toList(),
-        ));
+          ),
+          MediaQuery.of(context).size.width > showExpandedSearch
+              ? Expanded(child: _getResultWidget())
+              : null,
+        ].whereType<Widget>().toList(),
+      ),
+    );
   }
 
   Widget _getResultWidget() {
     return BlocBuilder<IngredientSearchBloc, IngredientSearchState>(
-        builder: (context, state) {
-      if (state is IngredientSearchInitial) {
-        return Container();
-      } else if (state is SearchingRecipes) {
-        return Center(
-          child: Container(
-            height: MediaQuery.of(context).size.height - 350,
-            child: Center(child: CircularProgressIndicator()),
-          ),
-        );
-      } else if (state is IngredientSearchMatches) {
-        if (state.tupleMatchesRecipe.isEmpty) {
-          return ListView(children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.width > showExpandedSearch
-                  ? MediaQuery.of(context).size.height - kToolbarHeight
-                  : MediaQuery.of(context).size.height - 350,
-              child: Center(
-                child: state.totalIngredAmount == 0
-                    ? IconInfoMessage(
-                        iconWidget: Icon(
-                          MdiIcons.pencil,
-                          color: Colors.white,
-                          size: 70.0,
-                        ),
-                        description: S.of(context).enter_some_information,
-                      )
-                    : IconInfoMessage(
-                        iconWidget: Icon(
-                          Icons.search,
-                          color: Colors.white,
-                          size: 70.0,
-                        ),
-                        description: S.of(context).no_matching_recipes,
-                      ),
-              ),
+      builder: (context, state) {
+        if (state is IngredientSearchInitial) {
+          return Container();
+        } else if (state is SearchingRecipes) {
+          return Center(
+            child: Container(
+              height: MediaQuery.of(context).size.height - 350,
+              child: Center(child: CircularProgressIndicator()),
             ),
-          ]);
+          );
+        } else if (state is IngredientSearchMatches) {
+          if (state.tupleMatchesRecipe.isEmpty) {
+            return ListView(
+              children: <Widget>[
+                Container(
+                  height: MediaQuery.of(context).size.width > showExpandedSearch
+                      ? MediaQuery.of(context).size.height - kToolbarHeight
+                      : MediaQuery.of(context).size.height - 350,
+                  child: Center(
+                    child: state.totalIngredAmount == 0
+                        ? IconInfoMessage(
+                            iconWidget: Icon(
+                              MdiIcons.pencil,
+                              color: Colors.white,
+                              size: 70.0,
+                            ),
+                            description: S.of(context).enter_some_information,
+                          )
+                        : IconInfoMessage(
+                            iconWidget: Icon(
+                              Icons.search,
+                              color: Colors.white,
+                              size: 70.0,
+                            ),
+                            description: S.of(context).no_matching_recipes,
+                          ),
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return _getRecipeFoundList(
+              state.tupleMatchesRecipe,
+              state.totalIngredAmount,
+            );
+          }
         } else {
-          return _getRecipeFoundList(
-              state.tupleMatchesRecipe, state.totalIngredAmount);
+          return Text(state.toString());
         }
-      } else {
-        return Text(state.toString());
-      }
-    });
+      },
+    );
   }
 
   Widget _getRecipeFoundList(
-      List<Tuple2<int, Recipe>> recipeMatches, int totalIngredientAmount) {
+    List<Tuple2<int, Recipe>> recipeMatches,
+    int totalIngredientAmount,
+  ) {
     return ListView(
-      children: List<Widget>.generate(
-        recipeMatches.length * 2,
-        (index) {
-          int recipeIndex = index == 0 ? 0 : (index / 2).floor();
-          Recipe currentRecipe = recipeMatches[recipeIndex].item2;
-          return index % 2 == 1
-              ? Divider()
-              : ListTile(
-                  onTap: () {
-                    if (GlobalSettings().standbyDisabled()) {
-                      WakelockPlus.enable();
-                    }
-                    Navigator.pushNamed(
-                      context,
-                      RouteNames.recipeScreen,
-                      arguments: RecipeScreenArguments(
-                        BlocProvider.of<ShoppingCartBloc>(context),
-                        BlocProvider.of<RecipeCalendarBloc>(context),
-                        currentRecipe,
-                        currentRecipe.name,
-                        BlocProvider.of<RecipeManagerBloc>(context),
+      children: List<Widget>.generate(recipeMatches.length * 2, (index) {
+        int recipeIndex = index == 0 ? 0 : (index / 2).floor();
+        Recipe currentRecipe = recipeMatches[recipeIndex].item2;
+        return index % 2 == 1
+            ? Divider()
+            : ListTile(
+                onTap: () {
+                  if (GlobalSettings().standbyDisabled()) {
+                    WakelockPlus.enable();
+                  }
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.recipeScreen,
+                    arguments: RecipeScreenArguments(
+                      BlocProvider.of<ShoppingCartBloc>(context),
+                      BlocProvider.of<RecipeCalendarBloc>(context),
+                      currentRecipe,
+                      currentRecipe.name,
+                      BlocProvider.of<RecipeManagerBloc>(context),
+                    ),
+                  ).then((_) => WakelockPlus.disable());
+                },
+                title: Text(recipeMatches[recipeIndex].item2.name),
+                subtitle:
+                    recipeMatches[recipeIndex].item1 == 0 &&
+                        totalIngredientAmount == 0
+                    ? null
+                    : Text(
+                        "${S.of(context).ingredient_matches}: ${recipeMatches[recipeIndex].item1} ${S.of(context).out_of} $totalIngredientAmount",
                       ),
-                    ).then((_) => WakelockPlus.disable());
-                  },
-                  title: Text(recipeMatches[recipeIndex].item2.name),
-                  subtitle: recipeMatches[recipeIndex].item1 == 0 &&
-                          totalIngredientAmount == 0
-                      ? null
-                      : Text(
-                          "${S.of(context).ingredient_matches}: ${recipeMatches[recipeIndex].item1} ${S.of(context).out_of} $totalIngredientAmount"),
-                  leading: RecipeImageHero(
-                    currentRecipe,
-                    currentRecipe.name,
-                    showAds: true,
-                  ),
-                );
-        },
-      ),
+                leading: RecipeImageHero(
+                  currentRecipe,
+                  currentRecipe.name,
+                  showAds: true,
+                ),
+              );
+      }),
     );
   }
 
@@ -290,37 +298,46 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
             child: Container(
               height: 180,
               child: ListView(
-                  children: List<Widget>.generate(
-                _controllers.length,
-                (index) => Padding(
-                  padding:
-                      EdgeInsets.only(bottom: 10.0, top: index == 0 ? 5 : 0),
-                  child: SimpleAutoCompleteTextField(
-                    key: _autoCompletionKeys[index],
-                    suggestions: context.read<LocalRepository>().getIngredientNames(),
-                    controller: _controllers[index],
-                    // style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: S.of(context).ingredient,
-                      labelStyle: TextStyle(
-                          fontWeight: FontWeight.w500, color: Colors.grey[500]),
-                      border: OutlineInputBorder(),
-                      focusedBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
-                        borderSide: const BorderSide(
-                          color: Colors.amber,
-                          width: 2,
+                children: List<Widget>.generate(
+                  _controllers.length,
+                  (index) => Padding(
+                    padding: EdgeInsets.only(
+                      bottom: 10.0,
+                      top: index == 0 ? 5 : 0,
+                    ),
+                    child: SimpleAutoCompleteTextField(
+                      key: _autoCompletionKeys[index],
+                      suggestions: context
+                          .read<LocalRepository>()
+                          .getIngredientNames(),
+                      controller: _controllers[index],
+                      // style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: S.of(context).ingredient,
+                        labelStyle: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[500],
                         ),
-                      ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
-                        borderSide: const BorderSide(
-                            color: Color.fromRGBO(210, 210, 210, 1), width: 2),
+                        border: OutlineInputBorder(),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                          borderSide: const BorderSide(
+                            color: Colors.amber,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                          borderSide: const BorderSide(
+                            color: Color.fromRGBO(210, 210, 210, 1),
+                            width: 2,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              )),
+              ),
             ),
           ),
           SizedBox(height: 10),
@@ -367,17 +384,15 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                           height: 40,
                           width: 97,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              color: Colors.deepOrange[900]),
+                            borderRadius: BorderRadius.circular(40),
+                            color: Colors.deepOrange[900],
+                          ),
                           child: Row(
                             children: <Widget>[
                               IconButton(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
-                                icon: Icon(
-                                  Icons.remove,
-                                  color: Colors.white,
-                                ),
+                                icon: Icon(Icons.remove, color: Colors.white),
                                 onPressed: () {
                                   if (_controllers.length > 2)
                                     setState(() {
@@ -389,10 +404,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                               IconButton(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
-                                icon: Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                ),
+                                icon: Icon(Icons.add, color: Colors.white),
                                 onPressed: () {
                                   setState(() {
                                     if (_controllers.length < 20) {
@@ -401,7 +413,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                                     }
                                   });
                                 },
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -413,7 +425,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                 _getSearchIconButton(),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -424,75 +436,89 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
       builder: (context, constraints) => Container(
         height: _showTagCatFilter ? 500 : 220,
         child: ListView(
-          children: List<Widget>.generate(
-            2,
-            (index) => Padding(
-              padding: EdgeInsets.fromLTRB(20, index == 0 ? 20 : 0, 20, 10),
-              child: SimpleAutoCompleteTextField(
-                key: _autoCompletionKeys[index],
-                suggestions: context.read<LocalRepository>().getIngredientNames(),
-                controller: _controllers[index],
-                style: new TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: S.of(context).ingredient,
-                  labelStyle: TextStyle(
-                      fontWeight: FontWeight.w500, color: Colors.grey[500]),
-                  border: OutlineInputBorder(),
-                  focusedBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                    borderSide: const BorderSide(
-                      color: Colors.amber,
-                      width: 2,
+          children:
+              List<Widget>.generate(
+                  2,
+                  (index) => Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      20,
+                      index == 0 ? 20 : 0,
+                      20,
+                      10,
+                    ),
+                    child: SimpleAutoCompleteTextField(
+                      key: _autoCompletionKeys[index],
+                      suggestions: context
+                          .read<LocalRepository>()
+                          .getIngredientNames(),
+                      controller: _controllers[index],
+                      style: new TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: S.of(context).ingredient,
+                        labelStyle: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[500],
+                        ),
+                        border: OutlineInputBorder(),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                          borderSide: const BorderSide(
+                            color: Colors.amber,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                          borderSide: const BorderSide(
+                            color: Color.fromRGBO(210, 210, 210, 1),
+                            width: 2,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  enabledBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                    borderSide: const BorderSide(
-                        color: Color.fromRGBO(210, 210, 210, 1), width: 2),
-                  ),
-                ),
-              ),
-            ),
-          )
-            ..add(
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                child: Container(
-                  height: 50,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+                )
+                ..add(
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                    child: Container(
+                      height: 50,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          IconButton(
-                            icon: Icon(
-                              Icons.expand_more,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isExpanded = true;
-                              });
-                            },
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              IconButton(
+                                icon: Icon(
+                                  Icons.expand_more,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isExpanded = true;
+                                  });
+                                },
+                              ),
+                              _getHideSearch(),
+                              _showTagCatFilter
+                                  ? _getHideTagCat()
+                                  : _getExpandTagCat(),
+                            ],
                           ),
-                          _getHideSearch(),
-                          _showTagCatFilter
-                              ? _getHideTagCat()
-                              : _getExpandTagCat(),
+                          _getSearchIconButton(),
                         ],
                       ),
-                      _getSearchIconButton()
-                    ],
+                    ),
                   ),
+                )
+                ..insert(
+                  0,
+                  _showTagCatFilter
+                      ? _getRecipeTagCategoryFilter()
+                      : Container(),
                 ),
-              ),
-            )
-            ..insert(
-              0,
-              _showTagCatFilter ? _getRecipeTagCategoryFilter() : Container(),
-            ),
         ),
       ),
     );
@@ -500,10 +526,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
 
   Widget _getMinimized() {
     return IconButton(
-      icon: Icon(
-        MdiIcons.eye,
-        color: Colors.white,
-      ),
+      icon: Icon(MdiIcons.eye, color: Colors.white),
       onPressed: () {
         setState(() {
           _isMinimized = false;
@@ -517,12 +540,11 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
       width: 45,
       height: 45,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(45), color: Colors.yellow[800]),
+        borderRadius: BorderRadius.circular(45),
+        color: Colors.yellow[800],
+      ),
       child: IconButton(
-        icon: Icon(
-          Icons.search,
-          color: Colors.white,
-        ),
+        icon: Icon(Icons.search, color: Colors.white),
         onPressed: () {
           FocusScope.of(context).requestFocus(FocusNode());
           BlocProvider.of<IngredientSearchBloc>(context).add(
@@ -540,64 +562,57 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
   }
 
   Widget _getHideSearch() => IconButton(
-        icon: Icon(
-          MdiIcons.eyeOff,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          setState(() {
-            _isMinimized = true;
-          });
-        },
-      );
+    icon: Icon(MdiIcons.eyeOff, color: Colors.white),
+    onPressed: () {
+      setState(() {
+        _isMinimized = true;
+      });
+    },
+  );
 
   Widget _getExpandTagCat() => IconButton(
-        icon: Icon(
-          MdiIcons.tag,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          setState(() {
-            _showTagCatFilter = true;
-            _isExpanded = true;
-          });
-        },
-      );
+    icon: Icon(MdiIcons.tag, color: Colors.white),
+    onPressed: () {
+      setState(() {
+        _showTagCatFilter = true;
+        _isExpanded = true;
+      });
+    },
+  );
 
   Widget _getHideTagCat() => IconButton(
-        icon: Icon(
-          MdiIcons.tagOff,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          setState(() {
-            _showTagCatFilter = false;
-          });
-        },
-      );
+    icon: Icon(MdiIcons.tagOff, color: Colors.white),
+    onPressed: () {
+      setState(() {
+        _showTagCatFilter = false;
+      });
+    },
+  );
 
   Widget _getRecipeTagCategoryFilter() => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
+    padding: const EdgeInsets.symmetric(vertical: 10.0),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
+        width: MediaQuery.of(context).size.width - 40,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          padding: const EdgeInsets.all(12.0),
           child: Container(
-            decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.all(Radius.circular(20))),
-            width: MediaQuery.of(context).size.width - 40,
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Container(
-                height: 230,
-                child: ListView(
-                  children: <Widget>[
-                    Wrap(
-                      spacing: 5.0,
-                      runSpacing: 1.0,
-                      children: [
+            height: 230,
+            child: ListView(
+              children: <Widget>[
+                Wrap(
+                  spacing: 5.0,
+                  runSpacing: 1.0,
+                  children:
+                      [
                         Vegetable.NON_VEGETARIAN,
                         Vegetable.VEGETARIAN,
-                        Vegetable.VEGAN
+                        Vegetable.VEGAN,
                       ].map((vegetable) {
                         switch (vegetable) {
                           case Vegetable.VEGETARIAN:
@@ -628,69 +643,73 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
                             );
                         }
                       }).toList(),
-                    ),
-                    Text(
-                      S.of(context).categories,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Wrap(
-                        spacing: 5.0,
-                        runSpacing: 1.0,
-                        children: _categories.map((category) {
-                          return FilterChip(
-                            label: Text(category == Constants.noCategory
-                                ? S.of(context).no_category
-                                : category),
-                            selected: _selectedCategories.contains(category),
-                            onSelected: (isSelected) {
-                              setState(() {
-                                if (isSelected) {
-                                  _selectedCategories.add(category);
-                                } else {
-                                  _selectedCategories.remove(category);
-                                }
-                              });
-                            },
-                          );
-                        }).toList()),
-                    Text(
-                      S.of(context).tags,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Wrap(
-                        spacing: 5.0,
-                        runSpacing: 3.0,
-                        children: _recipeTags.map((recipeTag) {
-                          return FilterChip(
-                            label: Text(recipeTag.text),
-                            backgroundColor: Color(recipeTag.number),
-                            selected: _selectedRecipeTags.contains(recipeTag),
-                            onSelected: (isSelected) {
-                              setState(() {
-                                if (isSelected) {
-                                  _selectedRecipeTags.add(recipeTag);
-                                } else {
-                                  _selectedRecipeTags.remove(recipeTag);
-                                }
-                              });
-                            },
-                          );
-                        }).toList())
-                  ],
                 ),
-              ),
+                Text(
+                  S.of(context).categories,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+                Wrap(
+                  spacing: 5.0,
+                  runSpacing: 1.0,
+                  children: _categories.map((category) {
+                    return FilterChip(
+                      label: Text(
+                        category == Constants.noCategory
+                            ? S.of(context).no_category
+                            : category,
+                      ),
+                      selected: _selectedCategories.contains(category),
+                      onSelected: (isSelected) {
+                        setState(() {
+                          if (isSelected) {
+                            _selectedCategories.add(category);
+                          } else {
+                            _selectedCategories.remove(category);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                Text(
+                  S.of(context).tags,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+                Wrap(
+                  spacing: 5.0,
+                  runSpacing: 3.0,
+                  children: _recipeTags.map((recipeTag) {
+                    return FilterChip(
+                      label: Text(recipeTag.text),
+                      backgroundColor: Color(recipeTag.number),
+                      selected: _selectedRecipeTags.contains(recipeTag),
+                      onSelected: (isSelected) {
+                        setState(() {
+                          if (isSelected) {
+                            _selectedRecipeTags.add(recipeTag);
+                          } else {
+                            _selectedRecipeTags.remove(recipeTag);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   Widget _getVegetableFilterChip(
     Color? backgroundColor,
@@ -718,13 +737,7 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen>
           shape: BoxShape.circle,
           color: backgroundColor,
         ),
-        child: Center(
-          child: Icon(
-            iconData,
-            color: iconColor,
-            size: 22,
-          ),
-        ),
+        child: Center(child: Icon(iconData, color: iconColor, size: 22)),
       ),
     );
   }

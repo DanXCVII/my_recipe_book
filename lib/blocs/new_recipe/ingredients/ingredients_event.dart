@@ -31,12 +31,12 @@ class FinishedEditing extends IngredientsEvent {
 
   @override
   List<Object?> get props => [
-        editingRecipe,
-        goBack,
-        servings,
-        servingName,
-        ingredients,
-        ingredientsGlossary,
-        vegetable,
-      ];
+    editingRecipe,
+    goBack,
+    servings,
+    servingName,
+    ingredients,
+    ingredientsGlossary,
+    vegetable,
+  ];
 }

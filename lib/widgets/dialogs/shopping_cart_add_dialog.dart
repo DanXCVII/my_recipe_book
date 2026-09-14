@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
+
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import '../../util/helper.dart';
 import '../../local_storage/local_repository.dart';
 import '../../models/ingredient.dart';
@@ -26,7 +28,11 @@ class ShoppingCartAddDialog extends StatelessWidget {
         width: MediaQuery.of(context).size.width > 360 ? 360 : null,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
-              Consts.padding, Consts.padding, Consts.padding, 7),
+            Consts.padding,
+            Consts.padding,
+            Consts.padding,
+            7,
+          ),
           child: ShoppingCartAddDialogContent(),
         ),
       ),
@@ -84,19 +90,24 @@ class _ShoppingCartAddDialogContentState
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
-              S.of(context).add_ingredient(""),
-              style: Theme.of(context).textTheme.titleLarge,
+            Expanded(
+              child: Text(
+                S.of(context).add_ingredient(""),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
             IconButton(
               icon: Icon(
-                  isExpanded ? MdiIcons.arrowCollapse : MdiIcons.arrowExpand),
+                isExpanded ? MdiIcons.arrowCollapse : MdiIcons.arrowExpand,
+              ),
               onPressed: () {
                 setState(() {
                   isExpanded = !isExpanded;
                 });
               },
-            )
+            ),
           ],
         ),
         SizedBox(height: 12),
@@ -124,7 +135,9 @@ class _ShoppingCartAddDialogContentState
                             Container(height: 3),
                             SimpleAutoCompleteTextField(
                               key: autoCompletionTextField,
-                              suggestions: context.read<LocalRepository>().getIngredientNames(),
+                              suggestions: context
+                                  .read<LocalRepository>()
+                                  .getIngredientNames(),
                               controller: ingredientNameController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
@@ -132,8 +145,8 @@ class _ShoppingCartAddDialogContentState
                               ),
                               textCapitalization:
                                   S.of(context).two_char_locale == "EN"
-                                      ? TextCapitalization.none
-                                      : TextCapitalization.sentences,
+                                  ? TextCapitalization.none
+                                  : TextCapitalization.sentences,
                             ),
                             SizedBox(height: 6),
                             Row(
@@ -166,13 +179,15 @@ class _ShoppingCartAddDialogContentState
                                   ),
                                 ),
                               ],
-                            )
+                            ),
                           ],
                         )
                       : SimpleAutoCompleteTextField(
                           key: autoCompletionTextField,
                           focusNode: widget.focus,
-                          suggestions: context.read<LocalRepository>().getIngredientNames(),
+                          suggestions: context
+                              .read<LocalRepository>()
+                              .getIngredientNames(),
                           controller: ingredientNameController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
@@ -180,17 +195,15 @@ class _ShoppingCartAddDialogContentState
                           ),
                           textCapitalization:
                               S.of(context).two_char_locale == "EN"
-                                  ? TextCapitalization.none
-                                  : TextCapitalization.sentences,
+                              ? TextCapitalization.none
+                              : TextCapitalization.sentences,
                         ),
                 ),
               ),
             ],
           ),
         ),
-        SizedBox(
-          height: 12,
-        ),
+        SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
@@ -209,33 +222,36 @@ class _ShoppingCartAddDialogContentState
               style: TextButton.styleFrom(
                 backgroundColor:
                     Theme.of(context).colorScheme.surface == Colors.white
-                        ? null
-                        : Colors.amber,
+                    ? null
+                    : Colors.amber,
               ),
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   BlocProvider.of<ShoppingCartBloc>(context).add(
                     CleanAddIngredients(
-                        [
-                          Ingredient(
-                              name: ingredientNameController.text,
-                              amount: ingredientAmountController.text == ""
-                                  ? null
-                                  : getDoubleFromString(
-                                      ingredientAmountController.text),
-                              unit: ingredientUnitController.text)
-                        ],
-                        recipeNameController.text == ''
-                            ? "summary"
-                            : recipeNameController.text),
+                      [
+                        Ingredient(
+                          name: ingredientNameController.text,
+                          amount: ingredientAmountController.text == ""
+                              ? null
+                              : getDoubleFromString(
+                                  ingredientAmountController.text,
+                                ),
+                          unit: ingredientUnitController.text,
+                        ),
+                      ],
+                      recipeNameController.text == ''
+                          ? "summary"
+                          : recipeNameController.text,
+                    ),
                   );
 
                   Navigator.of(context).pop();
                 }
               },
-            )
+            ),
           ],
-        )
+        ),
       ],
     );
   }

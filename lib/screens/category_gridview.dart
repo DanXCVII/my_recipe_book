@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
+
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../ad_related/ad.dart';
@@ -16,46 +18,53 @@ import '../models/tuple.dart';
 import 'recipe_overview.dart';
 
 class CategoryGridView extends StatelessWidget {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  final RefreshController _refreshController = RefreshController(
+    initialRefresh: false,
+  );
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CategoryOverviewBloc, CategoryOverviewState>(
-        builder: (context, state) {
-      if (state is LoadingCategoryOverview) {
-        return Center(child: CircularProgressIndicator());
-      } else if (state is LoadedCategoryOverview) {
-        return AnimationLimiter(
-          child: SmartRefresher(
-            enablePullDown: true,
-            enablePullUp: false,
-            header: WaterDropMaterialHeader(),
-            controller: _refreshController,
-            onRefresh: () async {
-              await Future.delayed(Duration(milliseconds: 200));
-              BlocProvider.of<CategoryOverviewBloc>(context).add(
+      builder: (context, state) {
+        if (state is LoadingCategoryOverview) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is LoadedCategoryOverview) {
+          return AnimationLimiter(
+            child: SmartRefresher(
+              enablePullDown: true,
+              enablePullUp: false,
+              header: WaterDropMaterialHeader(),
+              controller: _refreshController,
+              onRefresh: () async {
+                await Future.delayed(Duration(milliseconds: 200));
+                BlocProvider.of<CategoryOverviewBloc>(context).add(
                   COLoadCategoryOverview(
-                      reopenBoxes: true, categoryOverviewContext: context));
-              _refreshController.refreshCompleted();
-            },
-            child: GridView.extent(
-              maxCrossAxisExtent: 220,
-              padding: const EdgeInsets.all(4),
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
-              children: getCategories(state.categories, context),
+                    reopenBoxes: true,
+                    categoryOverviewContext: context,
+                  ),
+                );
+                _refreshController.refreshCompleted();
+              },
+              child: GridView.extent(
+                maxCrossAxisExtent: 220,
+                padding: const EdgeInsets.all(4),
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                children: getCategories(state.categories, context),
+              ),
             ),
-          ),
-        );
-      } else {
-        return Text(state.toString());
-      }
-    });
+          );
+        } else {
+          return Text(state.toString());
+        }
+      },
+    );
   }
 
   List<Widget> getCategories(
-      List<Tuple2<String, String>> categoryNames, BuildContext context) {
+    List<Tuple2<String, String>> categoryNames,
+    BuildContext context,
+  ) {
     List<Widget> gridTiles = [];
 
     int index = 0;

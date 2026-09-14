@@ -9,9 +9,7 @@ class InitialClearRecipeState extends ClearRecipeState {}
 class ClearedRecipe extends ClearRecipeState {
   final Recipe recipe;
 
-  ClearedRecipe(
-    this.recipe,
-  );
+  ClearedRecipe(this.recipe);
 }
 
 class RemovedRecipeImage extends ClearRecipeState {}

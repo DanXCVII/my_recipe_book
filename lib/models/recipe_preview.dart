@@ -34,13 +34,13 @@ class RecipePreview extends Equatable {
 
   @override
   List<Object> get props => [
-        name,
-        totalTime,
-        imagePreviewPath,
-        ingredientsAmount,
-        effort,
-        vegetable,
-        isFavorite,
-        categories,
-      ];
+    name,
+    totalTime,
+    imagePreviewPath,
+    ingredientsAmount,
+    effort,
+    vegetable,
+    isFavorite,
+    categories,
+  ];
 }

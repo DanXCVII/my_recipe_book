@@ -7,11 +7,7 @@ class NutritionDraggableClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path()
       ..moveTo(0, 80)
-      ..arcToPoint(
-        Offset(30, 50),
-        clockwise: true,
-        radius: Radius.circular(30),
-      )
+      ..arcToPoint(Offset(30, 50), clockwise: true, radius: Radius.circular(30))
       ..lineTo(size.width - 130, 50)
       ..quadraticBezierTo(size.width - 120, 50, size.width - 110, 25)
       ..quadraticBezierTo(size.width - 100, 0, size.width - 80, 0)
@@ -42,7 +38,11 @@ class RightArrow extends CustomClipper<Path> {
       ..lineTo(0, 0)
       ..quadraticBezierTo(size.width * 0.2, size.height * 0.5, 0, size.height)
       ..quadraticBezierTo(
-          size.width / 2, size.height / 2, size.width, size.height / 2)
+        size.width / 2,
+        size.height / 2,
+        size.width,
+        size.height / 2,
+      )
       ..quadraticBezierTo(size.width / 2, size.height / 2, 0, 0);
 
     path.close();
@@ -61,7 +61,11 @@ class LeftArrow extends CustomClipper<Path> {
     final path = Path()
       ..lineTo(size.width, 0)
       ..quadraticBezierTo(
-          size.width * 0.8, size.height * 0.5, size.width, size.height)
+        size.width * 0.8,
+        size.height * 0.5,
+        size.width,
+        size.height,
+      )
       ..quadraticBezierTo(size.width / 2, size.height / 2, 0, size.height / 2)
       ..quadraticBezierTo(size.width / 2, size.height / 2, size.width, 0);
 

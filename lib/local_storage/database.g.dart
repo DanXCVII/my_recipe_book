@@ -5161,6 +5161,17 @@ class $ShoppingSourcesTable extends ShoppingSources
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _currentServingsMeta = const VerificationMeta(
+    'currentServings',
+  );
+  @override
+  late final GeneratedColumn<double> currentServings = GeneratedColumn<double>(
+    'current_servings',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _positionMeta = const VerificationMeta(
     'position',
   );
@@ -5178,6 +5189,7 @@ class $ShoppingSourcesTable extends ShoppingSources
     sourceKey,
     displayName,
     isSummary,
+    currentServings,
     position,
   ];
   @override
@@ -5220,6 +5232,15 @@ class $ShoppingSourcesTable extends ShoppingSources
         isSummary.isAcceptableOrUnknown(data['is_summary']!, _isSummaryMeta),
       );
     }
+    if (data.containsKey('current_servings')) {
+      context.handle(
+        _currentServingsMeta,
+        currentServings.isAcceptableOrUnknown(
+          data['current_servings']!,
+          _currentServingsMeta,
+        ),
+      );
+    }
     if (data.containsKey('position')) {
       context.handle(
         _positionMeta,
@@ -5253,6 +5274,10 @@ class $ShoppingSourcesTable extends ShoppingSources
         DriftSqlType.bool,
         data['${effectivePrefix}is_summary'],
       )!,
+      currentServings: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}current_servings'],
+      ),
       position: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}position'],
@@ -5271,12 +5296,14 @@ class ShoppingSource extends DataClass implements Insertable<ShoppingSource> {
   final String sourceKey;
   final String displayName;
   final bool isSummary;
+  final double? currentServings;
   final int position;
   const ShoppingSource({
     required this.id,
     required this.sourceKey,
     required this.displayName,
     required this.isSummary,
+    this.currentServings,
     required this.position,
   });
   @override
@@ -5286,6 +5313,9 @@ class ShoppingSource extends DataClass implements Insertable<ShoppingSource> {
     map['source_key'] = Variable<String>(sourceKey);
     map['display_name'] = Variable<String>(displayName);
     map['is_summary'] = Variable<bool>(isSummary);
+    if (!nullToAbsent || currentServings != null) {
+      map['current_servings'] = Variable<double>(currentServings);
+    }
     map['position'] = Variable<int>(position);
     return map;
   }
@@ -5296,6 +5326,9 @@ class ShoppingSource extends DataClass implements Insertable<ShoppingSource> {
       sourceKey: Value(sourceKey),
       displayName: Value(displayName),
       isSummary: Value(isSummary),
+      currentServings: currentServings == null && nullToAbsent
+          ? const Value.absent()
+          : Value(currentServings),
       position: Value(position),
     );
   }
@@ -5310,6 +5343,7 @@ class ShoppingSource extends DataClass implements Insertable<ShoppingSource> {
       sourceKey: serializer.fromJson<String>(json['sourceKey']),
       displayName: serializer.fromJson<String>(json['displayName']),
       isSummary: serializer.fromJson<bool>(json['isSummary']),
+      currentServings: serializer.fromJson<double?>(json['currentServings']),
       position: serializer.fromJson<int>(json['position']),
     );
   }
@@ -5321,6 +5355,7 @@ class ShoppingSource extends DataClass implements Insertable<ShoppingSource> {
       'sourceKey': serializer.toJson<String>(sourceKey),
       'displayName': serializer.toJson<String>(displayName),
       'isSummary': serializer.toJson<bool>(isSummary),
+      'currentServings': serializer.toJson<double?>(currentServings),
       'position': serializer.toJson<int>(position),
     };
   }
@@ -5330,12 +5365,16 @@ class ShoppingSource extends DataClass implements Insertable<ShoppingSource> {
     String? sourceKey,
     String? displayName,
     bool? isSummary,
+    Value<double?> currentServings = const Value.absent(),
     int? position,
   }) => ShoppingSource(
     id: id ?? this.id,
     sourceKey: sourceKey ?? this.sourceKey,
     displayName: displayName ?? this.displayName,
     isSummary: isSummary ?? this.isSummary,
+    currentServings: currentServings.present
+        ? currentServings.value
+        : this.currentServings,
     position: position ?? this.position,
   );
   ShoppingSource copyWithCompanion(ShoppingSourcesCompanion data) {
@@ -5346,6 +5385,9 @@ class ShoppingSource extends DataClass implements Insertable<ShoppingSource> {
           ? data.displayName.value
           : this.displayName,
       isSummary: data.isSummary.present ? data.isSummary.value : this.isSummary,
+      currentServings: data.currentServings.present
+          ? data.currentServings.value
+          : this.currentServings,
       position: data.position.present ? data.position.value : this.position,
     );
   }
@@ -5357,14 +5399,21 @@ class ShoppingSource extends DataClass implements Insertable<ShoppingSource> {
           ..write('sourceKey: $sourceKey, ')
           ..write('displayName: $displayName, ')
           ..write('isSummary: $isSummary, ')
+          ..write('currentServings: $currentServings, ')
           ..write('position: $position')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, sourceKey, displayName, isSummary, position);
+  int get hashCode => Object.hash(
+    id,
+    sourceKey,
+    displayName,
+    isSummary,
+    currentServings,
+    position,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -5373,6 +5422,7 @@ class ShoppingSource extends DataClass implements Insertable<ShoppingSource> {
           other.sourceKey == this.sourceKey &&
           other.displayName == this.displayName &&
           other.isSummary == this.isSummary &&
+          other.currentServings == this.currentServings &&
           other.position == this.position);
 }
 
@@ -5381,12 +5431,14 @@ class ShoppingSourcesCompanion extends UpdateCompanion<ShoppingSource> {
   final Value<String> sourceKey;
   final Value<String> displayName;
   final Value<bool> isSummary;
+  final Value<double?> currentServings;
   final Value<int> position;
   const ShoppingSourcesCompanion({
     this.id = const Value.absent(),
     this.sourceKey = const Value.absent(),
     this.displayName = const Value.absent(),
     this.isSummary = const Value.absent(),
+    this.currentServings = const Value.absent(),
     this.position = const Value.absent(),
   });
   ShoppingSourcesCompanion.insert({
@@ -5394,6 +5446,7 @@ class ShoppingSourcesCompanion extends UpdateCompanion<ShoppingSource> {
     required String sourceKey,
     required String displayName,
     this.isSummary = const Value.absent(),
+    this.currentServings = const Value.absent(),
     required int position,
   }) : sourceKey = Value(sourceKey),
        displayName = Value(displayName),
@@ -5403,6 +5456,7 @@ class ShoppingSourcesCompanion extends UpdateCompanion<ShoppingSource> {
     Expression<String>? sourceKey,
     Expression<String>? displayName,
     Expression<bool>? isSummary,
+    Expression<double>? currentServings,
     Expression<int>? position,
   }) {
     return RawValuesInsertable({
@@ -5410,6 +5464,7 @@ class ShoppingSourcesCompanion extends UpdateCompanion<ShoppingSource> {
       if (sourceKey != null) 'source_key': sourceKey,
       if (displayName != null) 'display_name': displayName,
       if (isSummary != null) 'is_summary': isSummary,
+      if (currentServings != null) 'current_servings': currentServings,
       if (position != null) 'position': position,
     });
   }
@@ -5419,6 +5474,7 @@ class ShoppingSourcesCompanion extends UpdateCompanion<ShoppingSource> {
     Value<String>? sourceKey,
     Value<String>? displayName,
     Value<bool>? isSummary,
+    Value<double?>? currentServings,
     Value<int>? position,
   }) {
     return ShoppingSourcesCompanion(
@@ -5426,6 +5482,7 @@ class ShoppingSourcesCompanion extends UpdateCompanion<ShoppingSource> {
       sourceKey: sourceKey ?? this.sourceKey,
       displayName: displayName ?? this.displayName,
       isSummary: isSummary ?? this.isSummary,
+      currentServings: currentServings ?? this.currentServings,
       position: position ?? this.position,
     );
   }
@@ -5445,6 +5502,9 @@ class ShoppingSourcesCompanion extends UpdateCompanion<ShoppingSource> {
     if (isSummary.present) {
       map['is_summary'] = Variable<bool>(isSummary.value);
     }
+    if (currentServings.present) {
+      map['current_servings'] = Variable<double>(currentServings.value);
+    }
     if (position.present) {
       map['position'] = Variable<int>(position.value);
     }
@@ -5458,6 +5518,7 @@ class ShoppingSourcesCompanion extends UpdateCompanion<ShoppingSource> {
           ..write('sourceKey: $sourceKey, ')
           ..write('displayName: $displayName, ')
           ..write('isSummary: $isSummary, ')
+          ..write('currentServings: $currentServings, ')
           ..write('position: $position')
           ..write(')'))
         .toString();
@@ -12159,6 +12220,7 @@ typedef $$ShoppingSourcesTableCreateCompanionBuilder =
       required String sourceKey,
       required String displayName,
       Value<bool> isSummary,
+      Value<double?> currentServings,
       required int position,
     });
 typedef $$ShoppingSourcesTableUpdateCompanionBuilder =
@@ -12167,6 +12229,7 @@ typedef $$ShoppingSourcesTableUpdateCompanionBuilder =
       Value<String> sourceKey,
       Value<String> displayName,
       Value<bool> isSummary,
+      Value<double?> currentServings,
       Value<int> position,
     });
 
@@ -12224,6 +12287,11 @@ class $$ShoppingSourcesTableFilterComposer
 
   ColumnFilters<bool> get isSummary => $composableBuilder(
     column: $table.isSummary,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get currentServings => $composableBuilder(
+    column: $table.currentServings,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12287,6 +12355,11 @@ class $$ShoppingSourcesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get currentServings => $composableBuilder(
+    column: $table.currentServings,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get position => $composableBuilder(
     column: $table.position,
     builder: (column) => ColumnOrderings(column),
@@ -12315,6 +12388,11 @@ class $$ShoppingSourcesTableAnnotationComposer
 
   GeneratedColumn<bool> get isSummary =>
       $composableBuilder(column: $table.isSummary, builder: (column) => column);
+
+  GeneratedColumn<double> get currentServings => $composableBuilder(
+    column: $table.currentServings,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get position =>
       $composableBuilder(column: $table.position, builder: (column) => column);
@@ -12379,12 +12457,14 @@ class $$ShoppingSourcesTableTableManager
                 Value<String> sourceKey = const Value.absent(),
                 Value<String> displayName = const Value.absent(),
                 Value<bool> isSummary = const Value.absent(),
+                Value<double?> currentServings = const Value.absent(),
                 Value<int> position = const Value.absent(),
               }) => ShoppingSourcesCompanion(
                 id: id,
                 sourceKey: sourceKey,
                 displayName: displayName,
                 isSummary: isSummary,
+                currentServings: currentServings,
                 position: position,
               ),
           createCompanionCallback:
@@ -12393,12 +12473,14 @@ class $$ShoppingSourcesTableTableManager
                 required String sourceKey,
                 required String displayName,
                 Value<bool> isSummary = const Value.absent(),
+                Value<double?> currentServings = const Value.absent(),
                 required int position,
               }) => ShoppingSourcesCompanion.insert(
                 id: id,
                 sourceKey: sourceKey,
                 displayName: displayName,
                 isSummary: isSummary,
+                currentServings: currentServings,
                 position: position,
               ),
           withReferenceMapper: (p0) => p0

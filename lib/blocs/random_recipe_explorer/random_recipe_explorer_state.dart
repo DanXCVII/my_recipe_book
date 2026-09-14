@@ -24,10 +24,11 @@ class LoadedRandomRecipeExplorer extends RandomRecipeExplorerState {
   final int? selectedCategory;
   final List<Recipe> randomRecipes;
 
-  const LoadedRandomRecipeExplorer(
-      [this.randomRecipes = const [],
-      this.categories = const [],
-      this.selectedCategory]);
+  const LoadedRandomRecipeExplorer([
+    this.randomRecipes = const [],
+    this.categories = const [],
+    this.selectedCategory,
+  ]);
 
   @override
   List<Object?> get props => [selectedCategory, categories, randomRecipes];

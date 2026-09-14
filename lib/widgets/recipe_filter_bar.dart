@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+
 import '../local_storage/local_repository.dart';
 import '../models/string_int_tuple.dart';
 
 import '../generated/l10n.dart';
 import '../models/enums.dart';
-import '../screens/recipe_overview.dart';
 
 class RecipeFilter extends StatefulWidget {
   final bool showVegetableFilter;
@@ -57,8 +57,9 @@ class _RecipeFilterState extends State<RecipeFilter>
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Center(
         child: Container(
-          width:
-              MediaQuery.of(context).size.width > 500 ? 500 : double.infinity,
+          width: MediaQuery.of(context).size.width > 500
+              ? 500
+              : double.infinity,
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
@@ -107,48 +108,52 @@ class _RecipeFilterState extends State<RecipeFilter>
                             dropdownValue = newValue;
                           });
                         },
-                        items: <RecipeSort>[
-                          RecipeSort.BY_NAME,
-                          RecipeSort.BY_EFFORT,
-                          RecipeSort.BY_INGREDIENT_COUNT,
-                          RecipeSort.BY_LAST_MODIFIED,
-                        ].map<DropdownMenuItem<RecipeSort>>((RecipeSort value) {
-                          return DropdownMenuItem<RecipeSort>(
-                            value: value,
-                            child: Container(
-                              width:
-                                  MediaQuery.of(context).size.width - 206 < 170
+                        items:
+                            <RecipeSort>[
+                              RecipeSort.BY_NAME,
+                              RecipeSort.BY_EFFORT,
+                              RecipeSort.BY_INGREDIENT_COUNT,
+                              RecipeSort.BY_LAST_MODIFIED,
+                            ].map<DropdownMenuItem<RecipeSort>>((
+                              RecipeSort value,
+                            ) {
+                              return DropdownMenuItem<RecipeSort>(
+                                value: value,
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width - 206 <
+                                          170
                                       ? MediaQuery.of(context).size.width - 206
                                       : 170,
-                              child: Text(
-                                value == RecipeSort.BY_NAME
-                                    ? S.of(context).by_name
-                                    : value == RecipeSort.BY_EFFORT
+                                  child: Text(
+                                    value == RecipeSort.BY_NAME
+                                        ? S.of(context).by_name
+                                        : value == RecipeSort.BY_EFFORT
                                         ? S.of(context).by_effort
                                         : value ==
-                                                RecipeSort.BY_INGREDIENT_COUNT
-                                            ? S
-                                                .of(context)
-                                                .by_ingredientsamount
-                                            : S.of(context).by_last_modified,
-                                style: TextStyle(
-                                    fontSize:
-                                        MediaQuery.of(context).size.width -
-                                                    206 <
-                                                170
-                                            ? 12
-                                            : 15),
-                              ),
-                            ),
-                          );
-                        }).toList(),
+                                              RecipeSort.BY_INGREDIENT_COUNT
+                                        ? S.of(context).by_ingredientsamount
+                                        : S.of(context).by_last_modified,
+                                    style: TextStyle(
+                                      fontSize:
+                                          MediaQuery.of(context).size.width -
+                                                  206 <
+                                              170
+                                          ? 12
+                                          : 15,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                       ),
                     ),
                     Spacer(),
                     widget.showVegetableFilter
                         ? Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                            ),
                             child: DropdownButton<Vegetable>(
                               isExpanded: false,
                               value: vegetableFilter,
@@ -167,26 +172,30 @@ class _RecipeFilterState extends State<RecipeFilter>
                                   vegetableFilter = newValue;
                                 });
                               },
-                              items: <Vegetable?>[
-                                null,
-                                Vegetable.NON_VEGETARIAN,
-                                Vegetable.VEGAN,
-                                Vegetable.VEGETARIAN
-                              ].map<DropdownMenuItem<Vegetable>>(
-                                  (Vegetable? value) {
-                                return DropdownMenuItem<Vegetable>(
-                                  value: value,
-                                  child: _getVegetableIcon(value),
-                                );
-                              }).toList(),
+                              items:
+                                  <Vegetable?>[
+                                    null,
+                                    Vegetable.NON_VEGETARIAN,
+                                    Vegetable.VEGAN,
+                                    Vegetable.VEGETARIAN,
+                                  ].map<DropdownMenuItem<Vegetable>>((
+                                    Vegetable? value,
+                                  ) {
+                                    return DropdownMenuItem<Vegetable>(
+                                      value: value,
+                                      child: _getVegetableIcon(value),
+                                    );
+                                  }).toList(),
                             ),
                           )
                         : Container(),
                     widget.showRecipeTagFilter && recipeTags.isNotEmpty
                         ? IconButton(
-                            icon: Icon(_isExpanded
-                                ? Icons.expand_less
-                                : Icons.expand_more),
+                            icon: Icon(
+                              _isExpanded
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
+                            ),
                             onPressed: () {
                               setState(() {
                                 _isExpanded = !_isExpanded;
@@ -219,16 +228,18 @@ class _RecipeFilterState extends State<RecipeFilter>
                                     selectedRecipeTags.remove(recipeTag);
                                   }
                                   widget.filterRecipeTagRecipes!(
-                                      selectedRecipeTags
-                                          .map((tag) => tag.text)
-                                          .toList());
+                                    selectedRecipeTags
+                                        .map((tag) => tag.text)
+                                        .toList(),
+                                  );
                                 });
                               },
                             );
                           }).toList(),
-                        ))
+                        ),
+                      )
                     : Container(),
-              )
+              ),
             ],
           ),
         ),
@@ -239,18 +250,25 @@ class _RecipeFilterState extends State<RecipeFilter>
   Widget _getVegetableIcon(Vegetable? vegetable) {
     switch (vegetable) {
       case Vegetable.VEGETARIAN:
-        return _getVegetableCircleIcon([Colors.green[600]!, Colors.green[900]!],
-            MdiIcons.cheese, Colors.amber);
+        return _getVegetableCircleIcon(
+          [Colors.green[600]!, Colors.green[900]!],
+          MdiIcons.cheese,
+          Colors.amber,
+        );
 
       case Vegetable.VEGAN:
-        return _getVegetableCircleIcon([Colors.orange, Colors.orange[800]!],
-            MdiIcons.leaf, Colors.green[700]);
+        return _getVegetableCircleIcon(
+          [Colors.orange, Colors.orange[800]!],
+          MdiIcons.leaf,
+          Colors.green[700],
+        );
 
       case Vegetable.NON_VEGETARIAN:
         return _getVegetableCircleIcon(
-            [Colors.lightBlue[400]!, Colors.lightBlue[600]!],
-            MdiIcons.foodDrumstick,
-            Colors.brown[600]);
+          [Colors.lightBlue[400]!, Colors.lightBlue[600]!],
+          MdiIcons.foodDrumstick,
+          Colors.brown[600],
+        );
 
       default:
         return Stack(
@@ -282,7 +300,10 @@ class _RecipeFilterState extends State<RecipeFilter>
   }
 
   Widget _getVegetableCircleIcon(
-      List<Color> backgroundColors, IconData iconData, Color? iconColor) {
+    List<Color> backgroundColors,
+    IconData iconData,
+    Color? iconColor,
+  ) {
     return Container(
       height: 30,
       width: 30,
@@ -290,13 +311,7 @@ class _RecipeFilterState extends State<RecipeFilter>
         shape: BoxShape.circle,
         gradient: LinearGradient(colors: backgroundColors),
       ),
-      child: Center(
-        child: Icon(
-          iconData,
-          color: iconColor,
-          size: 22,
-        ),
-      ),
+      child: Center(child: Icon(iconData, color: iconColor, size: 22)),
     );
   }
 }
@@ -313,6 +328,36 @@ class RotatingArrow extends StatefulWidget {
 
   @override
   _RotatingArrowState createState() => _RotatingArrowState();
+}
+
+class OneThirdClipperRight extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    return Path()
+      ..lineTo(size.width / 2, 0)
+      ..lineTo(size.width / 2, size.height / 2)
+      ..lineTo(size.width, size.height * 0.8)
+      ..lineTo(size.width, 0)
+      ..close();
+  }
+
+  @override
+  bool shouldReclip(OneThirdClipperRight oldClipper) => false;
+}
+
+class OneThirdClipperLeft extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    return Path()
+      ..lineTo(size.width / 2, 0)
+      ..lineTo(size.width / 2, size.height / 2)
+      ..lineTo(0, size.height * 0.8)
+      ..lineTo(0, 0)
+      ..close();
+  }
+
+  @override
+  bool shouldReclip(OneThirdClipperLeft oldClipper) => false;
 }
 
 class _RotatingArrowState extends State<RotatingArrow>

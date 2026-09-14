@@ -2,6 +2,7 @@ import '../../models/enums.dart';
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
 import '../../models/recipe_sort.dart';
+import '../../models/shopping_cart_data.dart';
 import '../../models/string_int_tuple.dart';
 import '../../models/tuple.dart';
 
@@ -83,10 +84,12 @@ abstract interface class LocalRepository {
   Map<String, DateTime> getDeletions();
   Future<void> clearDeletions();
   Future<Map<Recipe, List<CheckableIngredient>>> getShoppingCart();
+  Future<ShoppingCartData> getShoppingCartData();
   Future<void> addMultipleIngredientsToCart(
     String recipeName,
-    List<Ingredient> ingredients,
-  );
+    List<Ingredient> ingredients, {
+    double? servings,
+  });
   Future<void> addSingleIngredientToCart(
     String recipeName,
     Ingredient ingredient,
@@ -114,6 +117,12 @@ abstract interface class LocalRepository {
     String recipeName,
     Ingredient ingredient,
   );
+  Future<void> updateShoppingCartServings(
+    String recipeName,
+    double newServings,
+  );
+  Future<ShoppingCartData?> removeCheckedShoppingCartItems();
+  Future<void> restoreShoppingCart(ShoppingCartData snapshot);
 }
 
 class MigrationIssueSummary {

@@ -7,7 +7,9 @@ import '../../../ad_related/ad.dart';
 import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../../blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import '../../../constants/routes.dart';
+
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import '../../../models/string_int_tuple.dart';
 import '../../../widgets/dialogs/text_color_dialog.dart';
 import '../../recipe_tag_manager_screen.dart';
@@ -29,14 +31,14 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RecipeTagManagerBloc, RecipeTagManagerState>(
-        builder: (context, state) {
-      if (state is LoadingRecipeTagManager) {
-        return CircularProgressIndicator();
-      } else if (state is LoadedRecipeTagManager) {
-        return Column(
-          children: <Widget>[
-            // heading for the recipeTag selector section
-            Padding(
+      builder: (context, state) {
+        if (state is LoadingRecipeTagManager) {
+          return CircularProgressIndicator();
+        } else if (state is LoadedRecipeTagManager) {
+          return Column(
+            children: <Widget>[
+              // heading for the recipeTag selector section
+              Padding(
                 padding: const EdgeInsets.only(left: 56, right: 6, top: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,7 +59,8 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                           builder: (_) => TextColorDialog(
                             validation: (String? name) {
                               if (state.recipeTags.firstWhereOrNull(
-                                      (element) => element.text == name) !=
+                                    (element) => element.text == name,
+                                  ) !=
                                   null) {
                                 return S.of(context).recipe_tag_already_exists;
                               } else if (name == "") {
@@ -71,7 +74,7 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                                   .recipeManagerBloc
                                   .add(
                                     RMAddRecipeTag([
-                                      StringIntTuple(text: name, number: color)
+                                      StringIntTuple(text: name, number: color),
                                     ]),
                                   );
                             },
@@ -92,37 +95,39 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                           ),
                         ).then((_) => Ads.hideBottomBannerAd());
                       },
-                    )
+                    ),
                   ],
-                )),
-            // recipe tag chips
-            Container(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: Wrap(
-                spacing: 5.0,
-                runSpacing: 3.0,
-                children: state.recipeTags.map((recipeTag) {
-                  return MyRecipeTagFilterChip(
-                    recipeTag: recipeTag,
-                    isSelected: BlocProvider.of<RecipeTagManagerBloc>(context)
-                        .selectedTags
-                        .contains(recipeTag),
-                    onSelect: (_) =>
-                        BlocProvider.of<RecipeTagManagerBloc>(context)
-                            .add(SelectRecipeTag(recipeTag)),
-                    onDeselect: (_) =>
-                        BlocProvider.of<RecipeTagManagerBloc>(context)
-                            .add(UnselectRecipeTag(recipeTag)),
-                  );
-                }).toList(),
+                ),
               ),
-            )
-          ],
-        );
-      } else {
-        return Text(state.toString());
-      }
-    });
+              // recipe tag chips
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Wrap(
+                  spacing: 5.0,
+                  runSpacing: 3.0,
+                  children: state.recipeTags.map((recipeTag) {
+                    return MyRecipeTagFilterChip(
+                      recipeTag: recipeTag,
+                      isSelected: BlocProvider.of<RecipeTagManagerBloc>(context)
+                          .selectedTags
+                          .contains(recipeTag),
+                      onSelect: (_) =>
+                          BlocProvider.of<RecipeTagManagerBloc>(context)
+                              .add(SelectRecipeTag(recipeTag)),
+                      onDeselect: (_) =>
+                          BlocProvider.of<RecipeTagManagerBloc>(context)
+                              .add(UnselectRecipeTag(recipeTag)),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          );
+        } else {
+          return Text(state.toString());
+        }
+      },
+    );
   }
 }
 

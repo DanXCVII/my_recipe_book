@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+
 import '../../models/enums.dart';
 
 import '../../constants/global_constants.dart' as Constants;
@@ -20,16 +21,17 @@ class IngredientSearchBloc
       List<Tuple2<int, Recipe>> filteredRecipes = [];
 
       if (event.ingredients.isNotEmpty) {
-        filteredRecipes = (await repository
-            .getRecipesWithIngredients(event.ingredients))
-          ..sort((a, b) => b.item1.compareTo(a.item1));
+        filteredRecipes = (await repository.getRecipesWithIngredients(
+          event.ingredients,
+        ))..sort((a, b) => b.item1.compareTo(a.item1));
       }
       if (filteredRecipes.isNotEmpty) {
         if (event.categories.isNotEmpty) {
           if (filteredRecipes.isNotEmpty) {
             for (String category in event.categories) {
               filteredRecipes.removeWhere(
-                  (tuple) => !tuple.item2.categories.contains(category));
+                (tuple) => !tuple.item2.categories.contains(category),
+              );
             }
           }
         }
@@ -37,13 +39,15 @@ class IngredientSearchBloc
           if (filteredRecipes.isNotEmpty) {
             for (StringIntTuple recipeTag in event.recipeTags) {
               filteredRecipes.removeWhere(
-                  (tuple) => !tuple.item2.tags.contains(recipeTag));
+                (tuple) => !tuple.item2.tags.contains(recipeTag),
+              );
             }
           }
         }
         if (event.vegetable != null) {
           filteredRecipes.removeWhere(
-              (tuple) => !(tuple.item2.vegetable == event.vegetable));
+            (tuple) => !(tuple.item2.vegetable == event.vegetable),
+          );
         }
       } else {
         List<Recipe> allRecipes = await repository.getAllRecipes();
@@ -77,10 +81,7 @@ class IngredientSearchBloc
           }
         }
       }
-      emit(IngredientSearchMatches(
-        filteredRecipes,
-        event.ingredients.length,
-      ));
+      emit(IngredientSearchMatches(filteredRecipes, event.ingredients.length));
     });
   }
 

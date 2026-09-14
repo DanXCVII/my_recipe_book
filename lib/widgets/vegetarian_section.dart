@@ -61,47 +61,35 @@ class _VegetarianState extends State<Vegetarian> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Row(children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                child: Radio(
-                  value: 0,
-                ),
-              ),
-              Text(
-                S.of(context).with_meat,
-                style: TextStyle(fontSize: 16),
-              ),
-            ]),
             Row(
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                  child: Radio(
-                    value: 1,
-                  ),
+                  child: Radio(value: 0),
                 ),
-                Text(
-                  S.of(context).vegetarian,
-                  style: TextStyle(fontSize: 16),
-                ),
+                Text(S.of(context).with_meat, style: TextStyle(fontSize: 16)),
               ],
             ),
             Row(
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                  child: Radio(
-                    value: 2,
-                  ),
+                  child: Radio(value: 1),
                 ),
-                Text(
-                  S.of(context).vegan,
-                  style: TextStyle(fontSize: 16),
-                ),
+                Text(S.of(context).vegetarian, style: TextStyle(fontSize: 16)),
               ],
-            )
-          ]),
+            ),
+            Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                  child: Radio(value: 2),
+                ),
+                Text(S.of(context).vegan, style: TextStyle(fontSize: 16)),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

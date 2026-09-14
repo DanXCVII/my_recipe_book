@@ -10,37 +10,32 @@ class GradientAppBarRun extends StatelessWidget {
       home:
           // scaffold
           Scaffold(
-        body: CustomScrollView(
-          slivers: <Widget>[
-            // sliverappbar for gradient widget
-            SliverAppBar(
-              pinned: true,
-              expandedHeight: 50,
-              flexibleSpace: Container(
-                decoration: BoxDecoration(
-                  // LinearGradient
-                  gradient: LinearGradient(
-                    // colors for gradient
-                    colors: [
-                      Colors.deepPurpleAccent,
-                      Colors.yellowAccent,
-                    ],
+            body: CustomScrollView(
+              slivers: <Widget>[
+                // sliverappbar for gradient widget
+                SliverAppBar(
+                  pinned: true,
+                  expandedHeight: 50,
+                  flexibleSpace: Container(
+                    decoration: BoxDecoration(
+                      // LinearGradient
+                      gradient: LinearGradient(
+                        // colors for gradient
+                        colors: [Colors.deepPurpleAccent, Colors.yellowAccent],
+                      ),
+                    ),
                   ),
+                  // title of appbar
+                  title: Text("Gradient AppBar!"),
                 ),
-              ),
-              // title of appbar
-              title: Text("Gradient AppBar!"),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    // Body Element
+                  ]),
+                ),
+              ],
             ),
-            SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  // Body Element
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }

@@ -26,32 +26,40 @@ class GDriveSyncBloc extends Bloc<GDriveSyncEvent, GDriveSyncState> {
         (i) async {
           switch (i.status) {
             case Status.DELETED_LOCAL:
-              add(InternGDriveLocalDeletingEvent(
-                i.recipeName,
-                i.currentRecipeNumber,
-                i.totalRecipes,
-              ));
+              add(
+                InternGDriveLocalDeletingEvent(
+                  i.recipeName,
+                  i.currentRecipeNumber,
+                  i.totalRecipes,
+                ),
+              );
               break;
             case Status.DELETED_ONLINE:
-              add(InternGDriveCloudDeletingEvent(
-                i.recipeName,
-                i.currentRecipeNumber,
-                i.totalRecipes,
-              ));
+              add(
+                InternGDriveCloudDeletingEvent(
+                  i.recipeName,
+                  i.currentRecipeNumber,
+                  i.totalRecipes,
+                ),
+              );
               break;
             case Status.IMPORTED_LOCAL:
-              add(InternGDriveImportingEvent(
-                i.recipeName,
-                i.currentRecipeNumber,
-                i.totalRecipes,
-              ));
+              add(
+                InternGDriveImportingEvent(
+                  i.recipeName,
+                  i.currentRecipeNumber,
+                  i.totalRecipes,
+                ),
+              );
               break;
             case Status.UPLOADED:
-              add(InternGDriveUploadingEvent(
-                i.recipeName,
-                i.currentRecipeNumber,
-                i.totalRecipes,
-              ));
+              add(
+                InternGDriveUploadingEvent(
+                  i.recipeName,
+                  i.currentRecipeNumber,
+                  i.totalRecipes,
+                ),
+              );
               break;
             case Status.FINISHED:
               await Future.delayed(Duration(milliseconds: 200));
@@ -73,25 +81,45 @@ class GDriveSyncBloc extends Bloc<GDriveSyncEvent, GDriveSyncState> {
     });
 
     on<InternGDriveCloudDeletingEvent>((event, emit) async {
-      emit(GDriveCloudDeleting(
-          event.recipeName, event.deletingRecipeNumber, event.totalDeleting));
+      emit(
+        GDriveCloudDeleting(
+          event.recipeName,
+          event.deletingRecipeNumber,
+          event.totalDeleting,
+        ),
+      );
     });
 
     on<InternGDriveImportingEvent>((event, emit) async {
       reloadRecipeOverview();
-      emit(GDriveImporting(
-          event.recipeName, event.importingRecipeNumber, event.totalImporting));
+      emit(
+        GDriveImporting(
+          event.recipeName,
+          event.importingRecipeNumber,
+          event.totalImporting,
+        ),
+      );
     });
 
     on<InternGDriveLocalDeletingEvent>((event, emit) async {
       reloadRecipeOverview();
-      emit(GDriveLocalDeleting(
-          event.recipeName, event.deletingRecipeNumber, event.totalDeleting));
+      emit(
+        GDriveLocalDeleting(
+          event.recipeName,
+          event.deletingRecipeNumber,
+          event.totalDeleting,
+        ),
+      );
     });
 
     on<InternGDriveUploadingEvent>((event, emit) async {
-      emit(GDriveUploading(
-          event.recipeName, event.uploadingRecipeNumber, event.totalUploading));
+      emit(
+        GDriveUploading(
+          event.recipeName,
+          event.uploadingRecipeNumber,
+          event.totalUploading,
+        ),
+      );
     });
 
     on<InternGDriveSuccessfullySyncedEvent>((event, emit) async {
@@ -115,8 +143,11 @@ class GDriveSyncBloc extends Bloc<GDriveSyncEvent, GDriveSyncState> {
 
   void reloadRecipeOverview() {
     BlocProvider.of<RecipeCategoryOverviewBloc>(context).add(
-        RCOLoadRecipeCategoryOverview(
-            reopenBoxes: false, categoryOverviewContext: context));
+      RCOLoadRecipeCategoryOverview(
+        reopenBoxes: false,
+        categoryOverviewContext: context,
+      ),
+    );
     BlocProvider.of<RandomRecipeExplorerBloc>(context)
         .add(InitializeRandomRecipeExplorer());
   }

@@ -26,18 +26,8 @@ class FinishedEditing extends StepsEvent {
   final String notes;
   // List<List<String>> images -> the bloc keeps track of that
 
-  FinishedEditing(
-    this.editingRecipe,
-    this.goBack,
-    this.complexity,
-    this.notes,
-  );
+  FinishedEditing(this.editingRecipe, this.goBack, this.complexity, this.notes);
 
   @override
-  List<Object> get props => [
-        editingRecipe,
-        goBack,
-        complexity,
-        notes,
-      ];
+  List<Object> get props => [editingRecipe, goBack, complexity, notes];
 }

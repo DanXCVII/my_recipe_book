@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../blocs/ad_manager/ad_manager_bloc.dart';
 import '../generated/l10n.dart';
+
 import 'package:video_player/video_player.dart';
 
 class IngredinetSearchPreviewScreen extends StatelessWidget {
@@ -9,7 +11,8 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width * 0.7 * 1.155 >
+    double width =
+        MediaQuery.of(context).size.width * 0.7 * 1.155 >
             MediaQuery.of(context).size.height - kToolbarHeight - 60
         ? MediaQuery.of(context).size.width * 0.7 * 1.155
         : MediaQuery.of(context).size.width * 0.7 * 1.155;
@@ -28,9 +31,10 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffAF1E1E), Color(0xff641414)],
+            ),
           ),
         ),
         title: Text(S.of(context).professional_search),
@@ -38,12 +42,10 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
       body: Stack(
         children: <Widget>[
           Container(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height - 145,
-              child: Image.asset(
-                'images/tableVegetable.jpg',
-                fit: BoxFit.cover,
-              )),
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height - 145,
+            child: Image.asset('images/tableVegetable.jpg', fit: BoxFit.cover),
+          ),
           Container(
             width: double.infinity,
             height: double.infinity,
@@ -55,52 +57,58 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                 child: ListView(
                   children: <Widget>[
                     Container(
-                      height: MediaQuery.of(context).size.height -
+                      height:
+                          MediaQuery.of(context).size.height -
                                   kToolbarHeight -
                                   70 >
                               height + 60
                           ? MediaQuery.of(context).size.height -
-                              kToolbarHeight -
-                              70
+                                kToolbarHeight -
+                                70
                           : height + 60,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Container(
-                              height: height,
-                              width: width,
-                              decoration: BoxDecoration(
-                                color: Color(0xff161616),
-                                borderRadius: BorderRadius.all(Radius.circular(
-                                    MediaQuery.of(context).size.width > 700
-                                        ? 30
-                                        : 40)),
+                            height: height,
+                            width: width,
+                            decoration: BoxDecoration(
+                              color: Color(0xff161616),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(
+                                  MediaQuery.of(context).size.width > 700
+                                      ? 30
+                                      : 40,
+                                ),
                               ),
-                              child: Center(
-                                child: Container(
-                                    height:
-                                        MediaQuery.of(context).size.width > 700
-                                            ? height - 20
-                                            : height - 80,
-                                    width: width - 20,
-                                    child: width > 300
-                                        ? Image.asset(
-                                            "images/tabletIngredientSearch.png")
-                                        : VideoPlayerAd()
-                                    // Image.asset(
-                                    //     "images/ingredient_search_preview.gif"),
-                                    ),
-                              )),
+                            ),
+                            child: Center(
+                              child: Container(
+                                height: MediaQuery.of(context).size.width > 700
+                                    ? height - 20
+                                    : height - 80,
+                                width: width - 20,
+                                child: width > 300
+                                    ? Image.asset(
+                                        "images/tabletIngredientSearch.png",
+                                      )
+                                    : VideoPlayerAd(),
+                                // Image.asset(
+                                //     "images/ingredient_search_preview.gif"),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
               Container(
                 decoration: BoxDecoration(
-                    color: Colors.green[800],
-                    border: Border.all(color: Colors.green[900]!, width: 2)),
+                  color: Colors.green[800],
+                  border: Border.all(color: Colors.green[900]!, width: 2),
+                ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -113,29 +121,34 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                         child: Row(
                           children: <Widget>[
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 22.0, right: 22),
-                              child: Icon(Icons.shopping_cart,
-                                  color: Colors.white),
+                              padding: const EdgeInsets.only(
+                                left: 22.0,
+                                right: 22,
+                              ),
+                              child: Icon(
+                                Icons.shopping_cart,
+                                color: Colors.white,
+                              ),
                             ),
                             Spacer(),
                             Container(
                               width: MediaQuery.of(context).size.width - 107,
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
-                                    Text(S.of(context).buy_pro_version,
-                                        style: TextStyle(
-                                          fontSize: 19,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        )),
-                                    SizedBox(
-                                      height: 6,
+                                    Text(
+                                      S.of(context).buy_pro_version,
+                                      style: TextStyle(
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
                                     ),
+                                    SizedBox(height: 6),
                                     Text(
                                       S.of(context).pro_version_desc,
                                       style: TextStyle(
@@ -143,22 +156,20 @@ class IngredinetSearchPreviewScreen extends StatelessWidget {
                                         color: Colors.white,
                                       ),
                                       textAlign: TextAlign.center,
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
                             ),
                             Spacer(),
-                            Container(
-                              width: 35,
-                            )
+                            Container(width: 35),
                           ],
                         ),
                       ),
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ],
@@ -199,10 +210,7 @@ class _VideoPlayerAdState extends State<VideoPlayerAd> {
   Widget build(BuildContext context) {
     return Container(
       child: _controller.value.isInitialized
-          ? AspectRatio(
-              aspectRatio: 16 / 9,
-              child: VideoPlayer(_controller),
-            )
+          ? AspectRatio(aspectRatio: 16 / 9, child: VideoPlayer(_controller))
           : Container(),
     );
   }

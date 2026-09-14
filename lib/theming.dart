@@ -6,11 +6,8 @@ enum MyThemeKeys { AUTOMATIC, LIGHT, DARK, OLEDBLACK }
 class _CustomTheme extends InheritedWidget {
   final CustomThemeState? data;
 
-  _CustomTheme({
-    this.data,
-    Key? key,
-    required Widget child,
-  }) : super(key: key, child: child);
+  _CustomTheme({this.data, Key? key, required Widget child})
+    : super(key: key, child: child);
 
   @override
   bool updateShouldNotify(_CustomTheme oldWidget) {
@@ -22,24 +19,21 @@ class CustomTheme extends StatefulWidget {
   final Widget child;
   final MyThemeKeys? initialThemeKey;
 
-  const CustomTheme({
-    Key? key,
-    this.initialThemeKey,
-    required this.child,
-  }) : super(key: key);
+  const CustomTheme({Key? key, this.initialThemeKey, required this.child})
+    : super(key: key);
 
   @override
   CustomThemeState createState() => new CustomThemeState();
 
   static ThemeData? of(BuildContext context) {
-    _CustomTheme inherited =
-        context.dependOnInheritedWidgetOfExactType<_CustomTheme>()!;
+    _CustomTheme inherited = context
+        .dependOnInheritedWidgetOfExactType<_CustomTheme>()!;
     return inherited.data!.theme;
   }
 
   static CustomThemeState? instanceOf(BuildContext context) {
-    _CustomTheme inherited =
-        context.dependOnInheritedWidgetOfExactType<_CustomTheme>()!;
+    _CustomTheme inherited = context
+        .dependOnInheritedWidgetOfExactType<_CustomTheme>()!;
     return inherited.data;
   }
 }
@@ -67,22 +61,25 @@ class MyThemes {
     primaryColor: Color(0xFF790604),
     unselectedWidgetColor: Colors.grey[100],
     appBarTheme: AppBarTheme(
-        foregroundColor: Colors.white,
-        systemOverlayStyle:
-            SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
-        iconTheme: IconThemeData(color: Colors.white)),
+      foregroundColor: Colors.white,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarBrightness: Brightness.dark,
+      ),
+      iconTheme: IconThemeData(color: Colors.white),
+    ),
     textTheme: TextTheme(
-        displayMedium: TextStyle(color: Colors.grey[400]),
-        titleMedium: TextStyle(color: Colors.grey[100])),
+      displayMedium: TextStyle(color: Colors.grey[400]),
+      titleMedium: TextStyle(color: Colors.grey[100]),
+    ),
     cardColor: Color(0xff34363D),
     focusColor: Colors.white,
     scaffoldBackgroundColor: Color(0xff212225),
     colorScheme: ThemeData().colorScheme.copyWith(
-          primary: Colors.amber,
-          secondary: Colors.orange[700],
-          brightness: Brightness.dark,
-          surface: Color(0xff212225),
-        ),
+      primary: Colors.amber,
+      secondary: Colors.orange[700],
+      brightness: Brightness.dark,
+      surface: Color(0xff212225),
+    ),
   );
 
   static final ThemeData oledblackTheme = ThemeData(
@@ -94,10 +91,12 @@ class MyThemes {
       disabledActionBackgroundColor: Colors.red,
     ),
     appBarTheme: AppBarTheme(
-        foregroundColor: Colors.white,
-        systemOverlayStyle:
-            SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
-        iconTheme: IconThemeData(color: Colors.white)),
+      foregroundColor: Colors.white,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarBrightness: Brightness.light,
+      ),
+      iconTheme: IconThemeData(color: Colors.white),
+    ),
     textTheme: TextTheme(titleMedium: TextStyle(color: Colors.grey[100])),
     unselectedWidgetColor: Colors.grey[100],
     cardColor: Color(0xff34363D),
@@ -152,9 +151,6 @@ class CustomThemeState extends State<CustomTheme> {
 
   @override
   Widget build(BuildContext context) {
-    return new _CustomTheme(
-      data: this,
-      child: widget.child,
-    );
+    return new _CustomTheme(data: this, child: widget.child);
   }
 }

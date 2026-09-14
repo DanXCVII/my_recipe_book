@@ -30,12 +30,12 @@ class LoadedState extends AppState {
 
   @override
   List<Object> get props => [
-        recipeCategoryOverview,
-        showIntro,
-        selectedIndex,
-        shoppingCartOpen,
-        recipeCalendarOpen,
-        showShoppingCartSummary,
-        title,
-      ];
+    recipeCategoryOverview,
+    showIntro,
+    selectedIndex,
+    shoppingCartOpen,
+    recipeCalendarOpen,
+    showShoppingCartSummary,
+    title,
+  ];
 }

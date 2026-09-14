@@ -7,7 +7,19 @@ abstract class ShoppingCartState {
 class LoadingShoppingCart extends ShoppingCartState {}
 
 class LoadedShoppingCart extends ShoppingCartState {
-  final Map<Recipe, List<CheckableIngredient>> shoppingCart;
+  final ShoppingCartData data;
+  final ShoppingCartData? undoSnapshot;
+  final ShoppingCartActionError? actionError;
 
-  LoadedShoppingCart(this.shoppingCart);
+  LoadedShoppingCart(this.data, {this.undoSnapshot, this.actionError});
+
+  Map<Recipe, List<CheckableIngredient>> get shoppingCart => data.toLegacyMap();
 }
+
+class FailedShoppingCart extends ShoppingCartState {
+  final Object error;
+
+  const FailedShoppingCart(this.error);
+}
+
+enum ShoppingCartActionError { add, check, remove, servings, restore }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../util/helper.dart';
 
 import '../../local_storage/local_repository.dart';
@@ -9,7 +10,7 @@ enum Validator {
   REQUIRED_FIELDS,
   NAME_TAKEN,
   GLOSSARY_NOT_VALID,
-  VALID
+  VALID,
 }
 
 class RecipeValidator {
@@ -44,8 +45,11 @@ class RecipeValidator {
     }
   }
 
-  Future<Validator> validateGeneralInfo(GlobalKey<FormState> formKey,
-      bool editingRecipe, String recipeName) async {
+  Future<Validator> validateGeneralInfo(
+    GlobalKey<FormState> formKey,
+    bool editingRecipe,
+    String recipeName,
+  ) async {
     if (!formKey.currentState!.validate())
       return Validator.REQUIRED_FIELDS;
     else if (!editingRecipe &&
@@ -103,16 +107,23 @@ class RecipeValidator {
   }
 
   bool _isGlossaryValid(
-      List<List<TextEditingController>> ingredients,
-      List<List<TextEditingController>> amount,
-      List<List<TextEditingController>> unit,
-      List<TextEditingController> ingredientsGlossary) {
-    List<List<Ingredient>> ingredientList =
-        getCleanIngredientData(ingredients, amount, unit);
-    List<String> ingredientGlossary =
-        getCleanGlossary(ingredientsGlossary, ingredientList);
+    List<List<TextEditingController>> ingredients,
+    List<List<TextEditingController>> amount,
+    List<List<TextEditingController>> unit,
+    List<TextEditingController> ingredientsGlossary,
+  ) {
+    List<List<Ingredient>> ingredientList = getCleanIngredientData(
+      ingredients,
+      amount,
+      unit,
+    );
+    List<String> ingredientGlossary = getCleanGlossary(
+      ingredientsGlossary,
+      ingredientList,
+    );
     if (ingredientList.length > 1 &&
-        ingredientGlossary.length < ingredientList.length) return false;
+        ingredientGlossary.length < ingredientList.length)
+      return false;
 
     return true;
   }
@@ -121,8 +132,10 @@ class RecipeValidator {
 /// sets the length of the glossary for the ingredients section equal to
 /// the length list<list<ingredients>> (removes unnessesary sections)
 /// After that, it removes the empty strings in the glossary
-List<String> getCleanGlossary(List<TextEditingController> glossary,
-    List<List<Ingredient>> cleanIngredientsData) {
+List<String> getCleanGlossary(
+  List<TextEditingController> glossary,
+  List<List<Ingredient>> cleanIngredientsData,
+) {
   List<String> output = [];
   for (int i = 0; i < glossary.length; i++) {
     output.add(glossary[i].text);
@@ -141,9 +154,10 @@ List<String> getCleanGlossary(List<TextEditingController> glossary,
 /// removes all leading and trailing whitespaces and empty ingredients from the lists
 /// of ingredients and
 List<List<Ingredient>> getCleanIngredientData(
-    List<List<TextEditingController>> ingredients,
-    List<List<TextEditingController>> amount,
-    List<List<TextEditingController>> unit) {
+  List<List<TextEditingController>> ingredients,
+  List<List<TextEditingController>> amount,
+  List<List<TextEditingController>> unit,
+) {
   /// creating the three lists with the data of the ingredients
   /// by getting the data of the controllers.
   List<List<String>> ingredientsNames = ingredients
@@ -151,20 +165,25 @@ List<List<Ingredient>> getCleanIngredientData(
       .toList();
 
   List<List<double?>> ingredientsAmount = amount
-      .map((list) => list.map((amount) {
-            if (amount.text != "" && amount.text != "0") {
-              String addValue = amount.text;
-              return getDoubleFromString(
-                  addValue.replaceAll(new RegExp(r','), 'e'));
-            } else {
-              return null;
-            }
-          }).toList())
+      .map(
+        (list) => list.map((amount) {
+          if (amount.text != "" && amount.text != "0") {
+            String addValue = amount.text;
+            return getDoubleFromString(
+              addValue.replaceAll(new RegExp(r','), 'e'),
+            );
+          } else {
+            return null;
+          }
+        }).toList(),
+      )
       .toList();
 
   List<List<String?>> ingredientsUnit = unit
-      .map((list) =>
-          list.map((unit) => unit.text == '' ? null : unit.text).toList())
+      .map(
+        (list) =>
+            list.map((unit) => unit.text == '' ? null : unit.text).toList(),
+      )
       .toList();
 
   /// List which will be the clean list with the list of the ingredients
@@ -182,11 +201,9 @@ List<List<Ingredient>> getCleanIngredientData(
         // trim unit if not empty
         if (ingredientsUnit[i][j] != null) unit = ingredientsUnit[i][j]!.trim();
         // add the ingredient with modified data
-        cleanIngredientsData[i].add(Ingredient(
-          name: name,
-          amount: ingredientsAmount[i][j],
-          unit: unit,
-        ));
+        cleanIngredientsData[i].add(
+          Ingredient(name: name, amount: ingredientsAmount[i][j], unit: unit),
+        );
       }
     }
   }

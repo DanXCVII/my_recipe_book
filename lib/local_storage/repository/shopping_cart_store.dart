@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
+import '../../models/shopping_cart_data.dart';
 import '../database.dart';
 import 'drift_repository_context.dart';
 import 'local_repository_contract.dart';
@@ -14,31 +15,41 @@ class ShoppingCartStore {
   Map<String, ShoppingCartSource> _cart = {};
 
   Future<Map<Recipe, List<CheckableIngredient>>> getShoppingCart() async {
-    final result = <Recipe, List<CheckableIngredient>>{};
+    return (await getShoppingCartData()).toLegacyMap();
+  }
+
+  Future<ShoppingCartData> getShoppingCartData() async {
+    final result = <ShoppingCartSourceData>[];
     final sources = _cart.values.toList()
       ..sort((a, b) => a.position.compareTo(b.position));
     for (final source in sources) {
-      Recipe? recipe;
-      if (source.isSummary) {
-        recipe = Recipe(name: shoppingSummaryName);
-      } else {
-        recipe =
-            await _recipeByName(source.displayName) ??
-            Recipe(name: source.displayName, notes: 'noLink');
-      }
-      result[recipe] = List<CheckableIngredient>.from(source.items);
+      final recipe = source.isSummary
+          ? null
+          : await _recipeByName(source.displayName);
+      result.add(
+        ShoppingCartSourceData(
+          key: source.key,
+          displayName: source.displayName,
+          items: List<CheckableIngredient>.from(source.items),
+          isSummary: source.isSummary,
+          position: source.position,
+          recipe: recipe,
+          currentServings: source.currentServings,
+        ),
+      );
     }
-    return result;
+    return ShoppingCartData(result);
   }
 
   Future<void> addMultipleIngredientsToCart(
     String recipeName,
-    List<Ingredient> ingredients,
-  ) async {
+    List<Ingredient> ingredients, {
+    double? servings,
+  }) async {
     for (final ingredient in ingredients) {
       _addCartIngredient(shoppingSummaryName, ingredient);
       if (recipeName != shoppingSummaryName) {
-        _addCartIngredient(recipeName, ingredient);
+        _addCartIngredient(recipeName, ingredient, currentServings: servings);
       }
     }
     await _persistCartCache();
@@ -55,7 +66,11 @@ class ShoppingCartStore {
     await _persistCartCache();
   }
 
-  void _addCartIngredient(String sourceName, Ingredient ingredient) {
+  void _addCartIngredient(
+    String sourceName,
+    Ingredient ingredient, {
+    double? currentServings,
+  }) {
     final source = _cart.putIfAbsent(
       sourceName,
       () => ShoppingCartSource(
@@ -64,8 +79,12 @@ class ShoppingCartStore {
         [],
         isSummary: sourceName == shoppingSummaryName,
         position: _cart.length,
+        currentServings: currentServings,
       ),
     );
+    if (!source.isSummary && currentServings != null) {
+      source.currentServings = currentServings;
+    }
     final index = _matchingIngredientIndex(ingredient, source.items);
     if (index == null) {
       source.items.add(
@@ -177,9 +196,18 @@ class ShoppingCartStore {
       summary.items[index] = old.copyWith(
         amount: old.amount! - ingredient.amount!,
       );
-    } else {
+    } else if (!_hasRemainingSourceContribution(ingredient)) {
       summary.items.removeAt(index);
     }
+  }
+
+  bool _hasRemainingSourceContribution(Ingredient ingredient) {
+    return _cart.values
+        .where((source) => !source.isSummary)
+        .any(
+          (source) =>
+              _matchingIngredientIndex(ingredient, source.items) != null,
+        );
   }
 
   int? _matchingIngredientIndex(
@@ -217,6 +245,91 @@ class ShoppingCartStore {
         }
       }
     }
+    await _persistCartCache();
+  }
+
+  Future<void> updateSourceServings(
+    String sourceName,
+    double newServings,
+  ) async {
+    if (!newServings.isFinite || newServings <= 0) {
+      throw ArgumentError.value(newServings, 'newServings');
+    }
+    final source = _cart[sourceName];
+    if (source == null || source.isSummary) {
+      throw StateError('Shopping cart source is not adjustable');
+    }
+    final recipe = await _recipeByName(source.displayName);
+    final oldServings = source.currentServings ?? recipe?.servings;
+    if (oldServings == null || !oldServings.isFinite || oldServings <= 0) {
+      throw StateError('Shopping cart source has no serving baseline');
+    }
+
+    final factor = newServings / oldServings;
+    final summary = _cart[shoppingSummaryName];
+    for (var index = 0; index < source.items.length; index++) {
+      final oldItem = source.items[index];
+      if (oldItem.amount == null) continue;
+      final newAmount = oldItem.amount! * factor;
+      source.items[index] = oldItem.copyWith(amount: newAmount);
+
+      if (summary == null) continue;
+      final summaryIndex = _matchingIngredientIndex(
+        oldItem.getIngredient(),
+        summary.items,
+      );
+      if (summaryIndex == null || summary.items[summaryIndex].amount == null) {
+        continue;
+      }
+      final summaryItem = summary.items[summaryIndex];
+      summary.items[summaryIndex] = summaryItem.copyWith(
+        amount: summaryItem.amount! + newAmount - oldItem.amount!,
+      );
+    }
+    source.currentServings = newServings;
+    await _persistCartCache();
+  }
+
+  Future<ShoppingCartData?> removeCheckedItems() async {
+    final before = (await getShoppingCartData()).snapshot();
+    final summary = _cart[shoppingSummaryName];
+    final checkedCount = _cart.values
+        .expand((source) => source.items)
+        .where((item) => item.checked)
+        .length;
+    if (checkedCount == 0) return null;
+
+    final nonSummarySources = _cart.values
+        .where((source) => !source.isSummary)
+        .toList(growable: false);
+    for (final source in nonSummarySources) {
+      final removed = source.items
+          .where((item) => item.checked)
+          .toList(growable: false);
+      source.items.removeWhere((item) => item.checked);
+      for (final item in removed) {
+        _subtractFromSummary(item.getIngredient());
+      }
+      if (source.items.isEmpty) _cart.remove(source.key);
+    }
+
+    summary?.items.removeWhere((item) => item.checked);
+    await _persistCartCache();
+    return before;
+  }
+
+  Future<void> restore(ShoppingCartData snapshot) async {
+    _cart = {
+      for (final source in snapshot.sources)
+        source.key: ShoppingCartSource(
+          source.key,
+          source.displayName,
+          List<CheckableIngredient>.from(source.items),
+          isSummary: source.isSummary,
+          position: source.position,
+          currentServings: source.currentServings,
+        ),
+    };
     await _persistCartCache();
   }
 
@@ -261,6 +374,7 @@ class ShoppingCartStore {
               sourceKey: source.key,
               displayName: source.displayName,
               isSummary: Value(source.isSummary),
+              currentServings: Value(source.currentServings),
               position: sourceIndex,
             ),
           );
@@ -308,6 +422,7 @@ class ShoppingCartStore {
             .toList(),
         isSummary: source.isSummary,
         position: source.position,
+        currentServings: source.currentServings,
       );
     }
   }
@@ -320,6 +435,7 @@ class ShoppingCartSource {
     this.items, {
     this.isSummary = false,
     this.position = 0,
+    this.currentServings,
   });
 
   final String key;
@@ -327,4 +443,5 @@ class ShoppingCartSource {
   final List<CheckableIngredient> items;
   final bool isSummary;
   final int position;
+  double? currentServings;
 }

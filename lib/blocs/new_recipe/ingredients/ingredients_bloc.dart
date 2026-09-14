@@ -34,21 +34,21 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
       Recipe newRecipe;
       if (!event.editingRecipe!) {
         newRecipe = repository.getTmpRecipe()!.copyWith(
-              servings: event.servings,
-              servingName: event.servingName,
-              ingredients: recipeIngredients,
-              ingredientsGlossary: recipeIngredientSections,
-              vegetable: event.vegetable,
-            );
+          servings: event.servings,
+          servingName: event.servingName,
+          ingredients: recipeIngredients,
+          ingredientsGlossary: recipeIngredientSections,
+          vegetable: event.vegetable,
+        );
         await repository.saveTmpRecipe(newRecipe);
       } else {
         newRecipe = repository.getTmpEditingRecipe()!.copyWith(
-              servings: event.servings,
-              servingName: event.servingName,
-              ingredients: recipeIngredients,
-              ingredientsGlossary: recipeIngredientSections,
-              vegetable: event.vegetable,
-            );
+          servings: event.servings,
+          servingName: event.servingName,
+          ingredients: recipeIngredients,
+          ingredientsGlossary: recipeIngredientSections,
+          vegetable: event.vegetable,
+        );
         await repository.saveTmpEditingRecipe(newRecipe);
       }
 

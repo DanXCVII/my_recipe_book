@@ -76,8 +76,10 @@ class NumberDialogState extends State<NumberDialog> {
                         child: Form(
                           key: _formKey,
                           child: TextFormField(
-                            style:
-                                TextStyle(fontFamily: "Orbitron", fontSize: 22),
+                            style: TextStyle(
+                              fontFamily: "Orbitron",
+                              fontSize: 22,
+                            ),
                             focusNode: widget.focus,
                             onFieldSubmitted: (_) {
                               validateAddModifyItem();
@@ -98,7 +100,7 @@ class NumberDialogState extends State<NumberDialog> {
                       validateAddModifyItem();
                     },
                   ),
-                  SizedBox(width: 8)
+                  SizedBox(width: 8),
                 ],
               ),
             ),

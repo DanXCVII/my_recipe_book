@@ -22,11 +22,13 @@ class GDriveSignInBloc extends Bloc<GDriveSignInEvent, GDriveSignInState> {
       if (connectedToInternet) {
         GoogleSignInAccount? account = await driveSync.signInGDrive();
         if (account != null) {
-          emit(GDriveSignedIn(
-            account.displayName ?? "",
-            account.email,
-            account.photoUrl,
-          ));
+          emit(
+            GDriveSignedIn(
+              account.displayName ?? "",
+              account.email,
+              account.photoUrl,
+            ),
+          );
         } else {
           emit(GDriveNoInternet());
         }
@@ -42,11 +44,13 @@ class GDriveSignInBloc extends Bloc<GDriveSignInEvent, GDriveSignInState> {
       if (connectedToInternet) {
         GoogleSignInAccount? account = await driveSync.signInSilently();
         if (account != null) {
-          emit(GDriveSignedIn(
-            account.displayName ?? "",
-            account.email,
-            account.photoUrl,
-          ));
+          emit(
+            GDriveSignedIn(
+              account.displayName ?? "",
+              account.email,
+              account.photoUrl,
+            ),
+          );
         } else {
           emit(GDriveSignedOut());
         }

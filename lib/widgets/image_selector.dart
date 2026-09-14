@@ -63,74 +63,75 @@ class _ImageSelectorState extends State<ImageSelector> {
                       color: widget.color,
                     ),
                     child: Center(
-                        child: IconButton(
-                      onPressed: () {
-                        _askUser();
-                      },
-                      color: Colors.white,
-                      icon: Icon(Icons.add_a_photo),
-                      iconSize: widget.circleSize / 3,
-                    )),
+                      child: IconButton(
+                        onPressed: () {
+                          _askUser();
+                        },
+                        color: Colors.white,
+                        icon: Icon(Icons.add_a_photo),
+                        iconSize: widget.circleSize / 3,
+                      ),
+                    ),
                   ),
                 ],
               )
             : Container(
                 width: widget.circleSize + 26,
                 child: Center(
-                  child: Stack(children: <Widget>[
-                    Center(
-                      child: ClipOval(
-                        child: Container(
-                          child: Image.file(
-                            // widget.imageWrapper.getSelectedImage(),
-                            selectedImageFile!,
-                            fit: BoxFit.cover,
+                  child: Stack(
+                    children: <Widget>[
+                      Center(
+                        child: ClipOval(
+                          child: Container(
+                            child: Image.file(
+                              // widget.imageWrapper.getSelectedImage(),
+                              selectedImageFile!,
+                              fit: BoxFit.cover,
+                            ),
+                            width: widget.circleSize,
+                            height: widget.circleSize,
                           ),
+                        ),
+                      ),
+                      Center(
+                        child: Opacity(
+                          opacity: 0.3,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black87,
+                              shape: BoxShape.circle,
+                            ),
+                            width: widget.circleSize,
+                            height: widget.circleSize,
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Container(
+                          decoration: BoxDecoration(shape: BoxShape.circle),
                           width: widget.circleSize,
                           height: widget.circleSize,
-                        ),
-                      ),
-                    ),
-                    Center(
-                      child: Opacity(
-                        opacity: 0.3,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black87,
-                            shape: BoxShape.circle,
+                          child: IconButton(
+                            iconSize: widget.circleSize / 3,
+                            icon: Icon(Icons.add_a_photo),
+                            color: Colors.white,
+                            onPressed: () {
+                              _askUser();
+                            },
                           ),
-                          width: widget.circleSize,
-                          height: widget.circleSize,
                         ),
                       ),
-                    ),
-                    Center(
-                      child: Container(
-                        decoration: BoxDecoration(shape: BoxShape.circle),
-                        width: widget.circleSize,
-                        height: widget.circleSize,
-                        child: IconButton(
-                          iconSize: widget.circleSize / 3,
-                          icon: Icon(Icons.add_a_photo),
-                          color: Colors.white,
-                          onPressed: () {
-                            _askUser();
-                          },
-                        ),
-                      ),
-                    ),
-                    Align(
+                      Align(
                         alignment: Alignment.topRight,
                         child: IconButton(
-                          icon: Icon(
-                            Icons.cancel,
-                            size: 26,
-                          ),
+                          icon: Icon(Icons.cancel, size: 26),
                           onPressed: () {
                             widget.onCancel();
                           },
-                        )),
-                  ]),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
       ),
@@ -139,10 +140,9 @@ class _ImageSelectorState extends State<ImageSelector> {
 
   Future _askUser() async {
     final _picker = ImagePicker();
-    File pictureFile = File((await _picker.pickImage(
-      source: ImageSource.gallery,
-    ))!
-        .path);
+    File pictureFile = File(
+      (await _picker.pickImage(source: ImageSource.gallery))!.path,
+    );
 
     widget.onNewImage(pictureFile);
     setState(() {

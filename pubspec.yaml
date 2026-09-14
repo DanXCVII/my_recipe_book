@@ -22,6 +22,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  intl: ^0.20.3 # BSD-3-Clause
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -95,6 +96,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.11.1 # BSD
   drift_dev: ^2.35.0 # MIT
+  intl_utils: ^2.8.16 # BSD-3-Clause
 
 flutter_native_splash:
   color: "ff6f00"
@@ -160,6 +162,24 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
+    - family: PlayfairDisplay
+      fonts:
+        - asset: fonts/PlayfairDisplay-VariableFont_wght.ttf
+          weight: 500
+        - asset: fonts/PlayfairDisplay-VariableFont_wght.ttf
+          weight: 600
+        - asset: fonts/PlayfairDisplay-VariableFont_wght.ttf
+          weight: 700
+    - family: PlusJakartaSans
+      fonts:
+        - asset: fonts/PlusJakartaSans-VariableFont_wght.ttf
+          weight: 400
+        - asset: fonts/PlusJakartaSans-VariableFont_wght.ttf
+          weight: 500
+        - asset: fonts/PlusJakartaSans-VariableFont_wght.ttf
+          weight: 600
+        - asset: fonts/PlusJakartaSans-VariableFont_wght.ttf
+          weight: 700
     - family: Questrial
       fonts:
         - asset: fonts/Questrial-Regular.ttf

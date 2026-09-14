@@ -368,19 +368,23 @@ class MyGradientAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () {
                   Ads.hideBottomBannerAd();
 
-                  context.read<LocalRepository>().saveTmpEditingRecipe(recipe).then((_) {
-                    BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
-                    Navigator.pushNamed(
-                      context,
-                      RouteNames.addRecipeGeneralInfo,
-                      arguments: GeneralInfoArguments(
-                        recipe,
-                        BlocProvider.of<ShoppingCartBloc>(context),
-                        BlocProvider.of<RecipeCalendarBloc>(context),
-                        editingRecipeName: recipe.name,
-                      ),
-                    ).then((_) => Ads.showBottomBannerAd());
-                  });
+                  context
+                      .read<LocalRepository>()
+                      .saveTmpEditingRecipe(recipe)
+                      .then((_) {
+                        BlocProvider.of<AdManagerBloc>(context)
+                            .add(LoadVideo());
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.addRecipeGeneralInfo,
+                          arguments: GeneralInfoArguments(
+                            recipe,
+                            BlocProvider.of<ShoppingCartBloc>(context),
+                            BlocProvider.of<RecipeCalendarBloc>(context),
+                            editingRecipeName: recipe.name,
+                          ),
+                        ).then((_) => Ads.showBottomBannerAd());
+                      });
                 },
               );
             } else {
@@ -1537,6 +1541,10 @@ class IngredientsScreen extends StatelessWidget {
         AddToCart(
           currentRecipe.name,
           addToCartIngredients.map((e) => e).toList(),
+          servings:
+              (BlocProvider.of<RecipeScreenIngredientsBloc>(context).state
+                      as LoadedRecipeIngredients)
+                  .servings,
         ),
       );
       addToCartIngredients.clear();
@@ -1620,8 +1628,16 @@ class IngredientsScreen extends StatelessWidget {
       BlocProvider.of<RecipeScreenIngredientsBloc>(context)
           .add(RemoveFromCart(currentRecipe.name, ingredients));
     } else {
-      BlocProvider.of<RecipeScreenIngredientsBloc>(context)
-          .add(AddToCart(currentRecipe.name, ingredients));
+      BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
+        AddToCart(
+          currentRecipe.name,
+          ingredients,
+          servings:
+              (BlocProvider.of<RecipeScreenIngredientsBloc>(context).state
+                      as LoadedRecipeIngredients)
+                  .servings,
+        ),
+      );
     }
   }
 

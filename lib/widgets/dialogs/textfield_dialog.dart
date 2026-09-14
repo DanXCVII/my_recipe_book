@@ -98,7 +98,7 @@ class TextFieldDialogState extends State<TextFieldDialog> {
                         validateAddModifyItem();
                       },
                     ),
-                    SizedBox(width: 8)
+                    SizedBox(width: 8),
                   ],
                 ),
               ),

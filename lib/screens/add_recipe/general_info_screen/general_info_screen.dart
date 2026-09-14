@@ -46,10 +46,7 @@ class GeneralInfoScreen extends StatefulWidget {
   final Recipe? modifiedRecipe;
   final String? editingRecipeName;
 
-  GeneralInfoScreen({
-    this.modifiedRecipe,
-    this.editingRecipeName,
-  });
+  GeneralInfoScreen({this.modifiedRecipe, this.editingRecipeName});
 
   _GeneralInfoScreenState createState() =>
       _GeneralInfoScreenState(modifiedRecipe);
@@ -116,9 +113,10 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)],
+              ),
             ),
           ),
           title: Text(S.of(context).add_general_info),
@@ -127,52 +125,55 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
               icon: Icon(Icons.info_outline),
               onPressed: () {
                 showDialog(
-                    context: context,
-                    builder: (context) => InfoDialog(
-                          title: S.of(context).info,
-                          body:
-                              S.of(context).general_info_changes_will_be_saved,
-                        ));
+                  context: context,
+                  builder: (context) => InfoDialog(
+                    title: S.of(context).info,
+                    body: S.of(context).general_info_changes_will_be_saved,
+                  ),
+                );
               },
             ),
             BlocListener<ClearRecipeBloc, ClearRecipeState>(
               listener: (context, state) {
                 if (state is ClearedRecipe) {
                   setState(() {
-                    modifiedRecipe = state.recipe
-                        .copyWith(categories: modifiedRecipe!.categories);
+                    modifiedRecipe = state.recipe.copyWith(
+                      categories: modifiedRecipe!.categories,
+                    );
                     _emptyTextFields();
                   });
                 }
               },
               child: IconButton(
-                  icon: Icon(Icons.format_clear),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (bcontext) => BlocProvider.value(
-                        value: BlocProvider.of<ClearRecipeBloc>(context),
-                        child: AreYouSureDialog(
-                          S.of(context).clean_recipe_info,
-                          S.of(context).clean_recipe_info_desc,
-                          () {
-                            BlocProvider.of<ClearRecipeBloc>(context).add(
-                              Clear(
-                                widget.editingRecipeName == null ? false : true,
-                              ),
-                            );
-                            Navigator.pop(context);
-                          },
-                        ),
+                icon: Icon(Icons.format_clear),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (bcontext) => BlocProvider.value(
+                      value: BlocProvider.of<ClearRecipeBloc>(context),
+                      child: AreYouSureDialog(
+                        S.of(context).clean_recipe_info,
+                        S.of(context).clean_recipe_info_desc,
+                        () {
+                          BlocProvider.of<ClearRecipeBloc>(context).add(
+                            Clear(
+                              widget.editingRecipeName == null ? false : true,
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
                       ),
-                    );
-                  }),
+                    ),
+                  );
+                },
+              ),
             ),
             BlocListener<GeneralInfoBloc, GeneralInfoState>(
               listener: (context, state) {
                 if (state is GEditingFinishedGoBack) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(S.of(context).saving_your_input)));
+                    SnackBar(content: Text(S.of(context).saving_your_input)),
+                  );
                 } else if (state is GSaved) {
                   BlocProvider.of<GeneralInfoBloc>(context).add(SetCanSave());
 
@@ -196,10 +197,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                   if (state is GSavingTmpData) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Icon(
-                        Icons.arrow_forward,
-                        color: Colors.grey,
-                      ),
+                      child: Icon(Icons.arrow_forward, color: Colors.grey),
                     );
                   } else if (state is GCanSave) {
                     return IconButton(
@@ -216,9 +214,10 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Container(
-                            width: 25,
-                            height: 25,
-                            child: CircularProgressIndicator()),
+                          width: 25,
+                          height: 25,
+                          child: CircularProgressIndicator(),
+                        ),
                       ),
                     );
                   } else {
@@ -226,87 +225,103 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                   }
                 },
               ),
-            )
+            ),
           ],
         ),
         body: SingleChildScrollView(
           child: Center(
             child: Container(
               width: MediaQuery.of(context).size.width > 500 ? 500 : null,
-              child: Column(children: <Widget>[
-                // top section with the add image button
-                SizedBox(height: 30),
-                IS.ImageSelector(
-                  onNewImage: (File imageFile) =>
+              child: Column(
+                children: <Widget>[
+                  // top section with the add image button
+                  SizedBox(height: 30),
+                  IS.ImageSelector(
+                    onNewImage: (File imageFile) =>
+                        BlocProvider.of<GeneralInfoBloc>(context).add(
+                          UpdateRecipeImage(
+                            imageFile,
+                            widget.editingRecipeName == null ? false : true,
+                          ),
+                        ),
+                    prefilledImage: modifiedRecipe!.imagePath,
+                    circleSize: 120,
+                    color: Color(0xFF790604),
+                    onCancel: () {
+                      BlocProvider.of<ClearRecipeBloc>(context).add(
+                        RemoveRecipeImage(
+                          widget.editingRecipeName == null ? false : true,
+                        ),
+                      );
                       BlocProvider.of<GeneralInfoBloc>(context).add(
-                    UpdateRecipeImage(
-                      imageFile,
-                      widget.editingRecipeName == null ? false : true,
+                        GRemoveRecipeImage(
+                          widget.editingRecipeName == null ? false : true,
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(height: 30),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: TextFormField(
+                            validator: _validateRecipeName,
+                            controller: nameController,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                              filled: true,
+                              labelText: S.of(context).name + "*",
+                              icon: Icon(MdiIcons.notebook),
+                            ),
+                          ),
+                        ),
+                        // time textFields
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(52, 12, 12, 12),
+                          child: Wrap(
+                            alignment: WrapAlignment.center,
+                            children: <Widget>[
+                              _getTimeSelector(
+                                preperationTime,
+                                S.of(context).prep_time,
+                              ),
+                              _getTimeSelector(
+                                cookingTime,
+                                S.of(context).cook_time,
+                              ),
+                              _getTimeSelector(
+                                totalTime,
+                                S.of(context).total_time,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 52,
+                            top: 0,
+                            right: 12,
+                            bottom: 12,
+                          ),
+                          child: TextFormField(
+                            controller: sourceController,
+                            decoration: InputDecoration(
+                              filled: true,
+                              labelText: S.of(context).source,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  prefilledImage: modifiedRecipe!.imagePath,
-                  circleSize: 120,
-                  color: Color(0xFF790604),
-                  onCancel: () {
-                    BlocProvider.of<ClearRecipeBloc>(context).add(
-                        RemoveRecipeImage(
-                            widget.editingRecipeName == null ? false : true));
-                    BlocProvider.of<GeneralInfoBloc>(context).add(
-                        GRemoveRecipeImage(
-                            widget.editingRecipeName == null ? false : true));
-                  },
-                ),
-                SizedBox(height: 30),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: TextFormField(
-                          validator: _validateRecipeName,
-                          controller: nameController,
-                          textCapitalization: TextCapitalization.sentences,
-                          decoration: InputDecoration(
-                            filled: true,
-                            labelText: S.of(context).name + "*",
-                            icon: Icon(MdiIcons.notebook),
-                          ),
-                        ),
-                      ),
-                      // time textFields
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(52, 12, 12, 12),
-                        child: Wrap(
-                          alignment: WrapAlignment.center,
-                          children: <Widget>[
-                            _getTimeSelector(
-                                preperationTime, S.of(context).prep_time),
-                            _getTimeSelector(
-                                cookingTime, S.of(context).cook_time),
-                            _getTimeSelector(
-                                totalTime, S.of(context).total_time)
-                          ],
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 52, top: 0, right: 12, bottom: 12),
-                        child: TextFormField(
-                          controller: sourceController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            labelText: S.of(context).source,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                CategorySection(),
-                RecipeTagSection(),
-              ]),
+                  CategorySection(),
+                  RecipeTagSection(),
+                ],
+              ),
             ),
           ),
         ),
@@ -326,16 +341,19 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(addText + ":",
-                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(
+                    addText + ":",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                   Container(
                     width: 100,
                     child: Text(
-                        (time.myDouble! ~/ 60 > 0
-                                ? "${time.myDouble! ~/ 60} h"
-                                : "") +
-                            " ${cutDouble(time.myDouble! % 60)} min",
-                        style: TextStyle(fontSize: 18)),
+                      (time.myDouble! ~/ 60 > 0
+                              ? "${time.myDouble! ~/ 60} h"
+                              : "") +
+                          " ${cutDouble(time.myDouble! % 60)} min",
+                      style: TextStyle(fontSize: 18),
+                    ),
                   ),
                 ],
               ),
@@ -399,71 +417,70 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   void _finishedEditingGeneralInfo() {
     RecipeValidator(context.read<LocalRepository>())
         .validateGeneralInfo(
-      _formKey,
-      widget.editingRecipeName != null ? true : false,
-      nameController.text,
-    )
+          _formKey,
+          widget.editingRecipeName != null ? true : false,
+          nameController.text,
+        )
         .then((v) {
-      switch (v) {
-        case Validator.REQUIRED_FIELDS:
-          _showFlushInfo(
-            S.of(context).check_filled_in_information,
-            S.of(context).check_filled_in_information_description,
-          );
+          switch (v) {
+            case Validator.REQUIRED_FIELDS:
+              _showFlushInfo(
+                S.of(context).check_filled_in_information,
+                S.of(context).check_filled_in_information_description,
+              );
 
-          break;
-        case Validator.NAME_TAKEN:
-          _showFlushInfo(S.of(context).recipename_taken,
-              S.of(context).recipename_taken_description);
-          break;
+              break;
+            case Validator.NAME_TAKEN:
+              _showFlushInfo(
+                S.of(context).recipename_taken,
+                S.of(context).recipename_taken_description,
+              );
+              break;
 
-        default:
-          _saveGeneralInfoData(context, false);
-          break;
-      }
-    });
+            default:
+              _saveGeneralInfoData(context, false);
+              break;
+          }
+        });
   }
 
   void _showFlushInfo(String title, String body) {
     if (_flush != null && _flush!.isShowing()) {
     } else {
-      _flush = Flushbar<bool>(
-        animationDuration: Duration(milliseconds: 300),
-        leftBarIndicatorColor: Colors.blue[300],
-        title: title,
-        message: body,
-        icon: Icon(
-          Icons.info_outline,
-          color: Colors.blue,
-        ),
-        mainButton: TextButton(
-          onPressed: () {
-            _flush!.dismiss(true); // result = true
-          },
-          child: Text(
-            "OK",
-            style: TextStyle(color: Colors.amber),
-          ),
-        ),
-      ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-        ..show(context).then((result) {});
+      _flush =
+          Flushbar<bool>(
+              animationDuration: Duration(milliseconds: 300),
+              leftBarIndicatorColor: Colors.blue[300],
+              title: title,
+              message: body,
+              icon: Icon(Icons.info_outline, color: Colors.blue),
+              mainButton: TextButton(
+                onPressed: () {
+                  _flush!.dismiss(true); // result = true
+                },
+                child: Text("OK", style: TextStyle(color: Colors.amber)),
+              ),
+            ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+            ..show(context).then((result) {});
     }
   }
 
   /// notifies the Bloc to save all filled in data on this screen, with
   /// the info to go back
   void _saveGeneralInfoData(BuildContext gInfoScreenContext, bool goBack) {
-    BlocProvider.of<GeneralInfoBloc>(context).add(FinishedEditing(
-      nameController.text,
-      widget.editingRecipeName != null ? true : false,
-      goBack,
-      preperationTime.myDouble == null ? 0 : preperationTime.myDouble,
-      cookingTime.myDouble == null ? 0 : cookingTime.myDouble,
-      totalTime.myDouble == null ? 0 : totalTime.myDouble,
-      sourceController.text,
-      BlocProvider.of<CategoryManagerBloc>(context).selectedCategories,
-      BlocProvider.of<RecipeTagManagerBloc>(context).selectedTags,
-    ));
+    BlocProvider.of<GeneralInfoBloc>(context).add(
+      FinishedEditing(
+        nameController.text,
+        widget.editingRecipeName != null ? true : false,
+        goBack,
+        preperationTime.myDouble == null ? 0 : preperationTime.myDouble,
+        cookingTime.myDouble == null ? 0 : cookingTime.myDouble,
+        totalTime.myDouble == null ? 0 : totalTime.myDouble,
+        sourceController.text,
+        BlocProvider.of<CategoryManagerBloc>(context).selectedCategories,
+        BlocProvider.of<RecipeTagManagerBloc>(context).selectedTags,
+      ),
+    );
   }
 
   /// checks the recipeName for invalid characters like . or / or length

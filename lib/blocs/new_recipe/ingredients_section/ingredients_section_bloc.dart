@@ -64,14 +64,17 @@ class IngredientsSectionBloc
     });
 
     on<MoveIngredient>((event, emit) async {
-      Ingredient moveIngred =
-          ingredients[event.sectionIndex].removeAt(event.oldIndex);
+      Ingredient moveIngred = ingredients[event.sectionIndex].removeAt(
+        event.oldIndex,
+      );
       ingredients[event.sectionIndex].insert(event.newIndex, moveIngred);
 
-      emit(LoadedIngredientsSection(
-        sectionTitles,
-        List<List<Ingredient>>.from(ingredients),
-      ));
+      emit(
+        LoadedIngredientsSection(
+          sectionTitles,
+          List<List<Ingredient>>.from(ingredients),
+        ),
+      );
     });
 
     on<EditIngredient>((event, emit) async {
@@ -82,10 +85,12 @@ class IngredientsSectionBloc
         ingredients[event.sectionIndex][event.index] = event.newIngredient;
       }
 
-      emit(LoadedIngredientsSection(
-        sectionTitles,
-        List<List<Ingredient>>.from(ingredients),
-      ));
+      emit(
+        LoadedIngredientsSection(
+          sectionTitles,
+          List<List<Ingredient>>.from(ingredients),
+        ),
+      );
     });
 
     on<AddSectionTitle>((event, emit) async {
@@ -93,15 +98,20 @@ class IngredientsSectionBloc
         ingredients.add([]);
       }
 
-      emit(LoadedIngredientsSection(
-          List<String>.from(sectionTitles..add(event.title)), ingredients));
+      emit(
+        LoadedIngredientsSection(
+          List<String>.from(sectionTitles..add(event.title)),
+          ingredients,
+        ),
+      );
     });
 
     on<EditSectionTitle>((event, emit) async {
       sectionTitles[event.sectionIndex] = event.newTitle;
 
-      emit(LoadedIngredientsSection(
-          List<String>.from(sectionTitles), ingredients));
+      emit(
+        LoadedIngredientsSection(List<String>.from(sectionTitles), ingredients),
+      );
     });
 
     on<RemoveSection>((event, emit) async {
@@ -122,10 +132,12 @@ class IngredientsSectionBloc
         stateIngredients = ingredients;
       }
 
-      emit(LoadedIngredientsSection(
-        List<String>.from(sectionTitles..removeAt(event.index)),
-        stateIngredients,
-      ));
+      emit(
+        LoadedIngredientsSection(
+          List<String>.from(sectionTitles..removeAt(event.index)),
+          stateIngredients,
+        ),
+      );
     });
   }
 }

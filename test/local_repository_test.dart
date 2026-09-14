@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_recipe_book/local_storage/database.dart';
@@ -8,18 +10,23 @@ import 'package:my_recipe_book/models/nutrition.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/recipe_sort.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
+import 'package:sqlite3/sqlite3.dart' as sqlite3;
 
 void main() {
   late AppDatabase database;
   late DriftRepository repository;
+  late bool databaseClosed;
 
   setUp(() async {
     database = AppDatabase(NativeDatabase.memory());
+    databaseClosed = false;
     repository = DriftRepository(database: database);
     await repository.initialize();
   });
 
-  tearDown(() => database.close());
+  tearDown(() async {
+    if (!databaseClosed) await database.close();
+  });
 
   test('legacy snapshot round-trips all user-visible state', () async {
     final recipe = Recipe(
@@ -330,6 +337,163 @@ void main() {
     expect(repository.checkForRecipeIngredient('Soup', carrot), isFalse);
     await repository.deleteTmpEditingRecipe();
     expect(repository.getTmpEditingRecipe(), isNull);
+  });
+
+  test(
+    'shopping sources retain servings and scale only numeric contributions',
+    () async {
+      await repository.saveRecipe(Recipe(name: 'Soup', servings: 4));
+      await repository.saveRecipe(Recipe(name: 'Bread', servings: 2));
+      await repository.addMultipleIngredientsToCart('Soup', const [
+        Ingredient(name: 'Carrot', amount: 2, unit: 'pc'),
+        Ingredient(name: 'Salt'),
+      ], servings: 2);
+      await repository.addMultipleIngredientsToCart('Bread', const [
+        Ingredient(name: 'Carrot', amount: 1, unit: 'pc'),
+      ], servings: 2);
+      await repository.checkIngredient(
+        'Soup',
+        const CheckableIngredient('Carrot', 2, 'pc', true),
+      );
+
+      await repository.updateShoppingCartServings('Soup', 3.5);
+      await repository.reopenBoxes();
+
+      final cart = await repository.getShoppingCartData();
+      final soup = cart.recipeSources.singleWhere(
+        (source) => source.key == 'Soup',
+      );
+      final bread = cart.recipeSources.singleWhere(
+        (source) => source.key == 'Bread',
+      );
+      expect(soup.currentServings, 3.5);
+      expect(
+        soup.items.singleWhere((item) => item.name == 'Carrot'),
+        const CheckableIngredient('Carrot', 3.5, 'pc', true),
+      );
+      expect(
+        soup.items.singleWhere((item) => item.name == 'Salt').amount,
+        isNull,
+      );
+      expect(
+        bread.items.singleWhere((item) => item.name == 'Carrot').amount,
+        1,
+      );
+      expect(
+        cart.consolidatedItems
+            .singleWhere((item) => item.name == 'Carrot')
+            .amount,
+        4.5,
+      );
+    },
+  );
+
+  test(
+    'first serving adjustment assumes and then persists recipe default',
+    () async {
+      await repository.saveRecipe(Recipe(name: 'Pasta', servings: 4));
+      await repository.addMultipleIngredientsToCart('Pasta', const [
+        Ingredient(name: 'Pasta', amount: 400, unit: 'g'),
+      ]);
+
+      var source =
+          (await repository.getShoppingCartData()).recipeSources.single;
+      expect(source.currentServings, isNull);
+      expect(source.effectiveServings, 4);
+
+      await repository.updateShoppingCartServings('Pasta', 5);
+      await repository.reopenBoxes();
+      source = (await repository.getShoppingCartData()).recipeSources.single;
+      expect(source.currentServings, 5);
+      expect(source.items.single.amount, 500);
+    },
+  );
+
+  test('bulk removal retains unchecked duplicate contributions and restores exactly', () async {
+    await repository.addMultipleIngredientsToCart('Soup', const [
+      Ingredient(name: 'Carrot', amount: 2, unit: 'pc'),
+      Ingredient(name: 'Salt'),
+    ]);
+    await repository.addMultipleIngredientsToCart('Stew', const [
+      Ingredient(name: 'Carrot', amount: 3, unit: 'pc'),
+      Ingredient(name: 'Salt'),
+    ]);
+    await repository.addSingleIngredientToCart(
+      shoppingSummaryName,
+      const Ingredient(name: 'Napkins', amount: 1, unit: 'pack'),
+    );
+    await repository.checkIngredient(
+      'Soup',
+      const CheckableIngredient('Carrot', 2, 'pc', true),
+    );
+    await repository.checkIngredient(
+      'Soup',
+      const CheckableIngredient('Salt', null, null, true),
+    );
+    await repository.checkIngredient(
+      shoppingSummaryName,
+      const CheckableIngredient('Napkins', 1, 'pack', true),
+    );
+    final before = (await repository.getShoppingCartData()).snapshot();
+
+    final undo = await repository.removeCheckedShoppingCartItems();
+    final after = await repository.getShoppingCartData();
+
+    expect(undo, before);
+    expect(
+      after.consolidatedItems
+          .singleWhere((item) => item.name == 'Carrot')
+          .amount,
+      3,
+    );
+    expect(
+      after.consolidatedItems.singleWhere((item) => item.name == 'Salt'),
+      const CheckableIngredient('Salt', null, null, false),
+    );
+    expect(
+      after.consolidatedItems.where((item) => item.name == 'Napkins'),
+      isEmpty,
+    );
+    expect(
+      after.recipeSources.singleWhere((source) => source.key == 'Stew').items,
+      const [
+        CheckableIngredient('Carrot', 3, 'pc', false),
+        CheckableIngredient('Salt', null, null, false),
+      ],
+    );
+
+    await repository.restoreShoppingCart(undo!);
+    expect(await repository.getShoppingCartData(), before);
+  });
+
+  test('schema v1 cart rows migrate without data loss', () async {
+    final directory = await Directory.systemTemp.createTemp('cart-schema-v1-');
+    addTearDown(() => directory.delete(recursive: true));
+    final file = File('${directory.path}/legacy.sqlite');
+    final legacy = sqlite3.sqlite3.open(file.path);
+    legacy.execute('''
+      CREATE TABLE shopping_sources (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        source_key TEXT NOT NULL UNIQUE,
+        display_name TEXT NOT NULL,
+        is_summary INTEGER NOT NULL DEFAULT 0 CHECK (is_summary IN (0, 1)),
+        position INTEGER NOT NULL
+      );
+      INSERT INTO shopping_sources
+        (source_key, display_name, is_summary, position)
+        VALUES ('summary', 'summary', 1, 0), ('Soup', 'Soup', 0, 1);
+      PRAGMA user_version = 1;
+    ''');
+    legacy.close();
+
+    await database.close();
+    databaseClosed = true;
+    final migrated = AppDatabase(NativeDatabase(file));
+    addTearDown(migrated.close);
+    final sources = await migrated.select(migrated.shoppingSources).get();
+
+    expect(sources.map((source) => source.sourceKey), ['summary', 'Soup']);
+    expect(sources.every((source) => source.currentServings == null), isTrue);
   });
 
   test(

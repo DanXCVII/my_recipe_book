@@ -42,33 +42,42 @@ class RecipeInfoVertical extends StatelessWidget {
           },
           child: Container(
             height: 250,
-            child: Stack(children: <Widget>[
-              Hero(
-                tag: GlobalSettings().animationsEnabled()
-                    ? heroImageTag!
-                    : "heroImageTag2",
-                child: Material(
-                  color: Colors.transparent,
-                  child: ClipPath(
-                    clipper: MyClipper(),
-                    child: Container(
+            child: Stack(
+              children: <Widget>[
+                Hero(
+                  tag: GlobalSettings().animationsEnabled()
+                      ? heroImageTag!
+                      : "heroImageTag2",
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ClipPath(
+                      clipper: MyClipper(),
+                      child: Container(
                         height: 250,
                         child: recipe.imagePath == Constants.noRecipeImage
-                            ? Image.asset(Constants.noRecipeImage,
-                                width: double.infinity, fit: BoxFit.cover)
-                            : Image.file(File(recipe.imagePath),
-                                width: double.infinity, fit: BoxFit.cover)),
+                            ? Image.asset(
+                                Constants.noRecipeImage,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.file(
+                                File(recipe.imagePath),
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0, right: 8.0),
-                  child: AnimatedVegetable(recipe.vegetable),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0, right: 8.0),
+                    child: AnimatedVegetable(recipe.vegetable),
+                  ),
                 ),
-              )
-            ]),
+              ],
+            ),
           ),
         ),
         Center(
@@ -90,8 +99,11 @@ class RecipeInfoVertical extends StatelessWidget {
         Center(
           child: Column(
             children: [
-              _showComplexTopArea(recipe.preperationTime, recipe.cookingTime,
-                      recipe.totalTime)
+              _showComplexTopArea(
+                    recipe.preperationTime,
+                    recipe.cookingTime,
+                    recipe.totalTime,
+                  )
                   ? Padding(
                       padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                       child: Wrap(
@@ -137,10 +149,7 @@ class RecipeInfoVertical extends StatelessWidget {
                     ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
-                child: RecipeTagWrap(
-                  recipe.tags,
-                  recipeScreenFontFamily,
-                ),
+                child: RecipeTagWrap(recipe.tags, recipeScreenFontFamily),
               ),
             ],
           ),
@@ -182,7 +191,10 @@ class RecipeInfoVertical extends StatelessWidget {
   /// method which determines if the circular chart and complexity termometer should be
   /// shown or only a minimal version
   bool _showComplexTopArea(
-      double preperationTime, double cookingTime, double totalTime) {
+    double preperationTime,
+    double cookingTime,
+    double totalTime,
+  ) {
     int validator = 0;
 
     if (preperationTime != 0) validator++;

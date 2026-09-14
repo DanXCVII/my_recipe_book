@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -18,8 +19,10 @@ class S {
   static S? _current;
 
   static S get current {
-    assert(_current != null,
-        'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.');
+    assert(
+      _current != null,
+      'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.',
+    );
     return _current!;
   }
 
@@ -41,8 +44,10 @@ class S {
 
   static S of(BuildContext context) {
     final instance = S.maybeOf(context);
-    assert(instance != null,
-        'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?');
+    assert(
+      instance != null,
+      'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?',
+    );
     return instance!;
   }
 
@@ -52,22 +57,12 @@ class S {
 
   /// `EN`
   String get two_char_locale {
-    return Intl.message(
-      'EN',
-      name: 'two_char_locale',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('EN', name: 'two_char_locale', desc: '', args: []);
   }
 
   /// `en_US`
   String get locale_full {
-    return Intl.message(
-      'en_US',
-      name: 'locale_full',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('en_US', name: 'locale_full', desc: '', args: []);
   }
 
   /// `My RecipeBible`
@@ -152,22 +147,12 @@ class S {
 
   /// `recipes`
   String get recipes {
-    return Intl.message(
-      'recipes',
-      name: 'recipes',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('recipes', name: 'recipes', desc: '', args: []);
   }
 
   /// `RATE`
   String get rate {
-    return Intl.message(
-      'RATE',
-      name: 'rate',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('RATE', name: 'rate', desc: '', args: []);
   }
 
   /// `change ad preferences`
@@ -182,22 +167,12 @@ class S {
 
   /// `MAYBE LATER`
   String get maybe_later {
-    return Intl.message(
-      'MAYBE LATER',
-      name: 'maybe_later',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('MAYBE LATER', name: 'maybe_later', desc: '', args: []);
   }
 
   /// `NO THANKS`
   String get no_thanks {
-    return Intl.message(
-      'NO THANKS',
-      name: 'no_thanks',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('NO THANKS', name: 'no_thanks', desc: '', args: []);
   }
 
   /// `number notation`
@@ -222,12 +197,7 @@ class S {
 
   /// `Nutritions`
   String get nutritions {
-    return Intl.message(
-      'Nutritions',
-      name: 'nutritions',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Nutritions', name: 'nutritions', desc: '', args: []);
   }
 
   /// `delete recipe`
@@ -322,12 +292,7 @@ class S {
 
   /// `share as PDF`
   String get export_pdf {
-    return Intl.message(
-      'share as PDF',
-      name: 'export_pdf',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('share as PDF', name: 'export_pdf', desc: '', args: []);
   }
 
   /// `share in textform`
@@ -342,12 +307,7 @@ class S {
 
   /// `edit`
   String get edit {
-    return Intl.message(
-      'edit',
-      name: 'edit',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('edit', name: 'edit', desc: '', args: []);
   }
 
   /// `shoppingcart`
@@ -382,32 +342,17 @@ class S {
 
   /// `add`
   String get add {
-    return Intl.message(
-      'add',
-      name: 'add',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('add', name: 'add', desc: '', args: []);
   }
 
   /// `recipe name`
   String get recipe_name {
-    return Intl.message(
-      'recipe name',
-      name: 'recipe_name',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('recipe name', name: 'recipe_name', desc: '', args: []);
   }
 
   /// `add recipe`
   String get add_recipe {
-    return Intl.message(
-      'add recipe',
-      name: 'add_recipe',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('add recipe', name: 'add_recipe', desc: '', args: []);
   }
 
   /// `add favorites`
@@ -442,12 +387,7 @@ class S {
 
   /// `your`
   String get your {
-    return Intl.message(
-      'your',
-      name: 'your',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('your', name: 'your', desc: '', args: []);
   }
 
   /// `add {newLine}step`
@@ -492,32 +432,17 @@ class S {
 
   /// `Directions`
   String get directions {
-    return Intl.message(
-      'Directions',
-      name: 'directions',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Directions', name: 'directions', desc: '', args: []);
   }
 
   /// `notes`
   String get notes {
-    return Intl.message(
-      'notes',
-      name: 'notes',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('notes', name: 'notes', desc: '', args: []);
   }
 
   /// `categories`
   String get categories {
-    return Intl.message(
-      'categories',
-      name: 'categories',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('categories', name: 'categories', desc: '', args: []);
   }
 
   /// `ingredients for`
@@ -532,52 +457,27 @@ class S {
 
   /// `ingredients`
   String get ingredients {
-    return Intl.message(
-      'ingredients',
-      name: 'ingredients',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('ingredients', name: 'ingredients', desc: '', args: []);
   }
 
   /// `ingredient`
   String get ingredient {
-    return Intl.message(
-      'ingredient',
-      name: 'ingredient',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('ingredient', name: 'ingredient', desc: '', args: []);
   }
 
   /// `servings`
   String get servings {
-    return Intl.message(
-      'servings',
-      name: 'servings',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('servings', name: 'servings', desc: '', args: []);
   }
 
   /// `in minutes`
   String get in_minutes {
-    return Intl.message(
-      'in minutes',
-      name: 'in_minutes',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('in minutes', name: 'in_minutes', desc: '', args: []);
   }
 
   /// `name`
   String get name {
-    return Intl.message(
-      'name',
-      name: 'name',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('name', name: 'name', desc: '', args: []);
   }
 
   /// `fill in/ remove unit`
@@ -592,22 +492,12 @@ class S {
 
   /// `prep. time`
   String get prep_time {
-    return Intl.message(
-      'prep. time',
-      name: 'prep_time',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('prep. time', name: 'prep_time', desc: '', args: []);
   }
 
   /// `cook. time`
   String get cook_time {
-    return Intl.message(
-      'cook. time',
-      name: 'cook_time',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('cook. time', name: 'cook_time', desc: '', args: []);
   }
 
   /// `import file from PC`
@@ -622,12 +512,7 @@ class S {
 
   /// `1. Visit `
   String get visit {
-    return Intl.message(
-      '1. Visit ',
-      name: 'visit',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('1. Visit ', name: 'visit', desc: '', args: []);
   }
 
   /// `to create your recipes (at the current state pictures can only be imported in the App)\n\n 2. After generating the file with all the recipes, load it onto your mobile phone. You can also upload it to the cloud if you have access to it on your mobile phone.\n\n3. Then you have two options:\n\n3.1. Tap the generated ".json" file in your file manager and open it with My RecipeBible or\n\n3.2. Open My RecipeBible and go into the settings and tap "import recipes" and select the file to import`
@@ -642,12 +527,7 @@ class S {
 
   /// `total time`
   String get total_time {
-    return Intl.message(
-      'total time',
-      name: 'total_time',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('total time', name: 'total_time', desc: '', args: []);
   }
 
   /// `remaining time`
@@ -672,72 +552,37 @@ class S {
 
   /// `amnt`
   String get amnt {
-    return Intl.message(
-      'amnt',
-      name: 'amnt',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('amnt', name: 'amnt', desc: '', args: []);
   }
 
   /// `unit`
   String get unit {
-    return Intl.message(
-      'unit',
-      name: 'unit',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('unit', name: 'unit', desc: '', args: []);
   }
 
   /// `with meat`
   String get with_meat {
-    return Intl.message(
-      'with meat',
-      name: 'with_meat',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('with meat', name: 'with_meat', desc: '', args: []);
   }
 
   /// `vegetarian`
   String get vegetarian {
-    return Intl.message(
-      'vegetarian',
-      name: 'vegetarian',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('vegetarian', name: 'vegetarian', desc: '', args: []);
   }
 
   /// `vegan`
   String get vegan {
-    return Intl.message(
-      'vegan',
-      name: 'vegan',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('vegan', name: 'vegan', desc: '', args: []);
   }
 
   /// `steps`
   String get steps {
-    return Intl.message(
-      'steps',
-      name: 'steps',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('steps', name: 'steps', desc: '', args: []);
   }
 
   /// `description`
   String get description {
-    return Intl.message(
-      'description',
-      name: 'description',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('description', name: 'description', desc: '', args: []);
   }
 
   /// `complexity/effort`
@@ -752,22 +597,12 @@ class S {
 
   /// `complexity`
   String get complexity {
-    return Intl.message(
-      'complexity',
-      name: 'complexity',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('complexity', name: 'complexity', desc: '', args: []);
   }
 
   /// `effort`
   String get effort {
-    return Intl.message(
-      'effort',
-      name: 'effort',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('effort', name: 'effort', desc: '', args: []);
   }
 
   /// `select categories:`
@@ -792,12 +627,7 @@ class S {
 
   /// `shopping`
   String get basket {
-    return Intl.message(
-      'shopping',
-      name: 'basket',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('shopping', name: 'basket', desc: '', args: []);
   }
 
   /// `Your shoppingcart is empty`
@@ -812,12 +642,7 @@ class S {
 
   /// `explore`
   String get explore {
-    return Intl.message(
-      'explore',
-      name: 'explore',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('explore', name: 'explore', desc: '', args: []);
   }
 
   /// `roll the dice`
@@ -852,12 +677,7 @@ class S {
 
   /// `view intro`
   String get view_intro {
-    return Intl.message(
-      'view intro',
-      name: 'view_intro',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('view intro', name: 'view_intro', desc: '', args: []);
   }
 
   /// `manage nutritions`
@@ -882,12 +702,7 @@ class S {
 
   /// `no category`
   String get no_category {
-    return Intl.message(
-      'no category',
-      name: 'no_category',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('no category', name: 'no_category', desc: '', args: []);
   }
 
   /// `all categories`
@@ -922,72 +737,37 @@ class S {
 
   /// `info`
   String get about_me {
-    return Intl.message(
-      'info',
-      name: 'about_me',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('info', name: 'about_me', desc: '', args: []);
   }
 
   /// `rate this app`
   String get rate_app {
-    return Intl.message(
-      'rate this app',
-      name: 'rate_app',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('rate this app', name: 'rate_app', desc: '', args: []);
   }
 
   /// `settings`
   String get settings {
-    return Intl.message(
-      'settings',
-      name: 'settings',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('settings', name: 'settings', desc: '', args: []);
   }
 
   /// `cancel`
   String get cancel {
-    return Intl.message(
-      'cancel',
-      name: 'cancel',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('cancel', name: 'cancel', desc: '', args: []);
   }
 
   /// `save`
   String get save {
-    return Intl.message(
-      'save',
-      name: 'save',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('save', name: 'save', desc: '', args: []);
   }
 
   /// `alright`
   String get alright {
-    return Intl.message(
-      'alright',
-      name: 'alright',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('alright', name: 'alright', desc: '', args: []);
   }
 
   /// `favorites`
   String get favorites {
-    return Intl.message(
-      'favorites',
-      name: 'favorites',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('favorites', name: 'favorites', desc: '', args: []);
   }
 
   /// `You have no recipes under this category`
@@ -1132,12 +912,7 @@ class S {
 
   /// `out of`
   String get out_of {
-    return Intl.message(
-      'out of',
-      name: 'out_of',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('out of', name: 'out_of', desc: '', args: []);
   }
 
   /// `no valid number`
@@ -1182,12 +957,7 @@ class S {
 
   /// `imported`
   String get imported {
-    return Intl.message(
-      'imported',
-      name: 'imported',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('imported', name: 'imported', desc: '', args: []);
   }
 
   /// `no valid importfile`
@@ -1202,12 +972,7 @@ class S {
 
   /// `hide`
   String get hide {
-    return Intl.message(
-      'hide',
-      name: 'hide',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('hide', name: 'hide', desc: '', args: []);
   }
 
   /// `delete nutrition?`
@@ -1262,32 +1027,17 @@ class S {
 
   /// `no`
   String get no {
-    return Intl.message(
-      'no',
-      name: 'no',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('no', name: 'no', desc: '', args: []);
   }
 
   /// `yes`
   String get yes {
-    return Intl.message(
-      'yes',
-      name: 'yes',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('yes', name: 'yes', desc: '', args: []);
   }
 
   /// `verbergen`
   String get dismiss {
-    return Intl.message(
-      'verbergen',
-      name: 'dismiss',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('verbergen', name: 'dismiss', desc: '', args: []);
   }
 
   /// `if supported, theme will be applied, when restarting the app :)`
@@ -1332,28 +1082,18 @@ class S {
 
   /// `by name`
   String get by_name {
-    return Intl.message(
-      'by name',
-      name: 'by_name',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('by name', name: 'by_name', desc: '', args: []);
   }
 
   /// `by effort`
   String get by_effort {
-    return Intl.message(
-      'by effort',
-      name: 'by_effort',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('by effort', name: 'by_effort', desc: '', args: []);
   }
 
-  /// `by ingredientsamount`
+  /// `by ingredient count`
   String get by_ingredientsamount {
     return Intl.message(
-      'by ingredientsamount',
+      'by ingredient count',
       name: 'by_ingredientsamount',
       desc: '',
       args: [],
@@ -1382,12 +1122,7 @@ class S {
 
   /// `category`
   String get category {
-    return Intl.message(
-      'category',
-      name: 'category',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('category', name: 'category', desc: '', args: []);
   }
 
   /// `advanced search`
@@ -1472,12 +1207,7 @@ class S {
 
   /// `nutrition`
   String get nutrition {
-    return Intl.message(
-      'nutrition',
-      name: 'nutrition',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('nutrition', name: 'nutrition', desc: '', args: []);
   }
 
   /// `you made it to the end`
@@ -1492,22 +1222,12 @@ class S {
 
   /// `no recipes`
   String get no_recipes {
-    return Intl.message(
-      'no recipes',
-      name: 'no_recipes',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('no recipes', name: 'no_recipes', desc: '', args: []);
   }
 
   /// `finished`
   String get finished {
-    return Intl.message(
-      'finished',
-      name: 'finished',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('finished', name: 'finished', desc: '', args: []);
   }
 
   /// `importing recipe/s`
@@ -1532,62 +1252,32 @@ class S {
 
   /// `ready`
   String get ready {
-    return Intl.message(
-      'ready',
-      name: 'ready',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('ready', name: 'ready', desc: '', args: []);
   }
 
   /// `successful`
   String get successful {
-    return Intl.message(
-      'successful',
-      name: 'successful',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('successful', name: 'successful', desc: '', args: []);
   }
 
   /// `duplicate`
   String get duplicate {
-    return Intl.message(
-      'duplicate',
-      name: 'duplicate',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('duplicate', name: 'duplicate', desc: '', args: []);
   }
 
   /// `failed`
   String get failed {
-    return Intl.message(
-      'failed',
-      name: 'failed',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('failed', name: 'failed', desc: '', args: []);
   }
 
   /// `summary`
   String get summary {
-    return Intl.message(
-      'summary',
-      name: 'summary',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('summary', name: 'summary', desc: '', args: []);
   }
 
   /// `none`
   String get none {
-    return Intl.message(
-      'none',
-      name: 'none',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('none', name: 'none', desc: '', args: []);
   }
 
   /// `saving your input`
@@ -1632,12 +1322,7 @@ class S {
 
   /// `add steps`
   String get add_steps {
-    return Intl.message(
-      'add steps',
-      name: 'add_steps',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('add steps', name: 'add_steps', desc: '', args: []);
   }
 
   /// `Add steps description or remove image/s`
@@ -1672,12 +1357,7 @@ class S {
 
   /// `category`
   String get categoy {
-    return Intl.message(
-      'category',
-      name: 'categoy',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('category', name: 'categoy', desc: '', args: []);
   }
 
   /// `you have no ingredients`
@@ -1692,22 +1372,12 @@ class S {
 
   /// `recipe for`
   String get recipe_for {
-    return Intl.message(
-      'recipe for',
-      name: 'recipe_for',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('recipe for', name: 'recipe_for', desc: '', args: []);
   }
 
   /// `Information`
   String get info {
-    return Intl.message(
-      'Information',
-      name: 'info',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Information', name: 'info', desc: '', args: []);
   }
 
   /// `Here you can manage the ingredients, which you are suggested when adding a recipe or searching for them. When you edit or delete them, only the suggestions are updated and not the recipes with the ingredient.`
@@ -1812,12 +1482,7 @@ class S {
 
   /// `import`
   String get import {
-    return Intl.message(
-      'import',
-      name: 'import',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('import', name: 'import', desc: '', args: []);
   }
 
   /// `purchase pro version`
@@ -1852,12 +1517,7 @@ class S {
 
   /// `watch`
   String get watch {
-    return Intl.message(
-      'watch',
-      name: 'watch',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('watch', name: 'watch', desc: '', args: []);
   }
 
   /// `watch video → remove ads`
@@ -1882,12 +1542,7 @@ class S {
 
   /// `pro version`
   String get pro_version {
-    return Intl.message(
-      'pro version',
-      name: 'pro_version',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('pro version', name: 'pro_version', desc: '', args: []);
   }
 
   /// `purchase pro version in settings to get access to ingredient filter`
@@ -2032,12 +1687,7 @@ class S {
 
   /// `contact me`
   String get contact_me {
-    return Intl.message(
-      'contact me',
-      name: 'contact_me',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('contact me', name: 'contact_me', desc: '', args: []);
   }
 
   /// `includes ingredient filter, removal of ads and support of future development`
@@ -2102,12 +1752,7 @@ class S {
 
   /// `select all`
   String get select_all {
-    return Intl.message(
-      'select all',
-      name: 'select_all',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('select all', name: 'select_all', desc: '', args: []);
   }
 
   /// `manage recipe tags`
@@ -2152,12 +1797,7 @@ class S {
 
   /// `recipetag`
   String get recipe_tag {
-    return Intl.message(
-      'recipetag',
-      name: 'recipe_tag',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('recipetag', name: 'recipe_tag', desc: '', args: []);
   }
 
   /// `delete recipe tag?`
@@ -2282,22 +1922,12 @@ class S {
 
   /// `recipe-url`
   String get recipe_url {
-    return Intl.message(
-      'recipe-url',
-      name: 'recipe_url',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('recipe-url', name: 'recipe_url', desc: '', args: []);
   }
 
   /// `source/url`
   String get source {
-    return Intl.message(
-      'source/url',
-      name: 'source',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('source/url', name: 'source', desc: '', args: []);
   }
 
   /// `recipe has been edited or deleted:\ngo back to man view and view it`
@@ -2332,42 +1962,22 @@ class S {
 
   /// `done`
   String get done {
-    return Intl.message(
-      'done',
-      name: 'done',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('done', name: 'done', desc: '', args: []);
   }
 
   /// `next`
   String get next {
-    return Intl.message(
-      'next',
-      name: 'next',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('next', name: 'next', desc: '', args: []);
   }
 
   /// `back`
   String get back {
-    return Intl.message(
-      'back',
-      name: 'back',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('back', name: 'back', desc: '', args: []);
   }
 
   /// `skip`
   String get skip {
-    return Intl.message(
-      'skip',
-      name: 'skip',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('skip', name: 'skip', desc: '', args: []);
   }
 
   /// `maximum pin count of 3 exceeded`
@@ -2382,12 +1992,7 @@ class S {
 
   /// `information`
   String get information {
-    return Intl.message(
-      'information',
-      name: 'information',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('information', name: 'information', desc: '', args: []);
   }
 
   /// `It's recommended to sometimes save your recipes as zip, just i case that your smartphone gets lost or the app breaks for whatever reason.`
@@ -2402,12 +2007,7 @@ class S {
 
   /// `tags`
   String get tags {
-    return Intl.message(
-      'tags',
-      name: 'tags',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('tags', name: 'tags', desc: '', args: []);
   }
 
   /// `shoppingcart help`
@@ -2512,22 +2112,12 @@ class S {
 
   /// `for`
   String get for_word {
-    return Intl.message(
-      'for',
-      name: 'for_word',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('for', name: 'for_word', desc: '', args: []);
   }
 
   /// `persons`
   String get persons {
-    return Intl.message(
-      'persons',
-      name: 'persons',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('persons', name: 'persons', desc: '', args: []);
   }
 
   /// `print recipe`
@@ -2682,12 +2272,7 @@ class S {
 
   /// `amount`
   String get amount {
-    return Intl.message(
-      'amount',
-      name: 'amount',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('amount', name: 'amount', desc: '', args: []);
   }
 
   /// `Fix the issues with the red marked text fields`
@@ -2752,12 +2337,7 @@ class S {
 
   /// `add title`
   String get add_title {
-    return Intl.message(
-      'add title',
-      name: 'add_title',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('add title', name: 'add_title', desc: '', args: []);
   }
 
   /// `To add another section, you need to give the first one a title like e.g. (ingredients for) sauce.`
@@ -2782,17 +2362,16 @@ class S {
 
   /// `undo`
   String get undo {
-    return Intl.message(
-      'undo',
-      name: 'undo',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('undo', name: 'undo', desc: '', args: []);
   }
 
   /// `You added {recipeName} to your the recipe planner for the following date:\n {year}-{month}-{day}`
   String undo_added_to_planner_description(
-      Object recipeName, Object year, Object month, Object day) {
+    Object recipeName,
+    Object year,
+    Object month,
+    Object day,
+  ) {
     return Intl.message(
       'You added $recipeName to your the recipe planner for the following date:\n $year-$month-$day',
       name: 'undo_added_to_planner_description',
@@ -2833,12 +2412,7 @@ class S {
 
   /// `select date`
   String get add_date {
-    return Intl.message(
-      'select date',
-      name: 'add_date',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('select date', name: 'add_date', desc: '', args: []);
   }
 
   /// `add recipe`
@@ -2853,312 +2427,157 @@ class S {
 
   /// `Jan.`
   String get jan {
-    return Intl.message(
-      'Jan.',
-      name: 'jan',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Jan.', name: 'jan', desc: '', args: []);
   }
 
   /// `Feb.`
   String get feb {
-    return Intl.message(
-      'Feb.',
-      name: 'feb',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Feb.', name: 'feb', desc: '', args: []);
   }
 
   /// `Mar.`
   String get mar {
-    return Intl.message(
-      'Mar.',
-      name: 'mar',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Mar.', name: 'mar', desc: '', args: []);
   }
 
   /// `Apr.`
   String get apr {
-    return Intl.message(
-      'Apr.',
-      name: 'apr',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Apr.', name: 'apr', desc: '', args: []);
   }
 
   /// `May`
   String get may {
-    return Intl.message(
-      'May',
-      name: 'may',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('May', name: 'may', desc: '', args: []);
   }
 
   /// `Jun.`
   String get jun {
-    return Intl.message(
-      'Jun.',
-      name: 'jun',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Jun.', name: 'jun', desc: '', args: []);
   }
 
   /// `Jul.`
   String get jul {
-    return Intl.message(
-      'Jul.',
-      name: 'jul',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Jul.', name: 'jul', desc: '', args: []);
   }
 
   /// `Aug.`
   String get aug {
-    return Intl.message(
-      'Aug.',
-      name: 'aug',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Aug.', name: 'aug', desc: '', args: []);
   }
 
   /// `Sep.`
   String get sep {
-    return Intl.message(
-      'Sep.',
-      name: 'sep',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Sep.', name: 'sep', desc: '', args: []);
   }
 
   /// `Oct.`
   String get oct {
-    return Intl.message(
-      'Oct.',
-      name: 'oct',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Oct.', name: 'oct', desc: '', args: []);
   }
 
   /// `Nov.`
   String get nov {
-    return Intl.message(
-      'Nov.',
-      name: 'nov',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Nov.', name: 'nov', desc: '', args: []);
   }
 
   /// `Dec.`
   String get dec {
-    return Intl.message(
-      'Dec.',
-      name: 'dec',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Dec.', name: 'dec', desc: '', args: []);
   }
 
   /// `January`
   String get january {
-    return Intl.message(
-      'January',
-      name: 'january',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('January', name: 'january', desc: '', args: []);
   }
 
   /// `February`
   String get february {
-    return Intl.message(
-      'February',
-      name: 'february',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('February', name: 'february', desc: '', args: []);
   }
 
   /// `March`
   String get march {
-    return Intl.message(
-      'March',
-      name: 'march',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('March', name: 'march', desc: '', args: []);
   }
 
   /// `April`
   String get april {
-    return Intl.message(
-      'April',
-      name: 'april',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('April', name: 'april', desc: '', args: []);
   }
 
   /// `May`
   String get may_full {
-    return Intl.message(
-      'May',
-      name: 'may_full',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('May', name: 'may_full', desc: '', args: []);
   }
 
   /// `June`
   String get june {
-    return Intl.message(
-      'June',
-      name: 'june',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('June', name: 'june', desc: '', args: []);
   }
 
   /// `July`
   String get july {
-    return Intl.message(
-      'July',
-      name: 'july',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('July', name: 'july', desc: '', args: []);
   }
 
   /// `August`
   String get august {
-    return Intl.message(
-      'August',
-      name: 'august',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('August', name: 'august', desc: '', args: []);
   }
 
   /// `September`
   String get september {
-    return Intl.message(
-      'September',
-      name: 'september',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('September', name: 'september', desc: '', args: []);
   }
 
   /// `October`
   String get october {
-    return Intl.message(
-      'October',
-      name: 'october',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('October', name: 'october', desc: '', args: []);
   }
 
   /// `November`
   String get november {
-    return Intl.message(
-      'November',
-      name: 'november',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('November', name: 'november', desc: '', args: []);
   }
 
   /// `December`
   String get december {
-    return Intl.message(
-      'December',
-      name: 'december',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('December', name: 'december', desc: '', args: []);
   }
 
   /// `Monday`
   String get monday {
-    return Intl.message(
-      'Monday',
-      name: 'monday',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Monday', name: 'monday', desc: '', args: []);
   }
 
   /// `Tuesday`
   String get tuesday {
-    return Intl.message(
-      'Tuesday',
-      name: 'tuesday',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Tuesday', name: 'tuesday', desc: '', args: []);
   }
 
   /// `Wednesday`
   String get wednesday {
-    return Intl.message(
-      'Wednesday',
-      name: 'wednesday',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Wednesday', name: 'wednesday', desc: '', args: []);
   }
 
   /// `Thursday`
   String get thursday {
-    return Intl.message(
-      'Thursday',
-      name: 'thursday',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Thursday', name: 'thursday', desc: '', args: []);
   }
 
   /// `Friday`
   String get friday {
-    return Intl.message(
-      'Friday',
-      name: 'friday',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Friday', name: 'friday', desc: '', args: []);
   }
 
   /// `Saturday`
   String get saturday {
-    return Intl.message(
-      'Saturday',
-      name: 'saturday',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Saturday', name: 'saturday', desc: '', args: []);
   }
 
   /// `Sunday`
   String get sunday {
-    return Intl.message(
-      'Sunday',
-      name: 'sunday',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Sunday', name: 'sunday', desc: '', args: []);
   }
 
   /// `If you added multiple steps, you can move them by tapping and holding one step. This feature is only available, if no images for the steps are added. The same with removing steps from the middle.`
@@ -3268,6 +2687,458 @@ class S {
       name: 'failed_syncing',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Grid`
+  String get grid_view {
+    return Intl.message('Grid', name: 'grid_view', desc: '', args: []);
+  }
+
+  /// `List`
+  String get list_view {
+    return Intl.message('List', name: 'list_view', desc: '', args: []);
+  }
+
+  /// `Filter recipes...`
+  String get filter_recipes {
+    return Intl.message(
+      'Filter recipes...',
+      name: 'filter_recipes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sort: {sort}`
+  String sort_by(Object sort) {
+    return Intl.message('Sort: $sort', name: 'sort_by', desc: '', args: [sort]);
+  }
+
+  /// `All`
+  String get all_recipes_filter {
+    return Intl.message('All', name: 'all_recipes_filter', desc: '', args: []);
+  }
+
+  /// `Filters`
+  String get more_filters {
+    return Intl.message('Filters', name: 'more_filters', desc: '', args: []);
+  }
+
+  /// `Clear filters`
+  String get clear_filters {
+    return Intl.message(
+      'Clear filters',
+      name: 'clear_filters',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear search`
+  String get clear_search {
+    return Intl.message(
+      'Clear search',
+      name: 'clear_search',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avg effort`
+  String get average_effort {
+    return Intl.message(
+      'Avg effort',
+      name: 'average_effort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =0{No recipes} =1{1 recipe} other{{count} recipes}}`
+  String recipe_count(int count) {
+    return Intl.plural(
+      count,
+      zero: 'No recipes',
+      one: '1 recipe',
+      other: '$count recipes',
+      name: 'recipe_count',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =0{No recipes} =1{1 recipe} other{{count} recipes}} • Avg effort {effort}`
+  String recipe_summary_with_effort(int count, String effort) {
+    return Intl.message(
+      '${Intl.plural(count, zero: 'No recipes', one: '1 recipe', other: '$count recipes')} • Avg effort $effort',
+      name: 'recipe_summary_with_effort',
+      desc: '',
+      args: [count, effort],
+    );
+  }
+
+  /// `Add to favorites`
+  String get add_to_favorites {
+    return Intl.message(
+      'Add to favorites',
+      name: 'add_to_favorites',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove from favorites`
+  String get remove_from_favorites {
+    return Intl.message(
+      'Remove from favorites',
+      name: 'remove_from_favorites',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ascending`
+  String get ascending {
+    return Intl.message('Ascending', name: 'ascending', desc: '', args: []);
+  }
+
+  /// `Descending`
+  String get descending {
+    return Intl.message('Descending', name: 'descending', desc: '', args: []);
+  }
+
+  /// `No recipes here yet`
+  String get no_recipes_in_collection {
+    return Intl.message(
+      'No recipes here yet',
+      name: 'no_recipes_in_collection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No recipes match these filters`
+  String get no_filtered_recipes {
+    return Intl.message(
+      'No recipes match these filters',
+      name: 'no_filtered_recipes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have no recipes for this dietary selection`
+  String get no_recipes_for_diet {
+    return Intl.message(
+      'You have no recipes for this dietary selection',
+      name: 'no_recipes_for_diet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recipes couldn't be loaded`
+  String get recipe_overview_failed {
+    return Intl.message(
+      'Recipes couldn\'t be loaded',
+      name: 'recipe_overview_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check your storage and try again.`
+  String get recipe_overview_failed_description {
+    return Intl.message(
+      'Check your storage and try again.',
+      name: 'recipe_overview_failed_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get retry {
+    return Intl.message('Retry', name: 'retry', desc: '', args: []);
+  }
+
+  /// `MARKET PROVISIONS`
+  String get shopping_market_provisions {
+    return Intl.message(
+      'MARKET PROVISIONS',
+      name: 'shopping_market_provisions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =0{No items} =1{1 item} other{{count} items}}`
+  String shopping_item_count(int count) {
+    return Intl.plural(
+      count,
+      zero: 'No items',
+      one: '1 item',
+      other: '$count items',
+      name: 'shopping_item_count',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1{Gathering for 1 recipe} other{Gathering for {count} recipes}}`
+  String shopping_for_recipes(int count) {
+    return Intl.plural(
+      count,
+      one: 'Gathering for 1 recipe',
+      other: 'Gathering for $count recipes',
+      name: 'shopping_for_recipes',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Adjust servings`
+  String get shopping_adjust_servings {
+    return Intl.message(
+      'Adjust servings',
+      name: 'shopping_adjust_servings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{checked} of {total} items gathered`
+  String shopping_progress(int checked, int total) {
+    return Intl.message(
+      '$checked of $total items gathered',
+      name: 'shopping_progress',
+      desc: '',
+      args: [checked, total],
+    );
+  }
+
+  /// `{percent}% gathered`
+  String shopping_percent_gathered(int percent) {
+    return Intl.message(
+      '$percent% gathered',
+      name: 'shopping_percent_gathered',
+      desc: '',
+      args: [percent],
+    );
+  }
+
+  /// `Plain list`
+  String get shopping_plain_list {
+    return Intl.message(
+      'Plain list',
+      name: 'shopping_plain_list',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By recipe`
+  String get shopping_by_recipe {
+    return Intl.message(
+      'By recipe',
+      name: 'shopping_by_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add an ingredient…`
+  String get shopping_quick_add_hint {
+    return Intl.message(
+      'Add an ingredient…',
+      name: 'shopping_quick_add_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add ingredient with amount, unit, or recipe`
+  String get shopping_add_details {
+    return Intl.message(
+      'Add ingredient with amount, unit, or recipe',
+      name: 'shopping_add_details',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Other items`
+  String get shopping_other_items {
+    return Intl.message(
+      'Other items',
+      name: 'shopping_other_items',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Shopping mode`
+  String get shopping_mode {
+    return Intl.message(
+      'Shopping mode',
+      name: 'shopping_mode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Screen stays awake`
+  String get shopping_mode_active {
+    return Intl.message(
+      'Screen stays awake',
+      name: 'shopping_mode_active',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove checked items`
+  String get shopping_remove_checked {
+    return Intl.message(
+      'Remove checked items',
+      name: 'shopping_remove_checked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove gathered items?`
+  String get shopping_remove_checked_title {
+    return Intl.message(
+      'Remove gathered items?',
+      name: 'shopping_remove_checked_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =1{This removes 1 checked item from your list.} other{This removes {count} checked items from your list.}}`
+  String shopping_remove_checked_description(int count) {
+    return Intl.plural(
+      count,
+      one: 'This removes 1 checked item from your list.',
+      other: 'This removes $count checked items from your list.',
+      name: 'shopping_remove_checked_description',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1{1 item removed} other{{count} items removed}}`
+  String shopping_removed_items(int count) {
+    return Intl.plural(
+      count,
+      one: '1 item removed',
+      other: '$count items removed',
+      name: 'shopping_removed_items',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `The shopping list could not be updated. Try again.`
+  String get shopping_action_failed {
+    return Intl.message(
+      'The shopping list could not be updated. Try again.',
+      name: 'shopping_action_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your shopping list could not be loaded`
+  String get shopping_load_failed {
+    return Intl.message(
+      'Your shopping list could not be loaded',
+      name: 'shopping_load_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check your storage and try again.`
+  String get shopping_load_failed_description {
+    return Intl.message(
+      'Check your storage and try again.',
+      name: 'shopping_load_failed_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add ingredients here or from one of your recipes.`
+  String get shopping_empty_description {
+    return Intl.message(
+      'Add ingredients here or from one of your recipes.',
+      name: 'shopping_empty_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{value} servings`
+  String shopping_serving_value(String value) {
+    return Intl.message(
+      '$value servings',
+      name: 'shopping_serving_value',
+      desc: '',
+      args: [value],
+    );
+  }
+
+  /// `Enter a number greater than zero`
+  String get shopping_invalid_servings {
+    return Intl.message(
+      'Enter a number greater than zero',
+      name: 'shopping_invalid_servings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share shopping list`
+  String get share_shopping_list {
+    return Intl.message(
+      'Share shopping list',
+      name: 'share_shopping_list',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `More shopping-list actions`
+  String get shopping_more_actions {
+    return Intl.message(
+      'More shopping-list actions',
+      name: 'shopping_more_actions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search recipes`
+  String get shopping_search_recipes {
+    return Intl.message(
+      'Search recipes',
+      name: 'shopping_search_recipes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove {item}`
+  String shopping_remove_item(String item) {
+    return Intl.message(
+      'Remove $item',
+      name: 'shopping_remove_item',
+      desc: '',
+      args: [item],
     );
   }
 }

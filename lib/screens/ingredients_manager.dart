@@ -54,8 +54,9 @@ class _IngredientsManagerState extends State<IngredientsManager> {
               for (int i = 0; i < state.ingredients.length; i++) {
                 String currentingredient = state.ingredients[i];
 
-                ingredientsController
-                    .addAll({currentingredient: TextEditingController()});
+                ingredientsController.addAll({
+                  currentingredient: TextEditingController(),
+                });
 
                 dismissibleKeys.add(Key('D-$currentingredient'));
                 listTileKeys.add(Key(currentingredient));
@@ -75,9 +76,10 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                 flexibleSpace: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xffAF1E1E), Color(0xff641414)],
+                    ),
                   ),
                 ),
                 title: Text(S.of(context).manage_ingredients),
@@ -97,45 +99,43 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                 ],
               ),
               floatingActionButton: FloatingActionButton(
-                  backgroundColor: Color(0xFF790604),
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    listTileKeys.add(Key('${listTileKeys.length}'));
-                    dismissibleKeys.add(Key('D-${dismissibleKeys.length}'));
-                    showDialog(
-                        context: context,
-                        builder: (_) => TextFieldDialog(
-                              validation: (String? name) {
-                                if (state.ingredients.contains(name)) {
-                                  return S
-                                      .of(context)
-                                      .ingredient_already_exists;
-                                } else if (name == "") {
-                                  return S.of(context).field_must_not_be_empty;
-                                } else {
-                                  return null;
-                                }
-                              },
-                              save: (String name) {
-                                BlocProvider.of<IngredientsManagerBloc>(context)
-                                    .add(AddIngredient(name));
-                              },
-                              hintText: S.of(context).ingredient,
-                            ));
-                  }),
+                backgroundColor: Color(0xFF790604),
+                child: Icon(Icons.add, color: Colors.white),
+                onPressed: () {
+                  listTileKeys.add(Key('${listTileKeys.length}'));
+                  dismissibleKeys.add(Key('D-${dismissibleKeys.length}'));
+                  showDialog(
+                    context: context,
+                    builder: (_) => TextFieldDialog(
+                      validation: (String? name) {
+                        if (state.ingredients.contains(name)) {
+                          return S.of(context).ingredient_already_exists;
+                        } else if (name == "") {
+                          return S.of(context).field_must_not_be_empty;
+                        } else {
+                          return null;
+                        }
+                      },
+                      save: (String name) {
+                        BlocProvider.of<IngredientsManagerBloc>(context)
+                            .add(AddIngredient(name));
+                      },
+                      hintText: S.of(context).ingredient,
+                    ),
+                  );
+                },
+              ),
               body: state.ingredients.isEmpty
                   ? Center(
                       child: IconInfoMessage(
-                      iconWidget: Icon(
-                        MdiIcons.silverwareForkKnife,
-                        color: Colors.grey[300],
-                        size: 70.0,
+                        iconWidget: Icon(
+                          MdiIcons.silverwareForkKnife,
+                          color: Colors.grey[300],
+                          size: 70.0,
+                        ),
+                        description: S.of(context).you_have_no_ingredients,
                       ),
-                      description: S.of(context).you_have_no_ingredients,
-                    ))
+                    )
                   : AnimationLimiter(
                       child: Form(
                         key: _formKey,
@@ -143,45 +143,49 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                           controller: _controller,
                           backgroundColor:
                               Theme.of(context).colorScheme.surface ==
-                                      Colors.white
-                                  ? Colors.white
-                                  : Colors.grey[800]!,
+                                  Colors.white
+                              ? Colors.white
+                              : Colors.grey[800]!,
                           labelTextBuilder: (offset) {
                             final int currentItem = _controller.hasClients
                                 ? (_controller.offset /
-                                        _controller.position.maxScrollExtent *
-                                        (state.ingredients.length - 1))
-                                    .floor()
+                                          _controller.position.maxScrollExtent *
+                                          (state.ingredients.length - 1))
+                                      .floor()
                                 : 0;
 
                             return Text(
-                                state.ingredients[currentItem].substring(0, 1));
+                              state.ingredients[currentItem].substring(0, 1),
+                            );
                           },
                           child: ListView(
                             controller: _controller,
                             children: List<Widget>.generate(
-                                state.ingredients.length * 2, (index) {
-                              return AnimationConfiguration.staggeredList(
-                                position: index,
-                                duration: const Duration(milliseconds: 150),
-                                child: SlideAnimation(
-                                  verticalOffset: 50.0,
-                                  child: FadeInAnimation(
-                                    child: index % 2 == 1
-                                        ? Divider()
-                                        : _getIngredientListTile(
-                                            state.ingredients[index == 0
-                                                ? 0
-                                                : (index / 2).floor()],
-                                            context,
-                                            listTileKeys[index == 0
-                                                ? 0
-                                                : (index / 2).floor()],
-                                            state.ingredients),
+                              state.ingredients.length * 2,
+                              (index) {
+                                return AnimationConfiguration.staggeredList(
+                                  position: index,
+                                  duration: const Duration(milliseconds: 150),
+                                  child: SlideAnimation(
+                                    verticalOffset: 50.0,
+                                    child: FadeInAnimation(
+                                      child: index % 2 == 1
+                                          ? Divider()
+                                          : _getIngredientListTile(
+                                              state.ingredients[index == 0
+                                                  ? 0
+                                                  : (index / 2).floor()],
+                                              context,
+                                              listTileKeys[index == 0
+                                                  ? 0
+                                                  : (index / 2).floor()],
+                                              state.ingredients,
+                                            ),
+                                    ),
                                   ),
-                                ),
-                              );
-                            }),
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
@@ -197,23 +201,21 @@ class _IngredientsManagerState extends State<IngredientsManager> {
 
   Widget _getIngredientManagerLoadingScreen() {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffAF1E1E), Color(0xff641414)],
             ),
           ),
-          title: Text(
-            S.of(context).manage_ingredients,
-          ),
         ),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ));
+        title: Text(S.of(context).manage_ingredients),
+      ),
+      body: Center(child: CircularProgressIndicator()),
+    );
   }
 
   _showDeleteDialog(BuildContext context, String ingredientName) {
@@ -222,13 +224,16 @@ class _IngredientsManagerState extends State<IngredientsManager> {
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(S.of(context).delete_ingredient),
-        content: Text(S.of(context).sure_you_want_to_delete_this_nutrition +
-            " $ingredientName"),
+        content: Text(
+          S.of(context).sure_you_want_to_delete_this_nutrition +
+              " $ingredientName",
+        ),
         actions: <Widget>[
           TextButton(
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
               foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
             child: Text(S.of(context).no),
@@ -240,7 +245,8 @@ class _IngredientsManagerState extends State<IngredientsManager> {
             child: Text(S.of(context).yes),
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
               foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
               backgroundColor: Colors.red[600],
             ),
@@ -257,8 +263,12 @@ class _IngredientsManagerState extends State<IngredientsManager> {
     ).then((boo) => boo);
   }
 
-  Widget _getIngredientListTile(String ingredientName, BuildContext context,
-      Key key, List<String> ingredients) {
+  Widget _getIngredientListTile(
+    String ingredientName,
+    BuildContext context,
+    Key key,
+    List<String> ingredients,
+  ) {
     return ListTile(
       key: key,
       title: GestureDetector(
@@ -274,9 +284,8 @@ class _IngredientsManagerState extends State<IngredientsManager> {
                 }
               },
               save: (String name) {
-                BlocProvider.of<IngredientsManagerBloc>(context).add(
-                  UpdateIngredient(ingredientName, name),
-                );
+                BlocProvider.of<IngredientsManagerBloc>(context)
+                    .add(UpdateIngredient(ingredientName, name));
               },
               hintText: S.of(context).ingredient,
               prefilledText: ingredientName,

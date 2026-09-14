@@ -27,10 +27,10 @@ class GDriveImporting extends GDriveSyncState {
 
   @override
   List<Object?> get props => [
-        recipeName,
-        importingRecipeNumber,
-        totalImporting,
-      ];
+    recipeName,
+    importingRecipeNumber,
+    totalImporting,
+  ];
 }
 
 class GDriveUploading extends GDriveSyncState {
@@ -46,10 +46,10 @@ class GDriveUploading extends GDriveSyncState {
 
   @override
   List<Object?> get props => [
-        recipeName,
-        uploadingRecipeNumber,
-        totalUploading,
-      ];
+    recipeName,
+    uploadingRecipeNumber,
+    totalUploading,
+  ];
 }
 
 class GDriveCloudDeleting extends GDriveSyncState {
@@ -64,11 +64,7 @@ class GDriveCloudDeleting extends GDriveSyncState {
   );
 
   @override
-  List<Object?> get props => [
-        recipeName,
-        deletingRecipeNumber,
-        totalDeleting,
-      ];
+  List<Object?> get props => [recipeName, deletingRecipeNumber, totalDeleting];
 }
 
 class GDriveLocalDeleting extends GDriveSyncState {
@@ -83,11 +79,7 @@ class GDriveLocalDeleting extends GDriveSyncState {
   );
 
   @override
-  List<Object?> get props => [
-        recipeName,
-        deletingRecipeNumber,
-        totalDeleting,
-      ];
+  List<Object?> get props => [recipeName, deletingRecipeNumber, totalDeleting];
 }
 
 class GDriveSuccessfullySynced extends GDriveSyncState {

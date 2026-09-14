@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../../constants/global_settings.dart';
+
 import 'package:my_recipe_book/generated/l10n.dart';
 
 import '../../util/helper.dart';
@@ -72,8 +74,8 @@ class TimeInfoChart extends StatelessWidget {
                   : RoundTopBottomClipper(),
               child: TweenAnimationBuilder(
                 duration: Duration(
-                    milliseconds:
-                        GlobalSettings().animationsEnabled() ? 700 : 0),
+                  milliseconds: GlobalSettings().animationsEnabled() ? 700 : 0,
+                ),
                 curve: Curves.easeInOut,
                 child: Stack(
                   alignment: horizontal
@@ -84,13 +86,15 @@ class TimeInfoChart extends StatelessWidget {
                       height: horizontal ? 20 : null,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.yellow, Colors.yellow[800]!]),
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.yellow, Colors.yellow[800]!],
+                        ),
                         borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(horizontal ? 0 : 30),
-                            topRight: Radius.circular(30),
-                            bottomRight: Radius.circular(horizontal ? 30 : 0)),
+                          topLeft: Radius.circular(horizontal ? 0 : 30),
+                          topRight: Radius.circular(30),
+                          bottomRight: Radius.circular(horizontal ? 30 : 0),
+                        ),
                         color: Colors.yellow,
                       ),
                     ),
@@ -98,22 +102,24 @@ class TimeInfoChart extends StatelessWidget {
                       height: horizontal
                           ? 20
                           : (cookingTime + preperationTime) /
-                              totalTimeChart *
-                              100,
+                                totalTimeChart *
+                                100,
                       width: horizontal
                           ? (cookingTime + preperationTime) /
-                              totalTimeChart *
-                              100
+                                totalTimeChart *
+                                100
                           : null,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.blue, Colors.blue[800]!]),
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.blue, Colors.blue[800]!],
+                        ),
                         borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(horizontal ? 0 : 30),
-                            topRight: Radius.circular(30),
-                            bottomRight: Radius.circular(horizontal ? 30 : 0)),
+                          topLeft: Radius.circular(horizontal ? 0 : 30),
+                          topRight: Radius.circular(30),
+                          bottomRight: Radius.circular(horizontal ? 30 : 0),
+                        ),
                       ),
                     ),
                     Container(
@@ -125,24 +131,27 @@ class TimeInfoChart extends StatelessWidget {
                           : null,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(horizontal ? 0 : 30),
-                            topRight: Radius.circular(30),
-                            bottomRight: Radius.circular(horizontal ? 30 : 0)),
+                          topLeft: Radius.circular(horizontal ? 0 : 30),
+                          topRight: Radius.circular(30),
+                          bottomRight: Radius.circular(horizontal ? 30 : 0),
+                        ),
                         color: Colors.pink,
                       ),
-                    )
+                    ),
                   ],
                 ),
                 tween: Tween<double>(begin: 10, end: 100),
                 builder: (_, double animatedSize, myChild) => Column(
                   children: <Widget>[
                     Container(
-                        height: horizontal ? null : 100 - animatedSize,
-                        width: horizontal ? 100 - animatedSize : 20),
+                      height: horizontal ? null : 100 - animatedSize,
+                      width: horizontal ? 100 - animatedSize : 20,
+                    ),
                     Container(
-                        width: horizontal ? animatedSize : 20,
-                        height: horizontal ? null : animatedSize,
-                        child: myChild),
+                      width: horizontal ? animatedSize : 20,
+                      height: horizontal ? null : animatedSize,
+                      child: myChild,
+                    ),
                   ],
                 ),
               ),

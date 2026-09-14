@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../constants/global_settings.dart';
 
@@ -55,14 +56,8 @@ class RecipeImageHero extends StatelessWidget {
             width: 30,
             height: 30,
             child: recipe.imagePreviewPath == Constants.noRecipeImage
-                ? Image.asset(
-                    recipe.imagePreviewPath,
-                    fit: BoxFit.cover,
-                  )
-                : Image.file(
-                    File(recipe.imagePreviewPath),
-                    fit: BoxFit.cover,
-                  ),
+                ? Image.asset(recipe.imagePreviewPath, fit: BoxFit.cover)
+                : Image.file(File(recipe.imagePreviewPath), fit: BoxFit.cover),
           ),
         ),
       ),

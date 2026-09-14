@@ -45,8 +45,9 @@ class RecipeSearch extends SearchDelegate<SearchRecipe?> {
       );
     } else {
       return theme.copyWith(
-        primaryIconTheme:
-            theme.primaryIconTheme.copyWith(color: Colors.grey[200]),
+        primaryIconTheme: theme.primaryIconTheme.copyWith(
+          color: Colors.grey[200],
+        ),
         brightness: Brightness.dark,
         primaryTextTheme: theme.textTheme,
         appBarTheme: AppBarTheme(
@@ -65,7 +66,7 @@ class RecipeSearch extends SearchDelegate<SearchRecipe?> {
         onPressed: () {
           query = '';
         },
-      )
+      ),
     ];
   }
 
@@ -83,101 +84,112 @@ class RecipeSearch extends SearchDelegate<SearchRecipe?> {
   Widget buildResults(BuildContext context) {
     if (recipeNames.isEmpty && recipeTags.isEmpty && categories.isEmpty) {
       return Container(
-          height: 70,
-          child: Center(child: Text(S.of(context).nothing_to_search_through)));
+        height: 70,
+        child: Center(child: Text(S.of(context).nothing_to_search_through)),
+      );
     }
     List<String> resultCategories = categories
         .where(
-            (category) => category.toLowerCase().contains(query.toLowerCase()))
+          (category) => category.toLowerCase().contains(query.toLowerCase()),
+        )
         .toList();
 
     List<StringIntTuple> resultRecipeTags = recipeTags
-        .where((recipeTag) =>
-            recipeTag.text.toLowerCase().contains(query.toLowerCase()))
+        .where(
+          (recipeTag) =>
+              recipeTag.text.toLowerCase().contains(query.toLowerCase()),
+        )
         .toList();
 
     List<String> resultRecipeNames = recipeNames
-        .where((recipeName) =>
-            recipeName.toLowerCase().contains(query.toLowerCase()))
+        .where(
+          (recipeName) =>
+              recipeName.toLowerCase().contains(query.toLowerCase()),
+        )
         .toList();
 
     return ListView.builder(
-        itemCount: (resultRecipeNames.length +
-                resultCategories.length +
-                resultRecipeTags.length) *
-            2,
-        itemBuilder: (context, index) {
-          if ((index - 1) % 2 == 0 && index != 0) {
-            return Divider();
-          }
-          if (index ~/ 2 < resultRecipeNames.length) {
-            return ListTile(
-              title: Text(resultRecipeNames[index ~/ 2]),
-              onTap: () {
-                context.read<LocalRepository>()
-                    .getRecipeByName(resultRecipeNames[index ~/ 2])
-                    .then((recipe) {
-                  close(context, null);
-                  if (GlobalSettings().standbyDisabled()) {
-                    WakelockPlus.enable();
-                  }
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.recipeScreen,
-                    arguments: RecipeScreenArguments(
-                      shoppingCartBloc,
-                      recipeCalendarBloc,
-                      recipe,
-                      'heroTag',
-                      BlocProvider.of<RecipeManagerBloc>(context),
-                    ),
-                  ).then((_) => WakelockPlus.disable());
-                });
-              },
-            );
-          } else if (index ~/ 2 - resultRecipeNames.length <
-              resultCategories.length) {
-            int categoryIndex = index ~/ 2 - resultRecipeNames.length;
-            return ListTile(
-                leading: Icon(Icons.apps),
-                title: Text(resultCategories[categoryIndex]),
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.recipeCategories,
-                    arguments: RecipeGridViewArguments(
-                      category: resultCategories[categoryIndex],
-                      shoppingCartBloc: shoppingCartBloc,
-                      recipeCalendarBloc: recipeCalendarBloc,
-                    ),
-                  ).then((_) => Ads.hideBottomBannerAd());
-                });
-          } else {
-            int recipeTagIndex =
-                index ~/ 2 - resultRecipeNames.length - resultCategories.length;
-            return ListTile(
-                leading: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(resultRecipeTags[recipeTagIndex].number),
-                  ),
-                  height: 25,
-                  width: 25,
+      itemCount:
+          (resultRecipeNames.length +
+              resultCategories.length +
+              resultRecipeTags.length) *
+          2,
+      itemBuilder: (context, index) {
+        if ((index - 1) % 2 == 0 && index != 0) {
+          return Divider();
+        }
+        if (index ~/ 2 < resultRecipeNames.length) {
+          return ListTile(
+            title: Text(resultRecipeNames[index ~/ 2]),
+            onTap: () {
+              context
+                  .read<LocalRepository>()
+                  .getRecipeByName(resultRecipeNames[index ~/ 2])
+                  .then((recipe) {
+                    close(context, null);
+                    if (GlobalSettings().standbyDisabled()) {
+                      WakelockPlus.enable();
+                    }
+                    Navigator.pushNamed(
+                      context,
+                      RouteNames.recipeScreen,
+                      arguments: RecipeScreenArguments(
+                        shoppingCartBloc,
+                        recipeCalendarBloc,
+                        recipe,
+                        'heroTag',
+                        BlocProvider.of<RecipeManagerBloc>(context),
+                      ),
+                    ).then((_) => WakelockPlus.disable());
+                  });
+            },
+          );
+        } else if (index ~/ 2 - resultRecipeNames.length <
+            resultCategories.length) {
+          int categoryIndex = index ~/ 2 - resultRecipeNames.length;
+          return ListTile(
+            leading: Icon(Icons.apps),
+            title: Text(resultCategories[categoryIndex]),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                RouteNames.recipeCategories,
+                arguments: RecipeGridViewArguments(
+                  category: resultCategories[categoryIndex],
+                  shoppingCartBloc: shoppingCartBloc,
+                  recipeCalendarBloc: recipeCalendarBloc,
                 ),
-                title: Text(resultRecipeTags[recipeTagIndex].text),
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.recipeTagOverview,
-                    arguments: RecipeGridViewArguments(
-                      recipeTag: resultRecipeTags[recipeTagIndex],
-                      shoppingCartBloc: shoppingCartBloc,
-                      recipeCalendarBloc: recipeCalendarBloc,
-                    ),
-                  ).then((_) => Ads.hideBottomBannerAd());
-                });
-          }
-        });
+              ).then((_) => Ads.hideBottomBannerAd());
+            },
+          );
+        } else {
+          int recipeTagIndex =
+              index ~/ 2 - resultRecipeNames.length - resultCategories.length;
+          return ListTile(
+            leading: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(resultRecipeTags[recipeTagIndex].number),
+              ),
+              height: 25,
+              width: 25,
+            ),
+            title: Text(resultRecipeTags[recipeTagIndex].text),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                RouteNames.recipeTagOverview,
+                arguments: RecipeGridViewArguments(
+                  recipeTag: resultRecipeTags[recipeTagIndex],
+                  shoppingCartBloc: shoppingCartBloc,
+                  recipeCalendarBloc: recipeCalendarBloc,
+                ),
+              ).then((_) => Ads.hideBottomBannerAd());
+            },
+          );
+        }
+      },
+    );
   }
 
   @override

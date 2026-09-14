@@ -16,8 +16,9 @@ part 'ad_manager_state.dart';
 class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   StreamSubscription? _periodicSub;
   bool isInitialized = false;
-  DateTime lastTimeStartedWatching =
-      DateTime.now().subtract(Duration(days: 10));
+  DateTime lastTimeStartedWatching = DateTime.now().subtract(
+    Duration(days: 10),
+  );
 
   final InAppPurchase _iap = InAppPurchase.instance;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
@@ -36,17 +37,21 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   AdManagerBloc() : super(AdManagerInitial()) {
     final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
 
-    _subscription = purchaseUpdated.listen((purchaseDetailsList) {
-      purchaseDetailsList.forEach((purchase) {
-        if (purchase.pendingCompletePurchase) {
-          InAppPurchase.instance.completePurchase(purchase);
-        }
-      });
-    }, onDone: () {
-      _subscription.cancel();
-    }, onError: (error) {
-      // handle error here.
-    });
+    _subscription = purchaseUpdated.listen(
+      (purchaseDetailsList) {
+        purchaseDetailsList.forEach((purchase) {
+          if (purchase.pendingCompletePurchase) {
+            InAppPurchase.instance.completePurchase(purchase);
+          }
+        });
+      },
+      onDone: () {
+        _subscription.cancel();
+      },
+      onError: (error) {
+        // handle error here.
+      },
+    );
 
     _iap.isAvailable().then((isAvailable) {
       if (isAvailable) {
@@ -92,13 +97,13 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       _periodicSub = Stream.periodic(const Duration(minutes: 1), (v) => v)
           .take(waitTime)
           .listen((count) {
-        print(count);
-        if (DateTime.now().isAfter(noAdsUntil)) {
-          Ads.showBannerAds(true);
-          _periodicSub!.cancel();
-          add(ShowAdsAgain());
-        }
-      });
+            print(count);
+            if (DateTime.now().isAfter(noAdsUntil)) {
+              Ads.showBannerAds(true);
+              _periodicSub!.cancel();
+              add(ShowAdsAgain());
+            }
+          });
 
       emit(AdFreeUntil(noAdsUntil));
     });
@@ -108,7 +113,8 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
       isInitialized = true;
 
       MobileAds.instance.updateRequestConfiguration(
-          RequestConfiguration(testDeviceIds: ['']));
+        RequestConfiguration(testDeviceIds: ['']),
+      );
 
       _sP ??= await SharedPreferences.getInstance();
 
@@ -147,13 +153,13 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
             _periodicSub = Stream.periodic(const Duration(minutes: 1), (v) => v)
                 .take(waitTime)
                 .listen((count) {
-              print(count);
-              if (DateTime.now().isAfter(noAdsUntil)) {
-                Ads.showBannerAds(true);
-                _periodicSub!.cancel();
-                add(ShowAdsAgain());
-              }
-            });
+                  print(count);
+                  if (DateTime.now().isAfter(noAdsUntil)) {
+                    Ads.showBannerAds(true);
+                    _periodicSub!.cancel();
+                    add(ShowAdsAgain());
+                  }
+                });
 
             emit(AdFreeUntil(noAdsUntil));
           }
@@ -212,8 +218,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
 
     on<PurchaseProVersion>((event, emit) async {
       if (_products.isNotEmpty) {
-        final PurchaseParam purchaseParam =
-            GooglePlayPurchaseParam(productDetails: _products.first);
+        final PurchaseParam purchaseParam = GooglePlayPurchaseParam(
+          productDetails: _products.first,
+        );
 
         await _iap.buyNonConsumable(purchaseParam: purchaseParam);
       }
@@ -272,8 +279,9 @@ class AdManagerBloc extends Bloc<AdManagerEvent, AdManagerState> {
   }
 
   PurchaseDetails? _hasPurchased(String productID) {
-    return _purchases
-        .firstWhereOrNull((purchase) => purchase.productID == productID);
+    return _purchases.firstWhereOrNull(
+      (purchase) => purchase.productID == productID,
+    );
   }
 
   @override

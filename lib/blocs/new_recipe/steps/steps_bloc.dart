@@ -18,7 +18,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
   final LocalRepository repository;
 
   StepsBloc(StepImagesBloc stepImagesBloc, this.repository)
-      : super(SCanSave(isValid: true, time: DateTime.now())) {
+    : super(SCanSave(isValid: true, time: DateTime.now())) {
     subscription = stepImagesBloc.stream.listen((siState) {
       if (state is SCanSave) {
         if (siState is LoadedStepImages) {
@@ -66,21 +66,21 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
         Recipe newRecipe;
         if (!event.editingRecipe) {
           newRecipe = repository.getTmpRecipe()!.copyWith(
-                notes: event.notes,
-                stepImages: stepImages,
-                effort: event.complexity,
-                steps: recipeSteps,
-                stepTitles: recipeStepTitles,
-              );
+            notes: event.notes,
+            stepImages: stepImages,
+            effort: event.complexity,
+            steps: recipeSteps,
+            stepTitles: recipeStepTitles,
+          );
           await repository.saveTmpRecipe(newRecipe);
         } else {
           newRecipe = repository.getTmpEditingRecipe()!.copyWith(
-                notes: event.notes,
-                stepImages: stepImages,
-                effort: event.complexity,
-                steps: recipeSteps,
-                stepTitles: recipeStepTitles,
-              );
+            notes: event.notes,
+            stepImages: stepImages,
+            effort: event.complexity,
+            steps: recipeSteps,
+            stepTitles: recipeStepTitles,
+          );
           await repository.saveTmpEditingRecipe(newRecipe);
         }
 

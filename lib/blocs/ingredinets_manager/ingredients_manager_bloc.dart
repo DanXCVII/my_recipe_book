@@ -32,9 +32,9 @@ class IngredientsManagerBloc
     on<DeleteIngredient>((event, emit) async {
       if (state is LoadedIngredientsManager) {
         await repository.deleteIngredient(event.ingredient);
-        final List<String> ingredients =
-            List<String>.from((state as LoadedIngredientsManager).ingredients)
-              ..remove(event.ingredient);
+        final List<String> ingredients = List<String>.from(
+          (state as LoadedIngredientsManager).ingredients,
+        )..remove(event.ingredient);
 
         emit(LoadedIngredientsManager(ingredients));
       }
@@ -44,7 +44,7 @@ class IngredientsManagerBloc
       if (state is LoadedIngredientsManager) {
         await repository.deleteIngredient(event.oldIngredient);
         await repository.addIngredient(event.updatedIngredient);
-        final List<String /*!*/ > ingredients =
+        final List<String /*!*/> ingredients =
             (state as LoadedIngredientsManager).ingredients
               ..remove(event.oldIngredient)
               ..add(event.updatedIngredient)

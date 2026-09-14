@@ -8,10 +8,7 @@ class StartImportRecipes extends ImportRecipeEvent {
   final File importZipFile;
   final Duration delay;
 
-  StartImportRecipes(
-    this.importZipFile, {
-    required this.delay,
-  });
+  StartImportRecipes(this.importZipFile, {required this.delay});
 
   @override
   List<Object> get props => [importZipFile, delay];

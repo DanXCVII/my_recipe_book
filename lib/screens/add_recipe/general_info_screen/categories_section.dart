@@ -6,7 +6,9 @@ import '../../../ad_related/ad.dart';
 import '../../../blocs/category_manager/category_manager_bloc.dart';
 import '../../../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../../../constants/routes.dart';
+
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import '../../../widgets/dialogs/textfield_dialog.dart';
 import '../../category_manager.dart';
 
@@ -27,14 +29,14 @@ class _CategorySectionState extends State<CategorySection> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CategoryManagerBloc, CategoryManagerState>(
-        builder: (context, state) {
-      if (state is LoadingCategoryManager) {
-        return CircularProgressIndicator();
-      } else if (state is LoadedCategoryManager) {
-        return Column(
-          children: <Widget>[
-            // heading for the subcategory selector section
-            Padding(
+      builder: (context, state) {
+        if (state is LoadingCategoryManager) {
+          return CircularProgressIndicator();
+        } else if (state is LoadedCategoryManager) {
+          return Column(
+            children: <Widget>[
+              // heading for the subcategory selector section
+              Padding(
                 padding: const EdgeInsets.only(left: 50, right: 6, top: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,11 +86,12 @@ class _CategorySectionState extends State<CategorySection> {
                           ),
                         ).then((_) => Ads.hideBottomBannerAd());
                       },
-                    )
+                    ),
                   ],
-                )),
-            // category chips
-            Container(
+                ),
+              ),
+              // category chips
+              Container(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: Wrap(
                   spacing: 5.0,
@@ -106,15 +109,16 @@ class _CategorySectionState extends State<CategorySection> {
                           BlocProvider.of<CategoryManagerBloc>(context)
                               .add(UnselectCategory(category)),
                     );
-                  }).toList()
-                    ..removeLast(),
-                ))
-          ],
-        );
-      } else {
-        return Text(state.toString());
-      }
-    });
+                  }).toList()..removeLast(),
+                ),
+              ),
+            ],
+          );
+        } else {
+          return Text(state.toString());
+        }
+      },
+    );
   }
 }
 

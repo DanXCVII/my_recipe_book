@@ -74,18 +74,10 @@ class RMMoveCategory extends RecipeManagerEvent {
   final int newIndex;
   final DateTime time;
 
-  const RMMoveCategory(
-    this.oldIndex,
-    this.newIndex,
-    this.time,
-  );
+  const RMMoveCategory(this.oldIndex, this.newIndex, this.time);
 
   @override
-  List<Object> get props => [
-        oldIndex,
-        newIndex,
-        time,
-      ];
+  List<Object> get props => [oldIndex, newIndex, time];
 }
 
 class RMAddRecipeTag extends RecipeManagerEvent {
@@ -110,14 +102,8 @@ class RMUpdateRecipeTag extends RecipeManagerEvent {
   final StringIntTuple oldRecipeTag;
   final StringIntTuple updatedRecipeTag;
 
-  const RMUpdateRecipeTag(
-    this.oldRecipeTag,
-    this.updatedRecipeTag,
-  );
+  const RMUpdateRecipeTag(this.oldRecipeTag, this.updatedRecipeTag);
 
   @override
-  List<Object> get props => [
-        oldRecipeTag,
-        updatedRecipeTag,
-      ];
+  List<Object> get props => [oldRecipeTag, updatedRecipeTag];
 }

@@ -4,7 +4,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 import '../ad_related/ad.dart';
@@ -34,10 +36,8 @@ class ImportFromWebsiteArguments {
 class ImportFromWebsiteScreen extends StatelessWidget {
   final String initialWebsite;
 
-  const ImportFromWebsiteScreen({
-    this.initialWebsite = "",
-    Key? key,
-  }) : super(key: key);
+  const ImportFromWebsiteScreen({this.initialWebsite = "", Key? key})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +48,10 @@ class ImportFromWebsiteScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffAF1E1E), Color(0xff641414)],
+            ),
           ),
         ),
         title: Text(S.of(context).import_from_website_short),
@@ -68,26 +69,26 @@ class ImportFromWebsiteScreen extends StatelessWidget {
             },
           ),
           IconButton(
-              icon: Icon(Icons.check),
-              onPressed: () {
-                Navigator.pop(context);
-              })
+            icon: Icon(Icons.check),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ],
       ),
       body: Stack(
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-                image: DecorationImage(
-              image: AssetImage("images/salatLowRes.jpg"),
-              fit: BoxFit.cover,
-            )),
+              image: DecorationImage(
+                image: AssetImage("images/salatLowRes.jpg"),
+                fit: BoxFit.cover,
+              ),
+            ),
             height: MediaQuery.of(context).size.height - kToolbarHeight,
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 4, sigmaY: 5),
-              child: Container(
-                color: Colors.black.withValues(alpha: 0),
-              ),
+              child: Container(color: Colors.black.withValues(alpha: 0)),
             ),
           ),
           Container(
@@ -97,9 +98,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: WebsiteSearch(
-                    initialWebsite: initialWebsite,
-                  ),
+                  child: WebsiteSearch(initialWebsite: initialWebsite),
                 ),
                 Spacer(),
                 BlocListener<WebsiteImportBloc, WebsiteImportState>(
@@ -129,18 +128,19 @@ class ImportFromWebsiteScreen extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 100.0),
                           child: Container(
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Theme.of(context)
-                                              .colorScheme
-                                              .surface ==
-                                          Colors.white
-                                      ? Colors.grey[100]
-                                      : Colors.grey[900]),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: CircularProgressIndicator(),
-                              )),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  Theme.of(context).colorScheme.surface ==
+                                      Colors.white
+                                  ? Colors.grey[100]
+                                  : Colors.grey[900],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
                         );
                       } else if (state is AlreadyExists) {
                         return Container(
@@ -213,8 +213,9 @@ class ImportFromWebsiteScreen extends StatelessWidget {
             ),
           ),
           Align(
-              alignment: Alignment.bottomCenter,
-              child: RecipeWebsiteImportInfo()),
+            alignment: Alignment.bottomCenter,
+            child: RecipeWebsiteImportInfo(),
+          ),
         ],
       ),
     );
@@ -224,10 +225,7 @@ class ImportFromWebsiteScreen extends StatelessWidget {
 class WebsiteSearch extends StatefulWidget {
   final String initialWebsite;
 
-  WebsiteSearch({
-    this.initialWebsite = "",
-    Key? key,
-  }) : super(key: key);
+  WebsiteSearch({this.initialWebsite = "", Key? key}) : super(key: key);
 
   @override
   _WebsiteSearchState createState() => _WebsiteSearchState();
@@ -267,10 +265,7 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
                 : Colors.black45,
             blurRadius: 2.0,
             spreadRadius: 1.0,
-            offset: Offset(
-              0,
-              1.0,
-            ),
+            offset: Offset(0, 1.0),
           ),
         ],
       ),
@@ -291,15 +286,14 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
                 border: OutlineInputBorder(),
                 focusedBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(50)),
-                  borderSide: const BorderSide(
-                    color: Colors.amber,
-                    width: 2,
-                  ),
+                  borderSide: const BorderSide(color: Colors.amber, width: 2),
                 ),
                 enabledBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(50)),
                   borderSide: const BorderSide(
-                      color: Color.fromRGBO(210, 210, 210, 1), width: 2),
+                    color: Color.fromRGBO(210, 210, 210, 1),
+                    width: 2,
+                  ),
                 ),
               ),
             ),
@@ -309,8 +303,9 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
                 Spacer(),
                 Container(
                   decoration: BoxDecoration(
-                      color: Colors.yellow[800],
-                      borderRadius: BorderRadius.all(Radius.circular(30))),
+                    color: Colors.yellow[800],
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
+                  ),
                   child: InkWell(
                     onTap: () {
                       FocusScope.of(context).requestFocus(FocusNode());
@@ -327,15 +322,17 @@ class _WebsiteSearchState extends State<WebsiteSearch> {
                           child: Text(
                             "import",
                             style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 16),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                )
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -382,7 +379,9 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
           : MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
         color: Theme.of(context).colorScheme.surface == Colors.white
             ? Colors.grey[100]
             : Colors.grey[800],
@@ -400,18 +399,18 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                   color: Colors.amber,
                 ),
               ),
-              Expanded(
-                child: Text(S.of(context).supported_websites),
-              ),
+              Expanded(child: Text(S.of(context).supported_websites)),
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: ClipOval(
                   child: Material(
                     color: Colors.transparent,
                     child: IconButton(
-                      icon: Icon(_isExpanded
-                          ? Icons.keyboard_arrow_down
-                          : Icons.keyboard_arrow_up),
+                      icon: Icon(
+                        _isExpanded
+                            ? Icons.keyboard_arrow_down
+                            : Icons.keyboard_arrow_up,
+                      ),
                       onPressed: () {
                         setState(() {
                           _isExpanded = !_isExpanded;
@@ -420,7 +419,7 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
           AnimatedSize(
@@ -430,44 +429,57 @@ class _RecipeWebsiteImportInfoState extends State<RecipeWebsiteImportInfo>
                 ? Container(
                     height: 250,
                     child: ListView(
-                      children: List<Widget>.generate(
-                        _supportedWebsites.length * 2 + 1,
-                        (index) => index % 2 == 0 ||
-                                index == (_supportedWebsites.length * 2 + 1)
-                            ? Divider()
-                            : ListTile(
-                                title: RichText(
-                                  text: TextSpan(
-                                    text: _supportedWebsites[
-                                        (index / 2).round() - 1],
-                                    style: TextStyle(
-                                        color: Colors.blue, fontSize: 16),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        launchUrl(Uri.parse(_websiteUrls[
-                                            (index / 2).round() - 1]));
-                                      },
-                                  ),
+                      children:
+                          List<Widget>.generate(
+                              _supportedWebsites.length * 2 + 1,
+                              (index) =>
+                                  index % 2 == 0 ||
+                                      index ==
+                                          (_supportedWebsites.length * 2 + 1)
+                                  ? Divider()
+                                  : ListTile(
+                                      title: RichText(
+                                        text: TextSpan(
+                                          text:
+                                              _supportedWebsites[(index / 2)
+                                                      .round() -
+                                                  1],
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            fontSize: 16,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              launchUrl(
+                                                Uri.parse(
+                                                  _websiteUrls[(index / 2)
+                                                          .round() -
+                                                      1],
+                                                ),
+                                              );
+                                            },
+                                        ),
+                                      ),
+                                    ),
+                            )
+                            ..insert(
+                              0,
+                              ListTile(
+                                title: Text(
+                                  S.of(context).standardized_format,
+                                  style: TextStyle(fontSize: 11),
                                 ),
                               ),
-                      )
-                        ..insert(
-                          0,
-                          ListTile(
-                            title: Text(
-                              S.of(context).standardized_format,
-                              style: TextStyle(
-                                fontSize: 11,
+                            )
+                            ..add(
+                              ListTile(
+                                title: Text(S.of(context).and_many_more),
                               ),
                             ),
-                          ),
-                        )
-                        ..add(
-                            ListTile(title: Text(S.of(context).and_many_more))),
                     ),
                   )
                 : Container(),
-          )
+          ),
         ],
       ),
     );

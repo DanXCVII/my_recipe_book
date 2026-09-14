@@ -1,16 +1,15 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:bloc/bloc.dart';
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:equatable/equatable.dart';
-import '../../models/string_int_tuple.dart';
 
-import '../../util/helper.dart';
+import '../../constants/global_constants.dart' as constants;
 import '../../local_storage/local_repository.dart';
 import '../../models/enums.dart';
 import '../../models/recipe.dart';
 import '../../models/recipe_sort.dart';
+import '../../models/string_int_tuple.dart';
+import '../../util/helper.dart';
 import '../recipe_manager/recipe_manager_bloc.dart' as RM;
 
 part 'recipe_overview_event.dart';
@@ -18,395 +17,326 @@ part 'recipe_overview_state.dart';
 
 class RecipeOverviewBloc
     extends Bloc<RecipeOverviewEvent, RecipeOverviewState> {
-  final RM.RecipeManagerBloc recipeManagerBloc;
-  final LocalRepository repository;
-  late StreamSubscription subscription;
-
-  Vegetable? currentVegetableFilter;
-  List<String> currentRecipeTagFilter = [];
-
-  List<Recipe> unfilteredRecipes = [];
-
   RecipeOverviewBloc({
     required this.recipeManagerBloc,
     required this.repository,
-  })
-      : super(LoadingRecipeOverview()) {
-    subscription = recipeManagerBloc.stream.listen((rmState) {
-      if (state is LoadedRecipeOverview) {
-        if (rmState is RM.AddRecipesState) {
-          add(AddRecipes(rmState.recipes));
-        } else if (rmState is RM.DeleteRecipeState) {
-          add(DeleteRecipe(rmState.recipe));
-        } else if (rmState is RM.UpdateRecipeState) {
-          add(UpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
-        } else if (rmState is RM.AddFavoriteState) {
-          if (state is LoadedRecipeOverview) {
-            if (_belongsToRecipeList(rmState.recipe)) {
-              add(UpdateFavoriteStatus(rmState.recipe));
-            }
-          }
-        } else if (rmState is RM.RemoveFavoriteState) {
-          if (state is LoadedRecipeOverview) {
-            if (_belongsToRecipeList(rmState.recipe)) {
-              add(UpdateFavoriteStatus(rmState.recipe));
-            }
-          }
-        }
-      }
-    });
+  }) : super(LoadingRecipeOverview()) {
+    subscription = recipeManagerBloc.stream.listen(_onRecipeManagerState);
 
-    on<LoadCategoryRecipeOverview>((event, emit) async {
-      final Recipe? randomRecipe = (await repository
-          .getRandomRecipeOfCategory(category: event.category));
-      final String? randomRecipeImage =
-          randomRecipe != null ? randomRecipe.imagePreviewPath : null;
-
-      emit(LoadingRecipes(
-        randomImage: randomRecipeImage,
-        category: event.category,
-      ));
-
-      final RSort categorySort =
-          await repository.getSortOrder(event.category);
-      final List<Recipe> recipes =
-          await repository.getCategoryRecipes(event.category);
-      final List<Recipe> sortedRecipes = sortRecipes(categorySort, recipes);
-
-      unfilteredRecipes = List<Recipe>.from(sortedRecipes);
-
-      emit(LoadedRecipeOverview(
-        recipes: sortedRecipes,
-        randomImage: randomRecipeImage,
-        recipeSort: categorySort,
-        category: event.category,
-      ));
-    });
-
-    on<LoadVegetableRecipeOverview>((event, emit) async {
-      final Recipe? randomRecipe =
-          await repository.getRandomRecipeOfVegetable(event.vegetable);
-      final String? randomRecipeImage =
-          randomRecipe != null ? randomRecipe.imagePreviewPath : null;
-
-      emit(LoadingRecipes(
-        randomImage: randomRecipeImage,
-        vegetable: event.vegetable,
-      ));
-
-      final List<Recipe> recipes =
-          await repository.getVegetableRecipes(event.vegetable);
-
-      unfilteredRecipes = List<Recipe>.from(recipes);
-
-      emit(LoadedRecipeOverview(
-        recipes: recipes,
-        randomImage: randomRecipeImage,
-        vegetable: event.vegetable,
-        recipeSort: RSort(RecipeSort.BY_NAME, true),
-      ));
-    });
-
-    on<ChangeRecipeSort>((event, emit) async {
-      if (state is LoadedRecipeOverview) {
-        final RSort newRecipeSort = RSort(event.recipeSort,
-            (state as LoadedRecipeOverview).recipeSort!.ascending);
-
-        final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes!;
-        final List<Recipe> sortedRecipes = sortRecipes(newRecipeSort, recipes);
-        unfilteredRecipes = sortedRecipes;
-
-        if ((state as LoadedRecipeOverview).category != null) {
-          await repository.changeSortOrder(
-              newRecipeSort, (state as LoadedRecipeOverview).category!);
-        }
-
-        emit(LoadedRecipeOverview(
-          recipes: sortedRecipes,
-          randomImage: (state as LoadedRecipeOverview).randomImage,
-          vegetable: (state as LoadedRecipeOverview).vegetable,
-          category: (state as LoadedRecipeOverview).category,
-          recipeTag: (state as LoadedRecipeOverview).recipeTag,
-          recipeSort: newRecipeSort,
-        ));
-      }
-    });
-
-    on<AddRecipes>((event, emit) async {
-      if (state is LoadedRecipeOverview) {
-        final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes!;
-
-        for (Recipe r in event.recipes) {
-          if (_belongsToRecipeList(r)) {
-            recipes..add(r);
-          }
-        }
-        final List<Recipe> sortedRecipes =
-            sortRecipes((state as LoadedRecipeOverview).recipeSort, recipes);
-
-        emit(LoadedRecipeOverview(
-          recipes: sortedRecipes,
-          randomImage: _getRandomRecipeImage(sortedRecipes),
-          vegetable: (state as LoadedRecipeOverview).vegetable,
-          category: (state as LoadedRecipeOverview).category,
-          recipeTag: (state as LoadedRecipeOverview).recipeTag,
-          recipeSort: (state as LoadedRecipeOverview).recipeSort,
-        ));
-      }
-    });
-
-    on<DeleteRecipe>((event, emit) async {
-      if (state is LoadedRecipeOverview) {
-        if (_belongsToRecipeList(event.recipe)) {
-          final List<Recipe> recipes =
-              List<Recipe>.from((state as LoadedRecipeOverview).recipes!)
-                ..removeWhere((recipe) => event.recipe == recipe);
-
-          emit(LoadedRecipeOverview(
-            recipes: recipes,
-            randomImage: (state as LoadedRecipeOverview).randomImage,
-            vegetable: (state as LoadedRecipeOverview).vegetable,
-            category: (state as LoadedRecipeOverview).category,
-            recipeTag: (state as LoadedRecipeOverview).recipeTag,
-            recipeSort: (state as LoadedRecipeOverview).recipeSort,
-          ));
-        }
-      }
-    });
-
-    on<UpdateRecipe>((event, emit) async {
-      if (state is LoadedRecipeOverview) {
-        if (_belongsToRecipeList(event.oldRecipe) &&
-            _belongsToRecipeList(event.updatedRecipe)) {
-          final List<Recipe> recipes = (state as LoadedRecipeOverview).recipes!;
-          int indexOldRecipe = recipes.indexOf(event.oldRecipe);
-          final List<Recipe> updatedRecipes = recipes
-            ..replaceRange(
-                indexOldRecipe, indexOldRecipe + 1, [event.updatedRecipe]);
-          final List<Recipe> sortedRecipes = sortRecipes(
-              (state as LoadedRecipeOverview).recipeSort, updatedRecipes);
-
-          emit(LoadedRecipeOverview(
-            recipes: sortedRecipes,
-            randomImage: _getRandomRecipeImage(sortedRecipes),
-            vegetable: (state as LoadedRecipeOverview).vegetable,
-            category: (state as LoadedRecipeOverview).category,
-            recipeTag: (state as LoadedRecipeOverview).recipeTag,
-            recipeSort: (state as LoadedRecipeOverview).recipeSort,
-          ));
-        } else if (_belongsToRecipeList(event.oldRecipe) &&
-            !_belongsToRecipeList(event.updatedRecipe)) {
-          this.add(DeleteRecipe(event.oldRecipe));
-        }
-      }
-    });
-
-    on<UpdateFavoriteStatus>((event, emit) async {
-      if (state is LoadedRecipeOverview) {
-        if (_belongsToRecipeList(event.recipe)) {
-          final List<Recipe> recipes =
-              List<Recipe>.from((state as LoadedRecipeOverview).recipes!);
-          int favoriteIndex =
-              recipes.indexWhere((recipe) => recipe.name == event.recipe.name);
-          final List<Recipe> updatedRecipes = recipes
-            ..replaceRange(favoriteIndex, favoriteIndex + 1, [event.recipe]);
-          final List<Recipe> sortedRecipes =
-              (state as LoadedRecipeOverview).recipeSort == null
-                  ? updatedRecipes
-                  : sortRecipes((state as LoadedRecipeOverview).recipeSort,
-                      updatedRecipes);
-
-          emit(LoadedRecipeOverview(
-            recipes: sortedRecipes,
-            randomImage: _getRandomRecipeImage(sortedRecipes),
-            vegetable: (state as LoadedRecipeOverview).vegetable,
-            category: (state as LoadedRecipeOverview).category,
-            recipeSort: (state as LoadedRecipeOverview).recipeSort,
-          ));
-        }
-      }
-    });
-
-    on<FilterRecipesVegetable>((event, emit) async {
-      if (state is LoadedRecipeOverview) {
-        currentVegetableFilter = event.vegetable;
-
-        emit(LoadedRecipeOverview(
-          recipes: List<Recipe>.from(unfilteredRecipes)
-            ..removeWhere((recipe) {
-              for (String recipeTagName in currentRecipeTagFilter) {
-                if (recipe.tags
-                        .firstWhereOrNull((tag) => tag.text == recipeTagName) ==
-                    null) {
-                  return true;
-                }
-              }
-              if (currentVegetableFilter != null) {
-                if (recipe.vegetable != currentVegetableFilter) {
-                  return true;
-                }
-              }
-              return false;
-            }),
-          randomImage: (state as LoadedRecipeOverview).randomImage,
-          vegetable: (state as LoadedRecipeOverview).vegetable,
-          category: (state as LoadedRecipeOverview).category,
-          recipeTag: (state as LoadedRecipeOverview).recipeTag,
-          recipeSort: (state as LoadedRecipeOverview).recipeSort,
-        ));
-      }
-    });
-
-    on<ChangeAscending>((event, emit) async {
-      if (state is LoadedRecipeOverview) {
-        final RSort newRecipeSort = RSort(
-            (state as LoadedRecipeOverview).recipeSort!.sort, event.ascending);
-
-        final List<Recipe> recipes =
-            List<Recipe>.from((state as LoadedRecipeOverview).recipes!);
-        final List<Recipe> sortedRecipes = sortRecipes(newRecipeSort, recipes);
-        unfilteredRecipes = sortedRecipes;
-
-        if ((state as LoadedRecipeOverview).category != null) {
-          await repository.changeSortOrder(
-              newRecipeSort, (state as LoadedRecipeOverview).category!);
-        }
-
-        emit(LoadedRecipeOverview(
-          recipes: sortedRecipes,
-          randomImage: (state as LoadedRecipeOverview).randomImage,
-          vegetable: (state as LoadedRecipeOverview).vegetable,
-          category: (state as LoadedRecipeOverview).category,
-          recipeTag: (state as LoadedRecipeOverview).recipeTag,
-          recipeSort: (state as LoadedRecipeOverview).recipeSort,
-        ));
-      }
-    });
-
-    on<LoadRecipeTagRecipeOverview>((event, emit) async {
-      final Recipe? randomRecipe =
-          await repository.getRandomRecipeOfRecipeTag(event.recipeTag.text);
-      final String? randomRecipeImage =
-          randomRecipe != null ? randomRecipe.imagePreviewPath : null;
-
-      emit(LoadingRecipes(
-        randomImage: randomRecipeImage,
-        recipeTag: event.recipeTag,
-      ));
-
-      final List<Recipe> recipes =
-          await repository.getRecipeTagRecipes(event.recipeTag.text);
-      unfilteredRecipes = List<Recipe>.from(recipes);
-
-      emit(LoadedRecipeOverview(
-        recipes: recipes,
-        randomImage: randomRecipeImage,
-        recipeTag: event.recipeTag,
-        recipeSort: RSort(RecipeSort.BY_NAME, true),
-      ));
-    });
-
-    on<FilterRecipesTag>((event, emit) async {
-      if (state is LoadedRecipeOverview) {
-        currentRecipeTagFilter = event.recipeTags;
-
-        emit(LoadedRecipeOverview(
-          recipes: List<Recipe>.from(unfilteredRecipes)
-            ..removeWhere((recipe) {
-              for (String recipeTagName in event.recipeTags) {
-                if (recipe.tags
-                        .firstWhereOrNull((tag) => tag.text == recipeTagName) ==
-                    null) {
-                  return true;
-                }
-              }
-              if (currentVegetableFilter != null) {
-                if (recipe.vegetable != currentVegetableFilter) {
-                  return true;
-                }
-              }
-              return false;
-            }),
-          randomImage: (state as LoadedRecipeOverview).randomImage,
-          vegetable: (state as LoadedRecipeOverview).vegetable,
-          category: (state as LoadedRecipeOverview).category,
-          recipeTag: (state as LoadedRecipeOverview).recipeTag,
-          recipeSort: (state as LoadedRecipeOverview).recipeSort,
-        ));
-      }
-    });
+    on<LoadCategoryRecipeOverview>(_loadCategory);
+    on<LoadVegetableRecipeOverview>(_loadVegetable);
+    on<LoadRecipeTagRecipeOverview>(_loadRecipeTag);
+    on<ChangeRecipeSort>(_changeSort);
+    on<ChangeAscending>(_changeAscending);
+    on<FilterRecipesVegetable>(_filterVegetable);
+    on<FilterRecipesTag>(_filterTags);
+    on<FilterRecipesQuery>(_filterQuery);
+    on<ClearRecipeFilters>(_clearFilters);
+    on<RetryRecipeOverview>(_retry);
+    on<AddRecipes>(_addRecipes);
+    on<DeleteRecipe>(_deleteRecipe);
+    on<UpdateRecipe>(_updateRecipe);
+    on<UpdateFavoriteStatus>(_updateFavoriteStatus);
   }
 
-  bool _belongsToRecipeList(Recipe recipe) {
-    if (state is LoadedRecipeOverview) {
-      // if the bloc shows recipes of a category
-      if ((state as LoadedRecipeOverview).category != null) {
-        final String? overviewCategory =
-            (state as LoadedRecipeOverview).category;
+  final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
+  late final StreamSubscription<RM.RecipeManagerState> subscription;
 
-        // if the bloc shows recipes of "no cateogry"
-        if (recipe.categories.isEmpty && overviewCategory == "no category") {
-          return true;
-        } // the bloc shows recipes of a userCategory
-        else {
-          for (String category in recipe.categories) {
-            if (category == overviewCategory) {
-              return true;
-            }
-          }
-        }
-      } // the bloc shows recipes of a vegetable
-      else {
-        final Vegetable? overviewVegetable =
-            (state as LoadedRecipeOverview).vegetable;
+  List<Recipe> _allRecipes = [];
+  String? _category;
+  Vegetable? _routeVegetable;
+  StringIntTuple? _routeRecipeTag;
+  RSort _recipeSort = RSort(RecipeSort.BY_NAME, true);
+  String _query = '';
+  Vegetable? _selectedVegetable;
+  List<String> _selectedRecipeTags = [];
 
-        if (overviewVegetable == recipe.vegetable) {
-          return true;
-        }
+  void _onRecipeManagerState(RM.RecipeManagerState managerState) {
+    if (state is! LoadedRecipeOverview) return;
+
+    if (managerState is RM.AddRecipesState) {
+      add(AddRecipes(managerState.recipes));
+    } else if (managerState is RM.DeleteRecipeState) {
+      add(DeleteRecipe(managerState.recipe));
+    } else if (managerState is RM.UpdateRecipeState) {
+      add(UpdateRecipe(managerState.oldRecipe, managerState.updatedRecipe));
+    } else if (managerState is RM.AddFavoriteState) {
+      add(UpdateFavoriteStatus(managerState.recipe));
+    } else if (managerState is RM.RemoveFavoriteState) {
+      add(UpdateFavoriteStatus(managerState.recipe));
+    }
+  }
+
+  Future<void> _loadCategory(
+    LoadCategoryRecipeOverview event,
+    Emitter<RecipeOverviewState> emit,
+  ) async {
+    _resetContext(category: event.category);
+    emit(LoadingRecipes(category: event.category));
+    try {
+      _recipeSort = await repository.getSortOrder(event.category);
+      _allRecipes = await repository.getCategoryRecipes(event.category);
+      _emitLoaded(emit);
+    } catch (_) {
+      emit(FailedRecipeOverview(category: event.category));
+    }
+  }
+
+  Future<void> _loadVegetable(
+    LoadVegetableRecipeOverview event,
+    Emitter<RecipeOverviewState> emit,
+  ) async {
+    _resetContext(vegetable: event.vegetable);
+    emit(LoadingRecipes(vegetable: event.vegetable));
+    try {
+      _allRecipes = await repository.getVegetableRecipes(event.vegetable);
+      _emitLoaded(emit);
+    } catch (_) {
+      emit(FailedRecipeOverview(vegetable: event.vegetable));
+    }
+  }
+
+  Future<void> _loadRecipeTag(
+    LoadRecipeTagRecipeOverview event,
+    Emitter<RecipeOverviewState> emit,
+  ) async {
+    _resetContext(recipeTag: event.recipeTag);
+    emit(LoadingRecipes(recipeTag: event.recipeTag));
+    try {
+      _allRecipes = await repository.getRecipeTagRecipes(event.recipeTag.text);
+      _emitLoaded(emit);
+    } catch (_) {
+      emit(FailedRecipeOverview(recipeTag: event.recipeTag));
+    }
+  }
+
+  void _resetContext({
+    String? category,
+    Vegetable? vegetable,
+    StringIntTuple? recipeTag,
+  }) {
+    _category = category;
+    _routeVegetable = vegetable;
+    _routeRecipeTag = recipeTag;
+    _recipeSort = RSort(RecipeSort.BY_NAME, true);
+    _query = '';
+    _selectedVegetable = null;
+    _selectedRecipeTags = [];
+  }
+
+  Future<void> _changeSort(
+    ChangeRecipeSort event,
+    Emitter<RecipeOverviewState> emit,
+  ) async {
+    if (state is! LoadedRecipeOverview) return;
+    _recipeSort = RSort(event.recipeSort, _recipeSort.ascending ?? true);
+    await _persistCategorySort();
+    _emitLoaded(emit);
+  }
+
+  Future<void> _changeAscending(
+    ChangeAscending event,
+    Emitter<RecipeOverviewState> emit,
+  ) async {
+    if (state is! LoadedRecipeOverview) return;
+    _recipeSort = RSort(_recipeSort.sort, event.ascending);
+    await _persistCategorySort();
+    _emitLoaded(emit);
+  }
+
+  Future<void> _persistCategorySort() async {
+    if (_category != null) {
+      await repository.changeSortOrder(_recipeSort, _category!);
+    }
+  }
+
+  void _filterVegetable(
+    FilterRecipesVegetable event,
+    Emitter<RecipeOverviewState> emit,
+  ) {
+    if (state is! LoadedRecipeOverview) return;
+    _selectedVegetable = event.vegetable;
+    _emitLoaded(emit);
+  }
+
+  void _filterTags(FilterRecipesTag event, Emitter<RecipeOverviewState> emit) {
+    if (state is! LoadedRecipeOverview) return;
+    _selectedRecipeTags = List<String>.from(event.recipeTags);
+    _emitLoaded(emit);
+  }
+
+  void _filterQuery(
+    FilterRecipesQuery event,
+    Emitter<RecipeOverviewState> emit,
+  ) {
+    if (state is! LoadedRecipeOverview) return;
+    _query = event.query;
+    _emitLoaded(emit);
+  }
+
+  void _clearFilters(
+    ClearRecipeFilters event,
+    Emitter<RecipeOverviewState> emit,
+  ) {
+    if (state is! LoadedRecipeOverview) return;
+    _query = '';
+    _selectedVegetable = null;
+    _selectedRecipeTags = [];
+    _emitLoaded(emit);
+  }
+
+  void _retry(RetryRecipeOverview event, Emitter<RecipeOverviewState> emit) {
+    if (_category != null) {
+      add(LoadCategoryRecipeOverview(_category!));
+    } else if (_routeVegetable != null) {
+      add(LoadVegetableRecipeOverview(_routeVegetable!));
+    } else if (_routeRecipeTag != null) {
+      add(LoadRecipeTagRecipeOverview(_routeRecipeTag!));
+    }
+  }
+
+  void _addRecipes(AddRecipes event, Emitter<RecipeOverviewState> emit) {
+    if (state is! LoadedRecipeOverview) return;
+    final names = _allRecipes.map((recipe) => recipe.name).toSet();
+    for (final recipe in event.recipes) {
+      if (_belongsToOverview(recipe) && names.add(recipe.name)) {
+        _allRecipes.add(recipe);
       }
-      return false;
+    }
+    _emitLoaded(emit);
+  }
+
+  void _deleteRecipe(DeleteRecipe event, Emitter<RecipeOverviewState> emit) {
+    if (state is! LoadedRecipeOverview) return;
+    _allRecipes = _allRecipes
+        .where((recipe) => recipe.name != event.recipe.name)
+        .toList();
+    _emitLoaded(emit);
+  }
+
+  void _updateRecipe(UpdateRecipe event, Emitter<RecipeOverviewState> emit) {
+    if (state is! LoadedRecipeOverview) return;
+    final oldIndex = _allRecipes.indexWhere(
+      (recipe) => recipe.name == event.oldRecipe.name,
+    );
+    final updatedBelongs = _belongsToOverview(event.updatedRecipe);
+
+    if (oldIndex >= 0 && updatedBelongs) {
+      _allRecipes = List<Recipe>.from(_allRecipes)
+        ..[oldIndex] = event.updatedRecipe;
+    } else if (oldIndex >= 0) {
+      _allRecipes = List<Recipe>.from(_allRecipes)..removeAt(oldIndex);
+    } else if (updatedBelongs) {
+      _allRecipes = List<Recipe>.from(_allRecipes)..add(event.updatedRecipe);
+    }
+    _emitLoaded(emit);
+  }
+
+  void _updateFavoriteStatus(
+    UpdateFavoriteStatus event,
+    Emitter<RecipeOverviewState> emit,
+  ) {
+    if (state is! LoadedRecipeOverview) return;
+    final index = _allRecipes.indexWhere(
+      (recipe) => recipe.name == event.recipe.name,
+    );
+    if (index < 0) return;
+    _allRecipes = List<Recipe>.from(_allRecipes)..[index] = event.recipe;
+    _emitLoaded(emit);
+  }
+
+  void _emitLoaded(Emitter<RecipeOverviewState> emit) {
+    final normalizedQuery = _query.trim().toLowerCase();
+    final visibleRecipes = _allRecipes.where((recipe) {
+      if (_selectedVegetable != null &&
+          recipe.vegetable != _selectedVegetable) {
+        return false;
+      }
+
+      final tagNames = recipe.tags.map((tag) => tag.text).toList();
+      if (!_selectedRecipeTags.every(tagNames.contains)) return false;
+
+      if (normalizedQuery.isEmpty) return true;
+      if (recipe.name.toLowerCase().contains(normalizedQuery)) return true;
+      return tagNames.any(
+        (tagName) => tagName.toLowerCase().contains(normalizedQuery),
+      );
+    }).toList();
+
+    _sortRecipes(visibleRecipes);
+
+    emit(
+      LoadedRecipeOverview(
+        allRecipes: List<Recipe>.unmodifiable(_allRecipes),
+        visibleRecipes: List<Recipe>.unmodifiable(visibleRecipes),
+        category: _category,
+        vegetable: _routeVegetable,
+        recipeTag: _routeRecipeTag,
+        recipeSort: _recipeSort,
+        query: _query,
+        selectedVegetable: _selectedVegetable,
+        selectedRecipeTags: List<String>.unmodifiable(_selectedRecipeTags),
+      ),
+    );
+  }
+
+  bool _belongsToOverview(Recipe recipe) {
+    if (_category != null) {
+      if (_category == constants.allCategories) return true;
+      if (_category == constants.noCategory) return recipe.categories.isEmpty;
+      return recipe.categories.contains(_category);
+    }
+    if (_routeVegetable != null) {
+      return recipe.vegetable == _routeVegetable;
+    }
+    if (_routeRecipeTag != null) {
+      return recipe.tags.any((tag) => tag.text == _routeRecipeTag!.text);
     }
     return false;
   }
 
-  String? _getRandomRecipeImage(List<Recipe> recipes) {
-    Random r = Random();
-
-    return recipes.isEmpty
-        ? null
-        : recipes[recipes.length == 1 ? 0 : r.nextInt(recipes.length - 1)]
-            .imagePreviewPath;
+  void _sortRecipes(List<Recipe> recipes) {
+    final ascending = _recipeSort.ascending ?? true;
+    recipes.sort((first, second) {
+      final int result;
+      switch (_recipeSort.sort) {
+        case RecipeSort.BY_NAME:
+          result = first.name.toLowerCase().compareTo(
+            second.name.toLowerCase(),
+          );
+        case RecipeSort.BY_EFFORT:
+          return _compareNullable(
+            first.effort,
+            second.effort,
+            ascending: ascending,
+          );
+        case RecipeSort.BY_INGREDIENT_COUNT:
+          result = getIngredientCount(first.ingredients)
+              .compareTo(getIngredientCount(second.ingredients));
+        case RecipeSort.BY_LAST_MODIFIED:
+          return _compareNullable(
+            DateTime.tryParse(first.lastModified),
+            DateTime.tryParse(second.lastModified),
+            ascending: ascending,
+          );
+        case RecipeSort.BY_TOTAL_TIME:
+          result = first.totalTime.compareTo(second.totalTime);
+      }
+      return ascending ? result : -result;
+    });
   }
 
-  List<Recipe> sortRecipes(RSort? recipeSort, List<Recipe> recipes) {
-    if (recipes.isEmpty) return [];
-
-    switch (recipeSort!.sort) {
-      case RecipeSort.BY_NAME:
-        return recipes
-          ..sort((a, b) => recipeSort.ascending!
-              ? a.name.compareTo(b.name)
-              : b.name.compareTo((a.name)));
-      case RecipeSort.BY_EFFORT:
-        return recipes
-          ..sort((a, b) => recipeSort.ascending!
-              ? a.effort!.compareTo(b.effort!)
-              : b.effort!.compareTo(a.effort!));
-      case RecipeSort.BY_INGREDIENT_COUNT:
-        return recipes
-          ..sort((a, b) => recipeSort.ascending!
-              ? getIngredientCount(a.ingredients)
-                  .compareTo(getIngredientCount(b.ingredients))
-              : getIngredientCount(b.ingredients)
-                  .compareTo(getIngredientCount(a.ingredients)));
-      case RecipeSort.BY_LAST_MODIFIED:
-        return recipes
-          ..sort((a, b) => recipeSort.ascending!
-              ? DateTime.parse(a.lastModified)
-                  .compareTo(DateTime.parse(b.lastModified))
-              : DateTime.parse(b.lastModified)
-                  .compareTo(DateTime.parse(a.lastModified)));
-    }
+  int _compareNullable<T extends Comparable<Object?>>(
+    T? first,
+    T? second, {
+    required bool ascending,
+  }) {
+    if (first == null && second == null) return 0;
+    if (first == null) return 1;
+    if (second == null) return -1;
+    final result = first.compareTo(second);
+    return ascending ? result : -result;
   }
 
   @override

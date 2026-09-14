@@ -31,16 +31,10 @@ class UpdateRecipeTag extends RecipeTagManagerEvent {
   final StringIntTuple oldRecipeTag;
   final StringIntTuple updatedRecipeTag;
 
-  const UpdateRecipeTag(
-    this.oldRecipeTag,
-    this.updatedRecipeTag,
-  );
+  const UpdateRecipeTag(this.oldRecipeTag, this.updatedRecipeTag);
 
   @override
-  List<Object> get props => [
-        oldRecipeTag,
-        updatedRecipeTag,
-      ];
+  List<Object> get props => [oldRecipeTag, updatedRecipeTag];
 }
 
 class SelectRecipeTag extends RecipeTagManagerEvent {

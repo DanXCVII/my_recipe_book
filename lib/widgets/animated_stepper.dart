@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../ad_related/ad.dart';
 import '../constants/global_settings.dart';
 import 'clipper.dart';
+
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/animated_stepper/animated_stepper_bloc.dart';
@@ -36,13 +38,13 @@ class AnimatedStepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: _getStepsWithTitle(stepTitles, steps),
-    );
+    return Column(children: _getStepsWithTitle(stepTitles, steps));
   }
 
   List<Widget> _getStepsWithTitle(
-      List<String>? stepTitles, List<String> selectedSteps) {
+    List<String>? stepTitles,
+    List<String> selectedSteps,
+  ) {
     if (stepTitles == null) {
       return _getSteps(selectedSteps, 0);
     }
@@ -52,8 +54,9 @@ class AnimatedStepper extends StatelessWidget {
       if (i == 0 || stepTitles[i] != "") {
         int nextTitleIndex = stepTitles.length;
         if (i + 1 < stepTitles.length) {
-          String? nextTitle =
-              stepTitles.sublist(i + 1).firstWhereOrNull((e) => e != "");
+          String? nextTitle = stepTitles
+              .sublist(i + 1)
+              .firstWhereOrNull((e) => e != "");
           if (nextTitle == null) {
             nextTitleIndex = stepTitles.length;
           } else {
@@ -125,8 +128,12 @@ class AnimatedStepper extends StatelessWidget {
                 },
                 child: AnimatedContainer(
                   duration: Duration(milliseconds: 300),
-                  color: Color.fromRGBO(0, 0, 0,
-                      state.selectedStep == index + globalIndex ? 0.5 : 0),
+                  color: Color.fromRGBO(
+                    0,
+                    0,
+                    0,
+                    state.selectedStep == index + globalIndex ? 0.5 : 0,
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 12, right: 16),
                     child: Row(
@@ -135,48 +142,52 @@ class AnimatedStepper extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 5, 12, 12),
                           child: Padding(
-                              padding: const EdgeInsets.only(left: 0, top: 20),
-                              child: AnimatedContainer(
-                                duration: Duration(milliseconds: 200),
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      offset: Offset(2, 2),
-                                      blurRadius: 3,
-                                      spreadRadius: 1,
-                                      color: Colors.black26,
-                                    ),
-                                  ],
-
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: state.selectedStep ==
-                                            index + globalIndex
-                                        ? [Color(0xffBE4400), Color(0xffFF7A00)]
-                                        : [
-                                            Color(0xff933500),
-                                            Color(0xff933500)
-                                                .withAlpha((0.3 * 255).round())
-                                          ],
+                            padding: const EdgeInsets.only(left: 0, top: 20),
+                            child: AnimatedContainer(
+                              duration: Duration(milliseconds: 200),
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    offset: Offset(2, 2),
+                                    blurRadius: 3,
+                                    spreadRadius: 1,
+                                    color: Colors.black26,
                                   ),
-                                  // color: stepsColors[i % (stepsColors.length)],
+                                ],
+
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors:
+                                      state.selectedStep == index + globalIndex
+                                      ? [Color(0xffBE4400), Color(0xffFF7A00)]
+                                      : [
+                                          Color(0xff933500),
+                                          Color(0xff933500)
+                                              .withAlpha((0.3 * 255).round()),
+                                        ],
                                 ),
-                                child: Center(
-                                  child: Text("${index + 1}.",
-                                      style: TextStyle(
-                                        color: state.selectedStep ==
-                                                index + globalIndex
-                                            ? Color(0xff4F3D00)
-                                            : Colors.amber,
-                                        fontSize: index > 8 ? 32 : 42,
-                                        fontFamily: "Quando",
-                                      )),
+                                // color: stepsColors[i % (stepsColors.length)],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "${index + 1}.",
+                                  style: TextStyle(
+                                    color:
+                                        state.selectedStep ==
+                                            index + globalIndex
+                                        ? Color(0xff4F3D00)
+                                        : Colors.amber,
+                                    fontSize: index > 8 ? 32 : 42,
+                                    fontFamily: "Quando",
+                                  ),
                                 ),
-                              )),
+                              ),
+                            ),
+                          ),
                         ),
                         Expanded(
                           child: Column(
@@ -211,45 +222,48 @@ class AnimatedStepper extends StatelessWidget {
                                       children: List<Widget>.generate(
                                         lowResStepImages == null
                                             ? stepImages![index + globalIndex]
-                                                .length
-                                            : lowResStepImages![
-                                                    index + globalIndex]
-                                                .length,
+                                                  .length
+                                            : lowResStepImages![index +
+                                                      globalIndex]
+                                                  .length,
                                         (wrapIndex) => GestureDetector(
                                           onTap: () {
                                             _showStepFullView(
-                                                stepImages!,
-                                                steps,
-                                                index + globalIndex,
-                                                wrapIndex,
-                                                context);
+                                              stepImages!,
+                                              steps,
+                                              index + globalIndex,
+                                              wrapIndex,
+                                              context,
+                                            );
                                           },
                                           child: Hero(
-                                            tag: GlobalSettings()
+                                            tag:
+                                                GlobalSettings()
                                                     .animationsEnabled()
                                                 ? "Schritt$index:$wrapIndex"
                                                 : "Schritt$index:${wrapIndex}3",
                                             child: ClipRRect(
                                               borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)),
+                                                Radius.circular(10),
+                                              ),
                                               child: Container(
                                                 width: 100,
                                                 height: 80,
                                                 child: FadeInImage(
                                                   fadeInDuration: Duration(
-                                                      milliseconds: 100),
+                                                    milliseconds: 100,
+                                                  ),
                                                   placeholder: MemoryImage(
-                                                      kTransparentImage),
+                                                    kTransparentImage,
+                                                  ),
                                                   image: FileImage(
-                                                    File(lowResStepImages ==
-                                                            null
-                                                        ? stepImages![index +
-                                                                globalIndex]
-                                                            [wrapIndex]
-                                                        : lowResStepImages![
-                                                                index +
-                                                                    globalIndex]
-                                                            [wrapIndex]),
+                                                    File(
+                                                      lowResStepImages == null
+                                                          ? stepImages![index +
+                                                                globalIndex][wrapIndex]
+                                                          : lowResStepImages![index +
+                                                                globalIndex][wrapIndex],
+                                                    ),
                                                   ),
                                                   fit: BoxFit.cover,
                                                 ),

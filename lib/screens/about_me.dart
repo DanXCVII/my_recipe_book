@@ -108,17 +108,11 @@ class AboutMeScreen extends StatelessWidget {
                                     children: <Widget>[
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Icon(
-                                          Icons.chat,
-                                          size: 30,
-                                        ),
+                                        child: Icon(Icons.chat, size: 30),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Icon(
-                                          Icons.facebook,
-                                          size: 30,
-                                        ),
+                                        child: Icon(Icons.facebook, size: 30),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
@@ -129,8 +123,10 @@ class AboutMeScreen extends StatelessWidget {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Icon(Icons.alternate_email,
-                                            size: 30),
+                                        child: Icon(
+                                          Icons.alternate_email,
+                                          size: 30,
+                                        ),
                                       ),
                                     ],
                                   ),

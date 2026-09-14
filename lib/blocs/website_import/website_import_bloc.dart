@@ -30,7 +30,7 @@ class WebsiteImportBloc extends Bloc<WebsiteImportEvent?, WebsiteImportState> {
   final LocalRepository repository;
 
   WebsiteImportBloc(this.recipeManagerBloc, this.repository)
-      : super(ReadyToImport()) {
+    : super(ReadyToImport()) {
     on<ImportRecipe>((event, emit) async {
       emit(ImportingRecipe());
 

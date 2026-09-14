@@ -19,8 +19,7 @@ class FavoriteRecipesBloc
   FavoriteRecipesBloc({
     required this.recipeManagerBloc,
     required this.repository,
-  })
-      : super(LoadingFavorites()) {
+  }) : super(LoadingFavorites()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (rmState is RM.AddFavoriteState) {
         add(AddFavorite(rmState.recipe));

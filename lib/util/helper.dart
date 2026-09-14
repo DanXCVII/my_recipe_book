@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:fraction/fraction.dart';
+
 import '../generated/l10n.dart';
 
 import '../models/ingredient.dart';
@@ -154,10 +155,12 @@ double? getNumberOfString(String numberInfo) {
 
   try {
     if (numberInfo.contains("/")) {
-      double firstNumber =
-          double.parse(numberInfo.substring(0, numberInfo.indexOf("/")));
-      double secondNumber =
-          double.parse(numberInfo.substring(numberInfo.indexOf("/") + 1));
+      double firstNumber = double.parse(
+        numberInfo.substring(0, numberInfo.indexOf("/")),
+      );
+      double secondNumber = double.parse(
+        numberInfo.substring(numberInfo.indexOf("/") + 1),
+      );
       return firstNumber / secondNumber;
     }
   } catch (e) {

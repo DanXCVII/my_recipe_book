@@ -6,7 +6,9 @@ import '../../../blocs/new_recipe/steps/steps_bloc.dart';
 import '../../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../../constants/routes.dart';
+
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import '../../../models/recipe.dart';
 import '../../../util/my_wrapper.dart';
 import '../../../widgets/complexity_section.dart';
@@ -33,11 +35,8 @@ class StepsScreen extends StatefulWidget {
   final Recipe? modifiedRecipe;
   final String? editingRecipeName;
 
-  StepsScreen({
-    this.modifiedRecipe,
-    this.editingRecipeName,
-    Key? key,
-  }) : super(key: key);
+  StepsScreen({this.modifiedRecipe, this.editingRecipeName, Key? key})
+    : super(key: key);
 
   _StepsScreenState createState() => _StepsScreenState();
 }
@@ -99,9 +98,10 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)],
+              ),
             ),
           ),
           title: Text(S.of(context).add_steps),
@@ -122,7 +122,8 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
               listener: (context, state) {
                 if (state is SEditingFinishedGoBack) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(S.of(context).saving_your_input)));
+                    SnackBar(content: Text(S.of(context).saving_your_input)),
+                  );
                 } else if (state is SSaved) {
                   BlocProvider.of<StepsBloc>(context).add(SetCanSave());
 
@@ -151,10 +152,7 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                   if (state is SSavingTmpData) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Icon(
-                        Icons.arrow_forward,
-                        color: Colors.grey,
-                      ),
+                      child: Icon(Icons.arrow_forward, color: Colors.grey),
                     );
                   } else if (state is SCanSave) {
                     return IconButton(
@@ -171,9 +169,10 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Container(
-                            width: 25,
-                            height: 25,
-                            child: CircularProgressIndicator()),
+                          width: 25,
+                          height: 25,
+                          child: CircularProgressIndicator(),
+                        ),
                       ),
                     );
                   } else {
@@ -193,14 +192,16 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
                   Form(
                     key: _formKey,
                     child: widget.editingRecipeName != null
-                        ? Steps(
-                            editRecipeName: widget.editingRecipeName,
-                          )
+                        ? Steps(editRecipeName: widget.editingRecipeName)
                         : Steps(),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                        right: 12, top: 12, left: 18, bottom: 12),
+                      right: 12,
+                      top: 12,
+                      left: 18,
+                      bottom: 12,
+                    ),
                     child: TextField(
                       controller: notesController,
                       textCapitalization: TextCapitalization.sentences,
@@ -226,26 +227,21 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
   void _showFlushInfo(String title, String body) {
     if (_flush != null && _flush!.isShowing()) {
     } else {
-      _flush = Flushbar<bool>(
-        animationDuration: Duration(milliseconds: 300),
-        leftBarIndicatorColor: Colors.blue[300],
-        title: title,
-        message: body,
-        icon: Icon(
-          Icons.info_outline,
-          color: Colors.blue,
-        ),
-        mainButton: TextButton(
-          onPressed: () {
-            _flush!.dismiss(true); // result = true
-          },
-          child: Text(
-            "OK",
-            style: TextStyle(color: Colors.amber),
-          ),
-        ),
-      ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-        ..show(context).then((result) {});
+      _flush =
+          Flushbar<bool>(
+              animationDuration: Duration(milliseconds: 300),
+              leftBarIndicatorColor: Colors.blue[300],
+              title: title,
+              message: body,
+              icon: Icon(Icons.info_outline, color: Colors.blue),
+              mainButton: TextButton(
+                onPressed: () {
+                  _flush!.dismiss(true); // result = true
+                },
+                child: Text("OK", style: TextStyle(color: Colors.amber)),
+              ),
+            ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+            ..show(context).then((result) {});
     }
   }
 

@@ -44,11 +44,13 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          decoration: BoxDecoration(color: Colors.black),
-          constraints: BoxConstraints.expand(
-            height: MediaQuery.of(context).size.height,
-          ),
-          child: Stack(alignment: Alignment.bottomLeft, children: <Widget>[
+        decoration: BoxDecoration(color: Colors.black),
+        constraints: BoxConstraints.expand(
+          height: MediaQuery.of(context).size.height,
+        ),
+        child: Stack(
+          alignment: Alignment.bottomLeft,
+          children: <Widget>[
             PhotoViewGallery.builder(
               scrollPhysics: const BouncingScrollPhysics(),
               builder: _buildItem,
@@ -68,10 +70,12 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
                     child: Text(
                       widget.descriptions[currentIndex],
                       style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 17.0,
-                          decoration: null),
-                    )),
+                        color: Colors.white,
+                        fontSize: 17.0,
+                        decoration: null,
+                      ),
+                    ),
+                  ),
             Positioned(
               top: 0,
               left: 0,
@@ -82,17 +86,20 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoView> {
                   backgroundColor: Colors.black..withAlpha((0.3 * 255).round()),
                 ),
               ),
-            )
-          ])),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     return PhotoViewGalleryPageOptions(
-      imageProvider: (widget.galleryImagePaths[index] == Constants.noRecipeImage
-              ? AssetImage(widget.galleryImagePaths[index])
-              : FileImage(File(widget.galleryImagePaths[index])))
-          as ImageProvider<Object>?,
+      imageProvider:
+          (widget.galleryImagePaths[index] == Constants.noRecipeImage
+                  ? AssetImage(widget.galleryImagePaths[index])
+                  : FileImage(File(widget.galleryImagePaths[index])))
+              as ImageProvider<Object>?,
       initialScale: PhotoViewComputedScale.contained,
       minScale: PhotoViewComputedScale.contained * (1.0),
       maxScale: PhotoViewComputedScale.covered * 1.5,

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import '../../local_storage/local_repository.dart';
 import '../../models/ingredient.dart';
 import '../../screens/add_recipe/general_info_screen/categories_section.dart';
@@ -11,7 +12,7 @@ import '../../util/helper.dart';
 
 class IngredientAddDialog extends StatelessWidget {
   final void Function(Ingredient ingredient, int selectedDropdownIndex)
-      onFinished;
+  onFinished;
   final Ingredient prefilledData;
   final List<String> sectionTitles;
   final int selectedDropdownIndex;
@@ -36,7 +37,11 @@ class IngredientAddDialog extends StatelessWidget {
         width: MediaQuery.of(context).size.width > 360 ? 360 : null,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
-              Consts.padding, Consts.padding, Consts.padding, 7),
+            Consts.padding,
+            Consts.padding,
+            Consts.padding,
+            7,
+          ),
           child: IngredientAddDialogContent(
             onFinished,
             prefilledData,
@@ -51,7 +56,7 @@ class IngredientAddDialog extends StatelessWidget {
 
 class IngredientAddDialogContent extends StatefulWidget {
   final void Function(Ingredient ingredient, int selectedDropdownIndex)
-      onFinished;
+  onFinished;
   final Ingredient prefilledData;
   final focus = FocusNode();
   final List<String>? sectionTitles;
@@ -81,10 +86,12 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
   bool isExpanded = false;
 
   int selectedDropdownIndex;
-  List<String /*!*/ > dropdownItems = [];
+  List<String /*!*/> dropdownItems = [];
 
   _IngredientAddDialogContentState(
-      this.selectedDropdownIndex, List<String> sectionTitles) {
+    this.selectedDropdownIndex,
+    List<String> sectionTitles,
+  ) {
     for (int i = 0; i < sectionTitles.length; i++) {
       dropdownItems.add("${i + 1}: ${sectionTitles[i]}");
     }
@@ -138,27 +145,28 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                           iconSize: 24,
                           elevation: 16,
                           style: TextStyle(
-                              fontSize: 18,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.orange,
+                            fontSize: 18,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                           ),
+                          underline: Container(height: 2, color: Colors.orange),
                           onChanged: (String? newValue) {
                             setState(() {
-                              selectedDropdownIndex =
-                                  dropdownItems.indexOf(newValue!);
+                              selectedDropdownIndex = dropdownItems.indexOf(
+                                newValue!,
+                              );
                             });
                           },
-                          items: dropdownItems
-                              .map<DropdownMenuItem<String>>((String value) {
+                          items: dropdownItems.map<DropdownMenuItem<String>>((
+                            String value,
+                          ) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Container(
-                                width: MediaQuery.of(context).size.width - 150 >
+                                width:
+                                    MediaQuery.of(context).size.width - 150 >
                                         270
                                     ? 270
                                     : MediaQuery.of(context).size.width - 150,
@@ -179,7 +187,9 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                       SimpleAutoCompleteTextField(
                         key: autoCompletionTextField,
                         focusNode: widget.focus,
-                        suggestions: context.read<LocalRepository>().getIngredientNames(),
+                        suggestions: context
+                            .read<LocalRepository>()
+                            .getIngredientNames(),
                         controller: ingredientNameController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
@@ -187,8 +197,8 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                         ),
                         textCapitalization:
                             S.of(context).two_char_locale == "EN"
-                                ? TextCapitalization.none
-                                : TextCapitalization.sentences,
+                            ? TextCapitalization.none
+                            : TextCapitalization.sentences,
                       ),
                       SizedBox(height: 6),
                       Row(
@@ -226,7 +236,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                             ),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -234,9 +244,7 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
             ].whereType<Widget>().toList(),
           ),
         ),
-        SizedBox(
-          height: 12,
-        ),
+        SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
@@ -257,8 +265,8 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
               style: TextButton.styleFrom(
                 backgroundColor:
                     Theme.of(context).colorScheme.surface == Colors.white
-                        ? null
-                        : Colors.amber,
+                    ? null
+                    : Colors.amber,
               ),
               onPressed: () {
                 if (formKey.currentState!.validate()) {
@@ -268,7 +276,8 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                       amount: ingredientAmountController.text == ""
                           ? null
                           : getDoubleFromString(
-                              ingredientAmountController.text),
+                              ingredientAmountController.text,
+                            ),
                       unit: ingredientUnitController.text,
                     ),
                     selectedDropdownIndex,
@@ -277,9 +286,9 @@ class _IngredientAddDialogContentState extends State<IngredientAddDialogContent>
                   Navigator.of(context).pop();
                 }
               },
-            )
+            ),
           ],
-        )
+        ),
       ],
     );
   }

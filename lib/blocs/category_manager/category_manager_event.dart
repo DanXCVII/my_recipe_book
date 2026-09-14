@@ -32,18 +32,10 @@ class MoveCategory extends CategoryManagerEvent {
   final int newIndex;
   final DateTime time;
 
-  const MoveCategory(
-    this.oldIndex,
-    this.newIndex,
-    this.time,
-  );
+  const MoveCategory(this.oldIndex, this.newIndex, this.time);
 
   @override
-  List<Object> get props => [
-        oldIndex,
-        newIndex,
-        time,
-      ];
+  List<Object> get props => [oldIndex, newIndex, time];
 }
 
 class UpdateCategory extends CategoryManagerEvent {
@@ -57,7 +49,7 @@ class UpdateCategory extends CategoryManagerEvent {
 }
 
 class SelectCategory extends CategoryManagerEvent {
-  final String/*!*/ categoryName;
+  final String /*!*/ categoryName;
 
   const SelectCategory(this.categoryName);
 

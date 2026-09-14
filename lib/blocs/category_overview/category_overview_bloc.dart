@@ -23,8 +23,7 @@ class CategoryOverviewBloc
   CategoryOverviewBloc({
     required this.recipeManagerBloc,
     required this.repository,
-  })
-      : super(LoadingCategoryOverview()) {
+  }) : super(LoadingCategoryOverview()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedCategoryOverview) {
         if (rmState is RM.AddRecipesState) {
@@ -56,11 +55,11 @@ class CategoryOverviewBloc
 
       if (event.categoryOverviewContext != null) {
         BlocProvider.of<RandomRecipeExplorerBloc>(
-                event.categoryOverviewContext!)
-            .add(InitializeRandomRecipeExplorer());
+          event.categoryOverviewContext!,
+        ).add(InitializeRandomRecipeExplorer());
         BlocProvider.of<RecipeCategoryOverviewBloc>(
-                event.categoryOverviewContext!)
-            .add(RCOLoadRecipeCategoryOverview());
+          event.categoryOverviewContext!,
+        ).add(RCOLoadRecipeCategoryOverview());
       }
     });
 
@@ -68,7 +67,9 @@ class CategoryOverviewBloc
       if (state is LoadedCategoryOverview) {
         final List<Tuple2<String, String>> categoryRandomImageList =
             await _addCategoryRandomImage(
-                (state as LoadedCategoryOverview).categories, event.recipes);
+              (state as LoadedCategoryOverview).categories,
+              event.recipes,
+            );
 
         emit(LoadedCategoryOverview(categoryRandomImageList));
       }
@@ -76,9 +77,11 @@ class CategoryOverviewBloc
 
     on<CODeleteRecipe>((event, emit) async {
       if (state is LoadedCategoryOverview) {
-        final List<Tuple2<String, String /*!*/ >> categoryRandomImageList =
+        final List<Tuple2<String, String /*!*/>> categoryRandomImageList =
             await _removeRecipeFromOverview(
-                (state as LoadedCategoryOverview).categories, event.recipe);
+              (state as LoadedCategoryOverview).categories,
+              event.recipe,
+            );
         emit(LoadedCategoryOverview(categoryRandomImageList));
       }
     });
@@ -106,12 +109,12 @@ class CategoryOverviewBloc
       if (state is LoadedCategoryOverview) {
         final List<Tuple2<String, String>> categoryRandomImageList =
             (state as LoadedCategoryOverview).categories.map((t) {
-          if (t.item1 == event.oldCategory) {
-            return Tuple2<String, String>(event.updatedCategory, t.item2);
-          } else {
-            return t;
-          }
-        }).toList();
+              if (t.item1 == event.oldCategory) {
+                return Tuple2<String, String>(event.updatedCategory, t.item2);
+              } else {
+                return t;
+              }
+            }).toList();
 
         emit(LoadedCategoryOverview(categoryRandomImageList));
       }
@@ -125,10 +128,14 @@ class CategoryOverviewBloc
         List<Tuple2<String, String>> newCategoryRandomImageList =
             oldCategoryRandomImageList
               ..insert(
-                  event.newIndex, oldCategoryRandomImageList[event.oldIndex])
-              ..removeAt(event.oldIndex > event.newIndex
-                  ? event.oldIndex + 1
-                  : event.oldIndex);
+                event.newIndex,
+                oldCategoryRandomImageList[event.oldIndex],
+              )
+              ..removeAt(
+                event.oldIndex > event.newIndex
+                    ? event.oldIndex + 1
+                    : event.oldIndex,
+              );
 
         emit(LoadedCategoryOverview(newCategoryRandomImageList));
       }
@@ -136,8 +143,9 @@ class CategoryOverviewBloc
   }
 
   Future<List<Tuple2<String, String>>> _removeRecipeFromOverview(
-      List<Tuple2<String, String>> categoryRandomImageList,
-      Recipe recipe) async {
+    List<Tuple2<String, String>> categoryRandomImageList,
+    Recipe recipe,
+  ) async {
     List<Tuple2<String, String>> newCategoryRandomImageList = [];
 
     for (Tuple2<String, String> t in categoryRandomImageList) {
@@ -145,15 +153,19 @@ class CategoryOverviewBloc
       if (t.item2 == recipe.imagePath) {
         // get a new randomImage
         Recipe? randomRecipe = await repository.getRandomRecipeOfCategory(
-            category: t.item1, excludedRecipe: recipe);
+          category: t.item1,
+          excludedRecipe: recipe,
+        );
 
-        String? newRandomImage =
-            randomRecipe == null ? null : randomRecipe.imagePath;
+        String? newRandomImage = randomRecipe == null
+            ? null
+            : randomRecipe.imagePath;
         // if there is a new randomImage
         if (newRandomImage != null) {
           // add the new randomImage to the category
-          newCategoryRandomImageList
-              .add(Tuple2<String, String>(t.item1, newRandomImage));
+          newCategoryRandomImageList.add(
+            Tuple2<String, String>(t.item1, newRandomImage),
+          );
         }
       } // if the catogry randomImage is not of the to be deleted recipe
       else {
@@ -170,13 +182,16 @@ class CategoryOverviewBloc
     final List<Tuple2<String, String>> categoryRandomImageList = [];
 
     for (String category in categories) {
-      Recipe? randomRecipe =
-          await repository.getRandomRecipeOfCategory(category: category);
-      String? randomImage =
-          randomRecipe == null ? null : randomRecipe.imagePath;
+      Recipe? randomRecipe = await repository.getRandomRecipeOfCategory(
+        category: category,
+      );
+      String? randomImage = randomRecipe == null
+          ? null
+          : randomRecipe.imagePath;
       if (randomImage != null) {
-        categoryRandomImageList
-            .add(Tuple2<String, String>(category, randomImage));
+        categoryRandomImageList.add(
+          Tuple2<String, String>(category, randomImage),
+        );
       }
     }
     return categoryRandomImageList;
@@ -185,8 +200,9 @@ class CategoryOverviewBloc
   /// if the new recipe is under a category the only one, add the category to the
   /// overview with the new recipeImage
   Future<List<Tuple2<String, String>>> _addCategoryRandomImage(
-      List<Tuple2<String, String>> oldCategoryRandomImageList,
-      List<Recipe> recipes) async {
+    List<Tuple2<String, String>> oldCategoryRandomImageList,
+    List<Recipe> recipes,
+  ) async {
     List<Tuple2<String /*!*/, String>> categoryRandomImageList =
         List<Tuple2<String, String>>.from(oldCategoryRandomImageList);
 
@@ -204,11 +220,13 @@ class CategoryOverviewBloc
         // if the current recipeCategory is not yet in the overview
         if (!alreadyAdded) {
           // add the category with the image of the recipe
-          categoryRandomImageList.add(Tuple2<String, String>(
+          categoryRandomImageList.add(
+            Tuple2<String, String>(
               category,
-              (await repository
-                      .getRandomRecipeOfCategory(category: category))!
-                  .imagePath));
+              (await repository.getRandomRecipeOfCategory(category: category))!
+                  .imagePath,
+            ),
+          );
         }
       }
     }

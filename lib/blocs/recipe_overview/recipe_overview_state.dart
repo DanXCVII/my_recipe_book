@@ -10,50 +10,67 @@ class LoadingRecipeOverview extends RecipeOverviewState {
 }
 
 class LoadingRecipes extends RecipeOverviewState {
-  final String? randomImage;
   final String? category;
   final Vegetable? vegetable;
   final StringIntTuple? recipeTag;
 
-  const LoadingRecipes({
-    this.randomImage,
-    this.vegetable,
-    this.category,
-    this.recipeTag,
-  });
+  const LoadingRecipes({this.vegetable, this.category, this.recipeTag});
 
   @override
-  List<Object?> get props => [
-        randomImage,
-        vegetable,
-        category,
-        recipeTag,
-      ];
+  List<Object?> get props => [vegetable, category, recipeTag];
+}
+
+class FailedRecipeOverview extends RecipeOverviewState {
+  final String? category;
+  final Vegetable? vegetable;
+  final StringIntTuple? recipeTag;
+
+  const FailedRecipeOverview({this.category, this.vegetable, this.recipeTag});
+
+  @override
+  List<Object?> get props => [category, vegetable, recipeTag];
 }
 
 class LoadedRecipeOverview extends RecipeOverviewState {
-  final List<Recipe>? recipes;
-  final String? randomImage;
+  final List<Recipe> allRecipes;
+  final List<Recipe> visibleRecipes;
   final String? category;
   final Vegetable? vegetable;
   final StringIntTuple? recipeTag;
-  final RSort? recipeSort;
+  final RSort recipeSort;
+  final String query;
+  final Vegetable? selectedVegetable;
+  final List<String> selectedRecipeTags;
 
-  const LoadedRecipeOverview(
-      {this.recipes,
-      this.randomImage,
-      this.vegetable,
-      this.category,
-      this.recipeTag,
-      this.recipeSort});
+  const LoadedRecipeOverview({
+    required this.allRecipes,
+    required this.visibleRecipes,
+    required this.recipeSort,
+    this.category,
+    this.vegetable,
+    this.recipeTag,
+    this.query = '',
+    this.selectedVegetable,
+    this.selectedRecipeTags = const [],
+  });
+
+  List<Recipe> get recipes => visibleRecipes;
+
+  bool get hasActiveFilters =>
+      query.trim().isNotEmpty ||
+      selectedVegetable != null ||
+      selectedRecipeTags.isNotEmpty;
 
   @override
   List<Object?> get props => [
-        recipes,
-        randomImage,
-        vegetable,
-        category,
-        recipeTag,
-        recipeSort,
-      ];
+    allRecipes,
+    visibleRecipes,
+    vegetable,
+    category,
+    recipeTag,
+    recipeSort,
+    query,
+    selectedVegetable,
+    selectedRecipeTags,
+  ];
 }

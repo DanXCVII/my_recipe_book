@@ -87,18 +87,10 @@ class MoveCategoryState extends RecipeManagerState {
   final int newIndex;
   final DateTime time;
 
-  const MoveCategoryState(
-    this.oldIndex,
-    this.newIndex,
-    this.time,
-  );
+  const MoveCategoryState(this.oldIndex, this.newIndex, this.time);
 
   @override
-  List<Object> get props => [
-        oldIndex,
-        newIndex,
-        time,
-      ];
+  List<Object> get props => [oldIndex, newIndex, time];
 }
 
 class AddRecipeTagsState extends RecipeManagerState {
@@ -123,14 +115,8 @@ class UpdateRecipeTagState extends RecipeManagerState {
   final StringIntTuple oldRecipeTag;
   final StringIntTuple updatedRecipeTag;
 
-  const UpdateRecipeTagState(
-    this.oldRecipeTag,
-    this.updatedRecipeTag,
-  );
+  const UpdateRecipeTagState(this.oldRecipeTag, this.updatedRecipeTag);
 
   @override
-  List<Object> get props => [
-        oldRecipeTag,
-        updatedRecipeTag,
-      ];
+  List<Object> get props => [oldRecipeTag, updatedRecipeTag];
 }

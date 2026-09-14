@@ -4,7 +4,7 @@ abstract class RecipeOverviewEvent extends Equatable {
   const RecipeOverviewEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadVegetableRecipeOverview extends RecipeOverviewEvent {
@@ -26,7 +26,7 @@ class LoadRecipeTagRecipeOverview extends RecipeOverviewEvent {
 }
 
 class LoadCategoryRecipeOverview extends RecipeOverviewEvent {
-  final String/*!*/ category;
+  final String /*!*/ category;
 
   const LoadCategoryRecipeOverview(this.category);
 
@@ -53,20 +53,31 @@ class ChangeAscending extends RecipeOverviewEvent {
 }
 
 class FilterRecipesVegetable extends RecipeOverviewEvent {
-  final Vegetable vegetable;
+  final Vegetable? vegetable;
 
   const FilterRecipesVegetable(this.vegetable);
 
   @override
-  List<Object> get props => [vegetable];
+  List<Object?> get props => [vegetable];
 }
+
+class FilterRecipesQuery extends RecipeOverviewEvent {
+  final String query;
+
+  const FilterRecipesQuery(this.query);
+
+  @override
+  List<Object> get props => [query];
+}
+
+class ClearRecipeFilters extends RecipeOverviewEvent {}
+
+class RetryRecipeOverview extends RecipeOverviewEvent {}
 
 class FilterRecipesTag extends RecipeOverviewEvent {
   final List<String> recipeTags;
 
-  const FilterRecipesTag(
-    this.recipeTags,
-  );
+  const FilterRecipesTag(this.recipeTags);
 
   @override
   List<Object> get props => [recipeTags];

@@ -14,8 +14,11 @@ class LoadedRecipeIngredients extends RecipeScreenIngredientsState {
   final double? servings;
   final List<bool>? sectionCheck;
 
-  const LoadedRecipeIngredients(
-      [this.ingredients = const [[]], this.servings, this.sectionCheck]);
+  const LoadedRecipeIngredients([
+    this.ingredients = const [[]],
+    this.servings,
+    this.sectionCheck,
+  ]);
 
   @override
   List<Object?> get props => [ingredients, servings, sectionCheck];

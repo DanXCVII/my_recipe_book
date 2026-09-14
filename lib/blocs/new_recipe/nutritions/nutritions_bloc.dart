@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+
 import '../../../models/nutrition.dart';
 
 import '../../../local_storage/local_repository.dart';
@@ -36,8 +37,8 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
       Recipe? newRecipe;
       if (event.editingRecipeName == null) {
         Recipe nutritionRecipe = repository.getTmpRecipe()!.copyWith(
-              nutritions: event.nutritions,
-            );
+          nutritions: event.nutritions,
+        );
 
         if (event.goBack) {
           await repository.saveTmpRecipe(nutritionRecipe);
@@ -49,8 +50,8 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
         }
       } else {
         Recipe nutritionRecipe = repository.getTmpEditingRecipe()!.copyWith(
-              nutritions: event.nutritions,
-            );
+          nutritions: event.nutritions,
+        );
         if (event.goBack) {
           await repository.saveTmpEditingRecipe(nutritionRecipe);
         }
@@ -60,7 +61,8 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
             event.recipeManagerBloc.add(RMAddRecipes([newRecipe!]));
           } else {
             event.recipeManagerBloc.add(
-                RMDeleteRecipe(event.editingRecipeName!, deleteFiles: false));
+              RMDeleteRecipe(event.editingRecipeName!, deleteFiles: false),
+            );
             await Future.delayed(Duration(milliseconds: 100));
             newRecipe = await IO.fixImagePaths(nutritionRecipe);
             if (event.editingRecipeName != newRecipe.name) {

@@ -20,18 +20,10 @@ class AddImage extends StepImagesEvent {
   final int stepNumber;
   final bool editingRecipe;
 
-  const AddImage(
-    this.stepImage,
-    this.stepNumber,
-    this.editingRecipe,
-  );
+  const AddImage(this.stepImage, this.stepNumber, this.editingRecipe);
 
   @override
-  List<Object> get props => [
-        stepImage,
-        stepNumber,
-        editingRecipe,
-      ];
+  List<Object> get props => [stepImage, stepNumber, editingRecipe];
 }
 
 class AddStep extends StepImagesEvent {
@@ -49,18 +41,10 @@ class RemoveImage extends StepImagesEvent {
   final int stepImageIndex;
   final bool editingRecipe;
 
-  const RemoveImage(
-    this.stepNumber,
-    this.stepImageIndex,
-    this.editingRecipe,
-  );
+  const RemoveImage(this.stepNumber, this.stepImageIndex, this.editingRecipe);
 
   @override
-  List<Object> get props => [
-        stepImageIndex,
-        stepNumber,
-        editingRecipe,
-      ];
+  List<Object> get props => [stepImageIndex, stepNumber, editingRecipe];
 }
 
 class RemoveStep extends StepImagesEvent {

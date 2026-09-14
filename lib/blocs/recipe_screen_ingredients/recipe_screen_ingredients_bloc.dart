@@ -16,120 +16,142 @@ class RecipeScreenIngredientsBloc
   RecipeScreenIngredientsBloc({
     required this.shoppingCartBloc,
     required this.repository,
-  })
-      : super(InitialRecipeScreenIngredientsState()) {
+  }) : super(InitialRecipeScreenIngredientsState()) {
     on<InitializeIngredients>((event, emit) async {
       List<List<CheckableIngredient>> checkableIngredients = [[]];
 
       for (int i = 0; i < event.ingredients.length; i++) {
         if (i != 0) checkableIngredients.add([]);
         for (Ingredient ingred in event.ingredients[i]) {
-          checkableIngredients[i].add(CheckableIngredient(
-            ingred.name,
-            ingred.amount,
-            ingred.unit,
-            repository.checkForRecipeIngredient(event.recipeName, ingred),
-          ));
+          checkableIngredients[i].add(
+            CheckableIngredient(
+              ingred.name,
+              ingred.amount,
+              ingred.unit,
+              repository.checkForRecipeIngredient(event.recipeName, ingred),
+            ),
+          );
         }
       }
 
-      final List<bool> sectionCheck =
-          checkableIngredients.map((list) => _isSectionChecked(list)).toList();
+      final List<bool> sectionCheck = checkableIngredients
+          .map((list) => _isSectionChecked(list))
+          .toList();
 
-      emit(LoadedRecipeIngredients(
-        checkableIngredients,
-        event.servings,
-        sectionCheck,
-      ));
+      emit(
+        LoadedRecipeIngredients(
+          checkableIngredients,
+          event.servings,
+          sectionCheck,
+        ),
+      );
     });
 
     on<AddToCart>((event, emit) async {
       if (state is LoadedRecipeIngredients) {
-        await repository
-            .addMultipleIngredientsToCart(event.recipeName, event.ingredients);
+        await repository.addMultipleIngredientsToCart(
+          event.recipeName,
+          event.ingredients,
+          servings: event.servings,
+        );
 
         List<Ingredient> checkedIngredients = event.ingredients;
 
         final List<List<CheckableIngredient>> ingredients =
-            (state as LoadedRecipeIngredients)
-                .ingredients
-                .map((list) => list.map((item) {
-                      for (Ingredient i in checkedIngredients) {
-                        if (i == item.getIngredient()) {
-                          return item.copyWith(checked: true);
-                        }
+            (state as LoadedRecipeIngredients).ingredients
+                .map(
+                  (list) => list.map((item) {
+                    for (Ingredient i in checkedIngredients) {
+                      if (i == item.getIngredient()) {
+                        return item.copyWith(checked: true);
                       }
-                      return item;
-                    }).toList())
+                    }
+                    return item;
+                  }).toList(),
+                )
                 .toList();
 
-        final List<bool> sectionCheck =
-            ingredients.map((list) => _isSectionChecked(list)).toList();
+        final List<bool> sectionCheck = ingredients
+            .map((list) => _isSectionChecked(list))
+            .toList();
 
         shoppingCartBloc.add(LoadShoppingCart());
 
-        emit(LoadedRecipeIngredients(
-          ingredients,
-          (state as LoadedRecipeIngredients).servings,
-          sectionCheck,
-        ));
+        emit(
+          LoadedRecipeIngredients(
+            ingredients,
+            (state as LoadedRecipeIngredients).servings,
+            sectionCheck,
+          ),
+        );
       }
     });
 
     on<RemoveFromCart>((event, emit) async {
       if (state is LoadedRecipeIngredients) {
-        await repository
-            .removeIngredientsFromCart(event.recipeName, event.ingredients);
+        await repository.removeIngredientsFromCart(
+          event.recipeName,
+          event.ingredients,
+        );
 
         List<Ingredient> checkedIngredients = event.ingredients;
 
         final List<List<CheckableIngredient>> ingredients =
-            (state as LoadedRecipeIngredients)
-                .ingredients
-                .map((list) => list.map((item) {
-                      for (Ingredient i in checkedIngredients) {
-                        if (i == item.getIngredient()) {
-                          checkedIngredients.remove(i);
-                          return item.copyWith(checked: false);
-                        }
+            (state as LoadedRecipeIngredients).ingredients
+                .map(
+                  (list) => list.map((item) {
+                    for (Ingredient i in checkedIngredients) {
+                      if (i == item.getIngredient()) {
+                        checkedIngredients.remove(i);
+                        return item.copyWith(checked: false);
                       }
-                      return item;
-                    }).toList())
+                    }
+                    return item;
+                  }).toList(),
+                )
                 .toList();
 
-        final List<bool> sectionCheck =
-            ingredients.map((list) => _isSectionChecked(list)).toList();
+        final List<bool> sectionCheck = ingredients
+            .map((list) => _isSectionChecked(list))
+            .toList();
 
         shoppingCartBloc.add(LoadShoppingCart());
 
-        emit(LoadedRecipeIngredients(
-          ingredients,
-          (state as LoadedRecipeIngredients).servings,
-          sectionCheck,
-        ));
+        emit(
+          LoadedRecipeIngredients(
+            ingredients,
+            (state as LoadedRecipeIngredients).servings,
+            sectionCheck,
+          ),
+        );
       }
     });
 
     on<UpdateServings>((event, emit) async {
       if (state is LoadedRecipeIngredients) {
         final List<List<CheckableIngredient>> ingredients =
-            (state as LoadedRecipeIngredients)
-                .ingredients
-                .map((list) => list.map((item) {
-                      if (item.amount != null) {
-                        return item.copyWith(
-                            amount: (event.newServings / event.oldServings!) *
-                                item.amount!);
-                      }
-                      return item;
-                    }).toList())
+            (state as LoadedRecipeIngredients).ingredients
+                .map(
+                  (list) => list.map((item) {
+                    if (item.amount != null) {
+                      return item.copyWith(
+                        amount:
+                            (event.newServings / event.oldServings!) *
+                            item.amount!,
+                      );
+                    }
+                    return item;
+                  }).toList(),
+                )
                 .toList();
 
-        emit(LoadedRecipeIngredients(
-          ingredients,
-          event.newServings,
-          (state as LoadedRecipeIngredients).sectionCheck,
-        ));
+        emit(
+          LoadedRecipeIngredients(
+            ingredients,
+            event.newServings,
+            (state as LoadedRecipeIngredients).sectionCheck,
+          ),
+        );
       }
     });
   }

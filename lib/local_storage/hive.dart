@@ -37,11 +37,12 @@ class BoxNames {
 ///
 /// The registered adapters deliberately throw from `write`, and no normal app
 /// service receives this reader. Hive remains closed after migration.
-Future<LegacyHiveReader> openLegacyHive() async {
-  Hive.init((await getApplicationDocumentsDirectory()).path);
+Future<LegacyHiveReader> openLegacyHive({String? directoryPath}) async {
+  Hive.init(directoryPath ?? (await getApplicationDocumentsDirectory()).path);
   _registerLegacyAdapter(IngredientAdapter());
   _registerLegacyAdapter(CheckableIngredientAdapter());
   _registerLegacyAdapter(VegetableAdapter());
+  _registerLegacyAdapter(NutritionAdapter());
   _registerLegacyAdapter(RecipeSortAdapter());
   _registerLegacyAdapter(RSortAdapter());
   _registerLegacyAdapter(RecipeAdapter());
@@ -63,7 +64,7 @@ Future<LegacyHiveReader> openLegacyHive() async {
     Hive.openBox<List>(BoxNames.shoppingCart),
     Hive.openBox<List<String>>(BoxNames.recipeCategories),
     Hive.openBox<StringIntTuple>(BoxNames.recipeTags),
-    Hive.openBox<List<String>?>(BoxNames.recipeTagsList),
+    Hive.openBox<List<String>>(BoxNames.recipeTagsList),
     Hive.openBox<List<String>>(BoxNames.ratings),
     Hive.openBox<String>(BoxNames.recipeCalendar),
     Hive.openBox<StringStringTuple>(BoxNames.syncDeletionRecipes),

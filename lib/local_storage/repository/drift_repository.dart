@@ -2,6 +2,7 @@ import '../../models/enums.dart';
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
 import '../../models/recipe_sort.dart';
+import '../../models/shopping_cart_data.dart';
 import '../../models/string_int_tuple.dart';
 import '../../models/tuple.dart';
 import '../database.dart';
@@ -17,7 +18,7 @@ import 'shopping_cart_store.dart';
 
 class DriftRepository implements LocalRepository {
   static const int currentMigrationVersion = 1;
-  static const int currentSchemaVersion = 1;
+  static const int currentSchemaVersion = 2;
 
   DriftRepository({AppDatabase? database})
     : _context = DriftRepositoryContext(database) {
@@ -228,10 +229,13 @@ class DriftRepository implements LocalRepository {
   Future<Map<Recipe, List<CheckableIngredient>>> getShoppingCart() =>
       _cart.getShoppingCart();
   @override
+  Future<ShoppingCartData> getShoppingCartData() => _cart.getShoppingCartData();
+  @override
   Future<void> addMultipleIngredientsToCart(
     String name,
-    List<Ingredient> values,
-  ) => _cart.addMultipleIngredientsToCart(name, values);
+    List<Ingredient> values, {
+    double? servings,
+  }) => _cart.addMultipleIngredientsToCart(name, values, servings: servings);
   @override
   Future<void> addSingleIngredientToCart(String name, Ingredient value) =>
       _cart.addSingleIngredientToCart(name, value);
@@ -261,4 +265,13 @@ class DriftRepository implements LocalRepository {
   @override
   Future<void> removeIngredientFromCart(String name, Ingredient value) =>
       _cart.removeIngredientFromCart(name, value);
+  @override
+  Future<void> updateShoppingCartServings(String name, double newServings) =>
+      _cart.updateSourceServings(name, newServings);
+  @override
+  Future<ShoppingCartData?> removeCheckedShoppingCartItems() =>
+      _cart.removeCheckedItems();
+  @override
+  Future<void> restoreShoppingCart(ShoppingCartData snapshot) =>
+      _cart.restore(snapshot);
 }

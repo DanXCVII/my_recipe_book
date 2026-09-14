@@ -14,15 +14,17 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<InitializeData>((event, emit) async {
       prefs ??= await SharedPreferences.getInstance();
 
-      emit(LoadedState(
-        event.recipeCategoryOverview,
-        event.showIntro,
-        false,
-        false,
-        event.showSummary,
-        0,
-        S.of(event.context).recipes,
-      ));
+      emit(
+        LoadedState(
+          event.recipeCategoryOverview,
+          event.showIntro,
+          false,
+          false,
+          event.showSummary,
+          0,
+          S.of(event.context).recipes,
+        ),
+      );
     });
 
     on<ChangeView>((event, emit) async {
@@ -47,67 +49,77 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           break;
       }
 
-      emit(LoadedState(
-        (state as LoadedState).recipeCategoryOverview,
-        (state as LoadedState).showIntro,
-        (state as LoadedState).shoppingCartOpen,
-        (state as LoadedState).recipeCalendarOpen,
-        (state as LoadedState).showShoppingCartSummary,
-        event.index,
-        title,
-      ));
+      emit(
+        LoadedState(
+          (state as LoadedState).recipeCategoryOverview,
+          (state as LoadedState).showIntro,
+          (state as LoadedState).shoppingCartOpen,
+          (state as LoadedState).recipeCalendarOpen,
+          (state as LoadedState).showShoppingCartSummary,
+          event.index,
+          title,
+        ),
+      );
     });
 
     on<ChangeCategoryOverview>((event, emit) async {
       await prefs!.setBool('recipeCatOverview', event.recipeCategoryOverview);
 
-      emit(LoadedState(
-        event.recipeCategoryOverview,
-        false,
-        (state as LoadedState).shoppingCartOpen,
-        (state as LoadedState).recipeCalendarOpen,
-        (state as LoadedState).showShoppingCartSummary,
-        (state as LoadedState).selectedIndex,
-        (state as LoadedState).title,
-      ));
+      emit(
+        LoadedState(
+          event.recipeCategoryOverview,
+          false,
+          (state as LoadedState).shoppingCartOpen,
+          (state as LoadedState).recipeCalendarOpen,
+          (state as LoadedState).showShoppingCartSummary,
+          (state as LoadedState).selectedIndex,
+          (state as LoadedState).title,
+        ),
+      );
     });
 
     on<ChangeShoppingCartView>((event, emit) async {
-      emit(LoadedState(
-        (state as LoadedState).recipeCategoryOverview,
-        (state as LoadedState).showIntro,
-        event.open,
-        (state as LoadedState).recipeCalendarOpen,
-        (state as LoadedState).showShoppingCartSummary,
-        (state as LoadedState).selectedIndex,
-        (state as LoadedState).title,
-      ));
+      emit(
+        LoadedState(
+          (state as LoadedState).recipeCategoryOverview,
+          (state as LoadedState).showIntro,
+          event.open,
+          (state as LoadedState).recipeCalendarOpen,
+          (state as LoadedState).showShoppingCartSummary,
+          (state as LoadedState).selectedIndex,
+          (state as LoadedState).title,
+        ),
+      );
     });
 
     on<ShoppingCartShowSummary>((event, emit) async {
       await prefs!.setBool("shoppingCartSummary", event.showSummary);
 
-      emit(LoadedState(
-        (state as LoadedState).recipeCategoryOverview,
-        (state as LoadedState).showIntro,
-        (state as LoadedState).shoppingCartOpen,
-        (state as LoadedState).recipeCalendarOpen,
-        event.showSummary,
-        (state as LoadedState).selectedIndex,
-        (state as LoadedState).title,
-      ));
+      emit(
+        LoadedState(
+          (state as LoadedState).recipeCategoryOverview,
+          (state as LoadedState).showIntro,
+          (state as LoadedState).shoppingCartOpen,
+          (state as LoadedState).recipeCalendarOpen,
+          event.showSummary,
+          (state as LoadedState).selectedIndex,
+          (state as LoadedState).title,
+        ),
+      );
     });
 
     on<ChangeRecipeCalendarView>((event, emit) async {
-      emit(LoadedState(
-        (state as LoadedState).recipeCategoryOverview,
-        (state as LoadedState).showIntro,
-        (state as LoadedState).shoppingCartOpen,
-        event.open,
-        (state as LoadedState).showShoppingCartSummary,
-        (state as LoadedState).selectedIndex,
-        (state as LoadedState).title,
-      ));
+      emit(
+        LoadedState(
+          (state as LoadedState).recipeCategoryOverview,
+          (state as LoadedState).showIntro,
+          (state as LoadedState).shoppingCartOpen,
+          event.open,
+          (state as LoadedState).showShoppingCartSummary,
+          (state as LoadedState).selectedIndex,
+          (state as LoadedState).title,
+        ),
+      );
     });
   }
 }

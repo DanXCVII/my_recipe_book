@@ -31,57 +31,55 @@ class TimeInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         preperationTime != 0
-            ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                Container(
-                  height: 35,
-                  width: 35,
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black45,
-                        blurRadius: 2.0,
-                        spreadRadius: 1.0,
-                        offset: Offset(
-                          0,
-                          1.0,
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    height: 35,
+                    width: 35,
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black45,
+                          blurRadius: 2.0,
+                          spreadRadius: 1.0,
+                          offset: Offset(0, 1.0),
+                        ),
+                      ],
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.pink, Colors.pink[800]!],
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Icon(MdiIcons.knife, color: Colors.black),
+                  ),
+                  SizedBox(width: 10),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        "${S.of(context).prep_time}:",
+                        style: TextStyle(
+                          color: textColor,
+                          fontFamily: fontFamily,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        getTimeHoursMinutes(preperationTime),
+                        style: TextStyle(
+                          color: textColor,
+                          fontFamily: fontFamily,
+                          fontSize: 16,
                         ),
                       ),
                     ],
-                    gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Colors.pink, Colors.pink[800]!]),
-                    borderRadius: BorderRadius.circular(30),
                   ),
-                  child: Icon(
-                    MdiIcons.knife,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(width: 10),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "${S.of(context).prep_time}:",
-                      style: TextStyle(
-                        color: textColor,
-                        fontFamily: fontFamily,
-                        fontSize: 12,
-                      ),
-                    ),
-                    Text(
-                      getTimeHoursMinutes(preperationTime),
-                      style: TextStyle(
-                        color: textColor,
-                        fontFamily: fontFamily,
-                        fontSize: 16,
-                      ),
-                    )
-                  ],
-                )
-              ])
+                ],
+              )
             : null,
         SizedBox(height: 10),
         cookingTime != 0
@@ -93,26 +91,21 @@ class TimeInfo extends StatelessWidget {
                     width: 35,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Colors.lightBlue, Colors.lightBlue[800]!]),
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.lightBlue, Colors.lightBlue[800]!],
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black45,
                           blurRadius: 2.0,
                           spreadRadius: 1.0,
-                          offset: Offset(
-                            0,
-                            1.0,
-                          ),
+                          offset: Offset(0, 1.0),
                         ),
                       ],
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: Icon(
-                      MdiIcons.stove,
-                      color: Colors.black,
-                    ),
+                    child: Icon(MdiIcons.stove, color: Colors.black),
                   ),
                   SizedBox(width: 10),
                   Column(
@@ -134,9 +127,9 @@ class TimeInfo extends StatelessWidget {
                           fontFamily: fontFamily,
                           fontSize: 16,
                         ),
-                      )
+                      ),
                     ],
-                  )
+                  ),
                 ],
               )
             : null,
@@ -151,26 +144,21 @@ class TimeInfo extends StatelessWidget {
                     width: 35,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Colors.yellow, Colors.yellow[800]!]),
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.yellow, Colors.yellow[800]!],
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black45,
                           blurRadius: 2.0,
                           spreadRadius: 1.0,
-                          offset: Offset(
-                            0,
-                            1.0,
-                          ),
+                          offset: Offset(0, 1.0),
                         ),
                       ],
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: Icon(
-                      Icons.hourglass_empty,
-                      color: Colors.black,
-                    ),
+                    child: Icon(Icons.hourglass_empty, color: Colors.black),
                   ),
                   SizedBox(width: 10),
                   remainingTimeChart != 0
@@ -193,11 +181,12 @@ class TimeInfo extends StatelessWidget {
                                 fontFamily: fontFamily,
                                 fontSize: 16,
                               ),
-                            )
+                            ),
                           ],
                         )
-                      : null
-                ].whereType<Widget>().toList())
+                      : null,
+                ].whereType<Widget>().toList(),
+              ),
       ].whereType<Widget>().toList(),
     );
   }

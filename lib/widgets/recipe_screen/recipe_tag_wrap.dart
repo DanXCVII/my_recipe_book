@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../constants/routes.dart';
@@ -11,11 +12,8 @@ class RecipeTagWrap extends StatelessWidget {
   final List<StringIntTuple> recipeTags;
   final String fontFamily;
 
-  const RecipeTagWrap(
-    this.recipeTags,
-    this.fontFamily, {
-    Key? key,
-  }) : super(key: key);
+  const RecipeTagWrap(this.recipeTags, this.fontFamily, {Key? key})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,31 +32,33 @@ class RecipeTagWrap extends StatelessWidget {
               arguments: RecipeGridViewArguments(
                 recipeTag: recipeTags[index],
                 shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
-                recipeCalendarBloc:
-                    BlocProvider.of<RecipeCalendarBloc>(context),
+                recipeCalendarBloc: BlocProvider.of<RecipeCalendarBloc>(
+                  context,
+                ),
               ),
             ); // Not hiding the banner ad because it's shown on the recipe screen
           },
           child: Container(
             decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(2, 2),
-                    blurRadius: 3,
-                    spreadRadius: 1,
-                    color: Colors.black26,
-                  ),
-                ],
-                gradient: LinearGradient(
-                  colors: [
-                    Color(recipeTags[index].number),
-                    Color(recipeTags[index].number).withValues(alpha: 0.6)
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(2, 2),
+                  blurRadius: 3,
+                  spreadRadius: 1,
+                  color: Colors.black26,
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(25)),
-                color: Color(recipeTags[index].number)),
+              ],
+              gradient: LinearGradient(
+                colors: [
+                  Color(recipeTags[index].number),
+                  Color(recipeTags[index].number).withValues(alpha: 0.6),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(25)),
+              color: Color(recipeTags[index].number),
+            ),
             child: Padding(
               padding: EdgeInsets.fromLTRB(12, 9, 12, 9),
               child: Text(

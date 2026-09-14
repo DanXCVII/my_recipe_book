@@ -23,6 +23,15 @@ class CleanAddIngredients extends ShoppingCartEvent {
       'Add ingredients { ingrdients: $ingredients, recipeName: $recipeName }';
 }
 
+class AddShoppingCartIngredient extends ShoppingCartEvent {
+  final Ingredient ingredient;
+
+  const AddShoppingCartIngredient(this.ingredient);
+
+  @override
+  List<Object> get props => [ingredient];
+}
+
 class CheckIngredients extends ShoppingCartEvent {
   final Recipe recipeName;
   final List<CheckableIngredient> ingredients;
@@ -41,4 +50,25 @@ class RemoveIngredients extends ShoppingCartEvent {
 
   @override
   List<Object?> get props => [ingredients, recipeName];
+}
+
+class UpdateShoppingCartServings extends ShoppingCartEvent {
+  final String recipeName;
+  final double servings;
+
+  const UpdateShoppingCartServings(this.recipeName, this.servings);
+
+  @override
+  List<Object> get props => [recipeName, servings];
+}
+
+class RemoveCheckedIngredients extends ShoppingCartEvent {}
+
+class RestoreShoppingCart extends ShoppingCartEvent {
+  final ShoppingCartData snapshot;
+
+  const RestoreShoppingCart(this.snapshot);
+
+  @override
+  List<Object> get props => [snapshot];
 }

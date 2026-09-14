@@ -22,16 +22,17 @@ class InfoDialog extends StatelessWidget {
       title: Text(title),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       content: Container(
-          width: MediaQuery.of(context).size.width > 360 ? 360 : null,
-          child: Text(body)),
+        width: MediaQuery.of(context).size.width > 360 ? 360 : null,
+        child: Text(body),
+      ),
       actions: <Widget>[
         TextButton(
           child: okText == null ? Text(S.of(context).alright) : Text(okText!),
           style: TextButton.styleFrom(
             foregroundColor:
                 Theme.of(context).colorScheme.surface == Colors.white
-                    ? null
-                    : Colors.amber,
+                ? null
+                : Colors.amber,
           ),
           onPressed: () {
             if (onPressedOk != null) {
@@ -41,7 +42,7 @@ class InfoDialog extends StatelessWidget {
               Navigator.pop(context);
             }
           },
-        )
+        ),
       ],
     );
   }

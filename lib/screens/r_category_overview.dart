@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
+
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -25,53 +27,61 @@ import 'recipe_screen.dart';
 // Builds the Rows of all the categories
 
 class RecipeCategoryOverview extends StatelessWidget {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
-  final RefreshController _refreshControllerTwo =
-      RefreshController(initialRefresh: false);
+  final RefreshController _refreshController = RefreshController(
+    initialRefresh: false,
+  );
+  final RefreshController _refreshControllerTwo = RefreshController(
+    initialRefresh: false,
+  );
 
   RecipeCategoryOverview({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RecipeCategoryOverviewBloc, RecipeCategoryOverviewState>(
-        builder: (context, state) {
-      if (state is LoadingRecipeCategoryOverviewState) {
-        return Center(child: CircularProgressIndicator());
-      } else if (state is LoadedRecipeCategoryOverview) {
-        return MediaQuery.of(context).size.width > 1000
-            ? Row(
-                children: <Widget>[
-                  Expanded(
-                    child: _getRecipeCategoryOverviewList(
+      builder: (context, state) {
+        if (state is LoadingRecipeCategoryOverviewState) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is LoadedRecipeCategoryOverview) {
+          return MediaQuery.of(context).size.width > 1000
+              ? Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: _getRecipeCategoryOverviewList(
                         context,
                         state.rCategoryOverview.sublist(
-                            0, (state.rCategoryOverview.length / 2).round()),
-                        _refreshController),
-                  ),
-                  Container(
-                    height: double.infinity,
-                    width: 10,
-                    color: Colors.black,
-                  ),
-                  Expanded(
-                    child: _getRecipeCategoryOverviewList(
+                          0,
+                          (state.rCategoryOverview.length / 2).round(),
+                        ),
+                        _refreshController,
+                      ),
+                    ),
+                    Container(
+                      height: double.infinity,
+                      width: 10,
+                      color: Colors.black,
+                    ),
+                    Expanded(
+                      child: _getRecipeCategoryOverviewList(
                         context,
                         state.rCategoryOverview.sublist(
-                            (state.rCategoryOverview.length / 2).round(),
-                            state.rCategoryOverview.length),
-                        _refreshControllerTwo),
-                  ),
-                ],
-              )
-            : _getRecipeCategoryOverviewList(
-                context,
-                state.rCategoryOverview,
-                _refreshController,
-              );
-      }
-      return (Text(state.toString()));
-    });
+                          (state.rCategoryOverview.length / 2).round(),
+                          state.rCategoryOverview.length,
+                        ),
+                        _refreshControllerTwo,
+                      ),
+                    ),
+                  ],
+                )
+              : _getRecipeCategoryOverviewList(
+                  context,
+                  state.rCategoryOverview,
+                  _refreshController,
+                );
+        }
+        return (Text(state.toString()));
+      },
+    );
   }
 
   Widget _getRecipeCategoryOverviewList(
@@ -88,8 +98,11 @@ class RecipeCategoryOverview extends StatelessWidget {
         onRefresh: () async {
           await Future.delayed(Duration(milliseconds: 200));
           BlocProvider.of<RecipeCategoryOverviewBloc>(context).add(
-              RCOLoadRecipeCategoryOverview(
-                  reopenBoxes: false, categoryOverviewContext: context));
+            RCOLoadRecipeCategoryOverview(
+              reopenBoxes: false,
+              categoryOverviewContext: context,
+            ),
+          );
           refreshController.refreshCompleted();
         },
         child: ListView.builder(
@@ -141,8 +154,9 @@ class RecipeRow extends StatelessWidget {
                 RouteNames.recipeCategories,
                 arguments: RecipeGridViewArguments(
                   shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
-                  recipeCalendarBloc:
-                      BlocProvider.of<RecipeCalendarBloc>(context),
+                  recipeCalendarBloc: BlocProvider.of<RecipeCalendarBloc>(
+                    context,
+                  ),
                   category: category,
                 ),
               ).then((_) => Ads.hideBottomBannerAd());
@@ -158,12 +172,13 @@ class RecipeRow extends StatelessWidget {
                         : category,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 20,
-                        color: Theme.of(context).colorScheme.surface ==
-                                Colors.white
-                            ? Colors.black
-                            : Colors.grey[200]),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
+                      color:
+                          Theme.of(context).colorScheme.surface == Colors.white
+                          ? Colors.black
+                          : Colors.grey[200],
+                    ),
                   ),
                   Icon(Icons.arrow_forward_ios),
                 ],
@@ -177,7 +192,7 @@ class RecipeRow extends StatelessWidget {
                 categoryName: category,
                 recipes: recipes,
                 listIndex: listIndex,
-              )
+              ),
       ],
     );
   }
@@ -220,14 +235,16 @@ class RecipeHozizontalList extends StatelessWidget {
               );
             } else {
               return Padding(
-                  padding: EdgeInsets.only(
-                      left: leftPadding), //10, bottom: 35, right: 20),
-                  child: RecipeImageItemBig(
-                    showMore: true,
-                    heroImageTag: categoryName,
-                    categoryName: categoryName,
-                    index: listIndex,
-                  ));
+                padding: EdgeInsets.only(
+                  left: leftPadding,
+                ), //10, bottom: 35, right: 20),
+                child: RecipeImageItemBig(
+                  showMore: true,
+                  heroImageTag: categoryName,
+                  categoryName: categoryName,
+                  index: listIndex,
+                ),
+              );
             }
           },
         ),
@@ -266,10 +283,12 @@ class RecipeImageItemBig extends StatelessWidget {
                     context,
                     RouteNames.recipeCategories,
                     arguments: RecipeGridViewArguments(
-                      shoppingCartBloc:
-                          BlocProvider.of<ShoppingCartBloc>(context),
-                      recipeCalendarBloc:
-                          BlocProvider.of<RecipeCalendarBloc>(context),
+                      shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(
+                        context,
+                      ),
+                      recipeCalendarBloc: BlocProvider.of<RecipeCalendarBloc>(
+                        context,
+                      ),
                       category: categoryName == null
                           ? Constants.noCategory
                           : categoryName,
@@ -297,8 +316,9 @@ class RecipeImageItemBig extends StatelessWidget {
                           height: 110,
                           width: 170,
                           child: FadeInImage(
-                            image:
-                                AssetImage("images/foodBlur${index % 4}.jpg"),
+                            image: AssetImage(
+                              "images/foodBlur${index % 4}.jpg",
+                            ),
                             fadeInDuration: const Duration(milliseconds: 250),
                             placeholder: MemoryImage(kTransparentImage),
                             height: 110,
@@ -310,43 +330,51 @@ class RecipeImageItemBig extends StatelessWidget {
                           height: 110,
                           width: 170,
                           child: ClipRRect(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15),
-                            ),
+                            borderRadius: BorderRadius.all(Radius.circular(15)),
                             child: Container(
                               width: 170,
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                Radius.circular(10),
-                              )),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
                               child: BackdropFilter(
-                                filter:
-                                    ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+                                filter: ImageFilter.blur(
+                                  sigmaX: 3.0,
+                                  sigmaY: 3.0,
+                                ),
                                 child: Container(
-                                  color: Colors.black
-                                      .withAlpha((0.3 * 255).round()),
+                                  color: Colors.black.withAlpha(
+                                    (0.3 * 255).round(),
+                                  ),
                                   child: Center(
                                     child: Container(
                                       height: 50,
                                       child: Center(
                                         child: Padding(
                                           padding: const EdgeInsets.fromLTRB(
-                                              8, 8, 8, 8),
+                                            8,
+                                            8,
+                                            8,
+                                            8,
+                                          ),
                                           child: Text(
                                             S.of(context).show_overview,
                                             textAlign: TextAlign.center,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 16,
-                                                color: Colors.grey[300]),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 16,
+                                              color: Colors.grey[300],
+                                            ),
                                           ),
                                         ),
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.black
-                                            .withAlpha((0.3 * 255).round()),
+                                        color: Colors.black.withAlpha(
+                                          (0.3 * 255).round(),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -384,18 +412,19 @@ class RecipeImageItemBig extends StatelessWidget {
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15),
-                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
                       child: Hero(
                         tag: heroImageTag,
                         child: Container(
                           child: FadeInImage(
-                            image: (recipe!.imagePreviewPath ==
-                                        Constants.noRecipeImage
-                                    ? AssetImage(Constants.noRecipeImage)
-                                    : FileImage(File(recipe!.imagePreviewPath)))
-                                as ImageProvider<Object>,
+                            image:
+                                (recipe!.imagePreviewPath ==
+                                            Constants.noRecipeImage
+                                        ? AssetImage(Constants.noRecipeImage)
+                                        : FileImage(
+                                            File(recipe!.imagePreviewPath),
+                                          ))
+                                    as ImageProvider<Object>,
                             fadeInDuration: const Duration(milliseconds: 250),
                             placeholder: MemoryImage(kTransparentImage),
                             height: 110,
@@ -414,9 +443,8 @@ class RecipeImageItemBig extends StatelessWidget {
                       child: Container(
                         width: 170,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                          Radius.circular(15),
-                        )),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
                         child: Container(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -430,28 +458,30 @@ class RecipeImageItemBig extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      color: Colors.grey[300]),
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    color: Colors.grey[300],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                           decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                stops: [0, 0.4, 1],
-                                colors: [
-                                  Colors.transparent,
-                                  Colors.black45,
-                                  Colors.black54,
-                                ],
-                              ),
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(15),
-                                bottomRight: Radius.circular(15),
-                              )),
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              stops: [0, 0.4, 1],
+                              colors: [
+                                Colors.transparent,
+                                Colors.black45,
+                                Colors.black54,
+                              ],
+                            ),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(15),
+                              bottomRight: Radius.circular(15),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -463,7 +493,10 @@ class RecipeImageItemBig extends StatelessWidget {
   }
 
   void _pushRecipeRoute(
-      BuildContext context, String heroImageTag, Recipe recipe) {
+    BuildContext context,
+    String heroImageTag,
+    Recipe recipe,
+  ) {
     if (GlobalSettings().standbyDisabled()) {
       WakelockPlus.enable();
     }
@@ -512,8 +545,9 @@ class RecipeImageItemSmall extends StatelessWidget {
                 RouteNames.recipeCategories,
                 arguments: RecipeGridViewArguments(
                   shoppingCartBloc: BlocProvider.of<ShoppingCartBloc>(context),
-                  recipeCalendarBloc:
-                      BlocProvider.of<RecipeCalendarBloc>(context),
+                  recipeCalendarBloc: BlocProvider.of<RecipeCalendarBloc>(
+                    context,
+                  ),
                   category: categoryName,
                 ),
               ).then((_) => Ads.hideBottomBannerAd());
@@ -542,11 +576,7 @@ class RecipeImageItemSmall extends StatelessWidget {
           )
         : GestureDetector(
             onTap: () {
-              _pushRecipeRoute(
-                context,
-                heroImageTag,
-                recipe,
-              );
+              _pushRecipeRoute(context, heroImageTag, recipe);
             },
             child: Container(
               // color: Colors.pink,
@@ -562,38 +592,43 @@ class RecipeImageItemSmall extends StatelessWidget {
                             : '$heroImageTag 1',
                         child: Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(35),
-                                  topRight: Radius.circular(15),
-                                  bottomLeft: Radius.circular(15),
-                                  bottomRight: Radius.circular(35)),
-                              boxShadow: [
-                                BoxShadow(
-                                  offset: Offset(1, 1),
-                                  blurRadius: 2,
-                                  spreadRadius: 1,
-                                  color:
-                                      Theme.of(context).colorScheme.surface ==
-                                              Colors.white
-                                          ? Colors.grey[400]!
-                                          : Colors.black,
-                                ),
-                              ]),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(35),
+                              topRight: Radius.circular(15),
+                              bottomLeft: Radius.circular(15),
+                              bottomRight: Radius.circular(35),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                offset: Offset(1, 1),
+                                blurRadius: 2,
+                                spreadRadius: 1,
+                                color:
+                                    Theme.of(context).colorScheme.surface ==
+                                        Colors.white
+                                    ? Colors.grey[400]!
+                                    : Colors.black,
+                              ),
+                            ],
+                          ),
                           height: 90,
                           width: 90,
                           child: ClipRRect(
                             borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(35),
-                                topRight: Radius.circular(15),
-                                bottomLeft: Radius.circular(15),
-                                bottomRight: Radius.circular(35)),
+                              topLeft: Radius.circular(35),
+                              topRight: Radius.circular(15),
+                              bottomLeft: Radius.circular(15),
+                              bottomRight: Radius.circular(35),
+                            ),
                             child: FadeInImage(
-                              image: (recipe.imagePreviewPath ==
-                                          Constants.noRecipeImage
-                                      ? AssetImage(Constants.noRecipeImage)
-                                      : FileImage(
-                                          File(recipe.imagePreviewPath)))
-                                  as ImageProvider<Object>,
+                              image:
+                                  (recipe.imagePreviewPath ==
+                                              Constants.noRecipeImage
+                                          ? AssetImage(Constants.noRecipeImage)
+                                          : FileImage(
+                                              File(recipe.imagePreviewPath),
+                                            ))
+                                      as ImageProvider<Object>,
                               fadeInDuration: const Duration(milliseconds: 250),
                               placeholder: MemoryImage(kTransparentImage),
                               height: 90,
@@ -613,11 +648,13 @@ class RecipeImageItemSmall extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.surface ==
-                                  Colors.white
-                              ? Colors.grey[800]
-                              : Colors.grey[300]),
+                        fontWeight: FontWeight.w600,
+                        color:
+                            Theme.of(context).colorScheme.surface ==
+                                Colors.white
+                            ? Colors.grey[800]
+                            : Colors.grey[300],
+                      ),
                     ),
                   ),
                 ],
@@ -627,7 +664,10 @@ class RecipeImageItemSmall extends StatelessWidget {
   }
 
   void _pushRecipeRoute(
-      BuildContext context, String heroImageTag, Recipe recipe) {
+    BuildContext context,
+    String heroImageTag,
+    Recipe recipe,
+  ) {
     if (GlobalSettings().standbyDisabled()) {
       WakelockPlus.enable();
     }

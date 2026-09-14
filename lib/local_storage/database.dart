@@ -151,6 +151,7 @@ class ShoppingSources extends Table {
   TextColumn get sourceKey => text().unique()();
   TextColumn get displayName => text()();
   BoolColumn get isSummary => boolean().withDefault(const Constant(false))();
+  RealColumn get currentServings => real().nullable()();
   IntColumn get position => integer()();
 }
 
@@ -242,12 +243,20 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) async {
       await migrator.createAll();
+    },
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) {
+        await migrator.addColumn(
+          shoppingSources,
+          shoppingSources.currentServings,
+        );
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');

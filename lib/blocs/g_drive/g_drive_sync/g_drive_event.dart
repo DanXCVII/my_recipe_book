@@ -17,10 +17,10 @@ class InternGDriveImportingEvent extends GDriveSyncEvent {
 
   @override
   List<Object?> get props => [
-        recipeName,
-        importingRecipeNumber,
-        totalImporting,
-      ];
+    recipeName,
+    importingRecipeNumber,
+    totalImporting,
+  ];
 }
 
 class InternGDriveUploadingEvent extends GDriveSyncEvent {
@@ -36,10 +36,10 @@ class InternGDriveUploadingEvent extends GDriveSyncEvent {
 
   @override
   List<Object?> get props => [
-        recipeName,
-        uploadingRecipeNumber,
-        totalUploading,
-      ];
+    recipeName,
+    uploadingRecipeNumber,
+    totalUploading,
+  ];
 }
 
 class InternGDriveCloudDeletingEvent extends GDriveSyncEvent {
@@ -54,11 +54,7 @@ class InternGDriveCloudDeletingEvent extends GDriveSyncEvent {
   );
 
   @override
-  List<Object?> get props => [
-        recipeName,
-        deletingRecipeNumber,
-        totalDeleting,
-      ];
+  List<Object?> get props => [recipeName, deletingRecipeNumber, totalDeleting];
 }
 
 class InternGDriveLocalDeletingEvent extends GDriveSyncEvent {
@@ -73,11 +69,7 @@ class InternGDriveLocalDeletingEvent extends GDriveSyncEvent {
   );
 
   @override
-  List<Object?> get props => [
-        recipeName,
-        deletingRecipeNumber,
-        totalDeleting,
-      ];
+  List<Object?> get props => [recipeName, deletingRecipeNumber, totalDeleting];
 }
 
 class GDriveCancelSync extends GDriveSyncEvent {

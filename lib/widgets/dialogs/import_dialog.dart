@@ -6,7 +6,9 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../blocs/import_recipe/import_recipe_bloc.dart';
+
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import '../../local_storage/io_operations.dart';
 import '../../models/recipe.dart';
 
@@ -30,17 +32,18 @@ class _ImportDialogState extends State<ImportDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       contentPadding: EdgeInsets.all(12),
-      title: Text(importStatus == ImportStatus.Finished
-          ? S.of(context).finished
-          : importStatus == ImportStatus.Loading
-              ? S.of(context).import_recipe_s
-              : S.of(context).select_recipes_to_import),
+      title: Text(
+        importStatus == ImportStatus.Finished
+            ? S.of(context).finished
+            : importStatus == ImportStatus.Loading
+            ? S.of(context).import_recipe_s
+            : S.of(context).select_recipes_to_import,
+      ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       content: Container(
         width: MediaQuery.of(context).size.width > 320 ? 320 : null,
         child: LayoutBuilder(
-          builder: (context, constraints) =>
-              BlocListener<ImportRecipeBloc, ImportRecipeState>(
+          builder: (context, constraints) => BlocListener<ImportRecipeBloc, ImportRecipeState>(
             listener: (context, state) {
               if (state is ImportingRecipes) {
                 setState(() {
@@ -49,379 +52,419 @@ class _ImportDialogState extends State<ImportDialog> {
               } else if (state is ImportedRecipes) {
                 setState(() {
                   importStatus = ImportStatus.Finished;
-                  totalListItems = state.importedRecipes.length +
+                  totalListItems =
+                      state.importedRecipes.length +
                       state.alreadyExistingRecipes.length +
                       state.failedRecipes.length;
                 });
               } else if (state is MultipleRecipes) {
                 setState(() {
                   importStatus = ImportStatus.Selection;
-                  totalListItems = state.readyToImportRecipes.length +
+                  totalListItems =
+                      state.readyToImportRecipes.length +
                       state.alreadyExistingRecipes.length +
                       state.failedZips.length;
                 });
               }
             },
             child: BlocBuilder<ImportRecipeBloc, ImportRecipeState>(
-                builder: (context, state) {
-              late double percentageDone;
-              if (state is InitialImportRecipeState ||
-                  state is ImportingRecipes) {
-                if (state is InitialImportRecipeState) {
-                  percentageDone = 0;
-                } else if (state is ImportingRecipes) {
-                  percentageDone = state.percentageDone;
-                }
-                return Container(
-                  height: 20,
-                  child: LinearPercentIndicator(
-                    animation: true,
-                    lineHeight: 20.0,
-                    animationDuration: 500,
-                    percent: percentageDone,
-                    center: Text("${percentageDone * 100}%"),
-                    barRadius: Radius.circular(15),
-                    progressColor: Colors.green,
-                  ),
-                );
-              } else if (state is MultipleRecipes) {
-                return Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  direction: Axis.vertical,
-                  children: [
-                    state.readyToImportRecipes.isEmpty
-                        ? null
-                        : Container(
-                            width: constraints.maxWidth,
-                            decoration: BoxDecoration(
-                              color: Color.fromRGBO(0, 0, 0, 0.2),
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
+              builder: (context, state) {
+                late double percentageDone;
+                if (state is InitialImportRecipeState ||
+                    state is ImportingRecipes) {
+                  if (state is InitialImportRecipeState) {
+                    percentageDone = 0;
+                  } else if (state is ImportingRecipes) {
+                    percentageDone = state.percentageDone;
+                  }
+                  return Container(
+                    height: 20,
+                    child: LinearPercentIndicator(
+                      animation: true,
+                      lineHeight: 20.0,
+                      animationDuration: 500,
+                      percent: percentageDone,
+                      center: Text("${percentageDone * 100}%"),
+                      barRadius: Radius.circular(15),
+                      progressColor: Colors.green,
+                    ),
+                  );
+                } else if (state is MultipleRecipes) {
+                  return Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    direction: Axis.vertical,
+                    children: [
+                      state.readyToImportRecipes.isEmpty
+                          ? null
+                          : Container(
+                              width: constraints.maxWidth,
+                              decoration: BoxDecoration(
+                                color: Color.fromRGBO(0, 0, 0, 0.2),
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10),
+                                  topRight: Radius.circular(10),
+                                ),
+                              ),
+                              child: ListTile(
+                                title: Text(S.of(context).select_all),
+                                trailing: Checkbox(
+                                  value: listEquals(
+                                    selectedRecipes,
+                                    state.readyToImportRecipes,
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      if (value!) {
+                                        selectedRecipes = List<Recipe>.from(
+                                          state.readyToImportRecipes,
+                                        );
+                                      } else {
+                                        selectedRecipes = [];
+                                      }
+                                    });
+                                  },
+                                ),
                               ),
                             ),
-                            child: ListTile(
-                              title: Text(S.of(context).select_all),
-                              trailing: Checkbox(
-                                value: listEquals(selectedRecipes,
-                                    state.readyToImportRecipes),
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value!) {
-                                      selectedRecipes = List<Recipe>.from(
-                                          state.readyToImportRecipes);
-                                    } else {
-                                      selectedRecipes = [];
-                                    }
-                                  });
-                                },
-                              ),
-                            )),
-                    Container(
-                      height: totalListItems == 1
-                          ? 65
-                          : totalListItems == 2
-                              ? 130
-                              : totalListItems == 3
-                                  ? 195
-                                  : 280,
-                      width: constraints.maxWidth,
-                      child: ListView(
-                        children: List.generate(
-                            state.readyToImportRecipes.length == 0
-                                ? 0
-                                : state.readyToImportRecipes.length * 2 - 1,
-                            (index) {
-                          int currentRecipeIndex =
-                              index == 0 ? 0 : (index / 2).round();
+                      Container(
+                        height: totalListItems == 1
+                            ? 65
+                            : totalListItems == 2
+                            ? 130
+                            : totalListItems == 3
+                            ? 195
+                            : 280,
+                        width: constraints.maxWidth,
+                        child: ListView(
+                          children:
+                              List.generate(
+                                  state.readyToImportRecipes.length == 0
+                                      ? 0
+                                      : state.readyToImportRecipes.length * 2 -
+                                            1,
+                                  (index) {
+                                    int currentRecipeIndex = index == 0
+                                        ? 0
+                                        : (index / 2).round();
 
-                          return (index + 1) % 2 == 0
-                              ? Divider()
-                              : ListTile(
-                                  title: Text(
-                                    state
-                                        .readyToImportRecipes[
-                                            currentRecipeIndex.round()]
-                                        .name,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  trailing: Checkbox(
-                                    value: selectedRecipes.contains(
-                                        state.readyToImportRecipes[
-                                            currentRecipeIndex.round()]),
-                                    onChanged: (status) {
-                                      setState(() {
-                                        if (status!) {
-                                          selectedRecipes.add(
-                                              state.readyToImportRecipes[
-                                                  currentRecipeIndex.round()]);
-                                        } else {
-                                          selectedRecipes.remove(
-                                              state.readyToImportRecipes[
-                                                  currentRecipeIndex.round()]);
-                                        }
-                                      });
+                                    return (index + 1) % 2 == 0
+                                        ? Divider()
+                                        : ListTile(
+                                            title: Text(
+                                              state
+                                                  .readyToImportRecipes[currentRecipeIndex
+                                                      .round()]
+                                                  .name,
+                                              maxLines: 3,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            trailing: Checkbox(
+                                              value: selectedRecipes.contains(
+                                                state
+                                                    .readyToImportRecipes[currentRecipeIndex
+                                                    .round()],
+                                              ),
+                                              onChanged: (status) {
+                                                setState(() {
+                                                  if (status!) {
+                                                    selectedRecipes.add(
+                                                      state
+                                                          .readyToImportRecipes[currentRecipeIndex
+                                                          .round()],
+                                                    );
+                                                  } else {
+                                                    selectedRecipes.remove(
+                                                      state
+                                                          .readyToImportRecipes[currentRecipeIndex
+                                                          .round()],
+                                                    );
+                                                  }
+                                                });
+                                              },
+                                            ),
+                                          );
+                                  },
+                                )
+                                ..addAll(
+                                  List.generate(
+                                    state.alreadyExistingRecipes.length == 0
+                                        ? 0
+                                        : state.alreadyExistingRecipes.length *
+                                                  2 -
+                                              1,
+                                    (index) {
+                                      int currentRecipeIndex = index == 0
+                                          ? 0
+                                          : (index / 2).round();
+                                      return (index + 1) % 2 == 0
+                                          ? Divider()
+                                          : ListTile(
+                                              title: Text(
+                                                state
+                                                    .alreadyExistingRecipes[currentRecipeIndex]
+                                                    .name,
+                                                maxLines: 3,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              trailing: Padding(
+                                                padding: const EdgeInsets.only(
+                                                  right: 12.0,
+                                                ),
+                                                child: Icon(
+                                                  Icons.offline_bolt,
+                                                  color: Colors.yellow,
+                                                ),
+                                              ),
+                                            );
                                     },
                                   ),
-                                );
-                        })
-                          ..addAll(
-                            List.generate(
-                                state.alreadyExistingRecipes.length == 0
-                                    ? 0
-                                    : state.alreadyExistingRecipes.length * 2 -
-                                        1, (index) {
-                              int currentRecipeIndex =
-                                  index == 0 ? 0 : (index / 2).round();
-                              return (index + 1) % 2 == 0
-                                  ? Divider()
-                                  : ListTile(
-                                      title: Text(
-                                        state
-                                            .alreadyExistingRecipes[
-                                                currentRecipeIndex]
-                                            .name,
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      trailing: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12.0),
-                                        child: Icon(
-                                          Icons.offline_bolt,
-                                          color: Colors.yellow,
-                                        ),
-                                      ),
-                                    );
-                            }),
-                          )
-                          ..addAll(
-                            List.generate(
-                                state.failedZips.length == 0
-                                    ? 0
-                                    : state.failedZips.length * 2 - 1, (index) {
-                              int currentRecipeIndex =
-                                  index == 0 ? 0 : (index / 2).round();
-                              return (index + 1) % 2 == 0
-                                  ? Divider()
-                                  : ListTile(
-                                      title: Text(
-                                        state.failedZips[currentRecipeIndex],
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      trailing: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12.0),
-                                        child: Icon(
-                                          MdiIcons.alertCircle,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    );
-                            }),
-                          ),
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    Container(
-                      height: 20,
-                      width: constraints.maxWidth,
-                      child: Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(
-                              Icons.check_box,
-                              color: Colors.green,
-                              size: 14,
-                            ),
-                            Text(
-                              ' ${S.of(context).ready} ',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Icon(
-                              Icons.offline_bolt,
-                              color: Colors.yellow,
-                              size: 14,
-                            ),
-                            Text(
-                              ' ${S.of(context).duplicate} ',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Icon(
-                              MdiIcons.alertCircle,
-                              color: Colors.red,
-                              size: 14,
-                            ),
-                            Text(
-                              ' ${S.of(context).failed}',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ],
+                                )
+                                ..addAll(
+                                  List.generate(
+                                    state.failedZips.length == 0
+                                        ? 0
+                                        : state.failedZips.length * 2 - 1,
+                                    (index) {
+                                      int currentRecipeIndex = index == 0
+                                          ? 0
+                                          : (index / 2).round();
+                                      return (index + 1) % 2 == 0
+                                          ? Divider()
+                                          : ListTile(
+                                              title: Text(
+                                                state
+                                                    .failedZips[currentRecipeIndex],
+                                                maxLines: 3,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              trailing: Padding(
+                                                padding: const EdgeInsets.only(
+                                                  right: 12.0,
+                                                ),
+                                                child: Icon(
+                                                  MdiIcons.alertCircle,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            );
+                                    },
+                                  ),
+                                ),
                         ),
                       ),
-                    ),
-                    Container(
-                      width: constraints.maxWidth,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          TextButton(
+                      SizedBox(height: 6),
+                      Container(
+                        height: 20,
+                        width: constraints.maxWidth,
+                        child: Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(
+                                Icons.check_box,
+                                color: Colors.green,
+                                size: 14,
+                              ),
+                              Text(
+                                ' ${S.of(context).ready} ',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              Icon(
+                                Icons.offline_bolt,
+                                color: Colors.yellow,
+                                size: 14,
+                              ),
+                              Text(
+                                ' ${S.of(context).duplicate} ',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              Icon(
+                                MdiIcons.alertCircle,
+                                color: Colors.red,
+                                size: 14,
+                              ),
+                              Text(
+                                ' ${S.of(context).failed}',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: constraints.maxWidth,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            TextButton(
                               child: Text(S.of(context).cancel),
                               onPressed: () {
                                 clearCache().then((_) {});
 
                                 widget.closeAfterFinished
-                                    ? SystemChannels.platform
-                                        .invokeMethod('SystemNavigator.pop')
+                                    ? SystemChannels.platform.invokeMethod(
+                                        'SystemNavigator.pop',
+                                      )
                                     : Navigator.pop(context);
-                              }),
-                          SizedBox(
-                            width: 6,
-                          ),
-                          TextButton(
-                            child: Text(S.of(context).import),
-                            onPressed: () => selectedRecipes.isNotEmpty
-                                ? BlocProvider.of<ImportRecipeBloc>(context)
-                                    .add(FinishImportRecipes(selectedRecipes))
-                                : {},
-                          ),
-                        ],
-                      ),
-                    ),
-                  ].whereType<Widget>().toList(),
-                );
-              } else if (state is ImportedRecipes) {
-                return Wrap(
-                  direction: Axis.vertical,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Container(
-                        height: totalListItems == 1
-                            ? 55
-                            : totalListItems == 2
-                                ? 110
-                                : 165,
-                        width: constraints.maxWidth,
-                        child: ListView(
-                          children: List.generate(
-                            state.importedRecipes.length,
-                            (index) => ListTile(
-                              title: Text(state.importedRecipes[index].name),
-                              trailing: Icon(
-                                Icons.check_circle,
-                                color: Colors.green,
-                              ),
+                              },
                             ),
-                          )
-                            ..addAll(
-                              List.generate(
-                                state.alreadyExistingRecipes.length,
-                                (index) => ListTile(
-                                  title: Text(
-                                      state.alreadyExistingRecipes[index].name),
-                                  trailing: Icon(
-                                    Icons.offline_bolt,
-                                    color: Colors.yellow,
-                                  ),
-                                ),
-                              ),
-                            )
-                            ..addAll(
-                              List.generate(
-                                state.failedRecipes.length,
-                                (index) => ListTile(
-                                  title: Text(state.failedRecipes[index].name),
-                                  trailing: Padding(
-                                    padding: const EdgeInsets.only(right: 12.0),
-                                    child: Icon(
-                                      MdiIcons.alertCircle,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: 20,
-                      width: constraints.maxWidth,
-                      child: Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(
-                              Icons.check_circle,
-                              color: Colors.green,
-                              size: 14,
-                            ),
-                            Text(
-                              ' ${S.of(context).successful} ',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Icon(
-                              Icons.offline_bolt,
-                              color: Colors.yellow,
-                              size: 14,
-                            ),
-                            Text(
-                              ' ${S.of(context).duplicate} ',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Icon(
-                              MdiIcons.alertCircle,
-                              color: Colors.red,
-                              size: 14,
-                            ),
-                            Text(
-                              ' ${S.of(context).failed}',
-                              style: TextStyle(fontSize: 12),
+                            SizedBox(width: 6),
+                            TextButton(
+                              child: Text(S.of(context).import),
+                              onPressed: () => selectedRecipes.isNotEmpty
+                                  ? BlocProvider.of<ImportRecipeBloc>(
+                                      context,
+                                    ).add(FinishImportRecipes(selectedRecipes))
+                                  : {},
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    Container(
-                      width: constraints.maxWidth,
-                      child: Row(
+                    ].whereType<Widget>().toList(),
+                  );
+                } else if (state is ImportedRecipes) {
+                  return Wrap(
+                    direction: Axis.vertical,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Container(
+                          height: totalListItems == 1
+                              ? 55
+                              : totalListItems == 2
+                              ? 110
+                              : 165,
+                          width: constraints.maxWidth,
+                          child: ListView(
+                            children:
+                                List.generate(
+                                    state.importedRecipes.length,
+                                    (index) => ListTile(
+                                      title: Text(
+                                        state.importedRecipes[index].name,
+                                      ),
+                                      trailing: Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                  )
+                                  ..addAll(
+                                    List.generate(
+                                      state.alreadyExistingRecipes.length,
+                                      (index) => ListTile(
+                                        title: Text(
+                                          state
+                                              .alreadyExistingRecipes[index]
+                                              .name,
+                                        ),
+                                        trailing: Icon(
+                                          Icons.offline_bolt,
+                                          color: Colors.yellow,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  ..addAll(
+                                    List.generate(
+                                      state.failedRecipes.length,
+                                      (index) => ListTile(
+                                        title: Text(
+                                          state.failedRecipes[index].name,
+                                        ),
+                                        trailing: Padding(
+                                          padding: const EdgeInsets.only(
+                                            right: 12.0,
+                                          ),
+                                          child: Icon(
+                                            MdiIcons.alertCircle,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        height: 20,
+                        width: constraints.maxWidth,
+                        child: Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                                size: 14,
+                              ),
+                              Text(
+                                ' ${S.of(context).successful} ',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              Icon(
+                                Icons.offline_bolt,
+                                color: Colors.yellow,
+                                size: 14,
+                              ),
+                              Text(
+                                ' ${S.of(context).duplicate} ',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              Icon(
+                                MdiIcons.alertCircle,
+                                color: Colors.red,
+                                size: 14,
+                              ),
+                              Text(
+                                ' ${S.of(context).failed}',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: constraints.maxWidth,
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
                             TextButton(
-                                child: Text(
-                                  "ok",
-                                  style: TextStyle(color: Colors.amber),
-                                ),
-                                onPressed: () {
-                                  if (widget.closeAfterFinished) {
-                                    SystemChannels.platform
-                                        .invokeMethod('SystemNavigator.pop');
-                                  } else {
-                                    Navigator.pop(context);
-                                  }
-                                }),
-                          ]),
-                    ),
-                  ],
-                );
-              } else if (state is InvalidDataType) {
-                return _getShowInfoStringWidget(
-                    S.of(context).datatype_not_supported(state.fileExtension));
-              } else if (state is InvalidFile) {
-                return _getShowInfoStringWidget(
-                    S.of(context).file_not_supported(state.fileName));
-              } else {
-                return Text(state.toString());
-              }
-            }),
+                              child: Text(
+                                "ok",
+                                style: TextStyle(color: Colors.amber),
+                              ),
+                              onPressed: () {
+                                if (widget.closeAfterFinished) {
+                                  SystemChannels.platform.invokeMethod(
+                                    'SystemNavigator.pop',
+                                  );
+                                } else {
+                                  Navigator.pop(context);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                } else if (state is InvalidDataType) {
+                  return _getShowInfoStringWidget(
+                    S.of(context).datatype_not_supported(state.fileExtension),
+                  );
+                } else if (state is InvalidFile) {
+                  return _getShowInfoStringWidget(
+                    S.of(context).file_not_supported(state.fileName),
+                  );
+                } else {
+                  return Text(state.toString());
+                }
+              },
+            ),
           ),
         ),
       ),
@@ -434,9 +477,7 @@ class _ImportDialogState extends State<ImportDialog> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Container(
-            child: Text(description),
-          ),
+          Container(child: Text(description)),
           SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -446,9 +487,9 @@ class _ImportDialogState extends State<ImportDialog> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );

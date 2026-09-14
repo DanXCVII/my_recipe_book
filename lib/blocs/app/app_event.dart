@@ -22,11 +22,11 @@ class InitializeData extends AppEvent {
 
   @override
   List<Object> get props => [
-        context,
-        recipeCategoryOverview,
-        showIntro,
-        showSummary,
-      ];
+    context,
+    recipeCategoryOverview,
+    showIntro,
+    showSummary,
+  ];
 
   @override
   String toString() =>

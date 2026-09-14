@@ -128,13 +128,17 @@ class GDriveSync {
     jsonModificationId = driveMods.item1;
 
     var localMods = await getLocalModifications();
-    List<List<String>> updateProcess =
-        getUpdateListsFromModifications(localMods, driveModificationHistory!);
+    List<List<String>> updateProcess = getUpdateListsFromModifications(
+      localMods,
+      driveModificationHistory!,
+    );
 
     int recipeCount = 0;
     for (String recipeName in updateProcess[0]) {
-      await repository.deleteRecipe(recipeName,
-          deletionDate: driveMods.item2[recipeName]!['-'].toString());
+      await repository.deleteRecipe(
+        recipeName,
+        deletionDate: driveMods.item2[recipeName]!['-'].toString(),
+      );
       Future.delayed(Duration(milliseconds: 60)).then((_) async {
         await IO.deleteRecipeData(recipeName);
       });
@@ -151,7 +155,9 @@ class GDriveSync {
     recipeCount = 0;
     for (String recipeName in updateProcess[1]) {
       await deleteGDriveRecipeIfExists(
-          recipeName, repository.getDeletionDate(recipeName));
+        recipeName,
+        repository.getDeletionDate(recipeName),
+      );
 
       yield DriveSyncStatus(
         Status.DELETED_ONLINE,
@@ -198,7 +204,7 @@ class GDriveSync {
 
     repository.getDeletions().forEach((recipeName, delDate) {
       localMods.addAll({
-        recipeName: {'-': delDate}
+        recipeName: {'-': delDate},
       });
     });
 
@@ -208,7 +214,7 @@ class GDriveSync {
       // if the recipe exists, which should always be the case
       if (recipe != null) {
         localMods.addAll({
-          recipeName: {'+': DateTime.parse(recipe.lastModified)}
+          recipeName: {'+': DateTime.parse(recipe.lastModified)},
         });
       } // delete the recipe otherwise becaue it would just be causing issues
       else {
@@ -222,7 +228,9 @@ class GDriveSync {
   /// (currently not used) filters the given modification map, such that it only
   /// contains deleted or added recipes with the corresponding date
   Map<String, DateTime> getFilteredModHistory(
-      Map<String, Map<String, DateTime>> modsMap, String sign) {
+    Map<String, Map<String, DateTime>> modsMap,
+    String sign,
+  ) {
     assert(driveModificationHistory != null);
     Map<String, DateTime> mapFiltered = {};
 
@@ -238,12 +246,15 @@ class GDriveSync {
   /// imports the recipe, with the given recipeName from Gdrive, if it exists
   Future<String> importRecipeFromGDrive(String recipeName) async {
     String cRecipeName = stringReplaceSpaceUnderscore(recipeName);
-    Tuple2<String?, File?>? downloadedRecipeZip =
-        await getFileByName(cRecipeName + ".zip");
+    Tuple2<String?, File?>? downloadedRecipeZip = await getFileByName(
+      cRecipeName + ".zip",
+    );
 
     if (downloadedRecipeZip != null) {
-      Map<String, Recipe?> recipeImport =
-          await IO.importRecipeToTmp(downloadedRecipeZip.item2!, true);
+      Map<String, Recipe?> recipeImport = await IO.importRecipeToTmp(
+        downloadedRecipeZip.item2!,
+        true,
+      );
 
       await IO.importRecipeFromTmp(recipeImport[recipeImport.keys.first]!);
 
@@ -263,7 +274,9 @@ class GDriveSync {
   /// first updates the modification map on gdrive with the deletion entry and then deletes
   /// the recipe file of the given recipe
   Future<void> deleteGDriveRecipeIfExists(
-      String recipeName, DateTime? deletionDate) async {
+    String recipeName,
+    DateTime? deletionDate,
+  ) async {
     assert(driveModificationHistory != null);
 
     // Add a deletion entry to the modifications map
@@ -273,8 +286,9 @@ class GDriveSync {
       await updateDriveModifications();
     }
 
-    String recipeFolder =
-        (await PathProvider.pP.getRecipeDirFull(recipeName)).split('/').last;
+    String recipeFolder = (await PathProvider.pP.getRecipeDirFull(recipeName))
+        .split('/')
+        .last;
     await deleteFileDriveIfExists(recipeFolder + ".zip");
     print("successfully delete $recipeName");
   }
@@ -286,9 +300,10 @@ class GDriveSync {
     var driveApi = await getDriveApi();
 
     // Search for the file named 'recipes'
-    var searchFiles = (await driveApi.files
-            .list(spaces: 'appDataFolder', q: "name='$fileName'"))
-        .files;
+    var searchFiles = (await driveApi.files.list(
+      spaces: 'appDataFolder',
+      q: "name='$fileName'",
+    )).files;
 
     // If the file is found, download it and save it as a local file
     if (searchFiles != null && searchFiles.isNotEmpty) {
@@ -296,10 +311,13 @@ class GDriveSync {
       var fileId = file.id;
 
       // Download the file using its ID and save it as a local file
-      GD.Media fileStream = (await driveApi.files.get(fileId!,
-          downloadOptions: GD.DownloadOptions.fullMedia)) as GD.Media;
-      final File finalFile =
-          File(await PathProvider.pP.getTmpRecipeDir() + fileName);
+      GD.Media fileStream = (await driveApi.files.get(
+        fileId!,
+        downloadOptions: GD.DownloadOptions.fullMedia,
+      )) as GD.Media;
+      final File finalFile = File(
+        await PathProvider.pP.getTmpRecipeDir() + fileName,
+      );
 
       List<int> dataStore = [];
       Completer<void> _completer = Completer<void>();
@@ -335,8 +353,9 @@ class GDriveSync {
   /// (e.g. cloud and local) have to be deleted or added to the other storage
   /// s.t. everything is up to date
   List<List<String>> getUpdateListsFromModifications(
-      Map<String, Map<String, DateTime>> modsOne,
-      Map<String, Map<String, DateTime>> modsTwo) {
+    Map<String, Map<String, DateTime>> modsOne,
+    Map<String, Map<String, DateTime>> modsTwo,
+  ) {
     List<String> toDeleteInMap1 = [];
     List<String> toDeleteInMap2 = [];
     List<String> toUpdateInMap1 = [];
@@ -387,7 +406,7 @@ class GDriveSync {
   /// gets teh google drive modifications and returns a tuple where the first item
   /// is the gdrive id and the second the modificatinMap
   Future<Tuple2<String?, Map<String, Map<String, DateTime>>>>
-      getRecipeModificationsFromDrive() async {
+  getRecipeModificationsFromDrive() async {
     Map<String, Map<String, DateTime>> recipeMap = {};
     String? fileId;
 
@@ -416,8 +435,10 @@ class GDriveSync {
 
       // Upload the file content in Google Drive
       var driveApi = await getDriveApi();
-      GD.File modificationsJson =
-          await driveApi.files.create(recipesJson, uploadMedia: updatedMedia);
+      GD.File modificationsJson = await driveApi.files.create(
+        recipesJson,
+        uploadMedia: updatedMedia,
+      );
       fileId = modificationsJson.id;
     } // otherwise, parse it
     else {
@@ -427,13 +448,15 @@ class GDriveSync {
         Map<String, dynamic> jsonMap = json.decode(jsonFile);
         print(jsonMap);
 
-        recipeMap.addAll(jsonMap.map((key, value) {
-          Map<String, DateTime> innerMap =
-              (value as Map<String, dynamic>).map((innerKey, innerValue) {
-            return MapEntry(innerKey, DateTime.parse(innerValue));
-          });
-          return MapEntry(key, innerMap);
-        }));
+        recipeMap.addAll(
+          jsonMap.map((key, value) {
+            Map<String, DateTime> innerMap = (value as Map<String, dynamic>)
+                .map((innerKey, innerValue) {
+                  return MapEntry(innerKey, DateTime.parse(innerValue));
+                });
+            return MapEntry(key, innerMap);
+          }),
+        );
       }
     }
 
@@ -447,8 +470,9 @@ class GDriveSync {
 
     Recipe? uploadRecipe = await repository.getRecipeByName(recipeName);
     if (uploadRecipe != null) {
-      String recipeFolder =
-          (await PathProvider.pP.getRecipeDirFull(recipeName)).split('/').last;
+      String recipeFolder = (await PathProvider.pP.getRecipeDirFull(recipeName))
+          .split('/')
+          .last;
       await deleteFileDriveIfExists(recipeFolder + ".zip");
       // Save the recipe data to a ZIP file
       File recipeZip = File(
@@ -468,7 +492,7 @@ class GDriveSync {
 
       // Add an entry for the recipe to the modification history
       driveModificationHistory![uploadRecipe.name] = {
-        '+': DateTime.parse(uploadRecipe.lastModified)
+        '+': DateTime.parse(uploadRecipe.lastModified),
       };
 
       // Update the modification history in Google Drive
@@ -509,8 +533,11 @@ class GDriveSync {
 
     // Update the file content in Google Drive
     var driveApi = await getDriveApi();
-    await driveApi.files
-        .update(updateRequest, jsonModificationId!, uploadMedia: updatedMedia);
+    await driveApi.files.update(
+      updateRequest,
+      jsonModificationId!,
+      uploadMedia: updatedMedia,
+    );
   }
 
   /// deletes the gdrive file with the given filename
@@ -519,9 +546,10 @@ class GDriveSync {
     var driveApi = await getDriveApi();
 
     // Search for the file named 'recipes'
-    var searchFiles = (await driveApi.files
-            .list(spaces: 'appDataFolder', q: "name='$fileName'"))
-        .files;
+    var searchFiles = (await driveApi.files.list(
+      spaces: 'appDataFolder',
+      q: "name='$fileName'",
+    )).files;
 
     // If the file is found, delete it
     if (searchFiles!.isNotEmpty) {
@@ -535,7 +563,10 @@ class GDriveSync {
 
   /// uploads the given file with its information and returns the file id
   Future<String?> uploadFile(
-      String fileName, File uploadFile, String fileEnding) async {
+    String fileName,
+    File uploadFile,
+    String fileEnding,
+  ) async {
     // Read the file data as a byte list
     final Uint8List fileData = await uploadFile.readAsBytes();
 

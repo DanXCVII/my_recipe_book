@@ -1,13 +1,16 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 
 import '../../blocs/new_recipe/ingredients/ingredients_bloc.dart';
 import '../../blocs/new_recipe/ingredients_section/ingredients_section_bloc.dart';
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../constants/routes.dart';
+
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import '../../local_storage/local_repository.dart';
 import '../../models/enums.dart';
 import '../../models/ingredient.dart';
@@ -37,11 +40,8 @@ class IngredientsAddScreen extends StatefulWidget {
   final Recipe? modifiedRecipe;
   final String? editingRecipeName;
 
-  IngredientsAddScreen({
-    this.modifiedRecipe,
-    this.editingRecipeName,
-    Key? key,
-  }) : super(key: key);
+  IngredientsAddScreen({this.modifiedRecipe, this.editingRecipeName, Key? key})
+    : super(key: key);
 
   _IngredientsAddScreenState createState() => _IngredientsAddScreenState();
 }
@@ -102,9 +102,10 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                begin: Alignment.topLeft,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xffAF1E1E), Color(0xff641414)],
+              ),
             ),
           ),
           title: Text(S.of(context).add_ingredients_info),
@@ -113,7 +114,8 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
               listener: (context, state) {
                 if (state is IEditingFinishedGoBack) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(S.of(context).saving_your_input)));
+                    SnackBar(content: Text(S.of(context).saving_your_input)),
+                  );
                 } else if (state is ISaved) {
                   BlocProvider.of<IngredientsBloc>(context).add(SetCanSave());
 
@@ -137,10 +139,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                   if (state is ISavingTmpData) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Icon(
-                        Icons.arrow_forward,
-                        color: Colors.grey,
-                      ),
+                      child: Icon(Icons.arrow_forward, color: Colors.grey),
                     );
                   } else if (state is ICanSave) {
                     return IconButton(
@@ -157,9 +156,10 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Container(
-                            width: 25,
-                            height: 25,
-                            child: CircularProgressIndicator()),
+                          width: 25,
+                          height: 25,
+                          child: CircularProgressIndicator(),
+                        ),
                       ),
                     );
                   } else {
@@ -186,8 +186,11 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 56, top: 12, bottom: 12),
+                    padding: const EdgeInsets.only(
+                      left: 56,
+                      top: 12,
+                      bottom: 12,
+                    ),
                     child: Text(
                       S.of(context).category + ":",
                       style: TextStyle(
@@ -196,9 +199,7 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
                       ),
                     ),
                   ),
-                  Vegetarian(
-                    vegetableStatus: selectedRecipeVegetable,
-                  ),
+                  Vegetarian(vegetableStatus: selectedRecipeVegetable),
                 ],
               ),
             ),
@@ -303,26 +304,21 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
   void _showFlushInfo(String title, String body) {
     if (_flush != null && _flush!.isShowing()) {
     } else {
-      _flush = Flushbar<bool>(
-        animationDuration: Duration(milliseconds: 300),
-        leftBarIndicatorColor: Colors.blue[300],
-        title: title,
-        message: body,
-        icon: Icon(
-          Icons.info_outline,
-          color: Colors.blue,
-        ),
-        mainButton: TextButton(
-          onPressed: () {
-            _flush!.dismiss(true); // result = true
-          },
-          child: Text(
-            "OK",
-            style: TextStyle(color: Colors.amber),
-          ),
-        ),
-      ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-        ..show(context).then((result) {});
+      _flush =
+          Flushbar<bool>(
+              animationDuration: Duration(milliseconds: 300),
+              leftBarIndicatorColor: Colors.blue[300],
+              title: title,
+              message: body,
+              icon: Icon(Icons.info_outline, color: Colors.blue),
+              mainButton: TextButton(
+                onPressed: () {
+                  _flush!.dismiss(true); // result = true
+                },
+                child: Text("OK", style: TextStyle(color: Colors.amber)),
+              ),
+            ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+            ..show(context).then((result) {});
     }
   }
 }

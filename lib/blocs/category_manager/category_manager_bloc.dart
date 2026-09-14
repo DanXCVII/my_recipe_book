@@ -17,11 +17,11 @@ class CategoryManagerBloc
 
   List<String> selectedCategories = [];
 
-  CategoryManagerBloc(
-      {required this.recipeManagerBloc,
-      required this.repository,
-      required List<String> selectedCategories})
-      : super(LoadingCategoryManager()) {
+  CategoryManagerBloc({
+    required this.recipeManagerBloc,
+    required this.repository,
+    required List<String> selectedCategories,
+  }) : super(LoadingCategoryManager()) {
     if (selectedCategories.isNotEmpty)
       this.selectedCategories = List<String>.from(selectedCategories);
     subscription = recipeManagerBloc.stream.listen((rmState) {
@@ -49,10 +49,10 @@ class CategoryManagerBloc
         selectedCategories.addAll(event.categories);
 
         final List<String> categories =
-            List.from((state as LoadedCategoryManager).categories)
-              ..insertAll(
-                  (state as LoadedCategoryManager).categories.length - 1,
-                  event.categories);
+            List.from((state as LoadedCategoryManager).categories)..insertAll(
+              (state as LoadedCategoryManager).categories.length - 1,
+              event.categories,
+            );
 
         emit(LoadedCategoryManager(categories));
       }
@@ -60,9 +60,9 @@ class CategoryManagerBloc
 
     on<DeleteCategory>((event, emit) async {
       if (state is LoadedCategoryManager) {
-        final List<String> categories =
-            List<String>.from((state as LoadedCategoryManager).categories)
-              ..remove(event.category);
+        final List<String> categories = List<String>.from(
+          (state as LoadedCategoryManager).categories,
+        )..remove(event.category);
         if (selectedCategories.contains(event.category)) {
           selectedCategories.remove(event.category);
         }
@@ -73,14 +73,16 @@ class CategoryManagerBloc
 
     on<UpdateCategory>((event, emit) async {
       if (state is LoadedCategoryManager) {
-        final List<String> categories =
-            (state as LoadedCategoryManager).categories.map((category) {
-          if (category == event.oldCategory) {
-            return event.updatedCategory;
-          } else {
-            return category;
-          }
-        }).toList();
+        final List<String> categories = (state as LoadedCategoryManager)
+            .categories
+            .map((category) {
+              if (category == event.oldCategory) {
+                return event.updatedCategory;
+              } else {
+                return category;
+              }
+            })
+            .toList();
 
         if (selectedCategories.contains(event.oldCategory)) {
           selectedCategories[selectedCategories.indexOf(event.oldCategory)] =
@@ -96,14 +98,19 @@ class CategoryManagerBloc
         // List in repositoryProvider() is already updated of the recipeManager
 
         final List<String> it1 = List<String>.from(
-            (state as LoadedCategoryManager).categories
-              ..insert(event.newIndex,
-                  (state as LoadedCategoryManager).categories[event.oldIndex]));
+          (state as LoadedCategoryManager).categories..insert(
+            event.newIndex,
+            (state as LoadedCategoryManager).categories[event.oldIndex],
+          ),
+        );
 
-        final List<String> it2 = List<String>.from(it1
-          ..removeAt(event.oldIndex > event.newIndex
-              ? event.oldIndex + 1
-              : event.oldIndex));
+        final List<String> it2 = List<String>.from(
+          it1..removeAt(
+            event.oldIndex > event.newIndex
+                ? event.oldIndex + 1
+                : event.oldIndex,
+          ),
+        );
 
         emit(LoadedCategoryManager(it2));
       }

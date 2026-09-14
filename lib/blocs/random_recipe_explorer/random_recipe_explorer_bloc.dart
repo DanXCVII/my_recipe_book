@@ -19,8 +19,7 @@ class RandomRecipeExplorerBloc
   RandomRecipeExplorerBloc({
     required this.recipeManagerBloc,
     required this.repository,
-  })
-      : super(LoadingRandomRecipeExplorer()) {
+  }) : super(LoadingRandomRecipeExplorer()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRandomRecipeExplorer) {
         final List<String> categories =
@@ -43,11 +42,19 @@ class RandomRecipeExplorerBloc
         } else if (rmState is RM.UpdateRecipeState) {
           add(UpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
         } else if (rmState is RM.AddFavoriteState) {
-          add(UpdateRecipe(
-              rmState.recipe.copyWith(isFavorite: false), rmState.recipe));
+          add(
+            UpdateRecipe(
+              rmState.recipe.copyWith(isFavorite: false),
+              rmState.recipe,
+            ),
+          );
         } else if (rmState is RM.RemoveFavoriteState) {
-          add(UpdateRecipe(
-              rmState.recipe.copyWith(isFavorite: true), rmState.recipe));
+          add(
+            UpdateRecipe(
+              rmState.recipe.copyWith(isFavorite: true),
+              rmState.recipe,
+            ),
+          );
         } else if (rmState is RM.AddCategoriesState) {
           add(AddCategories(rmState.categories));
         } else if (rmState is RM.DeleteCategoryState) {
@@ -56,10 +63,14 @@ class RandomRecipeExplorerBloc
           add(UpdateCategory(rmState.oldCategory, rmState.updatedCategory));
         } else if (rmState is RM.DeleteRecipeTagState ||
             rmState is RM.UpdateRecipeTagState) {
-          add(InitializeRandomRecipeExplorer(
-              selectedCategory: (state as LoadedRandomRecipeExplorer)
-                      .categories[
-                  (state as LoadedRandomRecipeExplorer).selectedCategory!]));
+          add(
+            InitializeRandomRecipeExplorer(
+              selectedCategory:
+                  (state as LoadedRandomRecipeExplorer).categories[(state
+                          as LoadedRandomRecipeExplorer)
+                      .selectedCategory!],
+            ),
+          );
         } else if (rmState is RM.MoveCategoryState) {
           add(MoveCategory(rmState.oldIndex, rmState.newIndex));
         }
@@ -82,8 +93,13 @@ class RandomRecipeExplorerBloc
           randomRecipes.add(randomRecipe);
         }
       }
-      emit(LoadedRandomRecipeExplorer(randomRecipes, categories,
-          categories.indexOf(event.selectedCategory)));
+      emit(
+        LoadedRandomRecipeExplorer(
+          randomRecipes,
+          categories,
+          categories.indexOf(event.selectedCategory),
+        ),
+      );
     });
 
     on<AddCategories>((event, emit) async {
@@ -91,50 +107,59 @@ class RandomRecipeExplorerBloc
         final List<String> categories =
             List<String>.from((state as LoadedRandomRecipeExplorer).categories)
               ..insertAll(
-                  (state as LoadedRandomRecipeExplorer).categories.length - 1,
-                  event.categories);
+                (state as LoadedRandomRecipeExplorer).categories.length - 1,
+                event.categories,
+              );
 
-        emit(LoadedRandomRecipeExplorer(
-          (state as LoadedRandomRecipeExplorer).randomRecipes,
-          categories,
-          (state as LoadedRandomRecipeExplorer).selectedCategory,
-        ));
+        emit(
+          LoadedRandomRecipeExplorer(
+            (state as LoadedRandomRecipeExplorer).randomRecipes,
+            categories,
+            (state as LoadedRandomRecipeExplorer).selectedCategory,
+          ),
+        );
       }
     });
 
     on<DeleteCategory>((event, emit) async {
       if (state is LoadedRandomRecipeExplorer) {
-        List<String> categories =
-            List<String>.from((state as LoadedRandomRecipeExplorer).categories);
+        List<String> categories = List<String>.from(
+          (state as LoadedRandomRecipeExplorer).categories,
+        );
         int? selectedIndex =
             (state as LoadedRandomRecipeExplorer).selectedCategory;
         if (categories.indexOf(event.category) == selectedIndex) {
           List<Recipe> randomRecipes = [];
           for (int i = 0; i < 10; i++) {
-            Recipe? randomRecipe =
-                await repository.getRandomRecipeOfCategory();
+            Recipe? randomRecipe = await repository.getRandomRecipeOfCategory();
             if (randomRecipe != null) {
               randomRecipes.add(randomRecipe);
             }
           }
 
-          emit(LoadedRandomRecipeExplorer(
-            randomRecipes,
-            List<String>.from(categories)..remove(event.category),
-            selectedIndex,
-          ));
+          emit(
+            LoadedRandomRecipeExplorer(
+              randomRecipes,
+              List<String>.from(categories)..remove(event.category),
+              selectedIndex,
+            ),
+          );
         } else if (categories.indexOf(event.category) < selectedIndex!) {
-          emit(LoadedRandomRecipeExplorer(
-            (state as LoadedRandomRecipeExplorer).randomRecipes,
-            List<String>.from(categories)..remove(event.category),
-            selectedIndex - 1,
-          ));
+          emit(
+            LoadedRandomRecipeExplorer(
+              (state as LoadedRandomRecipeExplorer).randomRecipes,
+              List<String>.from(categories)..remove(event.category),
+              selectedIndex - 1,
+            ),
+          );
         } else {
-          emit(LoadedRandomRecipeExplorer(
-            (state as LoadedRandomRecipeExplorer).randomRecipes,
-            List<String>.from(categories)..remove(event.category),
-            (state as LoadedRandomRecipeExplorer).selectedCategory,
-          ));
+          emit(
+            LoadedRandomRecipeExplorer(
+              (state as LoadedRandomRecipeExplorer).randomRecipes,
+              List<String>.from(categories)..remove(event.category),
+              (state as LoadedRandomRecipeExplorer).selectedCategory,
+            ),
+          );
         }
       }
     });
@@ -154,11 +179,13 @@ class RandomRecipeExplorerBloc
         }
 
         if (updated == true) {
-          emit(LoadedRandomRecipeExplorer(
-            randomRecipes,
-            (state as LoadedRandomRecipeExplorer).categories,
-            (state as LoadedRandomRecipeExplorer).selectedCategory,
-          ));
+          emit(
+            LoadedRandomRecipeExplorer(
+              randomRecipes,
+              (state as LoadedRandomRecipeExplorer).categories,
+              (state as LoadedRandomRecipeExplorer).selectedCategory,
+            ),
+          );
         }
       }
     });
@@ -173,8 +200,8 @@ class RandomRecipeExplorerBloc
             (state as LoadedRandomRecipeExplorer).selectedCategory;
 
         if (await repository.getRandomRecipeOfCategory(
-                category:
-                    selectedIndex == 0 ? null : categories[selectedIndex!]) ==
+              category: selectedIndex == 0 ? null : categories[selectedIndex!],
+            ) ==
             null) {
           emit(LoadedRandomRecipeExplorer([], categories, selectedIndex));
           return;
@@ -183,44 +210,52 @@ class RandomRecipeExplorerBloc
         bool updated = false;
         while (randomRecipes.contains(event.recipe)) {
           Recipe? randomRecipe = await repository.getRandomRecipeOfCategory(
-              category: selectedIndex == 0 ? null : categories[selectedIndex!]);
+            category: selectedIndex == 0 ? null : categories[selectedIndex!],
+          );
           if (randomRecipe != null) {
             randomRecipes[randomRecipes.indexOf(event.recipe)] = randomRecipe;
           }
           updated = true;
         }
         if (updated) {
-          emit(LoadedRandomRecipeExplorer(
-              randomRecipes, categories, selectedIndex));
+          emit(
+            LoadedRandomRecipeExplorer(
+              randomRecipes,
+              categories,
+              selectedIndex,
+            ),
+          );
         }
       }
     });
 
     on<UpdateCategory>((event, emit) async {
       if (state is LoadedRandomRecipeExplorer) {
-        final List<String> categories =
-            List<String>.from((state as LoadedRandomRecipeExplorer).categories);
+        final List<String> categories = List<String>.from(
+          (state as LoadedRandomRecipeExplorer).categories,
+        );
         int renamedCategoryIndex = categories.indexOf(event.oldCategory);
         categories[renamedCategoryIndex] = event.updatedCategory;
 
-        emit(LoadedRandomRecipeExplorer(
-          (state as LoadedRandomRecipeExplorer)
-              .randomRecipes
-              .map(
-                (recipe) => recipe.copyWith(
-                  categories: recipe.categories
-                      .map(
-                        (category) => category == event.oldCategory
-                            ? event.updatedCategory
-                            : category,
-                      )
-                      .toList(),
-                ),
-              )
-              .toList(),
-          categories,
-          (state as LoadedRandomRecipeExplorer).selectedCategory,
-        ));
+        emit(
+          LoadedRandomRecipeExplorer(
+            (state as LoadedRandomRecipeExplorer).randomRecipes
+                .map(
+                  (recipe) => recipe.copyWith(
+                    categories: recipe.categories
+                        .map(
+                          (category) => category == event.oldCategory
+                              ? event.updatedCategory
+                              : category,
+                        )
+                        .toList(),
+                  ),
+                )
+                .toList(),
+            categories,
+            (state as LoadedRandomRecipeExplorer).selectedCategory,
+          ),
+        );
       }
     });
 
@@ -236,18 +271,22 @@ class RandomRecipeExplorerBloc
 
         for (int i = 0; i < 50; i++) {
           Recipe? randomRecipe = await repository.getRandomRecipeOfCategory(
-              category:
-                  selectedCategory == 0 ? null : categories[selectedCategory]);
+            category: selectedCategory == 0
+                ? null
+                : categories[selectedCategory],
+          );
           if (randomRecipe != null) {
             randomRecipes.add(randomRecipe);
           }
         }
 
-        emit(LoadedRandomRecipeExplorer(
-          randomRecipes,
-          categories,
-          selectedCategory,
-        ));
+        emit(
+          LoadedRandomRecipeExplorer(
+            randomRecipes,
+            categories,
+            selectedCategory,
+          ),
+        );
       }
     });
 
@@ -258,17 +297,23 @@ class RandomRecipeExplorerBloc
               (state as LoadedRandomRecipeExplorer).categories;
           // verify if working
           List<String> newCategoryRandomImageList = oldCategoryRandomImageList
-            ..insert(event.newIndex + 1,
-                oldCategoryRandomImageList[event.oldIndex + 1])
-            ..removeAt(event.oldIndex > event.newIndex
-                ? event.oldIndex + 2
-                : event.oldIndex + 1);
+            ..insert(
+              event.newIndex + 1,
+              oldCategoryRandomImageList[event.oldIndex + 1],
+            )
+            ..removeAt(
+              event.oldIndex > event.newIndex
+                  ? event.oldIndex + 2
+                  : event.oldIndex + 1,
+            );
 
-          emit(LoadedRandomRecipeExplorer(
-            (state as LoadedRandomRecipeExplorer).randomRecipes,
-            newCategoryRandomImageList,
-            (state as LoadedRandomRecipeExplorer).selectedCategory,
-          ));
+          emit(
+            LoadedRandomRecipeExplorer(
+              (state as LoadedRandomRecipeExplorer).randomRecipes,
+              newCategoryRandomImageList,
+              (state as LoadedRandomRecipeExplorer).selectedCategory,
+            ),
+          );
         }
       }
     });

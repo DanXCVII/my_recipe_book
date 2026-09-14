@@ -2,7 +2,7 @@
 import 'package:image/image.dart' as IO;
 import 'dart:io';
 */
- //this is just a class for random testing purposes ;)
+//this is just a class for random testing purposes ;)
 /*
 void test(File image) {
     IO.Image i = IO.decodeImage(new File('test.webp').readAsBytesSync());
@@ -530,18 +530,10 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
   }
 }
 */
-    
 
+//RECIPECARD
 
-
-
-
-
-
-
-    //RECIPECARD
-
-    /*
+/*
     class RecipeCard extends StatelessWidget {
   final Recipe recipe;
   final Color recipeColor;
@@ -757,14 +749,6 @@ class RecipeSearch extends SearchDelegate<SearchRecipe> {
     }
   }
 }*/
-
-
-
-
-
-
-
-
 
 ////// FLOATING ACTION BUTTON //////////
 /*

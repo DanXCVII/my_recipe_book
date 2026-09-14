@@ -23,38 +23,45 @@ Ingredient getIngredientFromString(String ingredientInfo) {
     } else if (!ingredientInfo.contains(" ")) {
       return Ingredient(name: ingredientInfo);
     } else if (getNumberOfString(
-            ingredientInfo.substring(0, ingredientInfo.indexOf(" "))) !=
+          ingredientInfo.substring(0, ingredientInfo.indexOf(" ")),
+        ) !=
         null) {
       amount = getNumberOfString(
-          ingredientInfo.substring(0, ingredientInfo.indexOf(" ")))!;
+        ingredientInfo.substring(0, ingredientInfo.indexOf(" ")),
+      )!;
 
       if (ingredientInfo.contains(" ", ingredientInfo.indexOf(" ") + 1)) {
-        String remainingIngredInfo =
-            ingredientInfo.substring(ingredientInfo.indexOf(" ") + 1);
+        String remainingIngredInfo = ingredientInfo.substring(
+          ingredientInfo.indexOf(" ") + 1,
+        );
         if (remainingIngredInfo.startsWith(" ")) {
           return Ingredient(
-              name:
-                  remainingIngredInfo.substring(1, remainingIngredInfo.length),
-              amount: amount);
+            name: remainingIngredInfo.substring(1, remainingIngredInfo.length),
+            amount: amount,
+          );
         }
 
-        String secondSubString =
-            remainingIngredInfo.substring(0, remainingIngredInfo.indexOf(" "));
+        String secondSubString = remainingIngredInfo.substring(
+          0,
+          remainingIngredInfo.indexOf(" "),
+        );
         if (getNumberOfString(secondSubString) != null) {
           amount += getNumberOfString(secondSubString)!;
           if (remainingIngredInfo[remainingIngredInfo.indexOf(" ") + 1] ==
               " ") {
             return Ingredient(
-              name: remainingIngredInfo
-                  .substring(remainingIngredInfo.indexOf(" ") + 2),
+              name: remainingIngredInfo.substring(
+                remainingIngredInfo.indexOf(" ") + 2,
+              ),
               amount: amount,
             );
           }
         } else {
           unit = secondSubString;
         }
-        name =
-            remainingIngredInfo.substring(remainingIngredInfo.indexOf(" ") + 1);
+        name = remainingIngredInfo.substring(
+          remainingIngredInfo.indexOf(" ") + 1,
+        );
       } else {
         name = ingredientInfo.substring(ingredientInfo.indexOf(" ") + 1);
       }
@@ -68,14 +75,17 @@ Ingredient getIngredientFromString(String ingredientInfo) {
       int indexOfSpace = ingredientInfo.indexOf(" ");
       String searchedIngredInfo = ingredientInfo.trim();
       while (indexOfSpace != -1) {
-        amount =
-            getNumberOfString(searchedIngredInfo.substring(0, indexOfSpace));
+        amount = getNumberOfString(
+          searchedIngredInfo.substring(0, indexOfSpace),
+        );
         if (amount != null) {
           name = ingredientInfo
               .substring(0, ingredientInfo.indexOf(searchedIngredInfo))
               .trim();
           unit = searchedIngredInfo.substring(
-              indexOfSpace + 1, searchedIngredInfo.length);
+            indexOfSpace + 1,
+            searchedIngredInfo.length,
+          );
           break;
         }
         searchedIngredInfo = searchedIngredInfo.substring(indexOfSpace + 1);
@@ -94,25 +104,32 @@ List<String> getRecipeNamesFromMRB(String xmlData) {
 
   while (iteratedXmlData.contains("<title>")) {
     recipeNames.add(
-      iteratedXmlData.substring(iteratedXmlData.indexOf("<title>") + 7,
-          iteratedXmlData.indexOf("</title>")),
+      iteratedXmlData.substring(
+        iteratedXmlData.indexOf("<title>") + 7,
+        iteratedXmlData.indexOf("</title>"),
+      ),
     );
-    iteratedXmlData =
-        iteratedXmlData.substring(iteratedXmlData.indexOf("</title>") + 8);
+    iteratedXmlData = iteratedXmlData.substring(
+      iteratedXmlData.indexOf("</title>") + 8,
+    );
   }
   return recipeNames;
 }
 
 List<Tuple2<Recipe, String?>> getRecipeData(
-    List<String> recipeNames, String xmlData) {
+  List<String> recipeNames,
+  String xmlData,
+) {
   List<Tuple2<Recipe, String?>> recipeData = [];
 
   String iteratedXmlData = xmlData;
 
   while (iteratedXmlData.contains("<recipe>")) {
     Tuple2<Recipe, String?>? recipe = getRecipeFromMRB(
-      iteratedXmlData.substring(iteratedXmlData.indexOf("<recipe>") + 8,
-          iteratedXmlData.indexOf("</recipe>")),
+      iteratedXmlData.substring(
+        iteratedXmlData.indexOf("<recipe>") + 8,
+        iteratedXmlData.indexOf("</recipe>"),
+      ),
     );
     if (recipe != null) {
       recipeData.add(recipe);
@@ -122,15 +139,19 @@ List<Tuple2<Recipe, String?>> getRecipeData(
 }
 
 Tuple2<Recipe, String?>? getSpecifiedRecipeFromMRB(
-    String xmlData, String recipeName) {
+  String xmlData,
+  String recipeName,
+) {
   int recipeStartIndex = 0;
   if (xmlData.indexOf("<recipe>") < xmlData.indexOf(recipeName)) {
     String helpString = xmlData.substring(0, xmlData.indexOf(recipeName));
     recipeStartIndex = helpString.lastIndexOf("<recipe>");
   }
 
-  String recipeXML = xmlData.substring(recipeStartIndex,
-      xmlData.indexOf("</recipe>", xmlData.indexOf(recipeName)));
+  String recipeXML = xmlData.substring(
+    recipeStartIndex,
+    xmlData.indexOf("</recipe>", xmlData.indexOf(recipeName)),
+  );
   return getRecipeFromMRB(recipeXML);
 }
 
@@ -169,16 +190,20 @@ List<Ingredient> getIngredientsFromMRB(String xmlData) {
   List<Ingredient> ingredients = [];
   if (xmlData.contains("<ingredient>")) {
     String iteratedIngredientSection = xmlData.substring(
-        xmlData.indexOf("<ingredient>"), xmlData.indexOf("</ingredient>"));
+      xmlData.indexOf("<ingredient>"),
+      xmlData.indexOf("</ingredient>"),
+    );
     while (iteratedIngredientSection.contains("<li>")) {
       String ingredientStringData = iteratedIngredientSection.substring(
-          iteratedIngredientSection.indexOf("<li>") + 4,
-          iteratedIngredientSection.indexOf("</li>"));
+        iteratedIngredientSection.indexOf("<li>") + 4,
+        iteratedIngredientSection.indexOf("</li>"),
+      );
 
       ingredients.add(getIngredientFromString(ingredientStringData));
 
-      iteratedIngredientSection = iteratedIngredientSection
-          .substring(iteratedIngredientSection.indexOf("</li>") + 5);
+      iteratedIngredientSection = iteratedIngredientSection.substring(
+        iteratedIngredientSection.indexOf("</li>") + 5,
+      );
     }
   }
 
@@ -188,7 +213,9 @@ List<Ingredient> getIngredientsFromMRB(String xmlData) {
 String? getSourceFromMRB(String xmlData) {
   if (xmlData.contains("<url>")) {
     return xmlData.substring(
-        xmlData.indexOf("<url>") + 5, xmlData.indexOf("</url>"));
+      xmlData.indexOf("<url>") + 5,
+      xmlData.indexOf("</url>"),
+    );
   } else {
     return null;
   }
@@ -201,11 +228,14 @@ List<String> getCategoriesFromMRB(String xmlData) {
 
   while (iteratedXmlData.contains('<category>')) {
     categories.add(
-      iteratedXmlData.substring(iteratedXmlData.indexOf("<category>") + 10,
-          iteratedXmlData.indexOf("</category>")),
+      iteratedXmlData.substring(
+        iteratedXmlData.indexOf("<category>") + 10,
+        iteratedXmlData.indexOf("</category>"),
+      ),
     );
-    iteratedXmlData =
-        iteratedXmlData.substring(iteratedXmlData.indexOf("</category>") + 11);
+    iteratedXmlData = iteratedXmlData.substring(
+      iteratedXmlData.indexOf("</category>") + 11,
+    );
   }
   return categories;
 }
@@ -225,16 +255,20 @@ List<String> getStepsFromMRB(String xmlData) {
   List<String> steps = [];
   if (xmlData.contains("<recipetext>")) {
     String iteratedStepsData = xmlData.substring(
-        xmlData.indexOf("<recipetext>"), xmlData.indexOf("</recipetext>"));
+      xmlData.indexOf("<recipetext>"),
+      xmlData.indexOf("</recipetext>"),
+    );
     while (iteratedStepsData.contains("<li>")) {
       String recipeStep = iteratedStepsData.substring(
-          iteratedStepsData.indexOf("<li>") + 4,
-          iteratedStepsData.indexOf("</li>"));
+        iteratedStepsData.indexOf("<li>") + 4,
+        iteratedStepsData.indexOf("</li>"),
+      );
 
       steps.add(recipeStep);
 
-      iteratedStepsData =
-          iteratedStepsData.substring(iteratedStepsData.indexOf("</li>") + 5);
+      iteratedStepsData = iteratedStepsData.substring(
+        iteratedStepsData.indexOf("</li>") + 5,
+      );
     }
   }
 
@@ -243,12 +277,15 @@ List<String> getStepsFromMRB(String xmlData) {
 
 String? getImageNameFromMRB(String xmlData) {
   if (xmlData.contains("<imagepath>")) {
-    String recipeImageNamePart =
-        (xmlData.substring(0, xmlData.indexOf("</imagepath>"))).trim();
+    String recipeImageNamePart = (xmlData.substring(
+      0,
+      xmlData.indexOf("</imagepath>"),
+    )).trim();
     String recipeImageName = recipeImageNamePart.substring(
-        recipeImageNamePart.contains("/")
-            ? recipeImageNamePart.lastIndexOf("/") + 1
-            : recipeImageNamePart.indexOf("<imagepath>") + 11);
+      recipeImageNamePart.contains("/")
+          ? recipeImageNamePart.lastIndexOf("/") + 1
+          : recipeImageNamePart.indexOf("<imagepath>") + 11,
+    );
     return recipeImageName == "" ? null : recipeImageName;
   } else {
     return null;
@@ -294,22 +331,27 @@ List<Nutrition> getNutritionsFromMRB(String xmlData) {
   List<Nutrition> nutritions = [];
   if (xmlData.contains("<nutrition>")) {
     String iteratedStepsData = xmlData.substring(
-        xmlData.indexOf("<nutrition>"), xmlData.indexOf("</nutrition>"));
+      xmlData.indexOf("<nutrition>"),
+      xmlData.indexOf("</nutrition>"),
+    );
     while (iteratedStepsData.contains("<li>")) {
       String nutritionString = iteratedStepsData.substring(
-          iteratedStepsData.indexOf("<li>") + 4,
-          iteratedStepsData.indexOf("</li>"));
+        iteratedStepsData.indexOf("<li>") + 4,
+        iteratedStepsData.indexOf("</li>"),
+      );
 
       nutritions.add(
         Nutrition(
           name: nutritionString.substring(0, nutritionString.indexOf(" :")),
-          amountUnit:
-              nutritionString.substring(nutritionString.indexOf(": ") + 2),
+          amountUnit: nutritionString.substring(
+            nutritionString.indexOf(": ") + 2,
+          ),
         ),
       );
 
-      iteratedStepsData =
-          iteratedStepsData.substring(iteratedStepsData.indexOf("</li>") + 5);
+      iteratedStepsData = iteratedStepsData.substring(
+        iteratedStepsData.indexOf("</li>") + 5,
+      );
     }
   }
 
@@ -319,10 +361,7 @@ List<Nutrition> getNutritionsFromMRB(String xmlData) {
 String? getURLfromMRB(String xmlData) {
   if (xmlData.contains("<url>")) {
     return xmlData
-        .substring(
-          xmlData.indexOf("<url>") + 5,
-          xmlData.indexOf("</url>"),
-        )
+        .substring(xmlData.indexOf("<url>") + 5, xmlData.indexOf("</url>"))
         .trim();
   }
   return null;
@@ -330,10 +369,12 @@ String? getURLfromMRB(String xmlData) {
 
 double? getServingsFromMRB(String xmlData) {
   if (xmlData.contains("<quantity>")) {
-    return getFirstFullNumber(xmlData.substring(
-      xmlData.indexOf("<quantity>"),
-      xmlData.indexOf("</quantity>"),
-    ));
+    return getFirstFullNumber(
+      xmlData.substring(
+        xmlData.indexOf("<quantity>"),
+        xmlData.indexOf("</quantity>"),
+      ),
+    );
   }
   return null;
 }

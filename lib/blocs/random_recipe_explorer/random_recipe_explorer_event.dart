@@ -7,8 +7,9 @@ abstract class RandomRecipeExplorerEvent {
 class InitializeRandomRecipeExplorer extends RandomRecipeExplorerEvent {
   final String selectedCategory;
 
-  const InitializeRandomRecipeExplorer(
-      {this.selectedCategory = 'all categories'});
+  const InitializeRandomRecipeExplorer({
+    this.selectedCategory = 'all categories',
+  });
 }
 
 class ReloadRandomRecipeExplorer extends RandomRecipeExplorerEvent {}

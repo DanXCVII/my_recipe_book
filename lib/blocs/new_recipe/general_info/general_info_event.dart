@@ -49,25 +49,27 @@ class FinishedEditing extends GeneralInfoEvent {
   final List<String>? categories;
   final List<StringIntTuple>? recipeTags;
 
-  FinishedEditing(this.recipeName,
-      [this.editingRecipe,
-      this.goBack,
-      this.preperationTime,
-      this.cookingTime,
-      this.totalTime,
-      this.source,
-      this.categories,
-      this.recipeTags]);
+  FinishedEditing(
+    this.recipeName, [
+    this.editingRecipe,
+    this.goBack,
+    this.preperationTime,
+    this.cookingTime,
+    this.totalTime,
+    this.source,
+    this.categories,
+    this.recipeTags,
+  ]);
 
   @override
   List<Object?> get props => [
-        editingRecipe,
-        goBack,
-        recipeName,
-        preperationTime,
-        cookingTime,
-        totalTime,
-        categories,
-        recipeTags,
-      ];
+    editingRecipe,
+    goBack,
+    recipeName,
+    preperationTime,
+    cookingTime,
+    totalTime,
+    categories,
+    recipeTags,
+  ];
 }

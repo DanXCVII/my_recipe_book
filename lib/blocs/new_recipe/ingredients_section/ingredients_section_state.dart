@@ -8,8 +8,5 @@ class LoadedIngredientsSection extends IngredientsSectionState {
   final List<String> sectionTitles;
   final List<List<Ingredient>> ingredients;
 
-  LoadedIngredientsSection(
-    this.sectionTitles,
-    this.ingredients,
-  );
+  LoadedIngredientsSection(this.sectionTitles, this.ingredients);
 }

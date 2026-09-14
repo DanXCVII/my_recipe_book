@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 
 import 'package:my_recipe_book/generated/l10n.dart';
+
 import '../../models/nutrition.dart';
 
 class AnimatedNutritionsFab extends StatefulWidget {
@@ -76,10 +77,7 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
               decoration: BoxDecoration(
                 color: Colors.amber[800],
                 gradient: new LinearGradient(
-                  colors: [
-                    Colors.amber[600]!,
-                    Colors.amber[800]!,
-                  ],
+                  colors: [Colors.amber[600]!, Colors.amber[800]!],
                   begin: const FractionalOffset(0.0, 0.0),
                   end: const FractionalOffset(1.0, 1.0),
                 ),
@@ -117,11 +115,13 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
                                 child: Row(
                                   children: [
                                     Spacer(),
-                                    Text(S.of(context).nutritions,
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        )),
+                                    Text(
+                                      S.of(context).nutritions,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     Spacer(),
                                     IconButton(
                                       icon: Icon(Icons.cancel),
@@ -131,7 +131,7 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
                                           isMinimized = true;
                                         });
                                       },
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
@@ -141,28 +141,32 @@ class _AnimatedNutritionsFabState extends State<AnimatedNutritionsFab>
                                     : MediaQuery.of(context).size.height - 172,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 22.0),
+                                    horizontal: 22.0,
+                                  ),
                                   child: ListView(
                                     children: List.generate(
                                       widget.recipeNutritions.length,
                                       (index) => Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            vertical: 3.0),
-                                        child: Row(children: [
-                                          Text(
+                                          vertical: 3.0,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Text(
                                               widget
-                                                  .recipeNutritions[index].name,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                              )),
-                                          Spacer(),
-                                          Text(
-                                              widget.recipeNutritions[index]
+                                                  .recipeNutritions[index]
+                                                  .name,
+                                              style: TextStyle(fontSize: 16),
+                                            ),
+                                            Spacer(),
+                                            Text(
+                                              widget
+                                                  .recipeNutritions[index]
                                                   .amountUnit,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                              )),
-                                        ]),
+                                              style: TextStyle(fontSize: 16),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),

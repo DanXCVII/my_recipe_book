@@ -49,8 +49,9 @@ class _NutritionManagerState extends State<NutritionManager> {
               for (int i = 0; i < state.nutritions.length; i++) {
                 String currentNutrition = state.nutritions[i];
 
-                nutritionsController
-                    .addAll({currentNutrition: TextEditingController()});
+                nutritionsController.addAll({
+                  currentNutrition: TextEditingController(),
+                });
                 dismissibleKeys.add(Key('D-$currentNutrition'));
                 listTileKeys.add(Key(currentNutrition));
               }
@@ -69,9 +70,10 @@ class _NutritionManagerState extends State<NutritionManager> {
                 flexibleSpace: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xffAF1E1E), Color(0xff641414)],
+                    ),
                   ),
                 ),
                 title: Text(S.of(context).manage_nutritions),
@@ -91,57 +93,58 @@ class _NutritionManagerState extends State<NutritionManager> {
                 ],
               ),
               floatingActionButton: FloatingActionButton(
-                  backgroundColor: Color(0xFF790604),
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => TextFieldDialog(
-                        validation: (String? name) {
-                          if (state.nutritions.contains(name)) {
-                            return S.of(context).nutrition_already_exists;
-                          } else if (name == "") {
-                            return S.of(context).field_must_not_be_empty;
-                          } else {
-                            return null;
-                          }
-                        },
-                        save: (String name) {
-                          BlocProvider.of<NutritionManagerBloc>(context)
-                              .add(AddNutrition(name));
-                          nutritionsController
-                              .addAll({name: TextEditingController()});
-                          dismissibleKeys.add(Key('D-$name'));
-                          listTileKeys.add(Key(name));
-                        },
-                        hintText: S.of(context).nutrition,
-                      ),
-                    );
-                  }),
+                backgroundColor: Color(0xFF790604),
+                child: Icon(Icons.add, color: Colors.white),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => TextFieldDialog(
+                      validation: (String? name) {
+                        if (state.nutritions.contains(name)) {
+                          return S.of(context).nutrition_already_exists;
+                        } else if (name == "") {
+                          return S.of(context).field_must_not_be_empty;
+                        } else {
+                          return null;
+                        }
+                      },
+                      save: (String name) {
+                        BlocProvider.of<NutritionManagerBloc>(context)
+                            .add(AddNutrition(name));
+                        nutritionsController.addAll({
+                          name: TextEditingController(),
+                        });
+                        dismissibleKeys.add(Key('D-$name'));
+                        listTileKeys.add(Key(name));
+                      },
+                      hintText: S.of(context).nutrition,
+                    ),
+                  );
+                },
+              ),
               body: state.nutritions.isEmpty
                   ? Center(
                       child: IconInfoMessage(
-                      iconWidget: Icon(
-                        MdiIcons.nutrition,
-                        color: Colors.grey[200],
-                        size: 70.0,
+                        iconWidget: Icon(
+                          MdiIcons.nutrition,
+                          color: Colors.grey[200],
+                          size: 70.0,
+                        ),
+                        description: S.of(context).you_have_no_nutritions,
                       ),
-                      description: S.of(context).you_have_no_nutritions,
-                    ))
+                    )
                   : Form(
                       key: _formKey,
                       child: ReorderableListView(
                         onReorderItem: (oldIndex, newIndex) {
                           // The Bloc still expects the legacy pre-removal
                           // destination index.
-                          BlocProvider.of<NutritionManagerBloc>(context)
-                              .add(MoveNutrition(
-                                oldIndex,
-                                newIndex > oldIndex ? newIndex + 1 : newIndex,
-                              ));
+                          BlocProvider.of<NutritionManagerBloc>(context).add(
+                            MoveNutrition(
+                              oldIndex,
+                              newIndex > oldIndex ? newIndex + 1 : newIndex,
+                            ),
+                          );
                         },
                         children: List.generate(
                           dismissibleKeys.length,
@@ -185,21 +188,21 @@ class _NutritionManagerState extends State<NutritionManager> {
 
   Widget _getNutritionManagerLoadingScreen() {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xffAF1E1E), Color(0xff641414)]),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffAF1E1E), Color(0xff641414)],
             ),
           ),
-          title: Text(S.of(context).manage_nutritions),
         ),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ));
+        title: Text(S.of(context).manage_nutritions),
+      ),
+      body: Center(child: CircularProgressIndicator()),
+    );
   }
 
   _showDeleteDialog(
@@ -213,14 +216,17 @@ class _NutritionManagerState extends State<NutritionManager> {
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(S.of(context).delete_nutrition),
-        content: Text(S.of(context).sure_you_want_to_delete_this_nutrition +
-            " $nutritionName"),
+        content: Text(
+          S.of(context).sure_you_want_to_delete_this_nutrition +
+              " $nutritionName",
+        ),
         actions: <Widget>[
           TextButton(
             child: Text(S.of(context).no),
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
               foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
             onPressed: () {
@@ -231,7 +237,8 @@ class _NutritionManagerState extends State<NutritionManager> {
             child: Text(S.of(context).yes),
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
               foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
               backgroundColor: Colors.red[600],
             ),
@@ -261,11 +268,8 @@ class _NutritionManagerState extends State<NutritionManager> {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
-            child: Icon(
-              MdiIcons.deleteSweep,
-              color: Colors.white,
-            ),
-          )
+            child: Icon(MdiIcons.deleteSweep, color: Colors.white),
+          ),
         ],
       ),
     );
@@ -279,11 +283,8 @@ class _NutritionManagerState extends State<NutritionManager> {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Icon(
-              MdiIcons.deleteSweep,
-              color: Colors.white,
-            ),
-          )
+            child: Icon(MdiIcons.deleteSweep, color: Colors.white),
+          ),
         ],
       ),
     );
@@ -313,9 +314,8 @@ class _NutritionManagerState extends State<NutritionManager> {
                 }
               },
               save: (String name) {
-                BlocProvider.of<NutritionManagerBloc>(context).add(
-                  UpdateNutrition(nutritionName, name),
-                );
+                BlocProvider.of<NutritionManagerBloc>(context)
+                    .add(UpdateNutrition(nutritionName, name));
               },
               hintText: S.of(context).nutrition,
               prefilledText: nutritionName,

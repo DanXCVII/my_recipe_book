@@ -23,12 +23,7 @@ class LoadedRecipeCalendarVertical extends RecipeCalendarState {
   });
 
   @override
-  List<Object?> get props => [
-        from,
-        days,
-        recipes,
-        addedRecipe,
-      ];
+  List<Object?> get props => [from, days, recipes, addedRecipe];
 }
 
 class LoadedRecipeCalendarOverview extends RecipeCalendarState {
@@ -45,10 +40,5 @@ class LoadedRecipeCalendarOverview extends RecipeCalendarState {
   });
 
   @override
-  List<Object?> get props => [
-        events,
-        currentRecipes,
-        selectedDay,
-        addedRecipe,
-      ];
+  List<Object?> get props => [events, currentRecipes, selectedDay, addedRecipe];
 }

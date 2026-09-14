@@ -111,7 +111,7 @@ class TextColorDialogState extends State<TextColorDialog> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
                 SizedBox(height: 24.0),
@@ -119,10 +119,11 @@ class TextColorDialogState extends State<TextColorDialog> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     TextButton(
-                        child: Text(S.of(context).cancel),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }),
+                      child: Text(S.of(context).cancel),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
                     TextButton(
                       child: Text(S.of(context).save),
                       onPressed: () {
@@ -159,13 +160,14 @@ class TextColorDialogState extends State<TextColorDialog> {
             child: Text("ok"),
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
               foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
             ),
             onPressed: () {
               Navigator.pop(context);
             },
-          )
+          ),
         ],
       ),
     );
