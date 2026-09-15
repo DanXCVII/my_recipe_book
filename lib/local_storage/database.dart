@@ -89,6 +89,7 @@ class StoredIngredients extends Table {
     onDelete: KeyAction.cascade,
   )();
   IntColumn get position => integer()();
+  TextColumn get opaqueId => text().nullable()();
   TextColumn get name => text()();
   RealColumn get amount => real().nullable()();
   TextColumn get unit => text().nullable()();
@@ -124,6 +125,26 @@ class StoredStepImages extends Table {
   )();
   IntColumn get position => integer()();
   TextColumn get path => text()();
+}
+
+class StoredStepIngredients extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get stepGroupId => integer().references(
+    StoredStepGroups,
+    #id,
+    onDelete: KeyAction.cascade,
+  )();
+  IntColumn get ingredientId => integer().references(
+    StoredIngredients,
+    #id,
+    onDelete: KeyAction.cascade,
+  )();
+  IntColumn get position => integer()();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+    {stepGroupId, ingredientId},
+  ];
 }
 
 class IngredientCatalogEntries extends Table {
@@ -221,6 +242,7 @@ class LegacyBackupFiles extends Table {
     StoredNutritions,
     StoredStepGroups,
     StoredStepImages,
+    StoredStepIngredients,
     IngredientCatalogEntries,
     NutritionCatalogEntries,
     CalendarEntries,
@@ -243,7 +265,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -256,6 +278,24 @@ class AppDatabase extends _$AppDatabase {
           shoppingSources,
           shoppingSources.currentServings,
         );
+      }
+      if (from < 3) {
+        // Some early installations (and migration fixtures) contain only a
+        // subset of the v1 tables, so upgrades must remain additive and
+        // tolerate those partial databases.
+        final existingTables = (await customSelect(
+          "SELECT name FROM sqlite_master WHERE type = 'table'",
+        ).get()).map((row) => row.read<String>('name')).toSet();
+        if (existingTables.contains('stored_ingredients')) {
+          await migrator.addColumn(
+            storedIngredients,
+            storedIngredients.opaqueId,
+          );
+        }
+        if (existingTables.contains('stored_step_groups') &&
+            existingTables.contains('stored_ingredients')) {
+          await migrator.createTable(storedStepIngredients);
+        }
       }
     },
     beforeOpen: (details) async {

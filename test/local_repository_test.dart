@@ -28,6 +28,84 @@ void main() {
     if (!databaseClosed) await database.close();
   });
 
+  test('ingredient identities and step assignments round-trip', () async {
+    final recipe = Recipe(
+      name: 'Duplicate onions',
+      ingredientsGlossary: const ['Sauce', 'Garnish'],
+      ingredients: const [
+        [Ingredient(id: 'sauce-onion', name: 'Onion', amount: 1)],
+        [Ingredient(id: 'garnish-onion', name: 'Onion', amount: .5)],
+      ],
+      steps: const ['Cook the sauce', 'Finish and serve'],
+      stepImages: const [[], []],
+      stepTitles: const ['', ''],
+      stepIngredientIds: const [
+        ['sauce-onion'],
+        ['sauce-onion', 'garnish-onion'],
+      ],
+    );
+
+    await repository.saveRecipe(recipe);
+    final loaded = await repository.getRecipeByName(recipe.name);
+
+    expect(loaded, recipe);
+    expect(loaded!.ingredients[0].single.id, 'sauce-onion');
+    expect(loaded.ingredients[1].single.id, 'garnish-onion');
+    expect(loaded.stepIngredientIds, recipe.stepIngredientIds);
+
+    final sauceRow = await (database.select(
+      database.storedIngredients,
+    )..where((row) => row.opaqueId.equals('sauce-onion'))).getSingle();
+    await (database.delete(
+      database.storedIngredients,
+    )..where((row) => row.id.equals(sauceRow.id))).go();
+    expect(
+      await database.select(database.storedStepIngredients).get(),
+      hasLength(1),
+    );
+  });
+
+  test('recipe JSON remains legacy-compatible and prunes dangling links', () {
+    final legacy = Recipe.fromMap({
+      'name': 'Legacy',
+      'image': 'images/randomFood.jpg',
+      'imagePreviewPath': 'images/randomFood.jpg',
+      'preperationTime': 0,
+      'cookingTime': 0,
+      'totalTime': 0,
+      'servings': null,
+      'categories': <String>[],
+      'ingredientsGlossary': ['Main'],
+      'ingredients': [
+        [
+          {'name': 'Salt', 'amount': 1, 'unit': 'tsp'},
+        ],
+      ],
+      'vegetable': Vegetable.VEGETARIAN.toString(),
+      'steps': ['Season'],
+      'stepImages': [[]],
+      'notes': '',
+      'nutritions': <Map<String, dynamic>>[],
+      'lastModified': firstModified,
+      'source': null,
+    }, keepDateTime: true);
+
+    expect(legacy.stepIngredientIds, isEmpty);
+    final identified = legacy.ensureIngredientIds();
+    final ingredientId = identified.ingredients.single.single.id!;
+    final imported = Recipe.fromMap({
+      ...identified.toMap(),
+      'stepIngredientIds': [
+        [ingredientId, 'missing-id'],
+      ],
+    }, keepDateTime: true).ensureIngredientIds();
+
+    expect(imported.stepIngredientIds, [
+      [ingredientId],
+    ]);
+    expect(Recipe.fromMap(imported.toMap(), keepDateTime: true), imported);
+  });
+
   test('legacy snapshot round-trips all user-visible state', () async {
     final recipe = Recipe(
       name: 'Crème brûlée',
@@ -495,6 +573,56 @@ void main() {
     expect(sources.map((source) => source.sourceKey), ['summary', 'Soup']);
     expect(sources.every((source) => source.currentServings == null), isTrue);
   });
+
+  test(
+    'schema v2 creates ingredient identities and assignment table',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'recipe-schema-v2-',
+      );
+      addTearDown(() => directory.delete(recursive: true));
+      final file = File('${directory.path}/legacy.sqlite');
+      final legacy = sqlite3.sqlite3.open(file.path);
+      legacy.execute('''
+      CREATE TABLE stored_ingredient_groups (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+      );
+      CREATE TABLE stored_ingredients (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        group_id INTEGER NOT NULL,
+        position INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        amount REAL NULL,
+        unit TEXT NULL
+      );
+      CREATE TABLE stored_step_groups (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+      );
+      PRAGMA user_version = 2;
+    ''');
+      legacy.close();
+
+      await database.close();
+      databaseClosed = true;
+      final migrated = AppDatabase(NativeDatabase(file));
+      addTearDown(migrated.close);
+      await migrated.customSelect('SELECT 1').get();
+
+      final ingredientColumns = await migrated
+          .customSelect('PRAGMA table_info(stored_ingredients)')
+          .get();
+      final assignmentTables = await migrated
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'stored_step_ingredients'",
+          )
+          .get();
+      expect(
+        ingredientColumns.map((row) => row.read<String>('name')),
+        contains('opaque_id'),
+      );
+      expect(assignmentTables, hasLength(1));
+    },
+  );
 
   test(
     'migration issues can be recovered without overwriting recipes',

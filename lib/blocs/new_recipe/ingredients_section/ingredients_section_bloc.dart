@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bloc/bloc.dart';
 
 import '../../../models/ingredient.dart';
@@ -11,56 +9,50 @@ class IngredientsSectionBloc
     extends Bloc<IngredientsSectionEvent, IngredientsSectionState> {
   List<String> sectionTitles = [];
   List<List<Ingredient>> ingredients = [[]];
+  int _nextIngredientId = 0;
+
+  Ingredient _withId(Ingredient ingredient) => ingredient.id != null
+      ? ingredient
+      : ingredient.copyWith(
+          id: 'ing-${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}-${_nextIngredientId++}',
+        );
+
+  LoadedIngredientsSection _snapshot() => LoadedIngredientsSection(
+    List<String>.from(sectionTitles),
+    ingredients
+        .map((section) => List<Ingredient>.from(section))
+        .toList(growable: false),
+  );
 
   IngredientsSectionBloc() : super(LoadedIngredientsSection([], [[]])) {
     on<InitializeIngredientsSection>((event, emit) async {
       sectionTitles = List<String>.from(event.sectionTitles);
-      ingredients = [];
-      int iterations;
-
-      if (event.ingredients.length == 1) {
-        iterations = 1;
-      } else {
-        iterations = min(event.ingredients.length, event.sectionTitles.length);
+      final sectionCount = [
+        1,
+        event.ingredients.length,
+        event.sectionTitles.length,
+      ].reduce((value, element) => value > element ? value : element);
+      ingredients = List.generate(sectionCount, (index) {
+        if (index >= event.ingredients.length) return <Ingredient>[];
+        return event.ingredients[index].map(_withId).toList();
+      });
+      if (sectionCount > 1 && sectionTitles.length < sectionCount) {
+        sectionTitles.addAll(
+          List<String>.filled(sectionCount - sectionTitles.length, ''),
+        );
       }
-
-      for (int i = 0; i < iterations; i++) {
-        ingredients.add([]);
-        for (Ingredient ingred in event.ingredients[i]) {
-          ingredients[i].add(ingred);
-        }
-      }
-
-      emit(LoadedIngredientsSection(sectionTitles, ingredients));
+      emit(_snapshot());
     });
 
     on<AddIngredient>((event, emit) async {
-      List<List<Ingredient>> stateIngredients = [];
-      ingredients[event.index]..add(event.ingredient);
-
-      for (int i = 0; i < ingredients.length; i++) {
-        stateIngredients.add([]);
-        for (Ingredient ingred in ingredients[i]) {
-          stateIngredients[i].add(ingred);
-        }
-      }
-
-      emit(LoadedIngredientsSection(sectionTitles, stateIngredients));
+      ingredients[event.index].add(_withId(event.ingredient));
+      emit(_snapshot());
     });
 
     on<RemoveIngredient>((event, emit) async {
       ingredients[event.sectionIndex]..removeAt(event.index);
 
-      List<List<Ingredient>> stateIngredients = [];
-
-      for (int i = 0; i < ingredients.length; i++) {
-        stateIngredients.add([]);
-        for (Ingredient ingred in ingredients[i]) {
-          stateIngredients[i].add(ingred);
-        }
-      }
-
-      emit(LoadedIngredientsSection(sectionTitles, stateIngredients));
+      emit(_snapshot());
     });
 
     on<MoveIngredient>((event, emit) async {
@@ -69,75 +61,51 @@ class IngredientsSectionBloc
       );
       ingredients[event.sectionIndex].insert(event.newIndex, moveIngred);
 
-      emit(
-        LoadedIngredientsSection(
-          sectionTitles,
-          List<List<Ingredient>>.from(ingredients),
-        ),
-      );
+      emit(_snapshot());
     });
 
     on<EditIngredient>((event, emit) async {
+      final ingredientId = ingredients[event.sectionIndex][event.index].id;
       if (event.sectionIndex != event.newSectionIndex) {
         ingredients[event.sectionIndex].removeAt(event.index);
-        ingredients[event.newSectionIndex].add(event.newIngredient);
+        ingredients[event.newSectionIndex].add(
+          event.newIngredient.copyWith(id: ingredientId),
+        );
       } else {
-        ingredients[event.sectionIndex][event.index] = event.newIngredient;
+        ingredients[event.sectionIndex][event.index] = event.newIngredient
+            .copyWith(id: ingredientId);
       }
 
-      emit(
-        LoadedIngredientsSection(
-          sectionTitles,
-          List<List<Ingredient>>.from(ingredients),
-        ),
-      );
+      emit(_snapshot());
     });
 
     on<AddSectionTitle>((event, emit) async {
       if (sectionTitles.isNotEmpty) {
         ingredients.add([]);
       }
-
-      emit(
-        LoadedIngredientsSection(
-          List<String>.from(sectionTitles..add(event.title)),
-          ingredients,
-        ),
-      );
+      sectionTitles.add(event.title);
+      emit(_snapshot());
     });
 
     on<EditSectionTitle>((event, emit) async {
       sectionTitles[event.sectionIndex] = event.newTitle;
 
-      emit(
-        LoadedIngredientsSection(List<String>.from(sectionTitles), ingredients),
-      );
+      emit(_snapshot());
     });
 
     on<RemoveSection>((event, emit) async {
-      List<List<Ingredient>> stateIngredients = [];
-
       if (ingredients.length > 1) {
         ingredients.removeAt(event.index);
-      }
-
-      if (sectionTitles.length > 1) {
-        for (int i = 0; i < ingredients.length; i++) {
-          stateIngredients.add([]);
-          for (Ingredient ingred in ingredients[i]) {
-            stateIngredients[i].add(ingred);
-          }
-        }
       } else {
-        stateIngredients = ingredients;
+        ingredients[0] = [];
       }
-
-      emit(
-        LoadedIngredientsSection(
-          List<String>.from(sectionTitles..removeAt(event.index)),
-          stateIngredients,
-        ),
-      );
+      if (event.index < sectionTitles.length) {
+        sectionTitles.removeAt(event.index);
+      }
+      if (ingredients.length == 1 && sectionTitles.length > 1) {
+        sectionTitles = [sectionTitles.first];
+      }
+      emit(_snapshot());
     });
   }
 }

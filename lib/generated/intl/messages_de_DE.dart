@@ -33,61 +33,69 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m5(recipeName) => "Rezept lokal gelöscht: ${recipeName}";
 
-  static String m6(fileName) => "Die ausgewählte Datei wird nicht unterstützt.";
+  static String m6(step, total) => "Schritt ${step} von ${total}";
 
-  static String m7(recipeName) => "Rezept importiert: ${recipeName}";
+  static String m7(fileName) => "Die ausgewählte Datei wird nicht unterstützt.";
 
-  static String m8(name) =>
-      "Rezept mit demselben Namen \"${name}\" bereits vorhanden";
+  static String m8(recipeName) => "Rezept importiert: ${recipeName}";
 
   static String m9(count) =>
+      "${Intl.plural(count, zero: 'Keine Zutaten', one: '1 Zutat', other: '${count} Zutaten')}";
+
+  static String m10(name) =>
+      "Rezept mit demselben Namen \"${name}\" bereits vorhanden";
+
+  static String m11(count) =>
       "${Intl.plural(count, zero: 'Keine Rezepte', one: '1 Rezept', other: '${count} Rezepte')}";
 
-  static String m10(count, effort) =>
+  static String m12(count, effort) =>
       "${Intl.plural(count, zero: 'Keine Rezepte', one: '1 Rezept', other: '${count} Rezepte')} • Ø Aufwand ${effort}";
 
-  static String m11(newLine) => "Zutat ${newLine}entfernen";
+  static String m13(newLine) => "Zutat ${newLine}entfernen";
 
-  static String m12(newLine) => "Bereich ${newLine}entfernen";
+  static String m14(newLine) => "Bereich ${newLine}entfernen";
 
-  static String m13(newLine) => "Schritt ${newLine}entfernen";
+  static String m15(newLine) => "Schritt ${newLine}entfernen";
 
-  static String m14(link) =>
+  static String m16(link) =>
       "Ich verwalte meine Rezepte jetzt mit der App My RecipeBible ${link}";
 
-  static String m15(count) =>
+  static String m17(count) =>
       "${Intl.plural(count, one: 'Einkauf für 1 Rezept', other: 'Einkauf für ${count} Rezepte')}";
 
-  static String m16(count) =>
+  static String m18(count) =>
       "${Intl.plural(count, zero: 'Keine Einträge', one: '1 Eintrag', other: '${count} Einträge')}";
 
-  static String m17(percent) => "${percent}% erledigt";
+  static String m19(percent) => "${percent}% erledigt";
 
-  static String m18(checked, total) =>
+  static String m20(checked, total) =>
       "${checked} von ${total} Einträgen erledigt";
 
-  static String m19(count) =>
+  static String m21(count) =>
       "${Intl.plural(count, one: 'Damit wird 1 erledigter Eintrag aus der Liste entfernt.', other: 'Damit werden ${count} erledigte Einträge aus der Liste entfernt.')}";
 
-  static String m20(item) => "${item} entfernen";
+  static String m22(item) => "${item} entfernen";
 
-  static String m21(count) =>
+  static String m23(count) =>
       "${Intl.plural(count, one: '1 Eintrag entfernt', other: '${count} Einträge entfernt')}";
 
-  static String m22(value) => "${value} Portionen";
+  static String m24(value) => "${value} Portionen";
 
-  static String m23(sort) => "Sortierung: ${sort}";
+  static String m25(sort) => "Sortierung: ${sort}";
 
-  static String m24(recipeName, year, month, day) =>
+  static String m26(recipeName, year, month, day) =>
       "${recipeName} zum Rezepteplaner hinzugefügt: \n${day}.${month}.${year}";
 
-  static String m25(recipeName) => "Rezept hochgeladen: ${recipeName}";
+  static String m27(recipeName) => "Rezept hochgeladen: ${recipeName}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "about_me": MessageLookupByLibrary.simpleMessage("Info"),
     "ad_free_until": MessageLookupByLibrary.simpleMessage("werbefrei bis"),
     "add": MessageLookupByLibrary.simpleMessage("Hinzufügen"),
+    "add_cover_photo": MessageLookupByLibrary.simpleMessage(
+      "Titelbild hinzufügen",
+    ),
     "add_date": MessageLookupByLibrary.simpleMessage("Datum wählen"),
     "add_favorites": MessageLookupByLibrary.simpleMessage(
       "Favoriten hinzufügen",
@@ -98,6 +106,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "add_ingredient": m0,
     "add_ingredients_info": MessageLookupByLibrary.simpleMessage(
       "Zutateninformationen",
+    ),
+    "add_nutrition_item": MessageLookupByLibrary.simpleMessage(
+      "Nährwert hinzufügen",
     ),
     "add_nutritions": MessageLookupByLibrary.simpleMessage(
       "Nährwerte hinzufügen",
@@ -132,6 +143,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "apr": MessageLookupByLibrary.simpleMessage("Apr."),
     "april": MessageLookupByLibrary.simpleMessage("April"),
     "ascending": MessageLookupByLibrary.simpleMessage("Aufsteigend"),
+    "assign_ingredients": MessageLookupByLibrary.simpleMessage(
+      "Zutaten zuordnen",
+    ),
     "aug": MessageLookupByLibrary.simpleMessage("Aug."),
     "august": MessageLookupByLibrary.simpleMessage("August"),
     "average_effort": MessageLookupByLibrary.simpleMessage("Ø Aufwand"),
@@ -161,6 +175,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "categoy": MessageLookupByLibrary.simpleMessage("Kategorie"),
     "change_ad_preferences": MessageLookupByLibrary.simpleMessage(
       "Werbepräferenz ändern",
+    ),
+    "change_cover_photo": MessageLookupByLibrary.simpleMessage(
+      "Titelbild ändern",
     ),
     "check_filled_in_information": MessageLookupByLibrary.simpleMessage(
       "Prüfe rot markierte Felder",
@@ -200,6 +217,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "complexity": MessageLookupByLibrary.simpleMessage("Aufwand"),
     "complexity_effort": MessageLookupByLibrary.simpleMessage("Aufwand"),
     "contact_me": MessageLookupByLibrary.simpleMessage("kontaktiere mich"),
+    "continue_to_ingredients": MessageLookupByLibrary.simpleMessage(
+      "Weiter zu den Zutaten",
+    ),
+    "continue_to_instructions": MessageLookupByLibrary.simpleMessage(
+      "Weiter zur Zubereitung",
+    ),
+    "continue_to_nutrition": MessageLookupByLibrary.simpleMessage(
+      "Weiter zu den Nährwerten",
+    ),
     "cook_time": MessageLookupByLibrary.simpleMessage("Koch-/Backzeit"),
     "data_required": MessageLookupByLibrary.simpleMessage("bitte ausfüllen"),
     "datatype_not_supported": m3,
@@ -227,11 +253,25 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleting_recipe_local": m5,
     "descending": MessageLookupByLibrary.simpleMessage("Absteigend"),
     "description": MessageLookupByLibrary.simpleMessage("Beschreibung"),
+    "diet_meat": MessageLookupByLibrary.simpleMessage("Fleisch"),
+    "diet_vegan": MessageLookupByLibrary.simpleMessage("Vegan"),
+    "diet_vegetarian": MessageLookupByLibrary.simpleMessage("Vegetarisch"),
+    "dietary_preference": MessageLookupByLibrary.simpleMessage(
+      "Ernährungsweise",
+    ),
     "directions": MessageLookupByLibrary.simpleMessage("Zubereitung"),
+    "dish_basics_timing": MessageLookupByLibrary.simpleMessage(
+      "Gericht & Zeitplanung",
+    ),
     "dismiss": MessageLookupByLibrary.simpleMessage("verbergen"),
     "done": MessageLookupByLibrary.simpleMessage("fertig"),
     "duplicate": MessageLookupByLibrary.simpleMessage("Duplikat"),
     "edit": MessageLookupByLibrary.simpleMessage("editieren"),
+    "editor_general": MessageLookupByLibrary.simpleMessage("Allgemein"),
+    "editor_ingredients": MessageLookupByLibrary.simpleMessage("Zutaten"),
+    "editor_instructions": MessageLookupByLibrary.simpleMessage("Zubereitung"),
+    "editor_nutrition": MessageLookupByLibrary.simpleMessage("Nährwerte"),
+    "editor_progress": m6,
     "effort": MessageLookupByLibrary.simpleMessage("Aufwand"),
     "enter_some_information": MessageLookupByLibrary.simpleMessage(
       "Informationen angeben",
@@ -287,7 +327,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "field_must_not_be_empty": MessageLookupByLibrary.simpleMessage(
       "Textfeld darf nicht leer sein",
     ),
-    "file_not_supported": m6,
+    "file_not_supported": m7,
     "filter_recipes": MessageLookupByLibrary.simpleMessage(
       "Rezepte filtern...",
     ),
@@ -340,7 +380,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Rezepte importieren",
     ),
     "imported": MessageLookupByLibrary.simpleMessage("hinzugefügt"),
-    "importing_recipe_drive": m7,
+    "importing_recipe_drive": m8,
     "importing_recipes": MessageLookupByLibrary.simpleMessage(
       "importiere Rezept/e",
     ),
@@ -357,6 +397,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ingredient_already_exists": MessageLookupByLibrary.simpleMessage(
       "Zutat existiert bereits",
     ),
+    "ingredient_count": m9,
     "ingredient_filter_description": MessageLookupByLibrary.simpleMessage(
       "Kaufe die Vollversion in den Einstellungen um Zugriff zum Zutatenfilter zu bekommen",
     ),
@@ -366,8 +407,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "ingredient_matches": MessageLookupByLibrary.simpleMessage(
       "Zutatentreffer",
     ),
+    "ingredient_section_empty": MessageLookupByLibrary.simpleMessage(
+      "Dieser Bereich enthält noch keine Zutaten.",
+    ),
     "ingredients": MessageLookupByLibrary.simpleMessage("Zutaten"),
     "ingredients_for": MessageLookupByLibrary.simpleMessage("Zutaten für:"),
+    "ingredients_for_step": MessageLookupByLibrary.simpleMessage(
+      "Zutaten für diesen Schritt",
+    ),
+    "instructions_empty": MessageLookupByLibrary.simpleMessage(
+      "Beginne mit dem ersten Zubereitungsschritt.",
+    ),
     "invalid_datatype": MessageLookupByLibrary.simpleMessage(
       "Ungültiger Datentyp",
     ),
@@ -484,6 +534,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "nutrition_manager_description": MessageLookupByLibrary.simpleMessage(
       "Hier kannst du die Namen der Nährstoffe verwalten. Beim Bearbeiten der exisiterenden bleiben die Nährwerte, der bereits hinzugefügten Rezepte unverändert.",
     ),
+    "nutrition_value_hint": MessageLookupByLibrary.simpleMessage("z. B. 18 g"),
     "nutritions": MessageLookupByLibrary.simpleMessage("Nährwerte"),
     "oct": MessageLookupByLibrary.simpleMessage("Okt."),
     "october": MessageLookupByLibrary.simpleMessage("Oktober"),
@@ -518,12 +569,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Entschuldige der Störung. Wenn dir diese App gefällt und du die Entwicklung fördern möchtest, würde ich mich über eine Bewertung im Play Store sehr freuen :)",
     ),
     "ready": MessageLookupByLibrary.simpleMessage("bereit"),
-    "recipe_already_exists": m8,
+    "recipe_already_exists": m10,
     "recipe_bible": MessageLookupByLibrary.simpleMessage("My RecipeBible"),
-    "recipe_count": m9,
+    "recipe_count": m11,
     "recipe_edited_or_deleted": MessageLookupByLibrary.simpleMessage(
       "Rezept wurde bearbeitet oder gelöscht:\nGehe zurück zur Übersicht um es anzusehen",
     ),
+    "recipe_editor": MessageLookupByLibrary.simpleMessage("Rezepteditor"),
     "recipe_for": MessageLookupByLibrary.simpleMessage("Rezept für"),
     "recipe_import_pc_title": MessageLookupByLibrary.simpleMessage(
       "Wie erstelle ich ein Rezept am PC, um es in der App zu importieren?",
@@ -540,7 +592,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "recipe_planer": MessageLookupByLibrary.simpleMessage("Essensplaner"),
     "recipe_screen": MessageLookupByLibrary.simpleMessage("Rezeptansicht"),
-    "recipe_summary_with_effort": m10,
+    "recipe_studio": MessageLookupByLibrary.simpleMessage("Rezeptstudio"),
+    "recipe_summary_with_effort": m12,
     "recipe_tag": MessageLookupByLibrary.simpleMessage("Schlüsselwort"),
     "recipe_tag_already_exists": MessageLookupByLibrary.simpleMessage(
       "Tag bereits vorhanden",
@@ -569,9 +622,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "remove_from_favorites": MessageLookupByLibrary.simpleMessage(
       "Aus Favoriten entfernen",
     ),
-    "remove_ingredient": m11,
-    "remove_section": m12,
-    "remove_step": m13,
+    "remove_ingredient": m13,
+    "remove_section": m14,
+    "remove_step": m15,
     "remove_step_desc": MessageLookupByLibrary.simpleMessage(
       "Willst du diesen Schritt wirklich entfernen?",
     ),
@@ -579,6 +632,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "roll_the_dice": MessageLookupByLibrary.simpleMessage("Zufällige Rezepte"),
     "saturday": MessageLookupByLibrary.simpleMessage("Samstag"),
     "save": MessageLookupByLibrary.simpleMessage("Speichern"),
+    "save_changes": MessageLookupByLibrary.simpleMessage(
+      "Änderungen speichern",
+    ),
+    "save_recipe": MessageLookupByLibrary.simpleMessage("Rezept speichern"),
     "saving_your_input": MessageLookupByLibrary.simpleMessage(
       "speichere Daten",
     ),
@@ -615,7 +672,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Einkaufsliste teilen",
     ),
     "share_this_app": MessageLookupByLibrary.simpleMessage("teile diese App"),
-    "share_this_app_desc": m14,
+    "share_this_app_desc": m16,
     "share_this_app_title": MessageLookupByLibrary.simpleMessage("Neuigkeiten"),
     "shopping_action_failed": MessageLookupByLibrary.simpleMessage(
       "Die Einkaufsliste konnte nicht aktualisiert werden. Versuche es erneut.",
@@ -639,11 +696,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "shopping_empty_description": MessageLookupByLibrary.simpleMessage(
       "Füge hier oder direkt aus einem Rezept Zutaten hinzu.",
     ),
-    "shopping_for_recipes": m15,
+    "shopping_for_recipes": m17,
     "shopping_invalid_servings": MessageLookupByLibrary.simpleMessage(
       "Gib eine Zahl größer als null ein",
     ),
-    "shopping_item_count": m16,
+    "shopping_item_count": m18,
     "shopping_list": MessageLookupByLibrary.simpleMessage("Einkaufsliste"),
     "shopping_load_failed": MessageLookupByLibrary.simpleMessage(
       "Deine Einkaufsliste konnte nicht geladen werden",
@@ -664,27 +721,27 @@ class MessageLookup extends MessageLookupByLibrary {
     "shopping_other_items": MessageLookupByLibrary.simpleMessage(
       "Weitere Einträge",
     ),
-    "shopping_percent_gathered": m17,
+    "shopping_percent_gathered": m19,
     "shopping_plain_list": MessageLookupByLibrary.simpleMessage(
       "Einfache Liste",
     ),
-    "shopping_progress": m18,
+    "shopping_progress": m20,
     "shopping_quick_add_hint": MessageLookupByLibrary.simpleMessage(
       "Zutat hinzufügen…",
     ),
     "shopping_remove_checked": MessageLookupByLibrary.simpleMessage(
       "Erledigte Einträge entfernen",
     ),
-    "shopping_remove_checked_description": m19,
+    "shopping_remove_checked_description": m21,
     "shopping_remove_checked_title": MessageLookupByLibrary.simpleMessage(
       "Erledigte Einträge entfernen?",
     ),
-    "shopping_remove_item": m20,
-    "shopping_removed_items": m21,
+    "shopping_remove_item": m22,
+    "shopping_removed_items": m23,
     "shopping_search_recipes": MessageLookupByLibrary.simpleMessage(
       "Rezepte durchsuchen",
     ),
-    "shopping_serving_value": m22,
+    "shopping_serving_value": m24,
     "shoppingcart": MessageLookupByLibrary.simpleMessage("Einkaufsliste"),
     "show_overview": MessageLookupByLibrary.simpleMessage("zur Übersicht"),
     "skip": MessageLookupByLibrary.simpleMessage("überspringen"),
@@ -700,10 +757,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "snackbar_midnight_theme_applied": MessageLookupByLibrary.simpleMessage(
       "schwarzes Theme angewendet",
     ),
-    "sort_by": m23,
+    "sort_by": m25,
     "source": MessageLookupByLibrary.simpleMessage("Quelle/URL"),
     "standardized_format": MessageLookupByLibrary.simpleMessage(
       "Es werden alle Webseiten unterstützt, die ein standardisiertes Format enthalten. Deshalb ist hier nur ein Teil der unterstützten Webseiten aufgeführt. In der Praxis sollten die meisten Websites unterstützt werden.",
+    ),
+    "step_description_hint": MessageLookupByLibrary.simpleMessage(
+      "Beschreibe, was in diesem Schritt zu tun ist…",
+    ),
+    "step_title": MessageLookupByLibrary.simpleMessage(
+      "Schritttitel (optional)",
     ),
     "steps": MessageLookupByLibrary.simpleMessage("Schritte"),
     "steps_info_desc": MessageLookupByLibrary.simpleMessage(
@@ -771,9 +834,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "tuesday": MessageLookupByLibrary.simpleMessage("Dienstag"),
     "two_char_locale": MessageLookupByLibrary.simpleMessage("DE"),
     "undo": MessageLookupByLibrary.simpleMessage("rückgänig"),
-    "undo_added_to_planner_description": m24,
+    "undo_added_to_planner_description": m26,
     "unit": MessageLookupByLibrary.simpleMessage("Einheit"),
-    "uploading_recipe_drive": m25,
+    "untitled_recipe": MessageLookupByLibrary.simpleMessage(
+      "Rezept ohne Titel",
+    ),
+    "uploading_recipe_drive": m27,
+    "values_per_serving_optional": MessageLookupByLibrary.simpleMessage(
+      "Werte pro Portion · Optional",
+    ),
     "vegan": MessageLookupByLibrary.simpleMessage("vegan"),
     "vegetarian": MessageLookupByLibrary.simpleMessage("vegetarisch"),
     "video_to_remove_ads": MessageLookupByLibrary.simpleMessage(
@@ -794,6 +863,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "wednesday": MessageLookupByLibrary.simpleMessage("Mittwoch"),
     "with_meat": MessageLookupByLibrary.simpleMessage("mit Fleisch"),
     "yes": MessageLookupByLibrary.simpleMessage("ja"),
+    "yield_portions": MessageLookupByLibrary.simpleMessage("Menge & Portionen"),
     "you_already_have": MessageLookupByLibrary.simpleMessage(
       "es gibt schon einen Eintrag",
     ),

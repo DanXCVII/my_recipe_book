@@ -29,12 +29,25 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
         stepKeys.add(Key(i.toString()));
       }
 
+      final stepIngredientIds = List.generate(
+        event.steps.length,
+        (index) => index < event.stepIngredientIds.length
+            ? List<String>.from(event.stepIngredientIds[index])
+            : <String>[],
+      );
+
       editingStepImages = event.stepImages;
       editingStepTitles = event.stepTitles;
       editingSteps = event.steps;
 
       emit(
-        LoadedStepImages(event.stepImages, event.steps, stepTitles, stepKeys),
+        LoadedStepImages(
+          event.stepImages,
+          event.steps,
+          stepTitles,
+          stepKeys,
+          stepIngredientIds: stepIngredientIds,
+        ),
       );
     });
 
@@ -59,6 +72,7 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
           (state as LoadedStepImages).steps,
           (state as LoadedStepImages).stepTitles,
           (state as LoadedStepImages).stepKeys,
+          stepIngredientIds: (state as LoadedStepImages).stepIngredientIds,
         ),
       );
     });
@@ -81,6 +95,7 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
           (state as LoadedStepImages).steps,
           (state as LoadedStepImages).stepTitles,
           (state as LoadedStepImages).stepKeys,
+          stepIngredientIds: (state as LoadedStepImages).stepIngredientIds,
         ),
       );
 
@@ -92,17 +107,16 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
     });
 
     on<AddStep>((event, emit) async {
-      List<List<String>> stepImages =
-          (state as LoadedStepImages).stepImages
-              .map((e) => e.map((e) => e).toList())
-              .toList()
-            ..add([]);
-      List<String> steps =
-          (state as LoadedStepImages).steps.map((e) => e).toList()
-            ..add(event.step);
-      List<String> stepTitles =
-          (state as LoadedStepImages).stepTitles.map((e) => e).toList()
-            ..add("");
+      final current = state as LoadedStepImages;
+      final stepImages = current.stepImages
+          .map((e) => List<String>.from(e))
+          .toList();
+      if (stepImages.length <= current.steps.length) stepImages.add([]);
+      final steps = List<String>.from(current.steps)..add(event.step);
+      final stepTitles = List<String>.from(current.stepTitles)..add("");
+      final stepIngredientIds =
+          current.stepIngredientIds.map(List<String>.from).toList()
+            ..add(<String>[]);
 
       emit(
         LoadedStepImages(
@@ -110,31 +124,33 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
           steps,
           stepTitles,
           stepKeys..add(Key(stepKeys.length.toString())),
+          stepIngredientIds: stepIngredientIds,
         ),
       );
     });
 
     on<RemoveStep>((event, emit) async {
       if (event.stepNumber != null) {
-        if ((state as LoadedStepImages).stepImages.every(
-          (element) => element.isEmpty,
-        )) {
-          /// No need to modify or remove images in storage, because this option is only available
-          /// if there are no images added yet.
-          emit(
-            LoadedStepImages(
-              (state as LoadedStepImages).stepImages
-                  .map((e) => e.map((e) => e).toList())
-                  .toList()
-                ..removeAt(event.stepNumber!),
-              (state as LoadedStepImages).steps.map((e) => e).toList()
-                ..removeAt(event.stepNumber!),
-              (state as LoadedStepImages).stepTitles.map((e) => e).toList()
-                ..removeAt(event.stepNumber!),
-              stepKeys.map((e) => e).toList()..removeAt(event.stepNumber!),
-            ),
-          );
-        }
+        final current = state as LoadedStepImages;
+        final index = event.stepNumber!;
+        final images = current.stepImages
+            .map((e) => List<String>.from(e))
+            .toList();
+        if (index < images.length) images.removeAt(index);
+        if (images.isEmpty) images.add([]);
+        final keys = List<Key>.from(stepKeys)..removeAt(index);
+        stepKeys = keys;
+        emit(
+          LoadedStepImages(
+            images,
+            List<String>.from(current.steps)..removeAt(index),
+            List<String>.from(current.stepTitles)..removeAt(index),
+            keys,
+            stepIngredientIds:
+                current.stepIngredientIds.map(List<String>.from).toList()
+                  ..removeAt(index),
+          ),
+        );
       } else {
         String stepPath = await PathProvider.pP.getRecipeStepNumberDirFull(
           event.recipeName,
@@ -160,6 +176,11 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
             (state as LoadedStepImages).stepTitles.map((e) => e).toList()
               ..removeLast(),
             stepKeys.map((e) => e).toList()..removeLast(),
+            stepIngredientIds:
+                (state as LoadedStepImages).stepIngredientIds
+                    .map(List<String>.from)
+                    .toList()
+                  ..removeLast(),
           ),
         );
       }
@@ -177,6 +198,7 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
           (state as LoadedStepImages).steps,
           stepTitles,
           stepKeys,
+          stepIngredientIds: (state as LoadedStepImages).stepIngredientIds,
         ),
       );
     });
@@ -192,13 +214,26 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
           .map((e) => e)
           .toList();
       List<Key> copyStepKeys = stepKeys.map((e) => e).toList();
+      final stepIngredientIds = (state as LoadedStepImages).stepIngredientIds
+          .map(List<String>.from)
+          .toList();
 
       _move(steps, event.oldIndex, event.newIndex);
       _move(stepTitles, event.oldIndex, event.newIndex);
       _move(copyStepKeys, event.oldIndex, event.newIndex);
       _move(stepImages, event.oldIndex, event.newIndex);
+      _move(stepIngredientIds, event.oldIndex, event.newIndex);
 
-      emit(LoadedStepImages(stepImages, steps, stepTitles, stepKeys));
+      stepKeys = copyStepKeys;
+      emit(
+        LoadedStepImages(
+          stepImages,
+          steps,
+          stepTitles,
+          stepKeys,
+          stepIngredientIds: stepIngredientIds,
+        ),
+      );
     });
 
     on<EditStep>((event, emit) async {
@@ -213,6 +248,27 @@ class StepImagesBloc extends Bloc<StepImagesEvent, StepImagesState> {
           steps,
           (state as LoadedStepImages).stepTitles,
           stepKeys,
+          stepIngredientIds: (state as LoadedStepImages).stepIngredientIds,
+        ),
+      );
+    });
+
+    on<UpdateStepIngredients>((event, emit) {
+      final current = state as LoadedStepImages;
+      final assignments = List.generate(
+        current.steps.length,
+        (index) => index < current.stepIngredientIds.length
+            ? List<String>.from(current.stepIngredientIds[index])
+            : <String>[],
+      );
+      assignments[event.stepIndex] = List<String>.from(event.ingredientIds);
+      emit(
+        LoadedStepImages(
+          current.stepImages,
+          current.steps,
+          current.stepTitles,
+          current.stepKeys,
+          stepIngredientIds: assignments,
         ),
       );
     });

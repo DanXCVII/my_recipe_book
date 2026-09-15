@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Scaffold reference: nutrition-list.png</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&display=swap">
+  <link rel="stylesheet" href="layout.css">
+  <style>html,body{margin:0}body{background:#f8f7f8}.region{box-sizing:border-box}.region.text p{white-space:pre-wrap}</style>
+</head>
+<body>
+<!-- Reference only. Every region sits at its measured box inside a comp-aspect frame. Take the boxes (layout.css), keep your own semantic structure. -->
+<main class="comp-frame" style="max-width:853px">
+  <div class="r-editor-header region chrome" data-region="editor-header"><!-- Back affordance, Recipe Studio identity, four-part progress, and stage count --></div>
+  <figure class="r-recipe-thumbnail region plate" data-region="recipe-thumbnail"><img src="../../../assets/plates/recipe-thumbnail.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:center"></figure>
+  <div class="r-recipe-summary region text" data-region="recipe-summary"><!-- Recipe title and compact ingredient/time metadata --><p style="font-size:var(--r-recipe-summary-font);line-height:1.05;margin:0">recipe-summary</p></div>
+  <div class="r-stage-heading region text" data-region="stage-heading"><!-- Editorial Nutrition title and optional per-serving explanation --><p style="font-size:var(--r-stage-heading-font);font-family:var(--r-stage-heading-family),sans-serif;font-weight:var(--r-stage-heading-weight);line-height:1.05;margin:0">stage-heading</p></div>
+  <div class="r-nutrition-list region control" data-region="nutrition-list"><!-- Tonal reorderable nutrition rows with names, free-form values, units, delete actions, and add action: rebuild the control's chrome from the crop (comp-spec.mjs --crop nutrition-list); its ink box, border, fill, radius, and label size are the comp's --></div>
+  <div class="r-custom-nutrition region control" data-region="custom-nutrition"><!-- Secondary card for adding a custom nutrition field: rebuild the control's chrome from the crop (comp-spec.mjs --crop custom-nutrition); its ink box, border, fill, radius, and label size are the comp's --></div>
+  <div class="r-sticky-actions region chrome" data-region="sticky-actions"><!-- Keyboard-safe Back and dominant Save Recipe actions --></div>
+</main>
+</body>
+</html>

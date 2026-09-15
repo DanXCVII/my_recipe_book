@@ -1,4 +1,3 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,8 +10,7 @@ import 'package:my_recipe_book/generated/l10n.dart';
 
 import '../../../models/recipe.dart';
 import '../../../util/my_wrapper.dart';
-import '../../../widgets/complexity_section.dart';
-import '../../../widgets/dialogs/info_dialog.dart';
+import '../../../widgets/recipe_editor/editorial_editor_shell.dart';
 import '../nutritions.dart';
 import 'steps_section.dart';
 
@@ -47,7 +45,6 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
   final TextEditingController notesController = TextEditingController();
 
   final MyDoubleWrapper complexity = MyDoubleWrapper(myDouble: 5.0);
-  Flushbar? _flush;
   FocusNode _focusNode = FocusNode();
   FocusNode? _exitFocusNode;
 
@@ -93,156 +90,69 @@ class _StepsScreenState extends State<StepsScreen> with WidgetsBindingObserver {
           _finishedEditingSteps(true);
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffAF1E1E), Color(0xff641414)],
+      child: BlocListener<StepsBloc, StepsState>(
+        listener: (context, state) {
+          if (state is SEditingFinishedGoBack) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(S.of(context).saving_your_input)),
+            );
+          } else if (state is SSaved) {
+            BlocProvider.of<StepsBloc>(context).add(SetCanSave());
+            Navigator.pushNamed(
+              context,
+              RouteNames.addRecipeNutritions,
+              arguments: AddRecipeNutritionsArguments(
+                state.recipe,
+                BlocProvider.of<ShoppingCartBloc>(context),
+                BlocProvider.of<RecipeCalendarBloc>(context),
+                editingRecipeName: widget.editingRecipeName,
               ),
-            ),
-          ),
-          title: Text(S.of(context).add_steps),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.info_outline),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => InfoDialog(
-                    title: S.of(context).info,
-                    body: S.of(context).steps_info_desc,
-                  ),
-                );
-              },
-            ),
-            BlocListener<StepsBloc, StepsState>(
-              listener: (context, state) {
-                if (state is SEditingFinishedGoBack) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(S.of(context).saving_your_input)),
-                  );
-                } else if (state is SSaved) {
-                  BlocProvider.of<StepsBloc>(context).add(SetCanSave());
-
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.addRecipeNutritions,
-                    arguments: AddRecipeNutritionsArguments(
-                      state.recipe,
-                      BlocProvider.of<ShoppingCartBloc>(context),
-                      BlocProvider.of<RecipeCalendarBloc>(context),
-                      editingRecipeName: widget.editingRecipeName,
-                    ),
-                  );
-                } else if (state is SSavedGoBack) {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  Navigator.pop(context);
-                } else if (state is SCanSave && state.isValid == false) {
-                  _showFlushInfo(
-                    S.of(context).too_many_images_for_the_steps,
-                    S.of(context).too_many_images_for_the_steps_description,
-                  );
-                }
-              },
-              child: BlocBuilder<StepsBloc, StepsState>(
-                builder: (context, state) {
-                  if (state is SSavingTmpData) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Icon(Icons.arrow_forward, color: Colors.grey),
-                    );
-                  } else if (state is SCanSave) {
-                    return IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      color: Colors.white,
-                      onPressed: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-
-                        _finishedEditingSteps(false);
-                      },
-                    );
-                  } else if (state is SEditingFinished) {
-                    return Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Container(
-                          width: 25,
-                          height: 25,
-                          child: CircularProgressIndicator(),
-                        ),
+            );
+          } else if (state is SSavedGoBack) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            Navigator.pop(context);
+          } else if (state is SCanSave && !state.isValid) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  '${S.of(context).too_many_images_for_the_steps}: '
+                  '${S.of(context).too_many_images_for_the_steps_description}',
+                ),
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<StepsBloc, StepsState>(
+          builder: (context, state) {
+            final busy = state is! SCanSave;
+            return EditorialEditorShell(
+              stage: 3,
+              recipe: widget.modifiedRecipe!,
+              title: S.of(context).editor_instructions,
+              primaryLabel: S.of(context).continue_to_nutrition,
+              busy: busy,
+              onBack: busy ? null : () => _finishedEditingSteps(true),
+              onPrimary: busy ? null : () => _finishedEditingSteps(false),
+              body: Form(
+                key: _formKey,
+                child: widget.editingRecipeName != null
+                    ? Steps(
+                        editRecipeName: widget.editingRecipeName,
+                        ingredients: widget.modifiedRecipe!.ingredients,
+                        ingredientGlossary:
+                            widget.modifiedRecipe!.ingredientsGlossary,
+                      )
+                    : Steps(
+                        ingredients: widget.modifiedRecipe!.ingredients,
+                        ingredientGlossary:
+                            widget.modifiedRecipe!.ingredientsGlossary,
                       ),
-                    );
-                  } else {
-                    return Icon(Icons.arrow_forward);
-                  }
-                },
               ),
-            ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Container(
-              width: MediaQuery.of(context).size.width > 500 ? 500 : null,
-              child: Column(
-                children: <Widget>[
-                  Form(
-                    key: _formKey,
-                    child: widget.editingRecipeName != null
-                        ? Steps(editRecipeName: widget.editingRecipeName)
-                        : Steps(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      right: 12,
-                      top: 12,
-                      left: 18,
-                      bottom: 12,
-                    ),
-                    child: TextField(
-                      controller: notesController,
-                      textCapitalization: TextCapitalization.sentences,
-                      decoration: InputDecoration(
-                        labelText: S.of(context).notes,
-                        filled: true,
-                        icon: Icon(Icons.assignment),
-                      ),
-                      minLines: 3,
-                      maxLines: 10,
-                    ),
-                  ),
-                  ComplexitySection(complexity: complexity),
-                ],
-              ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
-  }
-
-  void _showFlushInfo(String title, String body) {
-    if (_flush != null && _flush!.isShowing()) {
-    } else {
-      _flush =
-          Flushbar<bool>(
-              animationDuration: Duration(milliseconds: 300),
-              leftBarIndicatorColor: Colors.blue[300],
-              title: title,
-              message: body,
-              icon: Icon(Icons.info_outline, color: Colors.blue),
-              mainButton: TextButton(
-                onPressed: () {
-                  _flush!.dismiss(true); // result = true
-                },
-                child: Text("OK", style: TextStyle(color: Colors.amber)),
-              ),
-            ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-            ..show(context).then((result) {});
-    }
   }
 
   void _finishedEditingSteps(bool goBack) {

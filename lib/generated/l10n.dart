@@ -3141,6 +3141,299 @@ class S {
       args: [item],
     );
   }
+
+  /// `Recipe Studio`
+  String get recipe_studio {
+    return Intl.message(
+      'Recipe Studio',
+      name: 'recipe_studio',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recipe editor`
+  String get recipe_editor {
+    return Intl.message(
+      'Recipe editor',
+      name: 'recipe_editor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Step {step} of {total}`
+  String editor_progress(int step, int total) {
+    return Intl.message(
+      'Step $step of $total',
+      name: 'editor_progress',
+      desc: '',
+      args: [step, total],
+    );
+  }
+
+  /// `Dish basics & timing`
+  String get dish_basics_timing {
+    return Intl.message(
+      'Dish basics & timing',
+      name: 'dish_basics_timing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yield & portions`
+  String get yield_portions {
+    return Intl.message(
+      'Yield & portions',
+      name: 'yield_portions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dietary preference`
+  String get dietary_preference {
+    return Intl.message(
+      'Dietary preference',
+      name: 'dietary_preference',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue to ingredients`
+  String get continue_to_ingredients {
+    return Intl.message(
+      'Continue to ingredients',
+      name: 'continue_to_ingredients',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue to instructions`
+  String get continue_to_instructions {
+    return Intl.message(
+      'Continue to instructions',
+      name: 'continue_to_instructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue to nutrition`
+  String get continue_to_nutrition {
+    return Intl.message(
+      'Continue to nutrition',
+      name: 'continue_to_nutrition',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save recipe`
+  String get save_recipe {
+    return Intl.message('Save recipe', name: 'save_recipe', desc: '', args: []);
+  }
+
+  /// `Save changes`
+  String get save_changes {
+    return Intl.message(
+      'Save changes',
+      name: 'save_changes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Values per serving · Optional`
+  String get values_per_serving_optional {
+    return Intl.message(
+      'Values per serving · Optional',
+      name: 'values_per_serving_optional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add nutrition`
+  String get add_nutrition_item {
+    return Intl.message(
+      'Add nutrition',
+      name: 'add_nutrition_item',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Assign ingredients`
+  String get assign_ingredients {
+    return Intl.message(
+      'Assign ingredients',
+      name: 'assign_ingredients',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ingredients for this step`
+  String get ingredients_for_step {
+    return Intl.message(
+      'Ingredients for this step',
+      name: 'ingredients_for_step',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Untitled recipe`
+  String get untitled_recipe {
+    return Intl.message(
+      'Untitled recipe',
+      name: 'untitled_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =0{No ingredients} =1{1 ingredient} other{{count} ingredients}}`
+  String ingredient_count(int count) {
+    return Intl.plural(
+      count,
+      zero: 'No ingredients',
+      one: '1 ingredient',
+      other: '$count ingredients',
+      name: 'ingredient_count',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Add cover photo`
+  String get add_cover_photo {
+    return Intl.message(
+      'Add cover photo',
+      name: 'add_cover_photo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change cover photo`
+  String get change_cover_photo {
+    return Intl.message(
+      'Change cover photo',
+      name: 'change_cover_photo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Meat`
+  String get diet_meat {
+    return Intl.message('Meat', name: 'diet_meat', desc: '', args: []);
+  }
+
+  /// `Vegetarian`
+  String get diet_vegetarian {
+    return Intl.message(
+      'Vegetarian',
+      name: 'diet_vegetarian',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Vegan`
+  String get diet_vegan {
+    return Intl.message('Vegan', name: 'diet_vegan', desc: '', args: []);
+  }
+
+  /// `No ingredients in this section yet.`
+  String get ingredient_section_empty {
+    return Intl.message(
+      'No ingredients in this section yet.',
+      name: 'ingredient_section_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start with the first instruction for this recipe.`
+  String get instructions_empty {
+    return Intl.message(
+      'Start with the first instruction for this recipe.',
+      name: 'instructions_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Step title (optional)`
+  String get step_title {
+    return Intl.message(
+      'Step title (optional)',
+      name: 'step_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Describe what to do in this step…`
+  String get step_description_hint {
+    return Intl.message(
+      'Describe what to do in this step…',
+      name: 'step_description_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `e.g. 18 g`
+  String get nutrition_value_hint {
+    return Intl.message(
+      'e.g. 18 g',
+      name: 'nutrition_value_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `General`
+  String get editor_general {
+    return Intl.message('General', name: 'editor_general', desc: '', args: []);
+  }
+
+  /// `Ingredients`
+  String get editor_ingredients {
+    return Intl.message(
+      'Ingredients',
+      name: 'editor_ingredients',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Instructions`
+  String get editor_instructions {
+    return Intl.message(
+      'Instructions',
+      name: 'editor_instructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nutrition`
+  String get editor_nutrition {
+    return Intl.message(
+      'Nutrition',
+      name: 'editor_nutrition',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

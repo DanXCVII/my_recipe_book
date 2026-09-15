@@ -48,6 +48,11 @@ class FinishedEditing extends GeneralInfoEvent {
   final String? source;
   final List<String>? categories;
   final List<StringIntTuple>? recipeTags;
+  final String? notes;
+  final double? servings;
+  final String? servingName;
+  final Vegetable? vegetable;
+  final int? effort;
 
   FinishedEditing(
     this.recipeName, [
@@ -59,6 +64,11 @@ class FinishedEditing extends GeneralInfoEvent {
     this.source,
     this.categories,
     this.recipeTags,
+    this.notes,
+    this.servings,
+    this.servingName,
+    this.vegetable,
+    this.effort,
   ]);
 
   @override
@@ -71,5 +81,10 @@ class FinishedEditing extends GeneralInfoEvent {
     totalTime,
     categories,
     recipeTags,
+    notes,
+    servings,
+    servingName,
+    vegetable,
+    effort,
   ];
 }

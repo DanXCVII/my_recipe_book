@@ -821,6 +821,8 @@ class RecipePage extends StatelessWidget {
                           recipe.stepImages,
                           recipe.name,
                           expandHeight: true,
+                          ingredients: recipe.ingredients,
+                          stepIngredientIds: recipe.stepIngredientIds,
                         ),
                       ],
                     ),
@@ -1017,6 +1019,8 @@ class RecipePage extends StatelessWidget {
                                   recipe.stepTitles,
                                   recipe.stepImages,
                                   recipe.name,
+                                  ingredients: recipe.ingredients,
+                                  stepIngredientIds: recipe.stepIngredientIds,
                                 ),
                               ),
                               (recipe.notes != "" ||
@@ -1283,6 +1287,8 @@ class StepsSection extends StatelessWidget {
   final List<String> steps;
   final String recipeName;
   final bool expandHeight;
+  final List<List<Ingredient>> ingredients;
+  final List<List<String>> stepIngredientIds;
 
   final List<Color> stepsColors = [
     Color(0xff28B404),
@@ -1297,6 +1303,8 @@ class StepsSection extends StatelessWidget {
     this.stepImages,
     this.recipeName, {
     this.expandHeight = false,
+    this.ingredients = const [],
+    this.stepIngredientIds = const [],
   });
 
   @override
@@ -1346,6 +1354,8 @@ class StepsSection extends StatelessWidget {
                     stepImages: stepImages,
                     fontFamily: recipeScreenFontFamily,
                     lowResStepImages: snapshot.data,
+                    ingredients: ingredients,
+                    stepIngredientIds: stepIngredientIds,
                   ),
                 ),
               ),

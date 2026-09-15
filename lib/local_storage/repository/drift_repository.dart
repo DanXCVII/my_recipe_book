@@ -18,7 +18,7 @@ import 'shopping_cart_store.dart';
 
 class DriftRepository implements LocalRepository {
   static const int currentMigrationVersion = 1;
-  static const int currentSchemaVersion = 2;
+  static const int currentSchemaVersion = 3;
 
   DriftRepository({AppDatabase? database})
     : _context = DriftRepositoryContext(database) {

@@ -8,11 +8,17 @@ class InitializeStepImages extends StepImagesEvent {
   final List<List<String>> stepImages;
   final List<String> steps;
   final List<String> stepTitles;
+  final List<List<String>> stepIngredientIds;
 
-  InitializeStepImages(this.steps, this.stepTitles, {required this.stepImages});
+  InitializeStepImages(
+    this.steps,
+    this.stepTitles, {
+    required this.stepImages,
+    this.stepIngredientIds = const [],
+  });
 
   @override
-  List<Object> get props => [stepImages];
+  List<Object> get props => [stepImages, steps, stepTitles, stepIngredientIds];
 }
 
 class AddImage extends StepImagesEvent {
@@ -86,4 +92,14 @@ class MoveStep extends StepImagesEvent {
 
   @override
   List<Object> get props => [oldIndex, newIndex];
+}
+
+class UpdateStepIngredients extends StepImagesEvent {
+  final int stepIndex;
+  final List<String> ingredientIds;
+
+  const UpdateStepIngredients(this.stepIndex, this.ingredientIds);
+
+  @override
+  List<Object> get props => [stepIndex, ingredientIds];
 }

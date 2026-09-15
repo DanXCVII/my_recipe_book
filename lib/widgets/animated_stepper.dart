@@ -11,6 +11,9 @@ import 'clipper.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../blocs/animated_stepper/animated_stepper_bloc.dart';
+import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
+import '../models/ingredient.dart';
+import 'culinary_editorial_theme.dart';
 import 'gallery_view.dart';
 
 class AnimatedStepper extends StatelessWidget {
@@ -20,6 +23,8 @@ class AnimatedStepper extends StatelessWidget {
   // if losResStepImages are provided, also stepImages must be provided
   final List<List<String>>? lowResStepImages;
   final List<List<String>>? stepImages;
+  final List<List<Ingredient>> ingredients;
+  final List<List<String>> stepIngredientIds;
 
   AnimatedStepper(
     this.steps,
@@ -27,6 +32,8 @@ class AnimatedStepper extends StatelessWidget {
     this.stepImages,
     this.fontFamily,
     this.lowResStepImages,
+    this.ingredients = const [],
+    this.stepIngredientIds = const [],
     Key? key,
   }) : super(key: key) {
     if (stepTitles != null && stepTitles!.length > steps.length) {
@@ -174,14 +181,14 @@ class AnimatedStepper extends StatelessWidget {
                               ),
                               child: Center(
                                 child: Text(
-                                  "${index + 1}.",
+                                  "${globalIndex + index + 1}.",
                                   style: TextStyle(
                                     color:
                                         state.selectedStep ==
                                             index + globalIndex
                                         ? Color(0xff4F3D00)
                                         : Colors.amber,
-                                    fontSize: index > 8 ? 32 : 42,
+                                    fontSize: globalIndex + index > 8 ? 32 : 42,
                                     fontFamily: "Quando",
                                   ),
                                 ),
@@ -209,6 +216,11 @@ class AnimatedStepper extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ),
+                              _AssignedIngredients(
+                                stepIndex: index + globalIndex,
+                                ingredients: ingredients,
+                                stepIngredientIds: stepIngredientIds,
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 12.0),
@@ -330,4 +342,111 @@ class AnimatedStepper extends StatelessWidget {
       ),
     ).then((_) => Ads.hideBottomBannerAd());
   }
+}
+
+class _AssignedIngredients extends StatelessWidget {
+  const _AssignedIngredients({
+    required this.stepIndex,
+    required this.ingredients,
+    required this.stepIngredientIds,
+  });
+
+  final int stepIndex;
+  final List<List<Ingredient>> ingredients;
+  final List<List<String>> stepIngredientIds;
+
+  @override
+  Widget build(BuildContext context) {
+    if (stepIndex >= stepIngredientIds.length ||
+        stepIngredientIds[stepIndex].isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return BlocBuilder<
+      RecipeScreenIngredientsBloc,
+      RecipeScreenIngredientsState
+    >(
+      builder: (context, state) {
+        final palette = CulinaryEditorialPalette.of(context);
+        final scaled = state is LoadedRecipeIngredients
+            ? state.ingredients
+            : const <List<CheckableIngredient>>[];
+        final labels = <String>[];
+        for (
+          var sectionIndex = 0;
+          sectionIndex < ingredients.length;
+          sectionIndex++
+        ) {
+          for (
+            var ingredientIndex = 0;
+            ingredientIndex < ingredients[sectionIndex].length;
+            ingredientIndex++
+          ) {
+            final original = ingredients[sectionIndex][ingredientIndex];
+            if (original.id == null ||
+                !stepIngredientIds[stepIndex].contains(original.id)) {
+              continue;
+            }
+            final display =
+                sectionIndex < scaled.length &&
+                    ingredientIndex < scaled[sectionIndex].length
+                ? scaled[sectionIndex][ingredientIndex]
+                : CheckableIngredient(
+                    original.name,
+                    original.amount,
+                    original.unit,
+                    false,
+                  );
+            labels.add(_ingredientLabel(display));
+          }
+        }
+        if (labels.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: labels
+                .map(
+                  (label) => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: palette.tertiarySoft,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: palette.tertiary.withValues(alpha: .55),
+                      ),
+                    ),
+                    child: Text(
+                      label,
+                      style: CulinaryEditorialType.body(
+                        palette,
+                        size: 13,
+                        weight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        );
+      },
+    );
+  }
+}
+
+String _ingredientLabel(CheckableIngredient ingredient) {
+  final amount = ingredient.amount == null
+      ? ''
+      : ingredient.amount! % 1 == 0
+      ? ingredient.amount!.toInt().toString()
+      : ingredient.amount!
+            .toStringAsFixed(2)
+            .replaceFirst(RegExp(r'0+$'), '')
+            .replaceFirst(RegExp(r'\.$'), '');
+  return [amount, ingredient.unit, ingredient.name]
+      .where((part) => part != null && part.toString().trim().isNotEmpty)
+      .join(' ');
 }

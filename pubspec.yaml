@@ -140,6 +140,7 @@ flutter:
     - images/ingredient_search.mp4
     - images/salatLowRes.jpg
     - assets/firstStartRecipes.zip
+    - assets/plates/recipe-thumbnail.png
     - images/foodBlur0.jpg
     - images/foodBlur1.jpg
     - images/foodBlur2.jpg

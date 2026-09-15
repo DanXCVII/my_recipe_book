@@ -22,32 +22,51 @@ class IngredientsBloc extends Bloc<IngredientsEvent, IngredientsState> {
         emit(IEditingFinished());
       }
 
-      List<String>? recipeIngredientSections = [];
-      List<List<Ingredient>>? recipeIngredients = [[]];
+      List<String> recipeIngredientSections = [];
+      List<List<Ingredient>> recipeIngredients = [[]];
 
       if (event.ingredients!.isNotEmpty &&
           event.ingredients!.first.isNotEmpty) {
-        recipeIngredientSections = event.ingredientsGlossary;
-        recipeIngredients = event.ingredients;
+        recipeIngredientSections = event.ingredientsGlossary!;
+        recipeIngredients = event.ingredients!;
       }
+
+      final validIngredientIds = recipeIngredients
+          .expand((group) => group)
+          .map((ingredient) => ingredient.id)
+          .whereType<String>()
+          .toSet();
+      final currentRecipe = event.editingRecipe!
+          ? repository.getTmpEditingRecipe()!
+          : repository.getTmpRecipe()!;
+      final retainedAssignments = List<List<String>>.generate(
+        currentRecipe.steps.length,
+        (index) => index < currentRecipe.stepIngredientIds.length
+            ? currentRecipe.stepIngredientIds[index]
+                  .where(validIngredientIds.contains)
+                  .toList()
+            : <String>[],
+      );
 
       Recipe newRecipe;
       if (!event.editingRecipe!) {
-        newRecipe = repository.getTmpRecipe()!.copyWith(
+        newRecipe = currentRecipe.copyWith(
           servings: event.servings,
           servingName: event.servingName,
           ingredients: recipeIngredients,
           ingredientsGlossary: recipeIngredientSections,
           vegetable: event.vegetable,
+          stepIngredientIds: retainedAssignments,
         );
         await repository.saveTmpRecipe(newRecipe);
       } else {
-        newRecipe = repository.getTmpEditingRecipe()!.copyWith(
+        newRecipe = currentRecipe.copyWith(
           servings: event.servings,
           servingName: event.servingName,
           ingredients: recipeIngredients,
           ingredientsGlossary: recipeIngredientSections,
           vegetable: event.vegetable,
+          stepIngredientIds: retainedAssignments,
         );
         await repository.saveTmpEditingRecipe(newRecipe);
       }

@@ -31,6 +31,7 @@ class Recipe extends Equatable {
   final String? source;
   final String? servingName;
   final List<String>? stepTitles;
+  final List<List<String>> stepIngredientIds;
 
   Recipe({
     required this.name,
@@ -56,6 +57,7 @@ class Recipe extends Equatable {
     this.tags = const [],
     this.source,
     this.stepTitles,
+    this.stepIngredientIds = const [],
   });
 
   @override
@@ -140,6 +142,11 @@ class Recipe extends Equatable {
           : json.containsKey('stepTitles')
           ? List<String>.from(json['stepTitles'])
           : (List<String>.from(json['steps'])).map((e) => "").toList(),
+      stepIngredientIds: json.containsKey('stepIngredientIds')
+          ? List<List<dynamic>>.from(json['stepIngredientIds'])
+                .map((ids) => List<String>.from(ids))
+                .toList()
+          : const [],
     );
   }
 
@@ -168,6 +175,7 @@ class Recipe extends Equatable {
     'keywords': tags.map((t) => t.toMap()).toList(),
     'source': source,
     'stepTitles': stepTitles ?? steps.map((e) => "").toList(),
+    'stepIngredientIds': stepIngredientIds,
   };
 
   Recipe copyWith({
@@ -179,6 +187,8 @@ class Recipe extends Equatable {
     double? totalTime,
     double? servings,
     String? servingName,
+    bool clearServings = false,
+    bool clearServingName = false,
     List<String>? ingredientsGlossary,
     List<List<Ingredient>>? ingredients,
     Vegetable? vegetable,
@@ -193,7 +203,9 @@ class Recipe extends Equatable {
     int? rating,
     List<StringIntTuple>? tags,
     String? source,
+    bool clearSource = false,
     List<String>? stepTitles,
+    List<List<String>>? stepIngredientIds,
   }) {
     return Recipe(
       name: name ?? this.name,
@@ -202,8 +214,8 @@ class Recipe extends Equatable {
       preperationTime: preperationTime ?? this.preperationTime,
       cookingTime: cookingTime ?? this.cookingTime,
       totalTime: totalTime ?? this.totalTime,
-      servings: servings ?? this.servings,
-      servingName: servingName ?? this.servingName,
+      servings: clearServings ? null : servings ?? this.servings,
+      servingName: clearServingName ? null : servingName ?? this.servingName,
       ingredientsGlossary: ingredientsGlossary ?? this.ingredientsGlossary,
       ingredients: ingredients ?? this.ingredients,
       vegetable: vegetable ?? this.vegetable,
@@ -217,8 +229,9 @@ class Recipe extends Equatable {
       lastModified: lastModified ?? this.lastModified,
       rating: rating ?? this.rating,
       tags: tags ?? this.tags,
-      source: source ?? this.source,
+      source: clearSource ? null : source ?? this.source,
       stepTitles: stepTitles ?? this.stepTitles,
+      stepIngredientIds: stepIngredientIds ?? this.stepIngredientIds,
     );
   }
 
@@ -247,7 +260,35 @@ class Recipe extends Equatable {
     tags,
     source,
     stepTitles,
+    stepIngredientIds,
   ];
+
+  /// Adds opaque IDs to ingredients that predate step assignments and prunes
+  /// links that no longer point at an ingredient in this recipe.
+  Recipe ensureIngredientIds() {
+    var next = 0;
+    final seed = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+    final seen = <String>{};
+    final normalized = ingredients
+        .map(
+          (group) => group.map((ingredient) {
+            var id = ingredient.id;
+            if (id == null || id.isEmpty || seen.contains(id)) {
+              id = 'ing-$seed-${next++}';
+            }
+            seen.add(id);
+            return ingredient.copyWith(id: id);
+          }).toList(),
+        )
+        .toList();
+    final links = List<List<String>>.generate(
+      steps.length,
+      (index) => index < stepIngredientIds.length
+          ? stepIngredientIds[index].where(seen.contains).toSet().toList()
+          : <String>[],
+    );
+    return copyWith(ingredients: normalized, stepIngredientIds: links);
+  }
 }
 
 class SearchRecipe {

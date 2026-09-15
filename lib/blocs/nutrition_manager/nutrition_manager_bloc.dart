@@ -92,17 +92,11 @@ class NutritionManagerBloc
       if (state is LoadedNutritionManager) {
         await repository.moveNutrition(event.oldIndex, event.newIndex);
 
-        List<String> newNutritionList = List<String>.from(
+        final newNutritionList = List<String>.from(
           (state as LoadedNutritionManager).nutritions,
         );
-
-        newNutritionList
-          ..insert(event.newIndex, newNutritionList[event.oldIndex])
-          ..removeAt(
-            event.oldIndex > event.newIndex
-                ? event.oldIndex + 1
-                : event.oldIndex,
-          );
+        final moved = newNutritionList.removeAt(event.oldIndex);
+        newNutritionList.insert(event.newIndex, moved);
 
         emit(LoadedNutritionManager(newNutritionList));
       }

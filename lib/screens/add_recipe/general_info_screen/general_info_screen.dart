@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:my_recipe_book/generated/l10n.dart';
 
 import '../../../blocs/category_manager/category_manager_bloc.dart';
@@ -16,13 +15,13 @@ import '../../../constants/routes.dart';
 import '../../../local_storage/local_repository.dart';
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
+import '../../../models/enums.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
 import '../../../util/helper.dart';
 import '../../../util/my_wrapper.dart';
-import '../../../widgets/dialogs/are_you_sure_dialog.dart';
-import '../../../widgets/dialogs/info_dialog.dart';
 import '../../../widgets/duration_picker.dart';
 import '../../../widgets/image_selector.dart' as IS;
+import '../../../widgets/recipe_editor/editorial_editor_shell.dart';
 import '../ingredients_screen.dart';
 import 'categories_section.dart';
 import 'recipe_tag_section.dart';
@@ -62,6 +61,11 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   final TextEditingController nameController = TextEditingController();
 
   final TextEditingController sourceController = TextEditingController();
+  final TextEditingController notesController = TextEditingController();
+  final TextEditingController servingsController = TextEditingController();
+  final TextEditingController servingsNameController = TextEditingController();
+  Vegetable vegetable = Vegetable.NON_VEGETARIAN;
+  double effort = 5;
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -82,6 +86,10 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   @override
   void dispose() {
     nameController.dispose();
+    sourceController.dispose();
+    notesController.dispose();
+    servingsController.dispose();
+    servingsNameController.dispose();
 
     WidgetsBinding.instance.removeObserver(this);
 
@@ -100,7 +108,6 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -108,218 +115,202 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
           _saveGeneralInfoData(context, true);
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffAF1E1E), Color(0xff641414)],
+      child: BlocListener<GeneralInfoBloc, GeneralInfoState>(
+        listener: (context, state) {
+          if (state is GSaved) {
+            context.read<GeneralInfoBloc>().add(SetCanSave());
+            Navigator.pushNamed(
+              context,
+              RouteNames.addRecipeIngredients,
+              arguments: IngredientsArguments(
+                state.recipe,
+                context.read<ShoppingCartBloc>(),
+                context.read<RecipeCalendarBloc>(),
+                editingRecipeName: widget.editingRecipeName,
               ),
-            ),
-          ),
-          title: Text(S.of(context).add_general_info),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.info_outline),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => InfoDialog(
-                    title: S.of(context).info,
-                    body: S.of(context).general_info_changes_will_be_saved,
-                  ),
-                );
-              },
-            ),
-            BlocListener<ClearRecipeBloc, ClearRecipeState>(
-              listener: (context, state) {
-                if (state is ClearedRecipe) {
-                  setState(() {
-                    modifiedRecipe = state.recipe.copyWith(
-                      categories: modifiedRecipe!.categories,
-                    );
-                    _emptyTextFields();
-                  });
-                }
-              },
-              child: IconButton(
-                icon: Icon(Icons.format_clear),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (bcontext) => BlocProvider.value(
-                      value: BlocProvider.of<ClearRecipeBloc>(context),
-                      child: AreYouSureDialog(
-                        S.of(context).clean_recipe_info,
-                        S.of(context).clean_recipe_info_desc,
-                        () {
-                          BlocProvider.of<ClearRecipeBloc>(context).add(
-                            Clear(
-                              widget.editingRecipeName == null ? false : true,
-                            ),
-                          );
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            BlocListener<GeneralInfoBloc, GeneralInfoState>(
-              listener: (context, state) {
-                if (state is GEditingFinishedGoBack) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(S.of(context).saving_your_input)),
-                  );
-                } else if (state is GSaved) {
-                  BlocProvider.of<GeneralInfoBloc>(context).add(SetCanSave());
-
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.addRecipeIngredients,
-                    arguments: IngredientsArguments(
-                      state.recipe,
-                      BlocProvider.of<ShoppingCartBloc>(context),
-                      BlocProvider.of<RecipeCalendarBloc>(context),
-                      editingRecipeName: widget.editingRecipeName,
-                    ),
-                  );
-                } else if (state is GSavedGoBack) {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  Navigator.pop(context);
-                }
-              },
-              child: BlocBuilder<GeneralInfoBloc, GeneralInfoState>(
-                builder: (context, state) {
-                  if (state is GSavingTmpData) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Icon(Icons.arrow_forward, color: Colors.grey),
-                    );
-                  } else if (state is GCanSave) {
-                    return IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      color: Colors.white,
-                      onPressed: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-
-                        _finishedEditingGeneralInfo();
-                      },
-                    );
-                  } else if (state is GEditingFinished) {
-                    return Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Container(
-                          width: 25,
-                          height: 25,
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Icon(Icons.arrow_forward);
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Container(
-              width: MediaQuery.of(context).size.width > 500 ? 500 : null,
+            );
+          } else if (state is GSavedGoBack) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            Navigator.pop(context);
+          }
+        },
+        child: BlocBuilder<GeneralInfoBloc, GeneralInfoState>(
+          builder: (context, state) => EditorialEditorShell(
+            stage: 1,
+            recipe: modifiedRecipe!,
+            title: S.of(context).editor_general,
+            showSummary: false,
+            busy: state is GEditingFinished || state is GSavingTmpData,
+            primaryLabel: S.of(context).continue_to_ingredients,
+            onBack: () => _saveGeneralInfoData(context, true),
+            onPrimary: _finishedEditingGeneralInfo,
+            body: Form(
+              key: _formKey,
               child: Column(
-                children: <Widget>[
-                  // top section with the add image button
-                  SizedBox(height: 30),
-                  IS.ImageSelector(
-                    onNewImage: (File imageFile) =>
-                        BlocProvider.of<GeneralInfoBloc>(context).add(
-                          UpdateRecipeImage(
-                            imageFile,
-                            widget.editingRecipeName == null ? false : true,
-                          ),
-                        ),
-                    prefilledImage: modifiedRecipe!.imagePath,
-                    circleSize: 120,
-                    color: Color(0xFF790604),
-                    onCancel: () {
-                      BlocProvider.of<ClearRecipeBloc>(context).add(
-                        RemoveRecipeImage(
-                          widget.editingRecipeName == null ? false : true,
-                        ),
-                      );
-                      BlocProvider.of<GeneralInfoBloc>(context).add(
-                        GRemoveRecipeImage(
-                          widget.editingRecipeName == null ? false : true,
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(height: 30),
-                  Form(
-                    key: _formKey,
+                children: [
+                  EditorialCard(
                     child: Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: TextFormField(
-                            validator: _validateRecipeName,
-                            controller: nameController,
-                            textCapitalization: TextCapitalization.sentences,
-                            decoration: InputDecoration(
-                              filled: true,
-                              labelText: S.of(context).name + "*",
-                              icon: Icon(MdiIcons.notebook),
-                            ),
+                      children: [
+                        IS.ImageSelector(
+                          onNewImage: (File imageFile) =>
+                              context.read<GeneralInfoBloc>().add(
+                                UpdateRecipeImage(
+                                  imageFile,
+                                  widget.editingRecipeName != null,
+                                ),
+                              ),
+                          prefilledImage: modifiedRecipe!.imagePath,
+                          circleSize: 132,
+                          color: const Color(0xFFA83211),
+                          onCancel: () {
+                            context.read<ClearRecipeBloc>().add(
+                              RemoveRecipeImage(
+                                widget.editingRecipeName != null,
+                              ),
+                            );
+                            context.read<GeneralInfoBloc>().add(
+                              GRemoveRecipeImage(
+                                widget.editingRecipeName != null,
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          validator: _validateRecipeName,
+                          controller: nameController,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: editorialInputDecoration(
+                            context,
+                            label: '${S.of(context).name} *',
                           ),
                         ),
-                        // time textFields
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(52, 12, 12, 12),
-                          child: Wrap(
-                            alignment: WrapAlignment.center,
-                            children: <Widget>[
-                              _getTimeSelector(
-                                preperationTime,
-                                S.of(context).prep_time,
-                              ),
-                              _getTimeSelector(
-                                cookingTime,
-                                S.of(context).cook_time,
-                              ),
-                              _getTimeSelector(
-                                totalTime,
-                                S.of(context).total_time,
-                              ),
-                            ],
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: notesController,
+                          minLines: 3,
+                          maxLines: 7,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: editorialInputDecoration(
+                            context,
+                            label: S.of(context).notes,
                           ),
                         ),
-
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 52,
-                            top: 0,
-                            right: 12,
-                            bottom: 12,
-                          ),
-                          child: TextFormField(
-                            controller: sourceController,
-                            decoration: InputDecoration(
-                              filled: true,
-                              labelText: S.of(context).source,
-                            ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: sourceController,
+                          decoration: editorialInputDecoration(
+                            context,
+                            label: S.of(context).source,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  CategorySection(),
-                  RecipeTagSection(),
+                  const SizedBox(height: 16),
+                  EditorialCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          S.of(context).yield_portions,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: servingsController,
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
+                                decoration: editorialInputDecoration(
+                                  context,
+                                  label: S.of(context).amount,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              flex: 2,
+                              child: TextFormField(
+                                controller: servingsNameController,
+                                decoration: editorialInputDecoration(
+                                  context,
+                                  label: S.of(context).servings,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            _getTimeSelector(
+                              preperationTime,
+                              S.of(context).prep_time,
+                            ),
+                            _getTimeSelector(
+                              cookingTime,
+                              S.of(context).cook_time,
+                            ),
+                            _getTimeSelector(
+                              totalTime,
+                              S.of(context).total_time,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  EditorialCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${S.of(context).effort}: ${effort.round()} / 10'),
+                        Slider(
+                          value: effort,
+                          min: 1,
+                          max: 10,
+                          divisions: 9,
+                          label: effort.round().toString(),
+                          onChanged: (value) => setState(() => effort = value),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(S.of(context).dietary_preference),
+                        const SizedBox(height: 8),
+                        SegmentedButton<Vegetable>(
+                          showSelectedIcon: true,
+                          segments: [
+                            ButtonSegment(
+                              value: Vegetable.NON_VEGETARIAN,
+                              label: Text(S.of(context).diet_meat),
+                            ),
+                            ButtonSegment(
+                              value: Vegetable.VEGETARIAN,
+                              label: Text(S.of(context).diet_vegetarian),
+                            ),
+                            ButtonSegment(
+                              value: Vegetable.VEGAN,
+                              label: Text(S.of(context).diet_vegan),
+                            ),
+                          ],
+                          selected: {vegetable},
+                          onSelectionChanged: (value) =>
+                              setState(() => vegetable = value.first),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  EditorialCard(child: CategorySection()),
+                  const SizedBox(height: 16),
+                  EditorialCard(child: RecipeTagSection()),
                 ],
               ),
             ),
@@ -330,51 +321,16 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   }
 
   Widget _getTimeSelector(MyDoubleWrapper time, String addText) {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: time.myDouble != null && time.myDouble != 0
-          ? InkWell(
-              onTap: () async {
-                _onTapDuration(time);
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    addText + ":",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  Container(
-                    width: 100,
-                    child: Text(
-                      (time.myDouble! ~/ 60 > 0
-                              ? "${time.myDouble! ~/ 60} h"
-                              : "") +
-                          " ${cutDouble(time.myDouble! % 60)} min",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : OutlinedButton.icon(
-              icon: Icon(Icons.add_circle),
-              label: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(addText),
-              ),
-              onPressed: () async {
-                _onTapDuration(time);
-              },
-              style: ButtonStyle(
-                shape: WidgetStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-              ),
-            ),
+    final minutes = time.myDouble ?? 0;
+    return OutlinedButton.icon(
+      icon: const Icon(Icons.schedule_outlined),
+      label: Text(
+        minutes == 0
+            ? addText
+            : '$addText  ${minutes ~/ 60 > 0 ? '${minutes ~/ 60}h ' : ''}${cutDouble(minutes % 60)}m',
+      ),
+      onPressed: () => _onTapDuration(time),
+      style: OutlinedButton.styleFrom(minimumSize: const Size(148, 52)),
     );
   }
 
@@ -395,6 +351,13 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   /// prefills the textfields with the data of the given recipe
   void _initializeData(Recipe recipe) {
     nameController.text = recipe.name;
+    notesController.text = recipe.notes;
+    servingsController.text = recipe.servings == null
+        ? ''
+        : cutDouble(recipe.servings!);
+    servingsNameController.text = recipe.servingName ?? S.current.servings;
+    vegetable = recipe.vegetable;
+    effort = (recipe.effort ?? 5).toDouble();
     if (recipe.preperationTime != 0.0)
       preperationTime.myDouble = recipe.preperationTime;
     if (recipe.cookingTime != 0.0) cookingTime.myDouble = recipe.cookingTime;
@@ -402,13 +365,6 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
     if (recipe.source != null) {
       sourceController.text = recipe.source!;
     }
-  }
-
-  void _emptyTextFields() {
-    nameController.clear();
-    preperationTime.myDouble = null;
-    cookingTime.myDouble = null;
-    sourceController.clear();
   }
 
   /// validates the info with the RecipeValidator() class and shows a
@@ -479,6 +435,13 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
         sourceController.text,
         BlocProvider.of<CategoryManagerBloc>(context).selectedCategories,
         BlocProvider.of<RecipeTagManagerBloc>(context).selectedTags,
+        notesController.text,
+        servingsController.text.trim().isEmpty
+            ? null
+            : getDoubleFromString(servingsController.text),
+        servingsNameController.text.trim(),
+        vegetable,
+        effort.round(),
       ),
     );
   }

@@ -2751,6 +2751,17 @@ class $StoredIngredientsTable extends StoredIngredients
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _opaqueIdMeta = const VerificationMeta(
+    'opaqueId',
+  );
+  @override
+  late final GeneratedColumn<String> opaqueId = GeneratedColumn<String>(
+    'opaque_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -2783,6 +2794,7 @@ class $StoredIngredientsTable extends StoredIngredients
     id,
     groupId,
     position,
+    opaqueId,
     name,
     amount,
     unit,
@@ -2817,6 +2829,12 @@ class $StoredIngredientsTable extends StoredIngredients
       );
     } else if (isInserting) {
       context.missing(_positionMeta);
+    }
+    if (data.containsKey('opaque_id')) {
+      context.handle(
+        _opaqueIdMeta,
+        opaqueId.isAcceptableOrUnknown(data['opaque_id']!, _opaqueIdMeta),
+      );
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -2859,6 +2877,10 @@ class $StoredIngredientsTable extends StoredIngredients
         DriftSqlType.int,
         data['${effectivePrefix}position'],
       )!,
+      opaqueId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}opaque_id'],
+      ),
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -2885,6 +2907,7 @@ class StoredIngredient extends DataClass
   final int id;
   final int groupId;
   final int position;
+  final String? opaqueId;
   final String name;
   final double? amount;
   final String? unit;
@@ -2892,6 +2915,7 @@ class StoredIngredient extends DataClass
     required this.id,
     required this.groupId,
     required this.position,
+    this.opaqueId,
     required this.name,
     this.amount,
     this.unit,
@@ -2902,6 +2926,9 @@ class StoredIngredient extends DataClass
     map['id'] = Variable<int>(id);
     map['group_id'] = Variable<int>(groupId);
     map['position'] = Variable<int>(position);
+    if (!nullToAbsent || opaqueId != null) {
+      map['opaque_id'] = Variable<String>(opaqueId);
+    }
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || amount != null) {
       map['amount'] = Variable<double>(amount);
@@ -2917,6 +2944,9 @@ class StoredIngredient extends DataClass
       id: Value(id),
       groupId: Value(groupId),
       position: Value(position),
+      opaqueId: opaqueId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(opaqueId),
       name: Value(name),
       amount: amount == null && nullToAbsent
           ? const Value.absent()
@@ -2934,6 +2964,7 @@ class StoredIngredient extends DataClass
       id: serializer.fromJson<int>(json['id']),
       groupId: serializer.fromJson<int>(json['groupId']),
       position: serializer.fromJson<int>(json['position']),
+      opaqueId: serializer.fromJson<String?>(json['opaqueId']),
       name: serializer.fromJson<String>(json['name']),
       amount: serializer.fromJson<double?>(json['amount']),
       unit: serializer.fromJson<String?>(json['unit']),
@@ -2946,6 +2977,7 @@ class StoredIngredient extends DataClass
       'id': serializer.toJson<int>(id),
       'groupId': serializer.toJson<int>(groupId),
       'position': serializer.toJson<int>(position),
+      'opaqueId': serializer.toJson<String?>(opaqueId),
       'name': serializer.toJson<String>(name),
       'amount': serializer.toJson<double?>(amount),
       'unit': serializer.toJson<String?>(unit),
@@ -2956,6 +2988,7 @@ class StoredIngredient extends DataClass
     int? id,
     int? groupId,
     int? position,
+    Value<String?> opaqueId = const Value.absent(),
     String? name,
     Value<double?> amount = const Value.absent(),
     Value<String?> unit = const Value.absent(),
@@ -2963,6 +2996,7 @@ class StoredIngredient extends DataClass
     id: id ?? this.id,
     groupId: groupId ?? this.groupId,
     position: position ?? this.position,
+    opaqueId: opaqueId.present ? opaqueId.value : this.opaqueId,
     name: name ?? this.name,
     amount: amount.present ? amount.value : this.amount,
     unit: unit.present ? unit.value : this.unit,
@@ -2972,6 +3006,7 @@ class StoredIngredient extends DataClass
       id: data.id.present ? data.id.value : this.id,
       groupId: data.groupId.present ? data.groupId.value : this.groupId,
       position: data.position.present ? data.position.value : this.position,
+      opaqueId: data.opaqueId.present ? data.opaqueId.value : this.opaqueId,
       name: data.name.present ? data.name.value : this.name,
       amount: data.amount.present ? data.amount.value : this.amount,
       unit: data.unit.present ? data.unit.value : this.unit,
@@ -2984,6 +3019,7 @@ class StoredIngredient extends DataClass
           ..write('id: $id, ')
           ..write('groupId: $groupId, ')
           ..write('position: $position, ')
+          ..write('opaqueId: $opaqueId, ')
           ..write('name: $name, ')
           ..write('amount: $amount, ')
           ..write('unit: $unit')
@@ -2992,7 +3028,8 @@ class StoredIngredient extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, groupId, position, name, amount, unit);
+  int get hashCode =>
+      Object.hash(id, groupId, position, opaqueId, name, amount, unit);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3000,6 +3037,7 @@ class StoredIngredient extends DataClass
           other.id == this.id &&
           other.groupId == this.groupId &&
           other.position == this.position &&
+          other.opaqueId == this.opaqueId &&
           other.name == this.name &&
           other.amount == this.amount &&
           other.unit == this.unit);
@@ -3009,6 +3047,7 @@ class StoredIngredientsCompanion extends UpdateCompanion<StoredIngredient> {
   final Value<int> id;
   final Value<int> groupId;
   final Value<int> position;
+  final Value<String?> opaqueId;
   final Value<String> name;
   final Value<double?> amount;
   final Value<String?> unit;
@@ -3016,6 +3055,7 @@ class StoredIngredientsCompanion extends UpdateCompanion<StoredIngredient> {
     this.id = const Value.absent(),
     this.groupId = const Value.absent(),
     this.position = const Value.absent(),
+    this.opaqueId = const Value.absent(),
     this.name = const Value.absent(),
     this.amount = const Value.absent(),
     this.unit = const Value.absent(),
@@ -3024,6 +3064,7 @@ class StoredIngredientsCompanion extends UpdateCompanion<StoredIngredient> {
     this.id = const Value.absent(),
     required int groupId,
     required int position,
+    this.opaqueId = const Value.absent(),
     required String name,
     this.amount = const Value.absent(),
     this.unit = const Value.absent(),
@@ -3034,6 +3075,7 @@ class StoredIngredientsCompanion extends UpdateCompanion<StoredIngredient> {
     Expression<int>? id,
     Expression<int>? groupId,
     Expression<int>? position,
+    Expression<String>? opaqueId,
     Expression<String>? name,
     Expression<double>? amount,
     Expression<String>? unit,
@@ -3042,6 +3084,7 @@ class StoredIngredientsCompanion extends UpdateCompanion<StoredIngredient> {
       if (id != null) 'id': id,
       if (groupId != null) 'group_id': groupId,
       if (position != null) 'position': position,
+      if (opaqueId != null) 'opaque_id': opaqueId,
       if (name != null) 'name': name,
       if (amount != null) 'amount': amount,
       if (unit != null) 'unit': unit,
@@ -3052,6 +3095,7 @@ class StoredIngredientsCompanion extends UpdateCompanion<StoredIngredient> {
     Value<int>? id,
     Value<int>? groupId,
     Value<int>? position,
+    Value<String?>? opaqueId,
     Value<String>? name,
     Value<double?>? amount,
     Value<String?>? unit,
@@ -3060,6 +3104,7 @@ class StoredIngredientsCompanion extends UpdateCompanion<StoredIngredient> {
       id: id ?? this.id,
       groupId: groupId ?? this.groupId,
       position: position ?? this.position,
+      opaqueId: opaqueId ?? this.opaqueId,
       name: name ?? this.name,
       amount: amount ?? this.amount,
       unit: unit ?? this.unit,
@@ -3077,6 +3122,9 @@ class StoredIngredientsCompanion extends UpdateCompanion<StoredIngredient> {
     }
     if (position.present) {
       map['position'] = Variable<int>(position.value);
+    }
+    if (opaqueId.present) {
+      map['opaque_id'] = Variable<String>(opaqueId.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -3096,6 +3144,7 @@ class StoredIngredientsCompanion extends UpdateCompanion<StoredIngredient> {
           ..write('id: $id, ')
           ..write('groupId: $groupId, ')
           ..write('position: $position, ')
+          ..write('opaqueId: $opaqueId, ')
           ..write('name: $name, ')
           ..write('amount: $amount, ')
           ..write('unit: $unit')
@@ -4284,6 +4333,333 @@ class StoredStepImagesCompanion extends UpdateCompanion<StoredStepImage> {
           ..write('groupId: $groupId, ')
           ..write('position: $position, ')
           ..write('path: $path')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $StoredStepIngredientsTable extends StoredStepIngredients
+    with TableInfo<$StoredStepIngredientsTable, StoredStepIngredient> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StoredStepIngredientsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _stepGroupIdMeta = const VerificationMeta(
+    'stepGroupId',
+  );
+  @override
+  late final GeneratedColumn<int> stepGroupId = GeneratedColumn<int>(
+    'step_group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES stored_step_groups (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _ingredientIdMeta = const VerificationMeta(
+    'ingredientId',
+  );
+  @override
+  late final GeneratedColumn<int> ingredientId = GeneratedColumn<int>(
+    'ingredient_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES stored_ingredients (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    stepGroupId,
+    ingredientId,
+    position,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'stored_step_ingredients';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StoredStepIngredient> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('step_group_id')) {
+      context.handle(
+        _stepGroupIdMeta,
+        stepGroupId.isAcceptableOrUnknown(
+          data['step_group_id']!,
+          _stepGroupIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_stepGroupIdMeta);
+    }
+    if (data.containsKey('ingredient_id')) {
+      context.handle(
+        _ingredientIdMeta,
+        ingredientId.isAcceptableOrUnknown(
+          data['ingredient_id']!,
+          _ingredientIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_ingredientIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {stepGroupId, ingredientId},
+  ];
+  @override
+  StoredStepIngredient map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StoredStepIngredient(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      stepGroupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}step_group_id'],
+      )!,
+      ingredientId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}ingredient_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+    );
+  }
+
+  @override
+  $StoredStepIngredientsTable createAlias(String alias) {
+    return $StoredStepIngredientsTable(attachedDatabase, alias);
+  }
+}
+
+class StoredStepIngredient extends DataClass
+    implements Insertable<StoredStepIngredient> {
+  final int id;
+  final int stepGroupId;
+  final int ingredientId;
+  final int position;
+  const StoredStepIngredient({
+    required this.id,
+    required this.stepGroupId,
+    required this.ingredientId,
+    required this.position,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['step_group_id'] = Variable<int>(stepGroupId);
+    map['ingredient_id'] = Variable<int>(ingredientId);
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  StoredStepIngredientsCompanion toCompanion(bool nullToAbsent) {
+    return StoredStepIngredientsCompanion(
+      id: Value(id),
+      stepGroupId: Value(stepGroupId),
+      ingredientId: Value(ingredientId),
+      position: Value(position),
+    );
+  }
+
+  factory StoredStepIngredient.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StoredStepIngredient(
+      id: serializer.fromJson<int>(json['id']),
+      stepGroupId: serializer.fromJson<int>(json['stepGroupId']),
+      ingredientId: serializer.fromJson<int>(json['ingredientId']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'stepGroupId': serializer.toJson<int>(stepGroupId),
+      'ingredientId': serializer.toJson<int>(ingredientId),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  StoredStepIngredient copyWith({
+    int? id,
+    int? stepGroupId,
+    int? ingredientId,
+    int? position,
+  }) => StoredStepIngredient(
+    id: id ?? this.id,
+    stepGroupId: stepGroupId ?? this.stepGroupId,
+    ingredientId: ingredientId ?? this.ingredientId,
+    position: position ?? this.position,
+  );
+  StoredStepIngredient copyWithCompanion(StoredStepIngredientsCompanion data) {
+    return StoredStepIngredient(
+      id: data.id.present ? data.id.value : this.id,
+      stepGroupId: data.stepGroupId.present
+          ? data.stepGroupId.value
+          : this.stepGroupId,
+      ingredientId: data.ingredientId.present
+          ? data.ingredientId.value
+          : this.ingredientId,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StoredStepIngredient(')
+          ..write('id: $id, ')
+          ..write('stepGroupId: $stepGroupId, ')
+          ..write('ingredientId: $ingredientId, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, stepGroupId, ingredientId, position);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StoredStepIngredient &&
+          other.id == this.id &&
+          other.stepGroupId == this.stepGroupId &&
+          other.ingredientId == this.ingredientId &&
+          other.position == this.position);
+}
+
+class StoredStepIngredientsCompanion
+    extends UpdateCompanion<StoredStepIngredient> {
+  final Value<int> id;
+  final Value<int> stepGroupId;
+  final Value<int> ingredientId;
+  final Value<int> position;
+  const StoredStepIngredientsCompanion({
+    this.id = const Value.absent(),
+    this.stepGroupId = const Value.absent(),
+    this.ingredientId = const Value.absent(),
+    this.position = const Value.absent(),
+  });
+  StoredStepIngredientsCompanion.insert({
+    this.id = const Value.absent(),
+    required int stepGroupId,
+    required int ingredientId,
+    required int position,
+  }) : stepGroupId = Value(stepGroupId),
+       ingredientId = Value(ingredientId),
+       position = Value(position);
+  static Insertable<StoredStepIngredient> custom({
+    Expression<int>? id,
+    Expression<int>? stepGroupId,
+    Expression<int>? ingredientId,
+    Expression<int>? position,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (stepGroupId != null) 'step_group_id': stepGroupId,
+      if (ingredientId != null) 'ingredient_id': ingredientId,
+      if (position != null) 'position': position,
+    });
+  }
+
+  StoredStepIngredientsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? stepGroupId,
+    Value<int>? ingredientId,
+    Value<int>? position,
+  }) {
+    return StoredStepIngredientsCompanion(
+      id: id ?? this.id,
+      stepGroupId: stepGroupId ?? this.stepGroupId,
+      ingredientId: ingredientId ?? this.ingredientId,
+      position: position ?? this.position,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (stepGroupId.present) {
+      map['step_group_id'] = Variable<int>(stepGroupId.value);
+    }
+    if (ingredientId.present) {
+      map['ingredient_id'] = Variable<int>(ingredientId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StoredStepIngredientsCompanion(')
+          ..write('id: $id, ')
+          ..write('stepGroupId: $stepGroupId, ')
+          ..write('ingredientId: $ingredientId, ')
+          ..write('position: $position')
           ..write(')'))
         .toString();
   }
@@ -7244,6 +7620,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $StoredStepImagesTable storedStepImages = $StoredStepImagesTable(
     this,
   );
+  late final $StoredStepIngredientsTable storedStepIngredients =
+      $StoredStepIngredientsTable(this);
   late final $IngredientCatalogEntriesTable ingredientCatalogEntries =
       $IngredientCatalogEntriesTable(this);
   late final $NutritionCatalogEntriesTable nutritionCatalogEntries =
@@ -7312,6 +7690,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     storedNutritions,
     storedStepGroups,
     storedStepImages,
+    storedStepIngredients,
     ingredientCatalogEntries,
     nutritionCatalogEntries,
     calendarEntries,
@@ -7401,6 +7780,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('stored_step_images', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'stored_step_groups',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('stored_step_ingredients', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'stored_ingredients',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('stored_step_ingredients', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -10216,6 +10609,7 @@ typedef $$StoredIngredientsTableCreateCompanionBuilder =
       Value<int> id,
       required int groupId,
       required int position,
+      Value<String?> opaqueId,
       required String name,
       Value<double?> amount,
       Value<String?> unit,
@@ -10225,6 +10619,7 @@ typedef $$StoredIngredientsTableUpdateCompanionBuilder =
       Value<int> id,
       Value<int> groupId,
       Value<int> position,
+      Value<String?> opaqueId,
       Value<String> name,
       Value<double?> amount,
       Value<String?> unit,
@@ -10261,6 +10656,32 @@ final class $$StoredIngredientsTableReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
+
+  static MultiTypedResultKey<
+    $StoredStepIngredientsTable,
+    List<StoredStepIngredient>
+  >
+  _storedStepIngredientsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.storedStepIngredients,
+        aliasName:
+            'stored_ingredients__id__stored_step_ingredients__ingredient_id',
+      );
+
+  $$StoredStepIngredientsTableProcessedTableManager
+  get storedStepIngredientsRefs {
+    final manager = $$StoredStepIngredientsTableTableManager(
+      $_db,
+      $_db.storedStepIngredients,
+    ).filter((f) => f.ingredientId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _storedStepIngredientsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$StoredIngredientsTableFilterComposer
@@ -10279,6 +10700,11 @@ class $$StoredIngredientsTableFilterComposer
 
   ColumnFilters<int> get position => $composableBuilder(
     column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get opaqueId => $composableBuilder(
+    column: $table.opaqueId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10320,6 +10746,32 @@ class $$StoredIngredientsTableFilterComposer
         );
     return composer;
   }
+
+  Expression<bool> storedStepIngredientsRefs(
+    Expression<bool> Function($$StoredStepIngredientsTableFilterComposer f) f,
+  ) {
+    final $$StoredStepIngredientsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.storedStepIngredients,
+          getReferencedColumn: (t) => t.ingredientId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$StoredStepIngredientsTableFilterComposer(
+                $db: $db,
+                $table: $db.storedStepIngredients,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$StoredIngredientsTableOrderingComposer
@@ -10338,6 +10790,11 @@ class $$StoredIngredientsTableOrderingComposer
 
   ColumnOrderings<int> get position => $composableBuilder(
     column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get opaqueId => $composableBuilder(
+    column: $table.opaqueId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -10396,6 +10853,9 @@ class $$StoredIngredientsTableAnnotationComposer
   GeneratedColumn<int> get position =>
       $composableBuilder(column: $table.position, builder: (column) => column);
 
+  GeneratedColumn<String> get opaqueId =>
+      $composableBuilder(column: $table.opaqueId, builder: (column) => column);
+
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
@@ -10428,6 +10888,32 @@ class $$StoredIngredientsTableAnnotationComposer
         );
     return composer;
   }
+
+  Expression<T> storedStepIngredientsRefs<T extends Object>(
+    Expression<T> Function($$StoredStepIngredientsTableAnnotationComposer a) f,
+  ) {
+    final $$StoredStepIngredientsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.storedStepIngredients,
+          getReferencedColumn: (t) => t.ingredientId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$StoredStepIngredientsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.storedStepIngredients,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$StoredIngredientsTableTableManager
@@ -10443,7 +10929,7 @@ class $$StoredIngredientsTableTableManager
           $$StoredIngredientsTableUpdateCompanionBuilder,
           (StoredIngredient, $$StoredIngredientsTableReferences),
           StoredIngredient,
-          PrefetchHooks Function({bool groupId})
+          PrefetchHooks Function({bool groupId, bool storedStepIngredientsRefs})
         > {
   $$StoredIngredientsTableTableManager(
     _$AppDatabase db,
@@ -10466,6 +10952,7 @@ class $$StoredIngredientsTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<int> groupId = const Value.absent(),
                 Value<int> position = const Value.absent(),
+                Value<String?> opaqueId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<double?> amount = const Value.absent(),
                 Value<String?> unit = const Value.absent(),
@@ -10473,6 +10960,7 @@ class $$StoredIngredientsTableTableManager
                 id: id,
                 groupId: groupId,
                 position: position,
+                opaqueId: opaqueId,
                 name: name,
                 amount: amount,
                 unit: unit,
@@ -10482,6 +10970,7 @@ class $$StoredIngredientsTableTableManager
                 Value<int> id = const Value.absent(),
                 required int groupId,
                 required int position,
+                Value<String?> opaqueId = const Value.absent(),
                 required String name,
                 Value<double?> amount = const Value.absent(),
                 Value<String?> unit = const Value.absent(),
@@ -10489,6 +10978,7 @@ class $$StoredIngredientsTableTableManager
                 id: id,
                 groupId: groupId,
                 position: position,
+                opaqueId: opaqueId,
                 name: name,
                 amount: amount,
                 unit: unit,
@@ -10501,45 +10991,70 @@ class $$StoredIngredientsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({groupId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (groupId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.groupId,
-                        referencedTable: $$StoredIngredientsTableReferences
-                            ._groupIdTable(db),
-                        referencedColumn: $$StoredIngredientsTableReferences
-                            ._groupIdTable(db)
-                            .id,
-                      ) as T;
-                    }
+          prefetchHooksCallback:
+              ({groupId = false, storedStepIngredientsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (storedStepIngredientsRefs) db.storedStepIngredients,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (groupId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.groupId,
+                            referencedTable: $$StoredIngredientsTableReferences
+                                ._groupIdTable(db),
+                            referencedColumn: $$StoredIngredientsTableReferences
+                                ._groupIdTable(db)
+                                .id,
+                          ) as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (storedStepIngredientsRefs)
+                        await $_getPrefetchedData<
+                          StoredIngredient,
+                          $StoredIngredientsTable,
+                          StoredStepIngredient
+                        >(
+                          currentTable: table,
+                          referencedTable: $$StoredIngredientsTableReferences
+                              ._storedStepIngredientsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$StoredIngredientsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).storedStepIngredientsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.ingredientId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -10556,7 +11071,7 @@ typedef $$StoredIngredientsTableProcessedTableManager =
       $$StoredIngredientsTableUpdateCompanionBuilder,
       (StoredIngredient, $$StoredIngredientsTableReferences),
       StoredIngredient,
-      PrefetchHooks Function({bool groupId})
+      PrefetchHooks Function({bool groupId, bool storedStepIngredientsRefs})
     >;
 typedef $$StoredNutritionsTableCreateCompanionBuilder =
     StoredNutritionsCompanion Function({
@@ -10946,6 +11461,32 @@ final class $$StoredStepGroupsTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<
+    $StoredStepIngredientsTable,
+    List<StoredStepIngredient>
+  >
+  _storedStepIngredientsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.storedStepIngredients,
+        aliasName:
+            'stored_step_groups__id__stored_step_ingredients__step_group_id',
+      );
+
+  $$StoredStepIngredientsTableProcessedTableManager
+  get storedStepIngredientsRefs {
+    final manager = $$StoredStepIngredientsTableTableManager(
+      $_db,
+      $_db.storedStepIngredients,
+    ).filter((f) => f.stepGroupId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _storedStepIngredientsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$StoredStepGroupsTableFilterComposer
@@ -11037,6 +11578,32 @@ class $$StoredStepGroupsTableFilterComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<bool> storedStepIngredientsRefs(
+    Expression<bool> Function($$StoredStepIngredientsTableFilterComposer f) f,
+  ) {
+    final $$StoredStepIngredientsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.storedStepIngredients,
+          getReferencedColumn: (t) => t.stepGroupId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$StoredStepIngredientsTableFilterComposer(
+                $db: $db,
+                $table: $db.storedStepIngredients,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
@@ -11192,6 +11759,32 @@ class $$StoredStepGroupsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> storedStepIngredientsRefs<T extends Object>(
+    Expression<T> Function($$StoredStepIngredientsTableAnnotationComposer a) f,
+  ) {
+    final $$StoredStepIngredientsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.storedStepIngredients,
+          getReferencedColumn: (t) => t.stepGroupId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$StoredStepIngredientsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.storedStepIngredients,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$StoredStepGroupsTableTableManager
@@ -11207,7 +11800,11 @@ class $$StoredStepGroupsTableTableManager
           $$StoredStepGroupsTableUpdateCompanionBuilder,
           (StoredStepGroup, $$StoredStepGroupsTableReferences),
           StoredStepGroup,
-          PrefetchHooks Function({bool recipeId, bool storedStepImagesRefs})
+          PrefetchHooks Function({
+            bool recipeId,
+            bool storedStepImagesRefs,
+            bool storedStepIngredientsRefs,
+          })
         > {
   $$StoredStepGroupsTableTableManager(
     _$AppDatabase db,
@@ -11271,11 +11868,16 @@ class $$StoredStepGroupsTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({recipeId = false, storedStepImagesRefs = false}) {
+              ({
+                recipeId = false,
+                storedStepImagesRefs = false,
+                storedStepIngredientsRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (storedStepImagesRefs) db.storedStepImages,
+                    if (storedStepIngredientsRefs) db.storedStepIngredients,
                   ],
                   addJoins:
                       <
@@ -11330,6 +11932,27 @@ class $$StoredStepGroupsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (storedStepIngredientsRefs)
+                        await $_getPrefetchedData<
+                          StoredStepGroup,
+                          $StoredStepGroupsTable,
+                          StoredStepIngredient
+                        >(
+                          currentTable: table,
+                          referencedTable: $$StoredStepGroupsTableReferences
+                              ._storedStepIngredientsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$StoredStepGroupsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).storedStepIngredientsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.stepGroupId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -11350,7 +11973,11 @@ typedef $$StoredStepGroupsTableProcessedTableManager =
       $$StoredStepGroupsTableUpdateCompanionBuilder,
       (StoredStepGroup, $$StoredStepGroupsTableReferences),
       StoredStepGroup,
-      PrefetchHooks Function({bool recipeId, bool storedStepImagesRefs})
+      PrefetchHooks Function({
+        bool recipeId,
+        bool storedStepImagesRefs,
+        bool storedStepIngredientsRefs,
+      })
     >;
 typedef $$StoredStepImagesTableCreateCompanionBuilder =
     StoredStepImagesCompanion Function({
@@ -11649,6 +12276,408 @@ typedef $$StoredStepImagesTableProcessedTableManager =
       (StoredStepImage, $$StoredStepImagesTableReferences),
       StoredStepImage,
       PrefetchHooks Function({bool groupId})
+    >;
+typedef $$StoredStepIngredientsTableCreateCompanionBuilder =
+    StoredStepIngredientsCompanion Function({
+      Value<int> id,
+      required int stepGroupId,
+      required int ingredientId,
+      required int position,
+    });
+typedef $$StoredStepIngredientsTableUpdateCompanionBuilder =
+    StoredStepIngredientsCompanion Function({
+      Value<int> id,
+      Value<int> stepGroupId,
+      Value<int> ingredientId,
+      Value<int> position,
+    });
+
+final class $$StoredStepIngredientsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $StoredStepIngredientsTable,
+          StoredStepIngredient
+        > {
+  $$StoredStepIngredientsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $StoredStepGroupsTable _stepGroupIdTable(_$AppDatabase db) =>
+      db.storedStepGroups.createAlias(
+        'stored_step_ingredients__step_group_id__stored_step_groups__id',
+      );
+
+  $$StoredStepGroupsTableProcessedTableManager get stepGroupId {
+    final $_column = $_itemColumn<int>('step_group_id')!;
+
+    final manager = $$StoredStepGroupsTableTableManager(
+      $_db,
+      $_db.storedStepGroups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_stepGroupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $StoredIngredientsTable _ingredientIdTable(_$AppDatabase db) =>
+      db.storedIngredients.createAlias(
+        'stored_step_ingredients__ingredient_id__stored_ingredients__id',
+      );
+
+  $$StoredIngredientsTableProcessedTableManager get ingredientId {
+    final $_column = $_itemColumn<int>('ingredient_id')!;
+
+    final manager = $$StoredIngredientsTableTableManager(
+      $_db,
+      $_db.storedIngredients,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_ingredientIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$StoredStepIngredientsTableFilterComposer
+    extends Composer<_$AppDatabase, $StoredStepIngredientsTable> {
+  $$StoredStepIngredientsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$StoredStepGroupsTableFilterComposer get stepGroupId {
+    final $$StoredStepGroupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stepGroupId,
+      referencedTable: $db.storedStepGroups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StoredStepGroupsTableFilterComposer(
+            $db: $db,
+            $table: $db.storedStepGroups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$StoredIngredientsTableFilterComposer get ingredientId {
+    final $$StoredIngredientsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.ingredientId,
+      referencedTable: $db.storedIngredients,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StoredIngredientsTableFilterComposer(
+            $db: $db,
+            $table: $db.storedIngredients,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$StoredStepIngredientsTableOrderingComposer
+    extends Composer<_$AppDatabase, $StoredStepIngredientsTable> {
+  $$StoredStepIngredientsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$StoredStepGroupsTableOrderingComposer get stepGroupId {
+    final $$StoredStepGroupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stepGroupId,
+      referencedTable: $db.storedStepGroups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StoredStepGroupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.storedStepGroups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$StoredIngredientsTableOrderingComposer get ingredientId {
+    final $$StoredIngredientsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.ingredientId,
+      referencedTable: $db.storedIngredients,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StoredIngredientsTableOrderingComposer(
+            $db: $db,
+            $table: $db.storedIngredients,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$StoredStepIngredientsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $StoredStepIngredientsTable> {
+  $$StoredStepIngredientsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  $$StoredStepGroupsTableAnnotationComposer get stepGroupId {
+    final $$StoredStepGroupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stepGroupId,
+      referencedTable: $db.storedStepGroups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StoredStepGroupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.storedStepGroups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$StoredIngredientsTableAnnotationComposer get ingredientId {
+    final $$StoredIngredientsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.ingredientId,
+          referencedTable: $db.storedIngredients,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$StoredIngredientsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.storedIngredients,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$StoredStepIngredientsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $StoredStepIngredientsTable,
+          StoredStepIngredient,
+          $$StoredStepIngredientsTableFilterComposer,
+          $$StoredStepIngredientsTableOrderingComposer,
+          $$StoredStepIngredientsTableAnnotationComposer,
+          $$StoredStepIngredientsTableCreateCompanionBuilder,
+          $$StoredStepIngredientsTableUpdateCompanionBuilder,
+          (StoredStepIngredient, $$StoredStepIngredientsTableReferences),
+          StoredStepIngredient,
+          PrefetchHooks Function({bool stepGroupId, bool ingredientId})
+        > {
+  $$StoredStepIngredientsTableTableManager(
+    _$AppDatabase db,
+    $StoredStepIngredientsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StoredStepIngredientsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$StoredStepIngredientsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$StoredStepIngredientsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> stepGroupId = const Value.absent(),
+                Value<int> ingredientId = const Value.absent(),
+                Value<int> position = const Value.absent(),
+              }) => StoredStepIngredientsCompanion(
+                id: id,
+                stepGroupId: stepGroupId,
+                ingredientId: ingredientId,
+                position: position,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int stepGroupId,
+                required int ingredientId,
+                required int position,
+              }) => StoredStepIngredientsCompanion.insert(
+                id: id,
+                stepGroupId: stepGroupId,
+                ingredientId: ingredientId,
+                position: position,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $StoredStepIngredientsTable,
+                    StoredStepIngredient
+                  >(table),
+                  $$StoredStepIngredientsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({stepGroupId = false, ingredientId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (stepGroupId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.stepGroupId,
+                        referencedTable: $$StoredStepIngredientsTableReferences
+                            ._stepGroupIdTable(db),
+                        referencedColumn: $$StoredStepIngredientsTableReferences
+                            ._stepGroupIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+                    if (ingredientId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.ingredientId,
+                        referencedTable: $$StoredStepIngredientsTableReferences
+                            ._ingredientIdTable(db),
+                        referencedColumn: $$StoredStepIngredientsTableReferences
+                            ._ingredientIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$StoredStepIngredientsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $StoredStepIngredientsTable,
+      StoredStepIngredient,
+      $$StoredStepIngredientsTableFilterComposer,
+      $$StoredStepIngredientsTableOrderingComposer,
+      $$StoredStepIngredientsTableAnnotationComposer,
+      $$StoredStepIngredientsTableCreateCompanionBuilder,
+      $$StoredStepIngredientsTableUpdateCompanionBuilder,
+      (StoredStepIngredient, $$StoredStepIngredientsTableReferences),
+      StoredStepIngredient,
+      PrefetchHooks Function({bool stepGroupId, bool ingredientId})
     >;
 typedef $$IngredientCatalogEntriesTableCreateCompanionBuilder =
     IngredientCatalogEntriesCompanion Function({
@@ -13805,6 +14834,8 @@ class $AppDatabaseManager {
       $$StoredStepGroupsTableTableManager(_db, _db.storedStepGroups);
   $$StoredStepImagesTableTableManager get storedStepImages =>
       $$StoredStepImagesTableTableManager(_db, _db.storedStepImages);
+  $$StoredStepIngredientsTableTableManager get storedStepIngredients =>
+      $$StoredStepIngredientsTableTableManager(_db, _db.storedStepIngredients);
   $$IngredientCatalogEntriesTableTableManager get ingredientCatalogEntries =>
       $$IngredientCatalogEntriesTableTableManager(
         _db,

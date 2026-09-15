@@ -113,6 +113,10 @@ class RecipeStore {
           );
     }
 
+    final ingredientRowIds = <String, int>{};
+    var generatedIngredientId = 0;
+    final ingredientIdSeed = DateTime.now().microsecondsSinceEpoch
+        .toRadixString(36);
     final groupCount = max(
       recipe.ingredients.length,
       recipe.ingredientsGlossary.length,
@@ -140,17 +144,25 @@ class RecipeStore {
           itemIndex++
         ) {
           final ingredient = recipe.ingredients[groupIndex][itemIndex];
-          await _context.db
+          var opaqueId = ingredient.id;
+          if (opaqueId == null ||
+              opaqueId.isEmpty ||
+              ingredientRowIds.containsKey(opaqueId)) {
+            opaqueId = 'ing-$ingredientIdSeed-${generatedIngredientId++}';
+          }
+          final ingredientRowId = await _context.db
               .into(_context.db.storedIngredients)
               .insert(
                 StoredIngredientsCompanion.insert(
                   groupId: groupId,
                   position: itemIndex,
+                  opaqueId: Value(opaqueId),
                   name: ingredient.name,
                   amount: Value(ingredient.amount),
                   unit: Value(ingredient.unit),
                 ),
               );
+          ingredientRowIds[opaqueId] = ingredientRowId;
           await _catalogs.ensureIngredient(ingredient.name);
         }
       }
@@ -171,7 +183,10 @@ class RecipeStore {
     }
     final stepCount = max(
       recipe.steps.length,
-      max(recipe.stepImages.length, recipe.stepTitles?.length ?? 0),
+      max(
+        recipe.stepImages.length,
+        max(recipe.stepTitles?.length ?? 0, recipe.stepIngredientIds.length),
+      ),
     );
     for (var stepIndex = 0; stepIndex < stepCount; stepIndex++) {
       final hasInstruction = stepIndex < recipe.steps.length;
@@ -206,6 +221,26 @@ class RecipeStore {
                   groupId: groupId,
                   position: imageIndex,
                   path: recipe.stepImages[stepIndex][imageIndex],
+                ),
+              );
+        }
+      }
+      if (stepIndex < recipe.stepIngredientIds.length) {
+        var linkPosition = 0;
+        final linkedIngredientIds = <String>{};
+        for (final ingredientId in recipe.stepIngredientIds[stepIndex]) {
+          final ingredientRowId = ingredientRowIds[ingredientId];
+          if (ingredientRowId == null ||
+              !linkedIngredientIds.add(ingredientId)) {
+            continue;
+          }
+          await _context.db
+              .into(_context.db.storedStepIngredients)
+              .insert(
+                StoredStepIngredientsCompanion.insert(
+                  stepGroupId: groupId,
+                  ingredientId: ingredientRowId,
+                  position: linkPosition++,
                 ),
               );
         }
@@ -263,6 +298,7 @@ class RecipeStore {
           items
               .map(
                 (item) => Ingredient(
+                  id: item.opaqueId ?? 'stored-${item.id}',
                   name: item.name,
                   amount: item.amount,
                   unit: item.unit,
@@ -293,6 +329,7 @@ class RecipeStore {
     final steps = <String>[];
     final titles = <String>[];
     final images = <List<String>>[];
+    final stepIngredientIds = <List<String>>[];
     for (final group in stepGroups) {
       if (group.hasInstruction) steps.add(group.instruction ?? '');
       if (group.hasTitle) {
@@ -306,6 +343,22 @@ class RecipeStore {
                 .get();
         images.add(imageRows.map((image) => image.path).toList());
       }
+      final linkRows =
+          await (_context.db.select(_context.db.storedStepIngredients)
+                ..where((link) => link.stepGroupId.equals(group.id))
+                ..orderBy([(link) => OrderingTerm.asc(link.position)]))
+              .get();
+      final linkedIds = <String>[];
+      for (final link in linkRows) {
+        final ingredient =
+            await (_context.db.select(_context.db.storedIngredients)
+                  ..where((item) => item.id.equals(link.ingredientId)))
+                .getSingleOrNull();
+        if (ingredient != null) {
+          linkedIds.add(ingredient.opaqueId ?? 'stored-${ingredient.id}');
+        }
+      }
+      if (group.hasInstruction) stepIngredientIds.add(linkedIds);
     }
 
     return Recipe(
@@ -332,6 +385,9 @@ class RecipeStore {
       tags: tags,
       source: row.source,
       stepTitles: row.hasStepTitles ? titles : null,
+      stepIngredientIds: stepIngredientIds.any((ids) => ids.isNotEmpty)
+          ? stepIngredientIds
+          : const [],
     );
   }
 

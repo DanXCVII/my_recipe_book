@@ -43,10 +43,10 @@ class CulinaryEditorialPalette {
   }
 
   static const light = CulinaryEditorialPalette(
-    background: Color(0xFFFBF8FF),
-    surface: Color(0xFFFFFFFF),
-    surfaceContainer: Color(0xFFEFECF5),
-    surfaceContainerHigh: Color(0xFFEAE7EF),
+    background: Color(0xFFFAF7F2),
+    surface: Color(0xFFFFFDF9),
+    surfaceContainer: Color(0xFFF3ECE2),
+    surfaceContainerHigh: Color(0xFFEAE0D4),
     onSurface: Color(0xFF1B1B21),
     onSurfaceVariant: Color(0xFF59413B),
     outline: Color(0xFF6F554F),

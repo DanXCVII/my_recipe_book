@@ -44,7 +44,7 @@ class DraftDeletionStore {
         .insertOnConflictUpdate(
           RecipeDraftsCompanion.insert(
             slot: slot,
-            codecVersion: 1,
+            codecVersion: 2,
             payload: jsonEncode(map),
           ),
         );

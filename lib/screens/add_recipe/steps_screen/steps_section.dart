@@ -1,568 +1,520 @@
-import "dart:io";
+import 'dart:io';
 
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import "package:image_picker/image_picker.dart";
+import 'package:image_picker/image_picker.dart';
 import 'package:reorderables/reorderables.dart';
 
 import '../../../blocs/new_recipe/step_images/step_images_bloc.dart';
-import '../../../constants/global_constants.dart' as Constants;
-
-import 'package:my_recipe_book/generated/l10n.dart';
-
+import '../../../constants/global_constants.dart' as constants;
+import '../../../generated/l10n.dart';
+import '../../../models/ingredient.dart';
+import '../../../util/helper.dart';
+import '../../../widgets/culinary_editorial_theme.dart';
 import '../../../widgets/dialogs/are_you_sure_dialog.dart';
-import '../../../widgets/dialogs/textfield_dialog.dart';
+import '../../../widgets/recipe_editor/editorial_editor_shell.dart';
 
-class Steps extends StatefulWidget {
+class Steps extends StatelessWidget {
+  const Steps({
+    super.key,
+    this.editRecipeName = constants.newRecipeLocalPathString,
+    this.ingredients = const [],
+    this.ingredientGlossary = const [],
+  });
+
   final String? editRecipeName;
-
-  Steps({this.editRecipeName = Constants.newRecipeLocalPathString});
-
-  @override
-  State<StatefulWidget> createState() {
-    return _StepsState();
-  }
-}
-
-class _StepsState extends State<Steps> {
-  TextEditingController stepsDescriptionController = TextEditingController();
+  final List<List<Ingredient>> ingredients;
+  final List<String> ingredientGlossary;
 
   @override
   Widget build(BuildContext context) {
-    // Column with all the data of the steps inside like heading, textFields etc.
     return BlocBuilder<StepImagesBloc, StepImagesState>(
       builder: (context, state) {
-        if (state is LoadedStepImages) {
-          bool editingRecipe =
-              widget.editRecipeName == Constants.newRecipeLocalPathString
-              ? false
-              : true;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children:
-                <Widget>[
-                    // the heading of the Column
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 56,
-                        top: 12,
-                        bottom: 12,
-                      ),
-                      child: Text(
-                        S.of(context).steps + ':',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ]
-                  ..add(
-                    // the sections
-                    state.stepImages.every((element) => element.isEmpty)
-                        ? ReorderableColumn(
-                            scrollController: ScrollController(),
-                            onReorder: (i, j) {
-                              BlocProvider.of<StepImagesBloc>(context)
-                                  .add(MoveStep(i, j));
-                            },
-                            children: List<Widget>.generate(
-                              state.steps.length,
-                              (i) => Step(
-                                i,
-                                state.stepTitles[i],
-                                state.steps[i],
-                                state.stepImages[i],
-                                (title) =>
-                                    BlocProvider.of<StepImagesBloc>(context)
-                                        .add(EditStepTitle(title, i)),
-                                (step) =>
-                                    BlocProvider.of<StepImagesBloc>(context)
-                                        .add(EditStep(step, i)),
-                                () => BlocProvider.of<StepImagesBloc>(context)
-                                    .add(
-                                      RemoveStep(
-                                        widget.editRecipeName!,
-                                        DateTime.now(),
-                                        stepNumber: i,
-                                      ),
-                                    ),
-                                true,
-                                (File imageFile) =>
-                                    BlocProvider.of<StepImagesBloc>(context)
-                                        .add(
-                                          AddImage(imageFile, i, editingRecipe),
-                                        ),
-                                (index) => BlocProvider.of<StepImagesBloc>(
-                                  context,
-                                ).add(RemoveImage(i, index, editingRecipe)),
-                                key: state.stepKeys[i],
-                              ),
-                            ),
-                          )
-                        : Column(
-                            children: List<Widget>.generate(
-                              state.steps.length,
-                              (i) => Step(
-                                i,
-                                state.stepTitles[i],
-                                state.steps[i],
-                                state.stepImages[i],
-                                (title) =>
-                                    BlocProvider.of<StepImagesBloc>(context)
-                                        .add(EditStepTitle(title, i)),
-                                (step) =>
-                                    BlocProvider.of<StepImagesBloc>(context)
-                                        .add(EditStep(step, i)),
-                                () => BlocProvider.of<StepImagesBloc>(context)
-                                    .add(
-                                      RemoveStep(
-                                        widget.editRecipeName!,
-                                        DateTime.now(),
-                                        stepNumber: i,
-                                      ),
-                                    ),
-                                false,
-                                (File imageFile) =>
-                                    BlocProvider.of<StepImagesBloc>(context)
-                                        .add(
-                                          AddImage(imageFile, i, editingRecipe),
-                                        ),
-                                (index) => BlocProvider.of<StepImagesBloc>(
-                                  context,
-                                ).add(RemoveImage(i, index, editingRecipe)),
-                                key: state.stepKeys[i],
-                              ),
-                            ),
-                          ),
-                  )
-                  ..add(
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(58, 8, 8, 8),
-                      child: TextFormField(
-                        controller: stepsDescriptionController,
-                        textCapitalization: TextCapitalization.sentences,
-                        keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
-                          filled: true,
-                          labelText: S.of(context).description,
-                        ),
-                        minLines: 3,
-                        maxLines: 10,
-                      ),
-                    ),
-                  )
-                  ..add(
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          state.steps.isNotEmpty
-                              ? Padding(
-                                  padding: const EdgeInsets.only(right: 12),
-                                  child: OutlinedButton.icon(
-                                    icon: Icon(Icons.remove_circle),
-                                    label: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0,
-                                      ),
-                                      child: Text(
-                                        S
-                                            .of(context)
-                                            .remove_step(
-                                              MediaQuery.of(context)
-                                                          .size
-                                                          .width <
-                                                      412
-                                                  ? "\n"
-                                                  : "",
-                                            ),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      _removeStep(widget.editRecipeName);
-                                    },
-                                    style: OutlinedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : null,
-                          OutlinedButton.icon(
-                            icon: Icon(Icons.add_circle),
-                            label: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 8.0,
-                              ),
-                              child: Text(
-                                S
-                                    .of(context)
-                                    .add_step(
-                                      MediaQuery.of(context).size.width < 412
-                                          ? "\n"
-                                          : "",
-                                    ),
-                              ),
-                            ),
-                            onPressed: () {
-                              _addStep(widget.editRecipeName);
-                            },
-                            style: OutlinedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                            ),
-                          ),
-                        ].whereType<Widget>().toList(),
-                      ),
+        if (state is! LoadedStepImages) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final editingRecipe =
+            editRecipeName != constants.newRecipeLocalPathString;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (state.steps.isEmpty)
+              EditorialCard(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Text(
+                    S.of(context).instructions_empty,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: CulinaryEditorialPalette.of(context)
+                          .onSurfaceVariant,
                     ),
                   ),
-          );
-        } else {
-          return Text('invalid state ${state.toString()}');
-        }
+                ),
+              )
+            else
+              ReorderableColumn(
+                needsLongPressDraggable: false,
+                onReorder: (oldIndex, newIndex) => context
+                    .read<StepImagesBloc>()
+                    .add(MoveStep(oldIndex, newIndex)),
+                children: [
+                  for (var index = 0; index < state.steps.length; index++)
+                    Padding(
+                      key: state.stepKeys[index],
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: _StepCard(
+                        stepIndex: index,
+                        stepTitle: state.stepTitles[index],
+                        step: state.steps[index],
+                        stepImages: index < state.stepImages.length
+                            ? state.stepImages[index]
+                            : const [],
+                        ingredients: ingredients,
+                        ingredientGlossary: ingredientGlossary,
+                        assignedIngredientIds: state.stepIngredientIds[index],
+                        onEditTitle: (value) => context
+                            .read<StepImagesBloc>()
+                            .add(EditStepTitle(value, index)),
+                        onEditStep: (value) => context
+                            .read<StepImagesBloc>()
+                            .add(EditStep(value, index)),
+                        onRemoveStep: () => _removeStep(context, index),
+                        onAddImage: (file) => context
+                            .read<StepImagesBloc>()
+                            .add(AddImage(file, index, editingRecipe)),
+                        onRemoveImage: (imageIndex) => context
+                            .read<StepImagesBloc>()
+                            .add(RemoveImage(index, imageIndex, editingRecipe)),
+                        onAssignmentsChanged: (ids) => context
+                            .read<StepImagesBloc>()
+                            .add(UpdateStepIngredients(index, ids)),
+                      ),
+                    ),
+                ],
+              ),
+            OutlinedButton.icon(
+              onPressed: () => context.read<StepImagesBloc>().add(
+                AddStep('', DateTime.now()),
+              ),
+              icon: const Icon(Icons.add),
+              label: Text(S.of(context).add_step('')),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
+          ],
+        );
       },
     );
   }
 
-  void _addStep(String? recipeName) {
-    BlocProvider.of<StepImagesBloc>(context)
-        .add(AddStep(stepsDescriptionController.text, DateTime.now()));
-    stepsDescriptionController.text = "";
-  }
-
-  void _removeStep(String? recipeName) {
-    BlocProvider.of<StepImagesBloc>(context)
-        .add(RemoveStep(widget.editRecipeName!, DateTime.now()));
-  }
-}
-
-class ImageBox extends StatelessWidget {
-  final void Function() onPress;
-  final String imagePath;
-  final double size;
-
-  const ImageBox({
-    required this.onPress,
-    required this.imagePath,
-    this.size = 80,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        ClipRRect(
-          borderRadius: BorderRadius.circular(7),
-          child: Container(
-            child: Image.file(
-              // widget.stepImages[widget.stepNumber][i],
-              File(imagePath),
-              fit: BoxFit.cover,
+  Future<void> _removeStep(BuildContext context, int index) async {
+    final bloc = context.read<StepImagesBloc>();
+    await showDialog<void>(
+      context: context,
+      builder: (_) => AreYouSureDialog(
+        '${S.of(context).remove_step('')}?',
+        S.of(context).remove_step_desc,
+        () {
+          bloc.add(
+            RemoveStep(
+              editRecipeName ?? constants.newRecipeLocalPathString,
+              DateTime.now(),
+              stepNumber: index,
             ),
-            width: size,
-            height: size,
-          ),
-        ),
-        Opacity(
-          opacity: 0.3,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(7),
-              color: Colors.black87,
-            ),
-            width: size,
-            height: size,
-          ),
-        ),
-        Container(
-          width: size,
-          height: size,
-          child: IconButton(
-            icon: Icon(Icons.remove_circle_outline),
-            color: Colors.white,
-            onPressed: () {
-              onPress();
-            },
-          ),
-        ),
-      ],
+          );
+          Navigator.of(context).pop();
+        },
+      ),
     );
   }
 }
 
-class Step extends StatelessWidget {
+class _StepCard extends StatelessWidget {
+  const _StepCard({
+    required this.stepIndex,
+    required this.stepTitle,
+    required this.step,
+    required this.stepImages,
+    required this.ingredients,
+    required this.ingredientGlossary,
+    required this.assignedIngredientIds,
+    required this.onEditTitle,
+    required this.onEditStep,
+    required this.onRemoveStep,
+    required this.onAddImage,
+    required this.onRemoveImage,
+    required this.onAssignmentsChanged,
+  });
+
   final int stepIndex;
   final String stepTitle;
   final String step;
   final List<String> stepImages;
-  final void Function(String title) onEditTitle;
-  final void Function(String step) onEditStep;
-  final void Function() onRemoveStep;
-  final void Function(int index) onRemoveImage;
-  final void Function(File image) onAddImage;
-  final bool removeOption;
-
-  const Step(
-    this.stepIndex,
-    this.stepTitle,
-    this.step,
-    this.stepImages,
-    this.onEditTitle,
-    this.onEditStep,
-    this.onRemoveStep,
-    this.removeOption,
-    this.onAddImage,
-    this.onRemoveImage, {
-    Key? key,
-  }) : super(key: key);
+  final List<List<Ingredient>> ingredients;
+  final List<String> ingredientGlossary;
+  final List<String> assignedIngredientIds;
+  final ValueChanged<String> onEditTitle;
+  final ValueChanged<String> onEditStep;
+  final VoidCallback onRemoveStep;
+  final ValueChanged<File> onAddImage;
+  final ValueChanged<int> onRemoveImage;
+  final ValueChanged<List<String>> onAssignmentsChanged;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children:
-          <Widget>[
-            stepTitle == ""
-                ? OutlinedButton.icon(
-                    icon: Icon(Icons.add_circle),
-                    label: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(S.of(context).add_title),
-                    ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (cntxt) => TextFieldDialog(
-                          validation: (_) => null,
-                          save: (String name) {
-                            onEditTitle(name);
-                          },
-                          hintText: S.of(context).categoryname,
-                        ),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.only(left: 62.0, right: 12),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width - 150 > 350
-                              ? 350
-                              : MediaQuery.of(context).size.width - 150,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (cntxt) => TextFieldDialog(
-                                  validation: (_) => null,
-                                  save: (String name) {
-                                    onEditTitle(name);
-                                  },
-                                  prefilledText: stepTitle,
-                                  hintText: S.of(context).categoryname,
-                                ),
-                              );
-                            },
-                            child: Center(
-                              child: Text(
-                                stepTitle,
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Spacer(),
-                        IconButton(
-                          icon: Icon(Icons.remove_circle),
-                          onPressed: () {
-                            onEditTitle("");
-                          },
-                        ),
-                      ],
-                    ),
+    final palette = CulinaryEditorialPalette.of(context);
+    return EditorialCard(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: Center(
+                  child: Text(
+                    '${stepIndex + 1}'.padLeft(2, '0'),
+                    style: CulinaryEditorialType.headline(
+                      palette,
+                      size: 25,
+                      weight: FontWeight.w600,
+                    ).copyWith(color: palette.primary),
                   ),
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => TextFieldDialog(
-                    validation: (String? name) => null,
-                    save: (String newStep) {
-                      BlocProvider.of<StepImagesBloc>(context)
-                          .add(EditStep(newStep, stepIndex));
-                    },
-                    prefilledText: step,
-                    hintText: S.of(context).categoryname,
-                    showExpanded: true,
-                  ),
-                );
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15, right: 17.0),
-                        child: Container(
-                          width: 26,
-                          height: 26,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFF790604),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "${stepIndex + 1}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(height: 12),
-                      removeOption ? Icon(Icons.reorder) : null,
-                    ].whereType<Widget>().toList(),
-                  ),
-                  Expanded(
-                    flex: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: Text(step),
-                    ),
-                  ),
-                  removeOption
-                      ? IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (cntxt) => AreYouSureDialog(
-                                S.of(context).remove_step("") + "?",
-                                S.of(context).remove_step_desc,
-                                () {
-                                  onRemoveStep();
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            );
-                          },
-                        )
-                      : null,
-                ].whereType<Widget>().toList(),
+                ),
               ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextFormField(
+                  key: ValueKey('step-$stepIndex-title'),
+                  initialValue: stepTitle,
+                  textCapitalization: TextCapitalization.sentences,
+                  onChanged: onEditTitle,
+                  decoration: editorialInputDecoration(
+                    context,
+                    label: S.of(context).step_title,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: Icon(
+                  Icons.drag_indicator,
+                  color: palette.onSurfaceVariant,
+                ),
+              ),
+              IconButton(
+                tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
+                constraints: const BoxConstraints.tightFor(
+                  width: 48,
+                  height: 48,
+                ),
+                onPressed: onRemoveStep,
+                icon: const Icon(Icons.delete_outline),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            key: ValueKey('step-$stepIndex-description'),
+            initialValue: step,
+            textCapitalization: TextCapitalization.sentences,
+            keyboardType: TextInputType.multiline,
+            minLines: 3,
+            maxLines: 10,
+            onChanged: onEditStep,
+            decoration: editorialInputDecoration(
+              context,
+              label: S.of(context).description,
+              hint: S.of(context).step_description_hint,
             ),
-          ]..add(
-            FractionallySizedBox(
-              widthFactor: 1,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(58.0, 12.0, 12.0, 8),
-                child: Wrap(
-                  spacing: 5.0,
-                  runSpacing: 3.0,
-                  children:
-                      List.generate(
-                        stepImages.length,
-                        (i) => ImageBox(
-                          size: 70,
-                          onPress: () {
-                            onRemoveImage(i);
-                          },
-                          imagePath: stepImages[i],
+          ),
+          const SizedBox(height: 14),
+          _IngredientAssignments(
+            ingredients: ingredients,
+            ingredientGlossary: ingredientGlossary,
+            assignedIngredientIds: assignedIngredientIds,
+            onChanged: onAssignmentsChanged,
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (var index = 0; index < stepImages.length; index++)
+                ImageBox(
+                  size: 72,
+                  onPress: () => onRemoveImage(index),
+                  imagePath: stepImages[index],
+                ),
+              AddImageBox(size: 72, iconSize: 21, onNewImage: onAddImage),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IngredientAssignments extends StatelessWidget {
+  const _IngredientAssignments({
+    required this.ingredients,
+    required this.ingredientGlossary,
+    required this.assignedIngredientIds,
+    required this.onChanged,
+  });
+
+  final List<List<Ingredient>> ingredients;
+  final List<String> ingredientGlossary;
+  final List<String> assignedIngredientIds;
+  final ValueChanged<List<String>> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    final byId = <String, Ingredient>{
+      for (final section in ingredients)
+        for (final ingredient in section)
+          if (ingredient.id != null) ingredient.id!: ingredient,
+    };
+    final assigned = assignedIngredientIds
+        .where(byId.containsKey)
+        .map((id) => byId[id]!)
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          S.of(context).ingredients_for_step,
+          style: CulinaryEditorialType.body(
+            palette,
+            size: 12,
+            weight: FontWeight.w700,
+            color: palette.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final ingredient in assigned)
+              InputChip(
+                avatar: const Icon(Icons.restaurant_outlined, size: 16),
+                label: Text(_ingredientLabel(ingredient)),
+                onDeleted: () => onChanged(
+                  assignedIngredientIds
+                      .where((id) => id != ingredient.id)
+                      .toList(),
+                ),
+              ),
+            ActionChip(
+              avatar: const Icon(Icons.add, size: 18),
+              label: Text(S.of(context).assign_ingredients),
+              onPressed: () => _showAssignmentSheet(context),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showAssignmentSheet(BuildContext context) async {
+    final selected = assignedIngredientIds.toSet();
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, setSheetState) => DraggableScrollableSheet(
+          initialChildSize: .68,
+          minChildSize: .35,
+          maxChildSize: .92,
+          expand: false,
+          builder: (context, scrollController) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
+                child: Text(
+                  S.of(context).assign_ingredients,
+                  style: CulinaryEditorialType.headline(
+                    CulinaryEditorialPalette.of(context),
+                    size: 24,
+                    weight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: ingredients.length,
+                  itemBuilder: (context, sectionIndex) {
+                    final section = ingredients[sectionIndex];
+                    final heading =
+                        sectionIndex < ingredientGlossary.length &&
+                            ingredientGlossary[sectionIndex].trim().isNotEmpty
+                        ? ingredientGlossary[sectionIndex]
+                        : S.of(context).ingredients;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 18, 24, 6),
+                          child: Text(
+                            heading,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(fontWeight: FontWeight.w700),
+                          ),
                         ),
-                      )..add(
-                        AddImageBox(
-                          size: stepImages.isEmpty ? 40 : 70,
-                          iconSize: 20,
-                          onNewImage: (File newImage) {
-                            onAddImage(newImage);
-                          },
-                        ),
-                      ),
+                        for (final ingredient in section)
+                          if (ingredient.id != null)
+                            CheckboxListTile(
+                              value: selected.contains(ingredient.id),
+                              title: Text(_ingredientLabel(ingredient)),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              onChanged: (checked) {
+                                setSheetState(() {
+                                  if (checked ?? false) {
+                                    selected.add(ingredient.id!);
+                                  } else {
+                                    selected.remove(ingredient.id);
+                                  }
+                                });
+                              },
+                            ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+                child: FilledButton(
+                  onPressed: () {
+                    final ordered = <String>[
+                      for (final section in ingredients)
+                        for (final ingredient in section)
+                          if (ingredient.id != null &&
+                              selected.contains(ingredient.id))
+                            ingredient.id!,
+                    ];
+                    onChanged(ordered);
+                    Navigator.pop(sheetContext);
+                  },
+                  child: Text(S.of(context).done),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+String _ingredientLabel(Ingredient ingredient) {
+  final amount = ingredient.amount == null ? '' : cutDouble(ingredient.amount!);
+  return [amount, ingredient.unit, ingredient.name]
+      .where((part) => part != null && part.toString().trim().isNotEmpty)
+      .join(' ');
+}
+
+class ImageBox extends StatelessWidget {
+  const ImageBox({
+    super.key,
+    required this.onPress,
+    required this.imagePath,
+    this.size = 80,
+  });
+
+  final VoidCallback onPress;
+  final String imagePath;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: SizedBox.square(
+        dimension: size,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.file(
+              File(imagePath),
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => ColoredBox(
+                color: palette.surfaceContainer,
+                child: Icon(
+                  Icons.broken_image_outlined,
+                  color: palette.outline,
                 ),
               ),
             ),
-          ),
+            Align(
+              alignment: Alignment.topRight,
+              child: IconButton.filledTonal(
+                constraints: const BoxConstraints.tightFor(
+                  width: 48,
+                  height: 48,
+                ),
+                onPressed: onPress,
+                icon: const Icon(Icons.close, size: 18),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
 class AddImageBox extends StatelessWidget {
-  final void Function(File newImage) onNewImage;
-  final double size;
-  final double? iconSize;
-
   const AddImageBox({
+    super.key,
     this.size = 80,
     this.iconSize,
     required this.onNewImage,
-    Key? key,
-  }) : super(key: key);
+  });
+
+  final ValueChanged<File> onNewImage;
+  final double size;
+  final double? iconSize;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: IconButton(
-          icon: Icon(Icons.add_a_photo, size: iconSize),
-          onPressed: (() {
-            _askUser(context);
-          }),
+    final palette = CulinaryEditorialPalette.of(context);
+    return SizedBox.square(
+      dimension: size,
+      child: OutlinedButton(
+        onPressed: () => _pickImage(context),
+        style: OutlinedButton.styleFrom(
+          padding: EdgeInsets.zero,
+          side: BorderSide(color: palette.outline.withValues(alpha: .55)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
-      ),
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(const Radius.circular(7.0)),
-        border: Border.all(width: 1.5, color: Colors.grey),
+        child: Icon(Icons.add_a_photo_outlined, size: iconSize),
       ),
     );
   }
 
-  Future _askUser(BuildContext context) async {
-    final _picker = ImagePicker();
-    File newImage = File(
-      (await _picker.pickImage(source: ImageSource.gallery))!.path,
-    );
-
-    onNewImage(newImage);
+  Future<void> _pickImage(BuildContext context) async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null && context.mounted) onNewImage(File(picked.path));
   }
-}
-
-// clips a shape of an octagon
-class CustomIngredientsClipper extends CustomClipper<Path> {
-  Path getClip(Size size) {
-    final Path path = Path();
-    path.lineTo(size.width / 3 * 2, 0);
-    path.lineTo(size.width, size.height / 3);
-    path.lineTo(size.width, size.height / 3 * 2);
-    path.lineTo(size.width / 3 * 2, size.height);
-    path.lineTo(size.width / 3, size.height);
-    path.lineTo(0, size.height / 3 * 2);
-    path.lineTo(0, size.height / 3);
-    path.lineTo(size.width / 3, 0);
-    path.close();
-    return path;
-  }
-
-  bool shouldReclip(CustomIngredientsClipper oldClipper) => false;
 }

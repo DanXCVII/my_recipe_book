@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../../constants/global_constants.dart';
 import '../../../models/string_int_tuple.dart';
+import '../../../models/enums.dart';
 
 import '../../../util/helper.dart';
 import '../../../local_storage/local_repository.dart';
@@ -89,7 +90,16 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
           categories: event.categories,
           tags: event.recipeTags,
           source: event.source,
+          clearSource: event.source?.trim().isEmpty ?? true,
+          notes: event.notes,
+          servings: event.servings,
+          servingName: event.servingName,
+          clearServings: event.servings == null,
+          clearServingName: event.servingName?.trim().isEmpty ?? true,
+          vegetable: event.vegetable,
+          effort: event.effort,
         );
+        newRecipe = newRecipe.ensureIngredientIds();
         await repository.saveTmpRecipe(newRecipe);
       } else {
         newRecipe = repository.getTmpEditingRecipe()!.copyWith(
@@ -100,7 +110,16 @@ class GeneralInfoBloc extends Bloc<GeneralInfoEvent, GeneralInfoState> {
           categories: event.categories,
           tags: event.recipeTags,
           source: event.source,
+          clearSource: event.source?.trim().isEmpty ?? true,
+          notes: event.notes,
+          servings: event.servings,
+          servingName: event.servingName,
+          clearServings: event.servings == null,
+          clearServingName: event.servingName?.trim().isEmpty ?? true,
+          vegetable: event.vegetable,
+          effort: event.effort,
         );
+        newRecipe = newRecipe.ensureIngredientIds();
         await repository.saveTmpEditingRecipe(newRecipe);
       }
 

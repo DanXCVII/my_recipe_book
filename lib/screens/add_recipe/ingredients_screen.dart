@@ -1,4 +1,3 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,7 +17,7 @@ import '../../models/recipe.dart';
 import '../../util/helper.dart';
 import '../../util/my_wrapper.dart';
 import '../../widgets/ingredients_section.dart';
-import '../../widgets/vegetarian_section.dart';
+import '../../widgets/recipe_editor/editorial_editor_shell.dart';
 import 'steps_screen/steps_screen.dart';
 
 /// arguments which are provided to the route, when pushing to it
@@ -56,7 +55,6 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
   FocusNode? _exitFocusNode;
 
   static GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Flushbar? _flush;
 
   @override
   void initState() {
@@ -96,114 +94,55 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
           _saveIngredientsData(true);
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffAF1E1E), Color(0xff641414)],
+      child: BlocListener<IngredientsBloc, IngredientsState>(
+        listener: (context, state) {
+          if (state is ISaved) {
+            context.read<IngredientsBloc>().add(SetCanSave());
+            Navigator.pushNamed(
+              context,
+              RouteNames.addRecipeSteps,
+              arguments: StepsArguments(
+                state.recipe,
+                context.read<ShoppingCartBloc>(),
+                context.read<RecipeCalendarBloc>(),
+                editingRecipeName: widget.editingRecipeName,
               ),
-            ),
-          ),
-          title: Text(S.of(context).add_ingredients_info),
-          actions: <Widget>[
-            BlocListener<IngredientsBloc, IngredientsState>(
-              listener: (context, state) {
-                if (state is IEditingFinishedGoBack) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(S.of(context).saving_your_input)),
-                  );
-                } else if (state is ISaved) {
-                  BlocProvider.of<IngredientsBloc>(context).add(SetCanSave());
-
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.addRecipeSteps,
-                    arguments: StepsArguments(
-                      state.recipe,
-                      BlocProvider.of<ShoppingCartBloc>(context),
-                      BlocProvider.of<RecipeCalendarBloc>(context),
-                      editingRecipeName: widget.editingRecipeName,
+            );
+          } else if (state is ISavedGoBack) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            Navigator.pop(context);
+          }
+        },
+        child: BlocBuilder<IngredientsBloc, IngredientsState>(
+          builder: (context, state) =>
+              BlocBuilder<IngredientsSectionBloc, IngredientsSectionState>(
+                builder: (context, sectionState) {
+                  final summaryRecipe = sectionState is LoadedIngredientsSection
+                      ? widget.modifiedRecipe!.copyWith(
+                          ingredients: sectionState.ingredients,
+                          ingredientsGlossary: sectionState.sectionTitles,
+                        )
+                      : widget.modifiedRecipe!;
+                  return EditorialEditorShell(
+                    stage: 2,
+                    recipe: summaryRecipe,
+                    title: S.of(context).editor_ingredients,
+                    busy: state is ISavingTmpData || state is IEditingFinished,
+                    primaryLabel: S.of(context).continue_to_instructions,
+                    onBack: () => _saveIngredientsData(true),
+                    onPrimary: _finishedEditingIngredients,
+                    body: Form(
+                      key: _formKey,
+                      child: Ingredients(
+                        servingsController,
+                        servingsNameController,
+                        context.read<LocalRepository>().getIngredientNames(),
+                        showServings: false,
+                      ),
                     ),
                   );
-                } else if (state is ISavedGoBack) {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  Navigator.pop(context);
-                }
-              },
-              child: BlocBuilder<IngredientsBloc, IngredientsState>(
-                builder: (context, state) {
-                  if (state is ISavingTmpData) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Icon(Icons.arrow_forward, color: Colors.grey),
-                    );
-                  } else if (state is ICanSave) {
-                    return IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      color: Colors.white,
-                      onPressed: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-
-                        _finishedEditingIngredients();
-                      },
-                    );
-                  } else if (state is IEditingFinished) {
-                    return Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Container(
-                          width: 25,
-                          height: 25,
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Icon(Icons.arrow_forward);
-                  }
                 },
               ),
-            ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Container(
-              width: MediaQuery.of(context).size.width > 500 ? 500 : null,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Form(
-                    key: _formKey,
-                    child: Ingredients(
-                      servingsController,
-                      servingsNameController,
-                      context.read<LocalRepository>().getIngredientNames(),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 56,
-                      top: 12,
-                      bottom: 12,
-                    ),
-                    child: Text(
-                      S.of(context).category + ":",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  Vegetarian(vegetableStatus: selectedRecipeVegetable),
-                ],
-              ),
-            ),
-          ),
         ),
       ),
     );
@@ -239,9 +178,13 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
   /// calls _saveIngredientsData(..)
   void _finishedEditingIngredients() {
     if (!_formKey.currentState!.validate()) {
-      _showFlushInfo(
-        S.of(context).check_filled_in_information,
-        S.of(context).check_red_fields_desc,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${S.of(context).check_filled_in_information}: '
+            '${S.of(context).check_red_fields_desc}',
+          ),
+        ),
       );
     } else {
       _saveIngredientsData(false);
@@ -266,20 +209,19 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
           (BlocProvider.of<IngredientsSectionBloc>(context).state
                   as LoadedIngredientsSection)
               .sectionTitles,
-          selectedRecipeVegetable.vegetableStatus,
+          widget.modifiedRecipe!.vegetable,
         ),
       );
     } else {
-      List<List<Ingredient>> savedIngredients =
-          (BlocProvider.of<IngredientsSectionBloc>(context).state
-                  as LoadedIngredientsSection)
-              .ingredients;
-      List<String> savedSectionTitles =
-          (BlocProvider.of<IngredientsSectionBloc>(context).state
-                  as LoadedIngredientsSection)
-              .sectionTitles;
+      final sectionState =
+          BlocProvider.of<IngredientsSectionBloc>(context).state
+              as LoadedIngredientsSection;
+      final savedIngredients = sectionState.ingredients
+          .map((section) => List<Ingredient>.from(section))
+          .toList();
+      final savedSectionTitles = List<String>.from(sectionState.sectionTitles);
 
-      for (int i = 0; i < savedIngredients.length; i++) {
+      for (int i = savedIngredients.length - 1; i >= 0; i--) {
         if (savedIngredients[i].isEmpty && savedSectionTitles.length > i) {
           savedSectionTitles.removeAt(i);
           savedIngredients.removeAt(i);
@@ -295,30 +237,9 @@ class _IngredientsAddScreenState extends State<IngredientsAddScreen>
           servingsNameController.text,
           savedIngredients,
           savedSectionTitles,
-          selectedRecipeVegetable.vegetableStatus,
+          widget.modifiedRecipe!.vegetable,
         ),
       );
-    }
-  }
-
-  void _showFlushInfo(String title, String body) {
-    if (_flush != null && _flush!.isShowing()) {
-    } else {
-      _flush =
-          Flushbar<bool>(
-              animationDuration: Duration(milliseconds: 300),
-              leftBarIndicatorColor: Colors.blue[300],
-              title: title,
-              message: body,
-              icon: Icon(Icons.info_outline, color: Colors.blue),
-              mainButton: TextButton(
-                onPressed: () {
-                  _flush!.dismiss(true); // result = true
-                },
-                child: Text("OK", style: TextStyle(color: Colors.amber)),
-              ),
-            ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-            ..show(context).then((result) {});
     }
   }
 }

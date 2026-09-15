@@ -394,6 +394,8 @@ class MyApp extends StatelessWidget {
                               args!.modifiedRecipe.steps,
                               args.modifiedRecipe.stepTitles ?? [],
                               stepImages: args.modifiedRecipe.stepImages,
+                              stepIngredientIds:
+                                  args.modifiedRecipe.stepIngredientIds,
                             ),
                           ),
                       ),

@@ -8,6 +8,7 @@ class LoadedStepImages extends StepImagesState {
   final List<List<String>> stepImages;
   final List<String> steps;
   final List<String> stepTitles;
+  final List<List<String>> stepIngredientIds;
   final int? removedStep;
 
   final List<Key> stepKeys;
@@ -18,6 +19,7 @@ class LoadedStepImages extends StepImagesState {
     this.stepTitles,
     this.stepKeys, {
     this.removedStep,
+    this.stepIngredientIds = const [],
   });
 
   // @override

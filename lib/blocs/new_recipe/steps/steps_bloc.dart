@@ -12,6 +12,7 @@ part 'steps_state.dart';
 
 class StepsBloc extends Bloc<StepsEvent, StepsState> {
   List<List<String>> stepImages = [[]];
+  List<List<String>> stepIngredientIds = [];
   List<String> stepTitles = [""];
   List<String> steps = [];
   late StreamSubscription subscription;
@@ -25,6 +26,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
           stepImages = siState.stepImages;
           steps = siState.steps;
           stepTitles = siState.stepTitles;
+          stepIngredientIds = siState.stepIngredientIds;
         }
       }
     });
@@ -37,6 +39,12 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
       if (state is SCanSave) {
         List<String> recipeSteps = steps.map((e) => e).toList();
         List<String> recipeStepTitles = stepTitles.map((e) => e).toList();
+        final recipeStepIngredientIds = List.generate(
+          recipeSteps.length,
+          (index) => index < stepIngredientIds.length
+              ? List<String>.from(stepIngredientIds[index])
+              : <String>[],
+        );
 
         bool stepImagesValid = true;
         for (int i = steps.length; i < stepImages.length; i++) {
@@ -57,10 +65,11 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
           emit(SEditingFinished());
         }
 
-        if (steps.length > 1) {
-          for (int i = steps.length; i < stepImages.length; i++) {
-            stepImages.removeLast();
-          }
+        while (stepImages.length > steps.length) {
+          stepImages.removeLast();
+        }
+        while (stepImages.length < steps.length) {
+          stepImages.add(<String>[]);
         }
 
         Recipe newRecipe;
@@ -71,6 +80,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
             effort: event.complexity,
             steps: recipeSteps,
             stepTitles: recipeStepTitles,
+            stepIngredientIds: recipeStepIngredientIds,
           );
           await repository.saveTmpRecipe(newRecipe);
         } else {
@@ -80,6 +90,7 @@ class StepsBloc extends Bloc<StepsEvent, StepsState> {
             effort: event.complexity,
             steps: recipeSteps,
             stepTitles: recipeStepTitles,
+            stepIngredientIds: recipeStepIngredientIds,
           );
           await repository.saveTmpEditingRecipe(newRecipe);
         }
