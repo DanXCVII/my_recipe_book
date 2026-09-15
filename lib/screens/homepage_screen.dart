@@ -515,8 +515,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               : IconButton(
                   icon: Icon(Icons.calendar_today_rounded),
                   onPressed: () {
-                    BlocProvider.of<RecipeCalendarBloc>(context)
-                        .add(ChangeSelectedDateEvent(DateTime.now()));
                     if (MediaQuery.of(context).size.width >
                         GC.recipeCalendarFloatingWidth) {
                       BlocProvider.of<AppBloc>(context)

@@ -9,36 +9,31 @@ abstract class RecipeCalendarState extends Equatable {
 
 class LoadingRecipeCalendar extends RecipeCalendarState {}
 
-class LoadedRecipeCalendarVertical extends RecipeCalendarState {
-  final DateTime from;
-  final int days;
+class LoadedRecipeCalendarWeek extends RecipeCalendarState {
+  const LoadedRecipeCalendarWeek({
+    required this.weekStart,
+    required this.recipes,
+    this.addedRecipe,
+    this.removedRecipe,
+  });
+
+  final DateTime weekStart;
   final Map<DateTime, List<Tuple2<DateTime, Recipe>>> recipes;
   final Tuple2<DateTime, String>? addedRecipe;
+  final Tuple2<DateTime, String>? removedRecipe;
 
-  LoadedRecipeCalendarVertical(
-    this.from,
-    this.days,
-    this.recipes, {
-    this.addedRecipe,
-  });
+  int get recipeCount => recipes.values.fold(0, (sum, day) => sum + day.length);
 
   @override
-  List<Object?> get props => [from, days, recipes, addedRecipe];
+  List<Object?> get props => [weekStart, recipes, addedRecipe, removedRecipe];
 }
 
-class LoadedRecipeCalendarOverview extends RecipeCalendarState {
-  final Map<DateTime, List<String>> events;
-  final List<Tuple2<DateTime, Recipe>> currentRecipes;
-  final Tuple2<DateTime, String>? addedRecipe;
-  final DateTime selectedDay;
+class FailedRecipeCalendar extends RecipeCalendarState {
+  const FailedRecipeCalendar(this.error, this.weekStart);
 
-  LoadedRecipeCalendarOverview(
-    this.events,
-    this.currentRecipes,
-    this.selectedDay, {
-    this.addedRecipe,
-  });
+  final Object error;
+  final DateTime weekStart;
 
   @override
-  List<Object?> get props => [events, currentRecipes, selectedDay, addedRecipe];
+  List<Object?> get props => [error, weekStart];
 }

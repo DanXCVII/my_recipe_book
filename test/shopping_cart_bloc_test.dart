@@ -7,6 +7,7 @@ import 'package:my_recipe_book/local_storage/database.dart';
 import 'package:my_recipe_book/local_storage/local_repository.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/models/shopping_cart_recipe_addition.dart';
 
 void main() {
   late AppDatabase database;
@@ -125,6 +126,114 @@ void main() {
       expect(failedState.actionError, ShoppingCartActionError.servings);
     },
   );
+
+  test(
+    'batch merge preserves sources and combines servings atomically',
+    () async {
+      await repository.saveRecipe(Recipe(name: 'Soup', servings: 4));
+      await repository.saveRecipe(Recipe(name: 'Tea', servings: 1));
+      await repository.addMultipleIngredientsToCart('Soup', const [
+        Ingredient(name: 'Carrot', amount: 2, unit: 'pc'),
+      ], servings: 4);
+      await repository.addMultipleIngredientsToCart('Tea', const [
+        Ingredient(name: 'Tea bag', amount: 1, unit: 'pc'),
+      ], servings: 1);
+      await repository.checkIngredient(
+        'Soup',
+        const CheckableIngredient('Carrot', 2, 'pc', true),
+      );
+      await _load(cart);
+
+      final merged = cart.stream
+          .where((state) => state is LoadedShoppingCart)
+          .cast<LoadedShoppingCart>()
+          .firstWhere((state) => state.data.recipeSources.length == 2);
+      cart.add(
+        const MergeShoppingCartRecipes([
+          ShoppingCartRecipeAddition(
+            recipeName: 'Soup',
+            servings: 2,
+            ingredients: [
+              Ingredient(name: 'Carrot', amount: 1, unit: 'pc'),
+              Ingredient(name: 'Onion', amount: 1, unit: 'pc'),
+            ],
+          ),
+        ]),
+      );
+      final data = (await merged).data;
+      final soup = data.recipeSources.singleWhere(
+        (source) => source.displayName == 'Soup',
+      );
+
+      expect(soup.currentServings, 6);
+      expect(soup.items.singleWhere((item) => item.name == 'Carrot').amount, 3);
+      expect(
+        soup.items.singleWhere((item) => item.name == 'Carrot').checked,
+        isFalse,
+      );
+      expect(
+        data.recipeSources.any((source) => source.displayName == 'Tea'),
+        isTrue,
+      );
+      expect(
+        data.consolidatedItems
+            .singleWhere((item) => item.name == 'Carrot')
+            .amount,
+        3,
+      );
+    },
+  );
+
+  test('repeat batch exports consolidate amounts and servings', () async {
+    await repository.saveRecipe(Recipe(name: 'Soup', servings: 4));
+    const addition = ShoppingCartRecipeAddition(
+      recipeName: 'Soup',
+      servings: 2,
+      ingredients: [Ingredient(name: 'Carrot', amount: 1, unit: 'pc')],
+    );
+
+    await repository.mergeRecipeIngredientsToCart(const [addition]);
+    await repository.mergeRecipeIngredientsToCart(const [addition]);
+    final data = await repository.getShoppingCartData();
+    final source = data.recipeSources.single;
+
+    expect(source.currentServings, 4);
+    expect(source.items.single.amount, 2);
+    expect(source.items.single.checked, isFalse);
+    expect(data.consolidatedItems.single.amount, 2);
+  });
+
+  test('failed batch persistence restores the in-memory cart', () async {
+    await repository.addMultipleIngredientsToCart(shoppingSummaryName, const [
+      Ingredient(name: 'Carrot', amount: 2, unit: 'pc'),
+    ]);
+    final initial = await _load(cart);
+    await database.close();
+    databaseClosed = true;
+
+    final failed = cart.stream
+        .where((state) => state is LoadedShoppingCart)
+        .cast<LoadedShoppingCart>()
+        .firstWhere(
+          (state) => state.actionError == ShoppingCartActionError.add,
+        );
+    cart.add(
+      const MergeShoppingCartRecipes([
+        ShoppingCartRecipeAddition(
+          recipeName: 'Soup',
+          servings: 2,
+          ingredients: [
+            Ingredient(name: 'Carrot', amount: 1, unit: 'pc'),
+            Ingredient(name: 'Onion', amount: 1, unit: 'pc'),
+          ],
+        ),
+      ]),
+    );
+    final failedState = await failed;
+
+    expect(failedState.data, initial.data);
+    expect(await repository.getShoppingCartData(), initial.data);
+  });
 }
 
 Future<LoadedShoppingCart> _load(ShoppingCartBloc bloc) {

@@ -9,68 +9,51 @@ abstract class RecipeCalendarEvent extends Equatable {
 
 class LoadRecipeCalendarEvent extends RecipeCalendarEvent {}
 
-class ChangeSelectedDateEvent extends RecipeCalendarEvent {
-  final DateTime day;
+class ChangeCalendarWeek extends RecipeCalendarEvent {
+  const ChangeCalendarWeek(this.deltaWeeks);
 
-  ChangeSelectedDateEvent(this.day);
+  final int deltaWeeks;
 
   @override
-  List<Object> get props => [day];
+  List<Object> get props => [deltaWeeks];
 }
 
+class GoToCurrentCalendarWeek extends RecipeCalendarEvent {}
+
 class RemoveRecipeFromDateEvent extends RecipeCalendarEvent {
+  const RemoveRecipeFromDateEvent(this.date, this.recipeName);
+
   final DateTime date;
   final String recipeName;
-
-  RemoveRecipeFromDateEvent(this.date, this.recipeName);
 
   @override
   List<Object> get props => [date, recipeName];
 }
 
 class UpdateRecipeEvent extends RecipeCalendarEvent {
+  const UpdateRecipeEvent(this.oldRecipeName, this.newRecipeName);
+
   final String oldRecipeName;
   final String newRecipeName;
-
-  UpdateRecipeEvent(this.oldRecipeName, this.newRecipeName);
 
   @override
   List<Object> get props => [oldRecipeName, newRecipeName];
 }
 
-class ChangeRecipeCalendarViewEvent extends RecipeCalendarEvent {
-  final bool showVerticalCalendar;
-
-  ChangeRecipeCalendarViewEvent(this.showVerticalCalendar);
-
-  @override
-  List<Object> get props => [showVerticalCalendar];
-}
-
-class ChangeSelectedTimeVerticalEvent extends RecipeCalendarEvent {
-  // if false, prevWeek
-  final bool nextWeek;
-
-  ChangeSelectedTimeVerticalEvent(this.nextWeek);
-
-  @override
-  List<Object> get props => [nextWeek];
-}
-
 class RemoveRecipeFromCalendarEvent extends RecipeCalendarEvent {
-  final String recipeName;
+  const RemoveRecipeFromCalendarEvent(this.recipeName);
 
-  RemoveRecipeFromCalendarEvent(this.recipeName);
+  final String recipeName;
 
   @override
   List<Object> get props => [recipeName];
 }
 
 class AddRecipeToCalendarEvent extends RecipeCalendarEvent {
+  const AddRecipeToCalendarEvent(this.date, this.recipeName);
+
   final DateTime date;
   final String recipeName;
-
-  AddRecipeToCalendarEvent(this.date, this.recipeName);
 
   @override
   List<Object> get props => [date, recipeName];

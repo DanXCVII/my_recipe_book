@@ -6,7 +6,6 @@ import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart'
     as RM;
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/tuple.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../local_storage/local_repository.dart';
 
@@ -15,193 +14,141 @@ part 'recipe_calendar_state.dart';
 
 class RecipeCalendarBloc
     extends Bloc<RecipeCalendarEvent, RecipeCalendarState> {
-  final RM.RecipeManagerBloc recipeManagerBloc;
-  final LocalRepository repository;
-  bool? isVertical;
-  late DateTime overviewSelectedDay;
-  DateTime? verticalSelectedWeek;
-  late StreamSubscription subscription;
-  SharedPreferences? prefs;
-
   RecipeCalendarBloc(this.recipeManagerBloc, this.repository)
-    : super(LoadingRecipeCalendar()) {
-    overviewSelectedDay = DateTime.now();
-    verticalSelectedWeek = DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day,
-    );
-    isVertical = false;
+    : selectedWeekStart = startOfWeek(DateTime.now()),
+      super(LoadingRecipeCalendar()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
-      if (state is LoadedRecipeCalendarOverview ||
-          state is LoadedRecipeCalendarVertical) {
-        if (rmState is RM.DeleteRecipeState) {
-          add(RemoveRecipeFromCalendarEvent(rmState.recipe.name));
-        } else if (rmState is RM.UpdateRecipeState) {
-          add(
-            UpdateRecipeEvent(
-              rmState.oldRecipe.name,
-              rmState.updatedRecipe.name,
-            ),
-          );
-        } else if (rmState is RM.UpdateCategoryState ||
-            rmState is RM.DeleteCategoryState ||
-            rmState is RM.UpdateRecipeTagState ||
-            rmState is RM.DeleteRecipeTagState) {
-          add(LoadRecipeCalendarEvent());
-        }
+      if (state is! LoadedRecipeCalendarWeek) return;
+      if (rmState is RM.DeleteRecipeState) {
+        add(RemoveRecipeFromCalendarEvent(rmState.recipe.name));
+      } else if (rmState is RM.UpdateRecipeState) {
+        add(
+          UpdateRecipeEvent(rmState.oldRecipe.name, rmState.updatedRecipe.name),
+        );
+      } else if (rmState is RM.UpdateCategoryState ||
+          rmState is RM.DeleteCategoryState ||
+          rmState is RM.UpdateRecipeTagState ||
+          rmState is RM.DeleteRecipeTagState) {
+        add(LoadRecipeCalendarEvent());
       }
     });
 
     on<LoadRecipeCalendarEvent>((event, emit) async {
       emit(LoadingRecipeCalendar());
-
-      prefs ??= await SharedPreferences.getInstance();
-      if (prefs!.containsKey("recipeCalendarIsVertical")) {
-        isVertical = prefs!.getBool("recipeCalendarIsVertical");
-      } else {
-        prefs!.setBool("recipeCalendarIsVertical", false);
-      }
-
-      emit(await _refreshCalendar());
+      await _emitRefresh(emit);
     });
 
-    on<UpdateRecipeEvent>((event, emit) async {
-      Map<DateTime, List<String>> recipeCalendar = await repository
-          .getRecipeCalendar();
-      // times, for which the recipe is added
-      List<DateTime> times = [];
-
-      for (DateTime time in recipeCalendar.keys) {
-        if (recipeCalendar[time]?.contains(event.oldRecipeName) ?? false) {
-          times.add(time);
-        }
-      }
-      add(RemoveRecipeFromCalendarEvent(event.oldRecipeName));
-
-      for (DateTime time in times) {
-        await repository.addRecipeToCalendar(time, event.newRecipeName);
-      }
-
-      emit(await _refreshCalendar());
+    on<ChangeCalendarWeek>((event, emit) async {
+      selectedWeekStart = selectedWeekStart.add(
+        Duration(days: event.deltaWeeks * 7),
+      );
+      await _emitRefresh(emit);
     });
 
-    on<ChangeSelectedDateEvent>((event, emit) async {
-      overviewSelectedDay = event.day;
-
-      // yep it unnesseserily releoads the events but this shouldn't be too cpu intensive..
-      emit(await _refreshCalendar());
+    on<GoToCurrentCalendarWeek>((event, emit) async {
+      selectedWeekStart = startOfWeek(DateTime.now());
+      await _emitRefresh(emit);
     });
 
     on<AddRecipeToCalendarEvent>((event, emit) async {
-      await repository.addRecipeToCalendar(event.date, event.recipeName);
+      try {
+        await repository.addRecipeToCalendar(event.date, event.recipeName);
+        await _emitRefresh(
+          emit,
+          addedRecipe: Tuple2(event.date, event.recipeName),
+        );
+      } catch (error) {
+        emit(FailedRecipeCalendar(error, selectedWeekStart));
+      }
+    });
 
-      emit(
-        await _refreshCalendar(
-          addedRecipe: Tuple2<DateTime, String>(event.date, event.recipeName),
-        ),
-      );
+    on<RemoveRecipeFromDateEvent>((event, emit) async {
+      try {
+        await repository.removeRecipeFromDateCalendar(
+          event.date,
+          event.recipeName,
+        );
+        await _emitRefresh(
+          emit,
+          removedRecipe: Tuple2(event.date, event.recipeName),
+        );
+      } catch (error) {
+        emit(FailedRecipeCalendar(error, selectedWeekStart));
+      }
     });
 
     on<RemoveRecipeFromCalendarEvent>((event, emit) async {
-      await repository.removeRecipeFromCalendar(event.recipeName);
-
-      emit(await _refreshCalendar());
-    });
-
-    on<ChangeRecipeCalendarViewEvent>((event, emit) async {
-      isVertical = event.showVerticalCalendar;
-      await prefs!.setBool(
-        "recipeCalendarIsVertical",
-        event.showVerticalCalendar,
-      );
-
-      emit(await _refreshCalendar());
-    });
-
-    on<ChangeSelectedTimeVerticalEvent>((event, emit) async {
-      if (event.nextWeek) {
-        verticalSelectedWeek = verticalSelectedWeek!.add(Duration(days: 7));
-      } else {
-        verticalSelectedWeek = verticalSelectedWeek!.subtract(
-          Duration(days: 7),
-        );
+      try {
+        await repository.removeRecipeFromCalendar(event.recipeName);
+        await _emitRefresh(emit);
+      } catch (error) {
+        emit(FailedRecipeCalendar(error, selectedWeekStart));
       }
+    });
 
-      emit(await _refreshCalendar());
+    on<UpdateRecipeEvent>((event, emit) async {
+      try {
+        final calendar = await repository.getRecipeCalendar();
+        final times = calendar.entries
+            .where((entry) => entry.value.contains(event.oldRecipeName))
+            .expand(
+              (entry) => List<DateTime>.filled(
+                entry.value.where((name) => name == event.oldRecipeName).length,
+                entry.key,
+              ),
+            )
+            .toList(growable: false);
+        await repository.removeRecipeFromCalendar(event.oldRecipeName);
+        for (final time in times) {
+          await repository.addRecipeToCalendar(time, event.newRecipeName);
+        }
+        await _emitRefresh(emit);
+      } catch (error) {
+        emit(FailedRecipeCalendar(error, selectedWeekStart));
+      }
     });
   }
 
-  @override
-  Future<void> close() {
-    subscription.cancel();
-    return super.close();
+  final RM.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
+  late DateTime selectedWeekStart;
+  late final StreamSubscription subscription;
+
+  static DateTime startOfWeek(DateTime value) {
+    final date = DateTime(value.year, value.month, value.day);
+    return date.subtract(Duration(days: date.weekday - DateTime.monday));
   }
 
-  // loads the calendar with the selected vertical state an
-  Future<RecipeCalendarState> _refreshCalendar({
+  Future<void> _emitRefresh(
+    Emitter<RecipeCalendarState> emit, {
     Tuple2<DateTime, String>? addedRecipe,
+    Tuple2<DateTime, String>? removedRecipe,
   }) async {
-    Map<DateTime, List<String>> recipeCalendar = await repository
-        .getRecipeCalendar();
-
-    if (isVertical == true) {
-      Map<DateTime, List<Tuple2<DateTime, Recipe>>> dateRecipes =
-          await getRecipesFromTo(verticalSelectedWeek, 7, recipeCalendar);
-
-      return LoadedRecipeCalendarVertical(
-        verticalSelectedWeek!,
-        7,
-        dateRecipes,
-        addedRecipe: addedRecipe,
+    try {
+      final calendar = await repository.getRecipeCalendar();
+      final recipes = await getRecipesFromTo(selectedWeekStart, 7, calendar);
+      emit(
+        LoadedRecipeCalendarWeek(
+          weekStart: selectedWeekStart,
+          recipes: recipes,
+          addedRecipe: addedRecipe,
+          removedRecipe: removedRecipe,
+        ),
       );
-    } else {
-      List<Tuple2<DateTime, Recipe>> currentDayRecipes =
-          await getRecipesFromDay(overviewSelectedDay, recipeCalendar);
-
-      return LoadedRecipeCalendarOverview(
-        removeTimeFromDateKey(recipeCalendar),
-        currentDayRecipes,
-        overviewSelectedDay,
-        addedRecipe: addedRecipe,
-      );
+    } catch (error) {
+      emit(FailedRecipeCalendar(error, selectedWeekStart));
     }
-  }
-
-  // creates a new map which has as keys a DateTime with only day-month-year without time
-  Map<DateTime, List<String>> removeTimeFromDateKey(
-    Map<DateTime, List<String>> events,
-  ) {
-    Map<DateTime, List<String>> eventsWithoutTime = {};
-    for (DateTime timeKey in events.keys) {
-      DateTime dateKeyClean = DateTime(
-        timeKey.year,
-        timeKey.month,
-        timeKey.day,
-      );
-      if (eventsWithoutTime.containsKey(dateKeyClean)) {
-        eventsWithoutTime[dateKeyClean]!.addAll(events[timeKey]!);
-      } else {
-        eventsWithoutTime[dateKeyClean] = events[timeKey] ?? [];
-      }
-    }
-    return eventsWithoutTime;
   }
 
   Future<Map<DateTime, List<Tuple2<DateTime, Recipe>>>> getRecipesFromTo(
-    DateTime? from,
+    DateTime from,
     int days,
     Map<DateTime, List<String>> recipeCalendar,
   ) async {
-    Map<DateTime, List<Tuple2<DateTime, Recipe>>> dateRecipes = {};
-    for (int i = 0; i < days; i++) {
-      DateTime selectedDateTime = from!.add(Duration(days: i));
-      dateRecipes.addAll({
-        selectedDateTime: await getRecipesFromDay(
-          selectedDateTime,
-          recipeCalendar,
-        ),
-      });
+    final dateRecipes = <DateTime, List<Tuple2<DateTime, Recipe>>>{};
+    for (var index = 0; index < days; index++) {
+      final date = from.add(Duration(days: index));
+      dateRecipes[date] = await getRecipesFromDay(date, recipeCalendar);
     }
     return dateRecipes;
   }
@@ -210,32 +157,29 @@ class RecipeCalendarBloc
     DateTime day,
     Map<DateTime, List<String>> recipeCalendar,
   ) async {
-    List<Tuple2<DateTime, Recipe>> dateRecipes = [];
-
-    List<DateTime> selectedKeys = [];
-    for (DateTime key in recipeCalendar.keys) {
-      String dateString = key.toIso8601String();
-      String dateBegin =
-          "${day.year}-${day.month < 10 ? "0" : ""}${day.month}-${day.day < 10 ? "0" : ""}${day.day}";
-      if (dateString.startsWith(dateBegin)) {
-        selectedKeys.add(key);
+    final keys =
+        recipeCalendar.keys
+            .where(
+              (key) =>
+                  key.year == day.year &&
+                  key.month == day.month &&
+                  key.day == day.day,
+            )
+            .toList()
+          ..sort();
+    final result = <Tuple2<DateTime, Recipe>>[];
+    for (final key in keys) {
+      for (final recipeName in recipeCalendar[key]!) {
+        final recipe = await repository.getRecipeByName(recipeName);
+        if (recipe != null) result.add(Tuple2(key, recipe));
       }
     }
+    return result;
+  }
 
-    selectedKeys.sort();
-    for (int i = 0; i < selectedKeys.length; i++) {
-      for (String recipeName in recipeCalendar[selectedKeys[i]]!) {
-        if (await repository.doesRecipeExist(recipeName)) {
-          dateRecipes.add(
-            Tuple2<DateTime, Recipe>(
-              selectedKeys[i],
-              (await repository.getRecipeByName(recipeName))!,
-            ),
-          );
-        }
-      }
-    }
-
-    return dateRecipes;
+  @override
+  Future<void> close() {
+    subscription.cancel();
+    return super.close();
   }
 }

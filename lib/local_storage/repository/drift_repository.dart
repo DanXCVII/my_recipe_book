@@ -3,6 +3,7 @@ import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
 import '../../models/recipe_sort.dart';
 import '../../models/shopping_cart_data.dart';
+import '../../models/shopping_cart_recipe_addition.dart';
 import '../../models/string_int_tuple.dart';
 import '../../models/tuple.dart';
 import '../database.dart';
@@ -236,6 +237,10 @@ class DriftRepository implements LocalRepository {
     List<Ingredient> values, {
     double? servings,
   }) => _cart.addMultipleIngredientsToCart(name, values, servings: servings);
+  @override
+  Future<void> mergeRecipeIngredientsToCart(
+    List<ShoppingCartRecipeAddition> additions,
+  ) => _cart.mergeRecipeIngredientsToCart(additions);
   @override
   Future<void> addSingleIngredientToCart(String name, Ingredient value) =>
       _cart.addSingleIngredientToCart(name, value);

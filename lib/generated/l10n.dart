@@ -2380,10 +2380,10 @@ class S {
     );
   }
 
-  /// `mealplaner`
+  /// `Meal planner`
   String get recipe_planer {
     return Intl.message(
-      'mealplaner',
+      'Meal planner',
       name: 'recipe_planer',
       desc: '',
       args: [],
@@ -3432,6 +3432,246 @@ class S {
       name: 'editor_nutrition',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Plan recipe`
+  String get calendar_plan_recipe {
+    return Intl.message(
+      'Plan recipe',
+      name: 'calendar_plan_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This week`
+  String get calendar_this_week {
+    return Intl.message(
+      'This week',
+      name: 'calendar_this_week',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Previous week`
+  String get calendar_previous_week {
+    return Intl.message(
+      'Previous week',
+      name: 'calendar_previous_week',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Next week`
+  String get calendar_next_week {
+    return Intl.message(
+      'Next week',
+      name: 'calendar_next_week',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =0{No meals} =1{1 meal} other{{count} meals}}`
+  String calendar_meal_count(int count) {
+    return Intl.plural(
+      count,
+      zero: 'No meals',
+      one: '1 meal',
+      other: '$count meals',
+      name: 'calendar_meal_count',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Nothing planned yet`
+  String get calendar_empty_day {
+    return Intl.message(
+      'Nothing planned yet',
+      name: 'calendar_empty_day',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add a recipe for {day}`
+  String calendar_add_for_day(String day) {
+    return Intl.message(
+      'Add a recipe for $day',
+      name: 'calendar_add_for_day',
+      desc: '',
+      args: [day],
+    );
+  }
+
+  /// `More actions for {recipe}`
+  String calendar_more_actions(String recipe) {
+    return Intl.message(
+      'More actions for $recipe',
+      name: 'calendar_more_actions',
+      desc: '',
+      args: [recipe],
+    );
+  }
+
+  /// `Remove from plan`
+  String get calendar_remove_from_plan {
+    return Intl.message(
+      'Remove from plan',
+      name: 'calendar_remove_from_plan',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{recipe} removed from the plan`
+  String calendar_removed(String recipe) {
+    return Intl.message(
+      '$recipe removed from the plan',
+      name: 'calendar_removed',
+      desc: '',
+      args: [recipe],
+    );
+  }
+
+  /// `Your meal plan could not be loaded`
+  String get calendar_load_failed {
+    return Intl.message(
+      'Your meal plan could not be loaded',
+      name: 'calendar_load_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check your storage and try again.`
+  String get calendar_load_failed_description {
+    return Intl.message(
+      'Check your storage and try again.',
+      name: 'calendar_load_failed_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{recipes, plural, =1{1 recipe} other{{recipes} recipes}} · {ingredients, plural, =1{1 ingredient line} other{{ingredients} ingredient lines}}`
+  String calendar_export_summary(int recipes, int ingredients) {
+    return Intl.message(
+      '${Intl.plural(recipes, one: '1 recipe', other: '$recipes recipes')} · ${Intl.plural(ingredients, one: '1 ingredient line', other: '$ingredients ingredient lines')}',
+      name: 'calendar_export_summary',
+      desc: '',
+      args: [recipes, ingredients],
+    );
+  }
+
+  /// `Review & export`
+  String get calendar_review_export {
+    return Intl.message(
+      'Review & export',
+      name: 'calendar_review_export',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Review shopping list`
+  String get calendar_review_title {
+    return Intl.message(
+      'Review shopping list',
+      name: 'calendar_review_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Adjust servings and unselect anything you already have.`
+  String get calendar_review_description {
+    return Intl.message(
+      'Adjust servings and unselect anything you already have.',
+      name: 'calendar_review_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =1{Planned once} other{Planned {count} times}}`
+  String calendar_planned_count(int count) {
+    return Intl.plural(
+      count,
+      one: 'Planned once',
+      other: 'Planned $count times',
+      name: 'calendar_planned_count',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Servings not specified`
+  String get calendar_servings_not_set {
+    return Intl.message(
+      'Servings not specified',
+      name: 'calendar_servings_not_set',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =0{No ingredients selected} =1{1 ingredient selected} other{{count} ingredients selected}}`
+  String calendar_selected_count(int count) {
+    return Intl.plural(
+      count,
+      zero: 'No ingredients selected',
+      one: '1 ingredient selected',
+      other: '$count ingredients selected',
+      name: 'calendar_selected_count',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Add selected`
+  String get calendar_add_selected {
+    return Intl.message(
+      'Add selected',
+      name: 'calendar_add_selected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =1{1 ingredient line added} other{{count} ingredient lines added}}`
+  String calendar_export_success(int count) {
+    return Intl.plural(
+      count,
+      one: '1 ingredient line added',
+      other: '$count ingredient lines added',
+      name: 'calendar_export_success',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `This week has no ingredients to export`
+  String get calendar_no_exportable {
+    return Intl.message(
+      'This week has no ingredients to export',
+      name: 'calendar_no_exportable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select ingredients for {recipe}`
+  String calendar_select_recipe_ingredients(String recipe) {
+    return Intl.message(
+      'Select ingredients for $recipe',
+      name: 'calendar_select_recipe_ingredients',
+      desc: '',
+      args: [recipe],
     );
   }
 }

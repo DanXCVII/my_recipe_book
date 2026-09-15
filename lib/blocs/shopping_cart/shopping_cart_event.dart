@@ -23,6 +23,15 @@ class CleanAddIngredients extends ShoppingCartEvent {
       'Add ingredients { ingrdients: $ingredients, recipeName: $recipeName }';
 }
 
+class MergeShoppingCartRecipes extends ShoppingCartEvent {
+  final List<ShoppingCartRecipeAddition> additions;
+
+  const MergeShoppingCartRecipes(this.additions);
+
+  @override
+  List<Object> get props => [additions];
+}
+
 class AddShoppingCartIngredient extends ShoppingCartEvent {
   final Ingredient ingredient;
 

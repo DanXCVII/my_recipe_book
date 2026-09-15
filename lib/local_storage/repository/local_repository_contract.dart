@@ -3,6 +3,7 @@ import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
 import '../../models/recipe_sort.dart';
 import '../../models/shopping_cart_data.dart';
+import '../../models/shopping_cart_recipe_addition.dart';
 import '../../models/string_int_tuple.dart';
 import '../../models/tuple.dart';
 
@@ -90,6 +91,9 @@ abstract interface class LocalRepository {
     List<Ingredient> ingredients, {
     double? servings,
   });
+  Future<void> mergeRecipeIngredientsToCart(
+    List<ShoppingCartRecipeAddition> additions,
+  );
   Future<void> addSingleIngredientToCart(
     String recipeName,
     Ingredient ingredient,

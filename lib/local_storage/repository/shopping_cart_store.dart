@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
 import '../../models/shopping_cart_data.dart';
+import '../../models/shopping_cart_recipe_addition.dart';
 import '../database.dart';
 import 'drift_repository_context.dart';
 import 'local_repository_contract.dart';
@@ -54,6 +55,52 @@ class ShoppingCartStore {
     }
     await _persistCartCache();
   }
+
+  Future<void> mergeRecipeIngredientsToCart(
+    List<ShoppingCartRecipeAddition> additions,
+  ) async {
+    final before = _copyCart();
+    try {
+      for (final addition in additions.where(
+        (addition) => addition.ingredients.isNotEmpty,
+      )) {
+        final existing = _cart[addition.recipeName];
+        double? existingServings = existing?.currentServings;
+        if (existing != null && existingServings == null) {
+          existingServings = (await _recipeByName(addition.recipeName))
+              ?.servings;
+        }
+        for (final ingredient in addition.ingredients) {
+          _addCartIngredient(shoppingSummaryName, ingredient);
+          _addCartIngredient(addition.recipeName, ingredient);
+        }
+        final source = _cart[addition.recipeName]!;
+        if (existing == null) {
+          source.currentServings = addition.servings;
+        } else if (existingServings != null && addition.servings != null) {
+          source.currentServings = existingServings + addition.servings!;
+        } else {
+          source.currentServings = null;
+        }
+      }
+      await _persistCartCache();
+    } catch (_) {
+      _cart = before;
+      rethrow;
+    }
+  }
+
+  Map<String, ShoppingCartSource> _copyCart() => {
+    for (final entry in _cart.entries)
+      entry.key: ShoppingCartSource(
+        entry.value.key,
+        entry.value.displayName,
+        List<CheckableIngredient>.from(entry.value.items),
+        isSummary: entry.value.isSummary,
+        position: entry.value.position,
+        currentServings: entry.value.currentServings,
+      ),
+  };
 
   Future<void> addSingleIngredientToCart(
     String recipeName,

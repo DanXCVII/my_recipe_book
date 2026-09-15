@@ -720,13 +720,8 @@ class RecipePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<RecipeCalendarBloc, RecipeCalendarState>(
       listener: (context, state) {
-        Tuple2<DateTime, String>? addedRecipe;
-
-        if (state is LoadedRecipeCalendarOverview) {
-          addedRecipe = state.addedRecipe;
-        } else if (state is LoadedRecipeCalendarVertical) {
-          addedRecipe = state.addedRecipe;
-        }
+        final Tuple2<DateTime, String>? addedRecipe =
+            state is LoadedRecipeCalendarWeek ? state.addedRecipe : null;
         if (addedRecipe != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -745,7 +740,7 @@ class RecipePage extends StatelessWidget {
                 onPressed: () {
                   BlocProvider.of<RecipeCalendarBloc>(context).add(
                     RemoveRecipeFromDateEvent(
-                      addedRecipe!.item1,
+                      addedRecipe.item1,
                       addedRecipe.item2,
                     ),
                   );

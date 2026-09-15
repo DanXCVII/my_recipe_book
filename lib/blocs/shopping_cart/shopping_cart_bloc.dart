@@ -10,6 +10,7 @@ import '../../local_storage/local_repository.dart';
 import '../../models/ingredient.dart';
 import '../../models/recipe.dart';
 import '../../models/shopping_cart_data.dart';
+import '../../models/shopping_cart_recipe_addition.dart';
 
 part 'shopping_cart_event.dart';
 part 'shopping_cart_state.dart';
@@ -55,6 +56,15 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
           event.ingredients,
         );
 
+        emit(LoadedShoppingCart(await repository.getShoppingCartData()));
+      } catch (_) {
+        emit(await _actionFailure(ShoppingCartActionError.add));
+      }
+    });
+
+    on<MergeShoppingCartRecipes>((event, emit) async {
+      try {
+        await repository.mergeRecipeIngredientsToCart(event.additions);
         emit(LoadedShoppingCart(await repository.getShoppingCartData()));
       } catch (_) {
         emit(await _actionFailure(ShoppingCartActionError.add));
