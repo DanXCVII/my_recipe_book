@@ -29,7 +29,7 @@ The product is primarily used on Android phones, including in bright kitchen con
 - Recipes expose name, image, total time, effort, dietary type, tags, favorite state, and ingredients.
 - English and German localization are supported.
 - Light, dark, and OLED themes must remain supported.
-- The Culinary Editorial redesign covers the pushed recipe-overview surface, weekly planner, and phone shopping-list surface; the home shell, wide-screen floating containers, and unrelated screens retain their current behavior.
+- The Culinary Editorial redesign covers the pushed recipe overview, recipe detail, recipe editor, weekly planner, and phone shopping-list surfaces; the home shell, wide-screen floating containers, and unrelated screens retain their current behavior.
 
 ## Brand Commitments
 
@@ -37,6 +37,7 @@ The product is primarily used on Android phones, including in bright kitchen con
 - The recipe overview adopts the user-supplied Culinary Editorial reference.
 - `stitch_modern_recipe_app_design/code.html` is authoritative for typography, weights, component styling, spacing, and interaction details.
 - `stitch_modern_recipe_app_design/screen.png` is authoritative for composition, density, hierarchy, and overall appearance except where its font rendering conflicts with the HTML.
+- The recipe detail adopts the user-supplied `recipe_screen/` reference while preserving My RecipeBible data and actions; mock-only author, public-review, guided-cook, and timer concepts are excluded.
 - The shopping-list adaptation preserves My RecipeBible navigation and real cart data; aisle, pantry-inventory, store-ordering, and Simmer-specific concepts from the reference are intentionally excluded.
 - The weekly planner adapts the user-supplied `calendar_view/` reference while preserving My RecipeBible navigation, ads, real calendar data, and the existing add, remove, recipe-detail, and cart workflows.
 

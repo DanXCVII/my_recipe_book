@@ -1,32 +1,20 @@
 import 'dart:io';
 
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../ad_related/ad.dart';
-import '../constants/global_settings.dart';
-import 'clipper.dart';
-
 import 'package:transparent_image/transparent_image.dart';
 
+import '../ad_related/ad.dart';
 import '../blocs/animated_stepper/animated_stepper_bloc.dart';
 import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
+import '../constants/global_settings.dart';
+import '../generated/l10n.dart';
 import '../models/ingredient.dart';
 import 'culinary_editorial_theme.dart';
 import 'gallery_view.dart';
 
 class AnimatedStepper extends StatelessWidget {
-  final List<String> steps;
-  final List<String>? stepTitles;
-  final String? fontFamily;
-  // if losResStepImages are provided, also stepImages must be provided
-  final List<List<String>>? lowResStepImages;
-  final List<List<String>>? stepImages;
-  final List<List<Ingredient>> ingredients;
-  final List<List<String>> stepIngredientIds;
-
-  AnimatedStepper(
+  const AnimatedStepper(
     this.steps,
     this.stepTitles, {
     this.stepImages,
@@ -34,307 +22,312 @@ class AnimatedStepper extends StatelessWidget {
     this.lowResStepImages,
     this.ingredients = const [],
     this.stepIngredientIds = const [],
-    Key? key,
-  }) : super(key: key) {
-    if (stepTitles != null && stepTitles!.length > steps.length) {
-      for (int i = steps.length; i < stepTitles!.length; i++) {
-        stepTitles!.removeLast();
-      }
-    }
-  }
+    super.key,
+  });
+
+  final List<String> steps;
+  final List<String>? stepTitles;
+  final String? fontFamily;
+  final List<List<String>>? lowResStepImages;
+  final List<List<String>>? stepImages;
+  final List<List<Ingredient>> ingredients;
+  final List<List<String>> stepIngredientIds;
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: _getStepsWithTitle(stepTitles, steps));
-  }
-
-  List<Widget> _getStepsWithTitle(
-    List<String>? stepTitles,
-    List<String> selectedSteps,
-  ) {
-    if (stepTitles == null) {
-      return _getSteps(selectedSteps, 0);
-    }
-
-    List<Widget> fullList = [];
-    for (int i = 0; i < stepTitles.length; i++) {
-      if (i == 0 || stepTitles[i] != "") {
-        int nextTitleIndex = stepTitles.length;
-        if (i + 1 < stepTitles.length) {
-          String? nextTitle = stepTitles
-              .sublist(i + 1)
-              .firstWhereOrNull((e) => e != "");
-          if (nextTitle == null) {
-            nextTitleIndex = stepTitles.length;
-          } else {
-            nextTitleIndex =
-                stepTitles.sublist(i + 1).indexOf(nextTitle) + i + 1;
-          }
-        }
-        if (stepTitles[i] != "") {
-          fullList.add(
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ClipPath(
-                    clipper: LeftArrow(),
-                    child: Container(
-                      height: 17,
-                      width: 25,
-                      color: Colors.amberAccent[700],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Container(
-                      child: Text(
-                        stepTitles[i],
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: "Questrial",
-                        ),
-                      ),
-                    ),
-                  ),
-                  ClipPath(
-                    clipper: RightArrow(),
-                    child: Container(
-                      height: 17,
-                      width: 25,
-                      color: Colors.amberAccent[700],
-                    ),
-                  ),
-                ],
+    final palette = CulinaryEditorialPalette.of(context);
+    if (steps.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: palette.surfaceContainer,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          children: [
+            Icon(Icons.menu_book_outlined, color: palette.onSurfaceVariant),
+            const SizedBox(height: 8),
+            Text(
+              S.maybeOf(context)?.recipe_instructions_empty ??
+                  'This recipe has no instructions yet.',
+              textAlign: TextAlign.center,
+              style: CulinaryEditorialType.body(
+                palette,
+                color: palette.onSurfaceVariant,
               ),
             ),
-          );
-        }
-        fullList.addAll(_getSteps(selectedSteps.sublist(i, nextTitleIndex), i));
-      }
+          ],
+        ),
+      );
     }
-    return fullList;
+    return BlocBuilder<AnimatedStepperBloc, AnimatedStepperState>(
+      builder: (context, state) {
+        final selected = state is SelectedStep ? state.selectedStep : null;
+        return Column(
+          children: List.generate(
+            steps.length,
+            (index) => Padding(
+              padding: EdgeInsets.only(
+                bottom: index == steps.length - 1 ? 0 : 14,
+              ),
+              child: _TimelineCard(
+                index: index,
+                title: index < (stepTitles?.length ?? 0)
+                    ? stepTitles![index]
+                    : '',
+                description: steps[index],
+                isSelected: selected == index,
+                previewImages: _imagesAt(lowResStepImages, index),
+                fullImages: _imagesAt(stepImages, index),
+                allStepImages: stepImages ?? const [],
+                allDescriptions: steps,
+                ingredients: ingredients,
+                assignedIngredientIds: index < stepIngredientIds.length
+                    ? stepIngredientIds[index]
+                    : const [],
+                onPressed: () =>
+                    context.read<AnimatedStepperBloc>().add(ChangeStep(index)),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
-  List<Widget> _getSteps(List<String> selectedSteps, int globalIndex) {
-    return List<Widget>.generate(
-      selectedSteps.length,
-      (index) => BlocBuilder<AnimatedStepperBloc, AnimatedStepperState>(
-        builder: (context, state) {
-          if (state is SelectedStep) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: InkWell(
-                onTap: () {
-                  BlocProvider.of<AnimatedStepperBloc>(context)
-                      .add(ChangeStep(globalIndex + index));
-                },
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  color: Color.fromRGBO(
-                    0,
-                    0,
-                    0,
-                    state.selectedStep == index + globalIndex ? 0.5 : 0,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 12, right: 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 5, 12, 12),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 0, top: 20),
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 200),
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(2, 2),
-                                    blurRadius: 3,
-                                    spreadRadius: 1,
-                                    color: Colors.black26,
-                                  ),
-                                ],
+  static List<String> _imagesAt(List<List<String>>? values, int index) {
+    if (values == null || index >= values.length) return const [];
+    return values[index];
+  }
+}
 
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors:
-                                      state.selectedStep == index + globalIndex
-                                      ? [Color(0xffBE4400), Color(0xffFF7A00)]
-                                      : [
-                                          Color(0xff933500),
-                                          Color(0xff933500)
-                                              .withAlpha((0.3 * 255).round()),
-                                        ],
-                                ),
-                                // color: stepsColors[i % (stepsColors.length)],
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "${globalIndex + index + 1}.",
-                                  style: TextStyle(
-                                    color:
-                                        state.selectedStep ==
-                                            index + globalIndex
-                                        ? Color(0xff4F3D00)
-                                        : Colors.amber,
-                                    fontSize: globalIndex + index > 8 ? 32 : 42,
-                                    fontFamily: "Quando",
-                                  ),
-                                ),
+class _TimelineCard extends StatelessWidget {
+  const _TimelineCard({
+    required this.index,
+    required this.title,
+    required this.description,
+    required this.isSelected,
+    required this.previewImages,
+    required this.fullImages,
+    required this.allStepImages,
+    required this.allDescriptions,
+    required this.ingredients,
+    required this.assignedIngredientIds,
+    required this.onPressed,
+  });
+
+  final int index;
+  final String title;
+  final String description;
+  final bool isSelected;
+  final List<String> previewImages;
+  final List<String> fullImages;
+  final List<List<String>> allStepImages;
+  final List<String> allDescriptions;
+  final List<List<Ingredient>> ingredients;
+  final List<String> assignedIngredientIds;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label:
+          S.maybeOf(context)?.instruction_number(index + 1) ??
+          'Instruction ${index + 1}',
+      child: Material(
+        color: isSelected ? palette.primarySoft : palette.surface,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          key: Key('recipe-instruction-$index'),
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(14),
+          child: AnimatedContainer(
+            duration: GlobalSettings().animationsEnabled()
+                ? const Duration(milliseconds: 220)
+                : Duration.zero,
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: palette.shadow,
+                  blurRadius: isSelected ? 18 : 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 42,
+                      child: Text(
+                        '${index + 1}'.padLeft(2, '0'),
+                        style:
+                            CulinaryEditorialType.headline(
+                              palette,
+                              size: 25,
+                              weight: FontWeight.w600,
+                            ).copyWith(
+                              color: isSelected
+                                  ? palette.primary
+                                  : palette.outline.withValues(alpha: .7),
+                            ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (title.trim().isNotEmpty) ...[
+                            Text(
+                              title,
+                              style: CulinaryEditorialType.body(
+                                palette,
+                                size: 14,
+                                weight: FontWeight.w700,
                               ),
                             ),
+                            const SizedBox(height: 6),
+                          ],
+                          Text(
+                            description,
+                            style: CulinaryEditorialType.body(
+                              palette,
+                              size: 14,
+                              color: palette.onSurfaceVariant,
+                              height: 1.5,
+                            ),
                           ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                _AssignedIngredients(
+                  ingredients: ingredients,
+                  assignedIngredientIds: assignedIngredientIds,
+                ),
+                if (previewImages.isNotEmpty || fullImages.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  _StepImages(
+                    stepIndex: index,
+                    previewImages: previewImages,
+                    fullImages: fullImages,
+                    allStepImages: allStepImages,
+                    allDescriptions: allDescriptions,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StepImages extends StatelessWidget {
+  const _StepImages({
+    required this.stepIndex,
+    required this.previewImages,
+    required this.fullImages,
+    required this.allStepImages,
+    required this.allDescriptions,
+  });
+
+  final int stepIndex;
+  final List<String> previewImages;
+  final List<String> fullImages;
+  final List<List<String>> allStepImages;
+  final List<String> allDescriptions;
+
+  @override
+  Widget build(BuildContext context) {
+    final images = previewImages.isNotEmpty ? previewImages : fullImages;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = images.length == 1
+            ? constraints.maxWidth
+            : (constraints.maxWidth - 8) / 2;
+        return Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: List.generate(images.length, (imageIndex) {
+            return SizedBox(
+              width: width,
+              child: AspectRatio(
+                aspectRatio: images.length == 1 ? 16 / 9 : 4 / 3,
+                child: Material(
+                  color: CulinaryEditorialPalette.of(context).surfaceContainer,
+                  borderRadius: BorderRadius.circular(10),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () =>
+                        _showStepFullView(context, stepIndex, imageIndex),
+                    child: Hero(
+                      tag: GlobalSettings().animationsEnabled()
+                          ? 'recipe-step-$stepIndex-$imageIndex'
+                          : 'recipe-step-static-$stepIndex-$imageIndex',
+                      child: FadeInImage(
+                        fadeInDuration: const Duration(milliseconds: 120),
+                        placeholder: MemoryImage(kTransparentImage),
+                        image: FileImage(File(images[imageIndex])),
+                        fit: BoxFit.cover,
+                        imageErrorBuilder: (_, __, ___) => const Center(
+                          child: Icon(Icons.broken_image_outlined),
                         ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () {
-                                  BlocProvider.of<AnimatedStepperBloc>(context)
-                                      .add(ChangeStep(index + globalIndex));
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.only(top: 15),
-                                  child: Text(
-                                    selectedSteps[index],
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontFamily: fontFamily,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              _AssignedIngredients(
-                                stepIndex: index + globalIndex,
-                                ingredients: ingredients,
-                                stepIngredientIds: stepIngredientIds,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 12.0),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width - 90,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Wrap(
-                                      runSpacing: 10,
-                                      spacing: 10,
-                                      children: List<Widget>.generate(
-                                        lowResStepImages == null
-                                            ? stepImages![index + globalIndex]
-                                                  .length
-                                            : lowResStepImages![index +
-                                                      globalIndex]
-                                                  .length,
-                                        (wrapIndex) => GestureDetector(
-                                          onTap: () {
-                                            _showStepFullView(
-                                              stepImages!,
-                                              steps,
-                                              index + globalIndex,
-                                              wrapIndex,
-                                              context,
-                                            );
-                                          },
-                                          child: Hero(
-                                            tag:
-                                                GlobalSettings()
-                                                    .animationsEnabled()
-                                                ? "Schritt$index:$wrapIndex"
-                                                : "Schritt$index:${wrapIndex}3",
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(10),
-                                              ),
-                                              child: Container(
-                                                width: 100,
-                                                height: 80,
-                                                child: FadeInImage(
-                                                  fadeInDuration: Duration(
-                                                    milliseconds: 100,
-                                                  ),
-                                                  placeholder: MemoryImage(
-                                                    kTransparentImage,
-                                                  ),
-                                                  image: FileImage(
-                                                    File(
-                                                      lowResStepImages == null
-                                                          ? stepImages![index +
-                                                                globalIndex][wrapIndex]
-                                                          : lowResStepImages![index +
-                                                                globalIndex][wrapIndex],
-                                                    ),
-                                                  ),
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
             );
-          } else {
-            return Text(state.toString());
-          }
-        },
-      ),
+          }),
+        );
+      },
     );
   }
 
   void _showStepFullView(
-    List<List<String>> stepImages,
-    List<String> description,
-    int stepNumber,
-    int imageNumber,
     BuildContext context,
+    int selectedStep,
+    int selectedImage,
   ) {
-    List<String> flatStepImages = [];
-    List<String> imageDescription = [];
-    List<String> heroTags = [];
-    int imageIndex = 0;
-    for (int i = 0; i < stepImages.length; i++) {
-      if (i < stepNumber) imageIndex += stepImages[i].length;
-      for (int j = 0; j < stepImages[i].length; j++) {
-        imageDescription.add(description[i]);
-        flatStepImages.add(stepImages[i][j]);
-        heroTags.add("Schritt$i:$j");
+    final flatImages = <String>[];
+    final descriptions = <String>[];
+    final heroTags = <String>[];
+    var initialIndex = 0;
+    for (var step = 0; step < allStepImages.length; step++) {
+      if (step < selectedStep) initialIndex += allStepImages[step].length;
+      for (var image = 0; image < allStepImages[step].length; image++) {
+        flatImages.add(allStepImages[step][image]);
+        descriptions.add(
+          step < allDescriptions.length ? allDescriptions[step] : '',
+        );
+        heroTags.add('recipe-step-$step-$image');
       }
     }
-    imageIndex += imageNumber;
-
+    if (flatImages.isEmpty) return;
+    initialIndex += selectedImage;
     Ads.showBottomBannerAd();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => Ads().getAdPage(
           GalleryPhotoView(
-            initialIndex: imageIndex,
-            galleryImagePaths: flatStepImages,
-            descriptions: imageDescription,
+            initialIndex: initialIndex,
+            galleryImagePaths: flatImages,
+            descriptions: descriptions,
             heroTags: heroTags,
           ),
           context,
@@ -346,21 +339,16 @@ class AnimatedStepper extends StatelessWidget {
 
 class _AssignedIngredients extends StatelessWidget {
   const _AssignedIngredients({
-    required this.stepIndex,
     required this.ingredients,
-    required this.stepIngredientIds,
+    required this.assignedIngredientIds,
   });
 
-  final int stepIndex;
   final List<List<Ingredient>> ingredients;
-  final List<List<String>> stepIngredientIds;
+  final List<String> assignedIngredientIds;
 
   @override
   Widget build(BuildContext context) {
-    if (stepIndex >= stepIngredientIds.length ||
-        stepIngredientIds[stepIndex].isEmpty) {
-      return const SizedBox.shrink();
-    }
+    if (assignedIngredientIds.isEmpty) return const SizedBox.shrink();
     return BlocBuilder<
       RecipeScreenIngredientsBloc,
       RecipeScreenIngredientsState
@@ -371,25 +359,16 @@ class _AssignedIngredients extends StatelessWidget {
             ? state.ingredients
             : const <List<CheckableIngredient>>[];
         final labels = <String>[];
-        for (
-          var sectionIndex = 0;
-          sectionIndex < ingredients.length;
-          sectionIndex++
-        ) {
-          for (
-            var ingredientIndex = 0;
-            ingredientIndex < ingredients[sectionIndex].length;
-            ingredientIndex++
-          ) {
-            final original = ingredients[sectionIndex][ingredientIndex];
+        for (var section = 0; section < ingredients.length; section++) {
+          for (var index = 0; index < ingredients[section].length; index++) {
+            final original = ingredients[section][index];
             if (original.id == null ||
-                !stepIngredientIds[stepIndex].contains(original.id)) {
+                !assignedIngredientIds.contains(original.id)) {
               continue;
             }
             final display =
-                sectionIndex < scaled.length &&
-                    ingredientIndex < scaled[sectionIndex].length
-                ? scaled[sectionIndex][ingredientIndex]
+                section < scaled.length && index < scaled[section].length
+                ? scaled[section][index]
                 : CheckableIngredient(
                     original.name,
                     original.amount,
@@ -401,35 +380,49 @@ class _AssignedIngredients extends StatelessWidget {
         }
         if (labels.isEmpty) return const SizedBox.shrink();
         return Padding(
-          padding: const EdgeInsets.only(top: 12),
-          child: Wrap(
-            spacing: 7,
-            runSpacing: 7,
-            children: labels
-                .map(
-                  (label) => Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: palette.tertiarySoft,
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                        color: palette.tertiary.withValues(alpha: .55),
+          padding: const EdgeInsets.only(top: 14, left: 50),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                S.maybeOf(context)?.ingredients_for_step ??
+                    'Ingredients for this step',
+                style: CulinaryEditorialType.body(
+                  palette,
+                  size: 11,
+                  weight: FontWeight.w700,
+                  color: palette.tertiary,
+                  letterSpacing: .55,
+                ),
+              ),
+              const SizedBox(height: 7),
+              Wrap(
+                spacing: 7,
+                runSpacing: 7,
+                children: labels
+                    .map(
+                      (label) => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 7,
+                        ),
+                        decoration: BoxDecoration(
+                          color: palette.tertiarySoft,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          label,
+                          style: CulinaryEditorialType.body(
+                            palette,
+                            size: 12,
+                            weight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      label,
-                      style: CulinaryEditorialType.body(
-                        palette,
-                        size: 13,
-                        weight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
+                    )
+                    .toList(),
+              ),
+            ],
           ),
         );
       },

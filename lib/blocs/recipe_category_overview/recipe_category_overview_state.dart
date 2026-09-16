@@ -6,6 +6,12 @@ abstract class RecipeCategoryOverviewState {
 
 class LoadingRecipeCategoryOverviewState extends RecipeCategoryOverviewState {}
 
+class FailedRecipeCategoryOverviewState extends RecipeCategoryOverviewState {
+  final Object error;
+
+  const FailedRecipeCategoryOverviewState(this.error);
+}
+
 class LoadedRecipeCategoryOverview extends RecipeCategoryOverviewState {
   // Not a map because the oder may change
   final List<Tuple2<String, List<Recipe>>> rCategoryOverview;

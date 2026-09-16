@@ -37,7 +37,7 @@ class EditorialEditorShell extends StatelessWidget {
     final palette = CulinaryEditorialPalette.of(context);
     final lightSystemIcons = Theme.of(context).brightness == Brightness.dark;
     return Theme(
-      data: _editorTheme(Theme.of(context), palette),
+      data: culinaryEditorialTheme(Theme.of(context), palette),
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
@@ -166,70 +166,6 @@ class EditorialEditorShell extends StatelessWidget {
       ),
     );
   }
-}
-
-ThemeData _editorTheme(ThemeData base, CulinaryEditorialPalette palette) {
-  final bodyText = base.textTheme.apply(
-    fontFamily: CulinaryEditorialType.bodyFamily,
-    bodyColor: palette.onSurface,
-    displayColor: palette.onSurface,
-  );
-  return base.copyWith(
-    scaffoldBackgroundColor: palette.background,
-    colorScheme: base.colorScheme.copyWith(
-      primary: palette.primary,
-      onPrimary: palette.onPrimary,
-      secondary: palette.secondary,
-      surface: palette.surface,
-      onSurface: palette.onSurface,
-      outline: palette.outline,
-    ),
-    textTheme: bodyText.copyWith(
-      displayLarge: bodyText.displayLarge?.copyWith(
-        fontFamily: CulinaryEditorialType.headlineFamily,
-      ),
-      displayMedium: bodyText.displayMedium?.copyWith(
-        fontFamily: CulinaryEditorialType.headlineFamily,
-      ),
-      headlineLarge: bodyText.headlineLarge?.copyWith(
-        fontFamily: CulinaryEditorialType.headlineFamily,
-      ),
-      headlineMedium: bodyText.headlineMedium?.copyWith(
-        fontFamily: CulinaryEditorialType.headlineFamily,
-      ),
-      headlineSmall: bodyText.headlineSmall?.copyWith(
-        fontFamily: CulinaryEditorialType.headlineFamily,
-      ),
-      titleLarge: bodyText.titleLarge?.copyWith(
-        fontFamily: CulinaryEditorialType.headlineFamily,
-      ),
-    ),
-    inputDecorationTheme: base.inputDecorationTheme.copyWith(
-      filled: true,
-      fillColor: palette.surfaceContainer,
-      labelStyle: CulinaryEditorialType.body(
-        palette,
-        size: 14,
-        color: palette.onSurfaceVariant,
-      ),
-      hintStyle: CulinaryEditorialType.body(
-        palette,
-        size: 14,
-        color: palette.onSurfaceVariant.withValues(alpha: .78),
-      ),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: palette.outline.withValues(alpha: .45)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: palette.primary, width: 2),
-      ),
-    ),
-    iconTheme: base.iconTheme.copyWith(color: palette.onSurfaceVariant),
-    dividerColor: palette.outline.withValues(alpha: .22),
-  );
 }
 
 class _EditorHeader extends StatelessWidget {

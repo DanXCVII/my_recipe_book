@@ -313,10 +313,16 @@ void main() {
       expect(repository.isRecipeFavorite('Soup'), isTrue);
       expect((await repository.getFavoriteRecipes()).single.name, 'Soup');
 
-      final renamed = first.copyWith(name: 'Stew', categories: const []);
+      final renamed = first.copyWith(
+        name: 'Stew',
+        categories: const [],
+        tags: const [],
+      );
       await repository.modifyRecipe('Soup', renamed);
       expect(repository.getRecipeNames(), ['Stew']);
       expect(repository.getRecipeAmountCategory('Dinner'), 0);
+      expect(await repository.getRecipeTagRecipes('Warm'), isEmpty);
+      expect((await repository.getRecipeByName('Stew'))!.tags, isEmpty);
       expect(repository.wasDeletedBefore('Soup'), isTrue);
 
       await repository.deleteRecipe(

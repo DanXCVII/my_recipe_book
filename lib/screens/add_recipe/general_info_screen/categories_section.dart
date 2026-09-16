@@ -37,18 +37,18 @@ class _CategorySectionState extends State<CategorySection> {
             children: <Widget>[
               // heading for the subcategory selector section
               Padding(
-                padding: const EdgeInsets.only(left: 50, right: 6, top: 8),
+                padding: const EdgeInsets.only(top: 8),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(
-                      S.of(context).select_subcategories,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                    Expanded(
+                      child: Text(
+                        S.of(context).select_subcategories,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                    Spacer(),
                     IconButton(
                       icon: Icon(Icons.add_circle_outline),
                       onPressed: () {

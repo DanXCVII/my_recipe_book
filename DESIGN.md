@@ -136,7 +136,7 @@ The Culinary Editorial world turns structured recipe work into the feeling of co
 
 The system is tactile without becoming ornamental. Burnt-red actions, restrained sage and amber semantics, generous working surfaces, and persistent navigation support people editing on a phone with divided attention. Material behavior, safe areas, keyboard avoidance, and real recipe data remain the foundation beneath the journal character.
 
-This world is established for participating Culinary Editorial surfaces, led by the four-stage recipe editor. It does not authorize restyling unrelated legacy screens or importing unsupported concepts from visual references.
+This world is established for participating Culinary Editorial surfaces, led by the four-stage recipe editor and recipe detail. It does not authorize restyling unrelated legacy screens or importing unsupported concepts from visual references.
 
 **Key Characteristics:**
 
@@ -216,6 +216,8 @@ The editor is a native, vertically scrolling single-column workflow. Each stage 
 
 The header keeps app identity and a four-segment, 5 dp-high progress indicator visible before the working content. The bottom action bar is safe-area aware and remains persistent; the body resizes for the IME and dismisses the keyboard on drag. Back retains a readable 92 by 52 dp footprint and the forward or save action expands into the remaining width.
 
+Recipe detail uses a 4:3 image hero on phones, a compact sticky Ingredients/Instructions switch, and the same 20 dp content margin. At 600 dp and wider, the checklist and instruction timeline become a two-column working spread inside a centered 1180 dp maximum width; the hero and recipe metadata span both columns.
+
 At narrow row widths below 420 dp, ingredient content reflows from one dense horizontal row into a name row followed by paired amount and unit fields. Wider screens keep a compact horizontal ingredient row, but the editor itself remains centered at the 760 dp reading measure rather than stretching into a dashboard. Insets protect status, navigation, cutout, and keyboard areas.
 
 **The One-Stage Rule.** Present one authoring stage at a time and keep the shared progress, summary, and navigation shell stable across all four stages.
@@ -279,6 +281,10 @@ The editor header pairs the existing app mark with a short uppercase studio labe
 ### Recipe Summary
 
 A compact 14 dp tonal card carries a 58 dp rounded thumbnail, a two-line recipe name, ingredient and time metadata, and an optional amber effort value. General omits the summary until enough recipe identity exists; later stages update it from the current draft rather than stale saved data.
+
+### Recipe Detail
+
+The detail surface pairs a photograph-led hero with navigable category and tag chips, an effort-and-time calibration card, a pantry checklist, and numbered instruction cards. Shopping-list checks and serving changes remain synchronized. Instructions show identity-backed ingredient associations only when the recipe stores them, using the currently scaled quantities. Notes, source, and nutrition remain inline editorial modules rather than floating controls.
 
 ### Editable Ingredient and Step Modules
 

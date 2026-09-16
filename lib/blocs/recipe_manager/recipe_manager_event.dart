@@ -23,6 +23,16 @@ class RMDeleteRecipe extends RecipeManagerEvent {
   List<Object> get props => [recipeName];
 }
 
+class RMUpdateRecipe extends RecipeManagerEvent {
+  final String oldRecipeName;
+  final Recipe updatedRecipe;
+
+  const RMUpdateRecipe(this.oldRecipeName, this.updatedRecipe);
+
+  @override
+  List<Object> get props => [oldRecipeName, updatedRecipe];
+}
+
 class RMAddFavorite extends RecipeManagerEvent {
   final Recipe recipe;
 

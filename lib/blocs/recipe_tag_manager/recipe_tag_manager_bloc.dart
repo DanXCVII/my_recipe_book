@@ -16,14 +16,14 @@ class RecipeTagManagerBloc
   final LocalRepository repository;
   StreamSubscription? subscription;
 
-  List<StringIntTuple> selectedTags = [];
+  final List<StringIntTuple> _initialSelectedTags;
 
   RecipeTagManagerBloc({
     required this.recipeManagerBloc,
     required this.repository,
     List<StringIntTuple> selectedTags = const [],
-  }) : super(LoadingRecipeTagManager()) {
-    this.selectedTags = List<StringIntTuple>.from(selectedTags);
+  }) : _initialSelectedTags = List<StringIntTuple>.from(selectedTags),
+       super(LoadingRecipeTagManager()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedRecipeTagManager) {
         if (rmState is RM.AddRecipeTagsState) {
@@ -39,18 +39,30 @@ class RecipeTagManagerBloc
     on<InitializeRecipeTagManager>((event, emit) async {
       final List<StringIntTuple> recipeTags = repository.getRecipeTags();
 
-      emit(LoadedRecipeTagManager(recipeTags));
+      emit(
+        LoadedRecipeTagManager(
+          recipeTags: recipeTags,
+          selectedTags: _normalizeSelectedTags(
+            _initialSelectedTags,
+            recipeTags,
+          ),
+        ),
+      );
     });
 
     on<AddRecipeTags>((event, emit) async {
       if (state is LoadedRecipeTagManager) {
-        selectedTags.addAll(event.recipeTags);
+        final current = state as LoadedRecipeTagManager;
+        final recipeTags = _upsertTags(current.recipeTags, event.recipeTags);
+        final selectedTags = _upsertTags(
+          current.selectedTags,
+          event.recipeTags,
+        );
 
         emit(
           LoadedRecipeTagManager(
-            List<StringIntTuple>.from(
-              (state as LoadedRecipeTagManager).recipeTags,
-            )..addAll(event.recipeTags),
+            recipeTags: recipeTags,
+            selectedTags: selectedTags,
           ),
         );
       }
@@ -58,46 +70,122 @@ class RecipeTagManagerBloc
 
     on<DeleteRecipeTag>((event, emit) async {
       if (state is LoadedRecipeTagManager) {
+        final current = state as LoadedRecipeTagManager;
         emit(
           LoadedRecipeTagManager(
-            List<StringIntTuple>.from(
-              (state as LoadedRecipeTagManager).recipeTags,
-            )..remove(event.recipeTag),
+            recipeTags: current.recipeTags
+                .where((tag) => tag.text != event.recipeTag.text)
+                .toList(),
+            selectedTags: current.selectedTags
+                .where((tag) => tag.text != event.recipeTag.text)
+                .toList(),
           ),
         );
-
-        if (selectedTags.contains(event.recipeTag)) {
-          selectedTags.remove(event.recipeTag);
-        }
       }
     });
 
     on<UpdateRecipeTag>((event, emit) async {
       if (state is LoadedRecipeTagManager) {
-        final List<StringIntTuple> recipeTags =
-            (state as LoadedRecipeTagManager).recipeTags.map((recipeTag) {
-              if (recipeTag == event.oldRecipeTag) {
-                return event.updatedRecipeTag;
-              } else {
-                return recipeTag;
-              }
-            }).toList();
+        final current = state as LoadedRecipeTagManager;
+        final recipeTags = _replaceTag(
+          current.recipeTags,
+          event.oldRecipeTag.text,
+          event.updatedRecipeTag,
+        );
+        final selectedTags =
+            current.selectedTags.any(
+              (tag) => tag.text == event.oldRecipeTag.text,
+            )
+            ? _replaceTag(
+                current.selectedTags,
+                event.oldRecipeTag.text,
+                event.updatedRecipeTag,
+              )
+            : current.selectedTags;
 
-        if (selectedTags.contains(event.oldRecipeTag)) {
-          selectedTags[selectedTags.indexOf(event.oldRecipeTag)] =
-              event.updatedRecipeTag;
-        }
-
-        emit(LoadedRecipeTagManager(recipeTags));
+        emit(
+          LoadedRecipeTagManager(
+            recipeTags: recipeTags,
+            selectedTags: selectedTags,
+          ),
+        );
       }
     });
 
     on<SelectRecipeTag>((event, emit) async {
-      selectedTags.add(event.recipeTag);
+      if (state is LoadedRecipeTagManager) {
+        final current = state as LoadedRecipeTagManager;
+        emit(
+          LoadedRecipeTagManager(
+            recipeTags: current.recipeTags,
+            selectedTags: _upsertTags(current.selectedTags, [event.recipeTag]),
+          ),
+        );
+      }
     });
 
     on<UnselectRecipeTag>((event, emit) async {
-      selectedTags.remove(event.recipeTag);
+      if (state is LoadedRecipeTagManager) {
+        final current = state as LoadedRecipeTagManager;
+        emit(
+          LoadedRecipeTagManager(
+            recipeTags: current.recipeTags,
+            selectedTags: current.selectedTags
+                .where((tag) => tag.text != event.recipeTag.text)
+                .toList(),
+          ),
+        );
+      }
     });
+  }
+
+  static List<StringIntTuple> _normalizeSelectedTags(
+    List<StringIntTuple> selectedTags,
+    List<StringIntTuple> recipeTags,
+  ) {
+    final currentByName = {
+      for (final recipeTag in recipeTags) recipeTag.text: recipeTag,
+    };
+    final normalized = <StringIntTuple>[];
+    final seenNames = <String>{};
+    for (final selectedTag in selectedTags) {
+      if (seenNames.add(selectedTag.text)) {
+        normalized.add(currentByName[selectedTag.text] ?? selectedTag);
+      }
+    }
+    return normalized;
+  }
+
+  static List<StringIntTuple> _upsertTags(
+    List<StringIntTuple> existing,
+    List<StringIntTuple> additions,
+  ) {
+    var result = List<StringIntTuple>.from(existing);
+    for (final addition in additions) {
+      final index = result.indexWhere((tag) => tag.text == addition.text);
+      if (index == -1) {
+        result.add(addition);
+      } else {
+        result[index] = addition;
+      }
+    }
+    return result;
+  }
+
+  static List<StringIntTuple> _replaceTag(
+    List<StringIntTuple> tags,
+    String oldName,
+    StringIntTuple replacement,
+  ) {
+    return _upsertTags(
+      const [],
+      tags.map((tag) => tag.text == oldName ? replacement : tag).toList(),
+    );
+  }
+
+  @override
+  Future<void> close() async {
+    await subscription?.cancel();
+    return super.close();
   }
 }

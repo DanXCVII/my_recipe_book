@@ -137,3 +137,131 @@ class CulinaryEditorialType {
     );
   }
 }
+
+ThemeData culinaryEditorialTheme(
+  ThemeData base,
+  CulinaryEditorialPalette palette,
+) {
+  final bodyText = base.textTheme.apply(
+    fontFamily: CulinaryEditorialType.bodyFamily,
+    bodyColor: palette.onSurface,
+    displayColor: palette.onSurface,
+  );
+  final colorScheme = base.colorScheme.copyWith(
+    primary: palette.primary,
+    onPrimary: palette.onPrimary,
+    primaryContainer: palette.primarySoft,
+    onPrimaryContainer: palette.primary,
+    secondary: palette.secondary,
+    onSecondary: palette.background,
+    secondaryContainer: palette.primarySoft,
+    onSecondaryContainer: palette.primary,
+    tertiary: palette.tertiary,
+    onTertiary: palette.background,
+    tertiaryContainer: palette.tertiarySoft,
+    onTertiaryContainer: palette.tertiary,
+    surface: palette.surface,
+    onSurface: palette.onSurface,
+    onSurfaceVariant: palette.onSurfaceVariant,
+    surfaceDim: palette.background,
+    surfaceBright: palette.surface,
+    surfaceContainerLowest: palette.background,
+    surfaceContainerLow: palette.surface,
+    surfaceContainer: palette.surfaceContainer,
+    surfaceContainerHigh: palette.surfaceContainerHigh,
+    surfaceContainerHighest: palette.surfaceContainerHigh,
+    outline: palette.outline,
+    outlineVariant: palette.outline.withValues(alpha: .45),
+    inverseSurface: palette.onSurface,
+    onInverseSurface: palette.surface,
+    inversePrimary: palette.primarySoft,
+    shadow: palette.shadow,
+    scrim: Colors.black,
+    surfaceTint: Colors.transparent,
+  );
+
+  return base.copyWith(
+    scaffoldBackgroundColor: palette.background,
+    colorScheme: colorScheme,
+    textTheme: bodyText.copyWith(
+      displayLarge: bodyText.displayLarge?.copyWith(
+        fontFamily: CulinaryEditorialType.headlineFamily,
+      ),
+      displayMedium: bodyText.displayMedium?.copyWith(
+        fontFamily: CulinaryEditorialType.headlineFamily,
+      ),
+      headlineLarge: bodyText.headlineLarge?.copyWith(
+        fontFamily: CulinaryEditorialType.headlineFamily,
+      ),
+      headlineMedium: bodyText.headlineMedium?.copyWith(
+        fontFamily: CulinaryEditorialType.headlineFamily,
+      ),
+      headlineSmall: bodyText.headlineSmall?.copyWith(
+        fontFamily: CulinaryEditorialType.headlineFamily,
+      ),
+      titleLarge: bodyText.titleLarge?.copyWith(
+        fontFamily: CulinaryEditorialType.headlineFamily,
+      ),
+    ),
+    chipTheme: base.chipTheme.copyWith(
+      backgroundColor: palette.surfaceContainer,
+      selectedColor: palette.primarySoft,
+      disabledColor: palette.surfaceContainerHigh,
+      checkmarkColor: palette.primary,
+      deleteIconColor: palette.onSurfaceVariant,
+      labelStyle: CulinaryEditorialType.body(
+        palette,
+        size: 13,
+        color: palette.onSurfaceVariant,
+      ),
+      secondaryLabelStyle: CulinaryEditorialType.body(
+        palette,
+        size: 13,
+        weight: FontWeight.w700,
+        color: palette.primary,
+      ),
+      side: BorderSide(color: palette.outline.withValues(alpha: .45)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: SegmentedButton.styleFrom(
+        minimumSize: const Size(0, 48),
+        backgroundColor: Colors.transparent,
+        foregroundColor: palette.onSurface,
+        selectedBackgroundColor: palette.primarySoft,
+        selectedForegroundColor: palette.primary,
+        side: BorderSide(color: palette.outline.withValues(alpha: .65)),
+        textStyle: CulinaryEditorialType.body(
+          palette,
+          size: 14,
+          weight: FontWeight.w700,
+        ),
+      ),
+    ),
+    inputDecorationTheme: base.inputDecorationTheme.copyWith(
+      filled: true,
+      fillColor: palette.surfaceContainer,
+      labelStyle: CulinaryEditorialType.body(
+        palette,
+        size: 14,
+        color: palette.onSurfaceVariant,
+      ),
+      hintStyle: CulinaryEditorialType.body(
+        palette,
+        size: 14,
+        color: palette.onSurfaceVariant.withValues(alpha: .78),
+      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: palette.outline.withValues(alpha: .45)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: palette.primary, width: 2),
+      ),
+    ),
+    iconTheme: base.iconTheme.copyWith(color: palette.onSurfaceVariant),
+    dividerColor: palette.outline.withValues(alpha: .22),
+  );
+}

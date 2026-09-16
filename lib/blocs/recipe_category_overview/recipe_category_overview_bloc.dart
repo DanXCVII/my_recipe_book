@@ -32,6 +32,10 @@ class RecipeCategoryOverviewBloc
           add(RCODeleteRecipe(rmState.recipe));
         } else if (rmState is RM.UpdateRecipeState) {
           add(RCOUpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
+        } else if (rmState is RM.AddFavoriteState) {
+          add(RCOUpdateFavoriteStatus(rmState.recipe));
+        } else if (rmState is RM.RemoveFavoriteState) {
+          add(RCOUpdateFavoriteStatus(rmState.recipe));
         } else if (rmState is RM.AddCategoriesState) {
           add(RCOAddCategory(rmState.categories));
         } else if (rmState is RM.DeleteCategoryState) {
@@ -48,41 +52,43 @@ class RecipeCategoryOverviewBloc
     });
 
     on<RCOLoadRecipeCategoryOverview>((event, emit) async {
-      if (event.reopenBoxes) await repository.reopenBoxes();
-
-      List<Tuple2<String, List<Recipe>>> categoryRecipes = [];
-      final List<String> categories = repository.getCategoryNames();
-
-      for (String category in categories) {
-        List<Recipe> categoryRecipeList = await repository.getCategoryRecipes(
-          category,
-        );
-        if (category == "no category" && categoryRecipeList.isEmpty) {
-        } else {
-          categoryRecipes.add(Tuple2(category, categoryRecipeList));
-        }
+      if (state is! LoadedRecipeCategoryOverview) {
+        emit(LoadingRecipeCategoryOverviewState());
       }
 
-      emit(LoadedRecipeCategoryOverview(categoryRecipes));
+      try {
+        if (event.reopenBoxes) await repository.reopenBoxes();
 
-      if (event.categoryOverviewContext != null) {
-        BlocProvider.of<RandomRecipeExplorerBloc>(
-          event.categoryOverviewContext!,
-        ).add(InitializeRandomRecipeExplorer());
-        BlocProvider.of<CategoryOverviewBloc>(event.categoryOverviewContext!)
-            .add(COLoadCategoryOverview());
+        final categoryRecipes = <Tuple2<String, List<Recipe>>>[];
+        final categories = repository.getCategoryNames();
+
+        for (final category in categories) {
+          final recipes = await repository.getCategoryRecipes(category);
+          if (category != "no category" || recipes.isNotEmpty) {
+            categoryRecipes.add(Tuple2(category, recipes));
+          }
+        }
+
+        emit(LoadedRecipeCategoryOverview(categoryRecipes));
+
+        final overviewContext = event.categoryOverviewContext;
+        if (overviewContext != null && overviewContext.mounted) {
+          BlocProvider.of<RandomRecipeExplorerBloc>(overviewContext)
+              .add(InitializeRandomRecipeExplorer());
+          BlocProvider.of<CategoryOverviewBloc>(overviewContext)
+              .add(COLoadCategoryOverview());
+        }
+      } catch (error) {
+        emit(FailedRecipeCategoryOverviewState(error));
       }
     });
 
     on<RCOAddRecipes>((event, emit) async {
       if (state is LoadedRecipeCategoryOverview) {
-        final List<Tuple2<String /*!*/, List<Recipe>>> recipeCategoryOverview =
-            _addRecipesToOverview(
-              event.recipes,
-              List<Tuple2<String, List<Recipe>>>.from(
-                (state as LoadedRecipeCategoryOverview).rCategoryOverview,
-              ),
-            );
+        final recipeCategoryOverview = _addRecipesToOverview(
+          event.recipes,
+          (state as LoadedRecipeCategoryOverview).rCategoryOverview,
+        );
 
         emit(LoadedRecipeCategoryOverview(recipeCategoryOverview));
       }
@@ -93,36 +99,52 @@ class RecipeCategoryOverviewBloc
         final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVone =
             _removeRecipeFromOverview(
               event.oldRecipe,
-              List<Tuple2<String, List<Recipe>>>.from(
-                (state as LoadedRecipeCategoryOverview).rCategoryOverview,
-              ),
+              (state as LoadedRecipeCategoryOverview).rCategoryOverview,
             );
         final List<Tuple2<String, List<Recipe>>> recipeCategoryOverviewVtwo =
-            _addRecipesToOverview(
-              [event.updatedRecipe],
-              List<Tuple2<String, List<Recipe>>>.from(
-                recipeCategoryOverviewVone,
-              ),
-            );
+            _addRecipesToOverview([
+              event.updatedRecipe,
+            ], recipeCategoryOverviewVone);
 
         emit(LoadedRecipeCategoryOverview(recipeCategoryOverviewVtwo));
       }
     });
 
+    on<RCOUpdateFavoriteStatus>((event, emit) {
+      if (state is LoadedRecipeCategoryOverview) {
+        final sections = (state as LoadedRecipeCategoryOverview)
+            .rCategoryOverview
+            .map(
+              (section) => Tuple2<String, List<Recipe>>(
+                section.item1,
+                section.item2
+                    .map(
+                      (recipe) => recipe.name == event.recipe.name
+                          ? event.recipe
+                          : recipe,
+                    )
+                    .toList(growable: false),
+              ),
+            )
+            .toList(growable: false);
+        emit(LoadedRecipeCategoryOverview(sections));
+      }
+    });
+
     on<RCOAddCategory>((event, emit) async {
       if (state is LoadedRecipeCategoryOverview) {
-        int categoryCount =
-            (state as LoadedRecipeCategoryOverview).rCategoryOverview.length;
-        final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview =
-            (state as LoadedRecipeCategoryOverview).rCategoryOverview
-              ..insertAll(
-                categoryCount == 0 ? 0 : categoryCount - 1,
-                event.categories
-                    .map(
-                      (category) => Tuple2<String, List<Recipe>>(category, []),
-                    )
-                    .toList(),
-              );
+        final recipeCategoryOverview = List<Tuple2<String, List<Recipe>>>.from(
+          (state as LoadedRecipeCategoryOverview).rCategoryOverview,
+        );
+        final noCategoryIndex = recipeCategoryOverview.indexWhere(
+          (section) => section.item1 == "no category",
+        );
+        recipeCategoryOverview.insertAll(
+          noCategoryIndex < 0 ? recipeCategoryOverview.length : noCategoryIndex,
+          event.categories.map(
+            (category) => Tuple2<String, List<Recipe>>(category, const []),
+          ),
+        );
 
         emit(LoadedRecipeCategoryOverview(recipeCategoryOverview));
       }
@@ -133,9 +155,7 @@ class RecipeCategoryOverviewBloc
         final List<Tuple2<String, List<Recipe>>> recipeCategoryOverview =
             _removeRecipeFromOverview(
               event.recipe,
-              List<Tuple2<String, List<Recipe>>>.from(
-                (state as LoadedRecipeCategoryOverview).rCategoryOverview,
-              ),
+              (state as LoadedRecipeCategoryOverview).rCategoryOverview,
             );
 
         emit(LoadedRecipeCategoryOverview(recipeCategoryOverview));
@@ -150,17 +170,16 @@ class RecipeCategoryOverviewBloc
 
     on<RCOMoveCategory>((event, emit) async {
       if (state is LoadedRecipeCategoryOverview) {
-        List<Tuple2<String, List<Recipe>>> oldrCategoryOverview =
-            (state as LoadedRecipeCategoryOverview).rCategoryOverview;
-        // verify if working
-        List<Tuple2<String, List<Recipe>>> newrCategoryOverview =
-            oldrCategoryOverview
-              ..insert(event.newIndex, oldrCategoryOverview[event.oldIndex])
-              ..removeAt(
-                event.oldIndex > event.newIndex
-                    ? event.oldIndex + 1
-                    : event.oldIndex,
-              );
+        final newrCategoryOverview = List<Tuple2<String, List<Recipe>>>.from(
+          (state as LoadedRecipeCategoryOverview).rCategoryOverview,
+        );
+        newrCategoryOverview
+          ..insert(event.newIndex, newrCategoryOverview[event.oldIndex])
+          ..removeAt(
+            event.oldIndex > event.newIndex
+                ? event.oldIndex + 1
+                : event.oldIndex,
+          );
 
         emit(LoadedRecipeCategoryOverview(newrCategoryOverview));
       }
@@ -205,9 +224,11 @@ class RecipeCategoryOverviewBloc
   ) {
     return recipeCategoryOverview
         .map((tuple) {
-          var updatedOverviewItem = Tuple2<String, List<Recipe>>(
+          final updatedOverviewItem = Tuple2<String, List<Recipe>>(
             tuple.item1,
-            tuple.item2..removeWhere((item2) => item2.name == recipe.name),
+            tuple.item2
+                .where((item) => item.name != recipe.name)
+                .toList(growable: false),
           );
           return updatedOverviewItem.item1 == "no category" &&
                   updatedOverviewItem.item2.isEmpty
@@ -222,11 +243,19 @@ class RecipeCategoryOverviewBloc
     List<Recipe> recipes,
     List<Tuple2<String, List<Recipe>>> recipeCategoryOverview,
   ) {
-    // check every recipe category, if it is already in the overview
+    final sections = recipeCategoryOverview
+        .map(
+          (section) => Tuple2<String, List<Recipe>>(
+            section.item1,
+            List<Recipe>.from(section.item2),
+          ),
+        )
+        .toList();
+
     for (Recipe recipe in recipes) {
       for (String c in recipe.categories) {
         bool alreadyAdded = false;
-        for (Tuple2<String, List<Recipe>> t in recipeCategoryOverview) {
+        for (Tuple2<String, List<Recipe>> t in sections) {
           if (t.item1 == c) {
             t.item2.add(recipe);
             alreadyAdded = true;
@@ -234,49 +263,29 @@ class RecipeCategoryOverviewBloc
         }
         // if it's not yet added
         if (!alreadyAdded) {
-          // if the overview is empty
-          if (recipeCategoryOverview.length == 0) {
-            // add it to the end
-            recipeCategoryOverview.add(
-              Tuple2<String, List<Recipe>>(c, [recipe]),
-            );
-          }
-          // if the last category of the overview is "no category"
-          else if (recipeCategoryOverview.last.item1 == "no category") {
-            // add it to the second last position
-            recipeCategoryOverview.insert(
-              recipeCategoryOverview.length - 1,
-              Tuple2<String, List<Recipe>>(c, [recipe]),
-            );
-          }
-          // if the overview is not empty and the last category is unlike "no category"
-          else {
-            // add it to the end
-            recipeCategoryOverview.add(
-              Tuple2<String, List<Recipe>>(c, [recipe]),
-            );
-          }
+          final noCategoryIndex = sections.indexWhere(
+            (section) => section.item1 == "no category",
+          );
+          sections.insert(
+            noCategoryIndex < 0 ? sections.length : noCategoryIndex,
+            Tuple2<String, List<Recipe>>(c, [recipe]),
+          );
         }
       }
-      // if the recipe is in no category
+
       if (recipe.categories.isEmpty) {
-        // if the no category is already in the overview and has less then 8 recipes
-        if (recipeCategoryOverview.isNotEmpty &&
-            recipeCategoryOverview.last.item1 == "no category") {
-          if (recipeCategoryOverview.last.item2.length < 8) {
-            // add it to the existing no category section
-            recipeCategoryOverview.last.item2.add(recipe);
-          }
+        final noCategoryIndex = sections.indexWhere(
+          (section) => section.item1 == "no category",
+        );
+        if (noCategoryIndex >= 0) {
+          sections[noCategoryIndex].item2.add(recipe);
         } else {
-          // add "no category" with the new recipe to the overview
-          recipeCategoryOverview.add(
-            Tuple2<String, List<Recipe>>("no category", [recipe]),
-          );
+          sections.add(Tuple2<String, List<Recipe>>("no category", [recipe]));
         }
       }
     }
 
-    return recipeCategoryOverview;
+    return sections;
   }
 
   @override

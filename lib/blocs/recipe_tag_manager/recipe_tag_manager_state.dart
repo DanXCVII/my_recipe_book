@@ -11,9 +11,14 @@ class LoadingRecipeTagManager extends RecipeTagManagerState {
 
 class LoadedRecipeTagManager extends RecipeTagManagerState {
   final List<StringIntTuple> recipeTags;
+  final List<StringIntTuple> selectedTags;
 
-  const LoadedRecipeTagManager([this.recipeTags = const []]);
+  LoadedRecipeTagManager({
+    List<StringIntTuple> recipeTags = const [],
+    List<StringIntTuple> selectedTags = const [],
+  }) : recipeTags = List.unmodifiable(recipeTags),
+       selectedTags = List.unmodifiable(selectedTags);
 
   @override
-  List<Object> get props => [recipeTags];
+  List<Object> get props => [recipeTags, selectedTags];
 }

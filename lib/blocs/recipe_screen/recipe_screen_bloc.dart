@@ -15,10 +15,12 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
   final Recipe recipe;
   late StreamSubscription rmListener;
   RecipeManagerBloc recipeManagerBloc;
-  final LocalRepository repository;
 
-  RecipeScreenBloc(this.recipe, this.recipeManagerBloc, this.repository)
-    : super(RecipeScreenInfo(recipe, [])) {
+  RecipeScreenBloc(
+    this.recipe,
+    this.recipeManagerBloc,
+    LocalRepository repository,
+  ) : super(RecipeScreenInfo(recipe)) {
     rmListener = recipeManagerBloc.stream.listen((state) {
       if (state is DeleteRecipeState) {
         if (state.recipe == recipe) {
@@ -29,15 +31,7 @@ class RecipeScreenBloc extends Bloc<RecipeScreenEvent, RecipeScreenState> {
     });
 
     on<InitRecipeScreen>((event, emit) async {
-      List<String> categoryImages = [];
-      for (String category in recipe.categories) {
-        categoryImages.add(
-          (await repository.getRandomRecipeOfCategory(category: category))!
-              .imagePreviewPath,
-        );
-      }
-
-      emit(RecipeScreenInfo(recipe, categoryImages));
+      emit(RecipeScreenInfo(recipe));
     });
 
     on<HideRecipe>((event, emit) async {

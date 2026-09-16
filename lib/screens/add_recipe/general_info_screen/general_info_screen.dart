@@ -16,9 +16,11 @@ import '../../../local_storage/local_repository.dart';
 import '../../../local_storage/local_paths.dart';
 import '../../../models/recipe.dart';
 import '../../../models/enums.dart';
+import '../../../models/string_int_tuple.dart';
 import '../../../recipe_overview/add_recipe_screen/validation_clean_up.dart';
 import '../../../util/helper.dart';
 import '../../../util/my_wrapper.dart';
+import '../../../widgets/culinary_editorial_theme.dart';
 import '../../../widgets/duration_picker.dart';
 import '../../../widgets/image_selector.dart' as IS;
 import '../../../widgets/recipe_editor/editorial_editor_shell.dart';
@@ -403,18 +405,22 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   void _showFlushInfo(String title, String body) {
     if (_flush != null && _flush!.isShowing()) {
     } else {
+      final palette = CulinaryEditorialPalette.of(context);
       _flush =
           Flushbar<bool>(
               animationDuration: Duration(milliseconds: 300),
-              leftBarIndicatorColor: Colors.blue[300],
+              backgroundColor: palette.surface,
+              titleColor: palette.onSurface,
+              messageColor: palette.onSurfaceVariant,
               title: title,
               message: body,
-              icon: Icon(Icons.info_outline, color: Colors.blue),
+              icon: Icon(Icons.info_outline, color: palette.primary),
               mainButton: TextButton(
                 onPressed: () {
                   _flush!.dismiss(true); // result = true
                 },
-                child: Text("OK", style: TextStyle(color: Colors.amber)),
+                style: TextButton.styleFrom(foregroundColor: palette.primary),
+                child: const Text("OK"),
               ),
             ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
             ..show(context).then((result) {});
@@ -424,6 +430,12 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
   /// notifies the Bloc to save all filled in data on this screen, with
   /// the info to go back
   void _saveGeneralInfoData(BuildContext gInfoScreenContext, bool goBack) {
+    final recipeTagState = context.read<RecipeTagManagerBloc>().state;
+    final List<StringIntTuple> selectedRecipeTags =
+        recipeTagState is LoadedRecipeTagManager
+        ? List<StringIntTuple>.unmodifiable(recipeTagState.selectedTags)
+        : List<StringIntTuple>.unmodifiable(modifiedRecipe!.tags);
+
     BlocProvider.of<GeneralInfoBloc>(context).add(
       FinishedEditing(
         nameController.text,
@@ -434,7 +446,7 @@ class _GeneralInfoScreenState extends State<GeneralInfoScreen>
         totalTime.myDouble == null ? 0 : totalTime.myDouble,
         sourceController.text,
         BlocProvider.of<CategoryManagerBloc>(context).selectedCategories,
-        BlocProvider.of<RecipeTagManagerBloc>(context).selectedTags,
+        selectedRecipeTags,
         notesController.text,
         servingsController.text.trim().isEmpty
             ? null

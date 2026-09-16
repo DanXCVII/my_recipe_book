@@ -1,18 +1,11 @@
-import 'dart:io';
-import 'dart:math';
-
-import 'package:collection/collection.dart' show IterableExtension;
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:like_button/like_button.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
@@ -22,66 +15,26 @@ import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_mods/recipe_mods_bloc.dart';
 import '../blocs/recipe_screen/recipe_screen_bloc.dart';
-import '../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
-import '../constants/global_constants.dart' as Constants;
-import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/l10n.dart';
-import '../local_storage/local_repository.dart';
-import '../local_storage/io_operations.dart' as IO;
+import '../local_storage/io_operations.dart' as io_operations;
 import '../local_storage/local_paths.dart';
-import '../models/enums.dart';
-import '../models/ingredient.dart';
+import '../local_storage/local_repository.dart';
 import '../models/recipe.dart';
-import '../models/string_int_tuple.dart';
-import '../models/tuple.dart';
-import '../screens/recipe_overview.dart';
 import '../util/helper.dart';
-import '../util/my_wrapper.dart';
 import '../util/pdf_share.dart';
-import '../widgets/animated_stepper.dart';
-import '../widgets/animated_vegetable.dart';
-import '../widgets/category_circle_image.dart';
-import '../widgets/dialogs/number_dialog.dart';
-import '../widgets/gallery_view.dart';
+import '../widgets/culinary_editorial_theme.dart';
 import '../widgets/icon_info_message.dart';
-import '../widgets/recipe_info_vertical.dart';
-import '../widgets/recipe_screen/animated_nutritions_fab.dart';
-import '../widgets/recipe_screen/complexity_wave.dart';
-import '../widgets/recipe_screen/recipe_tag_wrap.dart';
-import '../widgets/recipe_screen/time_complexity_compressed.dart';
-import '../widgets/recipe_screen/time_info.dart';
-import '../widgets/recipe_screen/time_info_chart.dart';
+import '../widgets/recipe_screen/editorial_recipe_detail.dart';
 import '../widgets/spinning_sync_icon.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 
-const double timeTextsize = 15;
-const double timeText = 17;
-const double paddingBottomTime = 5;
-const double headingSize = 19;
-const Color textColor = Colors.white;
-const String recipeScreenFontFamily = 'Roboto';
+enum PopupOptionsShare { exportZip, exportText, exportPdf }
 
-const Map<Vegetable, List<int>> vegetableColor = {
-  Vegetable.NON_VEGETARIAN: [0xff520808, 0xff400303],
-  Vegetable.VEGETARIAN: [0xff1A490A, 0xff193F0B],
-  Vegetable.VEGAN: [0xff144E00, 0xff0F3800],
-};
-
-enum PopupOptionsMore { DELETE, SHARE, PRINT }
-
-enum PopupOptionsShare { EXPORT_ZIP, EXPORT_TEXT, EXPORT_PDF }
+enum _RecipeMoreAction { calendar, pin, edit, print, delete }
 
 class RecipeScreenArguments {
-  final ShoppingCartBloc shoppingCartBloc;
-  final RecipeCalendarBloc recipeCalendarBloc;
-  final Recipe? recipe;
-  final String heroImageTag;
-  final RecipeManagerBloc recipeManagerBloc;
-  final double? initialScrollOffset;
-  final int? initialSelectedStep;
-
   RecipeScreenArguments(
     this.shoppingCartBloc,
     this.recipeCalendarBloc,
@@ -90,43 +43,53 @@ class RecipeScreenArguments {
     this.recipeManagerBloc, {
     this.initialScrollOffset,
     this.initialSelectedStep,
+    this.initialSection = RecipeDetailSection.ingredients,
   });
+
+  final ShoppingCartBloc shoppingCartBloc;
+  final RecipeCalendarBloc recipeCalendarBloc;
+  final Recipe? recipe;
+  final String heroImageTag;
+  final RecipeManagerBloc recipeManagerBloc;
+  final double? initialScrollOffset;
+  final int? initialSelectedStep;
+  final RecipeDetailSection initialSection;
 }
 
 class RecipeScreen extends StatefulWidget {
+  const RecipeScreen({
+    super.key,
+    this.heroImageTag,
+    this.initialScrollOffset,
+    this.initialSection = RecipeDetailSection.ingredients,
+  });
+
   final String? heroImageTag;
   final double? initialScrollOffset;
-
-  RecipeScreen({this.heroImageTag, this.initialScrollOffset});
+  final RecipeDetailSection initialSection;
 
   @override
-  _RecipeScreenState createState() =>
-      _RecipeScreenState(initialScrollOffset: initialScrollOffset);
+  State<RecipeScreen> createState() => _RecipeScreenState();
 }
 
-class _RecipeScreenState extends State<RecipeScreen>
-    with SingleTickerProviderStateMixin {
-  ScrollController? _scrollController;
+class _RecipeScreenState extends State<RecipeScreen> {
+  late final ScrollController _scrollController;
+  late RecipeDetailSection _selectedSection;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController(
+      initialScrollOffset: widget.initialScrollOffset ?? 0,
+      keepScrollOffset: false,
+    );
+    _selectedSection = widget.initialSection;
   }
 
   @override
   void dispose() {
-    // if (_pc.isAttached) _pc.close();
-
+    _scrollController.dispose();
     super.dispose();
-  }
-
-  _RecipeScreenState({double? initialScrollOffset}) {
-    _scrollController = ScrollController(
-      initialScrollOffset: initialScrollOffset == null
-          ? 0
-          : initialScrollOffset,
-      keepScrollOffset: false,
-    );
   }
 
   @override
@@ -136,1383 +99,274 @@ class _RecipeScreenState extends State<RecipeScreen>
         if (state is RecipeScreenInfo) {
           return BlocListener<AdManagerBloc, AdManagerState>(
             listener: (context, adState) {
-              if (adState is ShowAds && ModalRoute.of(context)!.isCurrent) {
+              if (adState is ShowAds &&
+                  ModalRoute.of(context)?.isCurrent == true) {
+                final stepState = context.read<AnimatedStepperBloc>().state;
                 Navigator.popAndPushNamed(
                   context,
                   RouteNames.recipeScreen,
                   arguments: RecipeScreenArguments(
-                    BlocProvider.of<ShoppingCartBloc>(context),
-                    BlocProvider.of<RecipeCalendarBloc>(context),
+                    context.read<ShoppingCartBloc>(),
+                    context.read<RecipeCalendarBloc>(),
                     state.recipe,
-                    "",
-                    BlocProvider.of<RecipeManagerBloc>(context),
-                    initialScrollOffset: _scrollController!.hasClients
-                        ? _scrollController?.offset
+                    '',
+                    context.read<RecipeManagerBloc>(),
+                    initialScrollOffset: _scrollController.hasClients
+                        ? _scrollController.offset
                         : null,
-                    initialSelectedStep:
-                        (BlocProvider.of<AnimatedStepperBloc>(context).state
-                                as SelectedStep)
-                            .selectedStep,
+                    initialSelectedStep: stepState is SelectedStep
+                        ? stepState.selectedStep
+                        : null,
+                    initialSection: _selectedSection,
                   ),
                 ).then((_) => Ads.hideBottomBannerAd());
               }
             },
-            child: Scaffold(
-              //##
-              appBar: MediaQuery.of(context).size.width > 550
-                  ? MyGradientAppBar(state.recipe)
-                  : null,
-              floatingActionButton: state.recipe.nutritions.isEmpty
-                  ? null
-                  : AnimatedNutritionsFab(
-                      state.recipe.nutritions,
-                      _scrollController,
-                    ),
-              body: RecipePage(
-                recipe: state.recipe,
-                heroImageTag: widget.heroImageTag,
-                scrollController: _scrollController,
-                categoriesFiles: state.categoryImages,
-              ),
+            child: _RecipeScaffold(
+              recipe: state.recipe,
+              heroImageTag: widget.heroImageTag,
+              scrollController: _scrollController,
+              selectedSection: _selectedSection,
+              onSectionChanged: (section) {
+                if (_selectedSection == section) return;
+                setState(() => _selectedSection = section);
+              },
             ),
           );
-        } else if (state is RecipeEditedDeleted) {
-          return Scaffold(
-            appBar: AppBar(
-              iconTheme: IconThemeData(color: Colors.white),
-              title: Text(S.of(context).recipe_screen),
-            ),
-            body: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                child: IconInfoMessage(
-                  iconWidget: Icon(
-                    MdiIcons.alertCircle,
-                    color: Colors.red,
-                    size: 70.0,
-                  ),
-                  description: S.of(context).recipe_edited_or_deleted,
-                ),
-              ),
-            ),
-          );
-        } else {
-          return Text("unknown state: " + state.toString());
         }
+        if (state is RecipeEditedDeleted) {
+          return _UnavailableRecipeScaffold();
+        }
+        return const SizedBox.shrink();
       },
     );
   }
 }
 
-class NotesSection extends StatelessWidget {
-  final String notes;
-
-  const NotesSection({required this.notes, Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width > 450
-            ? 450
-            : MediaQuery.of(context).size.width,
-        padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              S.of(context).notes,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 24,
-                fontFamily: recipeScreenFontFamily,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20, bottom: 20),
-              child: Text(
-                notes,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontFamily: recipeScreenFontFamily,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MyGradientAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final Recipe /*!*/ /*!*/ recipe;
-
-  MyGradientAppBar(this.recipe, {Key? key}) : super(key: key);
-
-  @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.black,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(vegetableColor[recipe.vegetable]![0]),
-              Color(vegetableColor[recipe.vegetable]![1]),
-            ],
-          ),
-        ),
-      ),
-      leading: BackButton(color: Colors.white),
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(MdiIcons.calendarPlus),
-          onPressed: () {
-            showOmniDateTimePicker(
-              context: context,
-              initialDate: DateTime(
-                DateTime.now().year,
-                DateTime.now().month,
-                DateTime.now().day,
-              ),
-              is24HourMode: true,
-            ).then(
-              (DateTime? date) => date != null
-                  ? BlocProvider.of<RecipeCalendarBloc>(context)
-                        .add(AddRecipeToCalendarEvent(date, recipe.name))
-                  : null,
-            );
-          },
-        ),
-        BlocBuilder<RecipeBubbleBloc, RecipeBubbleState>(
-          builder: (context, state) {
-            if (state is LoadedRecipeBubbles) {
-              bool isPinned = false;
-              if (state.recipes.contains(recipe)) {
-                isPinned = true;
-              }
-              return IconButton(
-                icon: Icon(
-                  isPinned ? MdiIcons.pin : MdiIcons.pinOutline,
-                  color: isPinned == false && state.recipes.length == 3
-                      ? Colors.grey[400]
-                      : null,
-                ),
-                onPressed: () {
-                  if (isPinned == false && state.recipes.length == 3) {
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          S.of(context).maximum_recipe_pin_count_exceeded,
-                        ),
-                        action: SnackBarAction(
-                          label: S.of(context).dismiss,
-                          onPressed: ScaffoldMessenger.of(context)
-                              .hideCurrentSnackBar,
-                        ),
-                      ),
-                    );
-                  } else if (isPinned) {
-                    BlocProvider.of<RecipeBubbleBloc>(context)
-                        .add(RemoveRecipeBubble([recipe]));
-                  } else {
-                    BlocProvider.of<RecipeBubbleBloc>(context)
-                        .add(AddRecipeBubble([recipe]));
-
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(S.of(context).recipe_pinned_to_overview),
-                        action: SnackBarAction(
-                          label: S.of(context).dismiss,
-                          onPressed: ScaffoldMessenger.of(context)
-                              .hideCurrentSnackBar,
-                        ),
-                      ),
-                    );
-                  }
-                },
-              );
-            } else {
-              return Text("unknown state");
-            }
-          },
-        ),
-        Favorite(
-          recipe,
-          addFavorite: () {
-            BlocProvider.of<RecipeManagerBloc>(context)
-                .add(RMAddFavorite(recipe));
-          },
-          removeFavorite: () {
-            BlocProvider.of<RecipeManagerBloc>(context)
-                .add(RMRemoveFavorite(recipe));
-          },
-        ),
-        BlocBuilder<RecipeModsBloc, RecipeModsState>(
-          builder: (context, recipeModsState) {
-            if (recipeModsState is UnblockModsState) {
-              return IconButton(
-                icon: Icon(Icons.edit),
-                tooltip: 'edit',
-                onPressed: () {
-                  Ads.hideBottomBannerAd();
-
-                  context
-                      .read<LocalRepository>()
-                      .saveTmpEditingRecipe(recipe)
-                      .then((_) {
-                        BlocProvider.of<AdManagerBloc>(context)
-                            .add(LoadVideo());
-                        Navigator.pushNamed(
-                          context,
-                          RouteNames.addRecipeGeneralInfo,
-                          arguments: GeneralInfoArguments(
-                            recipe,
-                            BlocProvider.of<ShoppingCartBloc>(context),
-                            BlocProvider.of<RecipeCalendarBloc>(context),
-                            editingRecipeName: recipe.name,
-                          ),
-                        ).then((_) => Ads.showBottomBannerAd());
-                      });
-                },
-              );
-            } else {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: SpinningSyncIcon(),
-              );
-            }
-          },
-        ),
-        PopupMenuButton<PopupOptionsMore>(
-          icon: Icon(Icons.more_vert),
-          onSelected: (value) => _choiceActionMore(value, context),
-          itemBuilder: (BuildContext context) {
-            return [
-              PopupMenuItem(
-                value: PopupOptionsMore.DELETE,
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.delete,
-                      color:
-                          Theme.of(context).colorScheme.surface == Colors.white
-                          ? Colors.grey
-                          : Colors.white,
-                    ),
-                    SizedBox(width: 10),
-                    Text(S.of(context).delete_recipe),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: PopupOptionsMore.SHARE,
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.share,
-                      color:
-                          Theme.of(context).colorScheme.surface == Colors.white
-                          ? Colors.grey
-                          : Colors.white,
-                    ),
-                    SizedBox(width: 10),
-                    Text(S.of(context).share_recipe),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: PopupOptionsMore.PRINT,
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.print,
-                      color:
-                          Theme.of(context).colorScheme.surface == Colors.white
-                          ? Colors.grey
-                          : Colors.white,
-                    ),
-                    SizedBox(width: 10),
-                    Text(S.of(context).print_recipe),
-                  ],
-                ),
-              ),
-            ];
-          },
-        ),
-      ],
-    );
-  }
-
-  void _choiceActionMore(PopupOptionsMore value, context) async {
-    if (value == PopupOptionsMore.DELETE) {
-      _showDeleteDialog(context, recipe.name);
-    } else if (value == PopupOptionsMore.PRINT) {
-      getRecipePdf(recipe, context).then(
-        (pdf) =>
-            Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf),
-      );
-    } else if (value == PopupOptionsMore.SHARE) {
-      await showMenu<PopupOptionsShare>(
-        context: context,
-        position: RelativeRect.fromLTRB(1000, 25, 0, 0),
-        items: [
-          PopupMenuItem(
-            value: PopupOptionsShare.EXPORT_TEXT,
-            child: getMenuListItem(
-              S.of(context).export_text,
-              Icon(MdiIcons.formatColorText),
-              PopupOptionsShare.EXPORT_TEXT,
-              context,
-            ),
-          ),
-          PopupMenuItem(
-            value: PopupOptionsShare.EXPORT_ZIP,
-            child: getMenuListItem(
-              S.of(context).export_zip,
-              Icon(MdiIcons.package),
-              PopupOptionsShare.EXPORT_ZIP,
-              context,
-            ),
-          ),
-          PopupMenuItem(
-            value: PopupOptionsShare.EXPORT_PDF,
-            child: getMenuListItem(
-              S.of(context).export_pdf,
-              Icon(MdiIcons.fileDocument),
-              PopupOptionsShare.EXPORT_PDF,
-              context,
-            ),
-          ),
-        ],
-        elevation: 8.0,
-      );
-    }
-  }
-
-  Widget getMenuListItem(
-    String description,
-    Icon leadingIcon,
-    PopupOptionsShare option,
-    BuildContext context,
-  ) {
-    return InkWell(
-      highlightColor: Colors.transparent,
-      onTap: () {
-        _choiceActionShare(option, context);
-      },
-      child: Container(
-        height: 60,
-        width: 250,
-        child: Center(
-          child: Row(
-            children: <Widget>[
-              leadingIcon,
-              SizedBox(width: 12),
-              Text(description),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _choiceActionShare(PopupOptionsShare value, context) {
-    if (value == PopupOptionsShare.EXPORT_TEXT) {
-      String sharedRecipeText = _getRecipeAsString(recipe, context);
-      SharePlus.instance.share(
-        ShareParams(
-          text: sharedRecipeText,
-          subject: stringReplaceSpaceUnderscore(recipe.name),
-        ),
-      );
-    } else if (value == PopupOptionsShare.EXPORT_ZIP) {
-      _exportRecipe(recipe, context).then((_) {});
-    } else if (value == PopupOptionsShare.EXPORT_PDF) {
-      getRecipePdf(recipe, context).then(
-        (pdf) => Printing.sharePdf(
-          bytes: pdf,
-          filename: '${stringReplaceSpaceUnderscore(recipe.name)}.pdf',
-        ),
-      );
-    }
-  }
-
-  Future<bool> _exportRecipe(Recipe recipe, BuildContext context) async {
-    String zipFilePath = await IO.saveRecipeZip(
-      await PathProvider.pP.getShareDir(),
-      recipe.name,
-      context.read<LocalRepository>(),
-    );
-
-    SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(zipFilePath)],
-        subject: stringReplaceSpaceUnderscore(recipe.name) + ".zip",
-      ),
-    );
-
-    return true;
-  }
-
-  void _showDeleteDialog(BuildContext context, String /*!*/ /*!*/ recipeName) {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(S.of(context).delete_recipe),
-        content: Text(
-          S.of(context).sure_you_want_to_delete_this_recipe + " $recipeName",
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text(S.of(context).no),
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).textTheme.bodyLarge!.color,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          TextButton(
-            child: Text(S.of(context).yes),
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).textTheme.bodyLarge!.color,
-              backgroundColor: Colors.red[600],
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-              BlocProvider.of<RecipeManagerBloc>(context)
-                  .add(RMDeleteRecipe(recipe.name, deleteFiles: true));
-              Future.delayed(Duration(milliseconds: 60)).then((_) async {
-                await IO.deleteRecipeData(recipe.name);
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _getRecipeAsString(Recipe recipe, BuildContext context) {
-    String recipeText = '${S.of(context).recipe_name}: ${recipe.name}\n';
-    if (recipe.preperationTime != 0 ||
-        recipe.cookingTime != 0 ||
-        recipe.totalTime != 0)
-      recipeText += '====================\n';
-    if (recipe.preperationTime != 0)
-      recipeText +=
-          '${S.of(context).prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}\n';
-    if (recipe.cookingTime != 0)
-      recipeText +=
-          '${S.of(context).cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)} min\n';
-    if (recipe.totalTime != 0)
-      recipeText +=
-          '${S.of(context).total_time}: ${getTimeHoursMinutes(recipe.totalTime)} min\n'
-              '====================\n' +
-          (recipe.servings == null
-              ? S.of(context).ingredients + ":"
-              : '${S.of(context).ingredients_for} ${recipe.servings} ${recipe.servingName ?? S.of(context).servings}:\n');
-    if (recipe.ingredientsGlossary.isNotEmpty) {
-      for (int i = 0; i < recipe.ingredientsGlossary.length; i++) {
-        recipeText +=
-            '${S.of(context).ingredients}: ${recipe.ingredientsGlossary[i]}:\n';
-        for (int j = 0; j < recipe.ingredients[i].length; j++) {
-          recipeText +=
-              '${recipe.ingredients[i][j].amount ?? ""} '
-              '${recipe.ingredients[i][j].unit ?? ""} '
-              '${recipe.ingredients[i][j].name}\n';
-        }
-        recipeText += '====================\n';
-      }
-    } else if (recipe.ingredients.first.isNotEmpty) {
-      for (int j = 0; j < recipe.ingredients.first.length; j++) {
-        recipeText +=
-            '${recipe.ingredients.first[j].amount} '
-            '${recipe.ingredients.first[j].unit ?? ""}\n';
-      }
-      recipeText += '====================\n';
-    }
-
-    if (recipe.stepTitles == null) {
-      return _getStepsString(recipe.steps);
-    }
-
-    for (int i = 0; i < recipe.stepTitles!.length; i++) {
-      if (i == 0 || recipe.stepTitles![i] != "") {
-        int nextTitleIndex = recipe.stepTitles!.length;
-        if (i + 1 < recipe.stepTitles!.length) {
-          String? nextTitle = recipe.stepTitles!
-              .sublist(i + 1)
-              .firstWhereOrNull((e) => e != "");
-          if (nextTitle == null) {
-            nextTitleIndex = recipe.stepTitles!.length;
-          } else {
-            nextTitleIndex =
-                recipe.stepTitles!.sublist(i + 1).indexOf(nextTitle) + i + 1;
-          }
-        }
-        if (recipe.stepTitles![i] != "") {
-          recipeText += "-> ${recipe.stepTitles![i]}\n <-";
-        }
-        recipeText += _getStepsString(recipe.steps.sublist(i, nextTitleIndex));
-      }
-    }
-
-    if (recipe.tags.isNotEmpty) {
-      recipeText += '====================\n${S.of(context).tags}: ';
-      for (StringIntTuple tag in recipe.tags) {
-        if (!(tag == recipe.tags.last)) {
-          recipeText += '${tag.text}, ';
-        } else {
-          recipeText += '${tag.text}';
-        }
-      }
-    }
-    if (recipe.notes != '') {
-      recipeText += '====================\n';
-      recipeText += '${S.of(context).notes}: ${recipe.notes}\n';
-    }
-    if (recipe.source != null && recipe.source != '') {
-      recipeText += '====================\n';
-      recipeText += '${S.of(context).source}: ${recipe.source}\n';
-    }
-
-    return recipeText;
-  }
-
-  String _getStepsString(List<String> steps) {
-    String stepsString = "";
-    for (int i = 0; i < steps.length; i++) {
-      stepsString += "${i + 1}. ${steps[i]}\n";
-    }
-    return stepsString;
-  }
-}
-
-class RecipePage extends StatelessWidget {
-  final Recipe /*!*/ recipe;
-  final String? heroImageTag;
-  final List<String>? categoriesFiles;
-  final ScrollController? scrollController;
-
-  RecipePage({
+class _RecipeScaffold extends StatelessWidget {
+  const _RecipeScaffold({
     required this.recipe,
-    this.heroImageTag,
-    this.categoriesFiles,
-    this.scrollController,
+    required this.heroImageTag,
+    required this.scrollController,
+    required this.selectedSection,
+    required this.onSectionChanged,
   });
 
+  final Recipe recipe;
+  final String? heroImageTag;
+  final ScrollController scrollController;
+  final RecipeDetailSection selectedSection;
+  final ValueChanged<RecipeDetailSection> onSectionChanged;
+
   @override
   Widget build(BuildContext context) {
-    return BlocListener<RecipeCalendarBloc, RecipeCalendarState>(
-      listener: (context, state) {
-        final Tuple2<DateTime, String>? addedRecipe =
-            state is LoadedRecipeCalendarWeek ? state.addedRecipe : null;
-        if (addedRecipe != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                S
-                    .of(context)
-                    .undo_added_to_planner_description(
-                      addedRecipe.item2,
-                      addedRecipe.item1.year.toString(),
-                      addedRecipe.item1.month.toString(),
-                      addedRecipe.item1.day.toString(),
-                    ),
-              ),
-              action: SnackBarAction(
-                label: S.of(context).undo,
-                onPressed: () {
-                  BlocProvider.of<RecipeCalendarBloc>(context).add(
-                    RemoveRecipeFromDateEvent(
-                      addedRecipe.item1,
-                      addedRecipe.item2,
-                    ),
-                  );
-                },
-              ),
-            ),
-          );
-        }
-      },
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          MediaQuery.of(context).size.width > 550
-              ? Container(
-                  width: (MediaQuery.of(context).size.width * 0.4 > 350)
-                      ? 350
-                      : MediaQuery.of(context).size.width * 0.4,
-                  decoration: BoxDecoration(color: Colors.grey[900]),
-                  child: RecipeInfoVertical(
-                    recipe,
-                    (MediaQuery.of(context).size.width * 0.45 > 350)
-                        ? 350
-                        : MediaQuery.of(context).size.width * 0.45,
-                    categoriesFiles!,
-                    heroImageTag,
-                  ),
-                )
-              : null,
-          MediaQuery.of(context).size.width > 1000
-              ? Container(
-                  height: double.infinity,
-                  width: 370,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(vegetableColor[recipe.vegetable]![0]),
-                        Color(vegetableColor[recipe.vegetable]![1]),
-                      ],
-                    ),
-                  ),
-                  child: ListView(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 0.0),
-                        child: IngredientsScreen(
-                          currentRecipe: recipe,
-                          animationWaitTime: MyIntWrapper(0),
-                          addToCartIngredients: [],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : null,
-          MediaQuery.of(context).size.width > 1000
-              ? Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xff672B00), Color(0xff3A1900)],
-                      ),
-                    ),
-                    child: ListView(
-                      controller: scrollController,
-                      children: <Widget>[
-                        StepsSection(
-                          recipe.steps,
-                          recipe.stepTitles,
-                          recipe.stepImages,
-                          recipe.name,
-                          expandHeight: true,
-                          ingredients: recipe.ingredients,
-                          stepIngredientIds: recipe.stepIngredientIds,
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              : null,
-          MediaQuery.of(context).size.width > 1000
-              ? null
-              : Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: MediaQuery.of(context).size.width > 550
-                          ? null
-                          : Color(0xff51473b),
-                      gradient: MediaQuery.of(context).size.width > 550
-                          ? LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomCenter,
-                              colors: [Color(0xff672B00), Color(0xff3A1900)],
-                            )
-                          : null,
-                    ),
-                    child: CustomScrollView(
-                      controller: scrollController,
-                      slivers: [
-                        MediaQuery.of(context).size.width > 550
-                            ? null
-                            : SliverAppBar(
-                                flexibleSpace: MyGradientAppBar(recipe),
-                                floating: true,
-                              ),
-                        SliverList(
-                          delegate: SliverChildListDelegate(
-                            [
-                              Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Color(
-                                        vegetableColor[recipe.vegetable]![0],
-                                      ),
-                                      Color(
-                                        vegetableColor[recipe.vegetable]![1],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    MediaQuery.of(context).size.width > 550
-                                        ? null
-                                        : GestureDetector(
-                                            onTap: () {
-                                              _showPictureFullView(
-                                                recipe.imagePath,
-                                                heroImageTag,
-                                                context,
-                                              );
-                                            },
-                                            child: Container(
-                                              height: 270,
-                                              child: Stack(
-                                                children: <Widget>[
-                                                  Hero(
-                                                    tag:
-                                                        GlobalSettings()
-                                                            .animationsEnabled()
-                                                        ? heroImageTag!
-                                                        : "heroImageTag2",
-                                                    child: Material(
-                                                      color: Colors.transparent,
-                                                      child: ClipPath(
-                                                        clipper: MyClipper(),
-                                                        child: Container(
-                                                          height: 250,
-                                                          child:
-                                                              recipe.imagePath ==
-                                                                  Constants
-                                                                      .noRecipeImage
-                                                              ? Image.asset(
-                                                                  Constants
-                                                                      .noRecipeImage,
-                                                                  width: double
-                                                                      .infinity,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                )
-                                                              : Image.file(
-                                                                  File(
-                                                                    recipe
-                                                                        .imagePath,
-                                                                  ),
-                                                                  width: double
-                                                                      .infinity,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.bottomRight,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                            bottom: 8.0,
-                                                            right: 8.0,
-                                                          ),
-                                                      child: AnimatedVegetable(
-                                                        recipe.vegetable,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                    MediaQuery.of(context).size.width > 550
-                                        ? null
-                                        : Align(
-                                            alignment: Alignment.topCenter,
-                                            child: Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.15,
-                                                0,
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.15,
-                                                0,
-                                              ),
-                                              child: Text(
-                                                recipe.name,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  color: textColor,
-                                                  fontSize: 27,
-                                                  fontFamily:
-                                                      recipeScreenFontFamily,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                    MediaQuery.of(context).size.width > 550
-                                        ? null
-                                        : SizedBox(height: 30),
-                                    MediaQuery.of(context).size.width > 550
-                                        ? null
-                                        : Center(
-                                            child: TopSectionRecipe(
-                                              preperationTime:
-                                                  recipe.preperationTime,
-                                              cookingTime: recipe.cookingTime,
-                                              totalTime: recipe.totalTime,
-                                              effort: recipe.effort,
-                                              recipeTags: recipe.tags,
-                                            ),
-                                          ),
-                                    MediaQuery.of(context).size.width > 550
-                                        ? null
-                                        : SizedBox(height: 20),
-                                    IngredientsScreen(
-                                      currentRecipe: recipe,
-                                      animationWaitTime: MyIntWrapper(0),
-                                      addToCartIngredients: [],
-                                    ),
-                                    SizedBox(height: 30),
-                                  ].whereType<Widget>().toList(),
-                                ),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  gradient:
-                                      MediaQuery.of(context).size.width <= 550
-                                      ? LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            Color(0xff672B00),
-                                            Color(0xff3A1900),
-                                          ],
-                                        )
-                                      : null,
-                                ),
-                                child: StepsSection(
-                                  recipe.steps,
-                                  recipe.stepTitles,
-                                  recipe.stepImages,
-                                  recipe.name,
-                                  ingredients: recipe.ingredients,
-                                  stepIngredientIds: recipe.stepIngredientIds,
-                                ),
-                              ),
-                              (recipe.notes != "" ||
-                                          recipe.categories.isNotEmpty ||
-                                          recipe.source != null) &&
-                                      MediaQuery.of(context).size.width <= 550
-                                  ? Container(
-                                      height: 20,
-                                      decoration: BoxDecoration(
-                                        color: Colors.black87,
-                                      ),
-                                    )
-                                  : null,
-                              recipe.notes != "" &&
-                                      MediaQuery.of(context).size.width <= 550
-                                  ? NotesSection(notes: recipe.notes)
-                                  : null,
-                              recipe.source != null &&
-                                      recipe.source != "" &&
-                                      MediaQuery.of(context).size.width <= 550
-                                  ? RecipeSource(recipe.source)
-                                  : null,
-                              recipe.categories.length > 0 &&
-                                      MediaQuery.of(context).size.width <= 550
-                                  ? CategoriesSection(
-                                      categories: recipe.categories,
-                                      categoriesFiles: categoriesFiles!,
-                                    )
-                                  : null,
-                            ].whereType<Widget>().toList(),
-                          ),
-                        ),
-                      ].whereType<Widget>().toList(),
-                    ),
-                  ),
-                ),
-        ].whereType<Widget>().toList(),
-      ),
-    );
-  }
-
-  void _showPictureFullView(String image, String? tag, BuildContext context) {
-    Ads.showBottomBannerAd();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Ads().getAdPage(
-          GalleryPhotoView(
-            initialIndex: 0,
-            galleryImagePaths: [image],
-            descriptions: [''],
-            heroTags: [tag!],
-          ),
-          context,
+    final palette = CulinaryEditorialPalette.of(context);
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return Theme(
+      data: culinaryEditorialTheme(Theme.of(context), palette),
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
+          statusBarBrightness: dark ? Brightness.dark : Brightness.light,
+          systemNavigationBarColor: palette.background,
+          systemNavigationBarIconBrightness: dark
+              ? Brightness.light
+              : Brightness.dark,
         ),
-      ),
-    ).then((_) => Ads.hideBottomBannerAd());
-  }
-}
-
-class RecipeSource extends StatelessWidget {
-  final String? source;
-
-  const RecipeSource(this.source, {Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Container(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
-                  child: Icon(Icons.cloud_circle),
-                ),
-                Expanded(
-                  child: RichText(
-                    text: TextSpan(
-                      text: source,
-                      style: TextStyle(color: Colors.blue),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          launchUrl(Uri.parse(source!));
-                        },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          decoration: BoxDecoration(
-            color: Colors.black38,
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class TopSectionRecipe extends StatelessWidget {
-  final double preperationTime;
-  final double cookingTime;
-  final double totalTime;
-  final int? effort;
-  final List<StringIntTuple>? recipeTags;
-
-  const TopSectionRecipe({
-    this.preperationTime = 0,
-    this.cookingTime = 0,
-    this.totalTime = 0,
-    this.effort,
-    this.recipeTags,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width > 450
-            ? 450
-            : MediaQuery.of(context).size.width,
-        child: Column(
-          children: <Widget>[
-            _showComplexTopArea(preperationTime, cookingTime, totalTime)
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Spacer(),
-                      TimeInfo(
-                        textColor,
-                        recipeScreenFontFamily,
-                        preperationTime,
-                        totalTime,
-                        cookingTime,
-                      ),
-                      Spacer(),
-                      TimeInfoChart(
-                        textColor,
-                        preperationTime,
-                        cookingTime,
-                        totalTime,
-                        recipeScreenFontFamily,
-                      ),
-                      Spacer(),
-                      ComplexityWave(
-                        textColor,
-                        recipeScreenFontFamily,
-                        effort!,
-                      ),
-                      Spacer(),
-                    ],
-                  )
-                : Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: TimeComplexityCompressed(
-                      preperationTime,
-                      cookingTime,
-                      totalTime,
-                      effort,
-                      recipeScreenFontFamily,
-                    ),
-                  ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 15.0),
-              child: RecipeTagWrap(recipeTags!, recipeScreenFontFamily),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// method which determines if the circular chart and complexity termometer should be
-/// shown or only a minimal version
-bool _showComplexTopArea(
-  double preperationTime,
-  double cookingTime,
-  double totalTime,
-) {
-  int validator = 0;
-
-  if (preperationTime != 0) validator++;
-  if (cookingTime != 0) validator++;
-  if (totalTime != 0) validator++;
-  if (preperationTime == totalTime || cookingTime == totalTime) return false;
-  if (validator > 1) return true;
-  return false;
-}
-
-class CategoriesSection extends StatelessWidget {
-  final List<String> categories;
-  final List<String> categoriesFiles;
-
-  CategoriesSection({required this.categories, required this.categoriesFiles});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width > 450
-            ? 450
-            : MediaQuery.of(context).size.width,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20, top: 30, bottom: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                S.of(context).categories,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 24,
-                  fontFamily: recipeScreenFontFamily,
-                ),
-              ),
-              SizedBox(height: 25),
-              Wrap(
-                children: List<Widget>.generate(
-                  categories.length,
-                  (index) => categoriesFiles.isEmpty
-                      ? CircularProgressIndicator()
-                      : CategoryCircle(
-                          categoryName: categories[index],
-                          imageName: categoriesFiles[index],
-                          onPressed: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteNames.recipeCategories,
-                              arguments: RecipeGridViewArguments(
-                                category: categories[index],
-                                shoppingCartBloc:
-                                    BlocProvider.of<ShoppingCartBloc>(context),
-                                recipeCalendarBloc:
-                                    BlocProvider.of<RecipeCalendarBloc>(
-                                      context,
-                                    ),
-                              ),
-                            );
-                          },
-                        ),
-                ),
-                runSpacing: 10.0,
-                spacing: 10.0,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class StepsSection extends StatelessWidget {
-  final List<List<String>> stepImages;
-  final List<String>? stepTitles;
-  final List<String> steps;
-  final String recipeName;
-  final bool expandHeight;
-  final List<List<Ingredient>> ingredients;
-  final List<List<String>> stepIngredientIds;
-
-  final List<Color> stepsColors = [
-    Color(0xff28B404),
-    Color(0xff009BDE),
-    Color(0xffE3B614),
-    Color(0xff8600C5),
-  ];
-
-  StepsSection(
-    this.steps,
-    this.stepTitles,
-    this.stepImages,
-    this.recipeName, {
-    this.expandHeight = false,
-    this.ingredients = const [],
-    this.stepIngredientIds = const [],
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (steps.isEmpty) return Container();
-    return FutureBuilder<List<List<String>>>(
-      future: PathProvider.pP.getRecipeStepPreviewPathList(
-        stepImages,
-        recipeName,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 40,
-                decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.3)),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 12.0),
-                      child: Text(
-                        S.of(context).directions,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: headingSize,
-                          fontFamily: recipeScreenFontFamily,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 15),
-              GlobalSettings().showStepsIntro() ? StepsIntro() : null,
-              Center(
-                child: Container(
-                  width: MediaQuery.of(context).size.width > 500
-                      ? 500
-                      : MediaQuery.of(context).size.width,
-                  child: AnimatedStepper(
-                    steps,
-                    stepTitles,
-                    stepImages: stepImages,
-                    fontFamily: recipeScreenFontFamily,
-                    lowResStepImages: snapshot.data,
-                    ingredients: ingredients,
-                    stepIngredientIds: stepIngredientIds,
-                  ),
-                ),
-              ),
-              SizedBox(height: 25),
-            ].whereType<Widget>().toList(),
-          );
-        } else {
-          return Container(
-            height: 200,
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-      },
-    );
-  }
-}
-
-class StepsIntro extends StatefulWidget {
-  StepsIntro({Key? key}) : super(key: key);
-
-  @override
-  _StepsIntroState createState() => _StepsIntroState();
-}
-
-class _StepsIntroState extends State<StepsIntro> {
-  bool show = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return show
-        ? Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.brown,
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
+        child: Scaffold(
+          backgroundColor: palette.background,
+          body: SafeArea(
+            bottom: false,
+            child: BlocListener<RecipeCalendarBloc, RecipeCalendarState>(
+              listener: _showCalendarConfirmation,
+              child: Column(
+                children: [
+                  _RecipeDetailHeader(recipe: recipe),
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        S.of(context).steps_intro,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: recipeScreenFontFamily,
-                        ),
-                      ),
-                    ),
-                  ),
-                  ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: IconButton(
-                        icon: Icon(Icons.check, color: Colors.white),
-                        onPressed: () {
-                          SharedPreferences.getInstance().then(
-                            (prefs) => setState(() {
-                              prefs.setBool("showStepsIntro", false);
-                              GlobalSettings().hasSeenStepIntro(true);
-                              show = false;
-                            }),
-                          );
-                        },
-                      ),
+                    child: EditorialRecipeDetailBody(
+                      recipe: recipe,
+                      heroImageTag: heroImageTag,
+                      scrollController: scrollController,
+                      selectedSection: selectedSection,
+                      onSectionChanged: onSectionChanged,
                     ),
                   ),
                 ],
               ),
             ),
-          )
-        : Container();
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showCalendarConfirmation(
+    BuildContext context,
+    RecipeCalendarState state,
+  ) {
+    final addedRecipe = switch (state) {
+      LoadedRecipeCalendarWeek() => state.addedRecipe,
+      _ => null,
+    };
+    if (addedRecipe == null) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          S
+              .of(context)
+              .undo_added_to_planner_description(
+                addedRecipe.item2,
+                addedRecipe.item1.year.toString(),
+                addedRecipe.item1.month.toString(),
+                addedRecipe.item1.day.toString(),
+              ),
+        ),
+        action: SnackBarAction(
+          label: S.of(context).undo,
+          onPressed: () => context.read<RecipeCalendarBloc>().add(
+            RemoveRecipeFromDateEvent(addedRecipe.item1, addedRecipe.item2),
+          ),
+        ),
+      ),
+    );
   }
 }
 
-class IngredientsScreen extends StatelessWidget {
-  final Recipe currentRecipe;
-  final MyIntWrapper animationWaitTime;
-  final List<Ingredient> addToCartIngredients;
+class _RecipeDetailHeader extends StatelessWidget {
+  const _RecipeDetailHeader({required this.recipe});
 
-  const IngredientsScreen({
-    Key? key,
-    required this.currentRecipe,
-    // needs to be initialized with 0
-    required this.animationWaitTime,
-    // needs to be initialized with an empty list
-    required this.addToCartIngredients,
-  }) : super(key: key);
+  final Recipe recipe;
 
-  List<Widget> getIngredientsSection(
-    List<CheckableIngredient> ingredients,
-    bool oneSection,
-    BuildContext context,
-  ) {
-    return [SizedBox(height: oneSection ? 0 : 15)]..addAll(
-      ingredients.map(
-        (currentIngredient) => Padding(
-          padding: const EdgeInsets.only(right: 20),
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: palette.background,
+        boxShadow: [
+          BoxShadow(
+            color: palette.shadow,
+            blurRadius: 10,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: SizedBox(
+        height: 64,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: LikeButton(
-                  circleColor: CircleColor(
-                    start: Colors.green[300]!,
-                    end: Colors.green[800]!,
-                  ),
-                  bubblesColor: BubblesColor(
-                    dotPrimaryColor: Colors.green[200]!,
-                    dotSecondaryColor: Colors.green[600]!,
-                    dotLastColor: Colors.green[900],
-                  ),
-                  animationDuration: Duration(milliseconds: 500),
-                  isLiked: currentIngredient.checked,
-                  likeBuilder: (bool isChecked) {
-                    return Icon(
-                      isChecked ? Icons.check_circle : Icons.add_circle_outline,
-                      color: isChecked ? Colors.green : Colors.white,
-                    );
-                  },
-                  onTap: (bool isChecked) async {
-                    if (!isChecked) {
-                      _pressIngredient(currentIngredient, context);
-                      return true;
-                    } else {
-                      _pressIngredient(
-                        currentIngredient.copyWith(checked: true),
-                        context,
-                      );
-                      return false;
-                    }
-                  },
-                ),
+            children: [
+              IconButton(
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(Icons.arrow_back),
               ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(9),
+                child: Image.asset('images/icon.png', width: 36, height: 36),
+              ),
+              const SizedBox(width: 10),
               Expanded(
-                child: Container(
-                  child: Text(
-                    currentIngredient.name,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontFamily: recipeScreenFontFamily,
-                    ),
+                child: Text(
+                  S.of(context).recipe_detail,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CulinaryEditorialType.headline(
+                    palette,
+                    size: 19,
+                    weight: FontWeight.w600,
                   ),
                 ),
               ),
-              Container(width: 12),
-              Container(
-                width: 80,
-                child: Text(
-                  "${currentIngredient.amount == null ? "" : (GlobalSettings().showDecimal() ? cutDouble(currentIngredient.amount!) : getFractionDouble(currentIngredient.amount!))} "
-                  "${currentIngredient.unit == null ? "" : currentIngredient.unit}",
-                  textAlign: TextAlign.end,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontFamily: recipeScreenFontFamily,
+              PopupMenuButton<PopupOptionsShare>(
+                key: const Key('recipe-share-button'),
+                tooltip: S.of(context).share_recipe,
+                icon: const Icon(Icons.share_outlined),
+                onSelected: (value) => _share(value, context),
+                itemBuilder: (context) => [
+                  _shareItem(
+                    PopupOptionsShare.exportText,
+                    Icons.text_snippet_outlined,
+                    S.of(context).export_text,
                   ),
-                ),
+                  _shareItem(
+                    PopupOptionsShare.exportZip,
+                    Icons.folder_zip_outlined,
+                    S.of(context).export_zip,
+                  ),
+                  _shareItem(
+                    PopupOptionsShare.exportPdf,
+                    Icons.picture_as_pdf_outlined,
+                    S.of(context).export_pdf,
+                  ),
+                ],
+              ),
+              BlocBuilder<RecipeModsBloc, RecipeModsState>(
+                builder: (context, modsState) {
+                  final canEdit = modsState is UnblockModsState;
+                  return BlocBuilder<RecipeBubbleBloc, RecipeBubbleState>(
+                    builder: (context, bubbleState) {
+                      final pinned =
+                          bubbleState is LoadedRecipeBubbles &&
+                          bubbleState.recipes.contains(recipe);
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (!canEdit)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 4),
+                              child: SizedBox.square(
+                                dimension: 24,
+                                child: SpinningSyncIcon(),
+                              ),
+                            ),
+                          PopupMenuButton<_RecipeMoreAction>(
+                            key: const Key('recipe-more-actions'),
+                            tooltip: S.of(context).recipe_more_actions,
+                            icon: const Icon(Icons.more_vert),
+                            onSelected: (value) =>
+                                _handleMoreAction(context, value, bubbleState),
+                            itemBuilder: (context) => [
+                              _moreItem(
+                                _RecipeMoreAction.calendar,
+                                Icons.event_available_outlined,
+                                S.of(context).add_to_calendar,
+                              ),
+                              _moreItem(
+                                _RecipeMoreAction.pin,
+                                pinned
+                                    ? MdiIcons.pinOffOutline
+                                    : MdiIcons.pinOutline,
+                                pinned
+                                    ? S.of(context).unpin_recipe
+                                    : S.of(context).pin_recipe,
+                              ),
+                              if (canEdit)
+                                _moreItem(
+                                  _RecipeMoreAction.edit,
+                                  Icons.edit_outlined,
+                                  S.of(context).edit,
+                                ),
+                              _moreItem(
+                                _RecipeMoreAction.print,
+                                Icons.print_outlined,
+                                S.of(context).print_recipe,
+                              ),
+                              _moreItem(
+                                _RecipeMoreAction.delete,
+                                Icons.delete_outline,
+                                S.of(context).delete_recipe,
+                                destructive: true,
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
             ],
           ),
@@ -1521,439 +375,281 @@ class IngredientsScreen extends StatelessWidget {
     );
   }
 
-  /// adds or removes the ingredient to/from the shopping cart and changes its
-  /// checked status
-  void _pressIngredient(
-    CheckableIngredient ingredient,
+  PopupMenuItem<PopupOptionsShare> _shareItem(
+    PopupOptionsShare value,
+    IconData icon,
+    String label,
+  ) {
+    return PopupMenuItem(
+      value: value,
+      child: Row(
+        children: [Icon(icon), const SizedBox(width: 12), Text(label)],
+      ),
+    );
+  }
+
+  PopupMenuItem<_RecipeMoreAction> _moreItem(
+    _RecipeMoreAction value,
+    IconData icon,
+    String label, {
+    bool destructive = false,
+  }) {
+    return PopupMenuItem(
+      value: value,
+      child: Row(
+        children: [
+          Icon(icon, color: destructive ? Colors.red : null),
+          const SizedBox(width: 12),
+          Text(label, style: TextStyle(color: destructive ? Colors.red : null)),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleMoreAction(
     BuildContext context,
+    _RecipeMoreAction action,
+    RecipeBubbleState bubbleState,
   ) async {
-    if (ingredient.checked) {
-      Future.delayed(Duration(milliseconds: animationWaitTime.myInt)).then(
-        (_) => BlocProvider.of<RecipeScreenIngredientsBloc>(
-          context,
-        ).add(RemoveFromCart(currentRecipe.name, [ingredient.getIngredient()])),
-      );
-    } else {
-      addToCartIngredients.add(ingredient.getIngredient());
-      animationWaitTime.myInt += 500;
-      await Future.delayed(Duration(milliseconds: 500));
-      animationWaitTime.myInt -= 500;
-      if (animationWaitTime.myInt > 0) {
-        return;
-      }
-
-      BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
-        AddToCart(
-          currentRecipe.name,
-          addToCartIngredients.map((e) => e).toList(),
-          servings:
-              (BlocProvider.of<RecipeScreenIngredientsBloc>(context).state
-                      as LoadedRecipeIngredients)
-                  .servings,
-        ),
-      );
-      addToCartIngredients.clear();
-    }
-  }
-
-  List<Widget> getIngredientsData(
-    List<List<CheckableIngredient>> ingredients,
-    List<bool>? sectionCheck,
-    BuildContext context,
-  ) {
-    List<Widget> output = [];
-    bool oneSection = ingredients.isEmpty;
-    int iterations;
-
-    if (ingredients.length == 1) {
-      iterations = 1;
-    } else {
-      iterations = min(
-        ingredients.length,
-        currentRecipe.ingredientsGlossary.length,
-      );
-    }
-
-    for (int i = 0; i < iterations; i++) {
-      // for (int i = 0; i < widget.currentRecipe.ingredientsGlossary.length; i++) {
-      List<CheckableIngredient> sectionIngredients = ingredients[i];
-      output.add(
-        Padding(
-          padding: EdgeInsets.only(
-            top: oneSection ? 5 : 15,
-            left: 45,
-            right: 12,
+    switch (action) {
+      case _RecipeMoreAction.calendar:
+        final date = await showOmniDateTimePicker(
+          context: context,
+          initialDate: DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  "${currentRecipe.ingredientsGlossary.isNotEmpty ? currentRecipe.ingredientsGlossary[i] : ''}",
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 24,
-                    fontFamily: recipeScreenFontFamily,
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: sectionCheck![i]
-                    ? Icon(Icons.shopping_cart)
-                    : Icon(Icons.add_shopping_cart),
-                tooltip: S.of(context).add_to_cart,
-                onPressed: () {
-                  _pressAddSection(
-                    sectionIngredients
-                        .map((ingred) => ingred.getIngredient())
-                        .toList(),
-                    sectionCheck[i],
-                    context,
-                  );
-                },
-                color: sectionCheck[i] ? Colors.green : textColor,
-              ),
-            ],
-          ),
-        ),
-      );
-
-      output.addAll(getIngredientsSection(ingredients[i], oneSection, context));
-    }
-
-    return output;
-  }
-
-  void _pressAddSection(
-    List<Ingredient> ingredients,
-    bool isChecked,
-    BuildContext context,
-  ) {
-    if (isChecked) {
-      BlocProvider.of<RecipeScreenIngredientsBloc>(context)
-          .add(RemoveFromCart(currentRecipe.name, ingredients));
-    } else {
-      BlocProvider.of<RecipeScreenIngredientsBloc>(context).add(
-        AddToCart(
-          currentRecipe.name,
-          ingredients,
-          servings:
-              (BlocProvider.of<RecipeScreenIngredientsBloc>(context).state
-                      as LoadedRecipeIngredients)
-                  .servings,
-        ),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List<Ingredient> allIngredients = flattenIngredients(
-      currentRecipe.ingredients,
-    );
-    if (allIngredients.isEmpty) return Container();
-    return BlocBuilder<
-      RecipeScreenIngredientsBloc,
-      RecipeScreenIngredientsState
-    >(
-      builder: (context, state) {
-        if (state is InitialRecipeScreenIngredientsState) {
-          return Center(child: CircularProgressIndicator());
-        } else if (state is LoadedRecipeIngredients) {
-          return Column(
-            children:
-                <Widget>[
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(0, 0, 0, 0.3),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8, right: 8),
-                          child: Center(
-                            child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: state.servings == null
-                                  ? [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 12.0,
-                                        ),
-                                        child: Text(
-                                          S.of(context).ingredients,
-                                          style: TextStyle(
-                                            color: textColor,
-                                            fontSize: headingSize,
-                                            fontFamily: recipeScreenFontFamily,
-                                          ),
-                                        ),
-                                      ),
-                                    ]
-                                  : <Widget>[
-                                      Text(
-                                        S.of(context).ingredients_for,
-                                        style: TextStyle(
-                                          color: textColor,
-                                          fontSize: headingSize,
-                                          fontFamily: recipeScreenFontFamily,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                          Icons.remove_circle_outline,
-                                          color: Colors.white,
-                                        ),
-                                        tooltip: S
-                                            .of(context)
-                                            .decrease_servings,
-                                        onPressed: () {
-                                          _updateServings(
-                                            state.servings,
-                                            state.servings! - 1,
-                                            context,
-                                          );
-                                        },
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) => NumberDialog(
-                                              prefilledText: state.servings!
-                                                  .toStringAsFixed(1),
-                                              validation: (String? value) {
-                                                if (value == null) return null;
-                                                if (getDoubleFromString(
-                                                      value,
-                                                    ) !=
-                                                    null) {
-                                                  return null;
-                                                } else {
-                                                  return S
-                                                      .of(context)
-                                                      .no_valid_number;
-                                                }
-                                              },
-                                              save: (String servingsString) {
-                                                _updateServings(
-                                                  state.servings,
-                                                  getDoubleFromString(
-                                                    servingsString,
-                                                  )!,
-                                                  context,
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        },
-                                        child: Text(
-                                          '${state.servings!.toStringAsFixed(1)}',
-                                          style: TextStyle(
-                                            color: textColor,
-                                            fontSize: headingSize,
-                                            fontFamily: recipeScreenFontFamily,
-                                          ),
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                          Icons.add_circle_outline,
-                                          color: Colors.white,
-                                        ),
-                                        tooltip: S
-                                            .of(context)
-                                            .increase_servings,
-                                        onPressed: () {
-                                          _updateServings(
-                                            state.servings,
-                                            state.servings! + 1,
-                                            context,
-                                          );
-                                        },
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0,
-                                        ),
-                                        child: Text(
-                                          currentRecipe.servingName ??
-                                              S.of(context).servings,
-                                          style: TextStyle(
-                                            color: textColor,
-                                            fontSize: headingSize,
-                                            fontFamily: recipeScreenFontFamily,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ]..add(
-                  Center(
-                    child: Container(
-                      width: 400,
-                      child: Column(
-                        children: getIngredientsData(
-                          state.ingredients,
-                          state.sectionCheck,
-                          context,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-          );
-        } else {
-          return Text(state.toString());
-        }
-      },
-    );
-  }
-
-  void _updateServings(
-    double? oldServings,
-    double newServings,
-    BuildContext context,
-  ) {
-    if (newServings <= 0) return;
-    BlocProvider.of<RecipeScreenIngredientsBloc>(context)
-        .add(UpdateServings(oldServings, newServings));
-  }
-}
-
-class Favorite extends StatelessWidget {
-  final Recipe recipe;
-  final double? iconSize;
-  final Function addFavorite;
-  final Function removeFavorite;
-
-  Favorite(
-    this.recipe, {
-    required this.addFavorite,
-    required this.removeFavorite,
-    this.iconSize,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return LikeButton(
-      size: iconSize == null ? 24 : iconSize!,
-      isLiked: context.read<LocalRepository>().isRecipeFavorite(recipe.name),
-      likeBuilder: (bool isFavorite) {
-        return Icon(
-          isFavorite ? Icons.favorite : Icons.favorite_border,
-          color: isFavorite ? Colors.pink : Colors.white,
+          is24HourMode: true,
         );
-      },
-      onTap: (bool isFavorite) async {
-        if (!isFavorite) {
-          addFavorite();
-          return true;
-        } else {
-          removeFavorite();
-          return false;
+        if (date != null && context.mounted) {
+          context.read<RecipeCalendarBloc>().add(
+            AddRecipeToCalendarEvent(date, recipe.name),
+          );
         }
-      },
+      case _RecipeMoreAction.pin:
+        _togglePin(context, bubbleState);
+      case _RecipeMoreAction.edit:
+        await _editRecipe(context);
+      case _RecipeMoreAction.print:
+        final pdf = await getRecipePdf(recipe, context);
+        await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf);
+      case _RecipeMoreAction.delete:
+        await _showDeleteDialog(context);
+    }
+  }
+
+  void _togglePin(BuildContext context, RecipeBubbleState state) {
+    if (state is! LoadedRecipeBubbles) return;
+    final pinned = state.recipes.contains(recipe);
+    if (!pinned && state.recipes.length == 3) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(S.of(context).maximum_recipe_pin_count_exceeded),
+            action: SnackBarAction(
+              label: S.of(context).dismiss,
+              onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar,
+            ),
+          ),
+        );
+      return;
+    }
+    context.read<RecipeBubbleBloc>().add(
+      pinned ? RemoveRecipeBubble([recipe]) : AddRecipeBubble([recipe]),
     );
+    if (!pinned) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(S.of(context).recipe_pinned_to_overview),
+            action: SnackBarAction(
+              label: S.of(context).dismiss,
+              onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar,
+            ),
+          ),
+        );
+    }
+  }
+
+  Future<void> _editRecipe(BuildContext context) async {
+    Ads.hideBottomBannerAd();
+    await context.read<LocalRepository>().saveTmpEditingRecipe(recipe);
+    if (!context.mounted) return;
+    context.read<AdManagerBloc>().add(LoadVideo());
+    await Navigator.pushNamed(
+      context,
+      RouteNames.addRecipeGeneralInfo,
+      arguments: GeneralInfoArguments(
+        recipe,
+        context.read<ShoppingCartBloc>(),
+        context.read<RecipeCalendarBloc>(),
+        editingRecipeName: recipe.name,
+      ),
+    );
+    Ads.showBottomBannerAd();
+  }
+
+  Future<void> _share(PopupOptionsShare value, BuildContext context) async {
+    switch (value) {
+      case PopupOptionsShare.exportText:
+        await SharePlus.instance.share(
+          ShareParams(
+            text: _recipeAsText(context),
+            subject: stringReplaceSpaceUnderscore(recipe.name),
+          ),
+        );
+      case PopupOptionsShare.exportZip:
+        final zipPath = await io_operations.saveRecipeZip(
+          await PathProvider.pP.getShareDir(),
+          recipe.name,
+          context.read<LocalRepository>(),
+        );
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(zipPath)],
+            subject: '${stringReplaceSpaceUnderscore(recipe.name)}.zip',
+          ),
+        );
+      case PopupOptionsShare.exportPdf:
+        final pdf = await getRecipePdf(recipe, context);
+        await Printing.sharePdf(
+          bytes: pdf,
+          filename: '${stringReplaceSpaceUnderscore(recipe.name)}.pdf',
+        );
+    }
+  }
+
+  Future<void> _showDeleteDialog(BuildContext context) async {
+    await showDialog<void>(
+      barrierDismissible: false,
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(S.of(context).delete_recipe),
+        content: Text(
+          '${S.of(context).sure_you_want_to_delete_this_recipe} ${recipe.name}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(S.of(context).no),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red[700]),
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Navigator.pop(context);
+              context.read<RecipeManagerBloc>().add(
+                RMDeleteRecipe(recipe.name, deleteFiles: true),
+              );
+              Future.delayed(const Duration(milliseconds: 60))
+                  .then((_) => io_operations.deleteRecipeData(recipe.name));
+            },
+            child: Text(S.of(context).yes),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _recipeAsText(BuildContext context) {
+    final buffer = StringBuffer()
+      ..writeln('${S.of(context).recipe_name}: ${recipe.name}')
+      ..writeln('====================');
+    if (recipe.preperationTime > 0) {
+      buffer.writeln(
+        '${S.of(context).prep_time}: ${getTimeHoursMinutes(recipe.preperationTime)}',
+      );
+    }
+    if (recipe.cookingTime > 0) {
+      buffer.writeln(
+        '${S.of(context).cook_time}: ${getTimeHoursMinutes(recipe.cookingTime)}',
+      );
+    }
+    if (recipe.totalTime > 0) {
+      buffer.writeln(
+        '${S.of(context).total_time}: ${getTimeHoursMinutes(recipe.totalTime)}',
+      );
+    }
+    buffer
+      ..writeln('====================')
+      ..writeln(
+        recipe.servings == null
+            ? '${S.of(context).ingredients}:'
+            : '${S.of(context).ingredients_for} ${recipe.servings} ${recipe.servingName ?? S.of(context).servings}:',
+      );
+    for (var section = 0; section < recipe.ingredients.length; section++) {
+      if (section < recipe.ingredientsGlossary.length &&
+          recipe.ingredientsGlossary[section].isNotEmpty) {
+        buffer.writeln(recipe.ingredientsGlossary[section]);
+      }
+      for (final ingredient in recipe.ingredients[section]) {
+        buffer.writeln(
+          [ingredient.amount, ingredient.unit, ingredient.name]
+              .where((part) => part != null && part.toString().isNotEmpty)
+              .join(' '),
+        );
+      }
+    }
+    if (recipe.steps.isNotEmpty) {
+      buffer
+        ..writeln('====================')
+        ..writeln('${S.of(context).directions}:');
+      for (var index = 0; index < recipe.steps.length; index++) {
+        final title = index < (recipe.stepTitles?.length ?? 0)
+            ? recipe.stepTitles![index]
+            : '';
+        if (title.isNotEmpty) buffer.writeln(title);
+        buffer.writeln('${index + 1}. ${recipe.steps[index]}');
+      }
+    }
+    if (recipe.tags.isNotEmpty) {
+      buffer
+        ..writeln('====================')
+        ..writeln(
+          '${S.of(context).tags}: ${recipe.tags.map((tag) => tag.text).join(', ')}',
+        );
+    }
+    if (recipe.notes.isNotEmpty) {
+      buffer
+        ..writeln('====================')
+        ..writeln('${S.of(context).notes}: ${recipe.notes}');
+    }
+    if (recipe.source?.isNotEmpty == true) {
+      buffer
+        ..writeln('====================')
+        ..writeln('${S.of(context).source}: ${recipe.source}');
+    }
+    return buffer.toString();
   }
 }
 
-class MyClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = new Path();
-    path.lineTo(0.0, size.height * 0.8);
-    path.quadraticBezierTo(
-      size.width / 4,
-      size.height,
-      size.width / 2,
-      size.height,
-    );
-    path.quadraticBezierTo(
-      size.width / 4 * 3,
-      size.height,
-      size.width,
-      size.height * 0.8,
-    );
-    path.lineTo(size.width, 0);
-    path.lineTo(0, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
-bool containsList(List<Ingredient> list, List<Ingredient> contains) {
-  for (int i = 0; i < contains.length; i++) {
-    if (!list.contains(contains[i])) return false;
-  }
-  return true;
-}
-
-class Indicator extends StatelessWidget {
-  final Color? color;
-  final String? text;
-  final bool? isSquare;
-  final double size;
-  final Color textColor;
-
-  const Indicator({
-    Key? key,
-    this.color,
-    this.text,
-    this.isSquare,
-    this.size = 16,
-    this.textColor = const Color(0xff505050),
-  }) : super(key: key);
-
+class _UnavailableRecipeScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: isSquare! ? BoxShape.rectangle : BoxShape.circle,
-            color: color,
+    final palette = CulinaryEditorialPalette.of(context);
+    return Theme(
+      data: culinaryEditorialTheme(Theme.of(context), palette),
+      child: Scaffold(
+        backgroundColor: palette.background,
+        appBar: AppBar(title: Text(S.of(context).recipe_detail)),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 22),
+            child: IconInfoMessage(
+              iconWidget: const Icon(
+                MdiIcons.alertCircle,
+                color: Colors.red,
+                size: 70,
+              ),
+              description: S.of(context).recipe_edited_or_deleted,
+            ),
           ),
         ),
-        const SizedBox(width: 4),
-        Text(
-          text!,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-        ),
-      ],
+      ),
     );
   }
-}
-
-class RoundEdgeShoppingCartClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    return Path()
-      ..lineTo(0.0, 240)
-      ..quadraticBezierTo(10, 200, 50, 200)
-      ..lineTo(size.width - 50, 200)
-      ..quadraticBezierTo(size.width - 10, 200, size.width, 240)
-      ..lineTo(size.width, 0)
-      ..lineTo(0, 0)
-      ..close();
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

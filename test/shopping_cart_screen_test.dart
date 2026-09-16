@@ -49,7 +49,7 @@ void main() {
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await harness.pump(tester);
 
-      expect(find.text('shopping list'), findsOneWidget);
+      expect(find.text('Shopping list'), findsOneWidget);
       expect(find.text('Gathering for 2 recipes'), findsOneWidget);
       expect(find.text('0 of 2 items gathered'), findsOneWidget);
       expect(find.text('Carrot'), findsOneWidget);
@@ -77,7 +77,7 @@ void main() {
                     .currentServings ==
                 3,
           );
-      await tester.tap(find.byTooltip('increase servings').first);
+      await tester.tap(find.byTooltip('Increase servings').first);
       await tester.runAsync(() => updated);
       await tester.pumpAndSettle();
       expect(
@@ -104,7 +104,7 @@ void main() {
               (item) => item.name == 'Olive oil',
             ),
           );
-      await tester.tap(find.text('add'));
+      await tester.tap(find.text('Add'));
       await tester.runAsync(() => added);
       await tester.pumpAndSettle();
       expect(find.text('Olive oil'), findsOneWidget);
@@ -113,7 +113,7 @@ void main() {
       await tester.tap(find.byTooltip('More shopping-list actions'));
       await tester.pumpAndSettle();
       expect(find.text('Search recipes'), findsOneWidget);
-      expect(find.text('shoppingcart help'), findsOneWidget);
+      expect(find.text('Shoppingcart help'), findsOneWidget);
       await tester.tapAt(const Offset(10, 10));
       await tester.pumpAndSettle();
 
@@ -121,8 +121,8 @@ void main() {
         find.byTooltip('Add ingredient with amount, unit, or recipe'),
       );
       await tester.pump(const Duration(milliseconds: 300));
-      expect(find.text('ingredient'), findsOneWidget);
-      await tester.tap(find.text('cancel'));
+      expect(find.text('Ingredient'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
     },
   );
@@ -173,7 +173,7 @@ void main() {
               state.undoSnapshot == null &&
               state.data.consolidatedItems.any((item) => item.name == 'Carrot'),
         );
-    await tester.tap(find.text('undo'));
+    await tester.tap(find.text('Undo'));
     await tester.runAsync(() => restored);
     await tester.pumpAndSettle();
     expect(find.text('Carrot'), findsOneWidget);
@@ -195,6 +195,24 @@ void main() {
     expect(find.text('Einfache Liste'), findsOneWidget);
     expect(find.text('Nach Rezept'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('empty cart does not scroll when its content fits', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(430, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await harness.pump(tester);
+
+    final scrollable = tester.state<ScrollableState>(
+      find
+          .descendant(
+            of: find.byKey(const PageStorageKey('culinary-shopping-cart')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    expect(scrollable.position.maxScrollExtent, 0);
   });
 
   testWidgets('keep-awake is released when leaving the shopping tab', (
@@ -226,7 +244,7 @@ void main() {
 
     for (final theme in [MyThemeKeys.DARK, MyThemeKeys.OLEDBLACK]) {
       await harness.pump(tester, themeKey: theme);
-      expect(find.text('shopping list'), findsOneWidget);
+      expect(find.text('Shopping list'), findsOneWidget);
       expect(find.text('Carrot'), findsOneWidget);
       expect(tester.takeException(), isNull);
     }

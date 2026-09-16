@@ -20,14 +20,9 @@ class Consts {
   static const double padding = 16.0;
 }
 
-class RecipeTagSection extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _RecipeTagSectionState();
-  }
-}
+class RecipeTagSection extends StatelessWidget {
+  const RecipeTagSection({super.key});
 
-class _RecipeTagSectionState extends State<RecipeTagSection> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RecipeTagManagerBloc, RecipeTagManagerState>(
@@ -39,18 +34,18 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
             children: <Widget>[
               // heading for the recipeTag selector section
               Padding(
-                padding: const EdgeInsets.only(left: 56, right: 6, top: 8),
+                padding: const EdgeInsets.only(top: 8),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(
-                      S.of(context).select_recipe_tags,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                    Expanded(
+                      child: Text(
+                        S.of(context).select_recipe_tags,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                    Spacer(),
                     IconButton(
                       icon: Icon(Icons.add_circle_outline),
                       onPressed: () {
@@ -108,15 +103,16 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
                   children: state.recipeTags.map((recipeTag) {
                     return MyRecipeTagFilterChip(
                       recipeTag: recipeTag,
-                      isSelected: BlocProvider.of<RecipeTagManagerBloc>(context)
-                          .selectedTags
-                          .contains(recipeTag),
-                      onSelect: (_) =>
-                          BlocProvider.of<RecipeTagManagerBloc>(context)
-                              .add(SelectRecipeTag(recipeTag)),
-                      onDeselect: (_) =>
-                          BlocProvider.of<RecipeTagManagerBloc>(context)
-                              .add(UnselectRecipeTag(recipeTag)),
+                      isSelected: state.selectedTags.any(
+                        (selectedTag) => selectedTag.text == recipeTag.text,
+                      ),
+                      onSelected: (isSelected) {
+                        context.read<RecipeTagManagerBloc>().add(
+                          isSelected
+                              ? SelectRecipeTag(recipeTag)
+                              : UnselectRecipeTag(recipeTag),
+                        );
+                      },
                     );
                   }).toList(),
                 ),
@@ -132,52 +128,26 @@ class _RecipeTagSectionState extends State<RecipeTagSection> {
 }
 
 // creates a filterClip with the given name
-class MyRecipeTagFilterChip extends StatefulWidget {
-  final StringIntTuple? recipeTag;
-  final isSelected;
-  final Function(StringIntTuple? name) onSelect;
-  final Function(StringIntTuple? name) onDeselect;
+class MyRecipeTagFilterChip extends StatelessWidget {
+  final StringIntTuple recipeTag;
+  final bool isSelected;
+  final ValueChanged<bool> onSelected;
 
-  MyRecipeTagFilterChip({
-    Key? key,
-    this.recipeTag,
-    this.isSelected,
-    required this.onSelect,
-    required this.onDeselect,
+  const MyRecipeTagFilterChip({
+    super.key,
+    required this.recipeTag,
+    required this.isSelected,
+    required this.onSelected,
   });
-
-  @override
-  State<StatefulWidget> createState() {
-    return _MyRecipeTagFilterChipState();
-  }
-}
-
-class _MyRecipeTagFilterChipState extends State<MyRecipeTagFilterChip> {
-  bool? _isSelected = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _isSelected = widget.isSelected;
-  }
 
   @override
   Widget build(BuildContext context) {
     return FilterChip(
-      label: Text(widget.recipeTag!.text),
-      backgroundColor: Color(widget.recipeTag!.number),
-      selected: _isSelected!,
-      onSelected: (isSelected) {
-        setState(() {
-          if (_isSelected == true) {
-            widget.onDeselect(widget.recipeTag);
-          } else {
-            widget.onSelect(widget.recipeTag);
-          }
-          _isSelected = isSelected;
-        });
-      },
+      key: ValueKey('recipe-tag-${recipeTag.text}'),
+      label: Text(recipeTag.text),
+      backgroundColor: Color(recipeTag.number),
+      selected: isSelected,
+      onSelected: onSelected,
     );
   }
 }

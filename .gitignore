@@ -95,3 +95,9 @@
 # credentials and local Android configuration remain ignored above.
 !lib/ad_related/ad_id.dart
 !android/app/src/main/AndroidManifest.xml
+# Widget Preview related
+.widget_preview/
+
+redesigns
+.impeccable/
+.impeccable

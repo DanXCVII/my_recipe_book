@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
@@ -57,21 +55,15 @@ class NutritionsBloc extends Bloc<NutritionsEvent, NutritionsState> {
         }
 
         if (!event.goBack) {
-          if (event.editingRecipeName == null) {
-            event.recipeManagerBloc.add(RMAddRecipes([newRecipe!]));
-          } else {
-            event.recipeManagerBloc.add(
-              RMDeleteRecipe(event.editingRecipeName!, deleteFiles: false),
-            );
-            await Future.delayed(Duration(milliseconds: 100));
-            newRecipe = await IO.fixImagePaths(nutritionRecipe);
-            if (event.editingRecipeName != newRecipe.name) {
-              await IO.deleteRecipeData(event.editingRecipeName!);
-            }
-            imageCache.clear();
-            await repository.deleteTmpEditingRecipe();
-            event.recipeManagerBloc.add(RMAddRecipes([newRecipe]));
+          newRecipe = await IO.fixImagePaths(nutritionRecipe);
+          if (event.editingRecipeName != newRecipe.name) {
+            await IO.deleteRecipeData(event.editingRecipeName!);
           }
+          imageCache.clear();
+          await repository.deleteTmpEditingRecipe();
+          event.recipeManagerBloc.add(
+            RMUpdateRecipe(event.editingRecipeName!, newRecipe),
+          );
         }
       }
 

@@ -29,6 +29,8 @@ import '../local_storage/io_operations.dart' as IO;
 import '../util/my_wrapper.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/dialogs/info_dialog.dart';
+import '../widgets/culinary_editorial_theme.dart';
+import '../widgets/floating_home_navigation_bar.dart';
 import '../widgets/recipe_bubble.dart';
 import '../widgets/recipe_calendar_floating.dart';
 import '../widgets/search.dart';
@@ -260,7 +262,10 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               if (appBlocState is LoadingState) {
                 return _getSplashScreen();
               } else if (appBlocState is LoadedState) {
+                final isCompactLayout =
+                    MediaQuery.sizeOf(context).width <= GC.sideBarWidth;
                 return Scaffold(
+                  extendBody: isCompactLayout,
                   appBar: _buildAppBar(
                     appBlocState.selectedIndex,
                     appBlocState.recipeCategoryOverview,
@@ -291,13 +296,19 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       : null,
                   body: Row(
                     children: ([
-                      MediaQuery.of(context).size.width > GC.sideBarWidth
-                          ? VerticalSideBar(
-                              appBlocState.selectedIndex == 2
-                                  ? 0
-                                  : appBlocState.selectedIndex,
-                              appBlocState.shoppingCartOpen,
-                              appBlocState.recipeCalendarOpen,
+                      !isCompactLayout
+                          ? SafeArea(
+                              left: false,
+                              right: false,
+                              bottom: false,
+                              top: appBlocState.selectedIndex == 4,
+                              child: VerticalSideBar(
+                                appBlocState.selectedIndex == 2
+                                    ? 0
+                                    : appBlocState.selectedIndex,
+                                appBlocState.shoppingCartOpen,
+                                appBlocState.recipeCalendarOpen,
+                              ),
                             )
                           : null,
                       Expanded(
@@ -311,7 +322,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                   : CategoryGridView(),
                             ),
                             FavoriteScreen(),
-                            MediaQuery.of(context).size.width <= GC.sideBarWidth
+                            isCompactLayout
                                 ? FancyShoppingCartScreen(shoppingCartImage)
                                 : Container(),
                             SwypingCardsScreen(),
@@ -324,102 +335,34 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   backgroundColor: _getBackgroundColor(
                     appBlocState.selectedIndex,
                   ),
-                  bottomNavigationBar:
-                      MediaQuery.of(context).size.width <= GC.sideBarWidth
-                      ? MediaQuery.of(context).size.width < 346
-                            ? BottomNavigationBar(
-                                backgroundColor: Color(0xff232323),
-                                currentIndex: appBlocState.selectedIndex,
-                                onTap: (index) => _onItemTapped(index, context),
-                                items: [
-                                  BottomNavigationBarItem(
-                                    icon: Icon(MdiIcons.notebook),
-                                    label: S.of(context).recipes,
-                                    activeIcon: Icon(
-                                      MdiIcons.notebook,
-                                      color: Colors.orange,
-                                    ),
-                                  ),
-                                  BottomNavigationBarItem(
-                                    icon: Icon(Icons.favorite),
-                                    label: S.of(context).favorites,
-                                    activeIcon: Icon(
-                                      Icons.favorite,
-                                      color: Colors.pink,
-                                    ),
-                                  ),
-                                  BottomNavigationBarItem(
-                                    icon: Icon(Icons.shopping_basket),
-                                    label: S.of(context).basket,
-                                    activeIcon: Icon(
-                                      Icons.shopping_basket,
-                                      color: Colors.brown[300],
-                                    ),
-                                  ),
-                                  BottomNavigationBarItem(
-                                    icon: Icon(MdiIcons.diceMultiple),
-                                    label: S.of(context).explore,
-                                    activeIcon: Icon(
-                                      MdiIcons.diceMultiple,
-                                      color: Colors.green,
-                                    ),
-                                  ),
-                                  BottomNavigationBarItem(
-                                    icon: Icon(Icons.settings),
-                                    label: S.of(context).settings,
-                                    activeIcon: Icon(
-                                      Icons.settings,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Theme(
-                                data: Theme.of(context)
-                                    .copyWith(canvasColor: Colors.black87),
-                                child: BottomNavyBar(
-                                  backgroundColor: Color(0xff232323),
-                                  animationDuration: Duration(
-                                    milliseconds: 150,
-                                  ),
-                                  selectedIndex: appBlocState.selectedIndex,
-                                  showElevation: true,
-                                  onItemSelected: (index) =>
-                                      _onItemTapped(index, context),
-                                  items: [
-                                    BottomNavyBarItem(
-                                      icon: Icon(MdiIcons.notebook),
-                                      title: Text(S.of(context).recipes),
-                                      activeColor: Colors.orange,
-                                      inactiveColor: Colors.white,
-                                    ),
-                                    BottomNavyBarItem(
-                                      icon: Icon(Icons.favorite),
-                                      title: Text(S.of(context).favorites),
-                                      activeColor: Colors.pink,
-                                      inactiveColor: Colors.white,
-                                    ),
-                                    BottomNavyBarItem(
-                                      icon: Icon(Icons.shopping_basket),
-                                      title: Text(S.of(context).basket),
-                                      activeColor: Colors.brown[300],
-                                      inactiveColor: Colors.white,
-                                    ),
-                                    BottomNavyBarItem(
-                                      icon: Icon(MdiIcons.diceMultiple),
-                                      title: Text(S.of(context).explore),
-                                      activeColor: Colors.green,
-                                      inactiveColor: Colors.white,
-                                    ),
-                                    BottomNavyBarItem(
-                                      icon: Icon(Icons.settings),
-                                      title: Text(S.of(context).settings),
-                                      activeColor: Colors.grey[100],
-                                      inactiveColor: Colors.white,
-                                    ),
-                                  ],
-                                ),
-                              )
+                  bottomNavigationBar: isCompactLayout
+                      ? FloatingHomeNavigationBar(
+                          selectedIndex: appBlocState.selectedIndex,
+                          onDestinationSelected: (index) =>
+                              _onItemTapped(index, context),
+                          destinations: [
+                            FloatingHomeNavigationDestination(
+                              icon: MdiIcons.notebook,
+                              label: S.of(context).recipes,
+                            ),
+                            FloatingHomeNavigationDestination(
+                              icon: Icons.bookmark_rounded,
+                              label: S.of(context).favorites,
+                            ),
+                            FloatingHomeNavigationDestination(
+                              icon: Icons.shopping_basket,
+                              label: S.of(context).basket,
+                            ),
+                            FloatingHomeNavigationDestination(
+                              icon: MdiIcons.diceMultiple,
+                              label: S.of(context).explore,
+                            ),
+                            FloatingHomeNavigationDestination(
+                              icon: Icons.settings,
+                              label: S.of(context).settings,
+                            ),
+                          ],
+                        )
                       : null,
                 );
               } else {
@@ -464,7 +407,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   ) {
     // if shoppingCartPage with sliverAppBar
 
-    if (currentIndex == 2) {
+    if (currentIndex == 1 || currentIndex == 2 || currentIndex == 4) {
       return null;
     } else if (currentIndex == 3 && MediaQuery.of(context).size.height < 730)
       return null;
@@ -591,18 +534,11 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     if (selectedIndex == 0) {
       return Theme.of(context).scaffoldBackgroundColor;
     } else if (selectedIndex == 1) {
-      // if bright theme
-      if (Theme.of(context).colorScheme.surface == Colors.white) {
-        return Theme.of(context).scaffoldBackgroundColor;
-      } // if dark theme
-      else if (Theme.of(context).colorScheme.surface == Color(0xff212225)) {
-        return Color(0xff58153D);
-      } // if oledBlack theme
-      else {
-        return Color(0xff43112F);
-      }
+      return CulinaryEditorialPalette.of(context).background;
     } else if (selectedIndex == 2) {
       return Theme.of(context).scaffoldBackgroundColor;
+    } else if (selectedIndex == 4) {
+      return CulinaryEditorialPalette.of(context).background;
     }
     return Theme.of(context).scaffoldBackgroundColor;
   }
@@ -913,180 +849,4 @@ class RecipeBubbles extends StatelessWidget {
       },
     );
   }
-}
-
-// ---------------------
-
-class BottomNavyBar extends StatelessWidget {
-  final int selectedIndex;
-  final double iconSize;
-  final Color? backgroundColor;
-  final bool showElevation;
-  final Duration animationDuration;
-  final List<BottomNavyBarItem> items;
-  final ValueChanged<int> onItemSelected;
-  final MainAxisAlignment mainAxisAlignment;
-  final double itemCornerRadius;
-  final Curve curve;
-
-  BottomNavyBar({
-    Key? key,
-    this.selectedIndex = 0,
-    this.showElevation = true,
-    this.iconSize = 24,
-    this.backgroundColor,
-    this.itemCornerRadius = 50,
-    this.animationDuration = const Duration(milliseconds: 270),
-    this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
-    required this.items,
-    required this.onItemSelected,
-    this.curve = Curves.linear,
-  }) {
-    assert(items.length >= 2 && items.length <= 5);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bgColor = (backgroundColor == null)
-        ? Theme.of(context).bottomAppBarTheme.color
-        : backgroundColor;
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.black87, Colors.grey[900]!],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          if (showElevation)
-            const BoxShadow(color: Colors.black12, blurRadius: 2),
-        ],
-      ),
-      child: SafeArea(
-        child: Container(
-          width: double.infinity,
-          height: 56,
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-          child: Row(
-            mainAxisAlignment: mainAxisAlignment,
-            children: items.map((item) {
-              var index = items.indexOf(item);
-              return GestureDetector(
-                onTap: () => onItemSelected(index),
-                child: _ItemWidget(
-                  item: item,
-                  iconSize: iconSize,
-                  isSelected: index == selectedIndex,
-                  backgroundColor: bgColor!,
-                  itemCornerRadius: itemCornerRadius,
-                  animationDuration: animationDuration,
-                  curve: curve,
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ItemWidget extends StatelessWidget {
-  final double iconSize;
-  final bool isSelected;
-  final BottomNavyBarItem item;
-  final Color backgroundColor;
-  final double itemCornerRadius;
-  final Duration animationDuration;
-  final Curve curve;
-
-  const _ItemWidget({
-    Key? key,
-    required this.item,
-    required this.isSelected,
-    required this.backgroundColor,
-    required this.animationDuration,
-    required this.itemCornerRadius,
-    required this.iconSize,
-    this.curve = Curves.linear,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      width: isSelected ? 130 : 50,
-      height: double.maxFinite,
-      duration: animationDuration,
-      curve: curve,
-      decoration: BoxDecoration(
-        color: isSelected
-            ? item.activeColor!.withValues(alpha: 0.2)
-            : Colors.transparent,
-        gradient: LinearGradient(
-          colors: isSelected
-              ? [item.activeColor!, item.activeColor!.withValues(alpha: 0.8)]
-              : [Colors.transparent, Colors.transparent],
-        ),
-        borderRadius: BorderRadius.circular(itemCornerRadius),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        physics: NeverScrollableScrollPhysics(),
-        child: Container(
-          width: isSelected ? 130 : 50,
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              IconTheme(
-                data: IconThemeData(
-                  size: iconSize,
-                  color: isSelected
-                      ? item.activeColor
-                      : item.inactiveColor == null
-                      ? item.activeColor
-                      : item.inactiveColor,
-                ),
-                child: item.icon,
-              ),
-              if (isSelected)
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 4),
-                    child: DefaultTextStyle.merge(
-                      style: TextStyle(
-                        color: item.activeColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      textAlign: item.textAlign,
-                      child: item.title,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class BottomNavyBarItem {
-  final Icon icon;
-  final Text title;
-  final Color? activeColor;
-  final Color? inactiveColor;
-  final TextAlign? textAlign;
-
-  BottomNavyBarItem({
-    required this.icon,
-    required this.title,
-    this.activeColor = Colors.blue,
-    this.textAlign,
-    this.inactiveColor,
-  });
 }

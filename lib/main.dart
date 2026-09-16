@@ -297,6 +297,7 @@ class MyApp extends StatelessWidget {
                       RecipeScreen(
                         heroImageTag: args.heroImageTag,
                         initialScrollOffset: args.initialScrollOffset,
+                        initialSection: args.initialSection,
                       ),
                       context,
                     ),
@@ -565,7 +566,11 @@ class MyApp extends StatelessWidget {
                     builder: (context) => MultiBlocProvider(
                       providers: [
                         BlocProvider<IngredientSearchBloc>(
-                          create: (context) => IngredientSearchBloc(repository),
+                          create: (context) => IngredientSearchBloc(
+                            repository: repository,
+                            recipeManagerBloc: context
+                                .read<RecipeManagerBloc>(),
+                          ),
                         ),
                         BlocProvider<ShoppingCartBloc>.value(
                           value: args.shoppingCartBloc,

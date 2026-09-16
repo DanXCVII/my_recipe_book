@@ -8,6 +8,7 @@ import '../blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import '../constants/global_constants.dart' as constants;
 import '../generated/l10n.dart';
 import 'culinary_editorial_theme.dart';
+import 'recipe_editor/editorial_image_remove_button.dart';
 
 class ImageSelector extends StatefulWidget {
   const ImageSelector({
@@ -90,9 +91,10 @@ class _ImageSelectorState extends State<ImageSelector> {
                       Image.file(
                         selectedImageFile!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            Image.asset(constants.noRecipeImage,
-                                fit: BoxFit.cover),
+                        errorBuilder: (_, __, ___) => Image.asset(
+                          constants.noRecipeImage,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                       const DecoratedBox(
                         decoration: BoxDecoration(
@@ -110,8 +112,10 @@ class _ImageSelectorState extends State<ImageSelector> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.photo_camera_outlined,
-                                  color: Colors.white),
+                              const Icon(
+                                Icons.photo_camera_outlined,
+                                color: Colors.white,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 S.of(context).change_cover_photo,
@@ -126,14 +130,13 @@ class _ImageSelectorState extends State<ImageSelector> {
                       ),
                       Align(
                         alignment: Alignment.topRight,
-                        child: IconButton.filledTonal(
+                        child: EditorialImageRemoveButton(
                           tooltip: MaterialLocalizations.of(context)
                               .deleteButtonTooltip,
                           onPressed: () {
                             widget.onCancel();
                             setState(() => selectedImageFile = null);
                           },
-                          icon: const Icon(Icons.close),
                         ),
                       ),
                     ],

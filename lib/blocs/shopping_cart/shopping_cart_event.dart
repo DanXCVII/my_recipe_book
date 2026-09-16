@@ -24,9 +24,9 @@ class CleanAddIngredients extends ShoppingCartEvent {
 }
 
 class MergeShoppingCartRecipes extends ShoppingCartEvent {
-  final List<ShoppingCartRecipeAddition> additions;
-
   const MergeShoppingCartRecipes(this.additions);
+
+  final List<ShoppingCartRecipeAddition> additions;
 
   @override
   List<Object> get props => [additions];

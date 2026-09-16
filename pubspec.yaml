@@ -37,7 +37,6 @@ dependencies:
   shared_preferences: ^2.5.5 # BSD
   archive: ^4.0.5 # Apache 2.0
   file_picker: ^12.3.0 # MIT
-  bottom_navy_bar: ^6.0.0 # Apache 2.0
   intro_slider: ^4.2.1 # MIT
   autocomplete_textfield_ns: ^2.0.0 # MIT
   # Hive CE is retained only for importing databases created by Hive 2.

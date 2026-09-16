@@ -47,7 +47,12 @@ class CategoryGridView extends StatelessWidget {
               },
               child: GridView.extent(
                 maxCrossAxisExtent: 220,
-                padding: const EdgeInsets.all(4),
+                padding: EdgeInsets.fromLTRB(
+                  4,
+                  4,
+                  4,
+                  4 + MediaQuery.paddingOf(context).bottom,
+                ),
                 mainAxisSpacing: 4,
                 crossAxisSpacing: 4,
                 children: getCategories(state.categories, context),

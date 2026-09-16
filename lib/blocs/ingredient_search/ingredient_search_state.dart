@@ -1,25 +1,31 @@
 part of 'ingredient_search_bloc.dart';
 
 abstract class IngredientSearchState extends Equatable {
-  const IngredientSearchState();
+  const IngredientSearchState(this.criteria);
+
+  final IngredientSearchCriteria criteria;
+
+  @override
+  List<Object?> get props => [criteria];
 }
 
 class IngredientSearchInitial extends IngredientSearchState {
-  @override
-  List<Object> get props => [];
+  const IngredientSearchInitial(super.criteria);
 }
 
 class SearchingRecipes extends IngredientSearchState {
-  @override
-  List<Object> get props => [];
+  const SearchingRecipes(super.criteria);
 }
 
 class IngredientSearchMatches extends IngredientSearchState {
-  final List<Tuple2<int, Recipe>> tupleMatchesRecipe;
-  final int totalIngredAmount;
+  const IngredientSearchMatches(super.criteria, this.results);
 
-  IngredientSearchMatches(this.tupleMatchesRecipe, this.totalIngredAmount);
+  final List<IngredientSearchResult> results;
 
   @override
-  List<Object> get props => [tupleMatchesRecipe];
+  List<Object?> get props => [...super.props, results];
+}
+
+class IngredientSearchFailure extends IngredientSearchState {
+  const IngredientSearchFailure(super.criteria);
 }

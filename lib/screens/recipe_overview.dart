@@ -20,6 +20,7 @@ import '../models/recipe.dart';
 import '../models/recipe_sort.dart';
 import '../models/string_int_tuple.dart';
 import '../widgets/recipe_overview/editorial_recipe_card.dart';
+import '../widgets/recipe_overview/recipe_layout_switch.dart';
 import '../widgets/recipe_overview/recipe_overview_theme.dart';
 import 'recipe_screen.dart';
 
@@ -186,7 +187,9 @@ class _RecipeGridViewState extends State<RecipeGridView> {
             : width < 900
             ? 3
             : 4;
-        final horizontalPadding = 20.0 + math.max(0, (width - 1200) / 2);
+        final isCompact = width < 600;
+        final horizontalPadding =
+            (isCompact ? 10.0 : 20.0) + math.max(0, (width - 1200) / 2);
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(
             horizontalPadding,
@@ -196,8 +199,8 @@ class _RecipeGridViewState extends State<RecipeGridView> {
           ),
           sliver: SliverMasonryGrid.count(
             crossAxisCount: crossAxisCount,
-            mainAxisSpacing: 14,
-            crossAxisSpacing: 12,
+            mainAxisSpacing: isCompact ? 6 : 14,
+            crossAxisSpacing: isCompact ? 6 : 12,
             childCount: state.visibleRecipes.length,
             itemBuilder: (context, index) => _cardFor(
               context,
@@ -258,6 +261,8 @@ class _RecipeGridViewState extends State<RecipeGridView> {
       heroImageTag: '$contextKey-${recipe.name}',
       layout: layout,
       onOpen: () => _openRecipe(context, recipe, '$contextKey-${recipe.name}'),
+      onCookAction: () =>
+          _openRecipe(context, recipe, '$contextKey-${recipe.name}'),
       onBookmarkToggle: () {
         final manager = context.read<RecipeManagerBloc>();
         manager.add(
@@ -452,7 +457,10 @@ class _OverviewControls extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    _ViewSwitch(layout: layout, onChanged: onLayoutChanged),
+                    RecipeLayoutSwitch(
+                      layout: layout,
+                      onChanged: onLayoutChanged,
+                    ),
                     const SizedBox(width: 9),
                     Expanded(
                       child: _InlineSearch(controller: searchController),
@@ -565,113 +573,6 @@ class _OverviewControls extends StatelessWidget {
 
   int _dietCount(Vegetable vegetable) =>
       state.allRecipes.where((recipe) => recipe.vegetable == vegetable).length;
-}
-
-class _ViewSwitch extends StatelessWidget {
-  const _ViewSwitch({required this.layout, required this.onChanged});
-
-  final RecipeOverviewCardLayout layout;
-  final ValueChanged<RecipeOverviewCardLayout> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = RecipeOverviewPalette.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: palette.surfaceContainer,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _ViewChoice(
-            key: const Key('recipe-overview-grid-toggle'),
-            icon: Icons.grid_view_rounded,
-            label: S.of(context).grid_view,
-            selected: layout == RecipeOverviewCardLayout.grid,
-            onTap: () => onChanged(RecipeOverviewCardLayout.grid),
-          ),
-          _ViewChoice(
-            key: const Key('recipe-overview-list-toggle'),
-            icon: Icons.view_agenda_outlined,
-            label: S.of(context).list_view,
-            selected: layout == RecipeOverviewCardLayout.list,
-            onTap: () => onChanged(RecipeOverviewCardLayout.list),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ViewChoice extends StatelessWidget {
-  const _ViewChoice({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = RecipeOverviewPalette.of(context);
-    return Semantics(
-      button: true,
-      selected: selected,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(999),
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: MediaQuery.disableAnimationsOf(context)
-              ? Duration.zero
-              : const Duration(milliseconds: 180),
-          curve: Curves.easeOutCubic,
-          height: 48,
-          padding: const EdgeInsets.symmetric(horizontal: 9),
-          decoration: BoxDecoration(
-            color: selected ? palette.surface : Colors.transparent,
-            borderRadius: BorderRadius.circular(999),
-            boxShadow: selected
-                ? [
-                    BoxShadow(
-                      color: palette.shadow,
-                      offset: const Offset(0, 1),
-                      blurRadius: 5,
-                    ),
-                  ]
-                : null,
-          ),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                size: 17,
-                color: selected ? palette.primary : palette.onSurfaceVariant,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                label,
-                style: RecipeOverviewType.body(
-                  palette,
-                  size: 11,
-                  weight: selected ? FontWeight.w700 : FontWeight.w500,
-                  color: selected
-                      ? palette.onSurface
-                      : palette.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _InlineSearch extends StatelessWidget {

@@ -12,12 +12,14 @@ class RecipeScreenIngredientsBloc
     extends Bloc<RecipeScreenIngredientsEvent, RecipeScreenIngredientsState> {
   final ShoppingCartBloc shoppingCartBloc;
   final LocalRepository repository;
+  String? _recipeName;
 
   RecipeScreenIngredientsBloc({
     required this.shoppingCartBloc,
     required this.repository,
   }) : super(InitialRecipeScreenIngredientsState()) {
     on<InitializeIngredients>((event, emit) async {
+      _recipeName = event.recipeName;
       List<List<CheckableIngredient>> checkableIngredients = [[]];
 
       for (int i = 0; i < event.ingredients.length; i++) {
@@ -129,27 +131,41 @@ class RecipeScreenIngredientsBloc
 
     on<UpdateServings>((event, emit) async {
       if (state is LoadedRecipeIngredients) {
-        final List<List<CheckableIngredient>> ingredients =
-            (state as LoadedRecipeIngredients).ingredients
-                .map(
-                  (list) => list.map((item) {
-                    if (item.amount != null) {
-                      return item.copyWith(
-                        amount:
-                            (event.newServings / event.oldServings!) *
-                            item.amount!,
-                      );
-                    }
-                    return item;
-                  }).toList(),
-                )
-                .toList();
+        final loaded = state as LoadedRecipeIngredients;
+        final hasCartIngredients = loaded.ingredients
+            .expand((section) => section)
+            .any((ingredient) => ingredient.checked);
+        if (hasCartIngredients && _recipeName != null) {
+          try {
+            await repository.updateShoppingCartServings(
+              _recipeName!,
+              event.newServings,
+            );
+            shoppingCartBloc.add(LoadShoppingCart());
+          } on StateError {
+            // A stale checked state can outlive a removed cart source. The
+            // visible recipe quantities should still remain adjustable.
+          }
+        }
+        final List<List<CheckableIngredient>> ingredients = loaded.ingredients
+            .map(
+              (list) => list.map((item) {
+                if (item.amount != null) {
+                  return item.copyWith(
+                    amount:
+                        (event.newServings / event.oldServings!) * item.amount!,
+                  );
+                }
+                return item;
+              }).toList(),
+            )
+            .toList();
 
         emit(
           LoadedRecipeIngredients(
             ingredients,
             event.newServings,
-            (state as LoadedRecipeIngredients).sectionCheck,
+            loaded.sectionCheck,
           ),
         );
       }

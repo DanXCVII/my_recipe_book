@@ -93,14 +93,7 @@ class _CalendarExportPreviewSheetState
   Widget build(BuildContext context) {
     final palette = CulinaryEditorialPalette.of(context);
     final baseTheme = Theme.of(context);
-    final editorialTheme = baseTheme.copyWith(
-      colorScheme: baseTheme.colorScheme.copyWith(
-        primary: palette.primary,
-        onPrimary: palette.onPrimary,
-        secondary: palette.secondary,
-        surface: palette.surface,
-        onSurface: palette.onSurface,
-      ),
+    final editorialTheme = culinaryEditorialTheme(baseTheme, palette).copyWith(
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith(
           (states) =>

@@ -180,7 +180,7 @@ void main() {
     expect(find.byType(Checkbox), findsNWidgets(2));
     await tester.tap(find.byType(Checkbox).at(0));
     await tester.tap(find.byType(Checkbox).at(1));
-    await tester.tap(find.text('done'));
+    await tester.tap(find.text('Done'));
     await tester.pumpAndSettle();
 
     expect((bloc.state as LoadedStepImages).stepIngredientIds.single, [

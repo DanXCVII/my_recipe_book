@@ -138,7 +138,7 @@ void main() {
           state.vegetable == Vegetable.NON_VEGETARIAN &&
           state.allRecipes.length == 1,
     );
-    expect(find.text('with meat'), findsWidgets);
+    expect(find.text('With meat'), findsWidgets);
     expect(find.byType(EditorialRecipeCard), findsOneWidget);
 
     await _dispatchAndPump(

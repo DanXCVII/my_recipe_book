@@ -4,31 +4,61 @@ abstract class FavoriteRecipesEvent extends Equatable {
   const FavoriteRecipesEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-class LoadFavorites extends FavoriteRecipesEvent {}
+class LoadFavorites extends FavoriteRecipesEvent {
+  const LoadFavorites({this.showLoading = true});
 
-class AddFavorite extends FavoriteRecipesEvent {
-  final Recipe recipe;
-
-  const AddFavorite(this.recipe);
+  final bool showLoading;
 
   @override
-  List<Object> get props => [recipe];
-
-  @override
-  String toString() => 'Add Favorite { recipe: $recipe }';
+  List<Object> get props => [showLoading];
 }
 
-class RemoveFavorite extends FavoriteRecipesEvent {
-  final Recipe recipe;
+class FilterFavoritesQuery extends FavoriteRecipesEvent {
+  const FilterFavoritesQuery(this.query);
 
-  const RemoveFavorite(this.recipe);
-
-  @override
-  List<Object> get props => [recipe];
+  final String query;
 
   @override
-  String toString() => 'Remove Favorite { recipe: $recipe }';
+  List<Object> get props => [query];
 }
+
+class FilterFavoritesCategory extends FavoriteRecipesEvent {
+  const FilterFavoritesCategory(this.category);
+
+  final String? category;
+
+  @override
+  List<Object?> get props => [category];
+}
+
+class FilterFavoritesVegetable extends FavoriteRecipesEvent {
+  const FilterFavoritesVegetable(this.vegetable);
+
+  final Vegetable? vegetable;
+
+  @override
+  List<Object?> get props => [vegetable];
+}
+
+class ChangeFavoritesSort extends FavoriteRecipesEvent {
+  const ChangeFavoritesSort(this.recipeSort);
+
+  final RecipeSort recipeSort;
+
+  @override
+  List<Object> get props => [recipeSort];
+}
+
+class ChangeFavoritesAscending extends FavoriteRecipesEvent {
+  const ChangeFavoritesAscending(this.ascending);
+
+  final bool ascending;
+
+  @override
+  List<Object> get props => [ascending];
+}
+
+class ClearFavoriteFilters extends FavoriteRecipesEvent {}

@@ -35,7 +35,7 @@ class VerticalSideBar extends StatelessWidget {
             ),
             Divider(),
             SideBarItem(
-              Icons.favorite,
+              Icons.bookmark_rounded,
               selectedIndex == 1 ? Colors.pink : Colors.grey[600],
               S.of(context).favorites,
               () {

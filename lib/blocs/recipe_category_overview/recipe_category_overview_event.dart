@@ -39,6 +39,15 @@ class RCOUpdateRecipe extends RecipeCategoryOverviewEvent {
   List<Object> get props => [oldRecipe, updatedRecipe];
 }
 
+class RCOUpdateFavoriteStatus extends RecipeCategoryOverviewEvent {
+  final Recipe recipe;
+
+  const RCOUpdateFavoriteStatus(this.recipe);
+
+  @override
+  List<Object> get props => [recipe];
+}
+
 class RCODeleteRecipe extends RecipeCategoryOverviewEvent {
   final Recipe recipe;
 

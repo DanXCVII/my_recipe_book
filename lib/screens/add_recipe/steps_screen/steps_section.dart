@@ -13,6 +13,7 @@ import '../../../util/helper.dart';
 import '../../../widgets/culinary_editorial_theme.dart';
 import '../../../widgets/dialogs/are_you_sure_dialog.dart';
 import '../../../widgets/recipe_editor/editorial_editor_shell.dart';
+import '../../../widgets/recipe_editor/editorial_image_remove_button.dart';
 
 class Steps extends StatelessWidget {
   const Steps({
@@ -466,13 +467,9 @@ class ImageBox extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.topRight,
-              child: IconButton.filledTonal(
-                constraints: const BoxConstraints.tightFor(
-                  width: 48,
-                  height: 48,
-                ),
+              child: EditorialImageRemoveButton(
+                tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
                 onPressed: onPress,
-                icon: const Icon(Icons.close, size: 18),
               ),
             ),
           ],

@@ -39,6 +39,19 @@ class RecipeManagerBloc extends Bloc<RecipeManagerEvent, RecipeManagerState> {
       }
     });
 
+    on<RMUpdateRecipe>((event, emit) async {
+      final oldRecipe = await repository.getRecipeByName(event.oldRecipeName);
+      if (oldRecipe == null) return;
+
+      final updatedRecipe = _fixRecipeSteps(
+        event.updatedRecipe.copyWith(lastModified: DateTime.now().toString()),
+      );
+      await repository.modifyRecipe(event.oldRecipeName, updatedRecipe);
+      await IO.updateBackup(repository);
+
+      emit(UpdateRecipeState(oldRecipe, updatedRecipe));
+    });
+
     on<RMAddCategories>((event, emit) async {
       for (String category in event.categories) {
         await repository.addCategory(category);

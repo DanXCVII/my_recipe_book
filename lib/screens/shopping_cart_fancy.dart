@@ -198,11 +198,15 @@ class _FancyShoppingCartScreenState extends State<FancyShoppingCartScreen>
             if (items.isEmpty)
               SliverFillRemaining(
                 hasScrollBody: false,
-                child: _EmptyCart(palette: palette),
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 92 + bottomInset),
+                  child: _EmptyCart(palette: palette),
+                ),
               )
             else
               _buildListSliver(data, showPlainList, palette),
-            SliverToBoxAdapter(child: SizedBox(height: 92 + bottomInset)),
+            if (items.isNotEmpty)
+              SliverToBoxAdapter(child: SizedBox(height: 92 + bottomInset)),
           ],
         ),
         Positioned(

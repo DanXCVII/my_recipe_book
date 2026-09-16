@@ -4,19 +4,29 @@ abstract class IngredientSearchEvent extends Equatable {
   const IngredientSearchEvent();
 }
 
-class SearchRecipes extends IngredientSearchEvent {
-  final List<String> ingredients;
-  final List<String> categories;
-  final List<StringIntTuple> recipeTags;
-  final Vegetable? vegetable;
+class UpdateIngredientSearch extends IngredientSearchEvent {
+  const UpdateIngredientSearch(this.criteria);
 
-  SearchRecipes(
-    this.ingredients,
-    this.categories,
-    this.recipeTags,
-    this.vegetable,
-  );
+  final IngredientSearchCriteria criteria;
 
   @override
-  List<Object?> get props => [ingredients, categories, recipeTags, vegetable];
+  List<Object> get props => [criteria];
+}
+
+class RetryIngredientSearch extends IngredientSearchEvent {
+  const RetryIngredientSearch(this.criteria);
+
+  final IngredientSearchCriteria criteria;
+
+  @override
+  List<Object> get props => [criteria];
+}
+
+class _SyncFavorite extends IngredientSearchEvent {
+  const _SyncFavorite(this.recipe);
+
+  final Recipe recipe;
+
+  @override
+  List<Object> get props => [recipe];
 }
