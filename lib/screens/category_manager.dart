@@ -26,7 +26,6 @@ class CategoryManager extends StatelessWidget {
             title: S.of(context).manage_categories,
             description: S.of(context).catalog_categories_description,
             itemCount: 0,
-            headerIcon: Icons.folder_special_outlined,
             addLabel: S.of(context).catalog_add_category,
             emptyTitle: S.of(context).catalog_categories_empty_title,
             emptyDescription: S
@@ -50,7 +49,6 @@ class CategoryManager extends StatelessWidget {
           title: S.of(context).manage_categories,
           description: S.of(context).catalog_categories_description,
           itemCount: categories.length,
-          headerIcon: Icons.folder_special_outlined,
           addLabel: S.of(context).catalog_add_category,
           emptyTitle: S.of(context).catalog_categories_empty_title,
           emptyDescription: S.of(context).catalog_categories_empty_description,
@@ -70,9 +68,13 @@ class CategoryManager extends StatelessWidget {
                 return EditorialCatalogContentFrame(
                   key: ValueKey('category-row-$categoryName'),
                   child: EditorialCatalogRowSurface(
-                    leading: _CategoryOrderBadge(index: index),
+                    leading: EditorialCatalogOrderBadge(
+                      position: index + 1,
+                      semanticLabel: S
+                          .of(context)
+                          .catalog_category_order(index + 1),
+                    ),
                     title: categoryName,
-                    subtitle: S.of(context).catalog_category_order(index + 1),
                     onTap: () => _showEditor(
                       context,
                       state.categories,
@@ -125,7 +127,7 @@ class CategoryManager extends StatelessWidget {
     List<String> categories, {
     String? currentName,
   }) {
-    showCategoryEditorSheet(
+    showCatalogNameEditorSheet(
       context: context,
       title: currentName == null
           ? S.of(context).catalog_add_category
@@ -179,33 +181,5 @@ class CategoryManager extends StatelessWidget {
     if (confirmed == true && context.mounted) {
       context.read<RecipeManagerBloc>().add(RMDeleteCategory(categoryName));
     }
-  }
-}
-
-class _CategoryOrderBadge extends StatelessWidget {
-  const _CategoryOrderBadge({required this.index});
-
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    return Container(
-      width: 48,
-      height: 52,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: palette.primarySoft,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        '${index + 1}'.padLeft(2, '0'),
-        style: CulinaryEditorialType.headline(
-          palette,
-          size: 18,
-          weight: FontWeight.w600,
-        ).copyWith(color: palette.primary),
-      ),
-    );
   }
 }

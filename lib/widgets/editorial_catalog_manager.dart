@@ -13,7 +13,6 @@ class EditorialCatalogManagerShell extends StatelessWidget {
     required this.title,
     required this.description,
     required this.itemCount,
-    required this.headerIcon,
     required this.addLabel,
     required this.emptyTitle,
     required this.emptyDescription,
@@ -26,7 +25,6 @@ class EditorialCatalogManagerShell extends StatelessWidget {
   final String title;
   final String description;
   final int itemCount;
-  final IconData headerIcon;
   final String addLabel;
   final String emptyTitle;
   final String emptyDescription;
@@ -75,12 +73,8 @@ class EditorialCatalogManagerShell extends StatelessWidget {
                 child: Text(
                   title,
                   key: const ValueKey('catalog-title'),
-                  style: CulinaryEditorialType.headline(
-                    palette,
-                    size: 30,
-                    weight: FontWeight.w600,
-                    height: 1.08,
-                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
@@ -88,9 +82,7 @@ class EditorialCatalogManagerShell extends StatelessWidget {
               child: EditorialCatalogContentFrame(
                 child: _CatalogIntroduction(
                   key: const ValueKey('catalog-introduction'),
-                  icon: headerIcon,
                   description: description,
-                  countLabel: S.of(context).settings_item_count(itemCount),
                 ),
               ),
             ),
@@ -118,7 +110,7 @@ class EditorialCatalogManagerShell extends StatelessWidget {
             else
               ...contentSlivers,
             if (!loading && itemCount > 0)
-              const SliverToBoxAdapter(child: SizedBox(height: 112)),
+              const SliverToBoxAdapter(child: SizedBox(height: 176)),
           ],
         ),
       ),
@@ -141,6 +133,44 @@ class EditorialCatalogContentFrame extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: width >= 600 ? 28 : 20),
           child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class EditorialCatalogOrderBadge extends StatelessWidget {
+  const EditorialCatalogOrderBadge({
+    super.key,
+    required this.position,
+    required this.semanticLabel,
+  });
+
+  final int position;
+  final String semanticLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return Semantics(
+      label: semanticLabel,
+      child: ExcludeSemantics(
+        child: Container(
+          width: 48,
+          height: 52,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: palette.primarySoft,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            '$position'.padLeft(2, '0'),
+            style: CulinaryEditorialType.headline(
+              palette,
+              size: 18,
+              weight: FontWeight.w600,
+            ).copyWith(color: palette.primary),
+          ),
         ),
       ),
     );
@@ -279,7 +309,7 @@ class EditorialCatalogMenuButton extends StatelessWidget {
   }
 }
 
-Future<void> showCategoryEditorSheet({
+Future<void> showCatalogNameEditorSheet({
   required BuildContext context,
   required String title,
   required String fieldLabel,
@@ -374,100 +404,20 @@ AnimationStyle? _animationStyle(BuildContext context) {
 }
 
 class _CatalogIntroduction extends StatelessWidget {
-  const _CatalogIntroduction({
-    super.key,
-    required this.icon,
-    required this.description,
-    required this.countLabel,
-  });
+  const _CatalogIntroduction({super.key, required this.description});
 
-  final IconData icon;
   final String description;
-  final String countLabel;
 
   @override
   Widget build(BuildContext context) {
     final palette = CulinaryEditorialPalette.of(context);
-    final textScale = MediaQuery.textScalerOf(context).scale(1);
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: palette.surfaceContainer,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final stacked = constraints.maxWidth < 360 || textScale > 1.2;
-          final iconWidget = Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: palette.primarySoft,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: palette.primary),
-          );
-          final descriptionWidget = Text(
-            description,
-            style: CulinaryEditorialType.body(
-              palette,
-              size: 13,
-              color: palette.onSurfaceVariant,
-            ),
-          );
-          final countWidget = _CatalogCountBadge(label: countLabel);
-
-          if (stacked) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    iconWidget,
-                    const SizedBox(width: 12),
-                    countWidget,
-                  ],
-                ),
-                const SizedBox(height: 12),
-                descriptionWidget,
-              ],
-            );
-          }
-          return Row(
-            children: [
-              iconWidget,
-              const SizedBox(width: 12),
-              Expanded(child: descriptionWidget),
-              const SizedBox(width: 12),
-              countWidget,
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _CatalogCountBadge extends StatelessWidget {
-  const _CatalogCountBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: palette.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(999),
-      ),
+    return SizedBox(
+      width: double.infinity,
       child: Text(
-        label,
+        description,
         style: CulinaryEditorialType.body(
           palette,
-          size: 11,
-          weight: FontWeight.w700,
+          size: 13,
           color: palette.onSurfaceVariant,
         ),
       ),

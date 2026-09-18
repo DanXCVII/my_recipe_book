@@ -5,18 +5,16 @@ import 'package:share_plus/share_plus.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../blocs/app/app_bloc.dart';
-import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_settings.dart';
 import '../generated/l10n.dart';
-import '../local_storage/local_repository.dart';
 import '../models/ingredient.dart';
 import '../models/shopping_cart_data.dart';
 import '../util/helper.dart';
 import '../widgets/culinary_editorial_theme.dart';
 import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/dialogs/shopping_cart_add_dialog.dart';
-import '../widgets/search.dart';
+import 'recipe_search_screen.dart';
 
 class FancyShoppingCartScreen extends StatefulWidget {
   const FancyShoppingCartScreen(this.shoppingCartImage, {super.key});
@@ -438,17 +436,7 @@ class _FancyShoppingCartScreenState extends State<FancyShoppingCartScreen>
   }
 
   void _showRecipeSearch() {
-    showSearch(
-      context: context,
-      delegate: RecipeSearch(
-        context.read<LocalRepository>().getRecipeNames(),
-        context.read<ShoppingCartBloc>(),
-        context.read<RecipeCalendarBloc>(),
-        context.read<LocalRepository>().getRecipeTags(),
-        context.read<LocalRepository>().getCategoryNames()
-          ..remove('no category'),
-      ),
-    );
+    openRecipeSearch(context);
   }
 
   void _showHelp() {

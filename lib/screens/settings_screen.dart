@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:another_flushbar/flushbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -18,12 +16,15 @@ import '../blocs/g_drive/g_drive_sync/g_drive_bloc.dart';
 import '../blocs/import_recipe/import_recipe_bloc.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/brand_assets.dart';
 import '../constants/global_constants.dart' as Constants;
 import '../constants/global_settings.dart';
 import '../constants/routes.dart';
 import '../generated/l10n.dart';
 import '../local_storage/local_repository.dart';
 import '../local_storage/storage_migration.dart';
+import '../models/import_candidate.dart';
+import '../services/import_file_stager.dart';
 import '../theming.dart';
 import '../widgets/culinary_editorial_theme.dart';
 import '../widgets/dialogs/import_dialog.dart';
@@ -590,9 +591,31 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<void> _importSingleRecipe(BuildContext context) async {
-    final result = await FilePicker.pickFile(type: FileType.any);
+    final result = await FilePicker.pickFile(
+      type: FileType.custom,
+      allowedExtensions: const ['zip', 'mcb', 'json'],
+    );
     final path = result?.path;
     if (path == null || !context.mounted) return;
+
+    late final ImportCandidate candidate;
+    try {
+      candidate = await ImportFileStager().stage(
+        sourcePath: path,
+        originalFileName: result!.name,
+        source: ImportSource.filePicker,
+      );
+    } catch (_) {
+      if (context.mounted) {
+        _showInfoFlushBar(
+          S.of(context).failed_import,
+          S.of(context).no_valid_import_file,
+          context,
+        );
+      }
+      return;
+    }
+    if (!context.mounted) return;
 
     await showDialog(
       context: context,
@@ -600,7 +623,7 @@ class _SettingsState extends State<Settings> {
         value: context.read<ImportRecipeBloc>()
           ..add(
             StartImportRecipes(
-              File(path),
+              candidate,
               delay: const Duration(milliseconds: 1000),
             ),
           ),
@@ -1555,7 +1578,7 @@ class _SettingsFooter extends StatelessWidget {
             color: palette.surfaceContainer,
             shape: BoxShape.circle,
           ),
-          child: Image.asset('images/icon.png'),
+          child: Image.asset(BrandAssets.simplifiedLogo),
         ),
         const SizedBox(height: 8),
         Text(

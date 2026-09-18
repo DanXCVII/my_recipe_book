@@ -37,6 +37,7 @@ dependencies:
   shared_preferences: ^2.5.5 # BSD
   archive: ^4.0.5 # Apache 2.0
   file_picker: ^12.3.0 # MIT
+  receive_sharing_intent: ^1.9.0 # Apache 2.0
   autocomplete_textfield_ns: ^2.0.0 # MIT
   # Hive CE is retained only for importing databases created by Hive 2.
   hive_ce: ^2.20.0 # Apache 2.0 / BSD-3-Clause
@@ -63,7 +64,6 @@ dependencies:
   url_launcher: ^6.1.5 # BSD
   pull_to_refresh: ^2.0.0 # MIT
   in_app_purchase: ^3.0.8 # BSD
-  permission_handler: ^13.0.2 # MIT
   flutter_sequence_animation: ^4.0.0-nullsafety # MIT
   flutter_native_splash: ^2.4.8 # MIT
   flutter_colorpicker: ^1.0.3 # MIT
@@ -96,15 +96,25 @@ dev_dependencies:
   intl_utils: ^2.8.16 # BSD-3-Clause
 
 flutter_native_splash:
-  color: "ff6f00"
+  color: "#8E0038"
+  image: "assets/launcher/newAdaptiveForeground.png"
+  android_12:
+    color: "#8E0038"
+    image: "assets/launcher/newAdaptiveForeground.png"
 
-flutter_icons:
+flutter_launcher_icons:
   ios: true
   android: true
-  image_path_ios: "assets/launcher/iconIos.png"
-  image_path_android: "assets/launcher/adaptiveForeground.png"
-  adaptive_icon_background: "assets/launcher/adaptiveBackground.png"
-  adaptive_icon_foreground: "assets/launcher/adaptiveForeground.png"
+  image_path_ios: "images/new_logo_simplistic.png"
+  image_path_ios_dark_transparent: "assets/launcher/newAdaptiveForeground.png"
+  image_path_ios_tinted_grayscale: "assets/launcher/newAdaptiveMonochrome.png"
+  desaturate_tinted_to_grayscale_ios: true
+  image_path_android: "images/new_logo_simplistic.png"
+  adaptive_icon_background: "#8E0038"
+  adaptive_icon_foreground: "assets/launcher/newAdaptiveForeground.png"
+  adaptive_icon_monochrome: "assets/launcher/newAdaptiveMonochrome.png"
+  remove_alpha_ios: true
+  background_color_ios: "#8E0038"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -117,35 +127,15 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/tomato.png
-    - images/milk.png
-    - images/meat.png
     - images/randomFood.jpg
-    - images/rightArrow.png
-    - images/cookingHat.png
-    - images/lock.png
-    - images/letter.png
     - images/cuisine.jpg
-    - images/export.png
-    - images/bag.png
-    - images/shield.png
-    - images/cards.png
-    - images/theme.png
-    - images/icon.png
+    - images/new_logo.png
+    - images/new_logo_simplistic.png
     - images/bannerAd.png
     - images/salatLowRes.jpg
     - assets/firstStartRecipes.zip
     - assets/plates/recipe-thumbnail.png
     - assets/audio/timer_complete.wav
-    - images/foodBlur0.jpg
-    - images/foodBlur1.jpg
-    - images/foodBlur2.jpg
-    - images/foodBlur3.jpg
-    - images/iconIosStyle.png
-    - images/finishFlag.png
-    - images/hearts.png
-    - images/vegetables.png
-    - images/vegetablesBright.png
     - images/google_logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

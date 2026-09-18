@@ -99,10 +99,7 @@
 .widget_preview/
 
 redesigns
+
+# Local Impeccable design workspace and generated artifacts
 .impeccable/
-.impeccable
-!.impeccable/
-.impeccable/*
-!.impeccable/surfaces/
-.impeccable/surfaces/*
-!.impeccable/surfaces/lib-screens-intro-screen-dart.md
+.impeccable.md

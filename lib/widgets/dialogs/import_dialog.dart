@@ -300,7 +300,7 @@ class _ImportDialogState extends State<ImportDialog> {
                             TextButton(
                               child: Text(S.of(context).cancel),
                               onPressed: () {
-                                clearCache().then((_) {});
+                                clearImportCache().then((_) {});
 
                                 widget.closeAfterFinished
                                     ? SystemChannels.platform.invokeMethod(

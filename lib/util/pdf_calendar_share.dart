@@ -4,6 +4,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import '../constants/brand_assets.dart';
 import '../generated/l10n.dart';
 import '../models/tuple.dart';
 import 'helper.dart';
@@ -25,7 +26,7 @@ Future<Uint8List> getRecipeCalendarPdf(
   );
   final righteousTtf = pw.Font.ttf(righteousFont.buffer.asByteData());
 
-  const imageProvider = const AssetImage('images/iconIosStyle.png');
+  const imageProvider = AssetImage(BrandAssets.simplifiedLogo);
   final pdfIconImage = await flutterImageProvider(imageProvider);
 
   doc.addPage(

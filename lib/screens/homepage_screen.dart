@@ -1,12 +1,10 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:my_recipe_book/blocs/recipe_mods/recipe_mods_bloc.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 
 import '../ad_related/ad.dart';
@@ -19,12 +17,15 @@ import '../blocs/recipe_bubble/recipe_bubble_bloc.dart';
 import '../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../constants/global_constants.dart' as GC;
+import '../constants/brand_assets.dart';
 import '../constants/routes.dart';
 import '../generated/l10n.dart';
 import '../local_storage/local_repository.dart';
 import '../local_storage/io_operations.dart' as IO;
+import '../models/import_candidate.dart';
+import '../services/import_file_stager.dart';
+import '../services/incoming_content_service.dart';
 import '../widgets/dialogs/import_dialog.dart';
-import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/culinary_editorial_theme.dart';
 import '../widgets/culinary_editorial_navigation_rail.dart';
 import '../widgets/editorial_home_app_bar.dart';
@@ -33,7 +34,6 @@ import '../widgets/home_navigation_destination.dart';
 import '../widgets/recipe_bubble.dart';
 import '../widgets/recipe_calendar_floating.dart';
 import '../widgets/recipe_creation_fab_menu.dart';
-import '../widgets/search.dart';
 import 'add_recipe/general_info_screen/general_info_screen.dart';
 import 'category_gridview.dart';
 import 'favorite_screen.dart';
@@ -44,6 +44,7 @@ import 'random_recipe.dart';
 import 'recipe_calendar_screen.dart';
 import 'settings_screen.dart';
 import 'shopping_cart_fancy.dart';
+import 'recipe_search_screen.dart';
 
 RateMyApp _rateMyApp = RateMyApp(
   preferencesPrefix: 'rateMyApp_',
@@ -68,126 +69,149 @@ class MyHomePageArguments {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({
+    super.key,
+    this.incomingContentService,
+    this.importFileStager,
+  });
+
+  final IncomingContentService? incomingContentService;
+  final ImportFileStager? importFileStager;
 
   @override
   MyHomePageState createState() => MyHomePageState();
 }
 
-class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+class MyHomePageState extends State<MyHomePage> {
   Future<SharedPreferences>? prefs;
   Image? shoppingCartImage;
-  bool _intentFailedImporting = false;
 
   Flushbar? _flush;
-
-  static const platform = const MethodChannel('app.channel.shared.data');
+  late final IncomingContentService _incomingContentService;
+  late final ImportFileStager _importFileStager;
+  StreamSubscription<List<IncomingContent>>? _incomingContentSubscription;
+  Future<void> _incomingContentQueue = Future<void>.value();
+  final Map<String, DateTime> _recentIncomingContent = {};
 
   @override
   void initState() {
     super.initState();
     shoppingCartImage = Image.asset('images/cuisine.jpg', fit: BoxFit.cover);
-    initializeIntent();
-
-    // Listen to lifecycle events.
-    WidgetsBinding.instance.addObserver(this);
+    _incomingContentService =
+        widget.incomingContentService ?? ReceiveSharingIncomingContentService();
+    _importFileStager = widget.importFileStager ?? ImportFileStager();
+    _incomingContentSubscription = _incomingContentService.contentStream.listen(
+      _enqueueIncomingContent,
+      onError: (_) => _showIncomingContentError(),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialIncomingContent();
+    });
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    _incomingContentSubscription?.cancel();
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      initializeIntent();
+  Future<void> _loadInitialIncomingContent() async {
+    try {
+      _enqueueIncomingContent(
+        await _incomingContentService.getInitialContent(),
+      );
+    } catch (_) {
+      _showIncomingContentError();
     }
   }
 
-  Future<void> initializeIntent() async {
-    var intentSharedText = await getIntentData();
-    if (intentSharedText == null) return;
+  void _enqueueIncomingContent(List<IncomingContent> content) {
+    if (content.isEmpty) return;
+    _incomingContentQueue = _incomingContentQueue
+        .then((_) => _processIncomingContent(content))
+        .catchError((_) => _showIncomingContentError());
+  }
 
-    // if error occured writing the import file
-    if (intentSharedText == "failedFileCreation" ||
-        intentSharedText == "failedWriting" ||
-        intentSharedText == "failedClosing") {
-      // if error occured even though the storage permission is granted
-      if (await Permission.storage.isGranted) {
-        String error = intentSharedText == "failedFileCreation"
-            ? "Error #1:"
-            : intentSharedText == "failedWriting"
-            ? "Error #2:"
-            : "Error #3:";
-        _showFlushInfo(
-          S.of(context).failed_import,
-          "$error" + S.of(context).failed_import_desc,
-        );
-      } // if error occured and the storage permission is not granted and not set to neverShowAgain
-      else if (await Permission.storage.isDenied) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => InfoDialog(
-            title: S.of(context).need_to_access_storage,
-            body: S.of(context).need_to_access_storage_desc,
-            onPressedOk: () async {
-              Permission.storage.request().then((updatedPermissions) {
-                if (updatedPermissions.isGranted) {
-                  if (_intentFailedImporting == false) {
-                    _intentFailedImporting = true;
+  Future<void> _processIncomingContent(List<IncomingContent> content) async {
+    try {
+      for (final item in content) {
+        if (!mounted || _isDuplicateIncomingContent(item)) continue;
+        switch (item.type) {
+          case IncomingContentType.recipeFile:
+            await _openIncomingRecipeFile(item);
+          case IncomingContentType.websiteUrl:
+            await _openIncomingWebsite(item.value);
+          case IncomingContentType.unsupported:
+            _showIncomingContentError();
+        }
+      }
+    } finally {
+      await _incomingContentService.reset();
+    }
+  }
 
-                    initializeIntent().then((_) {});
-                  }
-                }
-              });
-            },
+  bool _isDuplicateIncomingContent(IncomingContent content) {
+    final now = DateTime.now();
+    _recentIncomingContent.removeWhere(
+      (_, receivedAt) =>
+          now.difference(receivedAt) > const Duration(seconds: 5),
+    );
+    if (_recentIncomingContent.containsKey(content.identity)) return true;
+    _recentIncomingContent[content.identity] = now;
+    return false;
+  }
+
+  Future<void> _openIncomingRecipeFile(IncomingContent content) async {
+    try {
+      final candidate = await _importFileStager.stage(
+        sourcePath: content.value,
+        originalFileName: content.originalFileName,
+        mimeType: content.mimeType,
+        source: ImportSource.externalApp,
+      );
+      if (!mounted) return;
+      final importRecipeBloc = context.read<ImportRecipeBloc>()
+        ..add(
+          StartImportRecipes(
+            candidate,
+            delay: const Duration(milliseconds: 300),
           ),
         );
-      }
-    } // if import was successfull
-    else if (File(intentSharedText.toString()).existsSync() &&
-        intentSharedText != null) {
-      BuildContext importRecipeBlocContext = context;
-
-      showDialog(
+      await showDialog<void>(
         context: context,
         barrierDismissible: false,
-        builder: (context) => BlocProvider<ImportRecipeBloc>.value(
-          value: BlocProvider.of<ImportRecipeBloc>(importRecipeBlocContext)
-            ..add(
-              StartImportRecipes(
-                File(intentSharedText.toString()),
-                delay: Duration(milliseconds: 300),
-              ),
-            ),
+        builder: (dialogContext) => BlocProvider<ImportRecipeBloc>.value(
+          value: importRecipeBloc,
           child: ImportDialog(closeAfterFinished: false),
         ),
       );
-    } else if (intentSharedText != null) {
-      BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
-      Navigator.pushNamed(
-        context,
-        RouteNames.importFromWebsite,
-        arguments: ImportFromWebsiteArguments(
-          BlocProvider.of<ShoppingCartBloc>(context),
-          BlocProvider.of<RecipeCalendarBloc>(context),
-          BlocProvider.of<AdManagerBloc>(context),
-          initialWebsite: intentSharedText.toString(),
-        ),
-      ).then((_) => Ads.hideBottomBannerAd());
-    } else {
-      _intentFailedImporting = false;
+    } catch (_) {
+      _showIncomingContentError();
     }
   }
 
-  getIntentData() async {
-    if (Platform.isAndroid) {
-      var sharedData = await platform.invokeMethod("getSharedText");
-      return sharedData == null ? null : sharedData;
-    }
+  Future<void> _openIncomingWebsite(String website) async {
+    if (!mounted) return;
+    BlocProvider.of<AdManagerBloc>(context).add(LoadVideo());
+    await Navigator.pushNamed(
+      context,
+      RouteNames.importFromWebsite,
+      arguments: ImportFromWebsiteArguments(
+        BlocProvider.of<ShoppingCartBloc>(context),
+        BlocProvider.of<RecipeCalendarBloc>(context),
+        BlocProvider.of<AdManagerBloc>(context),
+        initialWebsite: website,
+      ),
+    );
+    Ads.hideBottomBannerAd();
+  }
+
+  void _showIncomingContentError() {
+    if (!mounted) return;
+    _showFlushInfo(
+      S.of(context).failed_import,
+      S.of(context).no_valid_import_file,
+    );
   }
 
   void _showFlushInfo(String title, String body) {
@@ -333,13 +357,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   Widget _getSplashScreen() {
     return Container(
-      color: Colors.amber,
+      color: const Color(0xFF8E0038),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-              'images/cookingHat.png',
+              BrandAssets.simplifiedLogo,
               fit: BoxFit.cover,
               height: 150,
             ),
@@ -402,17 +426,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   void _showRecipeSearch() {
-    showSearch(
-      context: context,
-      delegate: RecipeSearch(
-        context.read<LocalRepository>().getRecipeNames(),
-        context.read<ShoppingCartBloc>(),
-        context.read<RecipeCalendarBloc>(),
-        context.read<LocalRepository>().getRecipeTags(),
-        List<String>.of(context.read<LocalRepository>().getCategoryNames())
-          ..remove(GC.noCategory),
-      ),
-    );
+    openRecipeSearch(context);
   }
 
   void _createRecipeManually() {

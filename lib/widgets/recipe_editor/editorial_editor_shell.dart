@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../constants/brand_assets.dart';
 import '../../constants/global_constants.dart' as constants;
 import '../../generated/l10n.dart';
 import '../../models/recipe.dart';
@@ -201,7 +202,11 @@ class _EditorHeader extends StatelessWidget {
                 ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(9),
-                  child: Image.asset('images/icon.png', width: 36, height: 36),
+                  child: Image.asset(
+                    BrandAssets.simplifiedLogo,
+                    width: 36,
+                    height: 36,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(

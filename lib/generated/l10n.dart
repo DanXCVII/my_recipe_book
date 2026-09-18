@@ -1225,10 +1225,10 @@ class S {
     return Intl.message('View intro', name: 'view_intro', desc: '', args: []);
   }
 
-  /// `Manage nutritions`
+  /// `Manage nutrition`
   String get manage_nutritions {
     return Intl.message(
-      'Manage nutritions',
+      'Manage nutrition',
       name: 'manage_nutritions',
       desc: '',
       args: [],
@@ -1345,6 +1345,96 @@ class S {
     );
   }
 
+  /// `Choose and order the nutrition labels available while editing recipes. Changes here do not alter values already saved to recipes.`
+  String get catalog_nutritions_description {
+    return Intl.message(
+      'Choose and order the nutrition labels available while editing recipes. Changes here do not alter values already saved to recipes.',
+      name: 'catalog_nutritions_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add nutrition label`
+  String get catalog_add_nutrition {
+    return Intl.message(
+      'Add nutrition label',
+      name: 'catalog_add_nutrition',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit nutrition label`
+  String get catalog_edit_nutrition {
+    return Intl.message(
+      'Edit nutrition label',
+      name: 'catalog_edit_nutrition',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No nutrition labels yet`
+  String get catalog_nutritions_empty_title {
+    return Intl.message(
+      'No nutrition labels yet',
+      name: 'catalog_nutritions_empty_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add labels such as Energy, Protein, Fiber, or Salt so they are ready when you edit a recipe.`
+  String get catalog_nutritions_empty_description {
+    return Intl.message(
+      'Add labels such as Energy, Protein, Fiber, or Salt so they are ready when you edit a recipe.',
+      name: 'catalog_nutritions_empty_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Order {position}`
+  String catalog_nutrition_order(int position) {
+    return Intl.message(
+      'Order $position',
+      name: 'catalog_nutrition_order',
+      desc: '',
+      args: [position],
+    );
+  }
+
+  /// `Reorder {name}`
+  String catalog_reorder_nutrition(String name) {
+    return Intl.message(
+      'Reorder $name',
+      name: 'catalog_reorder_nutrition',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Delete “{name}”?`
+  String catalog_delete_nutrition_title(String name) {
+    return Intl.message(
+      'Delete “$name”?',
+      name: 'catalog_delete_nutrition_title',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Existing recipes keep their saved nutrition values. This label will only be removed from the list available when editing recipes.`
+  String get catalog_delete_nutrition_description {
+    return Intl.message(
+      'Existing recipes keep their saved nutrition values. This label will only be removed from the list available when editing recipes.',
+      name: 'catalog_delete_nutrition_description',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `No category`
   String get no_category {
     return Intl.message('No category', name: 'no_category', desc: '', args: []);
@@ -1383,6 +1473,216 @@ class S {
   /// `Info`
   String get about_me {
     return Intl.message('Info', name: 'about_me', desc: '', args: []);
+  }
+
+  /// `About & support`
+  String get about_title {
+    return Intl.message(
+      'About & support',
+      name: 'about_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your personal cookbook—offline, organized, and yours.`
+  String get about_tagline {
+    return Intl.message(
+      'Your personal cookbook—offline, organized, and yours.',
+      name: 'about_tagline',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save, organize, and cook from the recipes that matter to you.`
+  String get about_description {
+    return Intl.message(
+      'Save, organize, and cook from the recipes that matter to you.',
+      name: 'about_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Support & connect`
+  String get about_support_section {
+    return Intl.message(
+      'Support & connect',
+      name: 'about_support_section',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share this app`
+  String get about_share_title {
+    return Intl.message(
+      'Share this app',
+      name: 'about_share_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send My RecipeBible to friends and family.`
+  String get about_share_description {
+    return Intl.message(
+      'Send My RecipeBible to friends and family.',
+      name: 'about_share_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rate on Google Play`
+  String get about_rate_title {
+    return Intl.message(
+      'Rate on Google Play',
+      name: 'about_rate_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Leave a review and help others discover the app.`
+  String get about_rate_description {
+    return Intl.message(
+      'Leave a review and help others discover the app.',
+      name: 'about_rate_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email the developer`
+  String get about_contact_title {
+    return Intl.message(
+      'Email the developer',
+      name: 'about_contact_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send feedback, questions, or ideas directly.`
+  String get about_contact_description {
+    return Intl.message(
+      'Send feedback, questions, or ideas directly.',
+      name: 'about_contact_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `App details`
+  String get about_details_section {
+    return Intl.message(
+      'App details',
+      name: 'about_details_section',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Version`
+  String get about_version_title {
+    return Intl.message(
+      'Version',
+      name: 'about_version_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unavailable`
+  String get about_version_unavailable {
+    return Intl.message(
+      'Unavailable',
+      name: 'about_version_unavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open-source licenses`
+  String get about_licenses_title {
+    return Intl.message(
+      'Open-source licenses',
+      name: 'about_licenses_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Review licenses for the software used by this app.`
+  String get about_licenses_description {
+    return Intl.message(
+      'Review licenses for the software used by this app.',
+      name: 'about_licenses_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disclaimer`
+  String get about_disclaimer_title {
+    return Intl.message(
+      'Disclaimer',
+      name: 'about_disclaimer_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Read important information about responsibility and use.`
+  String get about_disclaimer_summary {
+    return Intl.message(
+      'Read important information about responsibility and use.',
+      name: 'about_disclaimer_summary',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Made with care in Münster.`
+  String get about_made_in_muenster {
+    return Intl.message(
+      'Made with care in Münster.',
+      name: 'about_made_in_muenster',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn’t open the share sheet. Please try again.`
+  String get about_share_failed {
+    return Intl.message(
+      'Couldn’t open the share sheet. Please try again.',
+      name: 'about_share_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn’t open Google Play. Check your connection and try again.`
+  String get about_rate_failed {
+    return Intl.message(
+      'Couldn’t open Google Play. Check your connection and try again.',
+      name: 'about_rate_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn’t open your email app. Please try again.`
+  String get about_contact_failed {
+    return Intl.message(
+      'Couldn’t open your email app. Please try again.',
+      name: 'about_contact_failed',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Rate this app`
@@ -1530,6 +1830,76 @@ class S {
     return Intl.message(
       'Nothing to search through',
       name: 'nothing_to_search_through',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search recipes, categories, or tags`
+  String get cookbook_search_hint {
+    return Intl.message(
+      'Search recipes, categories, or tags',
+      name: 'cookbook_search_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What would you like to cook?`
+  String get cookbook_search_prompt_title {
+    return Intl.message(
+      'What would you like to cook?',
+      name: 'cookbook_search_prompt_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search your cookbook by recipe name, category, or tag.`
+  String get cookbook_search_prompt_description {
+    return Intl.message(
+      'Search your cookbook by recipe name, category, or tag.',
+      name: 'cookbook_search_prompt_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add a recipe, category, or tag and it will become searchable here.`
+  String get cookbook_search_empty_description {
+    return Intl.message(
+      'Add a recipe, category, or tag and it will become searchable here.',
+      name: 'cookbook_search_empty_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No results for “{query}”`
+  String cookbook_search_no_results_title(String query) {
+    return Intl.message(
+      'No results for “$query”',
+      name: 'cookbook_search_no_results_title',
+      desc: '',
+      args: [query],
+    );
+  }
+
+  /// `Try another recipe name, category, or tag.`
+  String get cookbook_search_no_results_description {
+    return Intl.message(
+      'Try another recipe name, category, or tag.',
+      name: 'cookbook_search_no_results_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This recipe is no longer available.`
+  String get cookbook_search_recipe_missing {
+    return Intl.message(
+      'This recipe is no longer available.',
+      name: 'cookbook_search_recipe_missing',
       desc: '',
       args: [],
     );
@@ -2075,10 +2445,10 @@ class S {
     );
   }
 
-  /// `Check out this!`
+  /// `My RecipeBible`
   String get share_this_app_title {
     return Intl.message(
-      'Check out this!',
+      'My RecipeBible',
       name: 'share_this_app_title',
       desc: '',
       args: [],
@@ -2105,10 +2475,10 @@ class S {
     );
   }
 
-  /// `I now manage my recipes with the App My RecipeBible {link}`
+  /// `I use My RecipeBible to keep my recipes organized and close at hand: {link}`
   String share_this_app_desc(Object link) {
     return Intl.message(
-      'I now manage my recipes with the App My RecipeBible $link',
+      'I use My RecipeBible to keep my recipes organized and close at hand: $link',
       name: 'share_this_app_desc',
       desc: '',
       args: [link],
@@ -2680,10 +3050,10 @@ class S {
     );
   }
 
-  /// `Failed to import recipe for an unknown reason`
+  /// `The recipe could not be imported`
   String get failed_to_import_recipe_unknown_reason {
     return Intl.message(
-      'Failed to import recipe for an unknown reason',
+      'The recipe could not be imported',
       name: 'failed_to_import_recipe_unknown_reason',
       desc: '',
       args: [],
@@ -2700,40 +3070,35 @@ class S {
     );
   }
 
-  /// `Failed to connect to given url`
+  /// `Could not connect to the recipe page`
   String get failed_to_connect_to_url {
     return Intl.message(
-      'Failed to connect to given url',
+      'Could not connect to the recipe page',
       name: 'failed_to_connect_to_url',
       desc: '',
       args: [],
     );
   }
 
-  /// `Unsupported url:\ncheck the info about supported websites in the infopanel below`
+  /// `This recipe page is not supported yet`
   String get invalid_url {
     return Intl.message(
-      'Unsupported url:\ncheck the info about supported websites in the infopanel below',
+      'This recipe page is not supported yet',
       name: 'invalid_url',
       desc: '',
       args: [],
     );
   }
 
-  /// `Enter URL of website with recipe:`
+  /// `Recipe link`
   String get enter_url {
-    return Intl.message(
-      'Enter URL of website with recipe:',
-      name: 'enter_url',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Recipe link', name: 'enter_url', desc: '', args: []);
   }
 
-  /// `Info about supported websites:`
+  /// `Which sites work?`
   String get supported_websites {
     return Intl.message(
-      'Info about supported websites:',
+      'Which sites work?',
       name: 'supported_websites',
       desc: '',
       args: [],
@@ -2750,19 +3115,219 @@ class S {
     );
   }
 
-  /// `All websites are supported which contain a standardized format. Thet's why only a part of the supported websites are listed here. In practise most websites shoulb be supported.`
+  /// `Many recipe sites work when they publish structured recipe data. For example:`
   String get standardized_format {
     return Intl.message(
-      'All websites are supported which contain a standardized format. Thet\'s why only a part of the supported websites are listed here. In practise most websites shoulb be supported.',
+      'Many recipe sites work when they publish structured recipe data. For example:',
       name: 'standardized_format',
       desc: '',
       args: [],
     );
   }
 
-  /// `Recipe-url`
+  /// `Recipe link`
   String get recipe_url {
-    return Intl.message('Recipe-url', name: 'recipe_url', desc: '', args: []);
+    return Intl.message('Recipe link', name: 'recipe_url', desc: '', args: []);
+  }
+
+  /// `Bring a recipe into your cookbook`
+  String get website_import_intro_title {
+    return Intl.message(
+      'Bring a recipe into your cookbook',
+      name: 'website_import_intro_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Paste a link to a recipe page. We’ll pull in the details so you can review them before saving.`
+  String get website_import_intro_body {
+    return Intl.message(
+      'Paste a link to a recipe page. We’ll pull in the details so you can review them before saving.',
+      name: 'website_import_intro_body',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recipe link`
+  String get website_import_field_label {
+    return Intl.message(
+      'Recipe link',
+      name: 'website_import_field_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `https://example.com/recipe`
+  String get website_import_field_hint {
+    return Intl.message(
+      'https://example.com/recipe',
+      name: 'website_import_field_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a complete recipe link beginning with http:// or https://.`
+  String get website_import_invalid_url_input {
+    return Intl.message(
+      'Enter a complete recipe link beginning with http:// or https://.',
+      name: 'website_import_invalid_url_input',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Import recipe`
+  String get website_import_action {
+    return Intl.message(
+      'Import recipe',
+      name: 'website_import_action',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reading recipe…`
+  String get website_import_loading {
+    return Intl.message(
+      'Reading recipe…',
+      name: 'website_import_loading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Looking for ingredients, instructions, and recipe details.`
+  String get website_import_loading_body {
+    return Intl.message(
+      'Looking for ingredients, instructions, and recipe details.',
+      name: 'website_import_loading_body',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try again`
+  String get website_import_try_again {
+    return Intl.message(
+      'Try again',
+      name: 'website_import_try_again',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn’t connect`
+  String get website_import_connection_title {
+    return Intl.message(
+      'Couldn’t connect',
+      name: 'website_import_connection_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check your internet connection and try again.`
+  String get website_import_connection_body {
+    return Intl.message(
+      'Check your internet connection and try again.',
+      name: 'website_import_connection_body',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This page isn’t supported yet`
+  String get website_import_unsupported_title {
+    return Intl.message(
+      'This page isn’t supported yet',
+      name: 'website_import_unsupported_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try another recipe page or check the supported-site guidance below.`
+  String get website_import_unsupported_body {
+    return Intl.message(
+      'Try another recipe page or check the supported-site guidance below.',
+      name: 'website_import_unsupported_body',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We couldn’t import this recipe`
+  String get website_import_failed_title {
+    return Intl.message(
+      'We couldn’t import this recipe',
+      name: 'website_import_failed_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We couldn’t find complete recipe data on this page. Check the link or try again.`
+  String get website_import_failed_body {
+    return Intl.message(
+      'We couldn’t find complete recipe data on this page. Check the link or try again.',
+      name: 'website_import_failed_body',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Already in your cookbook`
+  String get website_import_duplicate_title {
+    return Intl.message(
+      'Already in your cookbook',
+      name: 'website_import_duplicate_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Faster from your browser`
+  String get website_import_share_tip_title {
+    return Intl.message(
+      'Faster from your browser',
+      name: 'website_import_share_tip_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show supported sites`
+  String get website_import_expand_sites {
+    return Intl.message(
+      'Show supported sites',
+      name: 'website_import_expand_sites',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide supported sites`
+  String get website_import_collapse_sites {
+    return Intl.message(
+      'Hide supported sites',
+      name: 'website_import_collapse_sites',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn’t open this website.`
+  String get website_import_link_failed {
+    return Intl.message(
+      'Couldn’t open this website.',
+      name: 'website_import_link_failed',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Source/url`
@@ -3020,10 +3585,10 @@ class S {
     );
   }
 
-  /// `To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link.`
+  /// `Use your browser’s Share action and choose My RecipeBible to import a recipe without copying its link.`
   String get website_import_info {
     return Intl.message(
-      'To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link.',
+      'Use your browser’s Share action and choose My RecipeBible to import a recipe without copying its link.',
       name: 'website_import_info',
       desc: '',
       args: [],
@@ -3070,10 +3635,10 @@ class S {
     );
   }
 
-  /// `And many more!`
+  /// `And many more recipe sites.`
   String get and_many_more {
     return Intl.message(
-      'And many more!',
+      'And many more recipe sites.',
       name: 'and_many_more',
       desc: '',
       args: [],
@@ -6676,20 +7241,20 @@ class S {
     );
   }
 
-  /// `About My RecipeBible`
+  /// `About & support`
   String get settings_about_title {
     return Intl.message(
-      'About My RecipeBible',
+      'About & support',
       name: 'settings_about_title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Open app details, disclaimer, sharing, and contact options.`
+  /// `Open app details, sharing, contact, and legal information.`
   String get settings_about_desc {
     return Intl.message(
-      'Open app details, disclaimer, sharing, and contact options.',
+      'Open app details, sharing, contact, and legal information.',
       name: 'settings_about_desc',
       desc: '',
       args: [],

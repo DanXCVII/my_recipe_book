@@ -16,6 +16,7 @@ import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../blocs/recipe_mods/recipe_mods_bloc.dart';
 import '../blocs/recipe_screen/recipe_screen_bloc.dart';
 import '../blocs/shopping_cart/shopping_cart_bloc.dart';
+import '../constants/brand_assets.dart';
 import '../constants/routes.dart';
 import '../generated/l10n.dart';
 import '../local_storage/io_operations.dart' as io_operations;
@@ -265,7 +266,11 @@ class _RecipeDetailHeader extends StatelessWidget {
               ),
               ClipRRect(
                 borderRadius: BorderRadius.circular(9),
-                child: Image.asset('images/icon.png', width: 36, height: 36),
+                child: Image.asset(
+                  BrandAssets.simplifiedLogo,
+                  width: 36,
+                  height: 36,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(

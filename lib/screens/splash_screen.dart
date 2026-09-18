@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../blocs/splash_screen/splash_screen_bloc.dart';
+import '../constants/brand_assets.dart';
 import '../generated/l10n.dart';
 import '../constants/routes.dart';
 import '../screens/homepage_screen.dart';
@@ -57,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
       },
       builder: (context, state) => Scaffold(
         body: Container(
-          color: Colors.amber,
+          color: const Color(0xFF8E0038),
           child: Center(
             child: Column(
               children: <Widget>[
@@ -71,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen>
                     builder: (_, double opacity, myChild) => Opacity(
                       opacity: opacity,
                       child: Image.asset(
-                        'images/cookingHat.png',
+                        BrandAssets.detailedLogo,
                         fit: BoxFit.cover,
                         height: _imageHeight,
                       ),
@@ -88,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen>
                       S.of(context).recipe_bible,
                       style: TextStyle(
                         fontFamily: "Righteous",
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 42,
                       ),
                     ),
@@ -103,7 +104,7 @@ class _SplashScreenState extends State<SplashScreen>
                       : S.of(context).loading_data,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontWeight: FontWeight.w800,
                     fontSize: 16,
                   ),
@@ -126,10 +127,10 @@ class _SplashScreenState extends State<SplashScreen>
                                 'My Recipe Book storage migration failed: ${state.errorCode}',
                           ),
                         ),
-                        icon: const Icon(Icons.share, color: Colors.black),
+                        icon: const Icon(Icons.share, color: Colors.white),
                         label: const Text(
                           'Share report',
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ],
@@ -139,7 +140,9 @@ class _SplashScreenState extends State<SplashScreen>
                     value: state is MigratingData && state.progress.total > 0
                         ? state.progress.current / state.progress.total
                         : null,
-                    valueColor: AlwaysStoppedAnimation<Color?>(Colors.red[900]),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Color(0xFFFFB000),
+                    ),
                   ),
                 Spacer(flex: 2),
               ],

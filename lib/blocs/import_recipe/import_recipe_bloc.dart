@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -9,6 +8,7 @@ import '../../local_storage/local_paths.dart';
 
 import '../../local_storage/local_repository.dart';
 import '../../local_storage/io_operations.dart' as IO;
+import '../../models/import_candidate.dart';
 import '../../models/recipe.dart';
 import '../recipe_manager/recipe_manager_bloc.dart';
 
@@ -165,7 +165,7 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         imageCache.clear();
       }
 
-      await IO.clearCache();
+      await IO.clearImportCache();
 
       emit(ImportedRecipes(importRecipes, failedRecipes, alreadyExisting));
     });
@@ -173,7 +173,10 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
     on<StartImportRecipes>((event, emit) async {
       emit(ImportingRecipes(0));
 
-      if (event.importZipFile.path.endsWith("zip")) {
+      final importFile = event.candidate.file;
+      final fileExtension = event.candidate.extension.toLowerCase();
+
+      if (fileExtension == "zip") {
         fileEndingLastImport = "zip";
         await Future.delayed(event.delay);
 
@@ -184,8 +187,8 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         bool failedImporting = false;
         Map<String, Recipe?>? recipes;
         try {
-          recipes = await IO.importRecipesToTmp(event.importZipFile, false);
-        } catch (e) {
+          recipes = await IO.importRecipesToTmp(importFile, false);
+        } catch (_) {
           failedImporting = true;
         }
 
@@ -233,16 +236,10 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
 
           emit(MultipleRecipes(importRecipes, failedZips, alreadyExisting));
         } else {
-          await IO.clearCache();
-          emit(
-            InvalidFile(
-              event.importZipFile.path.substring(
-                event.importZipFile.path.lastIndexOf("/") + 1,
-              ),
-            ),
-          );
+          await IO.clearImportCache();
+          emit(InvalidFile(event.candidate.originalFileName));
         }
-      } else if (event.importZipFile.path.endsWith("mcb")) {
+      } else if (fileExtension == "mcb") {
         // if (await repository
         //         .getRecipeByName("Vegane Gemüsepfanne mit Reis") !=
         //     null)
@@ -256,9 +253,8 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
         bool failedImporting = false;
         late List<String> recipeNames;
         try {
-          recipeNames =
-              (await (IO.extractMRBzipGetNames(event.importZipFile))) ?? [];
-        } catch (e) {
+          recipeNames = (await (IO.extractMRBzipGetNames(importFile))) ?? [];
+        } catch (_) {
           failedImporting = true;
         }
         if (!failedImporting) {
@@ -272,29 +268,23 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
 
           emit(MultipleRecipes(importRecipes, [], alreadyExisting));
         } else {
-          await IO.clearCache();
-          emit(
-            InvalidFile(
-              event.importZipFile.path.substring(
-                event.importZipFile.path.lastIndexOf("/") + 1,
-              ),
-            ),
-          );
+          await IO.clearImportCache();
+          emit(InvalidFile(event.candidate.originalFileName));
         }
-      } else if (event.importZipFile.path.endsWith("json")) {
+      } else if (fileExtension == "json") {
         fileEndingLastImport = "json";
 
-        List<Recipe> loadedRecipes = await IO.getRecipesFromJson(
-          event.importZipFile,
-        );
-        if (loadedRecipes.isEmpty) await IO.clearCache();
-        emit(
-          InvalidFile(
-            event.importZipFile.path.substring(
-              event.importZipFile.path.lastIndexOf("/") + 1,
-            ),
-          ),
-        );
+        List<Recipe> loadedRecipes;
+        try {
+          loadedRecipes = await IO.getRecipesFromJson(importFile);
+        } catch (_) {
+          loadedRecipes = [];
+        }
+        if (loadedRecipes.isEmpty) {
+          await IO.clearImportCache();
+          emit(InvalidFile(event.candidate.originalFileName));
+          return;
+        }
         List<Recipe> alreadyExisting = [];
         List<Recipe> importRecipes = [];
 
@@ -308,14 +298,8 @@ class ImportRecipeBloc extends Bloc<ImportRecipeEvent, ImportRecipeState> {
 
         emit(MultipleRecipes(importRecipes, [], alreadyExisting));
       } else {
-        await IO.clearCache();
-        emit(
-          InvalidDataType(
-            event.importZipFile.path.substring(
-              event.importZipFile.path.lastIndexOf("."),
-            ),
-          ),
-        );
+        await IO.clearImportCache();
+        emit(InvalidDataType(fileExtension.isEmpty ? '' : '.$fileExtension'));
       }
     });
   }

@@ -8,6 +8,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import '../constants/global_constants.dart' as Constants;
+import '../constants/brand_assets.dart';
 import '../generated/l10n.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
@@ -49,7 +50,7 @@ Future<Uint8List> getRecipePdf(Recipe recipe, BuildContext bContext) async {
   );
   final latoBTtf = pw.Font.ttf(latoBFont.buffer.asByteData());
 
-  const imageProvider = const AssetImage('images/iconIosStyle.png');
+  const imageProvider = AssetImage(BrandAssets.simplifiedLogo);
   final pdfIconImage = await flutterImageProvider(imageProvider);
 
   String categoriesString = "";

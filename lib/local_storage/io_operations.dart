@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:archive/archive_io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image/image.dart';
+import 'package:path/path.dart' as path;
 
 import '../models/tuple.dart';
 import 'io_operations.dart' as IO;
@@ -591,6 +592,19 @@ Future<void> clearCache() async {
   }
 }
 
+/// Deletes only temporary files owned by recipe import jobs.
+Future<void> clearImportCache() async {
+  final temporaryDirectory = await getTemporaryDirectory();
+  for (final directoryName in ['import', 'import_jobs']) {
+    final directory = Directory(
+      path.join(temporaryDirectory.path, directoryName),
+    );
+    if (await directory.exists()) {
+      await directory.delete(recursive: true);
+    }
+  }
+}
+
 /// extracts the given .zip to the tmp directory and if the recipe data is valid,
 /// returns the name of the .zip with the recipe data, otherwise: name of .zip with
 /// null
@@ -918,21 +932,59 @@ Future<Recipe> getRecipeFromJson(File jsonFile, {bool? keepTime}) async {
 }
 
 Future<void> exstractZip(File encode, String destination) async {
-  List<int> bytes = encode.readAsBytesSync();
+  const maxArchiveBytes = 100 * 1024 * 1024;
+  const maxExpandedBytes = 250 * 1024 * 1024;
+  const maxEntryBytes = 50 * 1024 * 1024;
+  const maxEntries = 2000;
+
+  if (await encode.length() > maxArchiveBytes) {
+    throw const FormatException('Archive is too large');
+  }
+
+  final bytes = await encode.readAsBytes();
 
   // Decode the Zip file
-  Archive archive = ZipDecoder().decodeBytes(bytes);
+  final archive = ZipDecoder().decodeBytes(bytes);
+  if (archive.length > maxEntries) {
+    throw const FormatException('Archive contains too many entries');
+  }
+
+  final destinationDirectory = Directory(destination);
+  await destinationDirectory.create(recursive: true);
+  final destinationRoot = path.normalize(
+    path.absolute(destinationDirectory.path),
+  );
+  var expandedBytes = 0;
 
   // Extract the contents of the Zip archive to disk.
-  for (ArchiveFile file in archive) {
-    String filename = file.name;
+  for (final file in archive) {
+    final entryName = file.name.replaceAll('\\', '/');
+    if (entryName.isEmpty ||
+        path.isAbsolute(entryName) ||
+        file.isSymbolicLink) {
+      throw const FormatException('Archive contains an unsafe path');
+    }
+
+    final outputPath = path.normalize(path.join(destinationRoot, entryName));
+    if (outputPath != destinationRoot &&
+        !path.isWithin(destinationRoot, outputPath)) {
+      throw const FormatException('Archive contains path traversal');
+    }
+
+    if (file.size > maxEntryBytes) {
+      throw const FormatException('Archive entry is too large');
+    }
+    expandedBytes += file.size;
+    if (expandedBytes > maxExpandedBytes) {
+      throw const FormatException('Expanded archive is too large');
+    }
+
     if (file.isFile) {
-      List<int> data = file.content;
-      File(destination + filename)
-        ..createSync(recursive: true)
-        ..writeAsBytesSync(data);
+      final outputFile = File(outputPath);
+      await outputFile.parent.create(recursive: true);
+      await outputFile.writeAsBytes(file.content, flush: false);
     } else {
-      Directory(destination + filename)..create(recursive: true);
+      await Directory(outputPath).create(recursive: true);
     }
   }
 }
