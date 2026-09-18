@@ -190,7 +190,8 @@ void main() {
       textScale: 1.3,
     );
 
-    expect(find.text('EINKAUFSPLAN'), findsOneWidget);
+    expect(find.text('EINKAUFSPLAN'), findsNothing);
+    expect(find.text('Einkaufsliste'), findsOneWidget);
     expect(find.text('Deine Einkaufsliste ist leer'), findsOneWidget);
     expect(find.text('Einfache Liste'), findsOneWidget);
     expect(find.text('Nach Rezept'), findsOneWidget);
@@ -357,7 +358,7 @@ class _CartHarness {
         .where((state) => state is LoadedState)
         .cast<LoadedState>()
         .first;
-    app.add(InitializeData(context, true, true, false));
+    app.add(InitializeData(context, true, true));
     await tester.runAsync(
       () => initialized.timeout(
         const Duration(seconds: 3),

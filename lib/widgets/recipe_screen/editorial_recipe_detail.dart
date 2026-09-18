@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../ad_related/ad.dart';
 import '../../blocs/recipe_calendar/recipe_calendar_bloc.dart';
 import '../../blocs/recipe_manager/recipe_manager_bloc.dart';
+import '../../blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import '../../blocs/shopping_cart/shopping_cart_bloc.dart';
 import '../../constants/global_constants.dart' as constants;
 import '../../constants/global_settings.dart';
@@ -16,10 +17,12 @@ import '../../generated/l10n.dart';
 import '../../local_storage/local_paths.dart';
 import '../../local_storage/local_repository.dart';
 import '../../models/enums.dart';
+import '../../models/ingredient.dart';
 import '../../models/nutrition.dart';
 import '../../models/recipe.dart';
 import '../../models/string_int_tuple.dart';
 import '../../screens/recipe_overview.dart';
+import '../../screens/cook_mode_screen.dart';
 import '../../util/helper.dart';
 import '../animated_stepper.dart';
 import '../culinary_editorial_theme.dart';
@@ -89,6 +92,8 @@ class EditorialRecipeDetailBody extends StatelessWidget {
                           const SizedBox(height: 18),
                           _EffortAndTimeCard(recipe: recipe),
                         ],
+                        const SizedBox(height: 20),
+                        _StartCookingButton(recipe: recipe),
                       ],
                     ),
                   ),
@@ -175,6 +180,84 @@ class EditorialRecipeDetailBody extends StatelessWidget {
       ],
     );
   }
+}
+
+class _StartCookingButton extends StatelessWidget {
+  const _StartCookingButton({required this.recipe});
+
+  final Recipe recipe;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return BlocBuilder<
+      RecipeScreenIngredientsBloc,
+      RecipeScreenIngredientsState
+    >(
+      builder: (context, state) {
+        return SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            key: const Key('recipe-start-cooking'),
+            onPressed: recipe.steps.isEmpty
+                ? null
+                : () => _openCookMode(context, state),
+            icon: const Icon(Icons.soup_kitchen_rounded),
+            label: Text(S.of(context).start_cooking),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+              backgroundColor: palette.primary,
+              foregroundColor: palette.onPrimary,
+              disabledBackgroundColor: palette.surfaceContainerHigh,
+              disabledForegroundColor: palette.onSurfaceVariant,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              textStyle: CulinaryEditorialType.body(
+                palette,
+                size: 14,
+                weight: FontWeight.w700,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _openCookMode(BuildContext context, RecipeScreenIngredientsState state) {
+    final effective = state is LoadedRecipeIngredients
+        ? _effectiveIngredients(recipe, state)
+        : recipe.ingredients;
+    Navigator.pushNamed(
+      context,
+      RouteNames.cookMode,
+      arguments: CookModeArguments(
+        recipe: recipe,
+        effectiveIngredients: effective,
+      ),
+    );
+  }
+}
+
+List<List<Ingredient>> _effectiveIngredients(
+  Recipe recipe,
+  LoadedRecipeIngredients state,
+) {
+  return List<List<Ingredient>>.generate(recipe.ingredients.length, (section) {
+    return List<Ingredient>.generate(recipe.ingredients[section].length, (
+      index,
+    ) {
+      final original = recipe.ingredients[section][index];
+      if (section >= state.ingredients.length ||
+          index >= state.ingredients[section].length) {
+        return original;
+      }
+      return original.copyWith(
+        amount: state.ingredients[section][index].amount,
+      );
+    });
+  });
 }
 
 class _RecipeHero extends StatelessWidget {

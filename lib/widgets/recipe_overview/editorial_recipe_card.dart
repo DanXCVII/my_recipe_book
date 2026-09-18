@@ -28,7 +28,7 @@ class EditorialRecipeCard extends StatelessWidget {
   final RecipeOverviewCardLayout layout;
   final VoidCallback onOpen;
   final VoidCallback onBookmarkToggle;
-  final VoidCallback onCookAction;
+  final VoidCallback? onCookAction;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +107,7 @@ class _GridCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AspectRatio(
       key: const Key('recipe-card-grid-aspect'),
-      aspectRatio: 4 / 5,
+      aspectRatio: 8 / 9,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -518,7 +518,7 @@ class _ListCard extends StatelessWidget {
   final Recipe recipe;
   final Widget image;
   final VoidCallback onBookmarkToggle;
-  final VoidCallback onCookAction;
+  final VoidCallback? onCookAction;
 
   @override
   Widget build(BuildContext context) {
@@ -695,7 +695,7 @@ class _BookmarkAction extends StatelessWidget {
 class _CookAction extends StatelessWidget {
   const _CookAction({required this.onPressed});
 
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -705,7 +705,7 @@ class _CookAction extends StatelessWidget {
       width: 48,
       height: 48,
       child: IconButton(
-        tooltip: S.of(context).open_recipe,
+        tooltip: S.of(context).start_cooking,
         onPressed: onPressed,
         padding: const EdgeInsets.all(8),
         icon: SizedBox(
@@ -714,13 +714,17 @@ class _CookAction extends StatelessWidget {
           height: 32,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: palette.primarySoft,
+              color: onPressed == null
+                  ? palette.surfaceContainerHigh
+                  : palette.primarySoft,
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.soup_kitchen_rounded,
               size: 18,
-              color: palette.primary,
+              color: onPressed == null
+                  ? palette.onSurfaceVariant.withValues(alpha: .45)
+                  : palette.primary,
             ),
           ),
         ),

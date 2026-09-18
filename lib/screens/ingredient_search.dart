@@ -30,7 +30,7 @@ class IngredientSearchScreenArguments {
     this.hasPremium,
   );
 
-  final AdManagerBloc adManagerBloc;
+  final Bloc<AdManagerEvent, AdManagerState> adManagerBloc;
   final ShoppingCartBloc shoppingCartBloc;
   final RecipeCalendarBloc recipeCalendarBloc;
   final bool hasPremium;
@@ -455,12 +455,12 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                     runSpacing: 8,
                     children: _categories.map((category) {
                       final selected = _selectedCategories.contains(category);
-                      return FilterChip(
-                        label: Text(
-                          category == constants.noCategory
-                              ? S.of(context).no_category
-                              : category,
-                        ),
+                      return _EditorialFilterChip(
+                        key: Key('ingredient-search-category-$category'),
+                        label: category == constants.noCategory
+                            ? S.of(context).no_category
+                            : category,
+                        icon: Icons.folder_open_rounded,
                         selected: selected,
                         onSelected: (value) => update(() {
                           if (value) {
@@ -485,8 +485,10 @@ class _IngredientSearchScreenState extends State<IngredientSearchScreen> {
                     runSpacing: 8,
                     children: _recipeTags.map((tag) {
                       final selected = _selectedRecipeTags.contains(tag);
-                      return FilterChip(
-                        label: Text('#${tag.text}'),
+                      return _EditorialFilterChip(
+                        key: Key('ingredient-search-tag-${tag.text}'),
+                        label: '#${tag.text}',
+                        icon: Icons.sell_outlined,
                         selected: selected,
                         onSelected: (value) => update(() {
                           if (value) {
@@ -1002,6 +1004,21 @@ class _LimitFilter extends StatelessWidget {
               ),
               value: enabled,
               onChanged: onEnabledChanged,
+              thumbColor: WidgetStateProperty.resolveWith(
+                (states) => states.contains(WidgetState.selected)
+                    ? palette.onPrimary
+                    : palette.onSurfaceVariant,
+              ),
+              trackColor: WidgetStateProperty.resolveWith(
+                (states) => states.contains(WidgetState.selected)
+                    ? palette.primary
+                    : palette.surfaceContainerHigh,
+              ),
+              trackOutlineColor: WidgetStateProperty.resolveWith(
+                (states) => states.contains(WidgetState.selected)
+                    ? palette.primary
+                    : palette.outline.withValues(alpha: .72),
+              ),
             ),
             if (slider != null) slider!,
           ],
@@ -1033,16 +1050,74 @@ class _FilterSectionTitle extends StatelessWidget {
           ),
         ),
         if (selectedCount > 0)
-          Text(
-            '$selectedCount',
-            style: CulinaryEditorialType.body(
-              palette,
-              size: 12,
-              weight: FontWeight.w700,
-              color: palette.primary,
+          Container(
+            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: palette.primarySoft,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              '$selectedCount',
+              style: CulinaryEditorialType.body(
+                palette,
+                size: 12,
+                weight: FontWeight.w700,
+                color: palette.primary,
+              ),
             ),
           ),
       ],
+    );
+  }
+}
+
+class _EditorialFilterChip extends StatelessWidget {
+  const _EditorialFilterChip({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final ValueChanged<bool> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    final foreground = selected ? palette.primary : palette.onSurface;
+
+    return FilterChip(
+      label: Text(label),
+      avatar: Icon(
+        selected ? Icons.check_rounded : icon,
+        size: 18,
+        color: foreground,
+      ),
+      selected: selected,
+      onSelected: onSelected,
+      showCheckmark: false,
+      backgroundColor: palette.surfaceContainer,
+      selectedColor: palette.primarySoft,
+      labelStyle: CulinaryEditorialType.body(
+        palette,
+        size: 13,
+        weight: FontWeight.w700,
+        color: foreground,
+      ),
+      side: BorderSide(
+        color: selected
+            ? palette.primary.withValues(alpha: .72)
+            : palette.outline.withValues(alpha: .42),
+      ),
+      shape: const StadiumBorder(),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      tooltip: label,
     );
   }
 }

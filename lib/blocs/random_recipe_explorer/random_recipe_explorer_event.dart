@@ -5,56 +5,23 @@ abstract class RandomRecipeExplorerEvent {
 }
 
 class InitializeRandomRecipeExplorer extends RandomRecipeExplorerEvent {
-  final String selectedCategory;
+  const InitializeRandomRecipeExplorer({this.filter});
 
-  const InitializeRandomRecipeExplorer({
-    this.selectedCategory = 'all categories',
-  });
+  final ExploreFilter? filter;
 }
 
-class ReloadRandomRecipeExplorer extends RandomRecipeExplorerEvent {}
-
-class AddCategories extends RandomRecipeExplorerEvent {
-  final List<String> categories;
-
-  const AddCategories(this.categories);
+class ReloadRandomRecipeExplorer extends RandomRecipeExplorerEvent {
+  const ReloadRandomRecipeExplorer();
 }
 
-class DeleteCategory extends RandomRecipeExplorerEvent {
-  final String category;
+class ChangeExploreFilter extends RandomRecipeExplorerEvent {
+  const ChangeExploreFilter(this.filter);
 
-  const DeleteCategory(this.category);
+  final ExploreFilter filter;
 }
 
-class DeleteRecipe extends RandomRecipeExplorerEvent {
+class UpdateExploreRecipe extends RandomRecipeExplorerEvent {
+  const UpdateExploreRecipe(this.recipe);
+
   final Recipe recipe;
-
-  const DeleteRecipe(this.recipe);
-}
-
-class UpdateRecipe extends RandomRecipeExplorerEvent {
-  final Recipe oldRecipe;
-  final Recipe updatedRecipe;
-
-  const UpdateRecipe(this.oldRecipe, this.updatedRecipe);
-}
-
-class UpdateCategory extends RandomRecipeExplorerEvent {
-  final String oldCategory;
-  final String updatedCategory;
-
-  const UpdateCategory(this.oldCategory, this.updatedCategory);
-}
-
-class ChangeCategory extends RandomRecipeExplorerEvent {
-  final String category;
-
-  const ChangeCategory(this.category);
-}
-
-class MoveCategory extends RandomRecipeExplorerEvent {
-  final int oldIndex;
-  final int newIndex;
-
-  MoveCategory(this.oldIndex, this.newIndex);
 }

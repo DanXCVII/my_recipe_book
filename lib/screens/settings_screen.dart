@@ -196,8 +196,6 @@ class _SettingsState extends State<Settings> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const _SettingsBrandHeader(),
-                            const SizedBox(height: 18),
                             const _SettingsPageHeading(),
                             const SizedBox(height: 18),
                             const _MigrationRecoveryNotice(),
@@ -613,89 +611,20 @@ class _SettingsState extends State<Settings> {
   }
 }
 
-class _SettingsBrandHeader extends StatelessWidget {
-  const _SettingsBrandHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    return Row(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            'images/icon.png',
-            width: 38,
-            height: 38,
-            fit: BoxFit.cover,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                S.of(context).recipe_bible,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CulinaryEditorialType.headline(
-                  palette,
-                  size: 22,
-                  weight: FontWeight.w600,
-                  height: 1.05,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                S.of(context).settings.toUpperCase(),
-                style: CulinaryEditorialType.body(
-                  palette,
-                  size: 10,
-                  weight: FontWeight.w700,
-                  color: palette.outline,
-                  height: 1,
-                  letterSpacing: 1.1,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _SettingsPageHeading extends StatelessWidget {
   const _SettingsPageHeading();
 
   @override
   Widget build(BuildContext context) {
     final palette = CulinaryEditorialPalette.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          S.of(context).settings_title,
-          style: CulinaryEditorialType.headline(
-            palette,
-            size: 30,
-            weight: FontWeight.w600,
-            height: 1.08,
-          ),
-        ),
-        const SizedBox(height: 7),
-        Text(
-          S.of(context).settings_configuration,
-          style: CulinaryEditorialType.body(
-            palette,
-            size: 11,
-            weight: FontWeight.w700,
-            color: palette.outline,
-            letterSpacing: .9,
-          ),
-        ),
-      ],
+    return Text(
+      S.of(context).settings_title,
+      style: CulinaryEditorialType.headline(
+        palette,
+        size: 30,
+        weight: FontWeight.w600,
+        height: 1.08,
+      ),
     );
   }
 }

@@ -1,6 +1,0 @@
-{
-  "approved": true,
-  "role": "north-star",
-  "origin": "generated",
-  "prompt": "Create stage 4 of 4 for the supplied Culinary Editorial recipe editor. Match the warm parchment, oxblood, amber, Playfair Display, and Plus Jakarta Sans visual system. Show a compact recipe summary, optional per-serving nutrition rows with free-form values and reorder/delete affordances, an add action, and sticky Back and Save Recipe actions. Do not add unsupported features."
-}

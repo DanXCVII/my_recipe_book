@@ -373,6 +373,27 @@ void main() {
   });
 
   test(
+    'deleting categories and tags keeps recipes but removes assignments',
+    () async {
+      await repository.initializeFresh();
+      const tag = StringIntTuple(text: 'Quick', number: 0xFF00838F);
+      await repository.addCategory('Dinner');
+      await repository.addRecipeTag(tag.text, tag.number);
+      await repository.saveRecipe(
+        Recipe(name: 'Soup', categories: const ['Dinner'], tags: const [tag]),
+      );
+
+      await repository.deleteCategory('Dinner');
+      await repository.deleteRecipeTag(tag.text);
+
+      final recipe = await repository.getRecipeByName('Soup');
+      expect(recipe, isNotNull);
+      expect(recipe!.categories, isEmpty);
+      expect(recipe.tags, isEmpty);
+    },
+  );
+
+  test(
     'calendar preserves duplicates and removes one matching entry',
     () async {
       final date = DateTime(2026, 9, 20, 18);

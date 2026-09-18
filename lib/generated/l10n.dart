@@ -75,71 +75,551 @@ class S {
     );
   }
 
-  /// `Choose a theme`
-  String get choose_a_theme {
+  /// `Continue`
+  String get onboarding_continue {
     return Intl.message(
-      'Choose a theme',
-      name: 'choose_a_theme',
+      'Continue',
+      name: 'onboarding_continue',
       desc: '',
       args: [],
     );
   }
 
-  /// `Swype your recipes`
-  String get swype_your_recipes {
+  /// `Open my cookbook`
+  String get onboarding_open_cookbook {
     return Intl.message(
-      'Swype your recipes',
-      name: 'swype_your_recipes',
+      'Open my cookbook',
+      name: 'onboarding_open_cookbook',
       desc: '',
       args: [],
     );
   }
 
-  /// `If you can’t decide what to cook, use random-recipe-explorer.`
-  String get if_you_cant_decide_random_recipe_explorer {
+  /// `Step {current} of {total}`
+  String onboarding_progress(int current, int total) {
     return Intl.message(
-      'If you can’t decide what to cook, use random-recipe-explorer.',
-      name: 'if_you_cant_decide_random_recipe_explorer',
+      'Step $current of $total',
+      name: 'onboarding_progress',
+      desc: '',
+      args: [current, total],
+    );
+  }
+
+  /// `Choose a recipe that fits your energy.`
+  String get onboarding_effort_title {
+    return Intl.message(
+      'Choose a recipe that fits your energy.',
+      name: 'onboarding_effort_title',
       desc: '',
       args: [],
     );
   }
 
-  /// `EXPORT as text or zip`
-  String get export_as_text_or_zip {
+  /// `Give recipes an effort score from 1 to 10, then sort your collection when choosing what to cook.`
+  String get onboarding_effort_description {
     return Intl.message(
-      'EXPORT as text or zip',
-      name: 'export_as_text_or_zip',
+      'Give recipes an effort score from 1 to 10, then sort your collection when choosing what to cook.',
+      name: 'onboarding_effort_description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Export your recipes as zip file for using them on multiple devices. Alternatively you can also generate a pdf or text with all the information.`
-  String get multiple_devices_use_export_as_zip_etc {
+  /// `Your effort scale`
+  String get onboarding_effort_scale {
     return Intl.message(
-      'Export your recipes as zip file for using them on multiple devices. Alternatively you can also generate a pdf or text with all the information.',
-      name: 'multiple_devices_use_export_as_zip_etc',
+      'Your effort scale',
+      name: 'onboarding_effort_scale',
       desc: '',
       args: [],
     );
   }
 
-  /// `Add to shoppingcart`
-  String get add_to_shoppingcart {
+  /// `LEVEL {effort} / 10`
+  String onboarding_effort_level(int effort) {
     return Intl.message(
-      'Add to shoppingcart',
-      name: 'add_to_shoppingcart',
+      'LEVEL $effort / 10',
+      name: 'onboarding_effort_level',
+      desc: '',
+      args: [effort],
+    );
+  }
+
+  /// `Choose effort level {effort}`
+  String onboarding_effort_choose(int effort) {
+    return Intl.message(
+      'Choose effort level $effort',
+      name: 'onboarding_effort_choose',
+      desc: '',
+      args: [effort],
+    );
+  }
+
+  /// `Gentle`
+  String get onboarding_effort_gentle {
+    return Intl.message(
+      'Gentle',
+      name: 'onboarding_effort_gentle',
       desc: '',
       args: [],
     );
   }
 
-  /// `You can add the ingredients of your recipe to your shoppingcart for more relaxed shopping.`
-  String get for_more_relaxed_shopping_add_to_shoppingcart {
+  /// `Balanced`
+  String get onboarding_effort_balanced {
     return Intl.message(
-      'You can add the ingredients of your recipe to your shoppingcart for more relaxed shopping.',
-      name: 'for_more_relaxed_shopping_add_to_shoppingcart',
+      'Balanced',
+      name: 'onboarding_effort_balanced',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ambitious`
+  String get onboarding_effort_ambitious {
+    return Intl.message(
+      'Ambitious',
+      name: 'onboarding_effort_ambitious',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `1 Gentle`
+  String get onboarding_effort_one {
+    return Intl.message(
+      '1 Gentle',
+      name: 'onboarding_effort_one',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `5 Balanced`
+  String get onboarding_effort_five {
+    return Intl.message(
+      '5 Balanced',
+      name: 'onboarding_effort_five',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `10 Ambitious`
+  String get onboarding_effort_ten {
+    return Intl.message(
+      '10 Ambitious',
+      name: 'onboarding_effort_ten',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Crisp garden salad`
+  String get onboarding_effort_easy_recipe {
+    return Intl.message(
+      'Crisp garden salad',
+      name: 'onboarding_effort_easy_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A lighter recipe for a busy evening.`
+  String get onboarding_effort_easy_detail {
+    return Intl.message(
+      'A lighter recipe for a busy evening.',
+      name: 'onboarding_effort_easy_detail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Slow-roasted vegetable pasta`
+  String get onboarding_effort_project_recipe {
+    return Intl.message(
+      'Slow-roasted vegetable pasta',
+      name: 'onboarding_effort_project_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `More time and attention for an unhurried day.`
+  String get onboarding_effort_project_detail {
+    return Intl.message(
+      'More time and attention for an unhurried day.',
+      name: 'onboarding_effort_project_detail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Effort {effort}/10`
+  String onboarding_effort_badge(int effort) {
+    return Intl.message(
+      'Effort $effort/10',
+      name: 'onboarding_effort_badge',
+      desc: '',
+      args: [effort],
+    );
+  }
+
+  /// `Never lose your place at the stove.`
+  String get onboarding_cook_title {
+    return Intl.message(
+      'Never lose your place at the stove.',
+      name: 'onboarding_cook_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Work through one recipe step at a time, see its assigned ingredients, and keep a timer within reach.`
+  String get onboarding_cook_description {
+    return Intl.message(
+      'Work through one recipe step at a time, see its assigned ingredients, and keep a timer within reach.',
+      name: 'onboarding_cook_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ROASTED TOMATO PASTA`
+  String get onboarding_cook_sample_recipe {
+    return Intl.message(
+      'ROASTED TOMATO PASTA',
+      name: 'onboarding_cook_sample_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `3 of 7`
+  String get onboarding_cook_step_count {
+    return Intl.message(
+      '3 of 7',
+      name: 'onboarding_cook_step_count',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deglaze and reduce`
+  String get onboarding_cook_sample_step {
+    return Intl.message(
+      'Deglaze and reduce',
+      name: 'onboarding_cook_sample_step',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add the wine, scrape the browned fond from the pan, and simmer until reduced by half.`
+  String get onboarding_cook_sample_instruction {
+    return Intl.message(
+      'Add the wine, scrape the browned fond from the pan, and simmer until reduced by half.',
+      name: 'onboarding_cook_sample_instruction',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `1 cup dry red wine`
+  String get onboarding_cook_sample_ingredient {
+    return Intl.message(
+      '1 cup dry red wine',
+      name: 'onboarding_cook_sample_ingredient',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Glanceable steps`
+  String get onboarding_cook_glanceable_title {
+    return Intl.message(
+      'Glanceable steps',
+      name: 'onboarding_cook_glanceable_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `One clear instruction at a time.`
+  String get onboarding_cook_glanceable_description {
+    return Intl.message(
+      'One clear instruction at a time.',
+      name: 'onboarding_cook_glanceable_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Keep the screen awake`
+  String get onboarding_cook_awake_title {
+    return Intl.message(
+      'Keep the screen awake',
+      name: 'onboarding_cook_awake_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable it for the current cooking session.`
+  String get onboarding_cook_awake_description {
+    return Intl.message(
+      'Enable it for the current cooking session.',
+      name: 'onboarding_cook_awake_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cook with what you have. Shop for what you need.`
+  String get onboarding_pantry_title {
+    return Intl.message(
+      'Cook with what you have. Shop for what you need.',
+      name: 'onboarding_pantry_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pro ingredient search matches your kitchen against recipes saved on this device. Any recipe can add ingredients to a checkable shopping list.`
+  String get onboarding_pantry_description {
+    return Intl.message(
+      'Pro ingredient search matches your kitchen against recipes saved on this device. Any recipe can add ingredients to a checkable shopping list.',
+      name: 'onboarding_pantry_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ingredient search`
+  String get onboarding_pantry_search_title {
+    return Intl.message(
+      'Ingredient search',
+      name: 'onboarding_pantry_search_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PRO FEATURE`
+  String get onboarding_pantry_pro {
+    return Intl.message(
+      'PRO FEATURE',
+      name: 'onboarding_pantry_pro',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Spinach`
+  String get onboarding_pantry_spinach {
+    return Intl.message(
+      'Spinach',
+      name: 'onboarding_pantry_spinach',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pasta`
+  String get onboarding_pantry_pasta {
+    return Intl.message(
+      'Pasta',
+      name: 'onboarding_pantry_pasta',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tomatoes`
+  String get onboarding_pantry_tomatoes {
+    return Intl.message(
+      'Tomatoes',
+      name: 'onboarding_pantry_tomatoes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{matched}/{total} INGREDIENTS MATCH`
+  String onboarding_pantry_match(int matched, int total) {
+    return Intl.message(
+      '$matched/$total INGREDIENTS MATCH',
+      name: 'onboarding_pantry_match',
+      desc: '',
+      args: [matched, total],
+    );
+  }
+
+  /// `Creamy spinach pasta`
+  String get onboarding_pantry_sample_recipe {
+    return Intl.message(
+      'Creamy spinach pasta',
+      name: 'onboarding_pantry_sample_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `25 min · Effort 4/10`
+  String get onboarding_pantry_sample_detail {
+    return Intl.message(
+      '25 min · Effort 4/10',
+      name: 'onboarding_pantry_sample_detail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recipe shopping list`
+  String get onboarding_shopping_title {
+    return Intl.message(
+      'Recipe shopping list',
+      name: 'onboarding_shopping_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `4 servings`
+  String get onboarding_shopping_servings {
+    return Intl.message(
+      '4 servings',
+      name: 'onboarding_shopping_servings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Parmesan`
+  String get onboarding_shopping_parmesan {
+    return Intl.message(
+      'Parmesan',
+      name: 'onboarding_shopping_parmesan',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Garlic`
+  String get onboarding_shopping_garlic {
+    return Intl.message(
+      'Garlic',
+      name: 'onboarding_shopping_garlic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cooking cream`
+  String get onboarding_shopping_cream {
+    return Intl.message(
+      'Cooking cream',
+      name: 'onboarding_shopping_cream',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Swipe until dinner feels obvious.`
+  String get onboarding_explore_title {
+    return Intl.message(
+      'Swipe until dinner feels obvious.',
+      name: 'onboarding_explore_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Browse your own recipes as a deck: left to pass, up to save, and right to cook.`
+  String get onboarding_explore_description {
+    return Intl.message(
+      'Browse your own recipes as a deck: left to pass, up to save, and right to cook.',
+      name: 'onboarding_explore_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Card {current} of {total}`
+  String onboarding_explore_card(int current, int total) {
+    return Intl.message(
+      'Card $current of $total',
+      name: 'onboarding_explore_card',
+      desc: '',
+      args: [current, total],
+    );
+  }
+
+  /// `Roasted vegetable pasta`
+  String get onboarding_explore_recipe_one {
+    return Intl.message(
+      'Roasted vegetable pasta',
+      name: 'onboarding_explore_recipe_one',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A colorful pantry dinner with herbs and tomatoes.`
+  String get onboarding_explore_recipe_one_detail {
+    return Intl.message(
+      'A colorful pantry dinner with herbs and tomatoes.',
+      name: 'onboarding_explore_recipe_one_detail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Summer garden salad`
+  String get onboarding_explore_recipe_two {
+    return Intl.message(
+      'Summer garden salad',
+      name: 'onboarding_explore_recipe_two',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fresh fruit, greens, avocado, and toasted nuts.`
+  String get onboarding_explore_recipe_two_detail {
+    return Intl.message(
+      'Fresh fruit, greens, avocado, and toasted nuts.',
+      name: 'onboarding_explore_recipe_two_detail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tomato basil spaghetti`
+  String get onboarding_explore_recipe_three {
+    return Intl.message(
+      'Tomato basil spaghetti',
+      name: 'onboarding_explore_recipe_three',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A familiar weeknight favorite from your own collection.`
+  String get onboarding_explore_recipe_three_detail {
+    return Intl.message(
+      'A familiar weeknight favorite from your own collection.',
+      name: 'onboarding_explore_recipe_three_detail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recipes without steps open in recipe detail instead.`
+  String get onboarding_explore_fallback {
+    return Intl.message(
+      'Recipes without steps open in recipe detail instead.',
+      name: 'onboarding_explore_fallback',
       desc: '',
       args: [],
     );
@@ -208,6 +688,11 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `Delete`
+  String get delete {
+    return Intl.message('Delete', name: 'delete', desc: '', args: []);
   }
 
   /// `Share recipe`
@@ -353,6 +838,66 @@ class S {
   /// `Add recipe`
   String get add_recipe {
     return Intl.message('Add recipe', name: 'add_recipe', desc: '', args: []);
+  }
+
+  /// `Create manually`
+  String get create_manually {
+    return Intl.message(
+      'Create manually',
+      name: 'create_manually',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recipe actions`
+  String get recipe_actions {
+    return Intl.message(
+      'Recipe actions',
+      name: 'recipe_actions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expanded`
+  String get recipe_actions_expanded {
+    return Intl.message(
+      'Expanded',
+      name: 'recipe_actions_expanded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Collapsed`
+  String get recipe_actions_collapsed {
+    return Intl.message(
+      'Collapsed',
+      name: 'recipe_actions_collapsed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Shows ways to add a recipe`
+  String get recipe_actions_hint {
+    return Intl.message(
+      'Shows ways to add a recipe',
+      name: 'recipe_actions_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close recipe actions`
+  String get close_recipe_actions {
+    return Intl.message(
+      'Close recipe actions',
+      name: 'close_recipe_actions',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Add bookmarks`
@@ -695,6 +1240,106 @@ class S {
     return Intl.message(
       'Manage categories',
       name: 'manage_categories',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Set the order categories use across your cookbook. Drag the handle to reorganize them.`
+  String get catalog_categories_description {
+    return Intl.message(
+      'Set the order categories use across your cookbook. Drag the handle to reorganize them.',
+      name: 'catalog_categories_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add category`
+  String get catalog_add_category {
+    return Intl.message(
+      'Add category',
+      name: 'catalog_add_category',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit category`
+  String get catalog_edit_category {
+    return Intl.message(
+      'Edit category',
+      name: 'catalog_edit_category',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No categories yet`
+  String get catalog_categories_empty_title {
+    return Intl.message(
+      'No categories yet',
+      name: 'catalog_categories_empty_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create a category to group recipes by meal, occasion, cuisine, or any system that fits your cookbook.`
+  String get catalog_categories_empty_description {
+    return Intl.message(
+      'Create a category to group recipes by meal, occasion, cuisine, or any system that fits your cookbook.',
+      name: 'catalog_categories_empty_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Order {position}`
+  String catalog_category_order(int position) {
+    return Intl.message(
+      'Order $position',
+      name: 'catalog_category_order',
+      desc: '',
+      args: [position],
+    );
+  }
+
+  /// `Reorder {name}`
+  String catalog_reorder_category(String name) {
+    return Intl.message(
+      'Reorder $name',
+      name: 'catalog_reorder_category',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `More actions for {name}`
+  String catalog_more_actions(String name) {
+    return Intl.message(
+      'More actions for $name',
+      name: 'catalog_more_actions',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Delete “{name}”?`
+  String catalog_delete_category_title(String name) {
+    return Intl.message(
+      'Delete “$name”?',
+      name: 'catalog_delete_category_title',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Recipes will stay in your cookbook. This category will be removed from every recipe that uses it.`
+  String get catalog_delete_category_description {
+    return Intl.message(
+      'Recipes will stay in your cookbook. This category will be removed from every recipe that uses it.',
+      name: 'catalog_delete_category_description',
       desc: '',
       args: [],
     );
@@ -1665,26 +2310,6 @@ class S {
     );
   }
 
-  /// `Here you can add a new recipe`
-  String get tap_here_to_add_recipe {
-    return Intl.message(
-      'Here you can add a new recipe',
-      name: 'tap_here_to_add_recipe',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Here you can manage\nyour recipe categories`
-  String get tap_here_to_manage_categories {
-    return Intl.message(
-      'Here you can manage\nyour recipe categories',
-      name: 'tap_here_to_manage_categories',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Contact me`
   String get contact_me {
     return Intl.message('Contact me', name: 'contact_me', desc: '', args: []);
@@ -1760,6 +2385,221 @@ class S {
     return Intl.message(
       'Manage recipe tags',
       name: 'manage_recipe_tags',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use color-coded tags to make recipes easier to spot, group, and filter.`
+  String get catalog_tags_description {
+    return Intl.message(
+      'Use color-coded tags to make recipes easier to spot, group, and filter.',
+      name: 'catalog_tags_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add tag`
+  String get catalog_add_tag {
+    return Intl.message('Add tag', name: 'catalog_add_tag', desc: '', args: []);
+  }
+
+  /// `Edit tag`
+  String get catalog_edit_tag {
+    return Intl.message(
+      'Edit tag',
+      name: 'catalog_edit_tag',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No recipe tags yet`
+  String get catalog_tags_empty_title {
+    return Intl.message(
+      'No recipe tags yet',
+      name: 'catalog_tags_empty_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create a color-coded tag for themes such as quick, seasonal, family favorite, or meal prep.`
+  String get catalog_tags_empty_description {
+    return Intl.message(
+      'Create a color-coded tag for themes such as quick, seasonal, family favorite, or meal prep.',
+      name: 'catalog_tags_empty_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Color-coded recipe tag`
+  String get catalog_tag_row_description {
+    return Intl.message(
+      'Color-coded recipe tag',
+      name: 'catalog_tag_row_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose a tag color`
+  String get catalog_choose_tag_color {
+    return Intl.message(
+      'Choose a tag color',
+      name: 'catalog_choose_tag_color',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `More colors`
+  String get catalog_custom_tag_color {
+    return Intl.message(
+      'More colors',
+      name: 'catalog_custom_tag_color',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tag preview`
+  String get catalog_tag_preview {
+    return Intl.message(
+      'Tag preview',
+      name: 'catalog_tag_preview',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{name}, {hex}`
+  String catalog_color_swatch(String name, String hex) {
+    return Intl.message(
+      '$name, $hex',
+      name: 'catalog_color_swatch',
+      desc: '',
+      args: [name, hex],
+    );
+  }
+
+  /// `Paprika`
+  String get catalog_color_paprika {
+    return Intl.message(
+      'Paprika',
+      name: 'catalog_color_paprika',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Red`
+  String get catalog_color_red {
+    return Intl.message('Red', name: 'catalog_color_red', desc: '', args: []);
+  }
+
+  /// `Pink`
+  String get catalog_color_pink {
+    return Intl.message('Pink', name: 'catalog_color_pink', desc: '', args: []);
+  }
+
+  /// `Purple`
+  String get catalog_color_purple {
+    return Intl.message(
+      'Purple',
+      name: 'catalog_color_purple',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Indigo`
+  String get catalog_color_indigo {
+    return Intl.message(
+      'Indigo',
+      name: 'catalog_color_indigo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blue`
+  String get catalog_color_blue {
+    return Intl.message('Blue', name: 'catalog_color_blue', desc: '', args: []);
+  }
+
+  /// `Teal`
+  String get catalog_color_teal {
+    return Intl.message('Teal', name: 'catalog_color_teal', desc: '', args: []);
+  }
+
+  /// `Green`
+  String get catalog_color_green {
+    return Intl.message(
+      'Green',
+      name: 'catalog_color_green',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Olive green`
+  String get catalog_color_olive {
+    return Intl.message(
+      'Olive green',
+      name: 'catalog_color_olive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Orange`
+  String get catalog_color_orange {
+    return Intl.message(
+      'Orange',
+      name: 'catalog_color_orange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Brown`
+  String get catalog_color_brown {
+    return Intl.message(
+      'Brown',
+      name: 'catalog_color_brown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blue grey`
+  String get catalog_color_blue_grey {
+    return Intl.message(
+      'Blue grey',
+      name: 'catalog_color_blue_grey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete “{name}”?`
+  String catalog_delete_tag_title(String name) {
+    return Intl.message(
+      'Delete “$name”?',
+      name: 'catalog_delete_tag_title',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Recipes will stay in your cookbook. This tag will be removed from every recipe that uses it.`
+  String get catalog_delete_tag_description {
+    return Intl.message(
+      'Recipes will stay in your cookbook. This tag will be removed from every recipe that uses it.',
+      name: 'catalog_delete_tag_description',
       desc: '',
       args: [],
     );
@@ -2180,26 +3020,6 @@ class S {
     );
   }
 
-  /// `Start Recipes`
-  String get first_start_recipes {
-    return Intl.message(
-      'Start Recipes',
-      name: 'first_start_recipes',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `A few example recipes in german are already in this app.\nOf course you can delete them.`
-  String get first_start_recipes_desc {
-    return Intl.message(
-      'A few example recipes in german are already in this app.\nOf course you can delete them.',
-      name: 'first_start_recipes_desc',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `To import recipes faster from the internet, use the share functionality of your preferred browser and select this app, to instantly import it without having to copy the link.`
   String get website_import_info {
     return Intl.message(
@@ -2300,16 +3120,6 @@ class S {
     return Intl.message(
       'Are you sure, that you want to delete the prefilled recipe data?',
       name: 'clean_recipe_info_desc',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Tap here to imoprt\n a recipe online`
-  String get tap_here_to_import_recipe_online {
-    return Intl.message(
-      'Tap here to imoprt\n a recipe online',
-      name: 'tap_here_to_import_recipe_online',
       desc: '',
       args: [],
     );
@@ -3694,6 +4504,431 @@ class S {
     );
   }
 
+  /// `Start cooking`
+  String get start_cooking {
+    return Intl.message(
+      'Start cooking',
+      name: 'start_cooking',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cook mode`
+  String get cook_mode_title {
+    return Intl.message(
+      'Cook mode',
+      name: 'cook_mode_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cooking assistant`
+  String get cook_mode_assistant {
+    return Intl.message(
+      'Cooking assistant',
+      name: 'cook_mode_assistant',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Step {step} of {total}`
+  String cook_mode_step_progress(int step, int total) {
+    return Intl.message(
+      'Step $step of $total',
+      name: 'cook_mode_step_progress',
+      desc: '',
+      args: [step, total],
+    );
+  }
+
+  /// `{percent}% complete`
+  String cook_mode_percent_complete(int percent) {
+    return Intl.message(
+      '$percent% complete',
+      name: 'cook_mode_percent_complete',
+      desc: '',
+      args: [percent],
+    );
+  }
+
+  /// `Active phase · {recipe}`
+  String cook_mode_active_phase(String recipe) {
+    return Intl.message(
+      'Active phase · $recipe',
+      name: 'cook_mode_active_phase',
+      desc: '',
+      args: [recipe],
+    );
+  }
+
+  /// `Step {number}`
+  String cook_mode_step_fallback(int number) {
+    return Intl.message(
+      'Step $number',
+      name: 'cook_mode_step_fallback',
+      desc: '',
+      args: [number],
+    );
+  }
+
+  /// `Required for this step ({count})`
+  String cook_mode_required_ingredients(int count) {
+    return Intl.message(
+      'Required for this step ($count)',
+      name: 'cook_mode_required_ingredients',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `No ingredients are assigned to this step.`
+  String get cook_mode_no_assigned_ingredients {
+    return Intl.message(
+      'No ingredients are assigned to this step.',
+      name: 'cook_mode_no_assigned_ingredients',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Prepared`
+  String get cook_mode_prepared {
+    return Intl.message(
+      'Prepared',
+      name: 'cook_mode_prepared',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Step instructions`
+  String get cook_mode_step_instructions {
+    return Intl.message(
+      'Step instructions',
+      name: 'cook_mode_step_instructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Previous`
+  String get cook_mode_previous {
+    return Intl.message(
+      'Previous',
+      name: 'cook_mode_previous',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Next`
+  String get cook_mode_next {
+    return Intl.message('Next', name: 'cook_mode_next', desc: '', args: []);
+  }
+
+  /// `Finish`
+  String get cook_mode_finish {
+    return Intl.message('Finish', name: 'cook_mode_finish', desc: '', args: []);
+  }
+
+  /// `Keep screen awake`
+  String get cook_mode_keep_awake {
+    return Intl.message(
+      'Keep screen awake',
+      name: 'cook_mode_keep_awake',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow screen to sleep`
+  String get cook_mode_allow_sleep {
+    return Intl.message(
+      'Allow screen to sleep',
+      name: 'cook_mode_allow_sleep',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Timer`
+  String get cook_mode_timer {
+    return Intl.message('Timer', name: 'cook_mode_timer', desc: '', args: []);
+  }
+
+  /// `Set time`
+  String get cook_mode_set_timer {
+    return Intl.message(
+      'Set time',
+      name: 'cook_mode_set_timer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start timer`
+  String get cook_mode_start_timer {
+    return Intl.message(
+      'Start timer',
+      name: 'cook_mode_start_timer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pause timer`
+  String get cook_mode_pause_timer {
+    return Intl.message(
+      'Pause timer',
+      name: 'cook_mode_pause_timer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Resume timer`
+  String get cook_mode_resume_timer {
+    return Intl.message(
+      'Resume timer',
+      name: 'cook_mode_resume_timer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add one minute`
+  String get cook_mode_add_minute {
+    return Intl.message(
+      'Add one minute',
+      name: 'cook_mode_add_minute',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `+1 min`
+  String get cook_mode_add_minute_compact {
+    return Intl.message(
+      '+1 min',
+      name: 'cook_mode_add_minute_compact',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset timer`
+  String get cook_mode_reset_timer {
+    return Intl.message(
+      'Reset timer',
+      name: 'cook_mode_reset_timer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel timer`
+  String get cook_mode_cancel_timer {
+    return Intl.message(
+      'Cancel timer',
+      name: 'cook_mode_cancel_timer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Collapse timer`
+  String get cook_mode_collapse_timer {
+    return Intl.message(
+      'Collapse timer',
+      name: 'cook_mode_collapse_timer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expand timer`
+  String get cook_mode_expand_timer {
+    return Intl.message(
+      'Expand timer',
+      name: 'cook_mode_expand_timer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Timer complete`
+  String get cook_mode_timer_complete {
+    return Intl.message(
+      'Timer complete',
+      name: 'cook_mode_timer_complete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Time is up for this cooking step.`
+  String get cook_mode_timer_complete_message {
+    return Intl.message(
+      'Time is up for this cooking step.',
+      name: 'cook_mode_timer_complete_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restart`
+  String get cook_mode_restart_timer {
+    return Intl.message(
+      'Restart',
+      name: 'cook_mode_restart_timer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Set cooking timer`
+  String get cook_mode_timer_sheet_title {
+    return Intl.message(
+      'Set cooking timer',
+      name: 'cook_mode_timer_sheet_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hours`
+  String get cook_mode_timer_hours {
+    return Intl.message(
+      'Hours',
+      name: 'cook_mode_timer_hours',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Minutes`
+  String get cook_mode_timer_minutes {
+    return Intl.message(
+      'Minutes',
+      name: 'cook_mode_timer_minutes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Seconds`
+  String get cook_mode_timer_seconds {
+    return Intl.message(
+      'Seconds',
+      name: 'cook_mode_timer_seconds',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a duration greater than zero.`
+  String get cook_mode_timer_invalid {
+    return Intl.message(
+      'Enter a duration greater than zero.',
+      name: 'cook_mode_timer_invalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Set timer`
+  String get cook_mode_timer_save {
+    return Intl.message(
+      'Set timer',
+      name: 'cook_mode_timer_save',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `End cook mode?`
+  String get cook_mode_exit_title {
+    return Intl.message(
+      'End cook mode?',
+      name: 'cook_mode_exit_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Leaving will stop the active timer and discard this cook session.`
+  String get cook_mode_exit_message {
+    return Intl.message(
+      'Leaving will stop the active timer and discard this cook session.',
+      name: 'cook_mode_exit_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Keep cooking`
+  String get cook_mode_stay {
+    return Intl.message(
+      'Keep cooking',
+      name: 'cook_mode_stay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `End session`
+  String get cook_mode_end_session {
+    return Intl.message(
+      'End session',
+      name: 'cook_mode_end_session',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cooking complete`
+  String get cook_mode_finish_title {
+    return Intl.message(
+      'Cooking complete',
+      name: 'cook_mode_finish_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have reached the final step.`
+  String get cook_mode_finish_message {
+    return Intl.message(
+      'You have reached the final step.',
+      name: 'cook_mode_finish_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have reached the final step. Finishing will also stop the active timer.`
+  String get cook_mode_finish_timer_message {
+    return Intl.message(
+      'You have reached the final step. Finishing will also stop the active timer.',
+      name: 'cook_mode_finish_timer_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Finish and stop timer`
+  String get cook_mode_finish_and_stop {
+    return Intl.message(
+      'Finish and stop timer',
+      name: 'cook_mode_finish_and_stop',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `The recipe source could not be opened.`
   String get source_could_not_open {
     return Intl.message(
@@ -3722,6 +4957,36 @@ class S {
   /// `Open`
   String get category_open {
     return Intl.message('Open', name: 'category_open', desc: '', args: []);
+  }
+
+  /// `Start`
+  String get category_start {
+    return Intl.message('Start', name: 'category_start', desc: '', args: []);
+  }
+
+  /// `Collapse`
+  String get collapse {
+    return Intl.message('Collapse', name: 'collapse', desc: '', args: []);
+  }
+
+  /// `Expand Dish of the Day`
+  String get expand_dish_of_the_day {
+    return Intl.message(
+      'Expand Dish of the Day',
+      name: 'expand_dish_of_the_day',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Collapse Dish of the Day`
+  String get collapse_dish_of_the_day {
+    return Intl.message(
+      'Collapse Dish of the Day',
+      name: 'collapse_dish_of_the_day',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `{effort}/10 Effort`
@@ -3919,6 +5184,216 @@ class S {
     return Intl.message(
       'Add ingredients from your kitchen, refine the filters, and find recipes that fit.',
       name: 'ingredient_search_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PRO FEATURE`
+  String get ingredient_search_preview_pro_badge {
+    return Intl.message(
+      'PRO FEATURE',
+      name: 'ingredient_search_preview_pro_badge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose ingredients from your kitchen and find matching recipes in your own collection. Refine them by diet, time, effort, categories, or tags.`
+  String get ingredient_search_preview_description {
+    return Intl.message(
+      'Choose ingredients from your kitchen and find matching recipes in your own collection. Refine them by diet, time, effort, categories, or tags.',
+      name: 'ingredient_search_preview_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Read-only example of an ingredient search with spinach, pasta, and tomatoes, refined to a vegetarian recipe under 30 minutes and effort level 5.`
+  String get ingredient_search_preview_semantics {
+    return Intl.message(
+      'Read-only example of an ingredient search with spinach, pasta, and tomatoes, refined to a vegetarian recipe under 30 minutes and effort level 5.',
+      name: 'ingredient_search_preview_semantics',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Spinach`
+  String get ingredient_search_preview_spinach {
+    return Intl.message(
+      'Spinach',
+      name: 'ingredient_search_preview_spinach',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pasta`
+  String get ingredient_search_preview_pasta {
+    return Intl.message(
+      'Pasta',
+      name: 'ingredient_search_preview_pasta',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tomatoes`
+  String get ingredient_search_preview_tomatoes {
+    return Intl.message(
+      'Tomatoes',
+      name: 'ingredient_search_preview_tomatoes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `FILTERED BY`
+  String get ingredient_search_preview_filtered_by {
+    return Intl.message(
+      'FILTERED BY',
+      name: 'ingredient_search_preview_filtered_by',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Effort ≤5`
+  String get ingredient_search_preview_effort_cap {
+    return Intl.message(
+      'Effort ≤5',
+      name: 'ingredient_search_preview_effort_cap',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `EXAMPLE MATCH`
+  String get ingredient_search_preview_example {
+    return Intl.message(
+      'EXAMPLE MATCH',
+      name: 'ingredient_search_preview_example',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Creamy spinach pasta`
+  String get ingredient_search_preview_example_recipe {
+    return Intl.message(
+      'Creamy spinach pasta',
+      name: 'ingredient_search_preview_example_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `25 min`
+  String get ingredient_search_preview_recipe_time {
+    return Intl.message(
+      '25 min',
+      name: 'ingredient_search_preview_recipe_time',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search your cookbook`
+  String get ingredient_search_preview_own_title {
+    return Intl.message(
+      'Search your cookbook',
+      name: 'ingredient_search_preview_own_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Match ingredients against the recipes saved on this device.`
+  String get ingredient_search_preview_own_description {
+    return Intl.message(
+      'Match ingredients against the recipes saved on this device.',
+      name: 'ingredient_search_preview_own_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refine every result`
+  String get ingredient_search_preview_refine_title {
+    return Intl.message(
+      'Refine every result',
+      name: 'ingredient_search_preview_refine_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Narrow matches by diet, time, effort, categories, and tags.`
+  String get ingredient_search_preview_refine_description {
+    return Intl.message(
+      'Narrow matches by diet, time, effort, categories, and tags.',
+      name: 'ingredient_search_preview_refine_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sort, open, and bookmark`
+  String get ingredient_search_preview_save_title {
+    return Intl.message(
+      'Sort, open, and bookmark',
+      name: 'ingredient_search_preview_save_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Order results by best match, time, effort, or name, then open or bookmark a recipe.`
+  String get ingredient_search_preview_save_description {
+    return Intl.message(
+      'Order results by best match, time, effort, or name, then open or bookmark a recipe.',
+      name: 'ingredient_search_preview_save_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Also included with Pro`
+  String get ingredient_search_preview_pro_title {
+    return Intl.message(
+      'Also included with Pro',
+      name: 'ingredient_search_preview_pro_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A one-time purchase also removes in-app ads and supports future development.`
+  String get ingredient_search_preview_pro_description {
+    return Intl.message(
+      'A one-time purchase also removes in-app ads and supports future development.',
+      name: 'ingredient_search_preview_pro_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unlock ingredient search`
+  String get ingredient_search_preview_unlock {
+    return Intl.message(
+      'Unlock ingredient search',
+      name: 'ingredient_search_preview_unlock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `One-time Pro purchase · Removes ads · Supports future development`
+  String get ingredient_search_preview_unlock_description {
+    return Intl.message(
+      'One-time Pro purchase · Removes ads · Supports future development',
+      name: 'ingredient_search_preview_unlock_description',
       desc: '',
       args: [],
     );
@@ -5171,10 +6646,10 @@ class S {
     );
   }
 
-  /// `Review themes, random discovery, backup, and shopping-list basics.`
+  /// `Review effort ratings, Cook Mode, ingredient search, shopping lists, and Explore.`
   String get settings_intro_desc {
     return Intl.message(
-      'Review themes, random discovery, backup, and shopping-list basics.',
+      'Review effort ratings, Cook Mode, ingredient search, shopping lists, and Explore.',
       name: 'settings_intro_desc',
       desc: '',
       args: [],
@@ -5271,6 +6746,221 @@ class S {
       name: 'settings_migration_share',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Swipe & discover`
+  String get explore_discover {
+    return Intl.message(
+      'Swipe & discover',
+      name: 'explore_discover',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Card {current} of {total}`
+  String explore_card_counter(int current, int total) {
+    return Intl.message(
+      'Card $current of $total',
+      name: 'explore_card_counter',
+      desc: '',
+      args: [current, total],
+    );
+  }
+
+  /// `Filters`
+  String get explore_filters {
+    return Intl.message('Filters', name: 'explore_filters', desc: '', args: []);
+  }
+
+  /// `Choose what to explore`
+  String get explore_filter_title {
+    return Intl.message(
+      'Choose what to explore',
+      name: 'explore_filter_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All recipes`
+  String get explore_all_recipes {
+    return Intl.message(
+      'All recipes',
+      name: 'explore_all_recipes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pass`
+  String get explore_pass {
+    return Intl.message('Pass', name: 'explore_pass', desc: '', args: []);
+  }
+
+  /// `Cook tonight`
+  String get explore_cook_tonight {
+    return Intl.message(
+      'Cook tonight',
+      name: 'explore_cook_tonight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Saved for later`
+  String get explore_saved {
+    return Intl.message(
+      'Saved for later',
+      name: 'explore_saved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show previous recipe`
+  String get explore_rewind {
+    return Intl.message(
+      'Show previous recipe',
+      name: 'explore_rewind',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save for later`
+  String get explore_save {
+    return Intl.message(
+      'Save for later',
+      name: 'explore_save',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start cooking`
+  String get explore_cook {
+    return Intl.message(
+      'Start cooking',
+      name: 'explore_cook',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open recipe`
+  String get explore_open_recipe {
+    return Intl.message(
+      'Open recipe',
+      name: 'explore_open_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ingredients snapshot`
+  String get explore_ingredients_snapshot {
+    return Intl.message(
+      'Ingredients snapshot',
+      name: 'explore_ingredients_snapshot',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nothing to explore here yet`
+  String get explore_empty_title {
+    return Intl.message(
+      'Nothing to explore here yet',
+      name: 'explore_empty_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose another filter or add recipes to this collection.`
+  String get explore_empty_message {
+    return Intl.message(
+      'Choose another filter or add recipes to this collection.',
+      name: 'explore_empty_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change filter`
+  String get explore_change_filter {
+    return Intl.message(
+      'Change filter',
+      name: 'explore_change_filter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You’ve explored the whole deck`
+  String get explore_complete_title {
+    return Intl.message(
+      'You’ve explored the whole deck',
+      name: 'explore_complete_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Shuffle the deck to discover these recipes in a fresh order.`
+  String get explore_complete_message {
+    return Intl.message(
+      'Shuffle the deck to discover these recipes in a fresh order.',
+      name: 'explore_complete_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Shuffle & restart`
+  String get explore_restart {
+    return Intl.message(
+      'Shuffle & restart',
+      name: 'explore_restart',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The recipe deck could not be loaded`
+  String get explore_error_title {
+    return Intl.message(
+      'The recipe deck could not be loaded',
+      name: 'explore_error_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try loading your recipes again.`
+  String get explore_error_message {
+    return Intl.message(
+      'Try loading your recipes again.',
+      name: 'explore_error_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try again`
+  String get explore_retry {
+    return Intl.message('Try again', name: 'explore_retry', desc: '', args: []);
+  }
+
+  /// `Effort {effort}/10`
+  String explore_effort(int effort) {
+    return Intl.message(
+      'Effort $effort/10',
+      name: 'explore_effort',
+      desc: '',
+      args: [effort],
     );
   }
 }

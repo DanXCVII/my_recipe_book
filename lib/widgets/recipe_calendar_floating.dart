@@ -5,47 +5,34 @@ import '../blocs/app/app_bloc.dart';
 import '../screens/recipe_calendar_screen.dart';
 import 'culinary_editorial_theme.dart';
 
-class RecipeCalendarFloating extends StatefulWidget {
+class RecipeCalendarFloating extends StatelessWidget {
   const RecipeCalendarFloating({required this.initialPosition, super.key});
 
   final Offset initialPosition;
 
   @override
-  State<RecipeCalendarFloating> createState() => _RecipeCalendarFloatingState();
-}
-
-class _RecipeCalendarFloatingState extends State<RecipeCalendarFloating> {
-  late final Offset position;
-  bool visible = false;
-
-  @override
-  void initState() {
-    super.initState();
-    position = widget.initialPosition;
-  }
-
-  @override
   Widget build(BuildContext context) {
     final palette = CulinaryEditorialPalette.of(context);
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
     return Positioned(
-      left: position.dx,
-      top: position.dy,
-      child: BlocListener<AppBloc, AppState>(
-        listener: (context, state) {
-          if (state is LoadedState && state.recipeCalendarOpen != visible) {
-            setState(() => visible = state.recipeCalendarOpen);
-          }
+      left: initialPosition.dx,
+      top: initialPosition.dy,
+      child: BlocBuilder<AppBloc, AppState>(
+        builder: (context, state) {
+          final visible = state is LoadedState && state.recipeCalendarOpen;
+          return Material(
+            color: Colors.transparent,
+            child: AnimatedSize(
+              duration: reduceMotion
+                  ? Duration.zero
+                  : const Duration(milliseconds: 180),
+              curve: Curves.easeOutCubic,
+              child: visible
+                  ? _FloatingCalendarPanel(palette: palette)
+                  : const SizedBox.shrink(),
+            ),
+          );
         },
-        child: Material(
-          color: Colors.transparent,
-          child: AnimatedSize(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeOutCubic,
-            child: visible
-                ? _FloatingCalendarPanel(palette: palette)
-                : const SizedBox.shrink(),
-          ),
-        ),
       ),
     );
   }

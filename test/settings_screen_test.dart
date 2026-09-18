@@ -58,6 +58,8 @@ void main() {
     await _pumpSettings(tester, size: const Size(430, 900));
 
     expect(find.text('Settings & Preferences'), findsOneWidget);
+    expect(find.text('Kitchen configuration'), findsNothing);
+    expect(find.image(const AssetImage('images/icon.png')), findsOneWidget);
     expect(
       find.text('Sign in to sync recipes manually across devices.'),
       findsOneWidget,

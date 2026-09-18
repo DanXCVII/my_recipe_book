@@ -8,5 +8,7 @@ const String enableAnimations = "enableAnimations";
 const String disableStandby = "disableStandby";
 const String showDecimal = "showDecimal";
 
-const double recipeCalendarFloatingWidth = 900;
-const double sideBarWidth = 900;
+const double homeNavigationRailBreakpoint = 900;
+
+bool usesHomeNavigationRail(double width) =>
+    width > homeNavigationRailBreakpoint;

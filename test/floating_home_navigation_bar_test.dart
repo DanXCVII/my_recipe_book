@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:my_recipe_book/generated/l10n.dart';
 import 'package:my_recipe_book/widgets/floating_home_navigation_bar.dart';
+import 'package:my_recipe_book/widgets/home_navigation_destination.dart';
 
 void main() {
   testWidgets('shows all destinations and reports every selection', (
@@ -122,23 +123,23 @@ Future<void> _pumpBar(
             selectedIndex: selectedIndex,
             onDestinationSelected: onSelected ?? (_) {},
             destinations: [
-              FloatingHomeNavigationDestination(
+              HomeNavigationDestination(
                 icon: MdiIcons.notebook,
                 label: S.of(context).recipes,
               ),
-              FloatingHomeNavigationDestination(
+              HomeNavigationDestination(
                 icon: Icons.bookmark_rounded,
                 label: S.of(context).favorites,
               ),
-              FloatingHomeNavigationDestination(
+              HomeNavigationDestination(
                 icon: Icons.shopping_basket,
                 label: S.of(context).basket,
               ),
-              FloatingHomeNavigationDestination(
+              HomeNavigationDestination(
                 icon: MdiIcons.diceMultiple,
                 label: S.of(context).explore,
               ),
-              FloatingHomeNavigationDestination(
+              HomeNavigationDestination(
                 icon: Icons.settings,
                 label: S.of(context).settings,
               ),

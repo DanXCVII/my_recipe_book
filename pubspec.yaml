@@ -37,7 +37,6 @@ dependencies:
   shared_preferences: ^2.5.5 # BSD
   archive: ^4.0.5 # Apache 2.0
   file_picker: ^12.3.0 # MIT
-  intro_slider: ^4.2.1 # MIT
   autocomplete_textfield_ns: ^2.0.0 # MIT
   # Hive CE is retained only for importing databases created by Hive 2.
   hive_ce: ^2.20.0 # Apache 2.0 / BSD-3-Clause
@@ -48,6 +47,7 @@ dependencies:
   firebase_crashlytics: ^5.3.0 # BSD-3-Clause
   package_info_plus: ^10.2.1 # BSD-3-Clause
   flutter_bloc: ^9.1.0 # MIT
+  flutter_card_swiper: ^7.2.0 # MIT
   equatable: ^2.0.5 # MIT
   flutter_launcher_icons: ^0.14.3 # MIT
   like_button: ^2.0.4 # MIT
@@ -62,9 +62,7 @@ dependencies:
   flutter_sticky_header: ^0.8.0 # MIT
   url_launcher: ^6.1.5 # BSD
   pull_to_refresh: ^2.0.0 # MIT
-  showcaseview: ^5.1.0 # BSD
   in_app_purchase: ^3.0.8 # BSD
-  video_player: ^2.4.7 # BSD
   permission_handler: ^13.0.2 # MIT
   flutter_sequence_animation: ^4.0.0-nullsafety # MIT
   flutter_native_splash: ^2.4.8 # MIT
@@ -76,6 +74,7 @@ dependencies:
   rate_my_app: ^2.4.1 # MIT
   # google_fonts: ^1.0.0 # Apache 2.0
   animated_text_kit: ^4.2.2 # MIT
+  audioplayers: ^6.8.1 # MIT
   page_transition: ^2.2.2 # BSD
   reorderables: ^0.6.0 # MIT
   omni_datetime_picker: ^2.0.7 # MIT
@@ -134,18 +133,16 @@ flutter:
     - images/theme.png
     - images/icon.png
     - images/bannerAd.png
-    - images/tableVegetable.jpg
-    - images/ingredient_search.mp4
     - images/salatLowRes.jpg
     - assets/firstStartRecipes.zip
     - assets/plates/recipe-thumbnail.png
+    - assets/audio/timer_complete.wav
     - images/foodBlur0.jpg
     - images/foodBlur1.jpg
     - images/foodBlur2.jpg
     - images/foodBlur3.jpg
     - images/iconIosStyle.png
     - images/finishFlag.png
-    - images/tabletIngredientSearch.png
     - images/hearts.png
     - images/vegetables.png
     - images/vegetablesBright.png

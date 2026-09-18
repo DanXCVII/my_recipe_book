@@ -56,7 +56,7 @@ class CategoryOverviewBloc
       if (event.categoryOverviewContext != null) {
         BlocProvider.of<RandomRecipeExplorerBloc>(
           event.categoryOverviewContext!,
-        ).add(InitializeRandomRecipeExplorer());
+        ).add(const InitializeRandomRecipeExplorer());
         BlocProvider.of<RecipeCategoryOverviewBloc>(
           event.categoryOverviewContext!,
         ).add(RCOLoadRecipeCategoryOverview());

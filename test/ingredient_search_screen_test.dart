@@ -15,6 +15,7 @@ import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/constants/routes.dart';
 import 'package:my_recipe_book/screens/ingredient_search.dart';
+import 'package:my_recipe_book/widgets/culinary_editorial_theme.dart';
 
 void main() {
   late AppDatabase database;
@@ -29,6 +30,7 @@ void main() {
     repository = DriftRepository(database: database);
     await repository.initialize();
     await repository.addCategory('Dinner');
+    await repository.addRecipeTag('Quick', 0xFFE05A36);
     await repository.addIngredient('Spinach');
     await repository.addIngredient('Chicken');
     await repository.saveRecipe(
@@ -172,6 +174,85 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('No recipes match yet'), findsOneWidget);
   });
+
+  testWidgets(
+    'category and tag filters stay distinct in light and dark themes',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(430, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      Future<void> expectFilterColors(CulinaryEditorialPalette palette) async {
+        await tester.tap(find.byKey(const Key('ingredient-search-filters')));
+        await tester.pumpAndSettle();
+
+        final categoryFinder = find.byKey(
+          const Key('ingredient-search-category-Dinner'),
+        );
+        final tagFinder = find.byKey(const Key('ingredient-search-tag-Quick'));
+        final categoryChipFinder = find.descendant(
+          of: categoryFinder,
+          matching: find.byType(FilterChip),
+        );
+        final tagChipFinder = find.descendant(
+          of: tagFinder,
+          matching: find.byType(FilterChip),
+        );
+        var categoryChip = tester.widget<FilterChip>(categoryChipFinder);
+        final tagChip = tester.widget<FilterChip>(tagChipFinder);
+        final offSwitch = tester.widget<Switch>(find.byType(Switch).first);
+
+        expect(categoryChip.backgroundColor, palette.surfaceContainer);
+        expect(categoryChip.labelStyle?.color, palette.onSurface);
+        expect(tagChip.backgroundColor, palette.surfaceContainer);
+        expect(tagChip.labelStyle?.color, palette.onSurface);
+        expect(
+          offSwitch.trackColor?.resolve(const <WidgetState>{}),
+          palette.surfaceContainerHigh,
+        );
+        expect(
+          offSwitch.thumbColor?.resolve(const <WidgetState>{}),
+          palette.onSurfaceVariant,
+        );
+        expect(
+          offSwitch.trackOutlineColor?.resolve(const <WidgetState>{}),
+          palette.outline.withValues(alpha: .72),
+        );
+
+        await tester.tap(categoryFinder);
+        await _waitForMatches(tester, searchBloc);
+        categoryChip = tester.widget<FilterChip>(categoryChipFinder);
+        expect(categoryChip.selected, isTrue);
+        expect(categoryChip.selectedColor, palette.primarySoft);
+        expect(categoryChip.labelStyle?.color, palette.primary);
+
+        await tester.tap(categoryFinder);
+        await _waitForInitial(tester, searchBloc);
+        await tester.tap(find.text('Done'));
+        await tester.pumpAndSettle();
+      }
+
+      await _pumpSearch(
+        tester,
+        repository: repository,
+        recipeManager: recipeManager,
+        searchBloc: searchBloc,
+        shoppingCartBloc: shoppingCartBloc,
+        recipeCalendarBloc: recipeCalendarBloc,
+      );
+      await expectFilterColors(CulinaryEditorialPalette.light);
+
+      await _pumpSearch(
+        tester,
+        repository: repository,
+        recipeManager: recipeManager,
+        searchBloc: searchBloc,
+        shoppingCartBloc: shoppingCartBloc,
+        recipeCalendarBloc: recipeCalendarBloc,
+        theme: ThemeData.dark(),
+      );
+      await expectFilterColors(CulinaryEditorialPalette.dark);
+    },
+  );
 
   testWidgets('bookmark action does not open the recipe', (tester) async {
     await tester.binding.setSurfaceSize(const Size(430, 900));

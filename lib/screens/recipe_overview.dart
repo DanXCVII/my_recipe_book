@@ -23,6 +23,7 @@ import '../widgets/recipe_overview/editorial_recipe_card.dart';
 import '../widgets/recipe_overview/recipe_layout_switch.dart';
 import '../widgets/recipe_overview/recipe_overview_theme.dart';
 import 'recipe_screen.dart';
+import 'cook_mode_screen.dart';
 
 class RecipeGridViewArguments {
   final String? category;
@@ -261,8 +262,9 @@ class _RecipeGridViewState extends State<RecipeGridView> {
       heroImageTag: '$contextKey-${recipe.name}',
       layout: layout,
       onOpen: () => _openRecipe(context, recipe, '$contextKey-${recipe.name}'),
-      onCookAction: () =>
-          _openRecipe(context, recipe, '$contextKey-${recipe.name}'),
+      onCookAction: recipe.steps.isEmpty
+          ? null
+          : () => _openCookMode(context, recipe),
       onBookmarkToggle: () {
         final manager = context.read<RecipeManagerBloc>();
         manager.add(
@@ -288,6 +290,17 @@ class _RecipeGridViewState extends State<RecipeGridView> {
       WakelockPlus.disable();
       Ads.hideBottomBannerAd();
     });
+  }
+
+  void _openCookMode(BuildContext context, Recipe recipe) {
+    Navigator.pushNamed(
+      context,
+      RouteNames.cookMode,
+      arguments: CookModeArguments(
+        recipe: recipe,
+        effectiveIngredients: recipe.ingredients,
+      ),
+    );
   }
 
   void _clearFilters() {

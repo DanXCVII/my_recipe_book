@@ -1,15 +1,18 @@
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
 import '../../constants/global_constants.dart' as constants;
+import '../../constants/global_settings.dart';
 import '../../generated/l10n.dart';
 import '../../models/enums.dart';
 import '../../models/recipe.dart';
 import '../../models/tuple.dart';
 import '../../util/helper.dart';
 import '../culinary_editorial_theme.dart';
+import '../recipe_overview/editorial_recipe_card.dart';
 
 typedef OpenOverviewRecipe = void Function(Recipe recipe, String heroTag);
 typedef ToggleOverviewFavorite = void Function(Recipe recipe);
@@ -41,11 +44,11 @@ class EditorialCategoryFeed extends StatelessWidget {
         final wide = constraints.maxWidth >= 1000;
         final horizontalPadding = wide ? 32.0 : 20.0;
         final contentWidth = math.min(1180.0, constraints.maxWidth);
-        final cardListHeight = _cardListHeight(context);
+        const cardListHeight = 216.0;
         final navigationClearance =
-            constraints.maxWidth <= constants.sideBarWidth
-            ? MediaQuery.paddingOf(context).bottom
-            : 0.0;
+            constants.usesHomeNavigationRail(constraints.maxWidth)
+            ? 0.0
+            : MediaQuery.paddingOf(context).bottom;
 
         if (!hasRecipes) {
           return _EmptyLibrary(
@@ -131,11 +134,6 @@ class EditorialCategoryFeed extends StatelessWidget {
         );
       },
     );
-  }
-
-  double _cardListHeight(BuildContext context) {
-    final scaled = MediaQuery.textScalerOf(context).scale(16) / 16;
-    return 240 + ((scaled - 1).clamp(0, .6) * 108);
   }
 }
 
@@ -247,7 +245,7 @@ class CategoryOverviewFailure extends StatelessWidget {
   }
 }
 
-class _FeaturedRecipeCard extends StatelessWidget {
+class _FeaturedRecipeCard extends StatefulWidget {
   const _FeaturedRecipeCard({
     required this.recipe,
     required this.wide,
@@ -260,176 +258,223 @@ class _FeaturedRecipeCard extends StatelessWidget {
   final OpenOverviewRecipe onOpen;
   final ToggleOverviewFavorite onToggleFavorite;
 
+  @override
+  State<_FeaturedRecipeCard> createState() => _FeaturedRecipeCardState();
+}
+
+class _FeaturedRecipeCardState extends State<_FeaturedRecipeCard> {
+  bool _expanded = true;
+
+  Recipe get recipe => widget.recipe;
   String get _heroTag => 'category-feed-featured-${recipe.name}';
 
   @override
   Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    final radius = BorderRadius.circular(16);
-    final image = _FeaturedImage(
-      recipe: recipe,
-      heroTag: _heroTag,
-      onOpen: () => onOpen(recipe, _heroTag),
-      onToggleFavorite: () => onToggleFavorite(recipe),
-    );
-    final details = _FeaturedDetails(
-      recipe: recipe,
-      wide: wide,
-      onOpen: () => onOpen(recipe, _heroTag),
-    );
+    final animationsEnabled =
+        GlobalSettings().animationsEnabled() &&
+        !MediaQuery.disableAnimationsOf(context);
+    final duration = animationsEnabled
+        ? const Duration(milliseconds: 280)
+        : Duration.zero;
+    final child = _expanded
+        ? _ExpandedFeaturedRecipe(
+            key: const ValueKey('category-featured-expanded'),
+            recipe: recipe,
+            heroTag: _heroTag,
+            wide: widget.wide,
+            onOpen: () => widget.onOpen(recipe, _heroTag),
+            onCollapse: () => setState(() => _expanded = false),
+            onToggleFavorite: () => widget.onToggleFavorite(recipe),
+          )
+        : _CollapsedFeaturedRecipe(
+            key: const ValueKey('category-featured-collapsed'),
+            recipe: recipe,
+            onExpand: () => setState(() => _expanded = true),
+          );
 
     return Semantics(
       container: true,
       label: '${S.of(context).dish_of_the_day}: ${recipe.name}',
-      child: SizedBox(
-        width: double.infinity,
-        child: Material(
-          key: const Key('category-featured-card'),
-          color: palette.surface,
-          borderRadius: radius,
-          clipBehavior: Clip.antiAlias,
-          elevation: 2,
-          shadowColor: palette.shadow,
-          child: wide
-              ? SizedBox(
-                  height: 370,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(flex: 6, child: image),
-                      Expanded(flex: 4, child: details),
-                    ],
-                  ),
-                )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: 264, child: image),
-                    details,
-                  ],
-                ),
+      child: ClipRect(
+        child: AnimatedSize(
+          alignment: Alignment.topCenter,
+          duration: duration,
+          curve: Curves.easeOutCubic,
+          child: AnimatedSwitcher(
+            duration: duration,
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) =>
+                FadeTransition(opacity: animation, child: child),
+            child: child,
+          ),
         ),
       ),
     );
   }
 }
 
-class _FeaturedImage extends StatelessWidget {
-  const _FeaturedImage({
+class _ExpandedFeaturedRecipe extends StatelessWidget {
+  const _ExpandedFeaturedRecipe({
     required this.recipe,
     required this.heroTag,
+    required this.wide,
     required this.onOpen,
+    required this.onCollapse,
     required this.onToggleFavorite,
+    super.key,
   });
 
   final Recipe recipe;
   final String heroTag;
+  final bool wide;
   final VoidCallback onOpen;
+  final VoidCallback onCollapse;
   final VoidCallback onToggleFavorite;
 
   @override
   Widget build(BuildContext context) {
     final palette = CulinaryEditorialPalette.of(context);
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Hero(
-          tag: heroTag,
-          child: Material(
-            color: palette.surfaceContainerHigh,
-            child: _RecipeImage(path: recipe.imagePath),
-          ),
-        ),
-        const DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0, .5, 1],
-              colors: [Color(0x08000000), Color(0x18000000), Color(0xD6000000)],
+    final card = Material(
+      key: const Key('category-featured-card'),
+      color: palette.onSurface,
+      elevation: 2,
+      shadowColor: palette.shadow,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Hero(
+            tag: heroTag,
+            child: Material(
+              color: palette.surfaceContainerHigh,
+              child: _RecipeImage(path: recipe.imagePath),
             ),
           ),
-        ),
-        Positioned.fill(
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onOpen,
-              splashColor: palette.primarySoft.withAlpha(70),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 16,
-          top: 16,
-          child: _LightBadge(
-            label: S.of(context).dish_of_the_day.toUpperCase(),
-            color: palette.primary,
-          ),
-        ),
-        Positioned(
-          right: 10,
-          top: 8,
-          child: _FavoriteButton(
-            recipe: recipe,
-            onPressed: onToggleFavorite,
-            prominent: true,
-            controlKey: ValueKey('category-featured-favorite-${recipe.name}'),
-          ),
-        ),
-        Positioned(
-          left: 17,
-          right: 17,
-          bottom: 16,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                _categoryLine(context, recipe),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CulinaryEditorialType.body(
-                  palette,
-                  size: 11,
-                  weight: FontWeight.w700,
-                  color: const Color(0xFFFFE4DB),
-                  letterSpacing: .7,
-                ),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: [0, .42, 1],
+                colors: [
+                  Color(0x1A000000),
+                  Color(0x26000000),
+                  Color(0xD9000000),
+                ],
               ),
-              const SizedBox(height: 5),
-              Text(
-                recipe.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style:
-                    CulinaryEditorialType.headline(
-                      palette,
-                      size: 27,
-                      weight: FontWeight.w600,
-                      height: 1.16,
-                    ).copyWith(
-                      color: const Color(0xFFFFF9F4),
-                      shadows: const [
-                        Shadow(
-                          color: Color(0x66000000),
-                          offset: Offset(0, 1),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
+            ),
+          ),
+          Positioned.fill(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onOpen,
+                splashColor: palette.primarySoft.withAlpha(70),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 10,
+            right: 10,
+            bottom: 10,
+            child: _FeaturedDetailsOverlay(
+              recipe: recipe,
+              wide: wide,
+              onOpen: onOpen,
+            ),
+          ),
+          Positioned(
+            top: 8,
+            left: 12,
+            right: 8,
+            child: _FeaturedTopBar(
+              recipe: recipe,
+              wide: wide,
+              onCollapse: onCollapse,
+              onToggleFavorite: onToggleFavorite,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (wide) return SizedBox(height: 444, child: card);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scale = MediaQuery.textScalerOf(context).scale(16) / 16;
+        final accessibilityHeight = ((scale - 1).clamp(0, .6) * 240).toDouble();
+        return SizedBox(
+          height: constraints.maxWidth * .9 + accessibilityHeight,
+          child: card,
+        );
+      },
+    );
+  }
+}
+
+class _FeaturedTopBar extends StatelessWidget {
+  const _FeaturedTopBar({
+    required this.recipe,
+    required this.wide,
+    required this.onCollapse,
+    required this.onToggleFavorite,
+  });
+
+  final Recipe recipe;
+  final bool wide;
+  final VoidCallback onCollapse;
+  final VoidCallback onToggleFavorite;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Wrap(
+            spacing: 6,
+            runSpacing: 5,
+            children: [
+              _LightBadge(
+                label: S.of(context).dish_of_the_day.toUpperCase(),
+                color: palette.primary,
+              ),
+              _FeaturedTimeBadge(
+                key: const Key('category-featured-time'),
+                recipe: recipe,
+                dark: true,
               ),
             ],
           ),
+        ),
+        const SizedBox(width: 4),
+        _FeaturedOverlayAction(
+          key: const Key('category-featured-collapse'),
+          tooltip: S.of(context).collapse_dish_of_the_day,
+          icon: Icons.expand_less_rounded,
+          label: wide ? S.of(context).collapse : null,
+          onPressed: onCollapse,
+        ),
+        _FeaturedOverlayAction(
+          key: ValueKey('category-featured-favorite-${recipe.name}'),
+          tooltip: recipe.isFavorite
+              ? S.of(context).remove_from_favorites
+              : S.of(context).add_to_favorites,
+          icon: recipe.isFavorite
+              ? Icons.bookmark_rounded
+              : Icons.bookmark_border_rounded,
+          onPressed: onToggleFavorite,
         ),
       ],
     );
   }
 }
 
-class _FeaturedDetails extends StatelessWidget {
-  const _FeaturedDetails({
+class _FeaturedDetailsOverlay extends StatelessWidget {
+  const _FeaturedDetailsOverlay({
     required this.recipe,
     required this.wide,
     required this.onOpen,
@@ -442,127 +487,463 @@ class _FeaturedDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = CulinaryEditorialPalette.of(context);
-    final tags = recipe.tags.take(wide ? 3 : 1).toList(growable: false);
-    final metadata = <Widget>[];
+    final tags = recipe.tags.take(wide ? 3 : 2).toList(growable: false);
 
-    void addMetadata({
-      required Key key,
-      required String label,
-      Color? color,
-      FontWeight weight = FontWeight.w600,
-    }) {
-      metadata.add(
-        Text(
-          metadata.isEmpty ? label : '· $label',
-          key: key,
-          style: CulinaryEditorialType.body(
-            palette,
-            size: 10,
-            weight: weight,
-            color: color ?? palette.onSurfaceVariant,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0xB81A1412),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0x24FFF7F2)),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x40000000),
+                offset: Offset(0, 4),
+                blurRadius: 14,
+              ),
+            ],
           ),
-        ),
-      );
-    }
-
-    addMetadata(
-      key: const Key('category-featured-effort'),
-      label: recipe.effort == null
-          ? S.of(context).category_effort_not_set
-          : S.of(context).category_effort_value(recipe.effort!),
-      color: _effortColor(palette, recipe.effort),
-      weight: FontWeight.w700,
-    );
-    if (recipe.preperationTime > 0) {
-      addMetadata(
-        key: const Key('category-featured-prep'),
-        label: S
-            .of(context)
-            .category_prep_value(_compactCategoryTime(recipe.preperationTime)),
-      );
-    }
-    if (recipe.cookingTime > 0) {
-      addMetadata(
-        key: const Key('category-featured-cook'),
-        label: S
-            .of(context)
-            .category_cook_value(_compactCategoryTime(recipe.cookingTime)),
-      );
-    }
-    if (recipe.preperationTime <= 0 &&
-        recipe.cookingTime <= 0 &&
-        recipe.totalTime > 0) {
-      addMetadata(
-        key: const Key('category-featured-total'),
-        label: S
-            .of(context)
-            .category_total_value(_compactCategoryTime(recipe.totalTime)),
-      );
-    }
-
-    return Padding(
-      padding: wide
-          ? const EdgeInsets.fromLTRB(18, 18, 18, 20)
-          : const EdgeInsets.all(14),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Wrap(
-            key: const Key('category-featured-metadata'),
-            spacing: 0,
-            runSpacing: 4,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: metadata,
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            key: const Key('category-featured-actions'),
-            spacing: 7,
-            runSpacing: 7,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              _DietChip(vegetable: recipe.vegetable, compact: !wide),
-              for (final tag in tags)
-                _TagChip(label: '#${tag.text}', compact: !wide),
-              if (recipe.tags.length > tags.length)
-                _TagChip(
-                  label: '+${recipe.tags.length - tags.length}',
-                  compact: !wide,
-                ),
-              Semantics(
-                button: true,
-                label: S.of(context).open_recipe,
-                excludeSemantics: true,
-                child: Tooltip(
-                  message: S.of(context).open_recipe,
-                  child: FilledButton.icon(
-                    key: const Key('category-featured-open'),
-                    onPressed: onOpen,
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(0, 48),
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      backgroundColor: palette.primary,
-                      foregroundColor: palette.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      textStyle: CulinaryEditorialType.body(
-                        palette,
-                        size: 14,
-                        weight: FontWeight.w700,
-                        color: palette.onPrimary,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 11),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Wrap(
+                        key: const Key('category-featured-metadata'),
+                        spacing: 6,
+                        runSpacing: 5,
+                        children: [
+                          _FeaturedEffortChip(recipe: recipe),
+                          _FeaturedDietChip(vegetable: recipe.vegetable),
+                        ],
                       ),
                     ),
-                    iconAlignment: IconAlignment.end,
-                    icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-                    label: Text(S.of(context).category_open),
+                    const SizedBox(width: 8),
+                    FilledButton.icon(
+                      key: const Key('category-featured-open'),
+                      onPressed: onOpen,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(0, 48),
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        backgroundColor: palette.primary,
+                        foregroundColor: palette.onPrimary,
+                        shape: const StadiumBorder(),
+                        textStyle: CulinaryEditorialType.body(
+                          palette,
+                          size: 13,
+                          weight: FontWeight.w700,
+                          color: palette.onPrimary,
+                        ),
+                      ),
+                      iconAlignment: IconAlignment.end,
+                      icon: const Icon(Icons.play_arrow_rounded, size: 18),
+                      label: Text(S.of(context).category_start),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  recipe.name,
+                  key: const Key('category-featured-title'),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      CulinaryEditorialType.headline(
+                        palette,
+                        size: wide ? 25 : 20,
+                        weight: FontWeight.w700,
+                        height: 1.14,
+                      ).copyWith(
+                        color: const Color(0xFFFFF9F4),
+                        shadows: const [
+                          Shadow(
+                            color: Color(0x66000000),
+                            offset: Offset(0, 1),
+                            blurRadius: 3,
+                          ),
+                        ],
+                      ),
+                ),
+                if (tags.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 5,
+                    children: [
+                      for (final tag in tags)
+                        _FeaturedTagChip(label: '#${tag.text}'),
+                      if (recipe.tags.length > tags.length)
+                        _FeaturedTagChip(
+                          label: '+${recipe.tags.length - tags.length}',
+                        ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CollapsedFeaturedRecipe extends StatelessWidget {
+  const _CollapsedFeaturedRecipe({
+    required this.recipe,
+    required this.onExpand,
+    super.key,
+  });
+
+  final Recipe recipe;
+  final VoidCallback onExpand;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return Semantics(
+      button: true,
+      label: S.of(context).expand_dish_of_the_day,
+      excludeSemantics: true,
+      child: Material(
+        key: const Key('category-featured-collapsed-card'),
+        color: palette.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+        elevation: 1,
+        shadowColor: palette.shadow,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onExpand,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 56),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 7, 4, 7),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: SizedBox.square(
+                      dimension: 40,
+                      child: _RecipeImage(path: recipe.imagePreviewPath),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          S.of(context).dish_of_the_day.toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CulinaryEditorialType.body(
+                            palette,
+                            size: 10,
+                            weight: FontWeight.w700,
+                            color: palette.primary,
+                            letterSpacing: .55,
+                            height: 1.1,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          recipe.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CulinaryEditorialType.headline(
+                            palette,
+                            size: 14,
+                            weight: FontWeight.w600,
+                            height: 1.1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  _FeaturedTimeBadge(
+                    key: const Key('category-featured-collapsed-time'),
+                    recipe: recipe,
+                    compact: true,
+                  ),
+                  _FeaturedExpandControl(onPressed: onExpand),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FeaturedTimeBadge extends StatelessWidget {
+  const _FeaturedTimeBadge({
+    required this.recipe,
+    this.dark = false,
+    this.compact = false,
+    super.key,
+  });
+
+  final Recipe recipe;
+  final bool dark;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    final foreground = dark
+        ? const Color(0xFFFCEFEA)
+        : palette.onSurfaceVariant;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: compact ? 92 : double.infinity),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: dark ? const Color(0xA64B3A34) : palette.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(999),
+          border: dark ? Border.all(color: const Color(0x2EFFF7F2)) : null,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.schedule_rounded, size: 14, color: palette.primary),
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  compact
+                      ? _collapsedTimeLabel(context, recipe)
+                      : _featuredTimeLabel(context, recipe),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CulinaryEditorialType.body(
+                    palette,
+                    size: 11,
+                    weight: FontWeight.w600,
+                    color: foreground,
+                    height: 1,
                   ),
                 ),
               ),
             ],
           ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FeaturedOverlayAction extends StatelessWidget {
+  const _FeaturedOverlayAction({
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+    this.label,
+    super.key,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final String? label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    final button = label == null
+        ? IconButton(
+            onPressed: onPressed,
+            style: IconButton.styleFrom(
+              minimumSize: const Size.square(48),
+              foregroundColor: const Color(0xFFFCEFEA),
+              backgroundColor: const Color(0xA64B3A34),
+              shape: const CircleBorder(),
+              side: const BorderSide(color: Color(0x2EFFF7F2)),
+            ),
+            icon: Icon(icon, size: 19),
+          )
+        : TextButton.icon(
+            onPressed: onPressed,
+            style: TextButton.styleFrom(
+              minimumSize: const Size(48, 48),
+              padding: const EdgeInsets.symmetric(horizontal: 13),
+              foregroundColor: const Color(0xFFFCEFEA),
+              backgroundColor: const Color(0xA64B3A34),
+              shape: const StadiumBorder(),
+              side: const BorderSide(color: Color(0x2EFFF7F2)),
+              textStyle: CulinaryEditorialType.body(
+                palette,
+                size: 11,
+                weight: FontWeight.w600,
+                color: const Color(0xFFFCEFEA),
+              ),
+            ),
+            icon: Icon(icon, size: 19),
+            label: Text(label!),
+          );
+    return Semantics(
+      button: true,
+      label: tooltip,
+      excludeSemantics: true,
+      child: Tooltip(
+        message: tooltip,
+        child: SizedBox(height: 48, child: button),
+      ),
+    );
+  }
+}
+
+class _FeaturedExpandControl extends StatelessWidget {
+  const _FeaturedExpandControl({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return SizedBox.square(
+      dimension: 48,
+      child: IconButton(
+        key: const Key('category-featured-expand'),
+        tooltip: S.of(context).expand_dish_of_the_day,
+        onPressed: onPressed,
+        icon: Icon(
+          Icons.expand_more_rounded,
+          size: 22,
+          color: palette.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}
+
+class _FeaturedEffortChip extends StatelessWidget {
+  const _FeaturedEffortChip({required this.recipe});
+
+  final Recipe recipe;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    final color = _effortColor(palette, recipe.effort);
+    final foreground =
+        ThemeData.estimateBrightnessForColor(color) == Brightness.dark
+        ? const Color(0xFFFFF9F4)
+        : const Color(0xFF2A1711);
+    return _FeaturedMetadataChip(
+      key: const Key('category-featured-effort'),
+      icon: _effortIcon(recipe.effort),
+      label: recipe.effort == null
+          ? S.of(context).category_effort_not_set
+          : S.of(context).category_effort_value(recipe.effort!),
+      foreground: foreground,
+      background: color.withAlpha(230),
+    );
+  }
+}
+
+class _FeaturedDietChip extends StatelessWidget {
+  const _FeaturedDietChip({required this.vegetable});
+
+  final Vegetable vegetable;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    final (icon, label) = switch (vegetable) {
+      Vegetable.VEGAN => (Icons.eco_rounded, S.of(context).vegan),
+      Vegetable.VEGETARIAN => (Icons.spa_rounded, S.of(context).vegetarian),
+      Vegetable.NON_VEGETARIAN => (
+        Icons.restaurant_rounded,
+        S.of(context).with_meat,
+      ),
+    };
+    return _FeaturedMetadataChip(
+      icon: icon,
+      label: label,
+      foreground: const Color(0xFFFCEFEA),
+      background: const Color(0x3DFFF7F2),
+      iconColor: vegetable == Vegetable.NON_VEGETARIAN
+          ? palette.primary
+          : palette.secondarySoft,
+    );
+  }
+}
+
+class _FeaturedTagChip extends StatelessWidget {
+  const _FeaturedTagChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return _FeaturedMetadataChip(
+      label: label,
+      foreground: const Color(0xFFFCEFEA),
+      background: const Color(0x2EFFF7F2),
+    );
+  }
+}
+
+class _FeaturedMetadataChip extends StatelessWidget {
+  const _FeaturedMetadataChip({
+    required this.label,
+    required this.foreground,
+    required this.background,
+    this.icon,
+    this.iconColor,
+    super.key,
+  });
+
+  final String label;
+  final Color foreground;
+  final Color background;
+  final IconData? icon;
+  final Color? iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 13, color: iconColor ?? foreground),
+              const SizedBox(width: 4),
+            ],
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CulinaryEditorialType.body(
+                  palette,
+                  size: 10,
+                  weight: FontWeight.w700,
+                  color: foreground,
+                  height: 1,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -655,7 +1036,7 @@ class _CategorySection extends StatelessWidget {
                 )
               : LayoutBuilder(
                   builder: (context, constraints) {
-                    final cardWidth = math.min(200.0, constraints.maxWidth);
+                    final cardWidth = math.min(192.0, constraints.maxWidth);
                     return ListView.separated(
                       key: PageStorageKey('category-row-$category'),
                       padding: EdgeInsets.symmetric(
@@ -671,13 +1052,15 @@ class _CategorySection extends StatelessWidget {
                         final heroTag =
                             'category-feed-$sectionIndex-$index-${recipe.name}';
                         return SizedBox(
+                          key: ValueKey('category-card-$sectionIndex-$index'),
                           width: cardWidth,
-                          child: _CompactRecipeCard(
-                            key: ValueKey('category-card-$sectionIndex-$index'),
+                          child: EditorialRecipeCard(
                             recipe: recipe,
-                            heroTag: heroTag,
+                            heroImageTag: heroTag,
+                            layout: RecipeOverviewCardLayout.grid,
                             onOpen: () => onOpenRecipe(recipe, heroTag),
-                            onToggleFavorite: () => onToggleFavorite(recipe),
+                            onBookmarkToggle: () => onToggleFavorite(recipe),
+                            onCookAction: () => onOpenRecipe(recipe, heroTag),
                           ),
                         );
                       },
@@ -686,418 +1069,6 @@ class _CategorySection extends StatelessWidget {
                 ),
         ),
       ],
-    );
-  }
-}
-
-class _CompactRecipeCard extends StatelessWidget {
-  const _CompactRecipeCard({
-    required this.recipe,
-    required this.heroTag,
-    required this.onOpen,
-    required this.onToggleFavorite,
-    super.key,
-  });
-
-  final Recipe recipe;
-  final String heroTag;
-  final VoidCallback onOpen;
-  final VoidCallback onToggleFavorite;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    final radius = BorderRadius.circular(14);
-    final hasPreparationTime = recipe.preperationTime > 0;
-    final hasCookingTime = recipe.cookingTime > 0;
-    final tags = recipe.tags.take(2).toList(growable: false);
-
-    return Semantics(
-      button: true,
-      label: recipe.name,
-      child: Material(
-        color: palette.surface,
-        borderRadius: radius,
-        clipBehavior: Clip.antiAlias,
-        elevation: 2,
-        shadowColor: palette.shadow,
-        child: InkWell(
-          onTap: onOpen,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  key: ValueKey('category-card-image-$heroTag'),
-                  borderRadius: BorderRadius.circular(10),
-                  child: SizedBox(
-                    height: 116,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Hero(
-                          tag: heroTag,
-                          child: Material(
-                            color: palette.surfaceContainerHigh,
-                            child: _RecipeImage(path: recipe.imagePreviewPath),
-                          ),
-                        ),
-                        Positioned(
-                          left: 8,
-                          top: 8,
-                          child: _EffortBadge(effort: recipe.effort),
-                        ),
-                        Positioned(
-                          right: 2,
-                          top: 0,
-                          child: _FavoriteButton(
-                            recipe: recipe,
-                            onPressed: onToggleFavorite,
-                            controlKey: ValueKey(
-                              'category-card-favorite-$heroTag',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (hasPreparationTime || hasCookingTime) ...[
-                        Row(
-                          children: [
-                            if (hasPreparationTime)
-                              Expanded(
-                                flex: 3,
-                                child: _CompactTimingItem(
-                                  key: ValueKey('category-card-prep-$heroTag'),
-                                  icon: Icons.timer_outlined,
-                                  label: S.of(context).category_prep_short,
-                                  value: getTimeHoursMinutes(
-                                    recipe.preperationTime,
-                                  ),
-                                ),
-                              ),
-                            if (hasPreparationTime && hasCookingTime)
-                              const SizedBox(width: 6),
-                            if (hasCookingTime)
-                              Expanded(
-                                flex: 2,
-                                child: _CompactTimingItem(
-                                  key: ValueKey('category-card-cook-$heroTag'),
-                                  icon: Icons.soup_kitchen_outlined,
-                                  label: S.of(context).category_cook_short,
-                                  value: getTimeHoursMinutes(
-                                    recipe.cookingTime,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                      ],
-                      Text(
-                        recipe.name,
-                        key: ValueKey('category-card-title-$heroTag'),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CulinaryEditorialType.headline(
-                          palette,
-                          size: 16,
-                          weight: FontWeight.w600,
-                          height: 1.18,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 5,
-                        children: [
-                          _DietChip(vegetable: recipe.vegetable, compact: true),
-                          for (final tag in tags)
-                            _TagChip(label: '#${tag.text}', compact: true),
-                          if (recipe.tags.length > tags.length)
-                            _TagChip(
-                              label: '+${recipe.tags.length - tags.length}',
-                              compact: true,
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CompactTimingItem extends StatelessWidget {
-  const _CompactTimingItem({
-    required this.icon,
-    required this.label,
-    required this.value,
-    super.key,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    return Semantics(
-      label: '$label $value',
-      child: Row(
-        children: [
-          Icon(icon, size: 14, color: palette.outline),
-          const SizedBox(width: 3),
-          Expanded(
-            child: Text(
-              '$label $value',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CulinaryEditorialType.body(
-                palette,
-                size: 10,
-                weight: FontWeight.w600,
-                color: palette.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _EffortBadge extends StatelessWidget {
-  const _EffortBadge({required this.effort});
-
-  final int? effort;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    final color = _effortColor(palette, effort);
-    final background = _effortBackground(palette, effort);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: background.withAlpha(242),
-        borderRadius: BorderRadius.circular(999),
-        boxShadow: [
-          BoxShadow(
-            color: palette.shadow,
-            offset: const Offset(0, 2),
-            blurRadius: 7,
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(_effortIcon(effort), size: 14, color: color),
-            const SizedBox(width: 4),
-            Text(
-              effort == null ? '—' : '$effort/10',
-              style: CulinaryEditorialType.body(
-                palette,
-                size: 11,
-                weight: FontWeight.w700,
-                color: color,
-                height: 1,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _FavoriteButton extends StatelessWidget {
-  const _FavoriteButton({
-    required this.recipe,
-    required this.onPressed,
-    this.prominent = false,
-    this.controlKey,
-  });
-
-  final Recipe recipe;
-  final VoidCallback onPressed;
-  final bool prominent;
-  final Key? controlKey;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    final label = recipe.isFavorite
-        ? S.of(context).remove_from_favorites
-        : S.of(context).add_to_favorites;
-    return Semantics(
-      button: true,
-      label: label,
-      child: SizedBox(
-        width: 48,
-        height: 48,
-        child: IconButton(
-          key: controlKey,
-          tooltip: label,
-          onPressed: onPressed,
-          icon: DecoratedBox(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: palette.surface.withAlpha(prominent ? 244 : 235),
-              boxShadow: [
-                BoxShadow(
-                  color: palette.shadow,
-                  offset: const Offset(0, 2),
-                  blurRadius: 8,
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(prominent ? 9 : 8),
-              child: Icon(
-                recipe.isFavorite
-                    ? Icons.bookmark_rounded
-                    : Icons.bookmark_border_rounded,
-                size: prominent ? 22 : 19,
-                color: recipe.isFavorite
-                    ? palette.primary
-                    : palette.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DietChip extends StatelessWidget {
-  const _DietChip({required this.vegetable, this.compact = false});
-
-  final Vegetable vegetable;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    final (icon, label, color, background) = switch (vegetable) {
-      Vegetable.VEGAN => (
-        Icons.eco_rounded,
-        S.of(context).vegan,
-        palette.secondary,
-        palette.secondarySoft,
-      ),
-      Vegetable.VEGETARIAN => (
-        Icons.spa_rounded,
-        S.of(context).vegetarian,
-        palette.secondary,
-        palette.secondarySoft,
-      ),
-      Vegetable.NON_VEGETARIAN => (
-        Icons.restaurant_rounded,
-        S.of(context).with_meat,
-        palette.primary,
-        palette.primarySoft,
-      ),
-    };
-    return _MetadataChip(
-      icon: icon,
-      label: label,
-      foreground: color,
-      background: background,
-      compact: compact,
-    );
-  }
-}
-
-class _TagChip extends StatelessWidget {
-  const _TagChip({required this.label, this.compact = false});
-
-  final String label;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    return _MetadataChip(
-      label: label,
-      foreground: palette.onSurfaceVariant,
-      background: palette.surfaceContainer,
-      compact: compact,
-    );
-  }
-}
-
-class _MetadataChip extends StatelessWidget {
-  const _MetadataChip({
-    required this.label,
-    required this.foreground,
-    required this.background,
-    required this.compact,
-    this.icon,
-  });
-
-  final IconData? icon;
-  final String label;
-  final Color foreground;
-  final Color background;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: compact ? 6 : 10,
-          vertical: compact ? 3 : 6,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: compact ? 12 : 14, color: foreground),
-              const SizedBox(width: 4),
-            ],
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: compact ? 94 : 150),
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CulinaryEditorialType.body(
-                  palette,
-                  size: compact ? 10 : 11,
-                  weight: FontWeight.w600,
-                  color: foreground,
-                  height: 1,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -1351,17 +1322,45 @@ class _SkeletonBox extends StatelessWidget {
   }
 }
 
-String _categoryLine(BuildContext context, Recipe recipe) {
-  final categories = recipe.categories.take(2).toList(growable: false);
-  if (categories.isEmpty) return S.of(context).no_category.toUpperCase();
-  return categories.join(' • ').toUpperCase();
-}
-
 String _compactCategoryTime(double minutes) =>
     getTimeHoursMinutes(minutes)
         .replaceAll(' min', 'm')
         .replaceAll('h ', 'h')
         .trim();
+
+String _featuredTimeLabel(BuildContext context, Recipe recipe) {
+  final values = <String>[];
+  if (recipe.preperationTime > 0) {
+    values.add(
+      S
+          .of(context)
+          .category_prep_value(_compactCategoryTime(recipe.preperationTime)),
+    );
+  }
+  if (recipe.cookingTime > 0) {
+    values.add(
+      S
+          .of(context)
+          .category_cook_value(_compactCategoryTime(recipe.cookingTime)),
+    );
+  }
+  if (values.isNotEmpty) return values.join(' • ');
+  if (recipe.totalTime > 0) {
+    return S
+        .of(context)
+        .category_total_value(_compactCategoryTime(recipe.totalTime));
+  }
+  return S.of(context).recipe_card_time_unknown;
+}
+
+String _collapsedTimeLabel(BuildContext context, Recipe recipe) {
+  if (recipe.totalTime > 0) return _compactCategoryTime(recipe.totalTime);
+  if (recipe.cookingTime > 0) return _compactCategoryTime(recipe.cookingTime);
+  if (recipe.preperationTime > 0) {
+    return _compactCategoryTime(recipe.preperationTime);
+  }
+  return S.of(context).recipe_card_time_unknown;
+}
 
 IconData _effortIcon(int? effort) {
   if (effort == null) return Icons.help_outline_rounded;
@@ -1375,11 +1374,4 @@ Color _effortColor(CulinaryEditorialPalette palette, int? effort) {
   if (effort <= 3) return palette.secondary;
   if (effort <= 7) return palette.tertiary;
   return palette.primary;
-}
-
-Color _effortBackground(CulinaryEditorialPalette palette, int? effort) {
-  if (effort == null) return palette.surfaceContainer;
-  if (effort <= 3) return palette.secondarySoft;
-  if (effort <= 7) return palette.tertiarySoft;
-  return palette.primarySoft;
 }

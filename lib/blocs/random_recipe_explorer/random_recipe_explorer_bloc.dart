@@ -1,331 +1,184 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../local_storage/local_repository.dart';
 import '../../models/recipe.dart';
-import '../recipe_manager/recipe_manager_bloc.dart' as RM;
+import '../../models/string_int_tuple.dart';
+import '../recipe_manager/recipe_manager_bloc.dart' as rm;
 
 part 'random_recipe_explorer_event.dart';
 part 'random_recipe_explorer_state.dart';
 
 class RandomRecipeExplorerBloc
     extends Bloc<RandomRecipeExplorerEvent, RandomRecipeExplorerState> {
-  final RM.RecipeManagerBloc recipeManagerBloc;
-  final LocalRepository repository;
-  late StreamSubscription subscription;
-
   RandomRecipeExplorerBloc({
     required this.recipeManagerBloc,
     required this.repository,
-  }) : super(LoadingRandomRecipeExplorer()) {
-    subscription = recipeManagerBloc.stream.listen((rmState) {
-      if (state is LoadedRandomRecipeExplorer) {
-        final List<String> categories =
-            (this.state as LoadedRandomRecipeExplorer).categories;
-        final int selectedIndex =
-            (this.state as LoadedRandomRecipeExplorer).selectedCategory!;
-        final String selectedCategory = categories[selectedIndex];
+    Random? random,
+  }) : _random = random ?? Random(),
+       super(const LoadingRandomRecipeExplorer()) {
+    _subscription = recipeManagerBloc.stream.listen(_onRecipeManagerState);
+    on<InitializeRandomRecipeExplorer>(_onInitialize);
+    on<ReloadRandomRecipeExplorer>(_onReload);
+    on<ChangeExploreFilter>(_onChangeFilter);
+    on<UpdateExploreRecipe>(_onUpdateRecipe);
+  }
 
-        if (rmState is RM.AddRecipesState) {
-          for (Recipe recipe in rmState.recipes) {
-            if (recipe.categories.contains(selectedCategory) ||
-                selectedCategory == "all categories" ||
-                (recipe.categories.isEmpty &&
-                    selectedCategory == "no category")) {
-              add(ReloadRandomRecipeExplorer());
-            }
-          }
-        } else if (rmState is RM.DeleteRecipeState) {
-          add(ReloadRandomRecipeExplorer());
-        } else if (rmState is RM.UpdateRecipeState) {
-          add(UpdateRecipe(rmState.oldRecipe, rmState.updatedRecipe));
-        } else if (rmState is RM.AddFavoriteState) {
-          add(
-            UpdateRecipe(
-              rmState.recipe.copyWith(isFavorite: false),
-              rmState.recipe,
-            ),
-          );
-        } else if (rmState is RM.RemoveFavoriteState) {
-          add(
-            UpdateRecipe(
-              rmState.recipe.copyWith(isFavorite: true),
-              rmState.recipe,
-            ),
-          );
-        } else if (rmState is RM.AddCategoriesState) {
-          add(AddCategories(rmState.categories));
-        } else if (rmState is RM.DeleteCategoryState) {
-          add(DeleteCategory(rmState.category));
-        } else if (rmState is RM.UpdateCategoryState) {
-          add(UpdateCategory(rmState.oldCategory, rmState.updatedCategory));
-        } else if (rmState is RM.DeleteRecipeTagState ||
-            rmState is RM.UpdateRecipeTagState) {
-          add(
-            InitializeRandomRecipeExplorer(
-              selectedCategory:
-                  (state as LoadedRandomRecipeExplorer).categories[(state
-                          as LoadedRandomRecipeExplorer)
-                      .selectedCategory!],
-            ),
-          );
-        } else if (rmState is RM.MoveCategoryState) {
-          add(MoveCategory(rmState.oldIndex, rmState.newIndex));
-        }
-      }
-    });
+  final rm.RecipeManagerBloc recipeManagerBloc;
+  final LocalRepository repository;
+  final Random _random;
+  int _deckRevision = 0;
+  late final StreamSubscription<rm.RecipeManagerState> _subscription;
 
-    on<InitializeRandomRecipeExplorer>((event, emit) async {
-      final List<String> categories = repository.getCategoryNames()
-        ..insert(0, 'all categories');
+  void _onRecipeManagerState(rm.RecipeManagerState managerState) {
+    if (managerState is rm.AddFavoriteState) {
+      add(UpdateExploreRecipe(managerState.recipe.copyWith(isFavorite: true)));
+      return;
+    }
+    if (managerState is rm.RemoveFavoriteState) {
+      add(UpdateExploreRecipe(managerState.recipe.copyWith(isFavorite: false)));
+      return;
+    }
+    if (managerState is rm.UpdateRecipeState) {
+      add(const ReloadRandomRecipeExplorer());
+      return;
+    }
+    if (managerState is rm.AddRecipesState ||
+        managerState is rm.DeleteRecipeState ||
+        managerState is rm.AddCategoriesState ||
+        managerState is rm.DeleteCategoryState ||
+        managerState is rm.UpdateCategoryState ||
+        managerState is rm.MoveCategoryState ||
+        managerState is rm.AddRecipeTagsState ||
+        managerState is rm.DeleteRecipeTagState ||
+        managerState is rm.UpdateRecipeTagState) {
+      add(const ReloadRandomRecipeExplorer());
+    }
+  }
 
-      List<Recipe> randomRecipes = [];
-      for (int i = 0; i < 50; i++) {
-        Recipe? randomRecipe = await (repository.getRandomRecipeOfCategory(
-          category: event.selectedCategory == "all categories"
-              ? null
-              : event.selectedCategory,
-          excludedRecipe: randomRecipes.isNotEmpty ? randomRecipes.last : null,
-        ));
-        if (randomRecipe != null) {
-          randomRecipes.add(randomRecipe);
-        }
-      }
+  Future<void> _onInitialize(
+    InitializeRandomRecipeExplorer event,
+    Emitter<RandomRecipeExplorerState> emit,
+  ) async {
+    await _load(event.filter ?? state.filter, emit);
+  }
+
+  Future<void> _onReload(
+    ReloadRandomRecipeExplorer event,
+    Emitter<RandomRecipeExplorerState> emit,
+  ) async {
+    await _load(state.filter, emit);
+  }
+
+  Future<void> _onChangeFilter(
+    ChangeExploreFilter event,
+    Emitter<RandomRecipeExplorerState> emit,
+  ) async {
+    await _load(event.filter, emit);
+  }
+
+  void _onUpdateRecipe(
+    UpdateExploreRecipe event,
+    Emitter<RandomRecipeExplorerState> emit,
+  ) {
+    final current = state;
+    if (current is! LoadedRandomRecipeExplorer) return;
+    final containsRecipe = current.randomRecipes.any(
+      (recipe) => recipe.name == event.recipe.name,
+    );
+    if (!containsRecipe) return;
+    emit(
+      LoadedRandomRecipeExplorer(
+        randomRecipes: current.randomRecipes
+            .map(
+              (recipe) =>
+                  recipe.name == event.recipe.name ? event.recipe : recipe,
+            )
+            .toList(growable: false),
+        categories: current.categories,
+        tags: current.tags,
+        filter: current.filter,
+        revision: current.revision,
+      ),
+    );
+  }
+
+  Future<void> _load(
+    ExploreFilter requestedFilter,
+    Emitter<RandomRecipeExplorerState> emit,
+  ) async {
+    final previous = state;
+    emit(
+      LoadingRandomRecipeExplorer(
+        categories: previous.categories,
+        tags: previous.tags,
+        filter: requestedFilter,
+      ),
+    );
+    try {
+      final categories = List<String>.unmodifiable(
+        repository.getCategoryNames(),
+      );
+      final tags = List<StringIntTuple>.unmodifiable(
+        repository.getRecipeTags(),
+      );
+      final filter = _validatedFilter(requestedFilter, categories, tags);
+      final source = switch (filter.kind) {
+        ExploreFilterKind.all => await repository.getAllRecipes(),
+        ExploreFilterKind.category => await repository.getCategoryRecipes(
+          filter.value!,
+        ),
+        ExploreFilterKind.tag => await repository.getRecipeTagRecipes(
+          filter.value!,
+        ),
+      };
+      final recipesByName = <String, Recipe>{
+        for (final recipe in source) recipe.name: recipe,
+      };
+      final deck = recipesByName.values.toList()..shuffle(_random);
       emit(
         LoadedRandomRecipeExplorer(
-          randomRecipes,
-          categories,
-          categories.indexOf(event.selectedCategory),
+          randomRecipes: List<Recipe>.unmodifiable(deck),
+          categories: categories,
+          tags: tags,
+          filter: filter,
+          revision: ++_deckRevision,
         ),
       );
-    });
+    } catch (error) {
+      emit(
+        FailedRandomRecipeExplorer(
+          error: error,
+          categories: previous.categories,
+          tags: previous.tags,
+          filter: requestedFilter,
+        ),
+      );
+    }
+  }
 
-    on<AddCategories>((event, emit) async {
-      if (state is LoadedRandomRecipeExplorer) {
-        final List<String> categories =
-            List<String>.from((state as LoadedRandomRecipeExplorer).categories)
-              ..insertAll(
-                (state as LoadedRandomRecipeExplorer).categories.length - 1,
-                event.categories,
-              );
-
-        emit(
-          LoadedRandomRecipeExplorer(
-            (state as LoadedRandomRecipeExplorer).randomRecipes,
-            categories,
-            (state as LoadedRandomRecipeExplorer).selectedCategory,
-          ),
-        );
-      }
-    });
-
-    on<DeleteCategory>((event, emit) async {
-      if (state is LoadedRandomRecipeExplorer) {
-        List<String> categories = List<String>.from(
-          (state as LoadedRandomRecipeExplorer).categories,
-        );
-        int? selectedIndex =
-            (state as LoadedRandomRecipeExplorer).selectedCategory;
-        if (categories.indexOf(event.category) == selectedIndex) {
-          List<Recipe> randomRecipes = [];
-          for (int i = 0; i < 10; i++) {
-            Recipe? randomRecipe = await repository.getRandomRecipeOfCategory();
-            if (randomRecipe != null) {
-              randomRecipes.add(randomRecipe);
-            }
-          }
-
-          emit(
-            LoadedRandomRecipeExplorer(
-              randomRecipes,
-              List<String>.from(categories)..remove(event.category),
-              selectedIndex,
-            ),
-          );
-        } else if (categories.indexOf(event.category) < selectedIndex!) {
-          emit(
-            LoadedRandomRecipeExplorer(
-              (state as LoadedRandomRecipeExplorer).randomRecipes,
-              List<String>.from(categories)..remove(event.category),
-              selectedIndex - 1,
-            ),
-          );
-        } else {
-          emit(
-            LoadedRandomRecipeExplorer(
-              (state as LoadedRandomRecipeExplorer).randomRecipes,
-              List<String>.from(categories)..remove(event.category),
-              (state as LoadedRandomRecipeExplorer).selectedCategory,
-            ),
-          );
-        }
-      }
-    });
-
-    on<UpdateRecipe>((event, emit) async {
-      if (state is LoadedRandomRecipeExplorer) {
-        List<Recipe> randomRecipes =
-            (state as LoadedRandomRecipeExplorer).randomRecipes;
-
-        bool updated = false;
-        // while randomRecipes contains the old recipe
-        while (randomRecipes.contains(event.oldRecipe)) {
-          // update them
-          randomRecipes[randomRecipes.indexOf(event.oldRecipe)] =
-              event.updatedRecipe;
-          updated = true;
-        }
-
-        if (updated == true) {
-          emit(
-            LoadedRandomRecipeExplorer(
-              randomRecipes,
-              (state as LoadedRandomRecipeExplorer).categories,
-              (state as LoadedRandomRecipeExplorer).selectedCategory,
-            ),
-          );
-        }
-      }
-    });
-
-    on<DeleteRecipe>((event, emit) async {
-      if (state is LoadedRandomRecipeExplorer) {
-        List<Recipe> randomRecipes =
-            (state as LoadedRandomRecipeExplorer).randomRecipes;
-        List<String> categories =
-            (state as LoadedRandomRecipeExplorer).categories;
-        int? selectedIndex =
-            (state as LoadedRandomRecipeExplorer).selectedCategory;
-
-        if (await repository.getRandomRecipeOfCategory(
-              category: selectedIndex == 0 ? null : categories[selectedIndex!],
-            ) ==
-            null) {
-          emit(LoadedRandomRecipeExplorer([], categories, selectedIndex));
-          return;
-        }
-
-        bool updated = false;
-        while (randomRecipes.contains(event.recipe)) {
-          Recipe? randomRecipe = await repository.getRandomRecipeOfCategory(
-            category: selectedIndex == 0 ? null : categories[selectedIndex!],
-          );
-          if (randomRecipe != null) {
-            randomRecipes[randomRecipes.indexOf(event.recipe)] = randomRecipe;
-          }
-          updated = true;
-        }
-        if (updated) {
-          emit(
-            LoadedRandomRecipeExplorer(
-              randomRecipes,
-              categories,
-              selectedIndex,
-            ),
-          );
-        }
-      }
-    });
-
-    on<UpdateCategory>((event, emit) async {
-      if (state is LoadedRandomRecipeExplorer) {
-        final List<String> categories = List<String>.from(
-          (state as LoadedRandomRecipeExplorer).categories,
-        );
-        int renamedCategoryIndex = categories.indexOf(event.oldCategory);
-        categories[renamedCategoryIndex] = event.updatedCategory;
-
-        emit(
-          LoadedRandomRecipeExplorer(
-            (state as LoadedRandomRecipeExplorer).randomRecipes
-                .map(
-                  (recipe) => recipe.copyWith(
-                    categories: recipe.categories
-                        .map(
-                          (category) => category == event.oldCategory
-                              ? event.updatedCategory
-                              : category,
-                        )
-                        .toList(),
-                  ),
-                )
-                .toList(),
-            categories,
-            (state as LoadedRandomRecipeExplorer).selectedCategory,
-          ),
-        );
-      }
-    });
-
-    on<ReloadRandomRecipeExplorer>((event, emit) async {
-      if (state is LoadedRandomRecipeExplorer) {
-        final List<String> categories =
-            (state as LoadedRandomRecipeExplorer).categories;
-        final int selectedCategory =
-            (state as LoadedRandomRecipeExplorer).selectedCategory!;
-        final List<Recipe> randomRecipes = [];
-
-        emit(LoadingRecipes(categories, selectedCategory));
-
-        for (int i = 0; i < 50; i++) {
-          Recipe? randomRecipe = await repository.getRandomRecipeOfCategory(
-            category: selectedCategory == 0
-                ? null
-                : categories[selectedCategory],
-          );
-          if (randomRecipe != null) {
-            randomRecipes.add(randomRecipe);
-          }
-        }
-
-        emit(
-          LoadedRandomRecipeExplorer(
-            randomRecipes,
-            categories,
-            selectedCategory,
-          ),
-        );
-      }
-    });
-
-    on<MoveCategory>((event, emit) async {
-      if (state is LoadedRandomRecipeExplorer) {
-        if (state is LoadedRandomRecipeExplorer) {
-          List<String> oldCategoryRandomImageList =
-              (state as LoadedRandomRecipeExplorer).categories;
-          // verify if working
-          List<String> newCategoryRandomImageList = oldCategoryRandomImageList
-            ..insert(
-              event.newIndex + 1,
-              oldCategoryRandomImageList[event.oldIndex + 1],
-            )
-            ..removeAt(
-              event.oldIndex > event.newIndex
-                  ? event.oldIndex + 2
-                  : event.oldIndex + 1,
-            );
-
-          emit(
-            LoadedRandomRecipeExplorer(
-              (state as LoadedRandomRecipeExplorer).randomRecipes,
-              newCategoryRandomImageList,
-              (state as LoadedRandomRecipeExplorer).selectedCategory,
-            ),
-          );
-        }
-      }
-    });
-
-    on<ChangeCategory>((event, emit) async {
-      add(InitializeRandomRecipeExplorer(selectedCategory: event.category));
-    });
+  ExploreFilter _validatedFilter(
+    ExploreFilter requested,
+    List<String> categories,
+    List<StringIntTuple> tags,
+  ) {
+    return switch (requested.kind) {
+      ExploreFilterKind.all => requested,
+      ExploreFilterKind.category when categories.contains(requested.value) =>
+        requested,
+      ExploreFilterKind.tag
+          when tags.any((tag) => tag.text == requested.value) =>
+        requested,
+      _ => const ExploreFilter.all(),
+    };
   }
 
   @override
-  Future<void> close() {
-    subscription.cancel();
+  Future<void> close() async {
+    await _subscription.cancel();
     return super.close();
   }
 }

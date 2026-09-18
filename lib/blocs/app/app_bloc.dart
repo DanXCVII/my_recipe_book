@@ -17,8 +17,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       emit(
         LoadedState(
           event.recipeCategoryOverview,
-          event.showIntro,
-          false,
           false,
           event.showSummary,
           0,
@@ -52,8 +50,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       emit(
         LoadedState(
           (state as LoadedState).recipeCategoryOverview,
-          (state as LoadedState).showIntro,
-          (state as LoadedState).shoppingCartOpen,
           (state as LoadedState).recipeCalendarOpen,
           (state as LoadedState).showShoppingCartSummary,
           event.index,
@@ -68,22 +64,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       emit(
         LoadedState(
           event.recipeCategoryOverview,
-          false,
-          (state as LoadedState).shoppingCartOpen,
-          (state as LoadedState).recipeCalendarOpen,
-          (state as LoadedState).showShoppingCartSummary,
-          (state as LoadedState).selectedIndex,
-          (state as LoadedState).title,
-        ),
-      );
-    });
-
-    on<ChangeShoppingCartView>((event, emit) async {
-      emit(
-        LoadedState(
-          (state as LoadedState).recipeCategoryOverview,
-          (state as LoadedState).showIntro,
-          event.open,
           (state as LoadedState).recipeCalendarOpen,
           (state as LoadedState).showShoppingCartSummary,
           (state as LoadedState).selectedIndex,
@@ -98,8 +78,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       emit(
         LoadedState(
           (state as LoadedState).recipeCategoryOverview,
-          (state as LoadedState).showIntro,
-          (state as LoadedState).shoppingCartOpen,
           (state as LoadedState).recipeCalendarOpen,
           event.showSummary,
           (state as LoadedState).selectedIndex,
@@ -112,8 +90,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       emit(
         LoadedState(
           (state as LoadedState).recipeCategoryOverview,
-          (state as LoadedState).showIntro,
-          (state as LoadedState).shoppingCartOpen,
           event.open,
           (state as LoadedState).showShoppingCartSummary,
           (state as LoadedState).selectedIndex,

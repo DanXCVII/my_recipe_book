@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 
 import '../../../ad_related/ad.dart';
 import '../../../blocs/category_manager/category_manager_bloc.dart';
@@ -11,6 +10,7 @@ import 'package:my_recipe_book/generated/l10n.dart';
 
 import '../../../widgets/dialogs/textfield_dialog.dart';
 import '../../category_manager.dart';
+import 'editorial_classification_section.dart';
 
 class Consts {
   Consts._();
@@ -33,86 +33,57 @@ class _CategorySectionState extends State<CategorySection> {
         if (state is LoadingCategoryManager) {
           return CircularProgressIndicator();
         } else if (state is LoadedCategoryManager) {
-          return Column(
-            children: <Widget>[
-              // heading for the subcategory selector section
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        S.of(context).select_subcategories,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.add_circle_outline),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => TextFieldDialog(
-                            validation: (String? name) {
-                              if (state.categories.contains(name)) {
-                                return S.of(context).category_already_exists;
-                              } else if (name == "") {
-                                return S.of(context).field_must_not_be_empty;
-                              } else {
-                                return null;
-                              }
-                            },
-                            save: (String name) {
-                              BlocProvider.of<CategoryManagerBloc>(context)
-                                  .recipeManagerBloc
-                                  .add(RMAddCategories([name]));
-                            },
-                            hintText: S.of(context).categoryname,
-                          ),
-                        );
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(MdiIcons.arrowExpand),
-                      onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          RouteNames.manageCategories,
-                          arguments: CategoryManagerArguments(
-                            categoryManagerBloc:
-                                BlocProvider.of<CategoryManagerBloc>(context),
-                          ),
-                        ).then((_) => Ads.hideBottomBannerAd());
-                      },
-                    ),
-                  ],
+          return EditorialClassificationSection(
+            title: S.of(context).select_subcategories,
+            addTooltip: S.of(context).add,
+            manageTooltip: S.of(context).manage_categories,
+            onAdd: () {
+              showDialog(
+                context: context,
+                builder: (_) => TextFieldDialog(
+                  validation: (String? name) {
+                    if (state.categories.contains(name)) {
+                      return S.of(context).category_already_exists;
+                    } else if (name == "") {
+                      return S.of(context).field_must_not_be_empty;
+                    } else {
+                      return null;
+                    }
+                  },
+                  save: (String name) {
+                    BlocProvider.of<CategoryManagerBloc>(context)
+                        .recipeManagerBloc
+                        .add(RMAddCategories([name]));
+                  },
+                  hintText: S.of(context).categoryname,
                 ),
-              ),
-              // category chips
-              Container(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: Wrap(
-                  spacing: 5.0,
-                  runSpacing: 3.0,
-                  children: state.categories.map((category) {
-                    return MyCategoryFilterChip(
-                      chipName: category,
-                      isSelected: BlocProvider.of<CategoryManagerBloc>(context)
-                          .selectedCategories
-                          .contains(category),
-                      onSelect: (_) =>
-                          BlocProvider.of<CategoryManagerBloc>(context)
-                              .add(SelectCategory(category)),
-                      onDeselect: (_) =>
-                          BlocProvider.of<CategoryManagerBloc>(context)
-                              .add(UnselectCategory(category)),
-                    );
-                  }).toList()..removeLast(),
+              );
+            },
+            onManage: () {
+              Navigator.pushNamed(
+                context,
+                RouteNames.manageCategories,
+                arguments: CategoryManagerArguments(
+                  categoryManagerBloc: BlocProvider.of<CategoryManagerBloc>(
+                    context,
+                  ),
                 ),
-              ),
-            ],
+              ).then((_) => Ads.hideBottomBannerAd());
+            },
+            children: state.categories.map((category) {
+              return MyCategoryFilterChip(
+                chipName: category,
+                isSelected: BlocProvider.of<CategoryManagerBloc>(context)
+                    .selectedCategories
+                    .contains(category),
+                onSelect: (_) =>
+                    BlocProvider.of<CategoryManagerBloc>(context)
+                        .add(SelectCategory(category)),
+                onDeselect: (_) =>
+                    BlocProvider.of<CategoryManagerBloc>(context)
+                        .add(UnselectCategory(category)),
+              );
+            }).toList()..removeLast(),
           );
         } else {
           return Text(state.toString());

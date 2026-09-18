@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
-
-import '../widgets/icon_info_message.dart';
 
 import '../blocs/category_manager/category_manager_bloc.dart';
 import '../blocs/recipe_manager/recipe_manager_bloc.dart';
 import '../generated/l10n.dart';
-import '../widgets/dialogs/textfield_dialog.dart';
+import '../local_storage/local_repository.dart';
+import '../widgets/culinary_editorial_theme.dart';
+import '../widgets/editorial_catalog_manager.dart';
 
 class CategoryManagerArguments {
   final CategoryManagerBloc? categoryManagerBloc;
@@ -23,187 +22,189 @@ class CategoryManager extends StatelessWidget {
     return BlocBuilder<CategoryManagerBloc, CategoryManagerState>(
       builder: (context, state) {
         if (state is LoadingCategoryManager) {
-          return _getLoadedScreen(context);
-        } else if (state is LoadedCategoryManager) {
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.black,
-              flexibleSpace: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xffAF1E1E), Color(0xff641414)],
-                  ),
-                ),
-              ),
-              title: Text(S.of(context).manage_categories),
-            ),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: Color(0xFF790604),
-              child: Icon(Icons.add, color: Colors.white),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => TextFieldDialog(
-                    validation: (String? name) {
-                      if (state.categories.contains(name)) {
-                        return S.of(context).category_already_exists;
-                      } else if (name == "") {
-                        return S.of(context).field_must_not_be_empty;
-                      } else {
-                        return null;
-                      }
-                    },
-                    save: (String name) {
-                      BlocProvider.of<CategoryManagerBloc>(context)
-                          .recipeManagerBloc
-                          .add(RMAddCategories([name]));
-                    },
-                    hintText: S.of(context).categoryname,
+          return EditorialCatalogManagerShell(
+            title: S.of(context).manage_categories,
+            description: S.of(context).catalog_categories_description,
+            itemCount: 0,
+            headerIcon: Icons.folder_special_outlined,
+            addLabel: S.of(context).catalog_add_category,
+            emptyTitle: S.of(context).catalog_categories_empty_title,
+            emptyDescription: S
+                .of(context)
+                .catalog_categories_empty_description,
+            emptyIcon: Icons.folder_copy_outlined,
+            onAdd: () {},
+            contentSlivers: const [],
+            loading: true,
+          );
+        }
+
+        if (state is! LoadedCategoryManager) {
+          return const SizedBox.shrink();
+        }
+
+        final categories = state.categories
+            .where((category) => category != noCategoryName)
+            .toList(growable: false);
+        return EditorialCatalogManagerShell(
+          title: S.of(context).manage_categories,
+          description: S.of(context).catalog_categories_description,
+          itemCount: categories.length,
+          headerIcon: Icons.folder_special_outlined,
+          addLabel: S.of(context).catalog_add_category,
+          emptyTitle: S.of(context).catalog_categories_empty_title,
+          emptyDescription: S.of(context).catalog_categories_empty_description,
+          emptyIcon: Icons.folder_copy_outlined,
+          onAdd: () => _showEditor(context, state.categories),
+          contentSlivers: [
+            SliverReorderableList(
+              itemCount: categories.length,
+              onReorderItem: (oldIndex, destination) {
+                if (destination == oldIndex) return;
+                context.read<CategoryManagerBloc>().recipeManagerBloc.add(
+                  RMMoveCategory(oldIndex, destination, DateTime.now()),
+                );
+              },
+              itemBuilder: (context, index) {
+                final categoryName = categories[index];
+                return EditorialCatalogContentFrame(
+                  key: ValueKey('category-row-$categoryName'),
+                  child: EditorialCatalogRowSurface(
+                    leading: _CategoryOrderBadge(index: index),
+                    title: categoryName,
+                    subtitle: S.of(context).catalog_category_order(index + 1),
+                    onTap: () => _showEditor(
+                      context,
+                      state.categories,
+                      currentName: categoryName,
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ReorderableDragStartListener(
+                          index: index,
+                          child: Tooltip(
+                            message: S
+                                .of(context)
+                                .catalog_reorder_category(categoryName),
+                            excludeFromSemantics: true,
+                            child: const SizedBox.square(
+                              dimension: 48,
+                              child: Icon(Icons.drag_handle_rounded),
+                            ),
+                          ),
+                        ),
+                        EditorialCatalogMenuButton(
+                          tooltip: S
+                              .of(context)
+                              .catalog_more_actions(categoryName),
+                          editLabel: S.of(context).edit,
+                          deleteLabel: S.of(context).delete,
+                          onEdit: () => _showEditor(
+                            context,
+                            state.categories,
+                            currentName: categoryName,
+                          ),
+                          onDelete: () =>
+                              _showDeleteDialog(context, categoryName),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
             ),
-            body: state.categories.length == 1
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Center(
-                      child: IconInfoMessage(
-                        iconWidget: Icon(
-                          MdiIcons.apps,
-                          color: Colors.grey[300],
-                          size: 70.0,
-                        ),
-                        description: S.of(context).you_have_no_categories,
-                      ),
-                    ),
-                  )
-                : ReorderableListView(
-                    onReorderItem: (oldIndex, newIndex) {
-                      // The Bloc still expects the legacy pre-removal
-                      // destination index.
-                      BlocProvider.of<CategoryManagerBloc>(context)
-                          .recipeManagerBloc
-                          .add(
-                            RMMoveCategory(
-                              oldIndex,
-                              newIndex > oldIndex ? newIndex + 1 : newIndex,
-                              DateTime.now(),
-                            ),
-                          );
-                    },
-                    children: state.categories.map((categoryName) {
-                      return ListTile(
-                        key: Key(categoryName),
-                        title: GestureDetector(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (_) => TextFieldDialog(
-                                validation: (String? name) {
-                                  if (state.categories.contains(name)) {
-                                    return S
-                                        .of(context)
-                                        .category_already_exists;
-                                  } else if (name == "") {
-                                    return S
-                                        .of(context)
-                                        .field_must_not_be_empty;
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                                save: (String name) {
-                                  BlocProvider.of<CategoryManagerBloc>(context)
-                                      .recipeManagerBloc
-                                      .add(
-                                        RMUpdateCategory(categoryName, name),
-                                      );
-                                },
-                                hintText: S.of(context).categoryname,
-                                prefilledText: categoryName,
-                              ),
-                            );
-                          },
-                          child: Text(categoryName),
-                        ),
-                        leading: Icon(Icons.reorder),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            _showDeleteDialog(context, categoryName);
-                          },
-                        ),
-                      );
-                    }).toList()..removeLast(),
-                  ),
-          );
-        } else {
-          return Text(state.toString());
-        }
+          ],
+        );
       },
     );
   }
 
-  Widget _getLoadedScreen(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xffAF1E1E), Color(0xff641414)],
-            ),
-          ),
-        ),
-        title: Text(S.of(context).manage_categories),
-      ),
-      body: Center(child: CircularProgressIndicator()),
+  void _showEditor(
+    BuildContext context,
+    List<String> categories, {
+    String? currentName,
+  }) {
+    showCategoryEditorSheet(
+      context: context,
+      title: currentName == null
+          ? S.of(context).catalog_add_category
+          : S.of(context).catalog_edit_category,
+      fieldLabel: S.of(context).categoryname,
+      saveLabel: S.of(context).save,
+      cancelLabel: S.of(context).cancel,
+      emptyError: S.of(context).field_must_not_be_empty,
+      duplicateError: S.of(context).category_already_exists,
+      existingNames: categories,
+      initialName: currentName,
+      onSave: (name) {
+        final manager = context.read<CategoryManagerBloc>().recipeManagerBloc;
+        manager.add(
+          currentName == null
+              ? RMAddCategories([name])
+              : RMUpdateCategory(currentName, name),
+        );
+      },
     );
   }
 
-  _showDeleteDialog(BuildContext context, String categoryName) {
-    showDialog(
+  Future<void> _showDeleteDialog(
+    BuildContext context,
+    String categoryName,
+  ) async {
+    final palette = CulinaryEditorialPalette.of(context);
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(S.of(context).delete_category),
-        content: Text(
-          S.of(context).sure_you_want_to_delete_this_category +
-              " $categoryName",
-        ),
-        actions: <Widget>[
+      builder: (dialogContext) => AlertDialog(
+        icon: Icon(Icons.delete_outline_rounded, color: palette.primary),
+        title: Text(S.of(context).catalog_delete_category_title(categoryName)),
+        content: Text(S.of(context).catalog_delete_category_description),
+        actions: [
           TextButton(
-            style: TextButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text(S.of(context).no),
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(S.of(context).cancel),
           ),
-          TextButton(
-            style: TextButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              backgroundColor: Colors.red[600],
-              foregroundColor: Theme.of(context).textTheme.bodyMedium!.color,
+          FilledButton(
+            key: const ValueKey('catalog-confirm-delete'),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
             ),
-            child: Text(S.of(context).yes),
-            onPressed: () {
-              BlocProvider.of<RecipeManagerBloc>(context)
-                  .add(RMDeleteCategory(categoryName));
-              Navigator.pop(context);
-            },
+            child: Text(S.of(context).delete),
           ),
         ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      context.read<RecipeManagerBloc>().add(RMDeleteCategory(categoryName));
+    }
+  }
+}
+
+class _CategoryOrderBadge extends StatelessWidget {
+  const _CategoryOrderBadge({required this.index});
+
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return Container(
+      width: 48,
+      height: 52,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: palette.primarySoft,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        '${index + 1}'.padLeft(2, '0'),
+        style: CulinaryEditorialType.headline(
+          palette,
+          size: 18,
+          weight: FontWeight.w600,
+        ).copyWith(color: palette.primary),
       ),
     );
   }

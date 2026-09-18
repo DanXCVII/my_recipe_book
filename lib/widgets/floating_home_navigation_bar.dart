@@ -3,17 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import 'culinary_editorial_theme.dart';
-
-@immutable
-class FloatingHomeNavigationDestination {
-  const FloatingHomeNavigationDestination({
-    required this.icon,
-    required this.label,
-  });
-
-  final IconData icon;
-  final String label;
-}
+import 'home_navigation_destination.dart';
 
 class FloatingHomeNavigationBar extends StatelessWidget {
   const FloatingHomeNavigationBar({
@@ -30,7 +20,7 @@ class FloatingHomeNavigationBar extends StatelessWidget {
   static const double narrowWidth = 346;
 
   final int selectedIndex;
-  final List<FloatingHomeNavigationDestination> destinations;
+  final List<HomeNavigationDestination> destinations;
   final ValueChanged<int> onDestinationSelected;
 
   @override
@@ -119,7 +109,7 @@ class _NavigationItem extends StatelessWidget {
     required this.onTap,
   });
 
-  final FloatingHomeNavigationDestination destination;
+  final HomeNavigationDestination destination;
   final bool selected;
   final bool showLabel;
   final CulinaryEditorialPalette palette;

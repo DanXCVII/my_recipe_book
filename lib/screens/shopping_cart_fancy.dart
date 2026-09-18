@@ -636,17 +636,6 @@ class _CartHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  S.of(context).shopping_market_provisions,
-                  style: CulinaryEditorialType.body(
-                    palette,
-                    size: 11,
-                    weight: FontWeight.w700,
-                    color: palette.primary,
-                    letterSpacing: 0.75,
-                  ),
-                ),
-                const SizedBox(height: 4),
                 Wrap(
                   spacing: 8,
                   runSpacing: 4,

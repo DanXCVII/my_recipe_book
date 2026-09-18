@@ -7,11 +7,13 @@ import 'package:my_recipe_book/blocs/animated_stepper/animated_stepper_bloc.dart
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_screen_ingredients/recipe_screen_ingredients_bloc.dart';
 import 'package:my_recipe_book/blocs/shopping_cart/shopping_cart_bloc.dart';
+import 'package:my_recipe_book/constants/routes.dart';
 import 'package:my_recipe_book/generated/l10n.dart';
 import 'package:my_recipe_book/local_storage/database.dart';
 import 'package:my_recipe_book/local_storage/local_repository.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/screens/cook_mode_screen.dart';
 import 'package:my_recipe_book/theming.dart';
 import 'package:my_recipe_book/widgets/culinary_editorial_theme.dart';
 import 'package:my_recipe_book/widgets/recipe_screen/editorial_ingredients_panel.dart';
@@ -41,6 +43,12 @@ void main() {
     expect(find.text('Effort calibration'), findsOneWidget);
     expect(find.text('Pantry checklist'), findsOneWidget);
     expect(find.byKey(const Key('recipe-detail-section-tabs')), findsOneWidget);
+    expect(
+      tester
+          .widget<FilledButton>(find.byKey(const Key('recipe-start-cooking')))
+          .onPressed,
+      isNull,
+    );
 
     await tester.tap(find.text('Directions (0)'));
     await tester.pumpAndSettle();
@@ -66,6 +74,57 @@ void main() {
     expect(find.text('Pantry checklist'), findsOneWidget);
     expect(find.text('Preparation timeline'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('start cooking passes the currently scaled ingredients', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(430, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final recipe = _recipe().copyWith(
+      steps: const ['Brown the butter and add the gnocchi.'],
+      stepTitles: const ['Brown the butter'],
+      stepImages: const [[]],
+      stepIngredientIds: const [
+        ['flour', 'butter'],
+      ],
+    );
+    final harness = await _Harness.create(recipe);
+    addTearDown(harness.dispose);
+    CookModeArguments? capturedArguments;
+    String? capturedRoute;
+    await harness.pumpBody(
+      tester,
+      onGenerateRoute: (settings) {
+        capturedRoute = settings.name;
+        capturedArguments = settings.arguments as CookModeArguments;
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const Scaffold(body: Text('Cook route opened')),
+        );
+      },
+    );
+
+    final scaled = harness.ingredientBloc.stream
+        .where((state) => state is LoadedRecipeIngredients)
+        .cast<LoadedRecipeIngredients>()
+        .firstWhere((state) => state.servings == 4);
+    harness.ingredientBloc.add(const UpdateServings(2, 4));
+    await tester.runAsync(() => scaled);
+    await tester.pump();
+
+    final start = find.byKey(const Key('recipe-start-cooking'));
+    await tester.ensureVisible(start);
+    await tester.tap(start);
+    await tester.pumpAndSettle();
+
+    expect(capturedRoute, RouteNames.cookMode);
+    expect(capturedArguments?.recipe, recipe);
+    expect(capturedArguments?.effectiveIngredients.first[0].amount, 4);
+    expect(capturedArguments?.effectiveIngredients.first[1].amount, 200);
   });
 
   testWidgets('bulk shopping action and serving changes stay synchronized', (
@@ -220,6 +279,7 @@ class _Harness {
     Locale? locale,
     ThemeData? theme,
     TextScaler? textScaler,
+    RouteFactory? onGenerateRoute,
   }) {
     final controller = ScrollController();
     final selected = ValueNotifier(RecipeDetailSection.ingredients);
@@ -241,6 +301,7 @@ class _Harness {
       locale: locale,
       theme: theme,
       textScaler: textScaler,
+      onGenerateRoute: onGenerateRoute,
     );
   }
 
@@ -262,6 +323,7 @@ class _Harness {
     Locale? locale,
     ThemeData? theme,
     TextScaler? textScaler,
+    RouteFactory? onGenerateRoute,
   }) {
     return tester.pumpWidget(
       RepositoryProvider<LocalRepository>.value(
@@ -292,6 +354,7 @@ class _Harness {
               GlobalWidgetsLocalizations.delegate,
             ],
             supportedLocales: S.delegate.supportedLocales,
+            onGenerateRoute: onGenerateRoute,
             home: Scaffold(body: child),
           ),
         ),

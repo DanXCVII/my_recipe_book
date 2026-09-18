@@ -15,15 +15,14 @@ class CategoryManagerBloc
   final LocalRepository repository;
   late StreamSubscription subscription;
 
-  List<String> selectedCategories = [];
+  List<String> selectedCategories;
 
   CategoryManagerBloc({
     required this.recipeManagerBloc,
     required this.repository,
     required List<String> selectedCategories,
-  }) : super(LoadingCategoryManager()) {
-    if (selectedCategories.isNotEmpty)
-      this.selectedCategories = List<String>.from(selectedCategories);
+  }) : selectedCategories = List<String>.from(selectedCategories),
+       super(LoadingCategoryManager()) {
     subscription = recipeManagerBloc.stream.listen((rmState) {
       if (state is LoadedCategoryManager) {
         if (rmState is RM.AddCategoriesState) {
@@ -46,13 +45,16 @@ class CategoryManagerBloc
 
     on<AddCategories>((event, emit) async {
       if (state is LoadedCategoryManager) {
-        selectedCategories.addAll(event.categories);
+        selectedCategories = [...selectedCategories, ...event.categories];
 
-        final List<String> categories =
-            List.from((state as LoadedCategoryManager).categories)..insertAll(
-              (state as LoadedCategoryManager).categories.length - 1,
-              event.categories,
-            );
+        final categories = List<String>.from(
+          (state as LoadedCategoryManager).categories,
+        );
+        final systemIndex = categories.indexOf(noCategoryName);
+        categories.insertAll(
+          systemIndex < 0 ? categories.length : systemIndex,
+          event.categories,
+        );
 
         emit(LoadedCategoryManager(categories));
       }
@@ -63,9 +65,9 @@ class CategoryManagerBloc
         final List<String> categories = List<String>.from(
           (state as LoadedCategoryManager).categories,
         )..remove(event.category);
-        if (selectedCategories.contains(event.category)) {
-          selectedCategories.remove(event.category);
-        }
+        selectedCategories = selectedCategories
+            .where((category) => category != event.category)
+            .toList();
 
         emit(LoadedCategoryManager(categories));
       }
@@ -84,10 +86,13 @@ class CategoryManagerBloc
             })
             .toList();
 
-        if (selectedCategories.contains(event.oldCategory)) {
-          selectedCategories[selectedCategories.indexOf(event.oldCategory)] =
-              event.updatedCategory;
-        }
+        selectedCategories = selectedCategories
+            .map(
+              (category) => category == event.oldCategory
+                  ? event.updatedCategory
+                  : category,
+            )
+            .toList();
 
         emit(LoadedCategoryManager(categories));
       }
@@ -95,33 +100,32 @@ class CategoryManagerBloc
 
     on<MoveCategory>((event, emit) async {
       if (state is LoadedCategoryManager) {
-        // List in repositoryProvider() is already updated of the recipeManager
-
-        final List<String> it1 = List<String>.from(
-          (state as LoadedCategoryManager).categories..insert(
-            event.newIndex,
-            (state as LoadedCategoryManager).categories[event.oldIndex],
-          ),
+        final categories = List<String>.from(
+          (state as LoadedCategoryManager).categories,
         );
-
-        final List<String> it2 = List<String>.from(
-          it1..removeAt(
-            event.oldIndex > event.newIndex
-                ? event.oldIndex + 1
-                : event.oldIndex,
-          ),
-        );
-
-        emit(LoadedCategoryManager(it2));
+        if (event.oldIndex < 0 ||
+            event.oldIndex >= categories.length ||
+            event.newIndex < 0 ||
+            event.newIndex >= categories.length ||
+            event.oldIndex == event.newIndex) {
+          return;
+        }
+        final moved = categories.removeAt(event.oldIndex);
+        categories.insert(event.newIndex, moved);
+        emit(LoadedCategoryManager(categories));
       }
     });
 
     on<SelectCategory>((event, emit) async {
-      selectedCategories.add(event.categoryName);
+      if (!selectedCategories.contains(event.categoryName)) {
+        selectedCategories = [...selectedCategories, event.categoryName];
+      }
     });
 
     on<UnselectCategory>((event, emit) async {
-      selectedCategories.remove(event.categoryName);
+      selectedCategories = selectedCategories
+          .where((category) => category != event.categoryName)
+          .toList();
     });
   }
 

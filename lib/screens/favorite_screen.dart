@@ -22,6 +22,7 @@ import '../widgets/culinary_editorial_theme.dart';
 import '../widgets/recipe_overview/editorial_recipe_card.dart';
 import '../widgets/recipe_overview/recipe_layout_switch.dart';
 import 'recipe_screen.dart';
+import 'cook_mode_screen.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({super.key});
@@ -251,7 +252,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       heroImageTag: heroImageTag,
       layout: layout,
       onOpen: () => _openRecipe(recipe, heroImageTag),
-      onCookAction: () => _openRecipe(recipe, heroImageTag),
+      onCookAction: recipe.steps.isEmpty ? null : () => _openCookMode(recipe),
       onBookmarkToggle: () =>
           context.read<RecipeManagerBloc>().add(RMRemoveFavorite(recipe)),
     );
@@ -279,6 +280,17 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       WakelockPlus.disable();
       Ads.hideBottomBannerAd();
     });
+  }
+
+  void _openCookMode(Recipe recipe) {
+    Navigator.pushNamed(
+      context,
+      RouteNames.cookMode,
+      arguments: CookModeArguments(
+        recipe: recipe,
+        effectiveIngredients: recipe.ingredients,
+      ),
+    );
   }
 }
 

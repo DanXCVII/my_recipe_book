@@ -56,89 +56,79 @@ void main() {
     expect(find.text('Slow roasted tomato soup'), findsWidgets);
     expect(find.text('Effort: 5/10'), findsOneWidget);
     expect(find.text('Moderate'), findsNothing);
-    expect(find.text('Open'), findsOneWidget);
+    expect(find.text('Start'), findsOneWidget);
     expect(find.text('See all (2)'), findsOneWidget);
 
     final effort = find.byKey(const Key('category-featured-effort'));
-    final prep = find.byKey(const Key('category-featured-prep'));
-    final cook = find.byKey(const Key('category-featured-cook'));
-    expect(tester.widget<Text>(prep).data, '· Prep 20m');
-    expect(tester.widget<Text>(cook).data, '· Cook 45m');
-    expect(tester.getTopLeft(prep).dy, tester.getTopLeft(effort).dy);
-    expect(tester.getTopLeft(cook).dy, tester.getTopLeft(effort).dy);
+    final time = find.byKey(const Key('category-featured-time'));
+    expect(
+      find.descendant(of: time, matching: find.text('Prep 20m • Cook 45m')),
+      findsOneWidget,
+    );
+    expect(effort, findsOneWidget);
 
     final featuredCard = find.byKey(const Key('category-featured-card'));
-    expect(tester.getSize(featuredCard).height, lessThan(400));
-    final featuredActions = find.byKey(const Key('category-featured-actions'));
+    expect(tester.getSize(featuredCard), const Size(390, 351));
     final openButton = find.byKey(const Key('category-featured-open'));
-    expect(tester.getSize(featuredActions).height, 48);
     expect(tester.getSize(openButton).height, 48);
     expect(
-      find.descendant(of: featuredActions, matching: find.text('#Cozy')),
+      find.descendant(of: featuredCard, matching: find.text('#Cozy')),
       findsOneWidget,
     );
     expect(
-      find.descendant(of: featuredActions, matching: find.text('#Soup')),
-      findsNothing,
-    );
-    expect(
-      find.descendant(of: featuredActions, matching: find.text('+3')),
+      find.descendant(of: featuredCard, matching: find.text('#Soup')),
       findsOneWidget,
     );
-    expect(find.bySemanticsLabel('Open recipe'), findsOneWidget);
-
-    final compactCard = find.byKey(const ValueKey('category-card-0-0'));
-    expect(tester.getSize(compactCard), const Size(200, 240));
-
-    final compactTitle = tester.widget<Text>(
-      find.byKey(
-        const ValueKey(
-          'category-card-title-category-feed-0-0-Slow roasted tomato soup',
-        ),
-      ),
+    expect(
+      find.descendant(of: featuredCard, matching: find.text('+2')),
+      findsOneWidget,
     );
-    expect(compactTitle.maxLines, 1);
-    expect(compactTitle.overflow, TextOverflow.ellipsis);
+
+    final gridCard = find.byKey(const ValueKey('category-card-0-0'));
+    expect(tester.getSize(gridCard), const Size(192, 216));
     expect(
       find.descendant(
-        of: find.byKey(
-          const ValueKey(
-            'category-card-prep-category-feed-0-0-Slow roasted tomato soup',
-          ),
-        ),
-        matching: find.text('Prep 20 min'),
+        of: gridCard,
+        matching: find.byKey(const Key('recipe-card-grid-aspect')),
       ),
       findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: find.byKey(
-          const ValueKey(
-            'category-card-cook-category-feed-0-0-Slow roasted tomato soup',
-          ),
-        ),
-        matching: find.text('Cook 45 min'),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: compactCard, matching: find.text('Moderate')),
-      findsNothing,
     );
 
-    final compactImage = tester.widget<ClipRRect>(
-      find.byKey(
-        const ValueKey(
-          'category-card-image-category-feed-0-0-Slow roasted tomato soup',
-        ),
+    final gridTitle = tester.widget<Text>(
+      find.descendant(
+        of: gridCard,
+        matching: find.text('Slow roasted tomato soup'),
       ),
     );
-    expect(compactImage.borderRadius, BorderRadius.circular(10));
-    expect(tester.getSize(find.byWidget(compactImage)), const Size(184, 116));
+    expect(gridTitle.maxLines, 2);
+    expect(gridTitle.overflow, TextOverflow.ellipsis);
+    expect(
+      find.descendant(of: gridCard, matching: find.text('1h 5m')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: gridCard, matching: find.text('5/10')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: gridCard, matching: find.text('Vegetarian')),
+      findsOneWidget,
+    );
 
     await tester.tap(
       find.byKey(
         const ValueKey('category-featured-favorite-Slow roasted tomato soup'),
+      ),
+    );
+    await tester.pump();
+    expect(favorited, featured);
+    expect(opened, isNull);
+
+    favorited = null;
+    await tester.tap(
+      find.descendant(
+        of: gridCard,
+        matching: find.byKey(const Key('recipe-card-grid-bookmark-action')),
       ),
     );
     await tester.pump();
@@ -150,7 +140,7 @@ void main() {
     expect(opened, featured);
 
     opened = null;
-    await tester.tap(compactCard);
+    await tester.tap(gridCard);
     await tester.pump();
     expect(opened, featured);
 
@@ -163,12 +153,64 @@ void main() {
     expect(openedCategory, 'Dinner');
   });
 
-  testWidgets('lets phone category rows scroll to the screen edges', (
+  testWidgets('collapses, expands, and keeps state through parent rebuilds', (
     tester,
   ) async {
+    Recipe? opened;
     await _pumpFeed(
       tester,
       sections: sections,
+      featured: featured,
+      onOpenRecipe: (recipe, heroTag) => opened = recipe,
+    );
+
+    expect(find.byKey(const Key('category-featured-card')), findsOneWidget);
+    expect(
+      find.byKey(const Key('category-featured-collapsed-card')),
+      findsNothing,
+    );
+
+    await tester.tap(find.byKey(const Key('category-featured-collapse')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('category-featured-card')), findsNothing);
+    expect(
+      find.byKey(const Key('category-featured-collapsed-card')),
+      findsOneWidget,
+    );
+    expect(find.text('Start'), findsNothing);
+    expect(opened, isNull);
+
+    await _pumpFeed(
+      tester,
+      sections: sections,
+      featured: featured,
+      onOpenRecipe: (recipe, heroTag) => opened = recipe,
+    );
+    expect(
+      find.byKey(const Key('category-featured-collapsed-card')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byKey(const Key('category-featured-expand')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('category-featured-card')), findsOneWidget);
+    expect(opened, isNull);
+  });
+
+  testWidgets('lets phone category rows scroll to the screen edges', (
+    tester,
+  ) async {
+    final third = Recipe(
+      name: 'Crispy potatoes',
+      categories: const ['Dinner'],
+      totalTime: 35,
+    );
+    await _pumpFeed(
+      tester,
+      sections: [
+        Tuple2<String, List<Recipe>>('Dinner', [featured, second, third]),
+      ],
       featured: featured,
       size: const Size(430, 900),
     );
@@ -204,15 +246,12 @@ void main() {
 
     expect(find.text('GERICHT DES TAGES'), findsOneWidget);
     expect(find.text('Aufwand: 5/10'), findsOneWidget);
-    expect(find.text('· Vorb. 20m'), findsOneWidget);
-    expect(find.text('· Garen 45m'), findsOneWidget);
-    expect(find.text('Öffnen'), findsOneWidget);
-    final effort = find.byKey(const Key('category-featured-effort'));
-    final prep = find.byKey(const Key('category-featured-prep'));
-    final cook = find.byKey(const Key('category-featured-cook'));
-    expect(tester.getTopLeft(prep).dy, tester.getTopLeft(effort).dy);
-    expect(tester.getTopLeft(cook).dy, tester.getTopLeft(effort).dy);
-    expect(find.bySemanticsLabel('Rezept öffnen'), findsOneWidget);
+    expect(find.text('Vorb. 20m • Garen 45m'), findsOneWidget);
+    expect(find.text('Starten'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('Gericht des Tages einklappen'),
+      findsOneWidget,
+    );
     await tester.scrollUntilVisible(
       find.text('Alle ansehen (2)'),
       160,
@@ -271,6 +310,9 @@ void main() {
       size: const Size(320, 900),
     );
     expect(tester.takeException(), isNull);
+    await tester.tap(find.byKey(const Key('category-featured-collapse')));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
 
     await _pumpFeed(
       tester,
@@ -280,6 +322,12 @@ void main() {
       size: const Size(1200, 900),
     );
     expect(tester.takeException(), isNull);
+    await tester.tap(find.byKey(const Key('category-featured-expand')));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getSize(find.byKey(const Key('category-featured-card'))).height,
+      444,
+    );
     expect(find.byKey(const ValueKey('category-card-1-0')), findsOneWidget);
   });
 
@@ -331,7 +379,7 @@ void main() {
       featured: totalOnlyRecipe,
       themeKey: MyThemeKeys.DARK,
     );
-    expect(find.text('· Total: 15m'), findsOneWidget);
+    expect(find.text('Total: 15m'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await _pumpFeed(

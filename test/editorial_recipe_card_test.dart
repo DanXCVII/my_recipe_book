@@ -45,10 +45,10 @@ void main() {
     final aspect = tester.widget<AspectRatio>(
       find.byKey(const Key('recipe-card-grid-aspect')),
     );
-    expect(aspect.aspectRatio, 4 / 5);
+    expect(aspect.aspectRatio, 8 / 9);
     expect(
       tester.getSize(find.byKey(const Key('recipe-card-grid-aspect'))),
-      const Size(180, 225),
+      const Size(180, 202.5),
     );
     expect(find.byKey(const Key('recipe-card-grid-hud')), findsOneWidget);
     expect(find.text('45m'), findsOneWidget);
@@ -307,6 +307,25 @@ void main() {
     expect(find.byKey(const Key('recipe-card-cook-action')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('list cook action is disabled when a recipe has no steps', (
+    tester,
+  ) async {
+    await _pumpCard(
+      tester,
+      recipe: Recipe(name: 'No directions yet'),
+      layout: RecipeOverviewCardLayout.list,
+      cookActionDisabled: true,
+    );
+
+    final action = tester.widget<IconButton>(
+      find.descendant(
+        of: find.byKey(const Key('recipe-card-cook-action')),
+        matching: find.byType(IconButton),
+      ),
+    );
+    expect(action.onPressed, isNull);
+  });
 }
 
 Future<void> _pumpCard(
@@ -320,6 +339,7 @@ Future<void> _pumpCard(
   VoidCallback? onOpen,
   VoidCallback? onBookmarkToggle,
   VoidCallback? onCookAction,
+  bool cookActionDisabled = false,
 }) async {
   await tester.binding.setSurfaceSize(const Size(430, 900));
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -349,7 +369,7 @@ Future<void> _pumpCard(
               layout: layout,
               onOpen: onOpen ?? () {},
               onBookmarkToggle: onBookmarkToggle ?? () {},
-              onCookAction: onCookAction ?? () {},
+              onCookAction: cookActionDisabled ? null : onCookAction ?? () {},
             ),
           ),
         ),

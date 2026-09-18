@@ -24,7 +24,6 @@ import 'blocs/category_manager/category_manager_bloc.dart';
 import 'blocs/category_overview/category_overview_bloc.dart';
 import 'blocs/favorite_recipes/favorite_recipes_bloc.dart';
 import 'blocs/import_recipe/import_recipe_bloc.dart';
-import 'blocs/ingredient_search/ingredient_search_bloc.dart';
 import 'blocs/ingredinets_manager/ingredients_manager_bloc.dart';
 import 'blocs/new_recipe/clear_recipe/clear_recipe_bloc.dart';
 import 'blocs/new_recipe/general_info/general_info_bloc.dart';
@@ -44,6 +43,7 @@ import 'blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen_bloc.dart';
 import 'blocs/website_import/website_import_bloc.dart';
+import 'constants/routes.dart';
 
 import 'package:my_recipe_book/generated/l10n.dart';
 
@@ -64,6 +64,7 @@ import 'screens/intro_screen.dart';
 import 'screens/nutrition_manager.dart';
 import 'screens/recipe_overview.dart';
 import 'screens/recipe_screen.dart';
+import 'screens/cook_mode_screen.dart';
 import 'screens/recipe_tag_manager_screen.dart';
 import 'local_storage/local_repository.dart';
 import 'local_storage/storage_migration.dart';
@@ -184,7 +185,6 @@ class MyApp extends StatelessWidget {
                               args!.context,
                               args.recipeCategoryOverview!,
                               args.showShoppingCartSummary!,
-                              args.showIntro!,
                             ),
                           ),
                       ),
@@ -247,7 +247,7 @@ class MyApp extends StatelessWidget {
                         create: (context) => GDriveSyncBloc(context, driveSync),
                       ),
                     ],
-                    child: MyHomePage(showIntro: args!.showIntro),
+                    child: const MyHomePage(),
                   ),
                 );
 
@@ -302,6 +302,12 @@ class MyApp extends StatelessWidget {
                       context,
                     ),
                   ),
+                );
+              case RouteNames.cookMode:
+                final args = settings.arguments as CookModeArguments;
+                return MaterialPageRoute(
+                  settings: RouteSettings(name: RouteNames.cookMode),
+                  builder: (context) => CookModeScreen(arguments: args),
                 );
               case "/add-recipe/general-info":
                 final GeneralInfoArguments? args =
@@ -560,36 +566,17 @@ class MyApp extends StatelessWidget {
                 final IngredientSearchScreenArguments args =
                     settings.arguments as IngredientSearchScreenArguments;
 
-                if (args.hasPremium) {
-                  return MaterialPageRoute(
-                    settings: RouteSettings(name: "recipeRoute"),
-                    builder: (context) => MultiBlocProvider(
-                      providers: [
-                        BlocProvider<IngredientSearchBloc>(
-                          create: (context) => IngredientSearchBloc(
-                            repository: repository,
-                            recipeManagerBloc: context
-                                .read<RecipeManagerBloc>(),
-                          ),
+                return MaterialPageRoute(
+                  settings: RouteSettings(name: "recipeRoute"),
+                  builder: (context) =>
+                      BlocProvider<Bloc<AdManagerEvent, AdManagerState>>.value(
+                        value: args.adManagerBloc,
+                        child: IngredientSearchAccessGate(
+                          arguments: args,
+                          repository: repository,
                         ),
-                        BlocProvider<ShoppingCartBloc>.value(
-                          value: args.shoppingCartBloc,
-                        ),
-                        BlocProvider<RecipeCalendarBloc>.value(
-                          value: args.recipeCalendarBloc,
-                        ),
-                      ],
-                      child: IngredientSearchScreen(),
-                    ),
-                  );
-                } else {
-                  return MaterialPageRoute(
-                    builder: (context) => BlocProvider<AdManagerBloc>.value(
-                      value: args.adManagerBloc,
-                      child: IngredinetSearchPreviewScreen(),
-                    ),
-                  );
-                }
+                      ),
+                );
 
               case "/manage-categories":
                 Ads.showBottomBannerAd();

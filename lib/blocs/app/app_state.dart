@@ -11,8 +11,6 @@ class LoadingState extends AppState {}
 
 class LoadedState extends AppState {
   final bool recipeCategoryOverview;
-  final bool showIntro;
-  final bool shoppingCartOpen;
   final bool recipeCalendarOpen;
   final bool showShoppingCartSummary;
   final int selectedIndex;
@@ -20,8 +18,6 @@ class LoadedState extends AppState {
 
   LoadedState(
     this.recipeCategoryOverview,
-    this.showIntro,
-    this.shoppingCartOpen,
     this.recipeCalendarOpen,
     this.showShoppingCartSummary,
     this.selectedIndex,
@@ -31,9 +27,7 @@ class LoadedState extends AppState {
   @override
   List<Object> get props => [
     recipeCategoryOverview,
-    showIntro,
     selectedIndex,
-    shoppingCartOpen,
     recipeCalendarOpen,
     showShoppingCartSummary,
     title,

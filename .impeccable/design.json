@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-15T08:44:57Z",
+  "generatedAt": "2026-09-18T09:58:47Z",
   "title": "Design System: My RecipeBible Culinary Editorial",
   "extensions": {
     "colorMeta": {
@@ -90,7 +90,7 @@
       }
     },
     "typographyMeta": {
-      "stage-headline": {"displayName": "Stage Headline", "purpose": "The decisive title for each editor stage."},
+      "stage-headline": {"displayName": "Stage Headline", "purpose": "The decisive title for an editor stage or cooking step."},
       "sheet-headline": {"displayName": "Sheet Headline", "purpose": "Modal and bottom-sheet task titles."},
       "section-headline": {"displayName": "Section Headline", "purpose": "Named ingredient sections and major card subdivisions."},
       "card-headline": {"displayName": "Card Headline", "purpose": "Recipe names and compact summaries."},
@@ -136,12 +136,23 @@
       {"name": "editorial-card-light", "value": "0 4px 16px rgba(84, 62, 45, 0.078)", "purpose": "Warm ambient lift for complete editorial working modules in light mode."},
       {"name": "anchored-header-light", "value": "0 1px 10px rgba(84, 62, 45, 0.078)", "purpose": "Shallow separation beneath the persistent identity and progress header."},
       {"name": "sticky-action-light", "value": "0 -4px 18px rgba(84, 62, 45, 0.078)", "purpose": "Upward separation above the safe-area-aware action bar."},
+      {"name": "session-dock-light", "value": "0 -6px 22px rgba(84, 62, 45, 0.078)", "purpose": "Stronger upward separation for Cook Mode's timer and navigation dock."},
+      {"name": "explore-deck-light", "value": "0 10px 28px rgba(84, 62, 45, 0.078)", "purpose": "Ambient lift for the active Explore recipe and its stacked previews."},
       {"name": "adaptive-dark", "value": "rgba(0, 0, 0, 0.4)", "purpose": "Dark-theme shadow color used with the component geometry above."},
       {"name": "adaptive-oled", "value": "rgba(0, 0, 0, 0.8)", "purpose": "OLED shadow color used sparingly where tonal separation needs reinforcement."}
     ],
+    "motion": [
+      {"name": "compact-state-change", "value": "180ms cubic-bezier(0.33, 1, 0.68, 1)", "purpose": "Cook Mode preparation, carousel, and timer disclosure transitions; use zero duration when system animations are disabled."},
+      {"name": "explore-card-action", "value": "260ms", "purpose": "Explore swipe, rewind, and completion feedback; reduce to an effectively instant transition when animations are disabled."}
+    ],
     "breakpoints": [
       {"name": "ingredient-row-reflow", "value": "420px"},
-      {"name": "editor-content-measure", "value": "760px"}
+      {"name": "explore-deck-measure", "value": "520px"},
+      {"name": "detail-and-cook-wide", "value": "600px"},
+      {"name": "editor-content-measure", "value": "760px"},
+      {"name": "cook-dock-measure", "value": "700px"},
+      {"name": "cook-content-measure", "value": "1120px"},
+      {"name": "recipe-detail-measure", "value": "1180px"}
     ]
   },
   "components": [
@@ -207,17 +218,31 @@
       "description": "Persistent recipe-editor identity and progress, with one filled segment per reached stage.",
       "html": "<header class=\"ds-stage-header\"><div><span>RECIPE STUDIO</span><strong>Recipe editor</strong></div><nav aria-label=\"Recipe editor progress\"><i class=\"ds-stage-header__done\"></i><i class=\"ds-stage-header__done\"></i><i></i><i></i><b>Step 2 of 4</b></nav></header>",
       "css": ".ds-stage-header { padding: 12px 20px; background: #FAF7F2; color: #1B1B21; box-shadow: 0 1px 10px rgba(84, 62, 45, 0.078); } .ds-stage-header > div { display: flex; flex-direction: column; margin-bottom: 12px; } .ds-stage-header > div span { color: #A83211; font: 700 11px/1.35 'Plus Jakarta Sans', Arial, sans-serif; letter-spacing: 0.8px; } .ds-stage-header > div strong { font: 600 19px/1.23 'Playfair Display', Georgia, serif; letter-spacing: -0.35px; } .ds-stage-header nav { display: grid; grid-template-columns: repeat(4, minmax(24px, 1fr)) auto; align-items: center; gap: 5px; } .ds-stage-header nav i { height: 5px; border-radius: 9999px; background: #EAE0D4; } .ds-stage-header nav i.ds-stage-header__done { background: #A83211; } .ds-stage-header nav b { margin-left: 7px; font: 700 11px/1.35 'Plus Jakarta Sans', Arial, sans-serif; } .ds-stage-header:focus-within { outline: 2px solid rgba(168, 50, 17, 0.24); outline-offset: -2px; }"
+    },
+    {
+      "name": "Explore Recipe Deck",
+      "kind": "custom",
+      "description": "A bounded, image-led recipe deck with progressive directional feedback, an intrinsic-height paper panel, readable category metadata above the Ingredients Snapshot, and a matching action dock.",
+      "html": "<section class=\"ds-explore\"><header><div><strong>Explore</strong><span>SWIPE &amp; DISCOVER</span></div><button>Filters</button></header><article class=\"ds-explore-card\"><div class=\"ds-explore-card__image\"></div><h2>Weeknight tomato pasta</h2><p>#Fast · 25 min · Effort 3</p></article><nav aria-label=\"Recipe deck actions\"><button aria-label=\"Rewind\">↶</button><button aria-label=\"Pass\">×</button><button aria-label=\"Save\">▮</button><button aria-label=\"Cook tonight\">→</button></nav></section>",
+      "css": ".ds-explore { width: min(100%, 520px); padding: 10px 20px; color: #1B1B21; font-family: 'Plus Jakarta Sans', Arial, sans-serif; } .ds-explore > header { display: flex; align-items: start; justify-content: space-between; gap: 16px; } .ds-explore > header div { display: flex; flex-direction: column; } .ds-explore > header strong, .ds-explore-card h2 { font: 600 26px/1.15 'Playfair Display', Georgia, serif; } .ds-explore > header span { margin-top: 3px; color: #6F554F; font-size: 11px; font-weight: 700; letter-spacing: .8px; } .ds-explore-card { margin-top: 14px; overflow: hidden; border-radius: 28px; background: #FFFDF9; box-shadow: 0 10px 28px rgba(84, 62, 45, .078); } .ds-explore-card__image { aspect-ratio: 4/3; background: linear-gradient(145deg, #8B4C00, #FFDBD1); } .ds-explore-card h2, .ds-explore-card p { margin: 14px 16px; } .ds-explore > nav { min-height: 68px; display: flex; align-items: center; justify-content: space-evenly; } .ds-explore > nav button { min-width: 48px; min-height: 48px; border: 0; border-radius: 9999px; background: #FFFDF9; color: #A83211; box-shadow: 0 4px 16px rgba(84, 62, 45, .078); cursor: pointer; } .ds-explore button:focus-visible { outline: 3px solid rgba(168, 50, 17, .28); outline-offset: 2px; }"
+    },
+    {
+      "name": "Cook Mode Session Dock",
+      "kind": "custom",
+      "description": "A pinned cooking-session dock that keeps the collapsible timer and equal-weight step navigation within reach.",
+      "html": "<section class=\"ds-cook-dock\"><div class=\"ds-cook-timer\"><span>◷</span><b>TIMER</b><strong>08:24</strong><button aria-label=\"Pause timer\">Ⅱ</button></div><nav aria-label=\"Cooking steps\"><button class=\"ds-cook-previous\">← Previous</button><button class=\"ds-cook-next\">Next →</button></nav></section>",
+      "css": ".ds-cook-dock { max-width: 700px; padding: 10px 16px 12px; background: #FAF7F2; color: #1B1B21; box-shadow: 0 -6px 22px rgba(84, 62, 45, 0.078); font-family: 'Plus Jakarta Sans', Arial, sans-serif; } .ds-cook-timer { min-height: 64px; padding: 8px 8px 8px 12px; display: grid; grid-template-columns: auto 1fr auto 48px; align-items: center; gap: 8px; border-radius: 16px; background: #FFFDF9; box-shadow: 0 4px 16px rgba(84, 62, 45, 0.078); } .ds-cook-timer > span { color: #A83211; font-size: 20px; } .ds-cook-timer > b { font-size: 11px; letter-spacing: .55px; } .ds-cook-timer > strong { font-size: 24px; font-variant-numeric: tabular-nums; } .ds-cook-timer > button { width: 48px; height: 48px; border: 0; border-radius: 9999px; background: #A83211; color: #FFFFFF; font-weight: 700; cursor: pointer; } .ds-cook-dock nav { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .ds-cook-dock nav button { min-height: 52px; border-radius: 12px; font: 700 14px/1.35 'Plus Jakarta Sans', Arial, sans-serif; cursor: pointer; transition: filter 180ms cubic-bezier(0.33, 1, 0.68, 1), transform 180ms cubic-bezier(0.33, 1, 0.68, 1); } .ds-cook-previous { border: 1px solid rgba(111, 85, 79, .45); background: transparent; color: #1B1B21; } .ds-cook-next { border: 0; background: #A83211; color: #FFFFFF; } .ds-cook-dock button:hover { filter: brightness(1.06); } .ds-cook-dock button:active { transform: translateY(1px); } .ds-cook-dock button:focus-visible { outline: 3px solid rgba(168, 50, 17, .28); outline-offset: 2px; }"
     }
   ],
   "narrative": {
     "northStar": "The Calm Culinary Journal",
-    "overview": "The Culinary Editorial world turns structured recipe work into the feeling of composing a trusted kitchen notebook: warm, deliberate, and quietly authoritative. Parchment grounds and tonal paper modules reduce glare, while expressive serif headings give each stage a clear editorial voice. Technical content stays compact and dependable in a geometric sans serif.\n\nThe system is tactile without becoming ornamental. Burnt-red actions, restrained sage and amber semantics, generous working surfaces, and persistent navigation support people editing on a phone with divided attention. Material behavior, safe areas, keyboard avoidance, and real recipe data remain the foundation beneath the journal character.\n\nThis world is established for participating Culinary Editorial surfaces, led by the four-stage recipe editor. It does not authorize restyling unrelated legacy screens or importing unsupported concepts from visual references.",
+    "overview": "The Culinary Editorial world turns structured recipe work into the feeling of composing a trusted kitchen notebook: warm, deliberate, and quietly authoritative. Parchment grounds and tonal paper modules reduce glare, while expressive serif headings give each stage a clear editorial voice. Technical content stays compact and dependable in a geometric sans serif.\n\nThe system is tactile without becoming ornamental. Burnt-red actions, restrained sage and amber semantics, generous working surfaces, and persistent navigation support people editing or cooking on a phone with divided attention. Material behavior, safe areas, keyboard avoidance, and real recipe data remain the foundation beneath the journal character.\n\nThis world is established for participating Culinary Editorial surfaces, led by the four-stage recipe editor, recipe detail, Explore, and Cook Mode. It does not authorize restyling unrelated legacy screens or importing unsupported concepts from visual references. DESIGN_REFERENCES.md is the authoritative index for assigning visual references to individual surfaces and identifying mock-only concepts that must not enter the product.",
     "keyCharacteristics": [
       "Warm parchment canvas with paper-like tonal layering.",
       "Playfair Display editorial hierarchy paired with Plus Jakarta Sans utility text.",
       "Burnt-red primary actions with sparing sage and amber semantic accents.",
       "Rounded rectangular controls built around 10, 12, and 14 dp corners.",
-      "A focused, single-column authoring measure with persistent stage progress and actions."
+      "Focused working measures with persistent progress and actions for authoring and cooking."
     ],
     "rules": [
       {"name": "The Ember Rarity Rule", "body": "Burnt Paprika marks focus and forward motion; do not flood large passive regions with it.", "section": "colors"},
@@ -227,6 +252,8 @@
       {"name": "The Scaling Rule", "body": "Treat Flutter sizes as scalable text roles and allow wrapping or ellipsis where implemented; do not lock text into decorative fixed-height compositions.", "section": "typography"},
       {"name": "The One-Stage Rule", "body": "Present one authoring stage at a time and keep the shared progress, summary, and navigation shell stable across all four stages.", "section": "layout"},
       {"name": "The Kitchen Reach Rule", "body": "Interactive targets are at least 48 dp; principal controls are 52 dp high and remain reachable above system and keyboard insets.", "section": "layout"},
+      {"name": "The Focused Session Rule", "body": "Cook Mode shows one actionable step, its assigned ingredients, and its instructions at a time; its persistent header uses one progress segment per recipe step, while timing, navigation, and exit controls never compete with the step content.", "section": "layout"},
+      {"name": "The Directional Deck Rule", "body": "Explore directions are stable across gesture and dock input: left passes, up saves without toggling an existing bookmark off, right starts cooking, and down is unavailable. Rewind restores only the preceding card; opening detail never consumes it.", "section": "layout"},
       {"name": "The Paper Before Shadow Rule", "body": "Establish hierarchy with surface tone first; add elevation only to persistent chrome and complete card modules.", "section": "elevation"},
       {"name": "The Three-Corner Rule", "body": "Default to 10 dp for fields, 12 dp for actions and rows, and 14 dp for modules; introduce another radius only for a specific native affordance.", "section": "shapes"}
     ],
@@ -235,12 +262,16 @@
       "Do use role-based light, dark, and OLED mappings so contrast and surface hierarchy survive every theme.",
       "Do keep real recipe content, stable ingredient identity, free-form nutrition values, localization, and native Material behavior intact.",
       "Do cap authoring content at 760 dp and reflow dense ingredient rows below 420 dp.",
+      "Do keep Cook Mode's step content bounded at 1120 dp, switch to its two-column working spread at 600 dp, and cap its pinned dock at 700 dp.",
+      "Do cap Explore at 520 dp, preserve the left/up/right action contract, and hide absent recipe metadata instead of inventing it.",
       "Do maintain 48 dp minimum touch targets, scalable text, semantic labels, keyboard-safe layout, and reduced-motion compatibility."
     ],
     "donts": [
       "Don't revive the legacy gradient editor, glassmorphism, or ad-dense recipe-blog styling inside this world.",
-      "Don't add AI parsing, inventory, timers, video, profiles, hands-free mode, or other unsupported reference concepts.",
+      "Don't add AI parsing, inventory, video, profiles, hands-free control, or other unsupported reference concepts; Cook Mode's implemented timer and keep-awake controls are the bounded exceptions.",
       "Don't turn the editor into a wide multi-column dashboard; tablet layouts preserve the focused authoring measure.",
+      "Don't turn Cook Mode into a full-recipe dashboard or hide its timer and step navigation inside the scrolling content.",
+      "Don't add a Deck/Grid switch, central information action, bottom swipe-instruction legend, or downward swipe to Explore.",
       "Don't use Paprika, Sage, and Amber interchangeably or rely on any accent as the sole carrier of meaning.",
       "Don't replace the approved nutrition list with a metric grid or force values into a unit model the product does not store."
     ]

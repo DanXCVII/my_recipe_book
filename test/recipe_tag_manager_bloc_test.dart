@@ -139,16 +139,28 @@ void main() {
     );
 
     await pumpChip(true);
-    expect(tester.widget<FilterChip>(find.byType(FilterChip)).selected, isTrue);
+    var chip = tester.widget<FilterChip>(find.byType(FilterChip));
+    expect(chip.selected, isTrue);
+    expect(chip.showCheckmark, isFalse);
+    expect(chip.shape, isA<StadiumBorder>());
+    expect(chip.backgroundColor, isNot(Color(tag.number)));
+    expect(find.text('#Quick'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('recipe-tag-color-Quick')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('recipe-tag-remove-Quick')),
+      findsOneWidget,
+    );
 
     await tester.tap(find.byType(FilterChip));
     expect(selection, isFalse);
 
     await pumpChip(false);
-    expect(
-      tester.widget<FilterChip>(find.byType(FilterChip)).selected,
-      isFalse,
-    );
+    chip = tester.widget<FilterChip>(find.byType(FilterChip));
+    expect(chip.selected, isFalse);
+    expect(find.byKey(const ValueKey('recipe-tag-remove-Quick')), findsNothing);
   });
 }
 

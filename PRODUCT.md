@@ -34,17 +34,17 @@ The product is primarily used on Android phones, including in bright kitchen con
 ## Brand Commitments
 
 - Preserve the product name My RecipeBible.
+- Use `DESIGN_REFERENCES.md` to resolve which visual source governs each surface and which mock-only ideas are excluded.
 - The recipe overview adopts the user-supplied Culinary Editorial reference.
-- `stitch_modern_recipe_app_design/code.html` is authoritative for typography, weights, component styling, spacing, and interaction details.
-- `stitch_modern_recipe_app_design/screen.png` is authoritative for composition, density, hierarchy, and overall appearance except where its font rendering conflicts with the HTML.
-- The recipe detail adopts the user-supplied `recipe_screen/` reference while preserving My RecipeBible data and actions; mock-only author, public-review, guided-cook, and timer concepts are excluded.
+- `redesigns/recipe_cards/` and `redesigns/recipe_list/` provide the scoped recipe-overview references; their HTML governs typography and component treatment, while their screenshots govern composition and density.
+- The recipe detail adopts the user-supplied `redesigns/recipe_screen/` reference while preserving My RecipeBible data and actions; mock-only author, public-review, guided-cook, and timer concepts are excluded.
 - The shopping-list adaptation preserves My RecipeBible navigation and real cart data; aisle, pantry-inventory, store-ordering, and Simmer-specific concepts from the reference are intentionally excluded.
-- The weekly planner adapts the user-supplied `calendar_view/` reference while preserving My RecipeBible navigation, ads, real calendar data, and the existing add, remove, recipe-detail, and cart workflows.
+- The weekly planner adapts the user-supplied `redesigns/calendar_view/` reference while preserving My RecipeBible navigation, ads, real calendar data, and the existing add, remove, recipe-detail, and cart workflows.
 
 ## Evidence on Hand
 
 - Existing local recipe data and user-selected recipe imagery.
-- A complete HTML reference, screenshot, and design-token document in `stitch_modern_recipe_app_design/`.
+- Scoped HTML, screenshot, and design-token references under `redesigns/`, indexed in `DESIGN_REFERENCES.md`.
 - No cooked-history field or collection model exists; the overview must not fabricate those statistics.
 
 ## Product Principles

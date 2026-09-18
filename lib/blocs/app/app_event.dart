@@ -9,7 +9,6 @@ abstract class AppEvent extends Equatable {
 
 class InitializeData extends AppEvent {
   final bool recipeCategoryOverview;
-  final bool showIntro;
   final bool showSummary;
   final BuildContext context;
 
@@ -17,20 +16,14 @@ class InitializeData extends AppEvent {
     this.context,
     this.recipeCategoryOverview,
     this.showSummary,
-    this.showIntro,
   );
 
   @override
-  List<Object> get props => [
-    context,
-    recipeCategoryOverview,
-    showIntro,
-    showSummary,
-  ];
+  List<Object> get props => [context, recipeCategoryOverview, showSummary];
 
   @override
   String toString() =>
-      'Load App { context: $context , recipeCategoryOverview : $recipeCategoryOverview , showIntro : $showIntro }';
+      'Load App { context: $context , recipeCategoryOverview : $recipeCategoryOverview }';
 }
 
 class ShoppingCartShowSummary extends AppEvent {
@@ -63,15 +56,6 @@ class ChangeView extends AppEvent {
 
   @override
   List<Object> get props => [index, context];
-}
-
-class ChangeShoppingCartView extends AppEvent {
-  final bool open;
-
-  const ChangeShoppingCartView(this.open);
-
-  @override
-  List<Object> get props => [open];
 }
 
 class ChangeRecipeCalendarView extends AppEvent {
