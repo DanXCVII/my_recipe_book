@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_recipe_book/blocs/category_manager/category_manager_bloc.dart';
+import 'package:my_recipe_book/blocs/ingredinets_manager/ingredients_manager_bloc.dart';
 import 'package:my_recipe_book/blocs/nutrition_manager/nutrition_manager_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
@@ -14,6 +15,7 @@ import 'package:my_recipe_book/models/nutrition.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
 import 'package:my_recipe_book/screens/category_manager.dart';
+import 'package:my_recipe_book/screens/ingredients_manager.dart';
 import 'package:my_recipe_book/screens/nutrition_manager.dart';
 import 'package:my_recipe_book/screens/recipe_tag_manager_screen.dart';
 import 'package:my_recipe_book/theming.dart';
@@ -24,6 +26,7 @@ void main() {
   late DriftRepository repository;
   late RecipeManagerBloc recipeManager;
   late CategoryManagerBloc categoryManager;
+  late IngredientsManagerBloc ingredientsManager;
   late NutritionManagerBloc nutritionManager;
   late RecipeTagManagerBloc tagManager;
 
@@ -37,6 +40,7 @@ void main() {
       repository: repository,
       selectedCategories: const [],
     );
+    ingredientsManager = IngredientsManagerBloc(repository);
     nutritionManager = NutritionManagerBloc(repository);
     tagManager = RecipeTagManagerBloc(
       recipeManagerBloc: recipeManager,
@@ -46,10 +50,50 @@ void main() {
 
   tearDown(() async {
     await categoryManager.close();
+    await ingredientsManager.close();
     await nutritionManager.close();
     await tagManager.close();
     await recipeManager.close();
     await database.close();
+  });
+
+  testWidgets('ingredient manager uses the shared editorial catalog flow', (
+    tester,
+  ) async {
+    await repository.addIngredient('Tomato');
+    ingredientsManager.add(LoadIngredientsManager());
+    await _pumpManager(
+      tester,
+      providers: [
+        BlocProvider<IngredientsManagerBloc>.value(value: ingredientsManager),
+      ],
+      child: const IngredientsManager(),
+    );
+
+    expect(find.byKey(const ValueKey('ingredient-row-Tomato')), findsOneWidget);
+    expect(find.byKey(const ValueKey('catalog-fab-add')), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('ingredient-row-Tomato')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('catalog-name-field')),
+      'Cherry tomato',
+    );
+    await tester.tap(find.byKey(const ValueKey('catalog-sheet-save')));
+    await _pumpUntil(
+      tester,
+      () =>
+          ingredientsManager.state is LoadedIngredientsManager &&
+          (ingredientsManager.state as LoadedIngredientsManager).ingredients
+              .contains('Cherry tomato'),
+    );
+
+    expect(
+      find.byKey(const ValueKey('ingredient-row-Cherry tomato')),
+      findsOneWidget,
+    );
+    expect(repository.getIngredientNames(), ['Cherry tomato']);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('category empty state validates and adds a trimmed name', (

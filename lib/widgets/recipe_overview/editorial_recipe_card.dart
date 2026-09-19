@@ -522,142 +522,187 @@ class _ListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = RecipeOverviewPalette.of(context);
-    final hasTags = recipe.tags.isNotEmpty;
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final isCompact = textScale <= 1.3;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 12, 10, 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final content = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: SizedBox(
+            key: const Key('recipe-card-list-image'),
+            width: 96,
+            height: 96,
+            child: image,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _ListMetadata(recipe: recipe, compact: isCompact),
+        ),
+        const SizedBox(width: 4),
+        SizedBox(
+          key: const Key('recipe-card-list-action-rail'),
+          width: 48,
+          height: 96,
+          child: Column(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: SizedBox(
-                  key: const Key('recipe-card-list-image'),
-                  width: 96,
-                  height: 96,
-                  child: image,
-                ),
+              _BookmarkAction(
+                isFavorite: recipe.isFavorite,
+                onPressed: onBookmarkToggle,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 96),
-                  child: _ListMetadata(
-                    recipe: recipe,
-                    onBookmarkToggle: onBookmarkToggle,
-                    trailingAction: hasTags
-                        ? null
-                        : _CookAction(onPressed: onCookAction),
-                  ),
-                ),
-              ),
+              _CookAction(onPressed: onCookAction),
             ],
           ),
-          if (hasTags) ...[
-            const SizedBox(height: 9),
-            Divider(
-              height: 1,
-              thickness: 1,
-              color: palette.surfaceContainerHigh.withAlpha(115),
+        ),
+      ],
+    );
+
+    return Padding(
+      key: const Key('recipe-card-list-padding'),
+      padding: const EdgeInsets.all(8),
+      child: isCompact
+          ? SizedBox(
+              key: const Key('recipe-card-list-content'),
+              height: 96,
+              child: content,
+            )
+          : KeyedSubtree(
+              key: const Key('recipe-card-list-content'),
+              child: content,
             ),
-            const SizedBox(height: 7),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(child: _TagWrap(recipe: recipe, listStyle: true)),
-                const SizedBox(width: 6),
-                _CookAction(onPressed: onCookAction),
-              ],
-            ),
-          ],
-        ],
-      ),
     );
   }
 }
 
 class _ListMetadata extends StatelessWidget {
-  const _ListMetadata({
-    required this.recipe,
-    required this.onBookmarkToggle,
-    this.trailingAction,
-  });
+  const _ListMetadata({required this.recipe, required this.compact});
 
   final Recipe recipe;
-  final VoidCallback onBookmarkToggle;
-  final Widget? trailingAction;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final palette = RecipeOverviewPalette.of(context);
+    final rows = <Widget>[
+      Text(
+        recipe.name,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: RecipeOverviewType.headline(
+          palette,
+          size: 16,
+          weight: FontWeight.w600,
+          height: 1.2,
+        ),
+      ),
+      _EffortGauge(effort: recipe.effort),
+      Row(
+        children: [
+          Expanded(child: _TimeBreakdown(recipe: recipe)),
+          const SizedBox(width: 4),
+          Flexible(child: _DietBadge(vegetable: recipe.vegetable)),
+        ],
+      ),
+      _ListTagRow(recipe: recipe, compact: compact),
+    ];
+
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: compact ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisAlignment: compact
+          ? MainAxisAlignment.spaceBetween
+          : MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Text(
-                recipe.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: RecipeOverviewType.headline(
-                  palette,
-                  size: 16,
-                  weight: FontWeight.w600,
-                  height: 1.2,
-                ),
-              ),
-            ),
-            _BookmarkAction(
-              isFavorite: recipe.isFavorite,
-              onPressed: onBookmarkToggle,
-            ),
-          ],
-        ),
-        const SizedBox(height: 2),
-        _EffortGauge(effort: recipe.effort),
-        const SizedBox(height: 4),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final diet = _DietBadge(vegetable: recipe.vegetable);
-            if (constraints.maxWidth < 300) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _TimeBreakdown(recipe: recipe),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Flexible(child: diet),
-                      if (trailingAction != null) ...[
-                        const Spacer(),
-                        trailingAction!,
-                      ],
-                    ],
-                  ),
-                ],
-              );
-            }
-            return Row(
-              children: [
-                Expanded(child: _TimeBreakdown(recipe: recipe)),
-                const SizedBox(width: 6),
-                Flexible(child: diet),
-                if (trailingAction != null) ...[
-                  const SizedBox(width: 2),
-                  trailingAction!,
-                ],
+      children: compact
+          ? rows
+          : [
+              for (var index = 0; index < rows.length; index++) ...[
+                if (index > 0) const SizedBox(height: 4),
+                rows[index],
               ],
-            );
-          },
-        ),
+            ],
+    );
+  }
+}
+
+class _ListTagRow extends StatelessWidget {
+  const _ListTagRow({required this.recipe, required this.compact});
+
+  final Recipe recipe;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final visibleTags = recipe.tags.take(2).toList();
+    final hiddenCount = recipe.tags.length - visibleTags.length;
+    final labels = [
+      ...visibleTags.map((tag) => '#${tag.text}'),
+      if (hiddenCount > 0) '+$hiddenCount',
+    ];
+
+    if (labels.isEmpty) {
+      return SizedBox(
+        key: const Key('recipe-card-list-tags'),
+        height: compact ? 20 : MediaQuery.textScalerOf(context).scale(11) + 8,
+      );
+    }
+
+    return Row(
+      key: const Key('recipe-card-list-tags'),
+      children: [
+        for (var index = 0; index < labels.length; index++) ...[
+          if (index > 0) const SizedBox(width: 4),
+          Flexible(
+            child: _ListTag(label: labels[index], compact: compact),
+          ),
+        ],
       ],
+    );
+  }
+}
+
+class _ListTag extends StatelessWidget {
+  const _ListTag({required this.label, required this.compact});
+
+  final String label;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = RecipeOverviewPalette.of(context);
+    final tag = DecoratedBox(
+      decoration: BoxDecoration(
+        color: palette.surfaceContainer,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 6 : 8,
+          vertical: compact ? 0 : 4,
+        ),
+        child: Center(
+          widthFactor: 1,
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: RecipeOverviewType.body(
+              palette,
+              size: 11,
+              weight: FontWeight.w500,
+              color: palette.outline,
+              height: 1,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    return SizedBox(
+      key: Key('recipe-card-list-tag-$label'),
+      height: compact ? 20 : null,
+      child: tag,
     );
   }
 }
@@ -928,76 +973,6 @@ class _MetadataBadge extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TagWrap extends StatelessWidget {
-  const _TagWrap({required this.recipe, this.listStyle = false});
-
-  final Recipe recipe;
-  final bool listStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    final tags = recipe.tags.take(3).toList();
-    if (tags.isEmpty) return const SizedBox.shrink();
-
-    return Wrap(
-      spacing: 5,
-      runSpacing: 5,
-      children: [
-        for (final tag in tags)
-          _Tag(label: '#${tag.text}', listStyle: listStyle),
-        if (recipe.tags.length > tags.length)
-          _Tag(
-            label: '+${recipe.tags.length - tags.length}',
-            listStyle: listStyle,
-          ),
-      ],
-    );
-  }
-}
-
-class _Tag extends StatelessWidget {
-  const _Tag({required this.label, required this.listStyle});
-
-  final String label;
-  final bool listStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = RecipeOverviewPalette.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: palette.surfaceContainer,
-        borderRadius: BorderRadius.circular(listStyle ? 999 : 5),
-      ),
-      child: SizedBox(
-        key: listStyle ? Key('recipe-card-list-tag-$label') : null,
-        height: listStyle ? 32 : null,
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: listStyle ? 10 : 7,
-            vertical: listStyle ? 0 : 4,
-          ),
-          child: Center(
-            widthFactor: 1,
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: RecipeOverviewType.body(
-                palette,
-                size: listStyle ? 11 : 10,
-                weight: FontWeight.w500,
-                color: palette.outline,
-                height: 1,
-              ),
-            ),
-          ),
         ),
       ),
     );

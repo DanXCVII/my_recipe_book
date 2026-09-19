@@ -212,6 +212,28 @@ void main() {
       expect(imageBox.width, 96);
       expect(imageBox.height, 96);
       expect(
+        tester.getSize(find.byKey(const Key('recipe-card-list-content'))),
+        const Size(374, 96),
+      );
+      expect(
+        tester.getSize(find.byType(EditorialRecipeCard)),
+        const Size(390, 112),
+      );
+      expect(
+        tester.getTopLeft(find.text(recipe.name)).dy,
+        tester.getTopLeft(find.byKey(const Key('recipe-card-list-image'))).dy,
+      );
+      expect(
+        tester
+            .getBottomRight(
+              find.byKey(const Key('recipe-card-list-tag-#WildMushroom')),
+            )
+            .dy,
+        tester
+            .getBottomRight(find.byKey(const Key('recipe-card-list-image')))
+            .dy,
+      );
+      expect(
         find.byWidgetPredicate(
           (widget) =>
               widget is DecoratedBox &&
@@ -226,8 +248,9 @@ void main() {
       expect(find.text('Vegetarian'), findsOneWidget);
       expect(find.text('#WildMushroom'), findsOneWidget);
       expect(find.text('#Handmade'), findsOneWidget);
-      expect(find.text('#Earthy'), findsOneWidget);
-      expect(find.text('+1'), findsOneWidget);
+      expect(find.text('#Earthy'), findsNothing);
+      expect(find.text('#Pasta'), findsNothing);
+      expect(find.text('+2'), findsOneWidget);
 
       expect(
         tester.getSize(find.byKey(const Key('recipe-card-cook-action'))),
@@ -243,7 +266,7 @@ void main() {
               find.byKey(const Key('recipe-card-list-tag-#WildMushroom')),
             )
             .height,
-        32,
+        20,
       );
 
       for (var index = 0; index < 10; index++) {
@@ -305,6 +328,126 @@ void main() {
     expect(find.text('vegan'), findsOneWidget);
     expect(find.byType(Divider), findsNothing);
     expect(find.byKey(const Key('recipe-card-cook-action')), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const Key('recipe-card-list-content'))).height,
+      96,
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('recipe-card-list-tags'))).height,
+      20,
+    );
+    expect(
+      tester.getBottomRight(find.byKey(const Key('recipe-card-list-tags'))).dy,
+      tester.getBottomRight(find.byKey(const Key('recipe-card-list-image'))).dy,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('list stays compact in German at 130% text scale', (
+    tester,
+  ) async {
+    final recipe = Recipe(
+      name: 'Kartoffelsuppe mit geröstetem Wurzelgemüse und Kräutern',
+      preperationTime: 25,
+      cookingTime: 125,
+      effort: 7,
+      vegetable: Vegetable.VEGETARIAN,
+      tags: const [
+        StringIntTuple(text: 'Familienrezept', number: 0),
+        StringIntTuple(text: 'Wurzelgemüse', number: 0),
+        StringIntTuple(text: 'Winterküche', number: 0),
+      ],
+    );
+
+    await _pumpCard(
+      tester,
+      recipe: recipe,
+      layout: RecipeOverviewCardLayout.list,
+      locale: const Locale('de', 'DE'),
+      textScaleFactor: 1.3,
+    );
+
+    expect(find.text('7/10 Aufwand'), findsOneWidget);
+    expect(find.text('vegetarisch'), findsOneWidget);
+    expect(find.text('+1'), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const Key('recipe-card-list-content'))).height,
+      96,
+    );
+    expect(tester.getSize(find.byType(EditorialRecipeCard)).height, 112);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('compact list preserves dark and OLED surface roles', (
+    tester,
+  ) async {
+    final recipe = Recipe(
+      name: 'Dark theme mushroom stew',
+      totalTime: 50,
+      effort: 6,
+      vegetable: Vegetable.VEGETARIAN,
+      tags: const [StringIntTuple(text: 'Weeknight', number: 0)],
+    );
+
+    for (final palette in [
+      RecipeOverviewPalette.dark,
+      RecipeOverviewPalette.oled,
+    ]) {
+      await _pumpCard(
+        tester,
+        recipe: recipe,
+        layout: RecipeOverviewCardLayout.list,
+        textScaleFactor: 1.3,
+        theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: palette.background,
+        ),
+      );
+
+      final cardMaterial = tester.widget<Material>(
+        find
+            .descendant(
+              of: find.byType(EditorialRecipeCard),
+              matching: find.byType(Material),
+            )
+            .first,
+      );
+      expect(cardMaterial.color, palette.surface);
+      expect(
+        tester
+            .getSize(find.byKey(const Key('recipe-card-list-content')))
+            .height,
+        96,
+      );
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('list grows above 130% text scale without overflowing', (
+    tester,
+  ) async {
+    final recipe = Recipe(
+      name: 'Accessible mushroom stew with a long title',
+      effort: 4,
+      vegetable: Vegetable.VEGAN,
+      tags: const [
+        StringIntTuple(text: 'Mushrooms', number: 0),
+        StringIntTuple(text: 'Weeknight', number: 0),
+        StringIntTuple(text: 'ComfortFood', number: 0),
+      ],
+    );
+
+    await _pumpCard(
+      tester,
+      recipe: recipe,
+      layout: RecipeOverviewCardLayout.list,
+      textScaleFactor: 2,
+    );
+
+    expect(find.text('Time not set'), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const Key('recipe-card-list-content'))).height,
+      greaterThan(96),
+    );
     expect(tester.takeException(), isNull);
   });
 

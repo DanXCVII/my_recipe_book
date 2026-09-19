@@ -10,8 +10,9 @@ class IngredientsManagerBloc
     extends Bloc<IngredientsManagerEvent, IngredientsManagerState> {
   IngredientsManagerBloc(this.repository) : super(IngredientsManagerInitial()) {
     on<LoadIngredientsManager>((event, emit) async {
-      final List<String> ingredients = repository.getIngredientNames()
-        ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      final List<String> ingredients = List<String>.from(
+        repository.getIngredientNames(),
+      )..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
       emit(LoadedIngredientsManager(ingredients));
     });
@@ -44,8 +45,8 @@ class IngredientsManagerBloc
       if (state is LoadedIngredientsManager) {
         await repository.deleteIngredient(event.oldIngredient);
         await repository.addIngredient(event.updatedIngredient);
-        final List<String /*!*/> ingredients =
-            (state as LoadedIngredientsManager).ingredients
+        final List<String> ingredients =
+            List<String>.from((state as LoadedIngredientsManager).ingredients)
               ..remove(event.oldIngredient)
               ..add(event.updatedIngredient)
               ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));

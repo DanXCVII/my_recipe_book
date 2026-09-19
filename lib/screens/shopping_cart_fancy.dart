@@ -1294,7 +1294,9 @@ class _ShoppingItemRow extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: sourceNames.isEmpty
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.start,
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 2),

@@ -109,6 +109,14 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Olive oil'), findsOneWidget);
       expect(find.text('0 of 3 items gathered'), findsOneWidget);
+      final oneOffItem = find.ancestor(
+        of: find.text('Olive oil'),
+        matching: find.byType(Dismissible),
+      );
+      expect(
+        tester.getCenter(find.text('Olive oil')).dy,
+        closeTo(tester.getCenter(oneOffItem).dy, 0.5),
+      );
 
       await tester.tap(find.byTooltip('More shopping-list actions'));
       await tester.pumpAndSettle();
