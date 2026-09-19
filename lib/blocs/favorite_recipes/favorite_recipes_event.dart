@@ -25,22 +25,13 @@ class FilterFavoritesQuery extends FavoriteRecipesEvent {
   List<Object> get props => [query];
 }
 
-class FilterFavoritesCategory extends FavoriteRecipesEvent {
-  const FilterFavoritesCategory(this.category);
+class UpdateFavoriteFilters extends FavoriteRecipesEvent {
+  const UpdateFavoriteFilters(this.filters);
 
-  final String? category;
-
-  @override
-  List<Object?> get props => [category];
-}
-
-class FilterFavoritesVegetable extends FavoriteRecipesEvent {
-  const FilterFavoritesVegetable(this.vegetable);
-
-  final Vegetable? vegetable;
+  final RecipeCollectionFilters filters;
 
   @override
-  List<Object?> get props => [vegetable];
+  List<Object> get props => [filters];
 }
 
 class ChangeFavoritesSort extends FavoriteRecipesEvent {

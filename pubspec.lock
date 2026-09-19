@@ -65,6 +65,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  app_review:
+    dependency: "direct main"
+    description:
+      name: app_review
+      sha256: "5931c84727c5f5a9cfdb5a40dbd63f2f0ece4157f9a6338fbb5c66d6e71f675e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   archive:
     dependency: "direct main"
     description:
@@ -659,14 +667,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.35"
-  flutter_rating_bar:
-    dependency: transitive
-    description:
-      name: flutter_rating_bar
-      sha256: d2af03469eac832c591a1eba47c91ecc871fe5708e69967073c043b2d775ed93
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.1"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -1413,14 +1413,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
-  rate_my_app:
-    dependency: "direct main"
-    description:
-      name: rate_my_app
-      sha256: "95e0ee43088c8417f73815a48616857adabd9740e78c9692b3c8ce3ab28c3ca6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.1"
   recase:
     dependency: transitive
     description:

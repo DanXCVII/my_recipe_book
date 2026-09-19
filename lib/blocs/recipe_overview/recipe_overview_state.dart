@@ -39,8 +39,7 @@ class LoadedRecipeOverview extends RecipeOverviewState {
   final StringIntTuple? recipeTag;
   final RSort recipeSort;
   final String query;
-  final Vegetable? selectedVegetable;
-  final List<String> selectedRecipeTags;
+  final RecipeCollectionFilters filters;
 
   const LoadedRecipeOverview({
     required this.allRecipes,
@@ -50,16 +49,12 @@ class LoadedRecipeOverview extends RecipeOverviewState {
     this.vegetable,
     this.recipeTag,
     this.query = '',
-    this.selectedVegetable,
-    this.selectedRecipeTags = const [],
+    this.filters = const RecipeCollectionFilters(),
   });
 
   List<Recipe> get recipes => visibleRecipes;
 
-  bool get hasActiveFilters =>
-      query.trim().isNotEmpty ||
-      selectedVegetable != null ||
-      selectedRecipeTags.isNotEmpty;
+  bool get hasActiveFilters => query.trim().isNotEmpty || !filters.isEmpty;
 
   @override
   List<Object?> get props => [
@@ -70,7 +65,6 @@ class LoadedRecipeOverview extends RecipeOverviewState {
     recipeTag,
     recipeSort,
     query,
-    selectedVegetable,
-    selectedRecipeTags,
+    filters,
   ];
 }

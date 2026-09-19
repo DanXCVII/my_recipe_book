@@ -4171,6 +4171,106 @@ class S {
     return Intl.message('Filters', name: 'more_filters', desc: '', args: []);
   }
 
+  /// `Filters ({count})`
+  String recipe_filters_active(int count) {
+    return Intl.message(
+      'Filters ($count)',
+      name: 'recipe_filters_active',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Refine recipes`
+  String get recipe_filters_title {
+    return Intl.message(
+      'Refine recipes',
+      name: 'recipe_filters_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset`
+  String get recipe_filters_reset {
+    return Intl.message(
+      'Reset',
+      name: 'recipe_filters_reset',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Diet`
+  String get recipe_filters_diet {
+    return Intl.message(
+      'Diet',
+      name: 'recipe_filters_diet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Any diet`
+  String get recipe_filters_any_diet {
+    return Intl.message(
+      'Any diet',
+      name: 'recipe_filters_any_diet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum total time`
+  String get recipe_filters_max_time {
+    return Intl.message(
+      'Maximum total time',
+      name: 'recipe_filters_max_time',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum effort`
+  String get recipe_filters_max_effort {
+    return Intl.message(
+      'Maximum effort',
+      name: 'recipe_filters_max_effort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No limit`
+  String get recipe_filters_no_limit {
+    return Intl.message(
+      'No limit',
+      name: 'recipe_filters_no_limit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Up to {count} min`
+  String recipe_filters_minutes(int count) {
+    return Intl.message(
+      'Up to $count min',
+      name: 'recipe_filters_minutes',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Up to {effort}/10`
+  String recipe_filters_effort_value(int effort) {
+    return Intl.message(
+      'Up to $effort/10',
+      name: 'recipe_filters_effort_value',
+      desc: '',
+      args: [effort],
+    );
+  }
+
   /// `Clear filters`
   String get clear_filters {
     return Intl.message(

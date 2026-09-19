@@ -85,6 +85,21 @@ void main() {
 
     expect(find.text('Weeknight favorites'), findsOneWidget);
     expect(find.text('2 recipes • Avg effort 5.5'), findsOneWidget);
+    expect(find.byKey(const Key('recipe-overview-search')), findsOneWidget);
+    expect(find.byKey(const Key('recipe-overview-sort')), findsOneWidget);
+    expect(find.byKey(const Key('recipe-overview-filters')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('recipe-overview-filters')));
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const Key('recipe-overview-category-Weeknight favorites')),
+      findsNothing,
+    );
+    expect(find.byKey(const Key('recipe-overview-diet-any')), findsOneWidget);
+    Navigator.of(
+      tester.element(find.byKey(const Key('recipe-overview-filter-sheet'))),
+    ).pop();
+    await tester.pumpAndSettle();
     expect(
       tester
           .widgetList<EditorialRecipeCard>(find.byType(EditorialRecipeCard))
@@ -140,6 +155,13 @@ void main() {
     );
     expect(find.text('With meat'), findsWidgets);
     expect(find.byType(EditorialRecipeCard), findsOneWidget);
+    await tester.tap(find.byKey(const Key('recipe-overview-filters')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('recipe-overview-diet-any')), findsNothing);
+    Navigator.of(
+      tester.element(find.byKey(const Key('recipe-overview-filter-sheet'))),
+    ).pop();
+    await tester.pumpAndSettle();
 
     await _dispatchAndPump(
       tester,
@@ -151,13 +173,18 @@ void main() {
     );
     expect(find.text('Quick'), findsOneWidget);
     expect(find.byType(EditorialRecipeCard), findsOneWidget);
-    await tester.drag(find.byType(ListView).first, const Offset(-700, 0));
+    await tester.tap(find.byKey(const Key('recipe-overview-filters')));
     await tester.pumpAndSettle();
-    expect(find.text('Filters'), findsOneWidget);
-    await tester.tap(find.text('Filters'));
-    await tester.pumpAndSettle();
-    expect(find.text('#Comfort'), findsNWidgets(2));
-    expect(find.text('#Quick'), findsOneWidget);
+    expect(
+      find.byKey(const Key('recipe-overview-filter-sheet')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('recipe-overview-tag-Comfort')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('recipe-overview-tag-Quick')), findsNothing);
+    expect(find.text('Diet'), findsOneWidget);
   });
 
   testWidgets('shows skeletons and the contextual empty-library state', (

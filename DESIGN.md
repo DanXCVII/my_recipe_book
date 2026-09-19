@@ -302,6 +302,12 @@ Category, tag, and future small classification managers share one Material 3 she
 
 A compact 14 dp tonal card carries a 58 dp rounded thumbnail, a two-line recipe name, ingredient and time metadata, and an optional amber effort value. General omits the summary until enough recipe identity exists; later stages update it from the current draft rather than stale saved data.
 
+### Recipe Collection Controls
+
+Bookmarked recipes and pushed recipe overviews share one pinned, two-row control cluster. The first row pairs the Grid/List switch with persistent inline search; the second gives equal, adjacent space to Sort and Filters. Filtering opens a safe-area-aware Material bottom sheet for the meaningful diet, category, tag, total-time, and effort values present in the unfiltered collection. Changes apply live, active criteria remain visible as a count on the Filters control, and Reset clears only sheet criteria. A category, tag, or diet fixed by the current route remains authoritative and is omitted from the sheet rather than repeated as a no-op choice.
+
+Category and tag selections match any selected value within their own group, while different groups combine to narrow the collection. Time and effort caps exclude recipes whose corresponding value is unknown. Search, filters, and sorting share the same behavior across bookmarks and overview routes; the bookmarks screen alone persists its chosen Grid/List layout.
+
 ### Recipe Detail
 
 The detail surface pairs a photograph-led hero with navigable category and tag chips, an effort-and-time calibration card, a pantry checklist, and numbered instruction cards. Shopping-list checks and serving changes remain synchronized. Instructions show identity-backed ingredient associations only when the recipe stores them, using the currently scaled quantities. Notes, source, and nutrition remain inline editorial modules rather than floating controls.

@@ -2,12 +2,12 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_recipe_book/blocs/favorite_recipes/favorite_recipes_bloc.dart';
 import 'package:my_recipe_book/blocs/recipe_manager/recipe_manager_bloc.dart';
-import 'package:my_recipe_book/constants/global_constants.dart' as constants;
 import 'package:my_recipe_book/local_storage/database.dart';
 import 'package:my_recipe_book/local_storage/local_repository.dart';
 import 'package:my_recipe_book/models/enums.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/models/recipe_collection_filters.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
 
 void main() {
@@ -62,22 +62,18 @@ void main() {
     await database.close();
   });
 
-  test(
-    'loads, counts collections, and defaults to latest modified first',
-    () async {
-      final loaded = _nextLoaded(favorites);
-      favorites.add(const LoadFavorites());
-      final state = await loaded;
+  test('loads bookmarks and defaults to latest modified first', () async {
+    final loaded = _nextLoaded(favorites);
+    favorites.add(const LoadFavorites());
+    final state = await loaded;
 
     expect(state.visibleRecipes.map((recipe) => recipe.name), [
-        'Mushroom Broth',
-        'Tomato Pasta',
-      ]);
-      expect(state.categoryCounts, {'Weeknight': 1, constants.noCategory: 1});
-      expect(state.recipeSort.sort, RecipeSort.BY_LAST_MODIFIED);
-      expect(state.recipeSort.ascending, isFalse);
-    },
-  );
+      'Mushroom Broth',
+      'Tomato Pasta',
+    ]);
+    expect(state.recipeSort.sort, RecipeSort.BY_LAST_MODIFIED);
+    expect(state.recipeSort.ascending, isFalse);
+  });
 
   test(
     'combines ingredient search, category, diet, and clear filters',
@@ -93,17 +89,28 @@ void main() {
 
       next = _nextLoaded(
         favorites,
-        (state) => state.selectedCategory == 'Weeknight',
+        (state) => state.filters.categories.contains('Weeknight'),
       );
-      favorites.add(const FilterFavoritesCategory('Weeknight'));
+      favorites.add(
+        const UpdateFavoriteFilters(
+          RecipeCollectionFilters(categories: ['Weeknight']),
+        ),
+      );
       state = await next;
       expect(state.visibleRecipes.single.name, 'Tomato Pasta');
 
       next = _nextLoaded(
         favorites,
-        (state) => state.selectedVegetable == Vegetable.VEGAN,
+        (state) => state.filters.vegetable == Vegetable.VEGAN,
       );
-      favorites.add(const FilterFavoritesVegetable(Vegetable.VEGAN));
+      favorites.add(
+        const UpdateFavoriteFilters(
+          RecipeCollectionFilters(
+            categories: ['Weeknight'],
+            vegetable: Vegetable.VEGAN,
+          ),
+        ),
+      );
       state = await next;
       expect(state.visibleRecipes, isEmpty);
 
@@ -130,6 +137,41 @@ void main() {
     expect(state.allRecipes.single.name, 'Tomato Pasta');
     expect(state.visibleRecipes, isEmpty);
   });
+
+  test('removes stale collection filters after bookmark removal', () async {
+    await _dispatch(
+      favorites,
+      const LoadFavorites(),
+      (state) => state.allRecipes.length == 2,
+    );
+    await _dispatch(
+      favorites,
+      const UpdateFavoriteFilters(
+        RecipeCollectionFilters(categories: ['Weeknight']),
+      ),
+      (state) => state.filters.categories.contains('Weeknight'),
+    );
+
+    final normalized = _nextLoaded(
+      favorites,
+      (state) =>
+          state.allRecipes.length == 1 && state.filters.categories.isEmpty,
+    );
+    manager.add(RMRemoveFavorite(older));
+    final state = await normalized;
+
+    expect(state.visibleRecipes.single.name, 'Mushroom Broth');
+  });
+}
+
+Future<LoadedFavorites> _dispatch(
+  FavoriteRecipesBloc bloc,
+  FavoriteRecipesEvent event,
+  bool Function(LoadedFavorites state) predicate,
+) {
+  final result = _nextLoaded(bloc, predicate);
+  bloc.add(event);
+  return result;
 }
 
 Future<LoadedFavorites> _nextLoaded(

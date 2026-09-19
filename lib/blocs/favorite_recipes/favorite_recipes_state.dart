@@ -18,36 +18,27 @@ class LoadedFavorites extends FavoriteRecipesState {
   const LoadedFavorites({
     this.allRecipes = const [],
     this.visibleRecipes = const [],
-    this.categoryCounts = const {},
     required this.recipeSort,
     this.query = '',
-    this.selectedCategory,
-    this.selectedVegetable,
+    this.filters = const RecipeCollectionFilters(),
   });
 
   final List<Recipe> allRecipes;
   final List<Recipe> visibleRecipes;
-  final Map<String, int> categoryCounts;
   final RSort recipeSort;
   final String query;
-  final String? selectedCategory;
-  final Vegetable? selectedVegetable;
+  final RecipeCollectionFilters filters;
 
   List<Recipe> get recipes => visibleRecipes;
 
-  bool get hasActiveFilters =>
-      query.trim().isNotEmpty ||
-      selectedCategory != null ||
-      selectedVegetable != null;
+  bool get hasActiveFilters => query.trim().isNotEmpty || !filters.isEmpty;
 
   @override
   List<Object?> get props => [
     allRecipes,
     visibleRecipes,
-    categoryCounts,
     recipeSort,
     query,
-    selectedCategory,
-    selectedVegetable,
+    filters,
   ];
 }

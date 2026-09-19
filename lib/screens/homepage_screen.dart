@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:my_recipe_book/blocs/recipe_mods/recipe_mods_bloc.dart';
-import 'package:rate_my_app/rate_my_app.dart';
 
 import '../ad_related/ad.dart';
 import '../blocs/ad_manager/ad_manager_bloc.dart';
@@ -25,6 +24,7 @@ import '../local_storage/io_operations.dart' as IO;
 import '../models/import_candidate.dart';
 import '../services/import_file_stager.dart';
 import '../services/incoming_content_service.dart';
+import '../services/review_prompt_service.dart';
 import '../widgets/dialogs/import_dialog.dart';
 import '../widgets/culinary_editorial_theme.dart';
 import '../widgets/culinary_editorial_navigation_rail.dart';
@@ -46,16 +46,6 @@ import 'settings_screen.dart';
 import 'shopping_cart_fancy.dart';
 import 'recipe_search_screen.dart';
 
-RateMyApp _rateMyApp = RateMyApp(
-  preferencesPrefix: 'rateMyApp_',
-  minDays: 7,
-  minLaunches: 10,
-  remindDays: 2,
-  remindLaunches: 2,
-  googlePlayIdentifier: 'com.release.my_recipe_book',
-  // appStoreIdentifier: '1491556149',
-);
-
 class MyHomePageArguments {
   final BuildContext context;
   final bool? showShoppingCartSummary;
@@ -73,22 +63,24 @@ class MyHomePage extends StatefulWidget {
     super.key,
     this.incomingContentService,
     this.importFileStager,
+    this.reviewPromptService,
   });
 
   final IncomingContentService? incomingContentService;
   final ImportFileStager? importFileStager;
+  final ReviewPromptService? reviewPromptService;
 
   @override
   MyHomePageState createState() => MyHomePageState();
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  Future<SharedPreferences>? prefs;
   Image? shoppingCartImage;
 
   Flushbar? _flush;
   late final IncomingContentService _incomingContentService;
   late final ImportFileStager _importFileStager;
+  late final ReviewPromptService _reviewPromptService;
   StreamSubscription<List<IncomingContent>>? _incomingContentSubscription;
   Future<void> _incomingContentQueue = Future<void>.value();
   final Map<String, DateTime> _recentIncomingContent = {};
@@ -100,12 +92,14 @@ class MyHomePageState extends State<MyHomePage> {
     _incomingContentService =
         widget.incomingContentService ?? ReceiveSharingIncomingContentService();
     _importFileStager = widget.importFileStager ?? ImportFileStager();
+    _reviewPromptService = widget.reviewPromptService ?? ReviewPromptService();
     _incomingContentSubscription = _incomingContentService.contentStream.listen(
       _enqueueIncomingContent,
       onError: (_) => _showIncomingContentError(),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInitialIncomingContent();
+      unawaited(_requestReviewIfEligible());
     });
   }
 
@@ -122,6 +116,14 @@ class MyHomePageState extends State<MyHomePage> {
       );
     } catch (_) {
       _showIncomingContentError();
+    }
+  }
+
+  Future<void> _requestReviewIfEligible() async {
+    try {
+      await _reviewPromptService.recordLaunchAndRequestIfEligible();
+    } catch (_) {
+      // A review prompt must never interrupt normal app use.
     }
   }
 
@@ -237,121 +239,95 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return RateMyAppBuilder(
-      rateMyApp: _rateMyApp,
-      onInitialized: (context, rateMyApp) {
-        rateMyApp.conditions.forEach((condition) {
-          if (condition is DebuggableCondition) {
-            print(condition.toString()); // We iterate through our list of conditions and we print all debuggable ones.
-          }
-        });
-
-        print(
-          'Are all conditions met ? ' +
-              (rateMyApp.shouldOpenDialog ? 'Yes' : 'No'),
-        );
-
-        if (rateMyApp.shouldOpenDialog) {
-          rateMyApp.showRateDialog(
-            context,
-            title: S.of(context).rate_this_app,
-            message: S.of(context).rate_this_app_desc,
-            laterButton: S.of(context).maybe_later,
-            rateButton: S.of(context).rate,
-            noButton: S.of(context).no_thanks,
-          );
-        }
-      },
-      builder: (context) => Stack(
-        children: [
-          BlocBuilder<AppBloc, AppState>(
-            builder: (context, appBlocState) {
-              if (appBlocState is LoadingState) {
-                return _getSplashScreen();
-              } else if (appBlocState is LoadedState) {
-                final isCompactLayout = !GC.usesHomeNavigationRail(
-                  MediaQuery.sizeOf(context).width,
-                );
-                final destinations = _homeNavigationDestinations(context);
-                return Scaffold(
-                  extendBody: isCompactLayout,
-                  appBar: _buildAppBar(
-                    appBlocState.selectedIndex,
-                    appBlocState.recipeCategoryOverview,
-                    appBlocState.title,
-                  ),
-                  floatingActionButton: appBlocState.selectedIndex == 0
-                      ? BlocBuilder<RecipeModsBloc, RecipeModsState>(
-                          builder: (context, recipeModsState) {
-                            return RecipeCreationFabMenu(
-                              busy: recipeModsState is! UnblockModsState,
-                              busyLabel: S.of(context).syncing_recipes_drive,
-                              onCreateManually: _createRecipeManually,
-                              onImportFromWebsite: _importRecipeFromWebsite,
-                            );
-                          },
-                        )
-                      : null,
-                  body: Row(
-                    children: ([
-                      !isCompactLayout
-                          ? CulinaryEditorialNavigationRail(
-                              selectedIndex: appBlocState.selectedIndex,
-                              destinations: destinations,
-                              onDestinationSelected: (index) =>
-                                  _onItemTapped(index, context),
-                              calendarOpen: appBlocState.recipeCalendarOpen,
-                              onCalendarPressed: () =>
-                                  context.read<AppBloc>().add(
-                                    ChangeRecipeCalendarView(
-                                      !appBlocState.recipeCalendarOpen,
-                                    ),
+    return Stack(
+      children: [
+        BlocBuilder<AppBloc, AppState>(
+          builder: (context, appBlocState) {
+            if (appBlocState is LoadingState) {
+              return _getSplashScreen();
+            } else if (appBlocState is LoadedState) {
+              final isCompactLayout = !GC.usesHomeNavigationRail(
+                MediaQuery.sizeOf(context).width,
+              );
+              final destinations = _homeNavigationDestinations(context);
+              return Scaffold(
+                extendBody: isCompactLayout,
+                appBar: _buildAppBar(
+                  appBlocState.selectedIndex,
+                  appBlocState.recipeCategoryOverview,
+                  appBlocState.title,
+                ),
+                floatingActionButton: appBlocState.selectedIndex == 0
+                    ? BlocBuilder<RecipeModsBloc, RecipeModsState>(
+                        builder: (context, recipeModsState) {
+                          return RecipeCreationFabMenu(
+                            busy: recipeModsState is! UnblockModsState,
+                            busyLabel: S.of(context).syncing_recipes_drive,
+                            onCreateManually: _createRecipeManually,
+                            onImportFromWebsite: _importRecipeFromWebsite,
+                          );
+                        },
+                      )
+                    : null,
+                body: Row(
+                  children: ([
+                    !isCompactLayout
+                        ? CulinaryEditorialNavigationRail(
+                            selectedIndex: appBlocState.selectedIndex,
+                            destinations: destinations,
+                            onDestinationSelected: (index) =>
+                                _onItemTapped(index, context),
+                            calendarOpen: appBlocState.recipeCalendarOpen,
+                            onCalendarPressed: () =>
+                                context.read<AppBloc>().add(
+                                  ChangeRecipeCalendarView(
+                                    !appBlocState.recipeCalendarOpen,
                                   ),
-                              calendarLabel: S.of(context).recipe_planer,
-                            )
-                          : null,
-                      Expanded(
-                        child: IndexedStack(
-                          index: appBlocState.selectedIndex,
-                          children: [
-                            AnimatedSwitcher(
-                              duration: Duration(milliseconds: 200),
-                              child: appBlocState.recipeCategoryOverview == true
-                                  ? RecipeCategoryOverview()
-                                  : CategoryGridView(),
-                            ),
-                            FavoriteScreen(),
-                            FancyShoppingCartScreen(shoppingCartImage),
-                            SwypingCardsScreen(),
-                            Settings(),
-                          ],
-                        ),
+                                ),
+                            calendarLabel: S.of(context).recipe_planer,
+                          )
+                        : null,
+                    Expanded(
+                      child: IndexedStack(
+                        index: appBlocState.selectedIndex,
+                        children: [
+                          AnimatedSwitcher(
+                            duration: Duration(milliseconds: 200),
+                            child: appBlocState.recipeCategoryOverview == true
+                                ? RecipeCategoryOverview()
+                                : CategoryGridView(),
+                          ),
+                          FavoriteScreen(),
+                          FancyShoppingCartScreen(shoppingCartImage),
+                          SwypingCardsScreen(),
+                          Settings(),
+                        ],
                       ),
-                    ].whereType<Widget>().toList()),
-                  ),
-                  backgroundColor: _getBackgroundColor(
-                    appBlocState.selectedIndex,
-                  ),
-                  bottomNavigationBar: isCompactLayout
-                      ? FloatingHomeNavigationBar(
-                          selectedIndex: appBlocState.selectedIndex,
-                          onDestinationSelected: (index) =>
-                              _onItemTapped(index, context),
-                          destinations: destinations,
-                        )
-                      : null,
-                );
-              } else {
-                return Text(appBlocState.toString());
-              }
-            },
-          ),
-          RecipeBubbles(),
-          GC.usesHomeNavigationRail(MediaQuery.sizeOf(context).width)
-              ? RecipeCalendarFloating(initialPosition: Offset(200, 45))
-              : null,
-        ].whereType<Widget>().toList(),
-      ),
+                    ),
+                  ].whereType<Widget>().toList()),
+                ),
+                backgroundColor: _getBackgroundColor(
+                  appBlocState.selectedIndex,
+                ),
+                bottomNavigationBar: isCompactLayout
+                    ? FloatingHomeNavigationBar(
+                        selectedIndex: appBlocState.selectedIndex,
+                        onDestinationSelected: (index) =>
+                            _onItemTapped(index, context),
+                        destinations: destinations,
+                      )
+                    : null,
+              );
+            } else {
+              return Text(appBlocState.toString());
+            }
+          },
+        ),
+        RecipeBubbles(),
+        GC.usesHomeNavigationRail(MediaQuery.sizeOf(context).width)
+            ? RecipeCalendarFloating(initialPosition: Offset(200, 45))
+            : null,
+      ].whereType<Widget>().toList(),
     );
   }
 

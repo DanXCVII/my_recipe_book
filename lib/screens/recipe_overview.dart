@@ -17,10 +17,9 @@ import '../constants/routes.dart';
 import '../generated/l10n.dart';
 import '../models/enums.dart';
 import '../models/recipe.dart';
-import '../models/recipe_sort.dart';
 import '../models/string_int_tuple.dart';
+import '../widgets/recipe_overview/recipe_collection_controls.dart';
 import '../widgets/recipe_overview/editorial_recipe_card.dart';
-import '../widgets/recipe_overview/recipe_layout_switch.dart';
 import '../widgets/recipe_overview/recipe_overview_theme.dart';
 import 'recipe_screen.dart';
 import 'cook_mode_screen.dart';
@@ -51,7 +50,6 @@ class RecipeGridView extends StatefulWidget {
 class _RecipeGridViewState extends State<RecipeGridView> {
   final TextEditingController _searchController = TextEditingController();
   RecipeOverviewCardLayout _layout = RecipeOverviewCardLayout.grid;
-  bool _showTagFilters = false;
 
   @override
   void dispose() {
@@ -116,7 +114,7 @@ class _RecipeGridViewState extends State<RecipeGridView> {
       _searchController.clear();
     }
 
-    final controlsHeight = _showTagFilters ? 184.0 : 128.0;
+    const controlsHeight = 115.0;
     return CustomScrollView(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       slivers: [
@@ -126,17 +124,14 @@ class _RecipeGridViewState extends State<RecipeGridView> {
         if (state.allRecipes.isNotEmpty)
           SliverPersistentHeader(
             pinned: true,
-            delegate: _PinnedControlsDelegate(
+            delegate: RecipeCollectionControlsHeaderDelegate(
               height: controlsHeight,
               background: palette.background,
-              child: _OverviewControls(
+              child: _OverviewControlCluster(
                 state: state,
                 layout: _layout,
                 searchController: _searchController,
-                showTagFilters: _showTagFilters,
                 onLayoutChanged: (layout) => setState(() => _layout = layout),
-                onTagFiltersChanged: (show) =>
-                    setState(() => _showTagFilters = show),
               ),
             ),
           ),
@@ -305,7 +300,6 @@ class _RecipeGridViewState extends State<RecipeGridView> {
 
   void _clearFilters() {
     _searchController.clear();
-    setState(() => _showTagFilters = false);
     context.read<RecipeOverviewBloc>().add(ClearRecipeFilters());
   }
 
@@ -430,34 +424,21 @@ class _OverviewHeader extends StatelessWidget {
   }
 }
 
-class _OverviewControls extends StatelessWidget {
-  const _OverviewControls({
+class _OverviewControlCluster extends StatelessWidget {
+  const _OverviewControlCluster({
     required this.state,
     required this.layout,
     required this.searchController,
-    required this.showTagFilters,
     required this.onLayoutChanged,
-    required this.onTagFiltersChanged,
   });
 
   final LoadedRecipeOverview state;
   final RecipeOverviewCardLayout layout;
   final TextEditingController searchController;
-  final bool showTagFilters;
   final ValueChanged<RecipeOverviewCardLayout> onLayoutChanged;
-  final ValueChanged<bool> onTagFiltersChanged;
 
   @override
   Widget build(BuildContext context) {
-    final tags = <String>[];
-    for (final recipe in state.allRecipes) {
-      for (final tag in recipe.tags) {
-        if (tag.text != state.recipeTag?.text && !tags.contains(tag.text)) {
-          tags.add(tag.text);
-        }
-      }
-    }
-
     return Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
@@ -466,441 +447,35 @@ class _OverviewControls extends StatelessWidget {
           width: double.infinity,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    RecipeLayoutSwitch(
-                      layout: layout,
-                      onChanged: onLayoutChanged,
-                    ),
-                    const SizedBox(width: 9),
-                    Expanded(
-                      child: _InlineSearch(controller: searchController),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 7),
-                SizedBox(
-                  height: 48,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      _SortMenu(recipeSort: state.recipeSort),
-                      if (state.vegetable == null) ...[
-                        const _ControlDivider(),
-                        _DietFilter(
-                          label: S.of(context).all_recipes_filter,
-                          count: state.allRecipes.length,
-                          selected: state.selectedVegetable == null,
-                          onTap: () => context.read<RecipeOverviewBloc>().add(
-                            const FilterRecipesVegetable(null),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        _DietFilter(
-                          label: S.of(context).vegetarian,
-                          count: _dietCount(Vegetable.VEGETARIAN),
-                          selected:
-                              state.selectedVegetable == Vegetable.VEGETARIAN,
-                          vegetable: Vegetable.VEGETARIAN,
-                          onTap: () => context.read<RecipeOverviewBloc>().add(
-                            const FilterRecipesVegetable(Vegetable.VEGETARIAN),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        _DietFilter(
-                          label: S.of(context).vegan,
-                          count: _dietCount(Vegetable.VEGAN),
-                          selected: state.selectedVegetable == Vegetable.VEGAN,
-                          vegetable: Vegetable.VEGAN,
-                          onTap: () => context.read<RecipeOverviewBloc>().add(
-                            const FilterRecipesVegetable(Vegetable.VEGAN),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        _DietFilter(
-                          label: S.of(context).with_meat,
-                          count: _dietCount(Vegetable.NON_VEGETARIAN),
-                          selected:
-                              state.selectedVegetable ==
-                              Vegetable.NON_VEGETARIAN,
-                          vegetable: Vegetable.NON_VEGETARIAN,
-                          onTap: () => context.read<RecipeOverviewBloc>().add(
-                            const FilterRecipesVegetable(
-                              Vegetable.NON_VEGETARIAN,
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (tags.isNotEmpty) ...[
-                        const SizedBox(width: 8),
-                        _ControlChip(
-                          icon: Icons.tune_rounded,
-                          label: S.of(context).more_filters,
-                          selected: showTagFilters,
-                          onTap: () => onTagFiltersChanged(!showTagFilters),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                if (showTagFilters) ...[
-                  const SizedBox(height: 4),
-                  SizedBox(
-                    height: 48,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: tags.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: 8),
-                      itemBuilder: (context, index) {
-                        final tag = tags[index];
-                        final selected = state.selectedRecipeTags.contains(tag);
-                        return _ControlChip(
-                          label: '#$tag',
-                          selected: selected,
-                          onTap: () {
-                            final selection = List<String>.from(
-                              state.selectedRecipeTags,
-                            );
-                            selected
-                                ? selection.remove(tag)
-                                : selection.add(tag);
-                            context.read<RecipeOverviewBloc>().add(
-                              FilterRecipesTag(selection),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  int _dietCount(Vegetable vegetable) =>
-      state.allRecipes.where((recipe) => recipe.vegetable == vegetable).length;
-}
-
-class _InlineSearch extends StatelessWidget {
-  const _InlineSearch({required this.controller});
-
-  final TextEditingController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = RecipeOverviewPalette.of(context);
-    return SizedBox(
-      height: 48,
-      child: TextField(
-        key: const Key('recipe-overview-search'),
-        controller: controller,
-        onChanged: (query) =>
-            context.read<RecipeOverviewBloc>().add(FilterRecipesQuery(query)),
-        textInputAction: TextInputAction.search,
-        style: RecipeOverviewType.body(palette, size: 12),
-        cursorColor: palette.primary,
-        decoration: InputDecoration(
-          hintText: S.of(context).filter_recipes,
-          hintStyle: RecipeOverviewType.body(
-            palette,
-            size: 12,
-            color: palette.outline,
-          ),
-          prefixIcon: Icon(
-            Icons.search_rounded,
-            size: 19,
-            color: palette.outline,
-          ),
-          suffixIcon: controller.text.isEmpty
-              ? null
-              : IconButton(
-                  tooltip: S.of(context).clear_search,
-                  onPressed: () {
-                    controller.clear();
-                    context.read<RecipeOverviewBloc>().add(
-                      const FilterRecipesQuery(''),
-                    );
-                  },
-                  icon: const Icon(Icons.close_rounded, size: 18),
-                ),
-          filled: true,
-          fillColor: palette.surfaceContainer,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(999),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(999),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(999),
-            borderSide: BorderSide(color: palette.primary, width: 1.5),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SortMenu extends StatelessWidget {
-  const _SortMenu({required this.recipeSort});
-
-  final RSort recipeSort;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = RecipeOverviewPalette.of(context);
-    return PopupMenuButton<Object>(
-      tooltip: S.of(context).sort_by(_sortLabel(context, recipeSort.sort)),
-      color: palette.surface,
-      surfaceTintColor: Colors.transparent,
-      elevation: 6,
-      onSelected: (value) {
-        if (value is RecipeSort) {
-          context.read<RecipeOverviewBloc>().add(ChangeRecipeSort(value));
-        } else if (value is bool) {
-          context.read<RecipeOverviewBloc>().add(ChangeAscending(value));
-        }
-      },
-      itemBuilder: (context) => [
-        for (final sort in RecipeSort.values)
-          PopupMenuItem<Object>(
-            value: sort,
-            child: _MenuRow(
-              label: _sortLabel(context, sort),
-              selected: recipeSort.sort == sort,
-            ),
-          ),
-        const PopupMenuDivider(),
-        PopupMenuItem<Object>(
-          value: true,
-          child: _MenuRow(
-            label: S.of(context).ascending,
-            selected: recipeSort.ascending == true,
-          ),
-        ),
-        PopupMenuItem<Object>(
-          value: false,
-          child: _MenuRow(
-            label: S.of(context).descending,
-            selected: recipeSort.ascending == false,
-          ),
-        ),
-      ],
-      child: _ControlChip(
-        icon: recipeSort.ascending == true
-            ? Icons.arrow_upward_rounded
-            : Icons.arrow_downward_rounded,
-        trailingIcon: Icons.expand_more_rounded,
-        label: S.of(context).sort_by(_sortLabel(context, recipeSort.sort)),
-      ),
-    );
-  }
-
-  static String _sortLabel(BuildContext context, RecipeSort sort) {
-    return switch (sort) {
-      RecipeSort.BY_NAME => S.of(context).by_name,
-      RecipeSort.BY_EFFORT => S.of(context).by_effort,
-      RecipeSort.BY_INGREDIENT_COUNT => S.of(context).by_ingredientsamount,
-      RecipeSort.BY_LAST_MODIFIED => S.of(context).by_last_modified,
-      RecipeSort.BY_TOTAL_TIME => S.of(context).total_time,
-    };
-  }
-}
-
-class _MenuRow extends StatelessWidget {
-  const _MenuRow({required this.label, required this.selected});
-
-  final String label;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = RecipeOverviewPalette.of(context);
-    return Row(
-      children: [
-        SizedBox(
-          width: 28,
-          child: selected
-              ? Icon(Icons.check_rounded, size: 18, color: palette.primary)
-              : null,
-        ),
-        Text(label, style: RecipeOverviewType.body(palette, size: 13)),
-      ],
-    );
-  }
-}
-
-class _DietFilter extends StatelessWidget {
-  const _DietFilter({
-    required this.label,
-    required this.count,
-    required this.selected,
-    required this.onTap,
-    this.vegetable,
-  });
-
-  final String label;
-  final int count;
-  final bool selected;
-  final VoidCallback onTap;
-  final Vegetable? vegetable;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = RecipeOverviewPalette.of(context);
-    final isProduce =
-        vegetable == Vegetable.VEGAN || vegetable == Vegetable.VEGETARIAN;
-    return _ControlChip(
-      label: '$label ($count)',
-      icon: vegetable == null
-          ? null
-          : isProduce
-          ? Icons.eco_rounded
-          : Icons.restaurant_rounded,
-      selected: selected,
-      selectedColor: vegetable == null
-          ? palette.primary
-          : isProduce
-          ? palette.secondary
-          : palette.primary,
-      onTap: onTap,
-    );
-  }
-}
-
-class _ControlChip extends StatelessWidget {
-  const _ControlChip({
-    required this.label,
-    this.icon,
-    this.trailingIcon,
-    this.selected = false,
-    this.selectedColor,
-    this.onTap,
-  });
-
-  final String label;
-  final IconData? icon;
-  final IconData? trailingIcon;
-  final bool selected;
-  final Color? selectedColor;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = RecipeOverviewPalette.of(context);
-    final activeColor = selectedColor ?? palette.primary;
-    final foreground = selected ? palette.onPrimary : palette.onSurfaceVariant;
-    return Semantics(
-      button: onTap != null,
-      selected: selected,
-      child: Material(
-        color: selected ? activeColor : palette.surfaceContainer,
-        borderRadius: BorderRadius.circular(999),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(999),
-          onTap: onTap,
-          child: SizedBox(
-            height: 48,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 11),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, size: 16, color: foreground),
-                    const SizedBox(width: 4),
-                  ],
-                  Text(
-                    label,
-                    style: RecipeOverviewType.body(
-                      palette,
-                      size: 11,
-                      weight: selected ? FontWeight.w700 : FontWeight.w600,
-                      color: foreground,
-                    ),
-                  ),
-                  if (trailingIcon != null) ...[
-                    const SizedBox(width: 2),
-                    Icon(trailingIcon, size: 16, color: foreground),
-                  ],
-                ],
+            child: RecipeCollectionControls(
+              keyPrefix: 'recipe-overview',
+              recipes: state.allRecipes,
+              layout: layout,
+              searchController: searchController,
+              recipeSort: state.recipeSort,
+              filters: state.filters,
+              excludedCategory: state.category,
+              excludedTag: state.recipeTag?.text,
+              includeVegetable: state.vegetable == null,
+              onLayoutChanged: onLayoutChanged,
+              onQueryChanged: (query) => context.read<RecipeOverviewBloc>().add(
+                FilterRecipesQuery(query),
               ),
+              onSortChanged: (sort) => context.read<RecipeOverviewBloc>().add(
+                ChangeRecipeSort(sort),
+              ),
+              onAscendingChanged: (ascending) => context
+                  .read<RecipeOverviewBloc>()
+                  .add(ChangeAscending(ascending)),
+              onFiltersChanged: (filters) => context
+                  .read<RecipeOverviewBloc>()
+                  .add(UpdateRecipeFilters(filters)),
             ),
           ),
         ),
       ),
     );
   }
-}
-
-class _ControlDivider extends StatelessWidget {
-  const _ControlDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = RecipeOverviewPalette.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 11),
-      child: Container(width: 1, color: palette.outline.withAlpha(100)),
-    );
-  }
-}
-
-class _PinnedControlsDelegate extends SliverPersistentHeaderDelegate {
-  const _PinnedControlsDelegate({
-    required this.height,
-    required this.background,
-    required this.child,
-  });
-
-  final double height;
-  final Color background;
-  final Widget child;
-
-  @override
-  double get minExtent => height;
-
-  @override
-  double get maxExtent => height;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: background.withAlpha(250),
-        boxShadow: overlapsContent
-            ? const [
-                BoxShadow(
-                  color: Color(0x10000000),
-                  offset: Offset(0, 2),
-                  blurRadius: 8,
-                ),
-              ]
-            : null,
-      ),
-      child: child,
-    );
-  }
-
-  @override
-  bool shouldRebuild(covariant _PinnedControlsDelegate oldDelegate) =>
-      height != oldDelegate.height ||
-      background != oldDelegate.background ||
-      child != oldDelegate.child;
 }
 
 class _EmptyOverview extends StatelessWidget {

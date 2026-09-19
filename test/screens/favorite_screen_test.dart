@@ -14,6 +14,7 @@ import 'package:my_recipe_book/local_storage/local_repository.dart';
 import 'package:my_recipe_book/models/enums.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/models/string_int_tuple.dart';
 import 'package:my_recipe_book/screens/favorite_screen.dart';
 import 'package:my_recipe_book/theming.dart';
 import 'package:my_recipe_book/widgets/recipe_overview/editorial_recipe_card.dart';
@@ -33,6 +34,7 @@ void main() {
     repository = DriftRepository(database: database);
     await repository.initialize();
     await repository.addCategory('Weeknight');
+    await repository.addRecipeTag('Quick', 0xFFA83211);
     final recipes = [
       Recipe(
         name: 'Tomato Pasta',
@@ -41,6 +43,7 @@ void main() {
         ingredients: const [
           [Ingredient(name: 'Tomato')],
         ],
+        tags: const [StringIntTuple(text: 'Quick', number: 0xFFA83211)],
         isFavorite: true,
         lastModified: '2026-09-10 10:00:00.000',
       ),
@@ -97,6 +100,10 @@ void main() {
     expect(find.text('2 saved recipes'), findsOneWidget);
     expect(find.textContaining('collection'), findsNothing);
     expect(find.byKey(const Key('bookmarks-new-collection')), findsNothing);
+    expect(find.byKey(const Key('bookmarks-search')), findsOneWidget);
+    expect(find.byKey(const Key('bookmarks-sort')), findsOneWidget);
+    expect(find.byKey(const Key('bookmarks-filters')), findsOneWidget);
+    expect(find.byKey(const Key('bookmarks-search-toggle')), findsNothing);
     expect(
       tester
           .widgetList<EditorialRecipeCard>(find.byType(EditorialRecipeCard))
@@ -128,14 +135,12 @@ void main() {
       calendar: calendar,
     );
 
-    await tester.tap(find.byKey(const Key('bookmarks-search-toggle')));
-    await tester.pump(const Duration(milliseconds: 250));
     final filtered = _nextLoaded(
       favorites,
       (state) => state.query == 'mushroom',
     );
     await tester.enterText(
-      find.byKey(const Key('bookmarks-search-field')),
+      find.byKey(const Key('bookmarks-search')),
       'mushroom',
     );
     await tester.runAsync(() => filtered);
@@ -144,6 +149,44 @@ void main() {
     expect(find.text('Tomato Pasta'), findsNothing);
 
     expect(find.byKey(const Key('bookmarks-new-collection')), findsNothing);
+  });
+
+  testWidgets('applies bookmark category and tag filters live from the sheet', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(430, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await _loadAndPump(
+      tester,
+      manager: manager,
+      favorites: favorites,
+      shoppingCart: shoppingCart,
+      calendar: calendar,
+    );
+
+    await tester.tap(find.byKey(const Key('bookmarks-filters')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('bookmarks-filter-sheet')), findsOneWidget);
+    expect(find.byKey(const Key('bookmarks-tag-Quick')), findsOneWidget);
+
+    final filtered = _nextLoaded(
+      favorites,
+      (state) => state.filters.categories.contains('Weeknight'),
+    );
+    await tester.tap(find.byKey(const Key('bookmarks-category-Weeknight')));
+    await tester.runAsync(() => filtered);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Filters (1)'), findsOneWidget);
+    await tester.drag(
+      find.byKey(const Key('bookmarks-filter-sheet')),
+      const Offset(0, -500),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('bookmarks-filter-done')));
+    await tester.pumpAndSettle();
+    expect(find.text('Tomato Pasta'), findsOneWidget);
+    expect(find.text('Mushroom Broth'), findsNothing);
   });
 
   testWidgets('removing a bookmark does not open the recipe', (tester) async {

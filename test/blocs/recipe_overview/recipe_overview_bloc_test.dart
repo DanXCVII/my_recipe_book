@@ -7,6 +7,7 @@ import 'package:my_recipe_book/local_storage/local_repository.dart';
 import 'package:my_recipe_book/models/enums.dart';
 import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
+import 'package:my_recipe_book/models/recipe_collection_filters.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
 
 void main() {
@@ -100,15 +101,19 @@ void main() {
 
     state = await _dispatch(
       overview,
-      const FilterRecipesVegetable(Vegetable.VEGAN),
-      (state) => state.selectedVegetable == Vegetable.VEGAN,
+      const UpdateRecipeFilters(
+        RecipeCollectionFilters(vegetable: Vegetable.VEGAN),
+      ),
+      (state) => state.filters.vegetable == Vegetable.VEGAN,
     );
     expect(state.visibleRecipes.map((recipe) => recipe.name), ['Green Curry']);
 
     state = await _dispatch(
       overview,
-      const FilterRecipesTag(['Slow']),
-      (state) => state.selectedRecipeTags.contains('Slow'),
+      const UpdateRecipeFilters(
+        RecipeCollectionFilters(vegetable: Vegetable.VEGAN, tags: ['Slow']),
+      ),
+      (state) => state.filters.tags.contains('Slow'),
     );
     expect(state.visibleRecipes, isEmpty);
 

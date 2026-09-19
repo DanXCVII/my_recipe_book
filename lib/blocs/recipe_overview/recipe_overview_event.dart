@@ -52,15 +52,6 @@ class ChangeAscending extends RecipeOverviewEvent {
   List<Object> get props => [ascending];
 }
 
-class FilterRecipesVegetable extends RecipeOverviewEvent {
-  final Vegetable? vegetable;
-
-  const FilterRecipesVegetable(this.vegetable);
-
-  @override
-  List<Object?> get props => [vegetable];
-}
-
 class FilterRecipesQuery extends RecipeOverviewEvent {
   final String query;
 
@@ -74,13 +65,13 @@ class ClearRecipeFilters extends RecipeOverviewEvent {}
 
 class RetryRecipeOverview extends RecipeOverviewEvent {}
 
-class FilterRecipesTag extends RecipeOverviewEvent {
-  final List<String> recipeTags;
+class UpdateRecipeFilters extends RecipeOverviewEvent {
+  const UpdateRecipeFilters(this.filters);
 
-  const FilterRecipesTag(this.recipeTags);
+  final RecipeCollectionFilters filters;
 
   @override
-  List<Object> get props => [recipeTags];
+  List<Object> get props => [filters];
 }
 
 class AddRecipes extends RecipeOverviewEvent {

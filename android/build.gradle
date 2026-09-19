@@ -9,13 +9,18 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 
-    // Some AGP 9-ready plugins assume built-in Kotlin solely from the AGP
-    // version. This project must keep compatibility mode while older plugins
-    // still apply kotlin-android themselves, so ensure every Android library
-    // gets the Kotlin plugin in that mode.
+    // app_review contains an unused generated Kotlin source beside its Java
+    // implementation. Keep its built-in Kotlin compiler aligned with the
+    // Java 11 target declared by the package.
     project.pluginManager.withPlugin('com.android.library') {
-        if (!project.plugins.hasPlugin('org.jetbrains.kotlin.android')) {
-            project.pluginManager.apply('org.jetbrains.kotlin.android')
+        if (project.name == 'app_review') {
+            project.tasks.withType(
+                org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+            ).configureEach {
+                compilerOptions.jvmTarget.set(
+                    org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+                )
+            }
         }
     }
 }

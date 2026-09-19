@@ -20,6 +20,9 @@ pluginManagement {
 plugins {
     id "dev.flutter.flutter-plugin-loader" version "1.0.0"
     id "com.android.application" version "9.2.1" apply false
+    // AGP 9.2 embeds Kotlin 2.2.10, while Flutter 3.47 requires 2.2.20+.
+    // Declaring a newer compiler keeps AGP's built-in Kotlin enabled without
+    // applying the legacy Kotlin Android plugin to the app.
     id "org.jetbrains.kotlin.android" version "2.4.0" apply false
     id "com.google.gms.google-services" version "4.5.0" apply false
     id "com.google.firebase.crashlytics" version "3.0.6" apply false
