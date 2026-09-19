@@ -433,10 +433,7 @@ class _ImportDialogState extends State<ImportDialog> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
                             TextButton(
-                              child: Text(
-                                "ok",
-                                style: TextStyle(color: Colors.amber),
-                              ),
+                              child: Text("ok"),
                               onPressed: () {
                                 if (widget.closeAfterFinished) {
                                   SystemChannels.platform.invokeMethod(
@@ -483,7 +480,7 @@ class _ImportDialogState extends State<ImportDialog> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               TextButton(
-                child: Text("ok", style: TextStyle(color: Colors.amber)),
+                child: Text("ok"),
                 onPressed: () {
                   Navigator.pop(context);
                 },

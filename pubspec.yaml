@@ -77,7 +77,6 @@ dependencies:
   audioplayers: ^6.8.1 # MIT
   page_transition: ^2.2.2 # BSD
   reorderables: ^0.6.0 # MIT
-  omni_datetime_picker: ^2.0.7 # MIT
   fraction: ^5.0.3 # MIT
   dio: ^5.8.0+1
   googleapis: ^17.0.0
@@ -107,7 +106,7 @@ flutter_launcher_icons:
   android: true
   image_path_ios: "images/new_logo_simplistic.png"
   image_path_ios_dark_transparent: "assets/launcher/newAdaptiveForeground.png"
-  image_path_ios_tinted_grayscale: "assets/launcher/newAdaptiveMonochrome.png"
+  image_path_ios_tinted_grayscale: "images/monochrome.png"
   desaturate_tinted_to_grayscale_ios: true
   image_path_android: "images/new_logo_simplistic.png"
   adaptive_icon_background: "#8E0038"

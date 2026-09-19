@@ -1,27 +1,9 @@
 import '../models/enums.dart';
 
-class MyImageWrapper {
-  String? selectedImage;
-
-  MyImageWrapper({this.selectedImage});
-}
-
-class MyBooleanWrapper {
-  bool? myBool;
-
-  MyBooleanWrapper(this.myBool);
-}
-
 class MyDoubleWrapper {
   double? myDouble;
 
   MyDoubleWrapper({this.myDouble});
-}
-
-class MyIntWrapper {
-  int myInt;
-
-  MyIntWrapper(this.myInt);
 }
 
 class MyVegetableWrapper {

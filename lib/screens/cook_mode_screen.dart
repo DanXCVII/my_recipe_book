@@ -1093,8 +1093,7 @@ class _CookTimerCard extends StatefulWidget {
   State<_CookTimerCard> createState() => _CookTimerCardState();
 }
 
-class _CookTimerCardState extends State<_CookTimerCard>
-    with SingleTickerProviderStateMixin {
+class _CookTimerCardState extends State<_CookTimerCard> {
   bool _collapsed = false;
 
   @override
@@ -1107,73 +1106,108 @@ class _CookTimerCardState extends State<_CookTimerCard>
       borderRadius: BorderRadius.circular(16),
       elevation: 3,
       shadowColor: palette.shadow,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.timer_outlined, size: 19, color: palette.primary),
-                const SizedBox(width: 7),
-                Expanded(
-                  child: Text(
-                    S.of(context).cook_mode_timer.toUpperCase(),
-                    style: CulinaryEditorialType.body(
-                      palette,
-                      size: 11,
-                      weight: FontWeight.w700,
-                      letterSpacing: .55,
+      child: AnimatedSize(
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        child: Padding(
+          padding: _collapsed
+              ? const EdgeInsets.fromLTRB(12, 4, 4, 4)
+              : const EdgeInsets.fromLTRB(12, 8, 8, 8),
+          child: _collapsed
+              ? _CollapsedTimer(
+                  state: state,
+                  onExpand: () => setState(() => _collapsed = false),
+                )
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _ExpandedTimerHeader(
+                      onSetTimer: widget.onSetTimer,
+                      onCollapse: () => setState(() => _collapsed = true),
                     ),
-                  ),
+                    _ExpandedTimer(state: state),
+                  ],
                 ),
-                TextButton.icon(
-                  key: const Key('cook-mode-set-timer'),
-                  onPressed: widget.onSetTimer,
-                  icon: const Icon(Icons.edit_outlined, size: 17),
-                  label: Text(S.of(context).cook_mode_set_timer),
-                ),
-                IconButton(
-                  key: const Key('cook-mode-collapse-timer'),
-                  tooltip: _collapsed
-                      ? S.of(context).cook_mode_expand_timer
-                      : S.of(context).cook_mode_collapse_timer,
-                  onPressed: () => setState(() => _collapsed = !_collapsed),
-                  icon: Icon(
-                    _collapsed
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                  ),
-                ),
-              ],
-            ),
-            AnimatedSize(
-              duration: MediaQuery.disableAnimationsOf(context)
-                  ? Duration.zero
-                  : const Duration(milliseconds: 180),
-              curve: Curves.easeOutCubic,
-              child: _collapsed
-                  ? _CollapsedTimer(state: state)
-                  : _ExpandedTimer(state: state),
-            ),
-          ],
         ),
       ),
     );
   }
 }
 
-class _CollapsedTimer extends StatelessWidget {
-  const _CollapsedTimer({required this.state});
+class _ExpandedTimerHeader extends StatelessWidget {
+  const _ExpandedTimerHeader({
+    required this.onSetTimer,
+    required this.onCollapse,
+  });
 
-  final CookModeState state;
+  final VoidCallback onSetTimer;
+  final VoidCallback onCollapse;
 
   @override
   Widget build(BuildContext context) {
     final palette = CulinaryEditorialPalette.of(context);
     return Row(
       children: [
+        Icon(Icons.timer_outlined, size: 19, color: palette.primary),
+        const SizedBox(width: 7),
         Expanded(
+          child: Text(
+            S.of(context).cook_mode_timer.toUpperCase(),
+            style: CulinaryEditorialType.body(
+              palette,
+              size: 11,
+              weight: FontWeight.w700,
+              letterSpacing: .55,
+            ),
+          ),
+        ),
+        TextButton.icon(
+          key: const Key('cook-mode-set-timer'),
+          onPressed: onSetTimer,
+          icon: const Icon(Icons.edit_outlined, size: 17),
+          label: Text(S.of(context).cook_mode_set_timer),
+        ),
+        IconButton(
+          key: const Key('cook-mode-collapse-timer'),
+          tooltip: S.of(context).cook_mode_collapse_timer,
+          onPressed: onCollapse,
+          icon: const Icon(Icons.keyboard_arrow_down),
+        ),
+      ],
+    );
+  }
+}
+
+class _CollapsedTimer extends StatelessWidget {
+  const _CollapsedTimer({required this.state, required this.onExpand});
+
+  final CookModeState state;
+  final VoidCallback onExpand;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = CulinaryEditorialPalette.of(context);
+    return Row(
+      children: [
+        Icon(Icons.timer_outlined, size: 19, color: palette.primary),
+        const SizedBox(width: 7),
+        Expanded(
+          child: Text(
+            S.of(context).cook_mode_timer.toUpperCase(),
+            style: CulinaryEditorialType.body(
+              palette,
+              size: 11,
+              weight: FontWeight.w700,
+              letterSpacing: .55,
+            ),
+          ),
+        ),
+        Semantics(
+          label: S.of(context).cook_mode_timer,
+          value: _formatDuration(state.remaining),
+          excludeSemantics: true,
           child: Text(
             state.hasConfiguredTimer
                 ? _formatDuration(state.remaining)
@@ -1186,7 +1220,14 @@ class _CollapsedTimer extends StatelessWidget {
             ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
           ),
         ),
+        const SizedBox(width: 4),
         _TimerPrimaryButton(state: state),
+        IconButton(
+          key: const Key('cook-mode-collapse-timer'),
+          tooltip: S.of(context).cook_mode_expand_timer,
+          onPressed: onExpand,
+          icon: const Icon(Icons.keyboard_arrow_up),
+        ),
       ],
     );
   }

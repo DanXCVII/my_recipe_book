@@ -43,6 +43,7 @@ import 'blocs/recipe_tag_manager/recipe_tag_manager_bloc.dart';
 import 'blocs/shopping_cart/shopping_cart_bloc.dart';
 import 'blocs/splash_screen/splash_screen_bloc.dart';
 import 'blocs/website_import/website_import_bloc.dart';
+import 'constants/global_settings.dart';
 import 'constants/routes.dart';
 
 import 'package:my_recipe_book/generated/l10n.dart';
@@ -69,6 +70,7 @@ import 'screens/recipe_tag_manager_screen.dart';
 import 'local_storage/local_repository.dart';
 import 'local_storage/storage_migration.dart';
 import 'network_storage/g_drive_sync.dart';
+import 'navigation/recipe_detail_page_route.dart';
 import 'services/migration_monitor.dart';
 
 /// for some devices, if accessing certain domains causes a 'certificate expired' error..
@@ -149,9 +151,10 @@ class MyApp extends StatelessWidget {
           localizationsDelegates: [
             S.delegate,
             GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
           ],
-          color: Colors.amber,
+          color: CustomTheme.of(context)?.colorScheme.primary,
           supportedLocales: S.delegate.supportedLocales,
           showPerformanceOverlay: false,
           theme: CustomTheme.of(context),
@@ -257,7 +260,16 @@ class MyApp extends StatelessWidget {
 
                 Ads.showBottomBannerAd();
 
-                return MaterialPageRoute(
+                final motionEnabled =
+                    GlobalSettings().animationsEnabled() &&
+                    !WidgetsBinding
+                        .instance
+                        .platformDispatcher
+                        .accessibilityFeatures
+                        .disableAnimations;
+
+                return RecipeDetailPageRoute(
+                  motionEnabled: motionEnabled,
                   settings: RouteSettings(name: "recipe-screen"),
                   builder: (context) => MultiBlocProvider(
                     providers: [

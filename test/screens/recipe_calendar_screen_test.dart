@@ -122,8 +122,10 @@ void main() {
   testWidgets('German OLED layout survives 130 percent text scale', (
     tester,
   ) async {
-    await tester.binding.setSurfaceSize(const Size(430, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view.physicalSize = const Size(430, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     await _pumpCalendar(
       tester,
       repository: repository,
@@ -137,6 +139,124 @@ void main() {
 
     expect(find.text('Rezept einplanen'), findsOneWidget);
     expect(find.text('Prüfen & exportieren'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('calendar-plan-recipe')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('calendar-schedule-sheet')), findsOneWidget);
+    expect(find.text('Zeitpunkt'), findsOneWidget);
+    expect(find.text('Keine Uhrzeit'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('compact plan flow adds the canonical recipe for today', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(430, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await _pumpCalendar(
+      tester,
+      repository: repository,
+      manager: manager,
+      calendar: calendar,
+      cart: cart,
+    );
+
+    await tester.tap(find.byKey(const Key('calendar-plan-recipe')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('calendar-schedule-sheet')), findsOneWidget);
+    expect(find.byKey(const Key('calendar-schedule-dialog')), findsNothing);
+    expect(find.byKey(const Key('calendar-schedule-date')), findsOneWidget);
+    expect(find.text('No time'), findsOneWidget);
+    expect(
+      tester
+          .widget<FilledButton>(
+            find.byKey(const Key('calendar-schedule-submit')),
+          )
+          .onPressed,
+      isNull,
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('calendar-schedule-recipe')),
+      'not a saved recipe',
+    );
+    await tester.pump();
+    expect(
+      find.text('You can only add recipes that you have saved in the app.'),
+      findsOneWidget,
+    );
+    expect(
+      tester
+          .widget<FilledButton>(
+            find.byKey(const Key('calendar-schedule-submit')),
+          )
+          .onPressed,
+      isNull,
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('calendar-schedule-recipe')),
+      'long simmered vegetable soup',
+    );
+    await tester.pump();
+    expect(
+      tester
+          .widget<FilledButton>(
+            find.byKey(const Key('calendar-schedule-submit')),
+          )
+          .onPressed,
+      isNotNull,
+    );
+
+    final updated = calendar.stream
+        .where((state) => state is LoadedRecipeCalendarWeek)
+        .cast<LoadedRecipeCalendarWeek>()
+        .firstWhere((state) => state.recipeCount == 2);
+    await tester.tap(find.byKey(const Key('calendar-schedule-submit')));
+    await tester.runAsync(() => updated);
+    await tester.pumpAndSettle();
+
+    final today = DateTime.now();
+    final scheduled = DateTime(today.year, today.month, today.day);
+    final stored = await repository.getRecipeCalendar();
+    expect(stored[scheduled], contains('Long simmered vegetable soup'));
+    expect(find.byKey(const Key('calendar-schedule-sheet')), findsNothing);
+  });
+
+  testWidgets('per-day quick add keeps its date fixed', (tester) async {
+    tester.view.physicalSize = const Size(430, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await _pumpCalendar(
+      tester,
+      repository: repository,
+      manager: manager,
+      calendar: calendar,
+      cart: cart,
+    );
+
+    final tuesday = RecipeCalendarBloc.startOfWeek(DateTime.now())
+        .add(const Duration(days: 1));
+    await tester.tap(
+      find.byKey(Key('calendar-empty-${tuesday.toIso8601String()}')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('calendar-schedule-fixed-date')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('calendar-schedule-date')), findsNothing);
+    expect(find.byKey(const Key('calendar-schedule-time')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('calendar-schedule-cancel')));
+    await tester.pumpAndSettle();
+    final stored = await repository.getRecipeCalendar();
+    expect(stored[tuesday], isNull);
     expect(tester.takeException(), isNull);
   });
 
@@ -154,6 +274,11 @@ void main() {
 
     expect(find.text('Plan recipe'), findsOneWidget);
     expect(find.text('Review & export'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('calendar-plan-recipe')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('calendar-schedule-dialog')), findsOneWidget);
+    expect(find.byKey(const Key('calendar-schedule-sheet')), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

@@ -19,13 +19,3 @@ class HideRecipe extends RecipeScreenEvent {
   @override
   List<Object> get props => [];
 }
-
-// Not used but maybe nice to have
-class ShowRecipe extends RecipeScreenEvent {
-  final Recipe recipe;
-
-  ShowRecipe(this.recipe);
-
-  @override
-  List<Object> get props => [recipe];
-}

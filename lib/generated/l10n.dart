@@ -75,6 +75,71 @@ class S {
     );
   }
 
+  /// `EST. 2024`
+  String get splash_established {
+    return Intl.message(
+      'EST. 2024',
+      name: 'splash_established',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `your personal recipe collection`
+  String get splash_subtitle {
+    return Intl.message(
+      'your personal recipe collection',
+      name: 'splash_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Warming the stove…`
+  String get splash_loading {
+    return Intl.message(
+      'Warming the stove…',
+      name: 'splash_loading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upgrading recipe storage…`
+  String get splash_migrating {
+    return Intl.message(
+      'Upgrading recipe storage…',
+      name: 'splash_migrating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your recipes are safe. The storage upgrade needs to be retried.`
+  String get splash_migration_failed {
+    return Intl.message(
+      'Your recipes are safe. The storage upgrade needs to be retried.',
+      name: 'splash_migration_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get splash_retry {
+    return Intl.message('Retry', name: 'splash_retry', desc: '', args: []);
+  }
+
+  /// `Share report`
+  String get splash_share_report {
+    return Intl.message(
+      'Share report',
+      name: 'splash_share_report',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Continue`
   String get onboarding_continue {
     return Intl.message(
@@ -4514,6 +4579,146 @@ class S {
     );
   }
 
+  /// `Add ingredient`
+  String get shopping_add_ingredient_title {
+    return Intl.message(
+      'Add ingredient',
+      name: 'shopping_add_ingredient_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ingredient name`
+  String get shopping_ingredient_name {
+    return Intl.message(
+      'Ingredient name',
+      name: 'shopping_ingredient_name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `e.g. Fresh flat-leaf parsley`
+  String get shopping_ingredient_hint {
+    return Intl.message(
+      'e.g. Fresh flat-leaf parsley',
+      name: 'shopping_ingredient_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter an ingredient name`
+  String get shopping_ingredient_required {
+    return Intl.message(
+      'Enter an ingredient name',
+      name: 'shopping_ingredient_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Quantity & measure`
+  String get shopping_quantity_measure {
+    return Intl.message(
+      'Quantity & measure',
+      name: 'shopping_quantity_measure',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Link to recipe (optional)`
+  String get shopping_link_recipe_optional {
+    return Intl.message(
+      'Link to recipe (optional)',
+      name: 'shopping_link_recipe_optional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search saved recipes…`
+  String get shopping_recipe_search_hint {
+    return Intl.message(
+      'Search saved recipes…',
+      name: 'shopping_recipe_search_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear field`
+  String get shopping_clear_field {
+    return Intl.message(
+      'Clear field',
+      name: 'shopping_clear_field',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select a saved recipe from the suggestions or clear this field`
+  String get shopping_select_saved_recipe {
+    return Intl.message(
+      'Select a saved recipe from the suggestions or clear this field',
+      name: 'shopping_select_saved_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LINKED RECIPE`
+  String get shopping_linked_recipe {
+    return Intl.message(
+      'LINKED RECIPE',
+      name: 'shopping_linked_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unlink`
+  String get shopping_unlink_recipe {
+    return Intl.message(
+      'Unlink',
+      name: 'shopping_unlink_recipe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add to shopping list`
+  String get shopping_add_to_list {
+    return Intl.message(
+      'Add to shopping list',
+      name: 'shopping_add_to_list',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add & create another`
+  String get shopping_add_another {
+    return Intl.message(
+      'Add & create another',
+      name: 'shopping_add_another',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Added {ingredient} to your shopping list`
+  String shopping_ingredient_added(String ingredient) {
+    return Intl.message(
+      'Added $ingredient to your shopping list',
+      name: 'shopping_ingredient_added',
+      desc: '',
+      args: [ingredient],
+    );
+  }
+
   /// `Other items`
   String get shopping_other_items {
     return Intl.message(
@@ -6470,6 +6675,76 @@ class S {
     );
   }
 
+  /// `When`
+  String get calendar_schedule_when {
+    return Intl.message(
+      'When',
+      name: 'calendar_schedule_when',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Date`
+  String get calendar_schedule_date {
+    return Intl.message(
+      'Date',
+      name: 'calendar_schedule_date',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Time (optional)`
+  String get calendar_schedule_time_optional {
+    return Intl.message(
+      'Time (optional)',
+      name: 'calendar_schedule_time_optional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No time`
+  String get calendar_schedule_no_time {
+    return Intl.message(
+      'No time',
+      name: 'calendar_schedule_no_time',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove time`
+  String get calendar_schedule_clear_time {
+    return Intl.message(
+      'Remove time',
+      name: 'calendar_schedule_clear_time',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search saved recipes…`
+  String get calendar_schedule_recipe_hint {
+    return Intl.message(
+      'Search saved recipes…',
+      name: 'calendar_schedule_recipe_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save a recipe before adding it to your meal plan.`
+  String get calendar_schedule_no_saved_recipes {
+    return Intl.message(
+      'Save a recipe before adding it to your meal plan.',
+      name: 'calendar_schedule_no_saved_recipes',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `This week`
   String get calendar_this_week {
     return Intl.message(
@@ -7464,24 +7739,19 @@ class S {
     return Intl.message('Pass', name: 'explore_pass', desc: '', args: []);
   }
 
-  /// `Cook tonight`
+  /// `Cook now`
   String get explore_cook_tonight {
     return Intl.message(
-      'Cook tonight',
+      'Cook now',
       name: 'explore_cook_tonight',
       desc: '',
       args: [],
     );
   }
 
-  /// `Saved for later`
+  /// `Bookmark`
   String get explore_saved {
-    return Intl.message(
-      'Saved for later',
-      name: 'explore_saved',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Bookmark', name: 'explore_saved', desc: '', args: []);
   }
 
   /// `Show previous recipe`
@@ -7494,14 +7764,9 @@ class S {
     );
   }
 
-  /// `Save for later`
+  /// `Bookmark`
   String get explore_save {
-    return Intl.message(
-      'Save for later',
-      name: 'explore_save',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Bookmark', name: 'explore_save', desc: '', args: []);
   }
 
   /// `Start cooking`

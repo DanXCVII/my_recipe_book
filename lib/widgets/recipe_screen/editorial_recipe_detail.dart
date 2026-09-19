@@ -189,7 +189,6 @@ class _StartCookingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = CulinaryEditorialPalette.of(context);
     return BlocBuilder<
       RecipeScreenIngredientsBloc,
       RecipeScreenIngredientsState
@@ -204,21 +203,6 @@ class _StartCookingButton extends StatelessWidget {
                 : () => _openCookMode(context, state),
             icon: const Icon(Icons.soup_kitchen_rounded),
             label: Text(S.of(context).start_cooking),
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
-              backgroundColor: palette.primary,
-              foregroundColor: palette.onPrimary,
-              disabledBackgroundColor: palette.surfaceContainerHigh,
-              disabledForegroundColor: palette.onSurfaceVariant,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              textStyle: CulinaryEditorialType.body(
-                palette,
-                size: 14,
-                weight: FontWeight.w700,
-              ),
-            ),
           ),
         );
       },

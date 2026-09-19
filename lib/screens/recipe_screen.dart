@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
-import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
@@ -26,6 +25,7 @@ import '../models/recipe.dart';
 import '../util/helper.dart';
 import '../util/pdf_share.dart';
 import '../widgets/culinary_editorial_theme.dart';
+import '../widgets/dialogs/calendar_add_dialog.dart';
 import '../widgets/icon_info_message.dart';
 import '../widgets/recipe_screen/editorial_recipe_detail.dart';
 import '../widgets/spinning_sync_icon.dart';
@@ -418,18 +418,16 @@ class _RecipeDetailHeader extends StatelessWidget {
   ) async {
     switch (action) {
       case _RecipeMoreAction.calendar:
-        final date = await showOmniDateTimePicker(
-          context: context,
-          initialDate: DateTime(
-            DateTime.now().year,
-            DateTime.now().month,
-            DateTime.now().day,
-          ),
-          is24HourMode: true,
+        final selection = await showCalendarSchedule(
+          context,
+          fixedRecipeName: recipe.name,
         );
-        if (date != null && context.mounted) {
+        if (selection != null && context.mounted) {
           context.read<RecipeCalendarBloc>().add(
-            AddRecipeToCalendarEvent(date, recipe.name),
+            AddRecipeToCalendarEvent(
+              selection.scheduledAt,
+              selection.recipeName,
+            ),
           );
         }
       case _RecipeMoreAction.pin:

@@ -8,7 +8,7 @@ import '../../../constants/routes.dart';
 
 import 'package:my_recipe_book/generated/l10n.dart';
 
-import '../../../widgets/dialogs/textfield_dialog.dart';
+import '../../../widgets/editorial_catalog_manager.dart';
 import '../../category_manager.dart';
 import 'editorial_classification_section.dart';
 
@@ -38,25 +38,20 @@ class _CategorySectionState extends State<CategorySection> {
             addTooltip: S.of(context).add,
             manageTooltip: S.of(context).manage_categories,
             onAdd: () {
-              showDialog(
+              showCatalogNameEditorSheet(
                 context: context,
-                builder: (_) => TextFieldDialog(
-                  validation: (String? name) {
-                    if (state.categories.contains(name)) {
-                      return S.of(context).category_already_exists;
-                    } else if (name == "") {
-                      return S.of(context).field_must_not_be_empty;
-                    } else {
-                      return null;
-                    }
-                  },
-                  save: (String name) {
-                    BlocProvider.of<CategoryManagerBloc>(context)
-                        .recipeManagerBloc
-                        .add(RMAddCategories([name]));
-                  },
-                  hintText: S.of(context).categoryname,
-                ),
+                title: S.of(context).catalog_add_category,
+                fieldLabel: S.of(context).categoryname,
+                saveLabel: S.of(context).save,
+                cancelLabel: S.of(context).cancel,
+                emptyError: S.of(context).field_must_not_be_empty,
+                duplicateError: S.of(context).category_already_exists,
+                existingNames: state.categories,
+                onSave: (name) {
+                  BlocProvider.of<CategoryManagerBloc>(context)
+                      .recipeManagerBloc
+                      .add(RMAddCategories([name]));
+                },
               );
             },
             onManage: () {

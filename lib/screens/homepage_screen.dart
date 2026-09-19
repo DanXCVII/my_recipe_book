@@ -230,7 +230,7 @@ class MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   _flush!.dismiss(true); // result = true
                 },
-                child: Text("OK", style: TextStyle(color: Colors.amber)),
+                child: Text("OK"),
               ),
             ) // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
             ..show(context).then((result) {});
@@ -257,18 +257,21 @@ class MyHomePageState extends State<MyHomePage> {
                   appBlocState.recipeCategoryOverview,
                   appBlocState.title,
                 ),
-                floatingActionButton: appBlocState.selectedIndex == 0
-                    ? BlocBuilder<RecipeModsBloc, RecipeModsState>(
-                        builder: (context, recipeModsState) {
-                          return RecipeCreationFabMenu(
-                            busy: recipeModsState is! UnblockModsState,
-                            busyLabel: S.of(context).syncing_recipes_drive,
-                            onCreateManually: _createRecipeManually,
-                            onImportFromWebsite: _importRecipeFromWebsite,
-                          );
-                        },
-                      )
-                    : null,
+                floatingActionButtonAnimator:
+                    FloatingActionButtonAnimator.noAnimation,
+                floatingActionButton: _RecipeCreationFabTransition(
+                  visible: appBlocState.selectedIndex == 0,
+                  child: BlocBuilder<RecipeModsBloc, RecipeModsState>(
+                    builder: (context, recipeModsState) {
+                      return RecipeCreationFabMenu(
+                        busy: recipeModsState is! UnblockModsState,
+                        busyLabel: S.of(context).syncing_recipes_drive,
+                        onCreateManually: _createRecipeManually,
+                        onImportFromWebsite: _importRecipeFromWebsite,
+                      );
+                    },
+                  ),
+                ),
                 body: Row(
                   children: ([
                     !isCompactLayout
@@ -485,6 +488,52 @@ class MyHomePageState extends State<MyHomePage> {
         label: S.of(context).settings,
       ),
     ];
+  }
+}
+
+class _RecipeCreationFabTransition extends StatelessWidget {
+  const _RecipeCreationFabTransition({
+    required this.visible,
+    required this.child,
+  });
+
+  static const Duration _enterDuration = Duration(milliseconds: 200);
+  static const Duration _exitDuration = Duration(milliseconds: 150);
+
+  final bool visible;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+
+    return AnimatedSwitcher(
+      duration: reduceMotion ? Duration.zero : _enterDuration,
+      reverseDuration: reduceMotion ? Duration.zero : _exitDuration,
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: (child, animation) {
+        final offset = Tween<Offset>(
+          begin: const Offset(0, .15),
+          end: Offset.zero,
+        ).animate(animation);
+        final scale = Tween<double>(begin: .96, end: 1).animate(animation);
+
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: offset,
+            child: ScaleTransition(scale: scale, child: child),
+          ),
+        );
+      },
+      child: visible
+          ? KeyedSubtree(
+              key: const ValueKey('recipe-creation-fab-visible'),
+              child: child,
+            )
+          : const SizedBox.shrink(key: ValueKey('recipe-creation-fab-hidden')),
+    );
   }
 }
 

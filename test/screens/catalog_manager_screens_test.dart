@@ -14,6 +14,8 @@ import 'package:my_recipe_book/local_storage/local_repository.dart';
 import 'package:my_recipe_book/models/nutrition.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/models/string_int_tuple.dart';
+import 'package:my_recipe_book/screens/add_recipe/general_info_screen/categories_section.dart';
+import 'package:my_recipe_book/screens/add_recipe/general_info_screen/recipe_tag_section.dart';
 import 'package:my_recipe_book/screens/category_manager.dart';
 import 'package:my_recipe_book/screens/ingredients_manager.dart';
 import 'package:my_recipe_book/screens/nutrition_manager.dart';
@@ -138,6 +140,74 @@ void main() {
 
     expect(find.byKey(const ValueKey('category-row-Dinner')), findsOneWidget);
     expect(repository.getCategoryNames(), ['Dinner', noCategoryName]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('recipe editor adds a category with the catalog sheet', (
+    tester,
+  ) async {
+    categoryManager.add(InitializeCategoryManager());
+    await _pumpManager(
+      tester,
+      providers: [
+        BlocProvider<CategoryManagerBloc>.value(value: categoryManager),
+      ],
+      child: Scaffold(body: CategorySection()),
+    );
+
+    await tester.tap(find.byTooltip('Add'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Add category'), findsOneWidget);
+    expect(find.byKey(const ValueKey('catalog-name-field')), findsOneWidget);
+    expect(find.byKey(const ValueKey('catalog-sheet-save')), findsOneWidget);
+
+    await tester.enterText(
+      find.byKey(const ValueKey('catalog-name-field')),
+      '  Weeknight  ',
+    );
+    await tester.tap(find.byKey(const ValueKey('catalog-sheet-save')));
+    await _pumpUntil(
+      tester,
+      () => repository.getCategoryNames().contains('Weeknight'),
+    );
+
+    expect(repository.getCategoryNames(), ['Weeknight', noCategoryName]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('recipe editor adds a tag with the catalog color sheet', (
+    tester,
+  ) async {
+    tagManager.add(InitializeRecipeTagManager());
+    await _pumpManager(
+      tester,
+      providers: [BlocProvider<RecipeTagManagerBloc>.value(value: tagManager)],
+      child: const Scaffold(body: RecipeTagSection()),
+    );
+
+    await tester.tap(find.byTooltip('Add'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Add tag'), findsOneWidget);
+    expect(find.byKey(const ValueKey('tag-color-preview')), findsOneWidget);
+    expect(find.byKey(const ValueKey('tag-color-0')), findsOneWidget);
+
+    await tester.enterText(
+      find.byKey(const ValueKey('catalog-name-field')),
+      '  Family  ',
+    );
+    await tester.tap(find.byKey(const ValueKey('tag-color-5')));
+    await tester.tap(find.byKey(const ValueKey('catalog-sheet-save')));
+    await _pumpUntil(
+      tester,
+      () => repository.getRecipeTags().any((tag) => tag.text == 'Family'),
+    );
+
+    final savedTag = repository.getRecipeTags().singleWhere(
+      (tag) => tag.text == 'Family',
+    );
+    expect(savedTag.number, const Color(0xFF1565C0).toARGB32());
     expect(tester.takeException(), isNull);
   });
 

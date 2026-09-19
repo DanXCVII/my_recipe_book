@@ -17,8 +17,6 @@ class SCanSave extends StepsState {
   List<Object> get props => [isValid, time];
 }
 
-class SSavingTmpData extends StepsState {}
-
 class SEditingFinished extends StepsState {}
 
 class SSaved extends StepsState {

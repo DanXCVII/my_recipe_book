@@ -20,7 +20,6 @@ import '../../screens/recipe_screen.dart';
 import '../../util/helper.dart';
 import '../culinary_editorial_theme.dart';
 import '../dialogs/calendar_add_dialog.dart';
-import '../dialogs/calendar_recipe_add_dialog.dart';
 import 'calendar_export_preview.dart';
 
 enum _CalendarRecipeAction { remove }
@@ -169,25 +168,23 @@ class _EditorialWeeklyPlannerState extends State<EditorialWeeklyPlanner> {
     });
   }
 
-  void _showPlanRecipe() {
-    showDialog<void>(
-      context: context,
-      builder: (_) => CalendarAddDialog((date, recipeName) {
-        context.read<RecipeCalendarBloc>().add(
-          AddRecipeToCalendarEvent(date, recipeName),
-        );
-      }),
+  Future<void> _showPlanRecipe() async {
+    final selection = await showCalendarSchedule(context);
+    if (selection == null || !mounted) return;
+    context.read<RecipeCalendarBloc>().add(
+      AddRecipeToCalendarEvent(selection.scheduledAt, selection.recipeName),
     );
   }
 
-  void _showRecipeForDay(DateTime date) {
-    showDialog<void>(
-      context: context,
-      builder: (_) => CalendarRecipeAddDialog(
-        save: (recipeName) => context.read<RecipeCalendarBloc>().add(
-          AddRecipeToCalendarEvent(date, recipeName),
-        ),
-      ),
+  Future<void> _showRecipeForDay(DateTime date) async {
+    final selection = await showCalendarSchedule(
+      context,
+      fixedDate: date,
+      allowTime: false,
+    );
+    if (selection == null || !mounted) return;
+    context.read<RecipeCalendarBloc>().add(
+      AddRecipeToCalendarEvent(selection.scheduledAt, selection.recipeName),
     );
   }
 

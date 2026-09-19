@@ -9,11 +9,6 @@ class InitialNutritionManagerState extends NutritionManagerState {
   List<Object> get props => [];
 }
 
-class LoadingNutritionManager extends NutritionManagerState {
-  @override
-  List<Object> get props => [];
-}
-
 class LoadedNutritionManager extends NutritionManagerState {
   final List<String> nutritions;
 

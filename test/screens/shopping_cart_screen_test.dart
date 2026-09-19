@@ -16,6 +16,7 @@ import 'package:my_recipe_book/models/ingredient.dart';
 import 'package:my_recipe_book/models/recipe.dart';
 import 'package:my_recipe_book/screens/shopping_cart_fancy.dart';
 import 'package:my_recipe_book/theming.dart';
+import 'package:my_recipe_book/widgets/culinary_editorial_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:wakelock_plus_platform_interface/wakelock_plus_platform_interface.dart';
@@ -24,6 +25,15 @@ void main() {
   late _CartHarness harness;
   late WakelockPlusPlatformInterface originalWakelock;
   late _TestWakelock testWakelock;
+
+  void setTestView(WidgetTester tester, Size size) {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = size;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+  }
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({
@@ -45,8 +55,7 @@ void main() {
     'renders real cart data and supports view, serving, and quick add',
     (tester) async {
       await harness.seedPopulatedCart();
-      await tester.binding.setSurfaceSize(const Size(430, 900));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+      setTestView(tester, const Size(430, 900));
       await harness.pump(tester);
 
       expect(find.text('Shopping list'), findsOneWidget);
@@ -128,12 +137,181 @@ void main() {
       await tester.tap(
         find.byTooltip('Add ingredient with amount, unit, or recipe'),
       );
-      await tester.pump(const Duration(milliseconds: 300));
-      expect(find.text('Ingredient'), findsOneWidget);
-      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('shopping-cart-add-sheet')), findsOneWidget);
+      expect(find.text('Add ingredient'), findsOneWidget);
+      await tester.tap(find.byTooltip('Close'));
       await tester.pumpAndSettle();
     },
   );
+
+  testWidgets(
+    'detailed add recommends local data and keeps the selected recipe for repeat entry',
+    (tester) async {
+      await harness.seedPopulatedCart();
+      setTestView(tester, const Size(430, 900));
+      await harness.pump(tester);
+
+      await tester.tap(
+        find.byTooltip('Add ingredient with amount, unit, or recipe'),
+      );
+      await tester.pumpAndSettle();
+
+      final ingredientField = find.byKey(const Key('shopping-cart-add-name'));
+      await tester.enterText(ingredientField, 'arr');
+      await tester.pump();
+      expect(
+        find.byKey(const ValueKey('shopping-suggestion-Carrot')),
+        findsOneWidget,
+      );
+
+      await tester.enterText(ingredientField, 'Flat-leaf parsley');
+      final recipeField = find.byKey(const Key('shopping-cart-add-recipe'));
+      await tester.ensureVisible(recipeField);
+      await tester.enterText(recipeField, 'so');
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('shopping-suggestion-Soup')));
+      await tester.pump();
+      expect(find.text('LINKED RECIPE'), findsOneWidget);
+
+      final added = harness.cart.stream
+          .where((state) => state is LoadedShoppingCart)
+          .cast<LoadedShoppingCart>()
+          .firstWhere(
+            (state) => state.data.recipeSources.any(
+              (source) =>
+                  source.key == 'Soup' &&
+                  source.items.any((item) => item.name == 'Flat-leaf parsley'),
+            ),
+          );
+      final addAnother = find.byKey(const Key('shopping-cart-add-another'));
+      await tester.ensureVisible(addAnother);
+      await tester.tap(addAnother);
+      await tester.runAsync(() => added);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('shopping-cart-add-sheet')), findsOneWidget);
+      expect(
+        find.text('Added Flat-leaf parsley to your shopping list'),
+        findsOneWidget,
+      );
+      expect(find.text('LINKED RECIPE'), findsOneWidget);
+      expect(
+        tester.widget<TextFormField>(ingredientField).controller!.text,
+        isEmpty,
+      );
+      expect(
+        tester.widget<TextFormField>(recipeField).controller!.text,
+        'Soup',
+      );
+    },
+  );
+
+  testWidgets(
+    'detailed add validates amount and requires selecting a saved recipe',
+    (tester) async {
+      await harness.seedPopulatedCart();
+      setTestView(tester, const Size(430, 900));
+      await harness.pump(tester);
+
+      await tester.tap(
+        find.byTooltip('Add ingredient with amount, unit, or recipe'),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('shopping-cart-add-name')),
+        'Olives',
+      );
+      await tester.enterText(
+        find.byKey(const Key('shopping-cart-add-amount')),
+        'many',
+      );
+      final submit = find.byKey(const Key('shopping-cart-add-submit'));
+      await tester.ensureVisible(submit);
+      await tester.tap(submit);
+      await tester.pump();
+      expect(find.text('No valid number'), findsOneWidget);
+
+      await tester.enterText(
+        find.byKey(const Key('shopping-cart-add-amount')),
+        '2',
+      );
+      await tester.enterText(
+        find.byKey(const Key('shopping-cart-add-recipe')),
+        'Invented recipe',
+      );
+      await tester.ensureVisible(submit);
+      await tester.tap(submit);
+      await tester.pump();
+      expect(
+        find.text(
+          'Select a saved recipe from the suggestions or clear this field',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('shopping-cart-add-sheet')), findsOneWidget);
+
+      await tester.enterText(
+        find.byKey(const Key('shopping-cart-add-recipe')),
+        '',
+      );
+      final added = harness.cart.stream
+          .where((state) => state is LoadedShoppingCart)
+          .cast<LoadedShoppingCart>()
+          .firstWhere(
+            (state) => state.data.consolidatedItems.any(
+              (item) => item.name == 'Olives' && item.amount == 2,
+            ),
+          );
+      await tester.ensureVisible(submit);
+      await tester.tap(submit);
+      await tester.runAsync(() => added);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('shopping-cart-add-sheet')), findsNothing);
+      expect(
+        (await harness.repository.getShoppingCartData()).recipeSources.any(
+          (source) => source.displayName == 'Invented recipe',
+        ),
+        isFalse,
+      );
+    },
+  );
+
+  testWidgets('detailed add uses a dialog at expanded widths', (tester) async {
+    setTestView(tester, const Size(800, 900));
+    await harness.pump(tester);
+
+    await tester.tap(
+      find.byTooltip('Add ingredient with amount, unit, or recipe'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('shopping-cart-add-dialog')), findsOneWidget);
+    expect(find.byKey(const Key('shopping-cart-add-sheet')), findsNothing);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('German detailed add remains usable at narrow 130% text', (
+    tester,
+  ) async {
+    setTestView(tester, const Size(320, 780));
+    await harness.pump(
+      tester,
+      locale: const Locale('de', 'DE'),
+      textScale: 1.3,
+    );
+
+    await tester.tap(
+      find.byTooltip('Zutat mit Menge, Einheit oder Rezept hinzufügen'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Zutat hinzufügen'), findsOneWidget);
+    await tester.ensureVisible(
+      find.byKey(const Key('shopping-cart-add-another')),
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('removes checked items with confirmation and immediate undo', (
     tester,
@@ -255,6 +433,31 @@ void main() {
       await harness.pump(tester, themeKey: theme);
       expect(find.text('Shopping list'), findsOneWidget);
       expect(find.text('Carrot'), findsOneWidget);
+
+      await tester.tap(
+        find.byTooltip('Add ingredient with amount, unit, or recipe'),
+      );
+      await tester.pumpAndSettle();
+      final palette = theme == MyThemeKeys.DARK
+          ? CulinaryEditorialPalette.dark
+          : CulinaryEditorialPalette.oled;
+      for (final key in const [
+        'shopping-cart-add-name',
+        'shopping-cart-add-amount',
+        'shopping-cart-add-unit',
+        'shopping-cart-add-recipe',
+      ]) {
+        final editable = tester.widget<EditableText>(
+          find.descendant(
+            of: find.byKey(Key(key)),
+            matching: find.byType(EditableText),
+          ),
+        );
+        expect(editable.style.color, palette.onSurface);
+        expect(editable.cursorColor, palette.primary);
+      }
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     }
   });
@@ -306,6 +509,8 @@ class _CartHarness {
   Future<void> seedPopulatedCart() async {
     await repository.saveRecipe(Recipe(name: 'Soup', servings: 4));
     await repository.saveRecipe(Recipe(name: 'Bread', servings: 2));
+    await repository.addIngredient('Carrot');
+    await repository.addIngredient('Salt');
     await repository.addMultipleIngredientsToCart('Soup', const [
       Ingredient(name: 'Carrot', amount: 2, unit: 'pc'),
       Ingredient(name: 'Salt'),

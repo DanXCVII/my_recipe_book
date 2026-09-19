@@ -130,7 +130,7 @@ void main() {
       );
       await tester.tap(find.byKey(const Key('onboarding-explore-save')));
       await tester.pumpAndSettle();
-      expect(find.text('Saved for later'), findsOneWidget);
+      expect(find.text('Bookmark'), findsOneWidget);
       expect(find.text('Card 2 of 3'), findsOneWidget);
       expect(find.byKey(const Key('onboarding-screen')), findsOneWidget);
 
@@ -140,7 +140,7 @@ void main() {
 
       await tester.tap(find.byKey(const Key('onboarding-explore-cook')));
       await tester.pumpAndSettle();
-      expect(find.text('Cook tonight'), findsOneWidget);
+      expect(find.text('Cook now'), findsOneWidget);
       expect(find.byKey(const Key('onboarding-screen')), findsOneWidget);
     },
   );

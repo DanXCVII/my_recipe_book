@@ -172,6 +172,53 @@ void main() {
     expect(effects.signalCount, 1);
   });
 
+  testWidgets('collapsed timer is a compact single row without set time', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(430, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final cubit = CookModeCubit(stepCount: 2);
+    addTearDown(cubit.close);
+    await _pumpCookMode(
+      tester,
+      cubit: cubit,
+      effects: _TestCompletionEffects(),
+    );
+    cubit.setTimer(const Duration(minutes: 1));
+    await tester.pumpAndSettle();
+
+    final timerCard = find.byKey(const Key('cook-mode-timer-card'));
+    final expandedHeight = tester.getSize(timerCard).height;
+    expect(find.byKey(const Key('cook-mode-set-timer')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('cook-mode-collapse-timer')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('cook-mode-set-timer')), findsNothing);
+    expect(
+      find.byKey(const Key('cook-mode-timer-display-collapsed')),
+      findsOneWidget,
+    );
+    expect(find.text('01:00'), findsOneWidget);
+    expect(find.byKey(const Key('cook-mode-toggle-timer')), findsOneWidget);
+    expect(find.byKey(const Key('cook-mode-collapse-timer')), findsOneWidget);
+    expect(tester.getSize(timerCard).height, lessThan(expandedHeight));
+
+    await tester.tap(find.byKey(const Key('cook-mode-collapse-timer')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('cook-mode-set-timer')), findsOneWidget);
+    expect(
+      find.byKey(const Key('cook-mode-timer-display-collapsed')),
+      findsNothing,
+    );
+    expect(tester.getSize(timerCard).height, expandedHeight);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('active timer protects exit and keep-awake is session scoped', (
     tester,
   ) async {

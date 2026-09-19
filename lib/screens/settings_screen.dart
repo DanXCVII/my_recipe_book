@@ -2,8 +2,6 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:html/dom.dart' as dom;
-import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
@@ -1739,58 +1737,4 @@ BoxDecoration _cardDecoration(CulinaryEditorialPalette palette) {
       ),
     ],
   );
-}
-
-//////////////// test code for extraction of recipes from websites ////////////////
-
-String extractText(dom.Element element) {
-  StringBuffer buffer = StringBuffer();
-
-  void extractTextRecursively(dom.Element element) {
-    for (dom.Node node in element.nodes) {
-      if (node is dom.Text) {
-        final text = node.text.trim();
-        if (text.isNotEmpty) {
-          buffer.write(' ');
-          buffer.write(text);
-        }
-      } else if (node is dom.Element) {
-        if (!['style', 'script'].contains(node.localName)) {
-          extractTextRecursively(node);
-        }
-      }
-    }
-  }
-
-  extractTextRecursively(element);
-
-  return buffer.toString().trim();
-}
-
-Future<String> fetchHtml(String url) async {
-  final response = await http.get(Uri.parse(url));
-  if (response.statusCode == 200) {
-    return response.body;
-  } else {
-    throw Exception('Failed to load HTML from $url');
-  }
-}
-
-String extractJsonLdText(dom.Document htmlDocument) {
-  StringBuffer buffer = StringBuffer();
-  final elements = htmlDocument.querySelectorAll(
-    'script[type="application/ld+json"]',
-  );
-
-  for (var element in elements) {
-    final jsonLdText = element.text.trim();
-    if (jsonLdText.isNotEmpty) {
-      if (buffer.isNotEmpty) {
-        buffer.write('\n');
-      }
-      buffer.write(jsonLdText);
-    }
-  }
-
-  return buffer.toString();
 }

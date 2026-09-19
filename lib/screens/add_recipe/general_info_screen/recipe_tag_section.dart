@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,7 +10,7 @@ import 'package:my_recipe_book/generated/l10n.dart';
 
 import '../../../models/string_int_tuple.dart';
 import '../../../widgets/culinary_editorial_theme.dart';
-import '../../../widgets/dialogs/text_color_dialog.dart';
+import '../../../widgets/editorial_catalog_manager.dart';
 import '../../recipe_tag_manager_screen.dart';
 import 'editorial_classification_section.dart';
 
@@ -30,32 +29,25 @@ class RecipeTagSection extends StatelessWidget {
             addTooltip: S.of(context).add,
             manageTooltip: S.of(context).manage_recipe_tags,
             onAdd: () {
-              showDialog(
+              showTagEditorSheet(
                 context: context,
-                builder: (_) => TextColorDialog(
-                  validation: (String? name) {
-                    if (state.recipeTags.firstWhereOrNull(
-                          (element) => element.text == name,
-                        ) !=
-                        null) {
-                      return S.of(context).recipe_tag_already_exists;
-                    } else if (name == "") {
-                      return S.of(context).field_must_not_be_empty;
-                    } else {
-                      return null;
-                    }
-                  },
-                  save: (String name, int color) {
-                    BlocProvider.of<RecipeTagManagerBloc>(context)
-                        .recipeManagerBloc
-                        .add(
-                          RMAddRecipeTag([
-                            StringIntTuple(text: name, number: color),
-                          ]),
-                        );
-                  },
-                  hintText: S.of(context).recipe_tag,
-                ),
+                title: S.of(context).catalog_add_tag,
+                fieldLabel: S.of(context).recipe_tag,
+                saveLabel: S.of(context).save,
+                cancelLabel: S.of(context).cancel,
+                emptyError: S.of(context).field_must_not_be_empty,
+                duplicateError: S.of(context).recipe_tag_already_exists,
+                chooseColorLabel: S.of(context).catalog_choose_tag_color,
+                customColorLabel: S.of(context).catalog_custom_tag_color,
+                colorPreviewLabel: S.of(context).catalog_tag_preview,
+                existingNames: state.recipeTags.map((tag) => tag.text),
+                onSave: (name, color) {
+                  BlocProvider.of<RecipeTagManagerBloc>(
+                    context,
+                  ).recipeManagerBloc.add(
+                    RMAddRecipeTag([StringIntTuple(text: name, number: color)]),
+                  );
+                },
               );
             },
             onManage: () {

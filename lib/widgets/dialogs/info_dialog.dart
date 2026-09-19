@@ -28,12 +28,6 @@ class InfoDialog extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           child: okText == null ? Text(S.of(context).alright) : Text(okText!),
-          style: TextButton.styleFrom(
-            foregroundColor:
-                Theme.of(context).colorScheme.surface == Colors.white
-                ? null
-                : Colors.amber,
-          ),
           onPressed: () {
             if (onPressedOk != null) {
               Navigator.pop(context);

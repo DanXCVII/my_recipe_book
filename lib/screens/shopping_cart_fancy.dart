@@ -349,15 +349,7 @@ class _FancyShoppingCartScreenState extends State<FancyShoppingCartScreen>
     setState(() {});
   }
 
-  void _showDetailedAdd() {
-    showDialog<void>(
-      context: context,
-      builder: (_) => BlocProvider.value(
-        value: context.read<ShoppingCartBloc>(),
-        child: const ShoppingCartAddDialog(),
-      ),
-    );
-  }
+  void _showDetailedAdd() => showShoppingCartAddIngredient(context);
 
   Future<void> _setKeepAwake(bool enabled) async {
     if (_keepAwake == enabled) return;

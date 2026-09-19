@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'widgets/culinary_editorial_theme.dart';
+
 enum MyThemeKeys { AUTOMATIC, LIGHT, DARK, OLEDBLACK }
 
 class _CustomTheme extends InheritedWidget {
@@ -40,17 +42,20 @@ class CustomTheme extends StatefulWidget {
 
 class MyThemes {
   static final ThemeData lightTheme = ThemeData(
-    primaryColor: Color(0xFF790604), // maybe brown[700]
+    primaryColor: CulinaryEditorialPalette.light.primary,
 
     scaffoldBackgroundColor: Colors.grey[200],
     canvasColor: Colors.white,
     // cardColor: Color(0xffFFE8C2),
     focusColor: Colors.grey[800],
     colorScheme: ColorScheme.fromSwatch().copyWith(
+      primary: CulinaryEditorialPalette.light.primary,
+      onPrimary: CulinaryEditorialPalette.light.onPrimary,
       secondary: Colors.orange[700],
       brightness: Brightness.light,
       surface: Colors.white,
     ),
+    filledButtonTheme: _primaryButtonTheme(CulinaryEditorialPalette.light),
     //  textSelectionColor: Colors.white,
     //      hintColor: Colors.white,
     //      textSelectionHandleColor: Colors.white,
@@ -58,7 +63,7 @@ class MyThemes {
   );
 
   static final ThemeData darkTheme = ThemeData(
-    primaryColor: Color(0xFF790604),
+    primaryColor: CulinaryEditorialPalette.dark.primary,
     unselectedWidgetColor: Colors.grey[100],
     appBarTheme: AppBarTheme(
       foregroundColor: Colors.white,
@@ -75,15 +80,17 @@ class MyThemes {
     focusColor: Colors.white,
     scaffoldBackgroundColor: Color(0xff212225),
     colorScheme: ThemeData().colorScheme.copyWith(
-      primary: Colors.amber,
+      primary: CulinaryEditorialPalette.dark.primary,
+      onPrimary: CulinaryEditorialPalette.dark.onPrimary,
       secondary: Colors.orange[700],
       brightness: Brightness.dark,
       surface: Color(0xff212225),
     ),
+    filledButtonTheme: _primaryButtonTheme(CulinaryEditorialPalette.dark),
   );
 
   static final ThemeData oledblackTheme = ThemeData(
-    primaryColor: Color(0xff363636),
+    primaryColor: CulinaryEditorialPalette.oled.primary,
     snackBarTheme: SnackBarThemeData(
       actionBackgroundColor: Colors.red,
       backgroundColor: Colors.red,
@@ -103,11 +110,13 @@ class MyThemes {
     focusColor: Colors.white,
     scaffoldBackgroundColor: Colors.black,
     colorScheme: ColorScheme.fromSwatch().copyWith(
-      primary: Colors.amber,
+      primary: CulinaryEditorialPalette.oled.primary,
+      onPrimary: CulinaryEditorialPalette.oled.onPrimary,
       secondary: Colors.orange[700],
       brightness: Brightness.dark,
       surface: Colors.black,
     ),
+    filledButtonTheme: _primaryButtonTheme(CulinaryEditorialPalette.oled),
   );
 
   static ThemeData getThemeFromKey(MyThemeKeys? themeKey) {
@@ -123,6 +132,22 @@ class MyThemes {
         return lightTheme;
     }
   }
+}
+
+FilledButtonThemeData _primaryButtonTheme(CulinaryEditorialPalette palette) {
+  return FilledButtonThemeData(
+    style: FilledButton.styleFrom(
+      minimumSize: const Size(0, 52),
+      disabledBackgroundColor: palette.surfaceContainerHigh,
+      disabledForegroundColor: palette.onSurfaceVariant,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      textStyle: CulinaryEditorialType.body(
+        palette,
+        size: 14,
+        weight: FontWeight.w700,
+      ),
+    ),
+  );
 }
 
 class CustomThemeState extends State<CustomTheme> {
